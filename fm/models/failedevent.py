@@ -8,8 +8,10 @@
 
 ## Python modules
 import datetime
+import struct
 ## Third-party modules
 from mongoengine import document, fields
+from bson import Binary
 ## NOC modules
 from eventlog import EventLog
 from noc.sa.models.managedobject import ManagedObject
@@ -46,10 +48,14 @@ class FailedEvent(document.Document):
         log = self.log + [EventLog(timestamp=datetime.datetime.now(),
                                    from_status="F", to_status="N",
                                    message=message)]
-        e = NewEvent(id=self.id, timestamp=self.timestamp,
-                     managed_object=self.managed_object,
-                     raw_vars=self.raw_vars,
-                     log=log)
+        e = NewEvent(
+            id=self.id,
+            timestamp=self.timestamp,
+            managed_object=self.managed_object,
+            raw_vars=self.raw_vars,
+            seq=Binary(struct.pack("!16sII", self.managed_object.pool.name, 0, 0)),
+            log=log
+        )
         e.save()
         self.delete()
         return e
