@@ -71,7 +71,7 @@ class ActiveEvent(document.Document):
             managed_object=self.managed_object,
             raw_vars=self.raw_vars,
             log=log,
-            seq=Binary(struct.pack("!16sII", self.managed_object.pool.name, 0, 0))
+            seq=Binary(struct.pack("!16sII", str(self.managed_object.pool.name), 0, 0))
         )
         e.save()
         self.delete()
