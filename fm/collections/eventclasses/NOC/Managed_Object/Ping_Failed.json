@@ -7,6 +7,11 @@
     "vars": [
 
     ],
+    "deduplication_window": 3,
+    "ttl": 86400,
+    "handlers": [
+        "noc.fm.handlers.event.status.set_down"
+    ],
     "subject_template": "Ping Failed",
     "body_template": "Failed to ping managed object {{event.managed_object.name}} (IP: {{event.managed_object.address}}). All SA tasks to this object are temporary suspended",
     "symptoms": "Cannot execute SA tasks on the object",
