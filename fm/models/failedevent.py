@@ -53,7 +53,7 @@ class FailedEvent(document.Document):
             timestamp=self.timestamp,
             managed_object=self.managed_object,
             raw_vars=self.raw_vars,
-            seq=Binary(struct.pack("!16sII", self.managed_object.pool.name, 0, 0)),
+            seq=Binary(struct.pack("!16sII", str(self.managed_object.pool.name), 0, 0)),
             log=log
         )
         e.save()
