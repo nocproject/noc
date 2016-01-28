@@ -11,69 +11,80 @@ import logging
 import datetime
 
 
-class PrefixLoggerAdapter(logging.LoggerAdapter):
+class PrefixLoggerAdapter(object):
     """
     Add [prefix] to log message
     """
-    def __init__(self, logger, prefix, extra=None):
-        self._pattern = None
-        self.set_prefix(prefix)
-        logging.LoggerAdapter.__init__(self, logger, extra or {})
+    def __init__(self, logger, prefix, target=None):
+        """
+        :param logger: Parent logger
+        :param prefix: Prefix to add in front of every message
+        :param target: Optional file-like handle to duplicate output
+        """
+        self.logger = logger
+        if prefix:
+            self.prefix = "[%s] " % str(prefix).replace("][", "|").replace("] [", "|")
+        else:
+            self.prefix = ""
+        self.target = target
 
-    def process(self, msg, kwargs):
-        return self._pattern % msg, kwargs
-
-    def set_prefix(self, prefix):
-        self._pattern = "[%s] %%s" % prefix
-        self._pattern = self._pattern.replace("][", "|")
-
-
-class TeeLoggerAdapter(logging.LoggerAdapter):
-    """
-    Duplicate log messages to the list
-    """
-    def __init__(self, logger, out, extra=None):
-        self.out = out
-        logging.LoggerAdapter.__init__(self, logger, extra or {})
-
-    def _append(self, msg, args):
-        if args:
-            msg = msg % args
-        msg = "%s %s" % (
-            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
-            msg
+    def _log(self, level, msg, args, **kwargs):
+        self.logger._log(
+            level,
+            self.prefix + msg,
+            args,
+            **kwargs
         )
-        self.out += [msg]
+        if self.target:
+            if args:
+                msg = msg % args
+            msg = "%s %s %s\n" % (
+                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"),
+                self.prefix,
+                msg
+            )
+            self.target.write(msg)
 
     def debug(self, msg, *args, **kwargs):
-        self._append(msg, args)
-        logging.LoggerAdapter.debug(self, msg, *args, **kwargs)
+        if self.logger.isEnabledFor(logging.DEBUG):
+            self._log(logging.DEBUG, msg, args, **kwargs)
 
     def info(self, msg, *args, **kwargs):
-        self._append(msg, args)
-        logging.LoggerAdapter.info(self, msg, *args, **kwargs)
+        if self.logger.isEnabledFor(logging.INFO):
+            self._log(logging.INFO, msg, args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):
-        self._append(msg, args)
-        logging.LoggerAdapter.warning(self, msg, *args, **kwargs)
+        if self.logger.isEnabledFor(logging.WARNING):
+            self._log(logging.WARNING, msg, args, **kwargs)
 
     def error(self, msg, *args, **kwargs):
-        self._append(msg, args)
-        logging.LoggerAdapter.error(self, msg, *args, **kwargs)
+        if self.logger.isEnabledFor(logging.ERROR):
+            self._log(logging.ERROR, msg, args, **kwargs)
 
     def critical(self, msg, *args, **kwargs):
-        self._append(msg, args)
-        logging.LoggerAdapter.critical(self, msg, *args, **kwargs)
+        if self.logger.isEnabledFor(logging.CRITICAL):
+            self._log(logging.CRITICAL, msg, args, **kwargs)
 
-    def log(self, level, msg, *args, **kwargs):
-        self._append(msg, args)
-        logging.LoggerAdapter.log(self, msg, *args, **kwargs)
+    def exception(self, msg, *args, **kwargs):
+        if self.logger.isEnabledFor(logging.ERROR):
+            kwargs["exc_info"] = 1
+            self._log(logging.ERROR, msg, args, **kwargs)
 
-    def set_prefix(self, prefix):
-        try:
-            self.logger.set_prefix(prefix)
-        except AttributeError:
-            pass
+    def isEnabledFor(self, level):
+        """
+        See if the underlying logger is enabled for the specified level.
+        """
+        return self.logger.isEnabledFor(level)
+
+    def get_logger(self, prefix):
+        """
+        Returns new logger adapter with additional prefix
+        """
+        return PrefixLoggerAdapter(
+            self.logger,
+            self.prefix[1:] + prefix,
+            self.target
+        )
 
 
 class ColorFormatter(logging.Formatter):

@@ -9,6 +9,7 @@
 
 ## Python modules
 from collections import defaultdict
+import cStringIO
 ## Third-party modules
 import gridfs
 ## NOC modules
@@ -20,7 +21,6 @@ from noc.lib.debug import error_report
 from noc.lib.log import PrefixLoggerAdapter
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
-from noc.lib.log import TeeLoggerAdapter
 from noc.lib.nosql import get_db
 
 
@@ -30,8 +30,12 @@ class MODiscoveryJob(PeriodicJob):
 
     def __init__(self, *args, **kwargs):
         super(MODiscoveryJob, self).__init__(*args, **kwargs)
-        self.out_log = []
-        self.logger = TeeLoggerAdapter(self.logger, self.out_log)
+        self.out_log = cStringIO.StringIO()
+        self.logger = PrefixLoggerAdapter(
+            self.logger,
+            "",
+            target=self.out_log
+        )
 
     def schedule_next(self, status):
         super(MODiscoveryJob, self).schedule_next(status)
@@ -41,7 +45,7 @@ class MODiscoveryJob(PeriodicJob):
         )
         fs = gridfs.GridFS(get_db(), "noc.joblog")
         fs.delete(key)
-        fs.put("\n".join(self.out_log), _id=key)
+        fs.put(self.out_log.getvalue(), _id=key)
 
     def can_run(self):
         return self.object.is_managed
@@ -59,8 +63,7 @@ class DiscoveryCheck(object):
     def __init__(self, job):
         self.job = job
         self.object = self.job.object
-        self.logger = PrefixLoggerAdapter(
-            self.job.logger.logger,
+        self.logger = self.job.logger.get_logger(
             "%s][%s][%s" % (self.job.name, self.name, self.object.name)
         )
         self.if_name_cache = {}  # mo, name -> Interface
