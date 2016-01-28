@@ -22,11 +22,15 @@ class PrefixLoggerAdapter(object):
         :param target: Optional file-like handle to duplicate output
         """
         self.logger = logger
+        self.target = target
+        self.prefix = None
+        self.set_prefix(prefix)
+
+    def set_prefix(self, prefix):
         if prefix:
             self.prefix = "[%s] " % str(prefix).replace("][", "|").replace("] [", "|")
         else:
             self.prefix = ""
-        self.target = target
 
     def _log(self, level, msg, args, **kwargs):
         self.logger._log(
