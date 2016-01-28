@@ -29,10 +29,10 @@ class Script(BaseScript):
                 r = []
                 if interface is None:
                     # Get all interfaces
-                    for i, n, s in self.snmp.join(
+                    for i, n, s in self.snmp.join([
                         mib["IF-MIB::ifName"],
                         mib["IF-MIB::ifOperStatus"]
-                    ):
+                    ]):
                         if i > 1023:
                             break
                         if n == "enet0":
