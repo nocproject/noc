@@ -22,7 +22,7 @@ class ExtNRILink(Document):
     while join_interface method is used to merge them back
     to normalized interface name
     """
-    _meta = {
+    meta = {
         "collection": "noc.extnrilinks",
         "allow_inheritance": False,
         "indexes": ["src_mo", "dst_mo"]
