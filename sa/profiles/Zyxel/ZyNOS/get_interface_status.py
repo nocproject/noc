@@ -44,8 +44,8 @@ class Script(BaseScript):
                     return r
                 else:
                     # Get single interface
-                    n = self.snmp.get(mib["IF-MIB::ifName", int(interface)]
-                    s = self.snmp.get(mib["IF-MIB::ifOperStatus", int(interface)]
+                    n = self.snmp.get(mib["IF-MIB::ifName", int(interface)])
+                    s = self.snmp.get(mib["IF-MIB::ifOperStatus", int(interface)])
                     return [{"interface":n, "status": s == 1}]
             except self.snmp.TimeOutError:
                 pass
