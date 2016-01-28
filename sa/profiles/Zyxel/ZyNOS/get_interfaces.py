@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
+from noc.lib.mib import mib
 
 
 class Script(BaseScript):
@@ -54,7 +55,7 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 # IF-MIB::ifAdminStatus
-                s = self.snmp.get("1.3.6.1.2.1.2.2.1.7.%d" % int(iface))
+                s = self.snmp.get(mib["IF-MIB::ifAdminStatus", int(iface)])
                 return int(s) == 1
             except self.snmp.TimeOutError:
                 pass  # Fallback to CLI
@@ -94,6 +95,9 @@ class Script(BaseScript):
         interfaces = []
         ospf_addresses = self.get_ospf_addresses()
         rip_addresses = self.get_rip_addresses()
+
+        # Get ifindexes
+        ifindexes = self.scripts.get_infindexes()
 
         # Get portchannes
         portchannel_members = {}  # member -> (portchannel, type)
@@ -162,9 +166,7 @@ class Script(BaseScript):
                     "oper_status": swp["status"],
                     "enabled_afi": ["BRIDGE"],
                     "mac": mac,
-                    "snmp_ifindex": self.scripts.get_ifindex(interface=name) if self.snmp 
-                                                and self.access_profile.snmp_ro
-                                                else None
+                    "snmp_ifindex": ifindexes.get(name)
                 }]
             }
             iface["snmp_ifindex"] = iface["subinterfaces"][0]["snmp_ifindex"]
