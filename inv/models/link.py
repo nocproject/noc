@@ -2,21 +2,23 @@
 ##----------------------------------------------------------------------
 ## Link model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 from collections import defaultdict
 import datetime
-## Third-party modules
-from mongoengine import signals
 ## NOC modules
 from noc.lib.nosql import (Document, PlainReferenceListField,
                            StringField, DateTimeField)
 from interface import Interface
+from noc.core.model.decorator import on_delete, on_save
+from noc.core.defer import call_later
 
 
+@on_delete
+@on_save
 class Link(Document):
     """
     Network links.
@@ -127,20 +129,22 @@ class Link(Document):
         ifaces = Interface.objects.filter(managed_object=object.id).values_list("id")
         return cls.objects.filter(interfaces__in=ifaces).count()
 
-    @classmethod
-    def _update_pop_links(cls, sender, document, target=None, **kwargs):
-        for i in document.interfaces:
+    def on_save(self):
+        self.update_pop_links()
+
+    def on_delete(self):
+        self.update_pop_links()
+
+    def update_pop_links(self):
+        for i in self.interfaces:
             for o in Object.get_managed(i.managed_object):
                 pop = o.get_pop()
                 if pop:
-                    refresh_schedule(
-                        "main.jobs", "inv.update_pop_links",
-                        key=pop.id, delta=5)
-
-
-signals.pre_delete.connect(Link._update_pop_links, sender=Link)
-signals.post_save.connect(Link._update_pop_links, sender=Link)
-
+                    call_later(
+                        "noc.inv.util.pop_links.update_pop_links",
+                        20,
+                        pop_id=pop.id
+                    )
 
 ##
 from object import Object
