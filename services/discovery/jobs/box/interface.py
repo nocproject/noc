@@ -2,14 +2,17 @@
 ##----------------------------------------------------------------------
 ## Interface check
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+import cachetools
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
 from noc.settings import config
 from noc.lib.solutions import get_solution
@@ -30,6 +33,10 @@ class InterfaceCheck(DiscoveryCheck):
             self.logger.info("Using %s for interface classification",
                              sol)
             self.get_interface_profile = get_solution(sol)
+            self.interface_profile_cache = cachetools.LRUCache(
+                1000,
+                missing=lambda x: InterfaceProfile.objects.filter(name=x).first()
+            )
 
     def handler(self):
         self.logger.info("Checking interfaces")
@@ -306,7 +313,7 @@ class InterfaceCheck(DiscoveryCheck):
         p_name = self.get_interface_profile(iface)
         if p_name and p_name != iface.profile.name:
             # Change profile
-            profile = self.get_interface_profile(p_name)
+            profile = self.interface_profile_cache[p_name]
             if not profile:
                 self.logger.error(
                     "Invalid interface profile '%s' for interface '%s'. "
