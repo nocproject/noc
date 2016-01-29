@@ -34,12 +34,12 @@ class Script(BaseScript):
             if i:
                 cli_ag = self.cli("show vlan port %s" % i)
                 tagget = []
-                untagget = []
+                untagged = []
                 for match_ag in self.rx_line_vlan_ag.finditer(cli_ag):
                      vlan = match_ag.group("vlan")
                      vlan_type = match_ag.group("vlan_type")
                      if vlan_type == "default":
-                        untagget = vlan
+                        untagged = vlan
                      if vlan_type == "qtagged":
                          tagget += [vlan]
                 shortname = self.profile.convert_interface_name(i)
@@ -51,7 +51,7 @@ class Script(BaseScript):
                        "description": "",
                        "802.1Q Enabled": "True",
                        "802.1ad Tunnel": False,
-                       "untagged": untagget,
+                       "untagged": untagged,
                        "tagged": tagget,
                        "members": members,
                     }]
