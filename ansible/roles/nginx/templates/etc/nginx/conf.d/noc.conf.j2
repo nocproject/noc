@@ -36,7 +36,7 @@ server {
     error_log  {{ nginx_log_dir }}/noc.error.log;
 
     location /media/ {
-        alias {{ noc_root }}/lib/python/site-packages/django/contrib/admin/static/;
+        alias {{ noc_root }}/django/contrib/admin/static/;
         gzip on;
         gzip_types text/css text/x-js;
     }
