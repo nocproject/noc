@@ -17,3 +17,13 @@ class Profile(BaseProfile):
     pattern_password = "[Pp]assword :"
     pattern_prompt = r"^(\S*->|(?P<hostname>\S+)# )"
     command_save_config = "write memory\r\ncopy working certified"
+
+    def convert_interface_name(self, s):
+        if s.startswith("Alcatel "):
+            # Alcatel 1/2 6.3.1.871.R01
+            return s.split()[1]
+        elif s.startswith("Dynamic Aggregate Number "):
+            # Dynamic Aggregate Number 1 ref 40000001 size 4
+            return "Agg %s" % s.split()[3]
+        else:
+            return s
