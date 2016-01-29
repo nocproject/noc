@@ -106,9 +106,12 @@ class BaseScript(object):
             self.base_logger,
             "%s] [%s" % (self.name, credentials.get("address", "-"))
         )
-        self.profile = profile_loader.get_profile(
-            ".".join(name.split(".")[:2])
-        )()
+        if self.parent:
+            self.profile = self.parent.profile
+        else:
+            self.profile = profile_loader.get_profile(
+                ".".join(name.split(".")[:2])
+            )()
         self.credentials = credentials or {}
         self.version = version or {}
         self.capabilities = capabilities
