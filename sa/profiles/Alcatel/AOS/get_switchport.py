@@ -81,10 +81,10 @@ class Script(BaseScript):
                     "description": "",
                     "802.1Q Enabled": "True",
                     "802.1ad Tunnel": False,
-                    "tagged": iface_vlans[interface]["tagged"],
+                    "tagged": iface_vlans[interface]["tagged"] if interface in iface_vlans else [],
                     "members": members,
                 }
-                if "untagged" in iface_vlans[interface]:
+                if interface in iface_vlans and "untagged" in iface_vlans[interface]:
                     i["untagged"] = iface_vlans[interface]["untagged"]
                 r += [i]
         return r
