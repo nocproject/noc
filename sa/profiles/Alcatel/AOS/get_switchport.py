@@ -2,15 +2,16 @@
 ##----------------------------------------------------------------------
 ## Alcatel.AOS.get_switchport
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
+## Python modules
+import re
+## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
-import re
- 
+
  
 class Script(BaseScript):
     name = "Alcatel.AOS.get_switchport"
@@ -30,7 +31,6 @@ class Script(BaseScript):
         for pc in self.scripts.get_portchannel():
             members = []
             i = pc["interface"]
-            member = pc["members"]
             if i:
                 cli_ag = self.cli("show vlan port %s" % i)
                 tagget = []
@@ -64,26 +64,27 @@ class Script(BaseScript):
             interface = match.group("interface")
             if interface not in iface_vlans:
                 iface_vlans[interface] = {
-                    "tagged": [],
-                    "untagged": [],
+                    "tagged": []
                 }
             vlan_type = match.group("vlan_type")
             if vlan_type == "default":
-                iface_vlans[interface]["untagged"].append(match.group("vlan"))
+                iface_vlans[interface]["untagged"] = match.group("vlan")
             if vlan_type == "qtagged":
-                iface_vlans[interface]["tagged"].append(match.group("vlan"))
+                iface_vlans[interface]["tagged"] += [match.group("vlan")]
  
         for match in self.rx_line.finditer(self.cli("show interfaces status")):
             interface = match.group("interface")
             if interface not in portchannel_members:
-                r += [{
+                i = {
                     "interface": interface,
                     "status": match.group("status") == "enabled",
                     "description": "",
                     "802.1Q Enabled": "True",
                     "802.1ad Tunnel": False,
-                    "untagged": iface_vlans[interface]["untagged"][0],
                     "tagged": iface_vlans[interface]["tagged"],
                     "members": members,
-                }]
+                }
+                if "untagged" in iface_vlans[interface]:
+                    i["untagged"] = iface_vlans[interface]["untagged"]
+                r += [i]
         return r
