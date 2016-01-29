@@ -139,12 +139,16 @@ class Link(Document):
         for i in self.interfaces:
             for o in Object.get_managed(i.managed_object):
                 pop = o.get_pop()
+                if not pop and i.managed_object.container:
+                    # Fallback to MO container
+                    pop = i.managed_object.container.get_pop()
                 if pop:
                     call_later(
                         "noc.inv.util.pop_links.update_pop_links",
                         20,
                         pop_id=pop.id
                     )
+
 
 ##
 from object import Object
