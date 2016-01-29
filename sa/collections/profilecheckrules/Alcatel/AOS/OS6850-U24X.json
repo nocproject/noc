@@ -1,0 +1,13 @@
+{
+    "name": "Alcatel | AOS | OS6850-U24X",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "ced06725-07ed-479c-ac5f-7728bc13705d",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.6486.800.1.1.2.1.7.1.10",
+    "action": "match",
+    "profile": "Alcatel.AOS"
+}
