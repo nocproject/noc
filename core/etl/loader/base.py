@@ -373,6 +373,15 @@ class BaseLoader(object):
         else:
             return None
 
+    def clean_map_str(self, mappings, value):
+        value = self.clean_str(value)
+        if value:
+            try:
+                value = mappings[value]
+            except KeyError:
+                raise self.Deferred
+        return value
+
     def clean_bool(self, value):
         if value == "":
             return None
@@ -416,6 +425,12 @@ class BaseLoader(object):
                                     self.mapped_fields[fn]),
                             ft.document_type
                     )
+            elif fn in self.mapped_fields:
+                self.clean_map[fn] = functools.partial(
+                    self.clean_map_str,
+                    self.chain.get_mappings(
+                        self.mapped_fields[fn])
+                )
 
     def update_model_clean_map(self):
         from django.db.models import BooleanField, ForeignKey
@@ -442,6 +457,12 @@ class BaseLoader(object):
                             self.mapped_fields[f.name]),
                         f.rel.to
                     )
+            elif f.name in self.mapped_fields:
+                self.clean_map[f.name] = functools.partial(
+                    self.clean_map_str,
+                    self.chain.get_mappings(
+                        self.mapped_fields[f.name])
+                )
 
     def check(self, chain):
         self.logger.info("Checking")
