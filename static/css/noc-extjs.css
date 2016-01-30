@@ -212,3 +212,7 @@ TABLE {
 .noc-offset-2 {
     padding-left: 8px;
 }
+
+.noc-bold {
+    font-weight: bold;
+}
