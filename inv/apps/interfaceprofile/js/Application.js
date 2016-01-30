@@ -157,6 +157,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         xtype: "main.notificationgroup.LookupField",
                         fieldLabel: "Status Change Notification",
                         allowBlank: true
+                    },
+                    {
+                        name: "is_customer",
+                        xtype: "checkbox",
+                        boxLabel: "Customer port",
+                        allowBlank: true
                     }
                 ],
                 formToolbar: [

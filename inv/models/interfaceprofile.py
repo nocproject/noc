@@ -54,6 +54,8 @@ class InterfaceProfile(Document):
     # Send up/down notifications
     status_change_notification = ForeignKeyField(NotificationGroup,
                                                  required=False)
+    # Count as customer port in alarms summary
+    is_customer = BooleanField(default=False)
 
     def __unicode__(self):
         return self.name
