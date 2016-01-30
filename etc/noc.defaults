@@ -58,8 +58,8 @@ installed_apps =
 crashinfo_limit = 1000000
 # Header contining an original protocol, when changed by reverse proxy
 # usually:
-# x_forwarded_proto = X-Forwarded-Proxy
-x_forwarded_proto =
+# x_forwarded_proto = X-Forwarded-Proto
+x_forwarded_proto = X-Forwarded-Proto
 # Log REST API calls and input parameters
 log_api_calls = false
 # Log SQL statements
