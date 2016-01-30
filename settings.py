@@ -134,7 +134,8 @@ TEMPLATE_DIRS = (
     # Don"t forget to use absolute paths, not relative paths.
     "local",
     ".",
-    "templates"
+    "templates",
+    "django/contrib/admin/templates/"
 )
 
 CACHES = {
