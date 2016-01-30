@@ -50,6 +50,11 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             type: "string"
         },
         {
+            name: "is_customer",
+            type: "bool",
+            defaultValue: false
+        },
+        {
             name: "status_change_notification__label",
             type: "string",
             persist: false
