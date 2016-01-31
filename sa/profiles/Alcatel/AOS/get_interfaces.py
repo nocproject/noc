@@ -2,18 +2,16 @@
 ##----------------------------------------------------------------------
 ## Alcatel.AOS.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
-from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces, InterfaceTypeError
-from noc.lib.ip import IPv4
+from noc.lib.ip import IPv4, IPv6
 
 
 def ranges_to_list_str(s):
@@ -252,6 +250,8 @@ class Script(BaseScript):
                 "show lldp %s local-port" % iface)
             for match1 in self.rx_ifindex.finditer(data1):
                 ifindex = match1.group("ifindex")
+            else:
+                ifindex = None
             if iface not in portchannel_members:
                 match = self.rx_mac_local.search(s)
                 if not match:
