@@ -39,7 +39,6 @@ from noc.settings import config
 from noc.core.scheduler.job import Job
 from noc.lib.solutions import get_solution
 from noc.lib.debug import error_report
-from noc.pm.models.probeconfig import probe_config
 from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete
@@ -58,7 +57,6 @@ logger = logging.getLogger(__name__)
 
 
 @full_text_search
-#@probe_config
 @on_init
 @on_save
 @on_delete
