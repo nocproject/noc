@@ -30,7 +30,7 @@ class InvMonitorApplication(ExtApplication):
         now = datetime.datetime.now()
         for p in Pool.objects.all().order_by("name"):
             sc = db["noc.schedules.discovery.%s" % p.name]
-            t0 = sc.find(limit=1, sort=[("ts", 1)])[0]
+            t0 = sc.find_one(limit=1, sort=[("ts", 1)])
             if t0 and t0["ts"] < now:
                 lag = humanize_timedelta(
                     now - t0["ts"]
