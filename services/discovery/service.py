@@ -30,6 +30,7 @@ class DiscoveryService(Service):
             "discovery",
             pool=self.config.pool,
             reset_running=True,
+            max_threads=self.config.max_threads,
             ioloop=self.ioloop
         )
         self.scheduler.run()
