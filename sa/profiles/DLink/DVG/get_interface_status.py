@@ -19,9 +19,10 @@ class Script(BaseScript):
         # Only one way: SNMP.
         if self.has_snmp():
             try:
-                for n, s in self.snmp.join_tables("1.3.6.1.2.1.2.2.1.2",
-                                                  "1.3.6.1.2.1.2.2.1.8",
-                                                  bulk=True):  # IF-MIB
+                for i, n, s in self.snmp.join([
+                    "1.3.6.1.2.1.2.2.1.2",
+                    "1.3.6.1.2.1.2.2.1.8"
+                ]):
                     if n[:3] == 'eth' or n[:3] == 'gre':
                         r += [{"interface": n, "status": int(s) == 1}]
                 return r

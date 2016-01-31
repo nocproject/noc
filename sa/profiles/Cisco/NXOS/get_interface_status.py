@@ -25,8 +25,10 @@ class Script(BaseScript):
                 # Get interface status
                 r = []
                 # IF-MIB::ifName, IF-MIB::ifOperStatus
-                for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8", bulk=True):
+                for i, n, s in self.snmp.join([
+                    "1.3.6.1.2.1.31.1.1.1.1",
+                    "1.3.6.1.2.1.2.2.1.8"
+                ]):
                     # ifOperStatus up(1)
                     if n.startswith("Stack") or n.startswith("Voice"):
                         continue

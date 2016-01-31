@@ -21,9 +21,10 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 # Get interface status IF-MIB
-                for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                                                  "1.3.6.1.2.1.2.2.1.8",
-                                                   bulk=True):
+                for i, n, s in self.snmp.join([
+                    "1.3.6.1.2.1.31.1.1.1.1",
+                    "1.3.6.1.2.1.2.2.1.8"
+                ]):
                     if '/' in n:
                         iface = n.split('/')[1]
                         if interface is not None:
