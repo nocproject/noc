@@ -97,7 +97,7 @@ class Script(BaseScript):
         rip_addresses = self.get_rip_addresses()
 
         # Get ifindexes
-        ifindexes = self.scripts.get_infindexes()
+        ifindexes = self.scripts.get_ifindexes()
 
         # Get portchannes
         portchannel_members = {}  # member -> (portchannel, type)
