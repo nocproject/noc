@@ -28,8 +28,10 @@ class Script(BaseScript):
                 # Get interface status
                 r = []
                 # IF-MIB::ifName, IF-MIB::ifOperStatus
-                for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8", bulk=True):
+                for i, n, s in self.snmp.join([
+                    "1.3.6.1.2.1.31.1.1.1.1",
+                    "1.3.6.1.2.1.2.2.1.8"
+                ]):
                     if interface \
                     and interface == self.profile.convert_interface_name(n):
                         return [{"interface": n, "status": int(s) == 1}]

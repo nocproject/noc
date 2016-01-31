@@ -28,8 +28,10 @@ class Script(BaseScript):
         # Try SNMP first
         if self.has_snmp():
             try:
-                for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8", bulk=True):  # IF-MIB
+                for i, n, s in self.snmp.join([
+                    "1.3.6.1.2.1.31.1.1.1.1",
+                    "1.3.6.1.2.1.2.2.1.8"
+                ]):  # IF-MIB
                     if n[:1] == 'e' or n[:1] == 'g' or n[:1] == 't':
                         if interface:
                             if n == interface:
