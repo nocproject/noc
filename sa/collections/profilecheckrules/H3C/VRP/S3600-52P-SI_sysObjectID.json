@@ -1,13 +1,13 @@
 {
-    "name": "Huawei | VRP | S3600-28TP-SI sysObjectID",
+    "name": "H3C | VRP | S3600-52P-SI sysObjectID",
     "$collection": "sa.profilecheckrules",
-    "uuid": "dbc707a1-bcc3-4611-9e1c-3c7332ebdce4",
+    "uuid": "3385154b-8834-4c69-b41c-3bb928eb2110",
     "description": "",
     "preference": 10,
     "method": "snmp_v2c_get",
     "param": "SNMPv2-MIB::sysObjectID.0",
     "match_method": "eq",
-    "value": "1.3.6.1.4.1.25506.1.34",
+    "value": "1.3.6.1.4.1.25506.1.33",
     "action": "match",
-    "profile": "Huawei.VRP"
+    "profile": "H3C.VRP"
 }
