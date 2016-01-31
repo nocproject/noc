@@ -2,6 +2,7 @@
 - name: Install and upgrade NOC
   hosts: nodes
   become: yes
+  any_errors_fatal: true
   roles:
     - role: pre
 
