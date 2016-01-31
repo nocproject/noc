@@ -179,7 +179,7 @@ class ManagedObjectProfile(models.Model):
                         key=mo_id,
                         pool=pool
                     )
-        if self.initial_data["enable_periodic_discovery"] != self.enable_box_discovery:
+        if self.initial_data["enable_periodic_discovery"] != self.enable_periodic_discovery:
             enable = self.enable_periodic_discovery
             for mo_id, is_managed, pool in iter_objects():
                 if enable and is_managed:
