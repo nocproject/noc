@@ -114,7 +114,7 @@ class Scheduler(object):
         self.get_collection().ensure_index([("jcls", 1), ("key", 1)])
         self.logger.debug("Indexes are ready")
 
-    def iter_pending_jobs(self):
+    def iter_pending_jobs(self, limit):
         """
         Yields pending jobs
         """
@@ -123,9 +123,9 @@ class Scheduler(object):
                 "$lte": datetime.datetime.now(),
             },
             Job.ATTR_STATUS: Job.S_WAIT
-        }).sort(Job.ATTR_TS)
+        }).limit(limit).sort(Job.ATTR_TS)
         try:
-            for job in qs.batch_size(100):
+            for job in qs:
                 yield job
         except pymongo.errors.CursorNotFound:
             self.logger.info("Server cursor timed out. Waiting for next cycle")
@@ -138,32 +138,48 @@ class Scheduler(object):
         """
         Read and launch all pending jobs
         """
-        for job_data in self.iter_pending_jobs():
-            try:
-                jcls = get_solution(job_data[Job.ATTR_CLASS])
-            except ImportError, why:
-                self.logger.error("Invalid job class %s",
-                                  job_data[Job.ATTR_CLASS])
-                self.logger.error("Error: %s", why)
-                self.remove_job(
-                    job_data[Job.ATTR_CLASS],
-                    job_data[Job.ATTR_KEY]
+        executor = self.get_executor()
+        collection = self.get_collection()
+        n = 0
+        while executor._work_queue.qsize() < self.max_threads:
+            jobs = []
+            jids = []
+            n = 0
+            for job_data in self.iter_pending_jobs(self.max_threads):
+                try:
+                    jcls = get_solution(job_data[Job.ATTR_CLASS])
+                except ImportError, why:
+                    self.logger.error("Invalid job class %s",
+                                      job_data[Job.ATTR_CLASS])
+                    self.logger.error("Error: %s", why)
+                    self.remove_job(
+                        job_data[Job.ATTR_CLASS],
+                        job_data[Job.ATTR_KEY]
+                    )
+                    continue
+                jobs += [jcls(self, job_data)]
+                jids += [job_data["_id"]]
+                n += 1
+            if not n:
+                break  # No pending data
+            if jobs:
+                self.logger.debug(
+                    "update({_id: {$in: %s}}, {$set: {%s: '%s'}})",
+                    jids, Job.ATTR_STATUS, Job.S_RUN
                 )
-                continue
-            # @todo: Group restrictions
-            job = jcls(self, job_data)
-            self.logger.debug(
-                "update({_id: %s}, {$set: {%s: '%s'}})",
-                job_data["_id"], Job.ATTR_STATUS, Job.S_RUN
-            )
-            self.get_collection().update({
-                "_id": job_data["_id"]
-            }, {
-                "$set": {
-                    Job.ATTR_STATUS: Job.S_RUN
-                }
-            })
-            self.get_executor().submit(job.run)
+                collection.update({
+                    "_id": {
+                        "$in": jids
+                    }
+                }, {
+                    "$set": {
+                        Job.ATTR_STATUS: Job.S_RUN
+                    }
+                })
+                for job in jobs:
+                    executor.submit(job.run)
+        if n:
+            self.logger.info("All workers are busy. Waiting")
 
     def remove_job(self, jcls, key=None):
         """
