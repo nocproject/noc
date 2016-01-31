@@ -14,14 +14,12 @@ from django.template import Template, Context
 from noc.main.models.style import Style
 from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
-from noc.pm.models.probeconfig import probe_config
 from noc.core.model.fields import TagsField
 from noc.core.model.decorator import on_save, on_init
 from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job
 
 
-#@probe_config
 @on_init
 @on_save
 class ManagedObjectProfile(models.Model):

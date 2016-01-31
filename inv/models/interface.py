@@ -21,7 +21,6 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
-from noc.pm.models.probeconfig import probe_config
 
 
 INTERFACE_TYPES = (IGetInterfaces.returns
@@ -36,7 +35,6 @@ INTERFACE_PROTOCOLS = (IGetInterfaces.returns
 logger = logging.getLogger(__name__)
 
 
-@probe_config
 class Interface(Document):
     """
     Interfaces

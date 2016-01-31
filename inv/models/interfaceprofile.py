@@ -10,10 +10,8 @@
 from noc.lib.nosql import Document, StringField, ForeignKeyField, BooleanField
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.pm.models.probeconfig import probe_config
 
 
-@probe_config
 class InterfaceProfile(Document):
     """
     Interface SLA profile and settings
