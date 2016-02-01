@@ -1,6 +1,9 @@
 - name: Install Nginx
   pkgng: name="nginx" state=present
 
+- name: Enabling Nginx
+  lineinfile: dest=/etc/rc.conf regexp=^nginx_enable= line=nginx_enable=\"YES\"
+
 - name: Remove default.conf site
   file: path=/usr/local/etc/nginx/nginx.conf state=absent
   notify: restart nginx
