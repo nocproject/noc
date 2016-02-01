@@ -175,7 +175,7 @@ class Scheduler(object):
                     "$set": {
                         Job.ATTR_STATUS: Job.S_RUN
                     }
-                })
+                }, multi=True, safe=True)
                 for job in jobs:
                     executor.submit(job.run)
         if n:
