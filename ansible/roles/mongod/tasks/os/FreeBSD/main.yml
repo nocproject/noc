@@ -4,5 +4,11 @@
   template: src="os/FreeBSD/etc/default/mongod.j2" dest="/usr/local/etc/mongodb.conf"
   notify: restart mongod
 
+- name: Enabling mongod
+  lineinfile: dest=/etc/rc.conf regexp=^mongod_enable= line=mongod_enable=\"YES\"
+
+- name: Setting limits
+  lineinfile: dest=/etc/rc.conf regexp=^mongod_limits= line=mongod_limits=\"YES\"
+
 - name: Install MongoDB
-  pkgng: name="mongodb" state=present
+  pkgng: name="mongodb32" state=present

@@ -11,3 +11,6 @@
 
 - name: Install supervisord init script
   template: src="os/FreeBSD/etc/rc.d/noc.j2" dest="/usr/local/etc/rc.d/{{ noc_system_service }}" mode="a+rx"
+
+- name: Enabling NOC
+  lineinfile: dest=/etc/rc.conf regexp=^noc_enable= line=noc_enable=\"YES\"
