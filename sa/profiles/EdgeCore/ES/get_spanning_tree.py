@@ -96,7 +96,7 @@ class Script(BaseScript):
             desg_priority, desg_id = sv["DESG_BRIDGE"].split(".")
             iface = {
                 "interface": sn,
-                "port_id": 0,
+                "port_id": "%s.%s" % (sv["PRIORITY"], sn.rsplit("/")[-1]),
                 "role": self.ROLE_MAP[sv["ROLE"]],
                 "state": self.STATE_MAP[sv["STATE"]],
                 "priority": sv["PRIORITY"],
