@@ -79,7 +79,7 @@ class Profile(BaseProfile):
         match = self.rx_pager.search(script.cli("show switch", cached=True))
         if not match:
             self.dlink_pager = True
-            script.debug("Disabling CLI Paging...")
+            script.logger.debug("Disabling CLI Paging...")
             script.cli("disable clipaging")
 
         # Parse path parameters
@@ -88,7 +88,7 @@ class Profile(BaseProfile):
                 self.cluster_member = p[8:].strip()
             # Switch to cluster member, if necessary
         if self.cluster_member:
-            script.debug("Switching to SIM member %s" % script.cluster_member)
+            script.logger.debug("Switching to SIM member %s" % script.cluster_member)
             script.cli("reconfig member_id %s" % script.cluster_member)
 
     def shutdown_session(self, script):
