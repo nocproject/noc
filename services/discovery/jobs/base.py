@@ -101,7 +101,7 @@ class DiscoveryCheck(object):
         try:
             self.handler()
         except Exception:
-            error_report()
+            error_report(logger=self.logger)
 
     def handler(self):
         pass
