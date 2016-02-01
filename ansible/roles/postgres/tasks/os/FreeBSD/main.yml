@@ -5,6 +5,9 @@
     - postgresql93-server
     - py27-psycopg2
 
+- name: Enabling PostgreSQL
+  lineinfile: dest=/etc/rc.conf regexp=^postgresql_enable= line=postgresql_enable=\"YES\"
+
 - name: PostgreSQL init db
   command: service postgresql initdb
   args:
