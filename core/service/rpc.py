@@ -73,7 +73,7 @@ class RPCProxy(object):
         response = None
         last = None
         for svc in random.sample(services, retries):
-            client = tornado.httpclient.AsyncHTTPClient()
+            client = tornado.httpclient.AsyncHTTPClient(force_instance=True)
             # Sleep when trying same instance
             if svc == last:
                 yield tornado.gen.sleep(timeouts.pop())
@@ -85,7 +85,8 @@ class RPCProxy(object):
                     method="POST",
                     body=body,
                     headers={
-                        "X-NOC-Calling-Service": self._service.name
+                        "X-NOC-Calling-Service": self._service.name,
+                        "Content-Type": "text/json"
                     }
                 )
                 break
