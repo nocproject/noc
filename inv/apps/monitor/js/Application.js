@@ -14,7 +14,7 @@ Ext.define("NOC.inv.monitor.Application", {
 
         me.store = Ext.create("Ext.data.Store", {
             model: null,
-            fields: ["pool", "total_tasks", "late_tasks", "lag"],
+            fields: ["pool", "total_tasks", "running_tasks", "late_tasks", "lag"],
             data: []
         });
 
@@ -44,6 +44,12 @@ Ext.define("NOC.inv.monitor.Application", {
                 {
                     text: "Tasks",
                     dataIndex: "total_tasks",
+                    width: 100,
+                    align: "right"
+                },
+                {
+                    text: "Running",
+                    dataIndex: "running_tasks",
                     width: 100,
                     align: "right"
                 },
