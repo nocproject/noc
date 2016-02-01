@@ -20,6 +20,7 @@ from vlan import VLANCheck
 from cdp import CDPCheck
 from oam import OAMCheck
 from lldp import LLDPCheck
+from stp import STPCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -28,7 +29,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
     TOPOLOGY_METHODS = [
         OAMCheck,
         LLDPCheck,
-        CDPCheck
+        CDPCheck,
+        STPCheck
     ]
 
     TOPOLOGY_NAMES = [m.name for m in TOPOLOGY_METHODS]
