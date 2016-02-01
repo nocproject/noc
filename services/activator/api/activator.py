@@ -63,7 +63,7 @@ class ActivatorAPI(API):
         try:
             result = script.run()
         except script.ScriptError, why:
-            raise APIError("Script error: %s", why.__doc__)
+            raise APIError("Script error: %s" % why.__doc__)
         return result
 
     @api
