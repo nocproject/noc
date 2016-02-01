@@ -18,7 +18,7 @@ class STPCheck(TopologyDiscoveryCheck):
     """
     name = "stp"
     required_script = "get_spanning_tree"
-    # required_capabilities = ["Network | STP"]
+    required_capabilities = ["Network | STP"]
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)

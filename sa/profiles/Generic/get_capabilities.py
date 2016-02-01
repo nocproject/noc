@@ -89,6 +89,12 @@ class Script(BaseScript):
         """
         return False
 
+    def has_stp(self):
+        """
+        Returns True when STP is enabled
+        """
+        return False
+
     def execute_platform(self, caps):
         """
         Method to be overriden in subclasses.
@@ -109,6 +115,8 @@ class Script(BaseScript):
             for cap, oid in self.CHECK_SNMP_GET.iteritems():
                 if self.check_snmp_get(oid):
                     caps[cap] = True
+        if self.has_stp():
+            caps["Network | STP"] = True
         if self.has_lldp():
             caps["Network | LLDP"] = True
         if self.has_cdp():
