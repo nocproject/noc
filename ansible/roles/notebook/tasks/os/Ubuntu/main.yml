@@ -1,0 +1,9 @@
+---
+- name: Install Ubuntu system packages
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+  with_items:
+    - libzmq3
+    - libzmq3-dev
