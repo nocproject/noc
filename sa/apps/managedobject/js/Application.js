@@ -114,13 +114,6 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onInteractions
         });
 
-        me.metricsButton = Ext.create("Ext.button.Button", {
-            text: "Metrics",
-            glyph: NOC.glyph.bar_chart_o,
-            scope: me,
-            handler: me.onMetrics
-        });
-
         me.validationSettingsButton = Ext.create("Ext.button.Button", {
             text: "Validation",
             glyph: NOC.glyph.file,
@@ -157,12 +150,6 @@ Ext.define("NOC.sa.managedobject.Application", {
         );
         me.ITEM_INVENTORY = me.registerItem("NOC.sa.managedobject.InventoryPanel");
         me.ITEM_INTERFACE = me.registerItem("NOC.sa.managedobject.InterfacePanel");
-        me.ITEM_INTERFACE_METRICS = me.registerItem(
-            Ext.create("NOC.core.MetricSettingsPanel", {
-                app: me,
-                metricModelId: "inv.Interface"
-            })
-        );
         me.ITEM_SCRIPTS = me.registerItem("NOC.sa.managedobject.ScriptPanel");
         me.ITEM_LINKS = me.registerItem("NOC.sa.managedobject.LinksPanel");
 
@@ -172,13 +159,6 @@ Ext.define("NOC.sa.managedobject.Application", {
 
         me.ITEM_ALARM = me.registerItem("NOC.sa.managedobject.AlarmPanel");
         me.ITEM_INTERACTIONS = me.registerItem("NOC.sa.managedobject.InteractionsPanel");
-
-        me.ITEM_METRICS = me.registerItem(
-            Ext.create("NOC.core.MetricSettingsPanel", {
-                app: me,
-                metricModelId: "sa.ManagedObject"
-            })
-        );
 
         me.ITEM_VALIDATION_SETTINGS = me.registerItem(
             Ext.create("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
@@ -670,7 +650,6 @@ Ext.define("NOC.sa.managedobject.Application", {
                 me.discoveryButton,
                 me.alarmsButton,
                 me.interactionsButton,
-                me.metricsButton,
                 me.validationSettingsButton,
                 me.capsButton,
                 me.factsButton
@@ -815,11 +794,6 @@ Ext.define("NOC.sa.managedobject.Application", {
     onAlarm: function() {
         var me = this;
         me.previewItem(me.ITEM_ALARM, me.currentRecord);
-    },
-    //
-    onMetrics: function() {
-        var me = this;
-        me.previewItem(me.ITEM_METRICS, me.currentRecord);
     },
     //
     onCaps: function() {

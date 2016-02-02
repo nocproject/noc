@@ -28,11 +28,15 @@ Ext.define("NOC.pm.metrictype.Model", {
             type: "string"
         },
         {
-            name: "is_vector",
-            type: "boolean"
+            name: "scope",
+            type: "string"
         },
         {
             name: "measure",
+            type: "string"
+        },
+        {
+            name: "vector_tag",
             type: "string"
         },
         {

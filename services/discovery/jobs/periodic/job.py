@@ -11,6 +11,7 @@ from noc.services.discovery.jobs.base import MODiscoveryJob
 from uptime import UptimeCheck
 from interfacestatus import InterfaceStatusCheck
 from mac import MACCheck
+from metrics import MetricsCheck
 
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
@@ -23,6 +24,8 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             InterfaceStatusCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_mac:
             MACCheck(self).run()
+        if self.object.object_profile.enable_periodic_discovery_metrics:
+            MetricsCheck(self).run()
 
     def can_run(self):
         return (

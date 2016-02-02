@@ -59,6 +59,10 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             type: "string",
             persist: false
         },
+        {
+            name: "metrics",
+            type: "auto"
+        },
         // CSS
         {
             name: "row_class",

@@ -229,21 +229,6 @@ class Interface(Document):
             return self.managed_object.vc_domain
         return VCDomain.get_default()
 
-    def get_probe_config(self, config):
-        if config == "interface__name":
-            return self.name
-        elif config == "interface__ifindex":
-            if self.ifindex is None:
-                raise ValueError("No ifindex for %s" % self)
-            else:
-                return self.ifindex
-        try:
-            return self.managed_object.get_probe_config(config)
-        except ValueError:
-            pass
-        # Fallback to interface profile
-        return self.profile.get_probe_config(config)
-
     @property
     def status(self):
         """

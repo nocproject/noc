@@ -12,6 +12,11 @@ services:
     level: system
     port: 27017
 
+  influxdb:
+    description: InfluxDB server
+    level: system
+    port: 8083
+
   nginx:
     description: Nginx server
     level: system
@@ -41,14 +46,6 @@ services:
   pmwriter:
     description: PMWriter
     level: global
-
-  probe:
-    description: Probe
-    level: pool
-
-  probeconf:
-    description: Probeconf
-    level: pool
 
   syslogcollector:
     description: Syslog Collector

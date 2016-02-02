@@ -24,7 +24,6 @@ from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter)
 from noc.lib.solutions import get_solution
 from noc.settings import config
-from noc.pm.db.base import tsdb
 
 
 class MapApplication(ExtApplication):
@@ -41,10 +40,6 @@ class MapApplication(ExtApplication):
     ST_ALARM = 2  # Object is reachable, Active alarms
     ST_UNREACH = 3  # Object is unreachable due to other's object failure
     ST_DOWN = 4  # Object is down
-
-    router = get_solution(
-        config.get("pm", "metric_router")
-    )
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],
           access="read", api=True)

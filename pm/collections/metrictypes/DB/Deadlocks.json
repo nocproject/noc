@@ -1,6 +1,0 @@
-{
-    "name": "DB | Deadlocks",
-    "uuid": "f6bde8fe-ada5-4733-bc83-618e7f5a32c7",
-    "description": "Database deadlocks",
-    "measure": "ops/sec"
-}

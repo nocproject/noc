@@ -17,7 +17,6 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
     rowClassField: "row_class",
-    metricModelId: "sa.ManagedObjectProfile",
     validationModelId: "sa.ManagedObjectProfile",
 
     initComponent: function () {
@@ -404,6 +403,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_periodic_discovery_mac",
                                             xtype: "checkboxfield",
                                             boxLabel: "MAC"
+                                        },
+                                        {
+                                            name: "enable_periodic_discovery_metrics",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "Metrics"
                                         }
                                     ]
                                 }

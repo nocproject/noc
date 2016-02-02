@@ -36,10 +36,3 @@ class ObjectCapabilities(Document):
 
     def __unicode__(self):
         return "%s caps" % self.object.name
-
-##
-from noc.pm.models.probeconfig import ProbeConfig
-mongoengine.signals.post_save.connect(
-    ProbeConfig.on_change_object_caps,
-    sender=ObjectCapabilities
-)

@@ -12,12 +12,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.inv.interfaceprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.notificationgroup.LookupField",
-        "Ext.ux.form.MultiIntervalField"
+        "Ext.ux.form.MultiIntervalField",
+        "NOC.pm.metrictype.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
     rowClassField: "row_class",
-    metricModelId: "inv.InterfaceProfile",
     validationModelId: "inv.InterfaceProfile",
 
     initComponent: function () {
@@ -163,6 +163,56 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         xtype: "checkbox",
                         boxLabel: "Customer port",
                         allowBlank: true
+                    },
+                    {
+                        name: "metrics",
+                        xtype: "gridfield",
+                        fieldLabel: "Metrics",
+                        columns: [
+                            {
+                                text: "Metric Type",
+                                dataIndex: "metric_type",
+                                width: 150,
+                                editor: "pm.metrictype.LookupField",
+                                renderer: NOC.render.Lookup("metric_type")
+                            },
+                            {
+                                text: "Active",
+                                dataIndex: "is_active",
+                                width: 50,
+                                renderer: NOC.render.Bool,
+                                editor: "checkbox"
+                            },
+                            {
+                                text: "Low Error",
+                                dataIndex: "low_error",
+                                width: 60,
+                                editor: "textfield",
+                                align: "right"
+                            },
+                            {
+                                text: "Low Warn",
+                                dataIndex: "low_warn",
+                                width: 60,
+                                editor: "textfield",
+                                align: "right"
+                            },
+                            {
+                                text: "High Warn",
+                                dataIndex: "high_warn",
+                                width: 60,
+                                editor: "textfield",
+                                align: "right"
+                            },
+                            {
+                                text: "High Error",
+                                dataIndex: "high_error",
+                                width: 60,
+                                editor: "textfield",
+                                align: "right"
+                            }
+                        ]
+
                     }
                 ],
                 formToolbar: [
