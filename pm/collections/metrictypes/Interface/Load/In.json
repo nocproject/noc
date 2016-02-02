@@ -1,0 +1,9 @@
+{
+    "name": "Interface | Load | In",
+    "$collection": "pm.metrictypes",
+    "uuid": "b43cc414-1067-4c18-ada0-2eb4feac28a2",
+    "description": "Interface input throughoutput",
+    "scope": "i",
+    "measure": "kbit/s",
+    "vector_tag": ""
+}
