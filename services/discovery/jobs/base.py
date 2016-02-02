@@ -106,7 +106,7 @@ class DiscoveryCheck(object):
     def handler(self):
         pass
 
-    def update_if_changed(self, obj, values, ignore_empty=None):
+    def update_if_changed(self, obj, values, ignore_empty=None, async=False):
         """
         Update fields if changed.
         :param obj: Document instance
@@ -128,7 +128,10 @@ class DiscoveryCheck(object):
                     setattr(obj, k, v)
                     changes += [(k, v)]
         if changes:
-            obj.save()
+            kwargs = {}
+            if async:
+                kwargs["write_concert"] = {"w": 0}
+            obj.save(**kwargs)
         return changes
 
     def log_changes(self, msg, changes):

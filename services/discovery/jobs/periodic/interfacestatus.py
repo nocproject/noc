@@ -49,7 +49,8 @@ class InterfaceStatusCheck(DiscoveryCheck):
             }
             changes = self.update_if_changed(
                 iface, kwargs,
-                ignore_empty=kwargs.keys()
+                ignore_empty=kwargs.keys(),
+                async=True
             )
             self.log_changes(
                 "Interface %s status has been changed" % i["interface"],
