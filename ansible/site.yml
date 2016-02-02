@@ -36,12 +36,6 @@
     - role: fmwriter
       when: "'svc-fmwriter' in group_names"
 
-    - role: pmwriter
-      when: "'svc-pmwriter' in group_names"
-
-    - role: probeconf
-      when: "'svc-probeconf' in group_names"
-
     - role: activator
       when: "'svc-activator' in group_names"
 
@@ -59,9 +53,6 @@
 
     - role: graphitecollector
       when: "'svc-graphitecollector' in group_names"
-
-    - role: probe
-      when: "'svc-probe' in group_names"
 
     - role: ping
       when: "'svc-ping' in group_names"

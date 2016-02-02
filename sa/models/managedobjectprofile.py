@@ -128,6 +128,8 @@ class ManagedObjectProfile(models.Model):
     enable_periodic_discovery_interface_status = models.BooleanField(default=False)
     # Collect mac address table
     enable_periodic_discovery_mac = models.BooleanField(default=False)
+    # Collect mac address table
+    enable_periodic_discovery_metrics = models.BooleanField(default=False)
     # Collect ARP cache
     # enable_periodic_discovery_ip = models.BooleanField(default=False)
     tags = TagsField("Tags", null=True, blank=True)
@@ -148,9 +150,6 @@ class ManagedObjectProfile(models.Model):
         if not is_fqdn(f):
             raise ValueError("Invalid FQDN: %s" % f)
         return f
-
-    def get_probe_config(self, config):
-        raise ValueError("Invalid config parameter '%s'" % config)
 
     def on_save(self):
         def iter_objects():

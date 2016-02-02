@@ -467,8 +467,6 @@ class Site(object):
         for app in noc_apps:
             logger.debug("Loading %s models", app)
             noc_models[app] = load_app(app)
-        # Start after-load handlers
-        import noc.ready
         # Load applications
         for app in noc_apps:
             logger.debug("Loading %s applications", app)

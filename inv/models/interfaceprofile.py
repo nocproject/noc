@@ -2,14 +2,29 @@
 ##----------------------------------------------------------------------
 ## Interface Profile models
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (StringField, BooleanField,
+                                ReferenceField, FloatField, ListField,
+                                EmbeddedDocumentField)
 ## NOC modules
-from noc.lib.nosql import Document, StringField, ForeignKeyField, BooleanField
+from noc.lib.nosql import ForeignKeyField
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.pm.models.metrictype import MetricType
+
+
+class InterfaceProfileMetrics(EmbeddedDocument):
+    metric_type = ReferenceField(MetricType, required=True)
+    is_active = BooleanField()
+    low_error = FloatField(required=False)
+    low_warn = FloatField(required=False)
+    high_warn = FloatField(required=False)
+    high_error = FloatField(required=False)
 
 
 class InterfaceProfile(Document):
@@ -54,6 +69,8 @@ class InterfaceProfile(Document):
                                                  required=False)
     # Count as customer port in alarms summary
     is_customer = BooleanField(default=False)
+    # Interface profile metrics
+    metrics = ListField(EmbeddedDocumentField(InterfaceProfileMetrics))
 
     def __unicode__(self):
         return self.name
@@ -66,6 +83,3 @@ class InterfaceProfile(Document):
             cls._default_profile = cls.objects.filter(
                 name="default").first()
             return cls._default_profile
-
-    def get_probe_config(self, config):
-        raise ValueError("Invalid config '%s'" % config)

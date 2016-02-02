@@ -713,25 +713,6 @@ class ManagedObject(Model):
         else:
             return ol
 
-    def get_probe_config(self, config):
-        if config == "address":
-            return self.address
-        elif config == "snmp__ro":
-            s = self.credentials.snmp_ro
-            if not s:
-                raise ValueError("No SNMP RO community")
-            else:
-                return s
-        elif config == "caps":
-            if not hasattr(self, "_caps"):
-                self._caps = self.get_caps()
-            return self._caps
-        elif config == "managed_object":
-            return self
-        elif config == "profile":
-            return self.profile_name
-        raise ValueError("Invalid config parameter '%s'" % config)
-
     def iter_recursive_objects(self):
         """
         Generator yilding all recursive objects

@@ -272,30 +272,6 @@ def get_model_id(object):
                            object._meta.object_name)
 
 
-def register_probe_config(model, handlers):
-    """
-    Register .get_probe_config() extensions
-    """
-    if not isinstance(model, basestring):
-        model = get_model_id(model)
-    if not isinstance(handlers, (list, tuple)):
-        handlers = [handlers]
-    _probe_config_handlers[model] += [get_solution(h) for h in handlers]
-
-
-def get_probe_config(object, config):
-    """
-    Get effective probe config extensions
-    """
-    model = get_model_id(object)
-    for h in _probe_config_handlers[model]:
-        try:
-            return h(object, config)
-        except ValueError:
-            pass
-    raise ValueError()
-
-
 # event class key -> [(handler, status, None)]
 _event_class_handlers = defaultdict(list)
 # alarm class key -> [(handler, status, None)]

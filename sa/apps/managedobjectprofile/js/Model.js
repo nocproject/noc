@@ -219,6 +219,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "enable_periodic_discovery_metrics",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

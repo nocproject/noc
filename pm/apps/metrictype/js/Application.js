@@ -40,17 +40,6 @@ Ext.define("NOC.pm.metrictype.Application", {
                     sortable: false
                 },
                 {
-                    text: "Vector",
-                    dataIndex: "is_vector",
-                    width: 35,
-                    renderer: NOC.render.Bool
-                },
-                {
-                    text: "Measure",
-                    dataIndex: "measure",
-                    width: 75
-                },
-                {
                     text: "Description",
                     dataIndex: "description",
                     flex: 1
@@ -76,9 +65,13 @@ Ext.define("NOC.pm.metrictype.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "is_vector",
-                    xtype: "checkbox",
-                    boxLabel: "Vector"
+                    name: "scope",
+                    xtype: "combobox",
+                    fieldLabel: "Scope",
+                    store: [
+                        ["o", "Object"],
+                        ["i", "Interface"]
+                    ]
                 },
                 {
                     name: "measure",
