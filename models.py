@@ -210,12 +210,7 @@ _MODELS = {
     "fm.SyntaxAlias": "noc.fm.models.syntaxalias.SyntaxAlias",
     # pm models
     "pm.GrafanaDashboard": "noc.pm.models.grafanadashboard.GrafanaDashboard",
-    "pm.Metric": "noc.pm.models.metric.Metric",
-    "pm.MetricConfig": "noc.pm.models.metricconfig.MetricConfig",
-    "pm.MetricSet": "noc.pm.models.metricset.MetricSet",
-    "pm.MetricSettings": "noc.pm.models.metricsettings.MetricSettings",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",
-    "pm.ProbeConfig": "noc.pm.models.probeconfig.ProbeConfig",
     # cm models
     "cm.ErrorType": "noc.cm.models.errortype.ErrorType",
     "cm.ObjectFact": "noc.cm.models.objectfact.ObjectFact",
