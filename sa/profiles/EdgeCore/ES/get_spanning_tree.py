@@ -42,8 +42,9 @@ class Script(BaseScript):
     ROLE_MAP = {
         "disabled": "disabled",
         "root": "root",
+        "alternate": "alternate",
         "designate": "designated"
-        # "alternate", "backup",
+        # "backup",
         # "master", "nonstp", "unknown"
     }
 
