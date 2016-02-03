@@ -8,12 +8,15 @@
 
 ## Python modules
 import threading
+import datetime
 ## Third-party modules
 import cachetools
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmclass import AlarmClass
 
 
 MAX31 = 0x7FFFFFFFL
@@ -54,9 +57,6 @@ class MetricsCheck(DiscoveryCheck):
     # Last counter values
     counter_values = {}
     counter_lock = threading.Lock()
-    # Current thresholds state
-    threshold_values = {}
-    threshold_lock = threading.Lock()
 
     S_OK = 0
     S_WARN = 1
@@ -68,9 +68,12 @@ class MetricsCheck(DiscoveryCheck):
         2: "error"
     }
 
-    # Send events one time in 10 minutes
-    # Time in nanoseconds
-    S_TTL = 600000000
+    SEV_MAP = {
+        1: 2000,
+        2: 3000
+    }
+
+    AC_PM_THRESHOLDS = AlarmClass.objects.get(name="NOC | PM | Out of Thresholds")
 
     def handler(self):
         def q(s):
@@ -146,37 +149,58 @@ class MetricsCheck(DiscoveryCheck):
         # @todo: Send metrics
         for b in batch:
             self.logger.info(">>> %s", b)
-        # Check thresholds and send fm events
-        with self.threshold_lock:
-            for m in result:
-                v = self.check_thresholds(m)
-                cv = self.threshold_values.get(m["key"])
-                if (cv and (cv[1] != v or m["ts"] - cv[0] > self.S_TTL)) or not cv:
-                    # Status change
-                    self.job.scheduler.service.register_message(
-                        self.object,
-                        m["ts"] / 1000000,
-                        {
-                            "source": "system",
-                            "probe": "metrics",
-                            "metric": m["name"],
-                            "key": m["key"],
-                            "state": self.SMAP[v]
-                        }
-                    )
-                if cv and cv[1] != v:
-                    self.logger.info(
-                        "Metric '%s' threshold status changed: %s -> %s",
-                        m["key"],
-                        self.SMAP[cv[1]], self.SMAP[v]
-                    )
-                elif not cv:
-                    self.logger.info(
-                        "Metric '%s' threshold status set to: %s",
-                        m["key"],
-                        self.SMAP[v]
-                    )
-                self.threshold_values[m["key"]] = (m["ts"], v)
+        # Calculate max triggered threshold level
+        oot = []
+        oot_level = self.S_OK
+        for m in result:
+            v = self.check_thresholds(m)
+            if v != self.S_OK:
+                oot_level = max(oot_level, v)
+                oot += [{
+                    "name": m["name"],
+                    "interface": m["tags"].get("interface"),
+                    "value": m["value"],
+                    "level": self.SMAP[v]
+                }]
+        # Change status of existing alarm
+        alarm = ActiveAlarm.objects.filter(
+            managed_object=self.object.id,
+            alarm_class=self.AC_PM_THRESHOLDS
+        ).first()
+        if oot_level == self.S_OK and alarm:
+            # Clear alarm
+            self.logger.info("Metrics are OK. Clearing alarm %s", alarm.id)
+            alarm.clear("All metrics are back in thresholds range")
+        elif oot_level != self.S_OK and not alarm:
+            # Raise alarm
+            alarm = ActiveAlarm(
+                timestamp=datetime.datetime.now(),
+                managed_object=self.object.id,
+                alarm_class=self.AC_PM_THRESHOLDS,
+                severity=self.SEV_MAP[oot_level],
+                vars={
+                    "thresholds": oot
+                }
+            )
+            alarm.save()
+            self.logger.info("Raising alarm %s with severity %s",
+                             alarm.id, alarm.severity)
+        elif oot_level != self.S_OK and alarm:
+            s = self.SEV_MAP[oot_level]
+            if s != alarm.severity:
+                self.logger.info(
+                    "Changing severity of alarm %s: %s -> %s",
+                    alarm.id,
+                    alarm.severity, s
+                )
+                alarm.severity = s
+            self.logger.info("Updating alarm %s", alarm.id)
+            v = alarm.vars
+            v.update({
+                "thresholds": oot
+            })
+            alarm.vars = v
+            alarm.save()
 
     @staticmethod
     def convert_counter(new_ts, new_value, old_ts, old_value):
