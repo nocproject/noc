@@ -83,7 +83,8 @@ class Script(BaseScript):
                                         "interface": i
                                     },
                                     "type": vtype,
-                                    "scale": scale
+                                    "scale": scale,
+                                    "thresholds": metrics[m]["thresholds"]
                                 }
                 else:
                     pass  # @todo: Spool object's metrics
@@ -100,7 +101,8 @@ class Script(BaseScript):
                             ts=ts,
                             tags=batch[oid]["tags"],
                             type=batch[oid]["type"],
-                            scale=batch[oid]["scale"]
+                            scale=batch[oid]["scale"],
+                            thresholds=batch[oid]["thresholds"]
                         )
 
     def resolve_oid(self, chain, ifindex=None):
@@ -125,7 +127,7 @@ class Script(BaseScript):
         """
         return int(time.time() * 1000000)
 
-    def set_metric(self, name, value, ts=None, tags=None, type="gauge", scale=1):
+    def set_metric(self, name, value, ts=None, tags=None, type="gauge", scale=1, thresholds=None):
         """
         Append metric to output
         """
@@ -138,7 +140,8 @@ class Script(BaseScript):
             "value": value,
             "tags": tags,
             "type": type,
-            "scale": scale
+            "scale": scale,
+            "thresholds": thresholds or [None, None, None, None]
         }]
 
     def get_metrics(self):

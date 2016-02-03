@@ -8,7 +8,8 @@
 
 ## NOC modules
 from base import (Interface, DictParameter, DictListParameter,
-                  IntParameter, StringParameter, FloatParameter)
+                  IntParameter, StringParameter, FloatParameter,
+                  ListParameter)
 
 
 class IGetMetrics(Interface):
@@ -28,5 +29,7 @@ class IGetMetrics(Interface):
             choices=["gauge", "counter"]
         ),
         #
-        "scale": FloatParameter(default=1)
+        "scale": FloatParameter(default=1),
+        #
+        "thresholds": ListParameter(required=False)
     })

@@ -64,7 +64,7 @@ class DiscoveryCheck(object):
         self.job = job
         self.object = self.job.object
         self.logger = self.job.logger.get_logger(
-            "%s][%s][%s" % (self.job.name, self.name, self.object.name)
+            "[%s" % self.name
         )
         self.if_name_cache = {}  # mo, name -> Interface
         self.if_mac_cache = {}  # mo, mac -> Interface

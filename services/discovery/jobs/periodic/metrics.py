@@ -30,12 +30,12 @@ def get_interface_profile_metrics(p_id):
         for m in ipr.metrics:
             if not m.is_active:
                 continue
-            r[m.metric_type.name] = {
-                "low_error": m.low_error,
-                "low_warn": m.low_warn,
-                "high_warn": m.high_warn,
-                "high_error": m.high_error
-            }
+            r[m.metric_type.name] = [
+                m.low_error,
+                m.low_warn,
+                m.high_warn,
+                m.high_error
+            ]
         return r
 
 interface_profile_metrics_lock = threading.Lock()
@@ -54,6 +54,23 @@ class MetricsCheck(DiscoveryCheck):
     # Last counter values
     counter_values = {}
     counter_lock = threading.Lock()
+    # Current thresholds state
+    threshold_values = {}
+    threshold_lock = threading.Lock()
+
+    S_OK = 0
+    S_WARN = 1
+    S_ERROR = 2
+
+    SMAP = {
+        0: "ok",
+        1: "warn",
+        2: "error"
+    }
+
+    # Send events one time in 10 minutes
+    # Time in nanoseconds
+    S_TTL = 600000000
 
     def handler(self):
         def q(s):
@@ -87,7 +104,8 @@ class MetricsCheck(DiscoveryCheck):
                 else:
                     metrics[metric] = {
                         "interfaces": [i["name"]],
-                        "scope": "i"
+                        "scope": "i",
+                        "thresholds": ipr[metric]
                     }
         # Collect metrics
         self.logger.debug("Collecting metrics: %s hints: %s",
@@ -104,6 +122,7 @@ class MetricsCheck(DiscoveryCheck):
         with self.counter_lock:
             for m in result:
                 key = "%s,%s" % (q(m["name"]), q_tags(m["tags"]))
+                m["key"] = key
                 if m["type"] == "counter":
                     # Resolve counter
                     r = self.counter_values.get(key)
@@ -124,10 +143,40 @@ class MetricsCheck(DiscoveryCheck):
                         m["ts"]
                     )
                 ]
-        self.logger.info("METRICS BATCH: %s", batch)
-        # @todo: Check thresholds
-        # @todo: Send FM alarms
         # @todo: Send metrics
+        for b in batch:
+            self.logger.info(">>> %s", b)
+        # Check thresholds and send fm events
+        with self.threshold_lock:
+            for m in result:
+                v = self.check_thresholds(m)
+                cv = self.threshold_values.get(m["key"])
+                if (cv and (cv[1] != v or m["ts"] - cv[0] > self.S_TTL)) or not cv:
+                    # Status change
+                    self.job.scheduler.service.register_message(
+                        self.object,
+                        m["ts"] / 1000000,
+                        {
+                            "source": "system",
+                            "probe": "metrics",
+                            "metric": m["name"],
+                            "key": m["key"],
+                            "state": self.SMAP[v]
+                        }
+                    )
+                if cv and cv[1] != v:
+                    self.logger.info(
+                        "Metric '%s' threshold status changed: %s -> %s",
+                        m["key"],
+                        self.SMAP[cv[1]], self.SMAP[v]
+                    )
+                elif not cv:
+                    self.logger.info(
+                        "Metric '%s' threshold status set to: %s",
+                        m["key"],
+                        self.SMAP[v]
+                    )
+                self.threshold_values[m["key"]] = (m["ts"], v)
 
     @staticmethod
     def convert_counter(new_ts, new_value, old_ts, old_value):
@@ -154,3 +203,17 @@ class MetricsCheck(DiscoveryCheck):
                 return float(d_wrap) / ((float(new_ts) - float(old_ts)) / 1000000.0)
         else:
             return (float(new_value) - float(old_value)) / ((float(new_ts) - float(old_ts)) / 1000000.0)
+
+    @classmethod
+    def check_thresholds(cls, v):
+        value = v["value"]
+        low_error, low_warn, high_warn, high_error = v["thresholds"]
+        if low_error is not None and value < low_error:
+            return cls.S_ERROR
+        if low_warn is not None and value < low_warn:
+            return cls.S_WARN
+        if high_error is not None and value > high_error:
+            return cls.S_ERROR
+        if high_warn is not None and value > high_warn:
+            return cls.S_WARN
+        return cls.S_OK
