@@ -2,27 +2,9 @@
 - include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Setup InfluxDB config
-  ini_file:
+  template:
+    src: etc/influxdb/influxdb.conf.j2
     dest: "{{ influxdb_conf }}"
-    section: "{{ item.section}}"
-    option: "{{ item.option }}"
-    value: "{{ item.value }}"
-  with_items:
-    - section: meta
-      option: hostname
-      value: "{{ ansible_hostname }}"
-    - section: data
-      option: engine
-      value: tsm1
-    - section: http
-      option: enabled
-      value: true
-    - section: http
-      option: auth-enabled
-      value: true
-    - section: http
-      option: bind-address
-      value: 0.0.0.0:8086
   register: s1
 
 - name: Enable InfluxDB system service

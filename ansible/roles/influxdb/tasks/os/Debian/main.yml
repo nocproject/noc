@@ -1,4 +1,14 @@
 ---
+- name: Add InfluxDB apt key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+
+- name: Add InfluxDB repo
+  apt_repository:
+    repo: "deb https://repos.influxdata.com/debian {{ ansible_lsb.codename }} stable"
+    state: present
+    update_cache: yes
+
 - name: Install Debian packages
   apt:
     name: "{{ item }}"
@@ -7,4 +17,3 @@
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   with_items:
     - influxdb
-    - influxdb-client
