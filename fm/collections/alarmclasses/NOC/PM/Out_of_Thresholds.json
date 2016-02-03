@@ -15,5 +15,10 @@
     "body_template": "Measured values are out of normal range",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "plugins": [
+        {
+            "name": "thresholds"
+        }
+    ]
 }
