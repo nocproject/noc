@@ -1,0 +1,41 @@
+influxdb role
+---
+- include: "os/{{ ansible_distribution }}/main.yml"
+
+- name: Setup InfluxDB config
+  ini_file:
+    dest: "{{ influxdb_conf }}"
+    section: "{{ item.section}}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - section: meta
+      option: hostname
+      value: "{{ ansible_hostname }}"
+    - section: data
+      option: engine
+      value: tsm1
+    - section: http
+      option: enabled
+      value: true
+    - section: http
+      option: auth-enabled
+      value: true
+    - section: http
+      option: bind-address
+      value: 0.0.0.0:8086
+  register: s1
+
+- name: Enable InfluxDB system service
+  service: name="{{influxdb_system_service}}" enabled=yes state=started
+  register: s2
+
+- name: Reload InfluxDB config
+  service: name="{{influxdb_system_service}}" state=restarted
+  when: "s1.changed and not s2.changed"
+
+- name: Create InfluxDB database
+  command: "{{ influx_path }} -execute 'CREATE DATABASE IF NOT EXISTS {{ noc_influxdb_db }}'"
+
+- name: Create InfluxDB user
+  command: "{{ influx_path }} -database {{ noc_influxdb_db }} -execute 'CREATE USER {{noc_influxdb_user}} WITH PASSWORD '{{ noc_influxdb_password }}' WITH ALL PRIVILEGES'"

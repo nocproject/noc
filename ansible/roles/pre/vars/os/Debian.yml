@@ -21,6 +21,11 @@ mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
 mongo_pid: " "
 mongo_arbiter_pid: " "
 mongo_fork: "false"
+# InfluxDB settings
+influxdb_system_service: influxdb
+influxdb_user: influxdb
+influxdb_conf: /etc/influxdb/influxdb.conf
+influx_path: /usr/bin/influx
 # Nginx settings
 nginx_system_service: nginx
 nginx_user: www-data
