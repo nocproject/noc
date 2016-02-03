@@ -15,11 +15,17 @@
   service: name="{{influxdb_system_service}}" state=restarted
   when: "s1.changed and not s2.changed"
 
+- name: Wait for InfluxDB
+  wait_for:
+    port: 8086
+    timeout: 15
+    state: present
+
 - name: Create InfluxDB database
   command: "{{ influx_path }} -execute 'CREATE DATABASE IF NOT EXISTS {{ noc_influxdb_db }}'"
 
 - name: Check InfluxDB user
-  shell: "{{ influx_path }} -database {{ noc_influxdb_db }} - execute \"show users\" | grep {{noc_influxdb_user}}"
+  shell: "{{ influx_path }} -database {{ noc_influxdb_db }} -execute \"show users\" | grep {{noc_influxdb_user}}"
   register: us
 
 - name: Create InfluxDB user
