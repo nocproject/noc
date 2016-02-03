@@ -2,8 +2,8 @@
     "name": "Interface | Load | Out",
     "$collection": "pm.metrictypes",
     "uuid": "a7651240-aef7-48a4-881d-1b6585532259",
-    "description": "Interface output throughoutput",
+    "description": "Interface output throughput",
     "scope": "i",
-    "measure": "kbit/s",
+    "measure": "bit/s",
     "vector_tag": ""
 }
