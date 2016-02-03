@@ -10,6 +10,7 @@ dist/
 build/
 noc.egg-info/
 bin/*
+custom/
 sbin/
 etc/noc.yml
 etc/noc-*.conf
@@ -17,7 +18,6 @@ etc/support.conf
 etc/upgrade.conf
 etc/beef.conf
 etc/noc.conf
-etc/noc.json
 etc/config/**.conf
 etc/supervisord.conf
 etc/address/*.conf
@@ -42,3 +42,4 @@ static/test/
 pip-selfcheck.json
 var/
 scripts/custom/*
+django/*
