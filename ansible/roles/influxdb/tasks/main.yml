@@ -7,23 +7,21 @@
     dest: "{{ influxdb_conf }}"
   register: s1
 
-- name: Setup InfluxDB cluster
-  copy:
-    src: "peers.json.j2"
-    dest: "{{ influxdb_db_path }}/meta/peers.json"
-    owner: "{{ influxdb_user }}"
-  register: s3
-
 - name: Enable InfluxDB system service
   service: name="{{influxdb_system_service}}" enabled=yes state=started
   register: s2
 
 - name: Reload InfluxDB config
   service: name="{{influxdb_system_service}}" state=restarted
-  when: "(s1.changed or s2.changed) and not s2.changed"
+  when: "s1.changed and not s2.changed"
 
 - name: Create InfluxDB database
   command: "{{ influx_path }} -execute 'CREATE DATABASE IF NOT EXISTS {{ noc_influxdb_db }}'"
 
+- name: Check InfluxDB user
+  shell: "{{ influx_path }} -database {{ noc_influxdb_db }} - execute \"show users\" | grep {{noc_influxdb_user}}"
+  register: us
+
 - name: Create InfluxDB user
   command: "{{ influx_path }} -database {{ noc_influxdb_db }} -execute \"CREATE USER {{noc_influxdb_user}} WITH PASSWORD '{{ noc_influxdb_password }}' WITH ALL PRIVILEGES\""
+  when: "us.rc == 1"
