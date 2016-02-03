@@ -24,5 +24,9 @@ class IGetMetrics(Interface):
         #
         "value": FloatParameter(),
         #
-        "type": StringParameter()
+        "type": StringParameter(
+            choices=["gauge", "counter"]
+        ),
+        #
+        "scale": FloatParameter(default=1)
     })
