@@ -11,9 +11,7 @@
 
 - name: Install Debian packages
   apt:
-    name: "{{ item }}"
+    name: influxdb
     state: present
     update_cache: yes
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
-  with_items:
-    - influxdb
