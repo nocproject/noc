@@ -1,4 +1,3 @@
-Debian InfluxDB installation
 ---
 - name: Install Debian packages
   apt:
