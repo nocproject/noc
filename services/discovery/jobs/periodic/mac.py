@@ -37,7 +37,7 @@ class MACCheck(DiscoveryCheck):
                 v["mac"],
                 vc_domain,
                 v["vlan_id"],
-                iface.name
+                iface
             )
             if changed:
                 self.logger.info(
