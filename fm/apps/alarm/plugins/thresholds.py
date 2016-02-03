@@ -11,7 +11,7 @@ from base import AlarmPlugin
 
 
 class ThresholdsPlugin(AlarmPlugin):
-    name = "validation"
+    name = "thresholds"
 
     def get_data(self, alarm, config):
         r = {
