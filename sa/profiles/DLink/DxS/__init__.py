@@ -83,7 +83,7 @@ class Profile(BaseProfile):
             script.cli("disable clipaging")
 
         # Parse path parameters
-        for p in script.access_profile.path.split("/"):
+        for p in script.credentials.get("path", "").split("/"):
             if p.startswith("cluster:"):
                 self.cluster_member = p[8:].strip()
             # Switch to cluster member, if necessary
