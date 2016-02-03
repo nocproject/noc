@@ -15,7 +15,7 @@ services:
   influxdb:
     description: InfluxDB server
     level: system
-    port: 8083
+    port: 8086
 
   nginx:
     description: Nginx server
@@ -42,10 +42,6 @@ services:
   ping:
     description: Ping
     level: pool
-
-  pmwriter:
-    description: PMWriter
-    level: global
 
   syslogcollector:
     description: Syslog Collector

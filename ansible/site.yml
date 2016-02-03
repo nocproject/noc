@@ -18,6 +18,9 @@
     - role: postgres
       when: "'svc-postgres' in group_names"
 
+    - role: influxdb
+      when: "'svc-influxdb' in group_names"
+
     - role: migrate
       when: "'svc-mongod-master' in group_names"
 
