@@ -116,6 +116,7 @@ class SAEAPI(API):
             snmp_rw = ap_snmp_rw
         # Build credentials
         credentials = {
+            "name": name,
             "address": address,
             "user": user,
             "password": password,

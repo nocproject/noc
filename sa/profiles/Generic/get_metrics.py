@@ -23,16 +23,21 @@ class Script(BaseScript):
     interface = IGetMetrics
     requires = []
 
+    # Dict of
+    # metric type -> list of (capability, oid, type, scale)
     SNMP_OIDS = {
         "Interface | Load | In": [
-            ("SNMP | IF-MIB | HC", "IF-MIB::ifHCInOctets"),
-            ("SNMP | IF-MIB", "IF-MIB::ifInOctets")
+            ("SNMP | IF-MIB | HC", "IF-MIB::ifHCInOctets", "counter", 8),
+            ("SNMP | IF-MIB", "IF-MIB::ifInOctets", "counter", 8)
         ],
         "Interface | Load | Out": [
-            ("SNMP | IF-MIB | HC", "IF-MIB::ifHCOutOctets"),
-            ("SNMP | IF-MIB", "IF-MIB::ifOutOctets")
+            ("SNMP | IF-MIB | HC", "IF-MIB::ifHCOutOctets", "counter", 8),
+            ("SNMP | IF-MIB", "IF-MIB::ifOutOctets", "counter", 8)
         ]
     }
+
+    GAUGE = "gauge"
+    COUNTER = "counter"
 
     def __init__(self, *args, **kwargs):
         super(Script, self).__init__(*args, **kwargs)
@@ -47,7 +52,7 @@ class Script(BaseScript):
         hints = hints or {}
         self.ifindexes = hints.get("ifindexes", {})
         #
-        self.collect_profile_metrics()
+        self.collect_profile_metrics(metrics)
         self.collect_snmp_metrics(metrics)
         #
         return self.get_metrics()
@@ -66,17 +71,19 @@ class Script(BaseScript):
             batch = {}
             # Calucate iods
             if m in self.SNMP_OIDS:
-                if m["scope"] == "i":
-                    for i in m["interfaces"]:
+                if metrics[m]["scope"] == "i":
+                    for i in metrics[m]["interfaces"]:
                         ifindex = self.get_ifindex(i)
                         if ifindex:
-                            oid = self.resolve_oid(self.SNMP_OIDS[m], ifindex)
+                            oid, vtype, scale = self.resolve_oid(self.SNMP_OIDS[m], ifindex)
                             if oid:
                                 batch[oid] = {
                                     "name": m,
                                     "tags": {
-                                        "object": self.credentials.name,
-                                    }
+                                        "interface": i
+                                    },
+                                    "type": vtype,
+                                    "scale": scale
                                 }
                 else:
                     pass  # @todo: Spool object's metrics
@@ -91,20 +98,22 @@ class Script(BaseScript):
                             name=batch[oid]["name"],
                             value=v,
                             ts=ts,
-                            tags=batch[oid]["tags"]
+                            tags=batch[oid]["tags"],
+                            type=batch[oid]["type"],
+                            scale=batch[oid]["scale"]
                         )
 
     def resolve_oid(self, chain, ifindex=None):
         """
         Return first suitable oid for OID_*, or None if not founc
         """
-        for c, o in chain:
-            if c in self.capabilities:
+        for cap, o, type, scale in chain:
+            if cap in self.capabilities:
                 if ifindex:
-                    return mib[o, ifindex]
+                    return mib[o, ifindex], type, scale
                 else:
-                    return mib[o]
-        return None
+                    return mib[o], type, scale
+        return None, None
 
     def get_ifindex(self, name):
         return self.ifindexes.get(name)
@@ -116,7 +125,7 @@ class Script(BaseScript):
         """
         return int(time.time() * 1000000)
 
-    def set_metric(self, name, value, ts=None, tags=None):
+    def set_metric(self, name, value, ts=None, tags=None, type="gauge", scale=1):
         """
         Append metric to output
         """
@@ -127,7 +136,9 @@ class Script(BaseScript):
             "ts": ts or self.get_ts(),
             "name": name,
             "value": value,
-            "tags": tags
+            "tags": tags,
+            "type": type,
+            "scale": scale
         }]
 
     def get_metrics(self):
