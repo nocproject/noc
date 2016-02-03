@@ -120,12 +120,12 @@ class Profile(BaseProfile):
         if path:
             cluster_member = None
             # Parse path parameters
-            for p in script.access_profile.path.split("/"):
+            for p in script.credentials.get("path", "").split("/"):
                 if p.startswith("cluster:"):
                     cluster_member = p[8:].strip()
             # Switch to cluster member, if necessary
             if cluster_member:
-                script.debug("Switching to cluster member '%s'" % cluster_member)
+                script.logger.debug("Switching to cluster member '%s'" % cluster_member)
                 script.cli("rc %s" % cluster_member)
 
     INTERFACE_TYPES = {
