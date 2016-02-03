@@ -193,7 +193,7 @@ class MetricsCheck(DiscoveryCheck):
                     alarm.id,
                     alarm.severity, s
                 )
-                alarm.severity = s
+                alarm.change_severity(severity=s)
             self.logger.info("Updating alarm %s", alarm.id)
             v = alarm.vars
             v.update({
