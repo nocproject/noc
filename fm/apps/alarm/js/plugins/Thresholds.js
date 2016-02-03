@@ -6,9 +6,9 @@
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarm.plugins.Validation");
 
-Ext.define("NOC.fm.alarm.plugins.Validation", {
+Ext.define("NOC.fm.alarm.plugins.Thresholds", {
     extend: "Ext.panel.Panel",
-    title: "Validation",
+    title: "Thresholds",
     app: null,
     autoScroll: true,
     bodyPadding: 4,
