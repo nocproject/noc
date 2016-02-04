@@ -9,6 +9,9 @@
     - sudo
     - quilt
 
+- name: Create rc.d directory
+  file: path=/usr/local/etc/rc.d state=directory mode=0755
+
 - name: Install supervisord init script
   template: src="os/FreeBSD/etc/rc.d/noc.j2" dest="/usr/local/etc/rc.d/{{ noc_system_service }}" mode="a+rx"
 
