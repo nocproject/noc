@@ -12,3 +12,8 @@
   command: service postgresql initdb
   args:
     creates: "{{ postgresql_hba_path }}"
+
+- name: Starting PostgreSQL service
+  # This avoid this message:
+  # pg_ctl: could not read file "/usr/local/pgsql/data/postmaster.opts"
+  command: service postgresql start creates=/usr/local/pgsql/data/postmaster.opts
