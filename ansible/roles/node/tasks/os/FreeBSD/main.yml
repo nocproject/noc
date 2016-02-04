@@ -3,6 +3,7 @@
   pkgng: name={{item}} state=present
   with_items:
     - ca_root_nss
+    - postgresql93-client
     - python2
     - py27-virtualenv
     - mercurial
