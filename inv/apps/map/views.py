@@ -8,6 +8,10 @@
 
 ## Python modules
 from collections import defaultdict
+import urllib
+import json
+## Third-party modules
+import tornado.httpclient
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
@@ -21,9 +25,7 @@ from noc.lib.stencil import stencil_registry
 from layout import Layout
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
-                                    StringParameter)
-from noc.lib.solutions import get_solution
-from noc.settings import config
+                                    StringParameter, DictListParameter, DictParameter)
 
 
 class MapApplication(ExtApplication):
@@ -63,15 +65,6 @@ class MapApplication(ExtApplication):
             mos = node_settings.get(mk)
             if mos:
                 layout.set_node_position(o.id, mos.x, mos.y)
-
-        def get_interfaces_metrics(interfaces, type):
-            return [
-                self.router.get_metric(
-                    "inv.Interface",
-                    i,
-                    type
-                ) for i in interfaces
-            ]
 
         def bandwidth(speed, bandwidth):
             if speed and bandwidth:
@@ -159,21 +152,13 @@ class MapApplication(ExtApplication):
                 add_mo(m0, external=True)
             mo[m0.id]["ports"] += [{
                 "id": pn,
-                "ports": [i.name for i in i0],
-                "metrics": {
-                    "in": get_interfaces_metrics(i0, "Interface | Load | In"),
-                    "out": get_interfaces_metrics(i0, "Interface | Load | Out")
-                }
+                "ports": [i.name for i in i0]
             }]
             if m1.id not in mo:
                 add_mo(m1, external=True)
             mo[m1.id]["ports"] += [{
                 "id": pn + 1,
-                "ports": [i.name for i in i1],
-                "metrics": {
-                    "in": get_interfaces_metrics(i1, "Interface | Load | In"),
-                    "out": get_interfaces_metrics(i1, "Interface | Load | Out")
-                }
+                "ports": [i.name for i in i1]
             }]
             t_in_bw = 0
             t_out_bw = 0
@@ -404,21 +389,61 @@ class MapApplication(ExtApplication):
                 r[o] = self.ST_DOWN
         return r
 
-    @view(url="^metrics/$", method=["POST"],
-          access="read", api=True,
-          validate={
-              "metrics": ListOfParameter(StringParameter())
-          }
+    @view(
+        url="^metrics/$", method=["POST"],
+        access="read", api=True,
+        validate={
+            "metrics": DictListParameter(attrs={
+                "id": StringParameter(),
+                "metric": StringParameter(),
+                "tags": DictParameter()
+            })
+        }
     )
     def api_metrics(self, request, metrics):
-        r = {}
+        def q(s):
+            return s
+
+        def qt(t):
+            return "|".join(["%s=%s" % (v, t[v]) for v in sorted(t)])
+
+        # Build query
+        query = []
+        m_objects = defaultdict(list)  # metric -> [object, ...]
+        tag_id = {}
         for m in metrics:
-            v, ts = tsdb.get_last_value(m)
-            if ts:
-                r[m] = {
-                    "ts": ts,
-                    "value": v
-                }
+            m_objects[m["metric"]] += [m["tags"]["object"]]
+            tag_id[qt(m["tags"])] = m["id"]
+        for m in m_objects:
+            for o in m_objects[m]:
+                query += [
+                    "SELECT object, interface, last(value) "
+                    "FROM \"%s\" "
+                    "WHERE object='%s' "
+                    "GROUP BY object, interface" % (
+                        q(m),
+                        q(o)
+                    )
+                ]
+        query = ";".join(query)
+        client = tornado.httpclient.HTTPClient()
+        response = client.fetch(
+            "http://127.0.0.1:8086/query?db=noc&q=%s" % urllib.quote(query)
+        )
+        data = json.loads(response.body)
+        r = {}
+        for qr in data["results"]:
+            if not qr:
+                continue
+            for sv in qr["series"]:
+                pid = tag_id.get(qt(sv["tags"]))
+                if not pid:
+                    continue
+                if pid not in r:
+                    r[pid] = {}
+                if sv["name"] not in r[pid]:
+                    r[pid][sv["name"]] = 0.0
+                r[pid][sv["name"]] += sv["values"][0][-1]
         return r
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"],
