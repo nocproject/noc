@@ -77,7 +77,6 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.objectNodes = {};
         me.objectsList = [];
         me.portObjects = {};  // port id -> object id
-        me.portMetrics = {};
         me.linkBw = {};  // Link id -> {in: ..., out: ...}
         me.isInteractive = false;  // Graph is editable
         me.isDirty = false;  // Graph is changed
@@ -85,6 +84,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.overlayPollingTaskId = null;
         me.currentHighlight = null;
         me.overlayMode = me.LO_NONE;
+        me.interfaceMetrics = [];
 
         Ext.apply(me, {
             items: [
@@ -168,16 +168,24 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.isDirty = false;
         me.currentHighlight = null;
         me.objectNodes = {};
-        me.portMetrics = {};
         me.linkBw = {};
         me.objectsList = [];
+        me.interfaceMetrics = [];
         me.graph.clear();
         // Create nodes
         Ext.each(data.nodes, function(node) {
             cells.push(me.createNode(node));
             Ext.each(node.ports, function(port) {
                 me.portObjects[port.id] = node.id;
-                me.portMetrics[port.id] = port.metrics;
+                Ext.each(port.ports, function(ifname) {
+                    me.interfaceMetrics.push({
+                        id: port.id,
+                        tags: {
+                            object: node.name,
+                            interface: ifname
+                        }
+                    });
+                });
             })
         });
         // Create links
@@ -466,13 +474,16 @@ Ext.define("NOC.inv.map.MapPanel", {
         switch(me.overlayMode) {
             case me.LO_LOAD:
                 var r = [];
-                // Fill in/out metrics
-                Ext.Object.each(me.portMetrics, function(port) {
-                    Ext.each(me.portMetrics[port]["in"], function(m) {
-                        r.push(m);
+                Ext.each(me.interfaceMetrics, function(m) {
+                    r.push({
+                        id: m.id,
+                        metric: "Interface | Load | In",
+                        tags: m.tags
                     });
-                    Ext.each(me.portMetrics[port]["out"], function(m) {
-                        r.push(m);
+                    r.push({
+                        id: m.id,
+                        metric: "Interface | Load | Out",
+                        tags: m.tags
                     });
                 });
                 Ext.Ajax.request({
@@ -584,19 +595,17 @@ Ext.define("NOC.inv.map.MapPanel", {
                 ports = link.get("data").ports,
                 linkId = link.get("data").id,
                 luStyle = null,
-                getTotal = function(metrics) {
-                    var v = 0.0;
-                    Ext.each(metrics, function(m) {
-                        if(data[m]) {
-                            v += data[m].value;
-                        }
-                    });
-                    return v;
+                getTotal = function(port, metric) {
+                    if(data[port] && data[port][metric]) {
+                        return data[port][metric];
+                    } else {
+                        return 0.0;
+                    }
                 };
-            sIn = getTotal(me.portMetrics[ports[0]]["in"]);
-            sOut = getTotal(me.portMetrics[ports[0]]["out"]);
-            dIn = getTotal(me.portMetrics[ports[1]]["in"]);
-            dOut = getTotal(me.portMetrics[ports[1]]["out"]);
+            sIn = getTotal(ports[0], "Interface | Load | In");
+            sOut = getTotal(ports[0], "Interface | Load | Out");
+            dIn = getTotal(ports[1], "Interface | Load | In");
+            dOut = getTotal(ports[1], "Interface | Load | Out");
 
             bw = me.linkBw[linkId];
             // Destination to target
