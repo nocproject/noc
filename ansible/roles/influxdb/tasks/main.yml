@@ -26,6 +26,7 @@
 
 - name: Check InfluxDB user
   shell: "{{ influx_path }} -database {{ noc_influxdb_db }} -execute \"show users\" | grep {{noc_influxdb_user}}"
+  ignore_errors: true
   register: us
 
 - name: Create InfluxDB user
