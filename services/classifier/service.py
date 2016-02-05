@@ -706,7 +706,8 @@ class ClassifierService(Service):
             "managed_object": event.managed_object.id,
             "timestamp__gte": t0,
             "timestamp__lte": event.timestamp,
-            "event_class": event_class.id
+            "event_class": event_class.id,
+            "id__ne": event.id
         }
         for v in vars:
             q["vars__%s" % v] = vars[v]
