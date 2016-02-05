@@ -1,0 +1,17 @@
+---
+- name: Add Grafana apt key
+  apt_key:
+    url: https://packagecloud.io/gpg.key
+
+- name: Add Grafana repo
+  apt_repository:
+    repo: "deb https://packagecloud.io/grafana/stable/debian/ wheezy main"
+    state: present
+    update_cache: yes
+
+- name: Install Debian packages
+  apt:
+    name: grafana
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"

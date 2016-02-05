@@ -23,6 +23,11 @@ services:
     port: 443
     require_cert: true
 
+  grafana:
+    description: Graphana server
+    level: system
+    port: 8002
+
   classifier:
     description: Classifier
     level: pool
