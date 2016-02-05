@@ -3,11 +3,15 @@
   pkgng: name={{item}} state=present
   with_items:
     - ca_root_nss
+    - postgresql93-client
     - python2
     - py27-virtualenv
     - mercurial
     - sudo
     - quilt
+
+- name: Create rc.d directory
+  file: path=/usr/local/etc/rc.d state=directory mode=0755
 
 - name: Install supervisord init script
   template: src="os/FreeBSD/etc/rc.d/noc.j2" dest="/usr/local/etc/rc.d/{{ noc_system_service }}" mode="a+rx"
