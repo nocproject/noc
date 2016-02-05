@@ -54,8 +54,8 @@
     - role: trapcollector
       when: "'svc-trapcollector' in group_names"
 
-    - role: graphitecollector
-      when: "'svc-graphitecollector' in group_names"
+    - role: grafana
+      when: "'svc-grafana' in group_names"
 
     - role: ping
       when: "'svc-ping' in group_names"

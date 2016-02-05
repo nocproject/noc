@@ -36,5 +36,7 @@ nginx_conf_path: /etc/nginx/conf.d/noc.conf
 nginx_log_dir: /var/log/nginx
 nginx_ssl_key_path: /etc/nginx/ssl/noc.key
 nginx_ssl_cert_path: /etc/nginx/ssl/noc.crt
+# Grafana settings
+grafana_system_service: grafana-server
 # APT settings
 apt_cache_valid_time: 86400
