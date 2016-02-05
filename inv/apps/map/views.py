@@ -36,6 +36,10 @@ class MapApplication(ExtApplication):
     menu = "Network Map"
     glyph = "globe"
 
+    implied_permissions = {
+        "launch": ["inv:networksegment:lookup"]
+    }
+
     # Object statuses
     ST_UNKNOWN = 0  # Object state is unknown
     ST_OK = 1  # Object is OK
