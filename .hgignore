@@ -22,6 +22,7 @@ etc/config/**.conf
 etc/supervisord.conf
 etc/address/*.conf
 etc/certs/*
+etc/jupyter/*
 etc/ssh/id_*
 include/*
 lib/python*
@@ -43,3 +44,4 @@ pip-selfcheck.json
 var/
 scripts/custom/*
 django/*
+ui/pkg/
