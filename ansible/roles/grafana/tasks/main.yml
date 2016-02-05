@@ -1,0 +1,8 @@
+---
+- include: "os/{{ ansible_distribution }}/main.yml"
+
+- name: Start Grafana service
+  service:
+    name: "{{ grafana_system_service }}"
+    enabled: yes
+    state: started
