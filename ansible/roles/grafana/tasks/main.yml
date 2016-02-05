@@ -1,6 +1,23 @@
 ---
 - include: "os/{{ ansible_distribution }}/main.yml"
 
+- name: Create grafana directories
+  file:
+    path: "{{ noc_root }}/{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+  with_items:
+    - path: var/etc/grafana
+      owner: root
+    - path: var/db/grafana
+      owner: "{{ grafana_user }}"
+
+- name: Create Grafana config
+  template:
+    src: grafana.ini
+    dest: "{{ noc_root }}/var/etc/grafana/grafana.ini"
+  notify: restart grafana
+
 - name: Start Grafana service
   service:
     name: "{{ grafana_system_service }}"
