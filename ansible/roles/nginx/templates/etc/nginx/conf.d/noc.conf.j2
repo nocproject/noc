@@ -22,6 +22,14 @@ upstream notebook {
 }
 {% endif %}
 
+{% if noc_config["services"].get("grafana", []) %}
+upstream grafana {
+{% for n in noc_config["services"].get("grafana", []) %}
+    server {{ n }};
+{% endfor %}
+}
+{% endif %}
+
 server {
     listen 443;
     server_name {{ noc_web_host }};
@@ -78,6 +86,18 @@ server {
         proxy_pass http://notebook;
         gzip on;
         gzip_types text/css text/x-js;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+{% endif %}
+
+{% if noc_config["services"].get("grafana", []) %}
+    location /ui/grafana {
+        proxy_pass http://grafana;
+        rewrite  ^/ui/grafana/(.*)  /$1 break;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
         proxy_set_header X-Real-IP $remote_addr;
