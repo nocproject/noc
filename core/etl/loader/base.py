@@ -327,6 +327,8 @@ class BaseLoader(object):
         """
         Save current state
         """
+        if not self.new_state_path:
+            return
         self.logger.info(
                 "Summary: %d new, %d changed, %d removed",
                 self.c_add, self.c_change, self.c_delete
@@ -400,6 +402,8 @@ class BaseLoader(object):
             try:
                 value = mappings[value]
             except KeyError:
+                self.logger.info("Deferred. Unknown value %s:%s",
+                                 r_model, value)
                 raise self.Deferred()
             return self.chain.cache[r_model, value]
 
