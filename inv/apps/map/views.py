@@ -413,15 +413,15 @@ class MapApplication(ExtApplication):
 
         # Build query
         query = []
-        m_objects = defaultdict(list)  # metric -> [object, ...]
+        m_objects = defaultdict(set)  # metric -> [object, ...]
         tag_id = {}
         for m in metrics:
-            m_objects[m["metric"]] += [m["tags"]["object"]]
+            m_objects[m["metric"]].add(m["tags"]["object"])
             tag_id[qt(m["tags"])] = m["id"]
         for m in m_objects:
             for o in m_objects[m]:
                 query += [
-                    "SELECT object, interface, last(value) "
+                    "SELECT object, last(value) "
                     "FROM \"%s\" "
                     "WHERE object='%s' "
                     "GROUP BY object, interface" % (
@@ -446,8 +446,7 @@ class MapApplication(ExtApplication):
                 if pid not in r:
                     r[pid] = {}
                 if sv["name"] not in r[pid]:
-                    r[pid][sv["name"]] = 0.0
-                r[pid][sv["name"]] += sv["values"][0][-1]
+                    r[pid][sv["name"]] = sv["values"][0][-1]
         return r
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"],
