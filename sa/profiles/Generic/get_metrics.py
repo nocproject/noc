@@ -14,6 +14,8 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmetrics import IGetMetrics
 from noc.lib.mib import mib
 
+NS = 1000000000.0
+
 
 class Script(BaseScript):
     """
@@ -125,7 +127,7 @@ class Script(BaseScript):
         """
         Returns current timestamp in nanoseconds
         """
-        return int(time.time() * 1000000)
+        return int(time.time() * NS)
 
     def set_metric(self, name, value, ts=None, tags=None, type="gauge", scale=1, thresholds=None):
         """
