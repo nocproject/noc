@@ -23,6 +23,8 @@ MAX31 = 0x7FFFFFFFL
 MAX32 = 0xFFFFFFFFL
 MAX64 = 0xFFFFFFFFFFFFFFFFL
 
+NS = 1000000000.0
+
 
 def get_interface_profile_metrics(p_id):
     with interface_profile_metrics_lock:
@@ -137,8 +139,21 @@ class MetricsCheck(DiscoveryCheck):
                             m["ts"], m["value"],
                             r[0], r[1]
                         )
+                        self.logger.debug(
+                            "[%s] Old value: %s@%s, new value: %s@%s.",
+                            r[1], r[0], m["value"], m["ts"]
+                        )
                     else:
+                        self.logger.debug(
+                            "[%s] COUNTER value is not found."
+                            "Storing and waiting for a new result",
+                            key
+                        )
                         continue  # Skip the step
+                self.logger.debug(
+                    "[%s] Measured value: %s. Scale: %s. Resuling value: %s",
+                    key, m["value"], m["scale"], m["value"] * m["scale"]
+                )
                 batch += [
                     "%s value=%s %s" % (
                         key,
@@ -227,9 +242,9 @@ class MetricsCheck(DiscoveryCheck):
                 return old_value
             else:
                 # Counter wrap
-                return float(d_wrap) / ((float(new_ts) - float(old_ts)) / 1000000.0)
+                return float(d_wrap) / ((float(new_ts) - float(old_ts)) / NS)
         else:
-            return (float(new_value) - float(old_value)) / ((float(new_ts) - float(old_ts)) / 1000000.0)
+            return (float(new_value) - float(old_value)) / ((float(new_ts) - float(old_ts)) / NS)
 
     @classmethod
     def check_thresholds(cls, v):
