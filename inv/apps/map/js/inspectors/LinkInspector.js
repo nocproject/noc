@@ -66,6 +66,7 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
             });
         });
         t += "<b>Discovery: </b>" + data.method + "<br>";
+        t += "<b>Util: </b>" + parseInt(data.utilization / 1000) + "kbit/s<br>";
         me.infoText.setHtml(t);
         me.currentLinkId = data.id;
     },

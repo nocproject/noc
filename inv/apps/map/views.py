@@ -26,6 +26,7 @@ from layout import Layout
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
+from noc.core.influxdb.client import InfluxDBClient
 
 
 class MapApplication(ExtApplication):
@@ -340,6 +341,33 @@ class MapApplication(ExtApplication):
                     for i in sorted(o[mo], key=lambda x: split_alnum(x.name))
                 ]
             }]
+        # Get link bandwidth
+        query = []
+        for mo in o:
+            for i in o[mo]:
+                query += [
+                    "SELECT object, interface, last(value) "
+                    "FROM \"Interface | Load | In\" "
+                    "WHERE object='%s' AND interface='%s' "
+                    "GROUP BY object, interface" % (
+                        mo.name, i.name
+                    ),
+                    "SELECT object, interface, last(value) "
+                    "FROM \"Interface | Load | Out\" "
+                    "WHERE object='%s' AND interface='%s' "
+                    "GROUP BY object, interface" % (
+                        mo.name, i.name
+                    )
+                ]
+        client = InfluxDBClient()
+        mo_in = defaultdict(float)
+        mo_out = defaultdict(float)
+        for row in client.query(query):
+            if row["_name"] == "Interface | Load | In":
+                mo_in[row["object"]] += row["last"]
+            else:
+                mo_out[row["object"]] += row["last"]
+        r["utilization"] = int(max(mo_in.values() + mo_out.values()))
         return r
 
     @view(url="^objects_statuses/$", method=["POST"],
