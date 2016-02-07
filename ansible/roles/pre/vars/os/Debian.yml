@@ -40,5 +40,6 @@ nginx_ssl_cert_path: /etc/nginx/ssl/noc.crt
 grafana_system_service: grafana-server
 grafana_user: grafana
 grafana_group: grafana
+grafana_home: /usr/share/grafana
 # APT settings
 apt_cache_valid_time: 86400
