@@ -18,6 +18,11 @@
     dest: "{{ noc_root }}/var/etc/grafana/grafana.ini"
   notify: restart grafana
 
+- name: Set up dynamic dashboars
+  copy:
+    src: noc.js
+    dest: "{{ grafana_home }}/public/dashboards/noc.js"
+
 - name: Start Grafana service
   service:
     name: "{{ grafana_system_service }}"
