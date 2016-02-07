@@ -36,6 +36,14 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
             disabled: true
         });
 
+        me.dashboardButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.line_chart,
+            scope: me,
+            tooltip: "Show dashboard",
+            handler: me.onDashboard,
+            disabled: true
+        });
+
         Ext.apply(me, {
             items: [
                 me.infoText
@@ -45,7 +53,8 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
                 dock: "top",
                 items: [
                     me.lookButton,
-                    me.segmentButton
+                    me.segmentButton,
+                    me.dashboardButton
                 ]
             }]
         });
@@ -89,6 +98,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
         me.infoText.setHtml(t);
         me.currentObjectId = data.id;
         me.lookButton.setDisabled(false);
+        me.dashboardButton.setDisabled(false);
     },
 
     onLook: function() {
@@ -101,5 +111,14 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     onJumpSegment: function() {
         var me = this;
         me.app.loadSegment(me.externalSegmentId);
+    },
+
+    onDashboard: function() {
+        var me = this;
+        if(me.currentObjectId) {
+            window.open(
+                "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.currentObjectId
+            );
+        }
     }
 });
