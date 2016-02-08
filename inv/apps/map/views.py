@@ -367,7 +367,15 @@ class MapApplication(ExtApplication):
                 mo_in[row["object"]] += row["last"]
             else:
                 mo_out[row["object"]] += row["last"]
-        r["utilization"] = int(max(mo_in.values() + mo_out.values()))
+        mos = [mo["name"] for mo in r["objects"]]
+        if len(mos) == 2:
+            mo1, mo2 = mos
+            r["utilisation"] = [
+                int(max(mo_in[mo1], mo_out[mo2])),
+                int(max(mo_in[mo2], mo_out[mo1])),
+            ]
+        else:
+            r["utilisation"] = [int(max(mo_in.values() + mo_out.values()))]
         return r
 
     @view(url="^objects_statuses/$", method=["POST"],

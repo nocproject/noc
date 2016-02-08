@@ -44,7 +44,7 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
 
     applyData: function(data) {
         var me = this,
-            t;
+            t, ut;
 
         t = "";
         Ext.each(data.objects, function(v) {
@@ -66,7 +66,11 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
             });
         });
         t += "<b>Discovery: </b>" + data.method + "<br>";
-        t += "<b>Util: </b>" + parseInt(data.utilization / 1000) + "kbit/s<br>";
+        // Utilisation
+        ut = data.utilisation.map(function(v) {
+            return parseInt(v / 1000000) + "Mbit/s";
+        }).join(" | ");
+        t += "<b>Util: </b>" + ut + "<br>";
         me.infoText.setHtml(t);
         me.currentLinkId = data.id;
     },
