@@ -45,6 +45,7 @@ class ManagedObjectDashboard(BaseDashboard):
                 "from": "now-6h",
                 "to": "now"
             },
+            "refresh": "1m",
             "rows": []
         }
         # Add object name and description
@@ -113,7 +114,7 @@ class ManagedObjectDashboard(BaseDashboard):
                     },
                     "seriesOverrides": [
                         {
-                            "alias": "Interface | Load | Out.mean",
+                            "alias": "Input",
                             "transform": "negative-Y"
                         }
                     ],
@@ -155,6 +156,19 @@ class ManagedObjectDashboard(BaseDashboard):
                                         "type": "mean"
                                     }
                                 ]
+                            ],
+                            "tags": [
+                                {
+                                    "key": "object",
+                                    "operator": "=",
+                                    "value": self.object.name
+                                },
+                                {
+                                    "condition": "AND",
+                                    "key": "interface",
+                                    "operator": "=",
+                                    "value": iface.name
+                                }
                             ]
                         },
                         {
@@ -194,6 +208,19 @@ class ManagedObjectDashboard(BaseDashboard):
                                         "type": "mean"
                                     }
                                 ]
+                            ],
+                            "tags": [
+                                {
+                                    "key": "object",
+                                    "operator": "=",
+                                    "value": self.object.name
+                                },
+                                {
+                                    "condition": "AND",
+                                    "key": "interface",
+                                    "operator": "=",
+                                    "value": iface.name
+                                }
                             ]
                         }
                     ],
