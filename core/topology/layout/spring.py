@@ -20,5 +20,5 @@ class SpringLayout(LayoutBase):
     def get_layout(self):
         return nx.spring_layout(
             self.topology.non_isolated_graph(),
-            scale=self.SCALE_FACTOR * math.sqrt(len(self.G))
+            scale=self.SCALE_FACTOR * math.sqrt(len(self.topology.G))
         )
