@@ -22,7 +22,8 @@ from noc.inv.models.link import Link
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.lib.stencil import stencil_registry
-from layout import Layout
+#from layout import Layout
+from noc.core.topology.segment import SegmentTopology
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
@@ -51,54 +52,45 @@ class MapApplication(ExtApplication):
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],
           access="read", api=True)
     def api_data(self, request, id):
-        def add_mo(o, external=False):
-            shape = self.get_object_shape(o)
-            sw, sh = self.get_shape_size(shape)
-            mo[o.id] = {
-                "type": "managedobject",
-                "id": str(o.id),
-                "name": o.name,
-                "external": external,
-                "shape": shape,
-                "ports": [],
-                "width": sw,
-                "height": sh
-            }
-            r["nodes"] += [mo[o.id]]
-            layout.set_node_size(o.id, sw, sh)
-            mk = (u"managedobject", unicode(o.id))
-            mos = node_settings.get(mk)
-            if mos:
-                layout.set_node_position(o.id, mos.x, mos.y)
+        def q_mo(d):
+            x = d.copy()
+            del x["mo"]
+            x["id"] = str(x["id"])
+            x["external"] = x.get("role") != "segment"
+            print x
+            return x
 
-        def bandwidth(speed, bandwidth):
-            if speed and bandwidth:
-                return min(speed, bandwidth)
-            elif speed and not bandwidth:
-                return speed
-            elif bandwidth:
-                return bandwidth
-            else:
-                return 0
-
+        # Find segment
         segment = self.get_object_or_404(NetworkSegment, id=id)
+        # Load settings
         settings = MapSettings.objects.filter(segment=id).first()
-        node_settings = {}
-        link_settings = {}
-        layout = Layout()
+        node_hints = {}
+        link_hints = {}
         if settings:
             self.logger.debug("Using stored positions")
-            layout.set_page_size(settings.width, settings.height)
             for n in settings.nodes:
-                node_settings[n.type, n.id] = n
+                node_hints[int(n.id)] = {
+                    "type": n.type,
+                    "id": int(n.id),
+                    "x": n.x,
+                    "y": n.y
+                }
             for l in settings.links:
-                link_settings[l.type, l.id] = l
+                link_hints[l.id] = {
+                    "connector": l.connector if len(l.vertices) else "normal",
+                    "vertices": [{"x": v.x, "y": v.y} for v in l.vertices]
+                }
         else:
             self.logger.debug("Generating positions")
+        # Generate topology
+        topology = SegmentTopology(segment, node_hints, link_hints)
+        topology.layout()
+        # Build output
         r = {
             "id": str(segment.id),
             "name": segment.name,
-            "nodes": []
+            "nodes": [q_mo(x) for x in topology.G.node.itervalues()],
+            "links": [topology.G[u][v] for u, v in topology.G.edges()]
         }
         # Parent info
         if segment.parent:
@@ -106,126 +98,7 @@ class MapApplication(ExtApplication):
                 "id": str(segment.parent.id),
                 "name": str(segment.parent.name)
             }
-        # Nodes
-        mo = {}
-        for o in segment.managed_objects:
-            add_mo(o, external=False)
-        # Get interfaces
-        ic = Interface._get_collection()
-        idata = list(ic.find(
-            {
-                "managed_object": {
-                    "$in": list(mo)
-                },
-                "type": {
-                    "$in": ["physical", "management"]
-                }
-            },
-            {
-                "_id": 1,
-                "bandwidth": 1,
-                "in_speed": 1,
-                "out_speed": 1
-            }
-        ))
-        if_ids = set(i["_id"] for i in idata)
-        if_bw = dict(
-            (i["_id"], (
-                i.get("bandwidth", 0),
-                i.get("in_speed", 0),
-                i.get("out_speed", 0)
-            )) for i in idata
-        )
-        # Load links
-        links = {}
-        pn = 0
-        for link in Link.objects.filter(interfaces__in=if_ids):
-            mos = set()
-            for i in link.interfaces:
-                mos.add(i.managed_object)
-            if len(mos) != 2:
-                continue
-            m0 = mos.pop()
-            m1 = mos.pop()
-            i0, i1 = [], []
-            for i in link.interfaces:
-                if i.managed_object == m0:
-                    i0 += [i]
-                else:
-                    i1 += [i]
-            if m0.id not in mo:
-                add_mo(m0, external=True)
-            mo[m0.id]["ports"] += [{
-                "id": pn,
-                "ports": [i.name for i in i0]
-            }]
-            if m1.id not in mo:
-                add_mo(m1, external=True)
-            mo[m1.id]["ports"] += [{
-                "id": pn + 1,
-                "ports": [i.name for i in i1]
-            }]
-            t_in_bw = 0
-            t_out_bw = 0
-            for i in i0:
-                bw, in_speed, out_speed = if_bw.get(i.id, (0, 0, 0))
-                t_in_bw += bandwidth(in_speed, bw)
-                t_out_bw += bandwidth(out_speed, bw)
-            d_in_bw = 0
-            d_out_bw = 0
-            for i in i1:
-                bw, in_speed, out_speed = if_bw.get(i.id, (0, 0, 0))
-                d_in_bw += bandwidth(in_speed, bw)
-                d_out_bw += bandwidth(out_speed, bw)
-            lid = (u"link", str(link.id))
-            in_bw = bandwidth(t_in_bw, d_out_bw) * 1000
-            out_bw = bandwidth(t_out_bw, d_in_bw) * 1000
-            links[lid] = {
-                "id": str(link.id),
-                "type": "link",
-                "method": link.discovery_method,
-                "ports": [pn, pn + 1],
-                # Target to source
-                "in_bw": in_bw,
-                # Source to target
-                "out_bw": out_bw,
-                # Max bandwidth
-                "bw": max(in_bw, out_bw)
-            }
-            pn += 2
-            layout.add_link(m0.id, m1.id, lid)
-        # Auto-layout
-        npos, lpos = layout.layout()
-        # Set nodes position
-        # Calculated position is the center of node
-        for o in npos:
-            x, y = npos[o]
-            mo[o]["x"] = x
-            mo[o]["y"] = y
-        # Adjust link hints
-        for lid in lpos:
-            links[lid]["connector"] = "smooth"
-            links[lid]["vertices"] = [
-                {
-                    "x": p["x"],
-                    "y": p["y"]
-                } for p in lpos[lid]
-            ]
-        # Override link hints with saved one
-        for lid in link_settings:
-            if lid not in links:
-                continue
-            if link_settings[lid].vertices:
-                connector = link_settings[lid].connector
-            else:
-                connector = "normal"
-            links[lid]["connector"] = connector
-            links[lid]["vertices"] = [
-                {
-                    "x": v.x,
-                    "y": v.y
-                } for v in link_settings[lid].vertices]
-        r["links"] = links.values()
+        # Save settings
         if not settings:
             self.logger.debug("Saving first-time layout")
             MapSettings.load_json({
