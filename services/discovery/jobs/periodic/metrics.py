@@ -101,7 +101,7 @@ class MetricsCheck(DiscoveryCheck):
             ipr = self.interface_profile_metrics_cache[i["profile"]]
             if not ipr:
                 continue
-            if i["ifindex"]:
+            if "ifindex" in i:
                 hints["ifindexes"][i["name"]] = i["ifindex"]
             for metric in ipr:
                 if metric in metrics:
@@ -141,11 +141,11 @@ class MetricsCheck(DiscoveryCheck):
                         )
                         self.logger.debug(
                             "[%s] Old value: %s@%s, new value: %s@%s.",
-                            r[1], r[0], m["value"], m["ts"]
+                            key, r[1], r[0], m["value"], m["ts"]
                         )
                     else:
                         self.logger.debug(
-                            "[%s] COUNTER value is not found."
+                            "[%s] COUNTER value is not found. "
                             "Storing and waiting for a new result",
                             key
                         )
@@ -220,11 +220,11 @@ class MetricsCheck(DiscoveryCheck):
             alarm.vars = v
             alarm.save()
 
-    @staticmethod
-    def convert_counter(new_ts, new_value, old_ts, old_value):
+    def convert_counter(self, new_ts, new_value, old_ts, old_value):
         """
         Calculate value from counter, gently handling overflows
         """
+        dt = (float(new_ts) - float(old_ts)) / NS
         if new_value < old_value:
             # Counter decreased, either due wrap or stepback
             if old_value <= MAX31:
@@ -239,12 +239,20 @@ class MetricsCheck(DiscoveryCheck):
             d_wrap = new_value + (mc - old_value)
             if d_direct < d_wrap:
                 # Possible counter stepback, return old_value
+                self.logger.debug(
+                    "Counter stepback: %s -> %s",
+                    old_value, new_value
+                )
                 return old_value
             else:
                 # Counter wrap
-                return float(d_wrap) / ((float(new_ts) - float(old_ts)) / NS)
+                self.logger.debug(
+                    "Counter wrap: %s -> %s",
+                    old_value, new_value
+                )
+                return float(d_wrap) / dt
         else:
-            return (float(new_value) - float(old_value)) / ((float(new_ts) - float(old_ts)) / NS)
+            return (float(new_value) - float(old_value)) / dt
 
     @classmethod
     def check_thresholds(cls, v):
