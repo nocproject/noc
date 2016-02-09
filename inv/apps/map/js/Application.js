@@ -250,8 +250,10 @@ Ext.define("NOC.inv.map.Application", {
         me.mapPanel.setOverlayMode(button.mapOverlay);
     },
 
-    onNewLayout: function() {
-        var me = this;
+    onNewLayout: function(btn, ev) {
+        var me = this,
+            forceSpring = ev.shiftKey;
+        console.log(arguments);
         Ext.Msg.show({
             title: "Reset Layout",
             message: "Would you like to reset current layout and generate new?",
@@ -259,7 +261,7 @@ Ext.define("NOC.inv.map.Application", {
             buttons: Ext.Msg.YESNO,
             fn: function(btn) {
                 if(btn == "yes") {
-                    me.mapPanel.resetLayout();
+                    me.mapPanel.resetLayout(forceSpring);
                 }
             }
         });

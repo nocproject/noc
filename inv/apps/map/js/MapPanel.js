@@ -143,11 +143,15 @@ Ext.define("NOC.inv.map.MapPanel", {
     },
 
     // Load segment data
-    loadSegment: function(segmentId) {
-        var me = this;
+    loadSegment: function(segmentId, forceSpring) {
+        var me = this,
+            url = "/inv/map/" + segmentId + "/data/";
+        if(forceSpring) {
+            url += "?force=spring"
+        }
         me.segmentId = segmentId;
         Ext.Ajax.request({
-            url: "/inv/map/" + segmentId + "/data/",
+            url: url,
             method: "GET",
             scope: me,
             success: function(response) {
@@ -662,17 +666,18 @@ Ext.define("NOC.inv.map.MapPanel", {
         V(el).attr("filter", "");
     },
 
-    resetLayout: function() {
+    resetLayout: function(forceSpring) {
         var me = this;
         if(!me.segmentId) {
             return;
         }
+        forceSpring = forceSpring || false;
         Ext.Ajax.request({
             url: "/inv/map/" + me.segmentId + "/data/",
             method: "DELETE",
             scope: me,
             success: function(response) {
-                me.loadSegment(me.segmentId);
+                me.loadSegment(me.segmentId, forceSpring);
             },
             failure: function() {
                 NOC.error("Failed to reset layout");
