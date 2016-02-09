@@ -83,7 +83,9 @@ class MapApplication(ExtApplication):
         else:
             self.logger.debug("Generating positions")
         # Generate topology
-        topology = SegmentTopology(segment, node_hints, link_hints)
+        topology = SegmentTopology(
+            segment, node_hints, link_hints,
+            force_spring=request.GET.get("force") == "spring")
         topology.layout()
         # Build output
         r = {
@@ -109,7 +111,7 @@ class MapApplication(ExtApplication):
                         "id": n["id"],
                         "x": n["x"],
                         "y": n["y"]
-                    } for n in r["nodes"]
+                    } for n in r["nodes"] if n.get("x") is not None and n.get("y") is not None
                 ],
                 "links": [
                     {

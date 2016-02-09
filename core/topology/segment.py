@@ -35,11 +35,13 @@ class SegmentTopology(BaseTopology):
     # Fixed map shifting
     MAP_OFFSET = np.array([50, 20])
 
-    def __init__(self, segment, node_hints=None, link_hints=None):
+    def __init__(self, segment, node_hints=None, link_hints=None,
+                 force_spring=False):
         self.segment = segment
         self._uplinks_cache = {}
         self._rings_cache = {}
         self._isolated_cache = {}
+        self.force_spring = force_spring
         if self.segment.parent:
             self.parent_segment = self.segment.parent
         else:
@@ -215,7 +217,7 @@ class SegmentTopology(BaseTopology):
 
     def get_layout_class(self):
         # @todo: Tree  nx.is_forest(..)
-        if len(self.get_rings()) == 1:
+        if not self.force_spring and len(self.get_rings()) == 1:
             return RingLayout
         else:
             return SpringLayout
