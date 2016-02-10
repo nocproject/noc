@@ -212,8 +212,11 @@ class AlarmApplication(ExtApplication):
             d["subscribers"] = self.get_alarm_subscribers(alarm)
             d["is_subscribed"] = user in alarm.subscribers
         # Apply plugins
+        plugins = []
+        dd = self.plugins["subscribers"].get_data(alarm, {})
+        plugins += dd.get("plugins", [])
+        d.update(dd)
         if alarm.alarm_class.plugins:
-            plugins = []
             for p in alarm.alarm_class.plugins:
                 if p.name in self.plugins:
                     plugin = self.plugins[p.name]
@@ -222,8 +225,8 @@ class AlarmApplication(ExtApplication):
                         plugins += dd["plugins"]
                         del dd["plugins"]
                     d.update(dd)
-            if plugins:
-                d["plugins"] = plugins
+        if plugins:
+            d["plugins"] = plugins
         return d
 
     def get_alarm_subscribers(self, alarm):
