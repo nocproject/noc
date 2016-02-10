@@ -24,13 +24,19 @@ class RingLayout(LayoutBase):
     # Spacing between parallel chains
     S = 100
     # Position of first node
-    A0 = math.pi / 2.0
+    A0 = - math.pi / 2.0
 
     def get_layout(self):
         T = self.topology
         # unconnected = set(T.get_unconnected())
         uplinks = T.get_uplinks()
         ring = T.get_rings()[0]
+        # Try to start ring with uplink
+        for u in uplinks:
+            if u in ring:
+                i = ring.index(u)
+                ring = ring[i:] + ring[:i]
+                break
         pos = {}
         # Ring length
         N = len(ring)
