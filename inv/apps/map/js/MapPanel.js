@@ -18,11 +18,16 @@ Ext.define("NOC.inv.map.MapPanel", {
     pollingInterval: 20000,
 
     svgFilters: {
-        osUnknown: [128, 128, 128],
-        osOk: [57, 190, 106],
-        osAlarm: [233, 149, 62],
+        // Asbestos, #7f8c8d
+        osUnknown: [127, 140, 141],
+        // Emerald, #23cc71
+        osOk: [46, 204, 113],
+        // Sunflower, #f1c40f
+        osAlarm: [241, 196, 15],
+        //
         osUnreach: [64, 64, 64],
-        osDown: [220, 38, 43]
+        // Pomegranade, #c0392b
+        osDown: [192, 57, 43]
     },
 
     svgDefaultFilters: [
@@ -93,7 +98,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                     autoScroll: true,
                     layout: "fit",
                     style: {
-                        background: "#e0e0e0"
+                        background: "#ecf0f1"
                     }
                 }
             ]
@@ -105,8 +110,9 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this;
         me.callParent();
         load_scripts([
-            "/static/pkg/jquery/jquery.js",
-            "/static/pkg/jointjs/jointjs.js"
+            "/ui/pkg/lodash/lodash.min.js",
+            "/ui/pkg/backbone/backbone.min.js",
+            "/ui/pkg/joint/joint.min.js",
         ], me, me.initMap);
     },
 
@@ -242,6 +248,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             }
         });
         me.objectNodes[data.id] = node;
+        console.log("node>", node);
         me.objectsList.push(data.id);
         return node;
     },

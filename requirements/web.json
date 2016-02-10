@@ -4,6 +4,22 @@
     {
       "name": "webix",
       "version": "3.1.2"
+    },
+    {
+      "name": "joint",
+      "version": "0.9.6"
+    },
+    {
+      "name": "jquery",
+      "version": "2.0.3"
+    },
+    {
+      "name": "lodash",
+      "version": "3.10.1"
+    },
+    {
+      "name": "backbone",
+      "version": "1.2.1"
     }
   ]
 }
