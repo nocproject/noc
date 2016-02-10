@@ -16,10 +16,10 @@ import json
 
 
 class NPkg(object):
-    CONFIG = "requirements/pkg.json"
     VAR = "var/pkg"
 
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.url = None
         self.required_versions = None
         self.installed_versions = None
@@ -28,7 +28,7 @@ class NPkg(object):
         self.changed = False
 
     def read_config(self):
-        with open(self.CONFIG) as f:
+        with open(self.config) as f:
             cfg = json.load(f)
         self.url = cfg["url"]
         self.required_versions = {}
@@ -105,4 +105,5 @@ class NPkg(object):
             print "OK"
 
 if __name__ == "__main__":
-    NPkg().sync()
+    import sys
+    NPkg(sys.argv[1]).sync()
