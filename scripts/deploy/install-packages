@@ -86,6 +86,7 @@ class NPkg(object):
             manifest = json.load(f)
         for f in manifest["files"]:
             os.unlink(f)
+        os.unlink(mp)
 
     def sync(self):
         """
