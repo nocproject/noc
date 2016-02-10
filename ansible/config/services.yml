@@ -59,6 +59,8 @@ services:
   web:
     description: Legacy web interface
     level: global
+    required_assets:
+      - web
 
   sae:
     description: Service activation engine

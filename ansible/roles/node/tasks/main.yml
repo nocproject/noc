@@ -76,6 +76,14 @@
     extra_args: "--upgrade"
   when: "ansible_python_version.startswith('2.6')"
 
+- name: Install assets
+  command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
+  args:
+    chdir: "{{ noc_root }}"
+  register: s
+  changed_when: "'CHANGED' in s.stdout"
+  with_items: "{{ required_assets }}"
+
 - name: Apply local patches
   command: "{{ noc_root }}/scripts/deploy/apply-patches"
   args:
