@@ -25,9 +25,10 @@
   command: "{{ influx_path }} -execute 'CREATE DATABASE IF NOT EXISTS {{ noc_influxdb_db }}'"
 
 - name: Check InfluxDB user
-  shell: "{{ influx_path }} -database {{ noc_influxdb_db }} -execute \"show users\" | grep {{noc_influxdb_user}}"
+  shell: "{{ influx_path }} -database {{ noc_influxdb_db }} -execute 'show users' | grep {{noc_influxdb_user}}"
   register: us
   changed_when: "us.rc == 1"
+  failed_when: "us.rc > 1"
 
 - name: Create InfluxDB user
   command: "{{ influx_path }} -database {{ noc_influxdb_db }} -execute \"CREATE USER {{noc_influxdb_user}} WITH PASSWORD '{{ noc_influxdb_password }}' WITH ALL PRIVILEGES\""
