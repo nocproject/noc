@@ -57,6 +57,12 @@ server {
         gzip_types text/css text/x-js;
     }
 
+    location /ui/ {
+        alias {{ noc_root }}/ui/;
+        gzip on;
+        gzip_types text/css text/x-js;
+    }
+
     location ~ ^([^/]+)/([^/]+)/(js|css|img)/(.+)$ {
         root {{ noc_root }};
         rewrite ^([^/]+)/([^/]+)/(js|css|img)/(.+)$
