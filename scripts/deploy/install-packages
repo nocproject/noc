@@ -1,0 +1,108 @@
+#!./bin/python
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Install npkg packages
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2016 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import os
+import tarfile
+import tempfile
+import urllib2
+import json
+
+
+class NPkg(object):
+    CONFIG = "requirements/pkg.json"
+    VAR = "var/pkg"
+
+    def __init__(self):
+        self.url = None
+        self.required_versions = None
+        self.installed_versions = None
+        self.read_config()
+        self.get_installed_versions()
+        self.changed = False
+
+    def read_config(self):
+        with open(self.CONFIG) as f:
+            cfg = json.load(f)
+        self.url = cfg["url"]
+        self.required_versions = {}
+        for r in cfg["packages"]:
+            self.required_versions[r["name"]] = r["version"]
+
+    def get_installed_versions(self):
+        if not os.path.isdir(self.VAR):
+            os.makedirs(self.VAR)
+        self.installed_versions = {}
+        for pkg in os.listdir(self.VAR):
+            if "@" not in pkg:
+                continue
+            if pkg.endswith(".json"):
+                pkg = pkg[:-5]
+                package, version = pkg.split("@")
+                self.installed_versions[package] = version
+
+    def get_manifest_path(self, pkg, version):
+        return os.path.join(self.VAR, "%s@%s.json" % (pkg, version))
+            
+    def install(self, pkg):
+        self.changed = True
+        version = self.required_versions[pkg]
+        url = self.url + pkg + "%40" + version + ".tar.bz2"
+        with tempfile.NamedTemporaryFile() as tf:
+            # Download
+            f = urllib2.urlopen(url)
+            tf.write(f.read())
+            tf.flush()
+            f.close()
+            # Process archive
+            manifest = {
+                "name": pkg,
+                "version": version,
+                "files": []
+            }
+            tar = tarfile.open(tf.name, "r:bz2")
+            for mi in tar.getmembers():
+                if mi.name.startswith("/") or ".." in mi.name:
+                    continue  # Skip suspicious paths
+                manifest["files"] += [mi.name]
+                tar.extract(mi)
+            # Write manifest
+            with open(self.get_manifest_path(pkg, version), "w") as f:
+                json.dump(manifest, f)
+
+    def uninstall(self, pkg):
+        """
+        Uninstall packages
+        """
+        self.changed = True
+        mp = self.get_manifest_path(pkg, self.installed_versions[pkg])
+        with open(mp) as f:
+            manifest = json.load(f)
+        for f in manifest["files"]:
+            os.unlink(f)
+
+    def sync(self):
+        """
+        Sync all packages
+        """
+        for pkg in self.required_versions:
+            if pkg in self.installed_versions:
+                if self.installed_versions[pkg] != self.required_versions[pkg]:
+                    self.uninstall(pkg)
+                else:
+                    continue
+            self.install(pkg)
+
+        if self.changed:
+            print "CHANGED"
+        else:
+            print "OK"
+
+if __name__ == "__main__":
+    NPkg().sync()
