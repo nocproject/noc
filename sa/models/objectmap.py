@@ -96,7 +96,7 @@ class ObjectMap(Document):
                 ping_sources[aq(mo.address)] = {
                     "id": mo.id,
                     "interval": mo.object_profile.ping_interval,
-                    "status": True
+                    "status": None
                 }
         # Resolve object statuses
         oids = dict((d["id"], q) for q, d in ping_sources.iteritems())
