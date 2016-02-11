@@ -11,6 +11,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
 import re
 
+
 class Script(BaseScript):
     name = "Cisco.IOS.get_cdp_neighbors"
     interface = IGetCDPNeighbors
