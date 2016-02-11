@@ -25,7 +25,7 @@ mongo_fork: "false"
 influxdb_system_service: influxd
 influxdb_user: influxd
 influxdb_group: influxd
-influxdb_conf: /usr/local/etc/influxdb.conf
+influxdb_conf: /usr/local/etc/influxd.conf
 influxdb_db_path: /var/db/influxdb
 influx_path: /usr/local/bin/influx
 # Nginx settings
