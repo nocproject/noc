@@ -57,6 +57,12 @@ server {
         gzip_types text/css text/x-js;
     }
 
+    location /ui/cache/ {
+        alias {{ noc_root }}/var/ui/cache/;
+        gzip on;
+        gzip_types text/css text/x-js;
+    }
+
     location /ui/ {
         alias {{ noc_root }}/ui/;
         gzip on;
