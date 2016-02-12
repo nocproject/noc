@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NOC Login</title>
+    <!-- Load used packages -->
+    <link rel="stylesheet" href="{{ hashed("/ui/pkg/webix/webix.css") }}" type="text/css">
+    <script src="{{ hashed("/ui/pkg/webix/webix.js") }}" type="text/javascript"></script>
+    <!-- Load application -->
+    {% raw mergecache([
+        "/ui/common/init.js",
+        "/ui/login/app/ui.js",
+        "/ui/login/app/logic.js"
+    ]) %}
+</head>
+<body>
+    <script type="text/javascript" charset="utf-8">
+        webix.ready(NOC.app.logic.init);
+    </script>
+</body>
+</html>

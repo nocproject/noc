@@ -86,6 +86,12 @@ services:
     description: Scheduler and Cron
     level: global
 
+  login:
+    description: Login
+    level: global
+    required_assets:
+      - web
+
 config:
   noc:
     installation_name:
