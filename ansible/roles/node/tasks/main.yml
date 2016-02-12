@@ -116,6 +116,8 @@
       owner: "{{noc_user}}"
     - name: var/etc/noc
       owner: root
+    - name: var/ui/cache
+      owner: "{{ noc_user }}"
 
 - name: Install noc.pth
   template: src="lib/python/site-packages/noc.pth.j2" dest="{{noc_root}}/lib/python/site-packages/noc.pth"
