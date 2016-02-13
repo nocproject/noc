@@ -36,9 +36,12 @@ class Script(BaseScript):
                         "vlan_id":int(oids[o]),
                         "name":v.strip().rstrip('\x00')
                     }]
-                return sorted(
-                    result, lambda x, y: cmp(x["vlan_id"], y["vlan_id"])
-                )
+                if result:
+                    return sorted(
+                        result, lambda x, y: cmp(x["vlan_id"], y["vlan_id"])
+                    )
+                else:
+                    pass
             except self.snmp.TimeOutError:
                 # SNMP failed, continue with CLI
                 pass
