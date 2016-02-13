@@ -19,6 +19,7 @@ class Script(BaseScript):
 
     @BaseScript.match(version__startswith="3.")
     def execute_vrp3(self):
+        return []
         raise self.NotSupportedError()
 
     rx_chan_line_vrp5 = re.compile(

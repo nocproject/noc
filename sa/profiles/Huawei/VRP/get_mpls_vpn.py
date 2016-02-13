@@ -24,7 +24,10 @@ class Script(BaseScript):
 
     def execute(self, **kwargs):
         vpns = []
-        v = self.cli("display ip vpn-instance verbose")
+        try:
+            v = self.cli("display ip vpn-instance verbose")
+        except self.CLISyntaxError:
+            return []
         for l in v.splitlines():
             match = self.rx_line.search(l)
             if match:
