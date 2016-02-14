@@ -21,7 +21,7 @@ class Script(BaseScript):
     )
     rx_count = re.compile(
         r"(?P<count>\d+) packet\(s\) transmitted.+(?P<success>\d+) packet\(s\) received",
-        re.MULTILINE
+        re.MULTILINE | re.DOTALL
     )
 
     def execute(self, address, count=None, source_address=None,
