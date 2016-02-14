@@ -1,0 +1,187 @@
+//---------------------------------------------------------------------
+// Link Interfaces window
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2016 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+console.debug("Defining NOC.sa.managedobject.LinkForm");
+
+Ext.define("NOC.sa.managedobject.LinkForm", {
+    extend: "Ext.Window",
+    requires: [
+        "NOC.sa.managedobject.LookupField"
+    ],
+    autoShow: true,
+    closable: true,
+    maximizable: true,
+    modal: true,
+    // width: 300,
+    // height: 200,
+    autoScroll: true,
+    layout: "fit",
+
+    initComponent: function() {
+        var me = this;
+
+        me.store = Ext.create("Ext.data.Store", {
+            autoLoad: false,
+            fields: ["id", "label"],
+            data: []
+        });
+
+        me.unlinkButton = Ext.create("Ext.button.Button", {
+            text: "Disconnect",
+            glyph: NOC.glyph.times,
+            disabled: !me.isLinked,
+            scope: me,
+            handler: me.onUnlink
+        });
+
+        me.fixButton = Ext.create("Ext.button.Button", {
+            text: "Fix",
+            glyph: NOC.glyph.check_circle,
+            disabled: !me.isLinked,
+            scope: me,
+            handler: me.onFix
+        });
+
+        Ext.apply(me, {
+            items: [
+                {
+                    xtype: "form",
+                    items: [
+                        {
+                            xtype: "sa.managedobject.LookupField",
+                            name: "managed_object",
+                            emptyText: "Select managed object ...",
+                            fieldLabel: "Object",
+                            width: 360,
+                            allowBlank: false,
+                            listeners: {
+                                scope: me,
+                                select: me.onObjectSelect
+                            }
+                        },
+                        {
+                            xtype: "combobox",
+                            name: "interface",
+                            fieldLabel: "Interface",
+                            width: 360,
+                            allowBlank: false,
+                            displayField: "label",
+                            valueField: "id",
+                            queryMode: "local",
+                            store: me.store
+                        }
+                    ],
+                    buttonAlign: "center",
+                    buttons: [
+                        {
+                            text: "Connect",
+                            glyph: NOC.glyph.link,
+                            formBind: true,
+                            scope: me,
+                            handler: me.onLink
+                        },
+                        me.unlinkButton,
+                        me.fixButton
+                    ]
+                }
+            ]
+        });
+        me.callParent();
+        me.form = me.items.first().getForm();
+    },
+    //
+    onObjectSelect: function(field, value) {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/inv/interface/unlinked/" + value.get("id") + "/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                var me = this,
+                    data = Ext.decode(response.responseText);
+                me.store.loadData(data);
+            },
+            failure: function() {
+                NOC.error("Failed to get interfaces list");
+            }
+        });
+    },
+    //
+    onLink: function() {
+        var me = this,
+            data = {
+                type: "ptp",
+                interfaces: [me.ifaceId, me.form.getValues().interface]
+            };
+        Ext.Ajax.request({
+            url: "/inv/interface/link/",
+            method: "POST",
+            jsonData: data,
+            scope: me,
+            success: function() {
+                var me = this;
+                me.app.loadInterfaces();
+                me.close();
+            },
+            failure: function() {
+                NOC.error("Failed to connect interfaces");
+            }
+        });
+    },
+    //
+    onUnlink: function() {
+        var me = this;
+        Ext.Msg.show({
+            title: "Unlink interface",
+            msg: Ext.String.format("Do you wish to unlink interface {0}?", me.ifName),
+            buttons: Ext.Msg.YESNO,
+            icon: Ext.window.MessageBox.QUESTION,
+            modal: true,
+            fn: function(button) {
+                if (button == "yes") {
+                    Ext.Ajax.request({
+                        url: "/inv/interface/unlink/" + me.ifaceId + "/",
+                        method: "POST",
+                        scope: me,
+                        success: function(response) {
+                            var me = this,
+                                data = Ext.decode(response.responseText);
+                            if(data.status) {
+                                me.close();
+                            } else {
+                                NOC.error(data.message);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    },
+    //
+    onFix: function() {
+        var me = this;
+        Ext.Ajax.request({
+            url: "/sa/managedobject/link/fix/" + me.linkId + "/",
+            method: "POST",
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                if(data) {
+                    NOC.info("Fixed");
+                    self.close();
+                    me.app.app.onRefresh();
+                } else {
+                    NOC.info("Failed to fix");
+                }
+            }
+        });
+    },
+    //
+    getDefaultFocus: function() {
+        var me = this;
+        return me.form.findField("managed_object");
+    }
+});
