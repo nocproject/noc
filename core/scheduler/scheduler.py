@@ -222,8 +222,7 @@ class Scheduler(object):
                 Job.ATTR_STATUS: Job.S_WAIT,
                 Job.ATTR_RUNS: 0,
                 Job.ATTR_FAULTS: 0,
-                Job.ATTR_OFFSET: random.random(),
-                Job.ATTR_DATA: data
+                Job.ATTR_OFFSET: random.random()
             }
         }
         self.logger.info("Submit job %s(%s, %s) at %s",
