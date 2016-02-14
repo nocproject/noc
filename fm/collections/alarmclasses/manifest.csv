@@ -37,7 +37,7 @@ Environment | UPS | Input Power Low,0b7db31a-06fe-47fc-895e-92b14158dcb8,Environ
 Environment | UPS | Self-Test Failed,cd8a2c67-969e-472a-a32e-624edda8e29a,Environment/UPS/Self-Test_Failed.json,a556e9976bce80bfbafa68dc48c4b8cad565326280368c84f7106650be3d89ef
 NOC | IPAM | VRF Group Address Collision,099d5271-1581-4059-9872-b8b98621e529,NOC/IPAM/VRF_Group_Address_Collision.json,5ca36044425563ba0705723a43c4d76fdfc5e9ff8579954fcc58ff93202a90ef
 NOC | Managed Object | Configuration Errors | Misconfigured SNMP,fad2b0ca-b717-404c-af00-7489baf6b15b,NOC/Managed_Object/Configuration_Errors/Misconfigured_SNMP.json,6b6bd7d3128dabc84a0181b57a9d7ecf319d35511eb7cb2b1499efe281c8f20b
-NOC | Managed Object | Ping Failed,ec26e28d-0b64-4738-8c07-5ee3daca16f4,NOC/Managed_Object/Ping_Failed.json,ac7bd4cb3cb17c9170db84bbb5e2a25679c0a4c3c9c781632fbf4262acc16ae3
+NOC | Managed Object | Ping Failed,ec26e28d-0b64-4738-8c07-5ee3daca16f4,NOC/Managed_Object/Ping_Failed.json,6b9ca132a89458adaa15a2edcbceb8ea746e460877fb122c91689f8dda343ec6
 NOC | PM | Out of Thresholds,9baba4bf-2163-49b6-b193-30baf59c56cf,NOC/PM/Out_of_Thresholds.json,ccdc1fb5e87a9492041695c5c89420f023d967ebb85b90cee16ffe10ea2fceba
 NOC | Periodic | Periodic Failed,19331749-daac-435d-829c-b9fedf85603f,NOC/Periodic/Periodic_Failed.json,9aa969c87be0864fe3f3d952a64784dc217470f4ed7a2ee34b6a5bd58e44100b
 NOC | SA | Activator Pool Degraded,70c6f606-e6eb-423a-86fb-87f0d6821f19,NOC/SA/Activator_Pool_Degraded.json,501a474ece468773382b1dca69f5146008f8e1fa6bddd064ac22207c653ad9d8
