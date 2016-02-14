@@ -45,16 +45,16 @@ def topology_rca(alarm):
         if not uplinks:
             return
         uplink_alarms = {}
-        for o in ou.uplinks:
+        for o in uplinks:
             a = get_alarm(o)
             if a:
                 uplink_alarms[o] = a
-        if len(uplink_alarms) == ou.uplinks():
+        if len(uplink_alarms) == len(uplinks):
             # All uplinks are faulty,
             # correlate with the last faulted
             aa = sorted(uplink_alarms.itervalues(),
-                        key=-operator.attrgetter("timestamp"))
-            alarm.set_root(aa[0])
+                        key=operator.attrgetter("timestamp"))
+            alarm.set_root(aa[-1])
 
     if alarm.root:
         return  # Already correlated
