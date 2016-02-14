@@ -9,10 +9,20 @@
 
 ## NOC modules
 from noc.core.service.ui import UIService
+from auth import AuthRequestHandler
+from api.login import LoginAPI
 
 
 class LoginService(UIService):
     name = "login"
+    api = [
+        LoginAPI
+    ]
+
+    def get_handlers(self):
+        return super(LoginService, self).get_handlers() + [
+            ("^/auth/$", AuthRequestHandler)
+        ]
 
 
 if __name__ == "__main__":

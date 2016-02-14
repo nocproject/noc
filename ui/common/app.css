@@ -1,0 +1,54 @@
+.webix_badge {
+    background-color: #f1c40f !important;
+}
+
+.webix_message_area {
+    position: fixed;
+    left: 50%;
+    margin-left: -125px;
+    width: 250px;
+    z-index: 1000;
+}
+
+.webix_started div {
+    background-color: #3498db;
+    color: #ecf0f1;
+    border: none;
+}
+
+.webix_started div::before {
+    color: #ecf0f1;
+    font-size: 13px;
+    font-family: FontAwesome;
+    content: "\f017";
+    margin-right: 4px;
+}
+
+.webix_complete div {
+    background-color: #2ecc71;
+    color: #ecf0f1;
+}
+
+.webix_complete div::before {
+    color: #ecf0f1;
+    font-size: 13px;
+    font-family: FontAwesome;
+    content: "\f058";
+    margin-right: 4px;
+}
+
+.webix_failed div {
+    background-color: #c0392b;
+    color: #ecf0f1;
+}
+
+.webix_failed div::before {
+    color: #ecf0f1;
+    font-size: 13px;
+    font-family: FontAwesome;
+    content: "\f0e7";
+    margin-right: 4px;
+}
+
+.webix_info div {
+}
