@@ -25,7 +25,7 @@ class Script(BaseScript):
 
     def execute(self, address, count=None, source_address=None,
                 size=None, df=None, vrf=None):
-        cmd = "ping ip %s" % address
+        cmd = "ping %s" % address
         if count:
             cmd += " count %d" % int(count)
         if size:
