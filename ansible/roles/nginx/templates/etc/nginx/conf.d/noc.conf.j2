@@ -51,30 +51,57 @@ server {
     access_log  {{ nginx_log_dir }}/noc.access.log;
     error_log  {{ nginx_log_dir }}/noc.error.log;
 
+    # Proxy authentication settings
+    error_page 401 = @error401;
+
+    location @error401 {
+        return 302 /api/login/;
+    }
+
+    # Login service api
+    location /api/login/ {
+        proxy_pass http://login;
+        rewrite  ^/api/login/(.*)  /$1 break;
+        # internal;
+        gzip on;
+        gzip_types text/css text/x-js;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Original-URI $request_uri;
+    }
+
+    # Legacy django media
     location /media/ {
         alias {{ noc_root }}/django/contrib/admin/static/;
         gzip on;
         gzip_types text/css text/x-js;
     }
 
+    # Legacy static resources
     location /static/ {
         alias {{ noc_root }}/static/;
         gzip on;
         gzip_types text/css text/x-js;
     }
 
+    # Minified JS files
     location /ui/cache/ {
         alias {{ noc_root }}/var/ui/cache/;
         gzip on;
         gzip_types text/css text/x-js;
     }
 
+    # UI files
     location /ui/ {
         alias {{ noc_root }}/ui/;
         gzip on;
         gzip_types text/css text/x-js;
     }
 
+    # Legacy JS mappings
     location ~ ^([^/]+)/([^/]+)/(js|css|img)/(.+)$ {
         root {{ noc_root }};
         rewrite ^([^/]+)/([^/]+)/(js|css|img)/(.+)$
@@ -115,6 +142,7 @@ server {
 {% if noc_config["services"].get("grafana", []) %}
     location /ui/grafana {
         proxy_pass http://grafana;
+        # auth_request /api/login/auth/;
         rewrite  ^/ui/grafana/(.*)  /$1 break;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
