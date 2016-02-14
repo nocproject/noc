@@ -62,6 +62,12 @@ Ext.define("NOC.inv.map.MapPanel", {
         [.50, {stroke: "#ff9933"}],
         [.0, {stroke: "#006600"}]
     ],
+    adminDownStyle: {
+        stroke: "#7f8c8d"
+    },
+    operDownStyle: {
+        stroke: "#c0392b"
+    },
     // Object status filter names
     statusFilter: {
         0: "osUnknown",
@@ -600,6 +606,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     // metric -> {ts: .., value: }
     setLoadOverlayData: function(data) {
         var me = this;
+        console.log("setLoadOverlayData", data);
         Ext.each(me.graph.getLinks(), function(link) {
             var sIn, sOut, dIn, dOut, bw,
                 td, dt, lu, cfg, tb, balance,
@@ -612,52 +619,105 @@ Ext.define("NOC.inv.map.MapPanel", {
                     } else {
                         return 0.0;
                     }
+                },
+                getStatus = function(port, status) {
+                    if(data[port] && data[port][status] !== undefined) {
+                        return data[port][status];
+                    } else {
+                        return true;
+                    }
                 };
-            sIn = getTotal(ports[0], "Interface | Load | In");
-            sOut = getTotal(ports[0], "Interface | Load | Out");
-            dIn = getTotal(ports[1], "Interface | Load | In");
-            dOut = getTotal(ports[1], "Interface | Load | Out");
+            //
+            if(!getStatus(ports[0], "admin_status") || !getStatus(ports[1], "admin_status")) {
+                // Administratively down
+                link.attr({
+                    ".connection": me.adminDownStyle
+                });
+                luStyle = Ext.apply({
+                    attrs: {
+                        text: me.adminDownStyle
+                    },
+                    visibility: "visible",
+                    position: 0.5,
+                    fill: me.adminDownStyle.stroke
+                }, me.adminDownStyle);
 
-            bw = me.linkBw[linkId];
-            // Destination to target
-            td = Math.max(sOut, dIn);
-            // Target to destination
-            dt = Math.max(sIn, dOut);
-            if(bw) {
-                // Link utilization
-                lu = 0.0;
-                if (bw.in) {
-                    lu = Math.max(lu, dt / bw.in);
-                }
-                if (bw.out) {
-                    lu = Math.max(lu, td / bw.out);
-                }
-                // Apply proper style according to load
-                for (var i = 0; i < me.luStyle.length; i++) {
-                    var t = me.luStyle[i][0],
-                        style = me.luStyle[i][1];
-                    if (lu >= t) {
-                        cfg = {
-                            filter: "url(#glow)"
-                        };
-                        cfg = Ext.apply(cfg, style);
-                        luStyle = cfg;
-                        link.attr({
-                            ".connection": cfg
-                        });
-                        break;
+                luStyle.fill = luStyle.stroke;
+                luStyle.visibility = "visible";
+                luStyle.text = "\uf00d";
+                luStyle["font-size"] = 10;
+                link.label(0, {attrs: {text: luStyle}});
+                link.label(0, {position: 0.5});
+            } else if(!getStatus(ports[0], "oper_status") || !getStatus(ports[1], "oper_status")) {
+                // Administratively down
+                link.attr({
+                    ".connection": me.operDownStyle
+                });
+                luStyle = Ext.apply({
+                    attrs: {
+                        text: me.operDownStyle
+                    },
+                    visibility: "visible",
+                    position: 0.5,
+                    fill: me.operDownStyle.stroke
+                }, me.operDownStyle);
+
+                luStyle.fill = luStyle.stroke;
+                luStyle.visibility = "visible";
+                luStyle.text = "\uf0e7";
+                luStyle["font-size"] = 10;
+                link.label(0, {attrs: {text: luStyle}});
+                link.label(0, {position: 0.5});
+            } else {
+                // Get bandwidth
+                sIn = getTotal(ports[0], "Interface | Load | In");
+                sOut = getTotal(ports[0], "Interface | Load | Out");
+                dIn = getTotal(ports[1], "Interface | Load | In");
+                dOut = getTotal(ports[1], "Interface | Load | Out");
+
+                bw = me.linkBw[linkId];
+                // Destination to target
+                td = Math.max(sOut, dIn);
+                // Target to destination
+                dt = Math.max(sIn, dOut);
+                if (bw) {
+                    // Link utilization
+                    lu = 0.0;
+                    if (bw.in) {
+                        lu = Math.max(lu, dt / bw.in);
+                    }
+                    if (bw.out) {
+                        lu = Math.max(lu, td / bw.out);
+                    }
+                    // Apply proper style according to load
+                    for (var i = 0; i < me.luStyle.length; i++) {
+                        var t = me.luStyle[i][0],
+                            style = me.luStyle[i][1];
+                        if (lu >= t) {
+                            cfg = {
+                                filter: "url(#glow)"
+                            };
+                            cfg = Ext.apply(cfg, style);
+                            luStyle = cfg;
+                            link.attr({
+                                ".connection": cfg
+                            });
+                            break;
+                        }
                     }
                 }
-            }
-            // Balance
-            tb = td + dt;
-            if(tb > 0) {
-                balance = td / tb;
-                link.label(0, {position: balance});
-                if(luStyle) {
-                    luStyle.fill = luStyle.stroke;
-                    luStyle.visibility = "visible";
-                    link.label(0, {attrs: {text: luStyle}});
+                // Show balance point
+                tb = td + dt;
+                if (tb > 0) {
+                    balance = td / tb;
+                    link.label(0, {position: balance});
+                    if (luStyle) {
+                        luStyle.fill = luStyle.stroke;
+                        luStyle.visibility = "visible";
+                        luStyle.text = "\uf111";
+                        luStyle["font-size"] = 5;
+                        link.label(0, {attrs: {text: luStyle}});
+                    }
                 }
             }
         });

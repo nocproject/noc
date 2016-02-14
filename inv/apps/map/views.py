@@ -28,6 +28,7 @@ from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
 from noc.core.influxdb.client import InfluxDBClient
+from noc.inv.caches.interface.tagstoid import interface_tags_to_id
 
 
 class MapApplication(ExtApplication):
@@ -326,9 +327,15 @@ class MapApplication(ExtApplication):
         query = []
         m_objects = defaultdict(set)  # metric -> [object, ...]
         tag_id = {}
+        if_ids = {}  # id -> port id
         for m in metrics:
             m_objects[m["metric"]].add(m["tags"]["object"])
             tag_id[qt(m["tags"])] = m["id"]
+            if "object" in m["tags"] and "interface" in m["tags"]:
+                try:
+                    if_ids[interface_tags_to_id[m["tags"]]] = m["id"]
+                except KeyError:
+                    pass
         for m in m_objects:
             for o in m_objects[m]:
                 query += [
@@ -347,6 +354,24 @@ class MapApplication(ExtApplication):
         )
         data = json.loads(response.body)
         r = {}
+        # Apply interface statuses
+        for d in Interface._get_collection().find(
+            {
+                "_id": {
+                    "$in": list(if_ids)
+                }
+            },
+            {
+                "_id": 1,
+                "admin_status": 1,
+                "oper_status": 1
+            }
+        ):
+            r[if_ids[d["_id"]]] = {
+                "admin_status": d["admin_status"],
+                "oper_status": d["oper_status"]
+            }
+        # Apply metrics
         for qr in data["results"]:
             if not qr:
                 continue
