@@ -26,16 +26,19 @@ logger = logging.getLogger("ui")
 
 class UIHandler(tornado.web.RequestHandler):
     hash = None
+    PREFIX = os.getcwd()
     CACHE_ROOT = "var/ui/cache"
     CACHE_URL = "/ui/cache/"
 
-    def initialize(self, path, *args, **kwargs):
-        self.root = path
+    def initialize(self, name, *args, **kwargs):
+        self.name = name
 
     def get(self):
         # @todo: Expose addiitonal context variables
+        index_path = os.path.join(self.PREFIX, "ui",
+                                  self.name, "index.html")
         return self.render(
-            os.path.join(self.root, "index.html"),
+            index_path,
             mergecache=self.mergecache,
             hashed=self.hashed
         )
@@ -44,11 +47,13 @@ class UIHandler(tornado.web.RequestHandler):
         if self.hash is None:
             logger.debug("Calculating JS hash")
             r = []
-            for f in jslist:
-                path = os.path.join(self.root, f)
-                if os.path.isfile(path):
-                    with open(path) as f:
-                        r += [f.read()]
+            for path in jslist:
+                p = path
+                if p.startswith("/"):
+                    p = p[1:]
+                p = os.path.join(self.PREFIX, p)
+                with open(p) as f:
+                    r += [f.read()]
             js = "\n".join(r)
             if jsmin:
                 ssize = len(js)
@@ -63,30 +68,28 @@ class UIHandler(tornado.web.RequestHandler):
         return "<script src=\"/ui/cache/%s.js\" " \
                "type=\"text/javascript\"></script>" % self.hash
 
-    def hashed(self, path):
+    def hashed(self, url):
         """
         Convert path to path?hash version
         :param path:
         :return:
         """
-        fp = path
-        if fp.startswith("/ui/"):
-            fp = fp[4:]
-        fp = os.path.join(self.root, fp)
-        with open(fp) as f:
+        u = url
+        if u.startswith("/"):
+            u = url[1:]
+        path = os.path.join(self.PREFIX, u)
+        with open(path) as f:
             hash = hashlib.sha256(f.read()).hexdigest()[:8]
-        return "%s?%s" % (path, hash)
+        return "%s?%s" % (url, hash)
 
 
 class UIService(Service):
-    def on_activate(self):
-        addr, port = self.get_service_address()
-        self.logger.info("Running HTTP server at http://%s:%s/",
-                         addr, port)
-        app = tornado.web.Application([
-            (r"^.*$", UIHandler, {
-                "index": "ui/login/"
+    def get_handlers(self):
+        """
+        Initialize additional application handlers
+        """
+        return super(UIService, self).get_handlers() + [
+            (r"^/$", UIHandler, {
+                "name": self.name
             })
-        ])
-        http_server = tornado.httpserver.HTTPServer(app)
-        http_server.listen(port, addr)
+        ]
