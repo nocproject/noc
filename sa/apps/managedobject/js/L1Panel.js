@@ -65,13 +65,11 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                         {
                             text: "Link",
                             dataIndex: "link",
-                            renderer: function(v) {
-                                if(v) {
-                                    return v.label;
-                                } else {
-                                    return "";
-                                }
-                            }
+                            renderer: function(value, meta, record) {
+                                var v = value ? value.label : "...";
+                                return "<a href='#' class='noc-clickable-cell' title='Click to change...'>" + v + "</a>";
+                            },
+                            onClick: me.onLinkClick
                         },
                         {
                             text: "Profile",
@@ -113,16 +111,13 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                         }
                     ],
                     viewConfig: {
-                        getRowClass: Ext.bind(me.getRowClass, me)
-                    },
-                    plugins: gridPlugins,
-                    listeners: {
-                        scope: me,
-                        select: function(panel, record) {
-                            me.app.metricsCurrentRecord = record;
-                            me.app.metricsButton.setDisabled(false);
+                        getRowClass: Ext.bind(me.getRowClass, me),
+                        listeners: {
+                            scope: me,
+                            cellclick: me.onCellClick
                         }
-                    }
+                    },
+                    plugins: gridPlugins
                 }
             ]
         });
@@ -165,5 +160,28 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                 NOC.error("Failed to set data");
             }
         });
+    },
+
+    onLinkClick: function(record) {
+        var me = this;
+        Ext.create("NOC.sa.managedobject.LinkForm", {
+            title: Ext.String.format("Link {0} with", record.get("name")),
+            app: me.app,
+            ifaceId: record.get("id"),
+            ifName: record.get("name"),
+            isLinked: !!record.get("link"),
+            linkId: record.get("link") ? record.get("link").id : null
+        });
+    },
+
+    onCellClick: function(view, cell, cellIndex, record, row,
+                          rowIndex, e) {
+        var me = this;
+        if(e.target.tagName == "A") {
+            var header = view.panel.headerCt.getHeaderAtIndex(cellIndex);
+            if(header.onClick) {
+                header.onClick.apply(me, [record]);
+            }
+        }
     }
 });

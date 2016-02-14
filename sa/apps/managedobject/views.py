@@ -739,3 +739,105 @@ class ManagedObjectApplication(ExtModelApplication):
         else:
             args = {}
         return self.submit_slow_op(request, execute, o, a, args)
+
+    @view(url="^link/fix/(?P<link_id>[0-9a-f]{24})/$",
+          method=["POST"], access="change_link")
+    def api_fix_links(self, request, link_id):
+        def get_mac(arp, ip):
+            for r in arp:
+                if r["ip"] == ip:
+                    return r["mac"]
+            return None
+
+        def get_interface(macs, mac):
+            for m in macs:
+                if m["mac"] == mac:
+                    return m["interfaces"][0]
+            return None
+
+        l = self.get_object_or_404(Link, id=link_id)
+        if len(l.interfaces) != 2:
+            self.logger.error("Cannot fix link: Not P2P")
+            return False
+        mo1 = l.interfaces[0].managed_object
+        mo2 = l.interfaces[1].managed_object
+        if mo1.id == mo2.id:
+            self.logger.error("Cannot fix circular links")
+            return False
+        # Ping each other
+        self.logger.info("[%s] Pinging %s", mo1.name, mo2.address)
+        r1 = mo1.scripts.ping(address=mo2.address)
+        if not r1["success"]:
+            self.logger.error("Failed to ping %s", mo2.name)
+        self.logger.info("[%s] Pinging %s", mo2.name, mo1.address)
+        r2 = mo2.scripts.ping(address=mo1.address)
+        if not r2["success"]:
+            self.logger.error("Failed to ping %s", mo1.name)
+        # Get ARPs
+        mac2 = get_mac(mo1.scripts.get_arp(), mo2.address)
+        if not mac2:
+            self.logger.error("[%s] ARP cache is not filled properly", mo1.name)
+            return False
+        self.logger.info("[%s] MAC=%s", mo2.name, mac2)
+        mac1 = get_mac(mo2.scripts.get_arp(), mo1.address)
+        if not mac1:
+            self.logger.error("[%s] ARP cache is not filled properly", mo2.name)
+            return False
+        self.logger.info("[%s] MAC=%s", mo1.name, mac1)
+        # Get MACs
+        r1 = mo1.scripts.get_mac_address_table(mac=mac2)
+        self.logger.info("[%s] MACS=%s", mo1.name, r1)
+        r2 = mo2.scripts.get_mac_address_table(mac=mac1)
+        self.logger.info("[%s] MACS=%s", mo2.name, r2)
+        # mo1: Find mo2
+        i1 = get_interface(r1, mac2)
+        if not i1:
+            self.logger.error("[%s] Cannot find %s in the MAC address table",
+                              mo1.name, mo2.name)
+        # mo2: Find mo1
+        i2 = get_interface(r2, mac1)
+        if not i1:
+            self.logger.error("[%s] Cannot find %s in the MAC address table",
+                              mo2.name, mo1.name)
+        self.logger.info("%s:%s -- %s:%s", mo1.name, i1, mo2.name, i2)
+        if l.interfaces[0].name == i1 and l.interfaces[1].name == i2:
+            self.logger.inf("Linked properly")
+            return True
+        # Get interfaces
+        try:
+            iface1 = Interface.objects.get(
+                managed_object=mo1.id,
+                name=i1
+            )
+        except Interface.DoesNotExist:
+            self.logger.error("[%s] Interface not found: %s",
+                              mo1.name, i1)
+            return False
+        try:
+            iface2 = Interface.objects.get(
+                managed_object=mo2.id,
+                name=i2
+            )
+        except Interface.DoesNotExist:
+            self.logger.error("[%s] Interface not found: %s",
+                              mo2.name, i2)
+            return False
+        # Check we can relink
+        if_ids = [i.id for i in l.interfaces]
+        if iface1.id not in if_ids and iface1.is_linked:
+            self.logger.error(
+                "[%s] %s is already linked",
+                mo1.name, i1
+            )
+            return False
+        if iface2.id not in if_ids and iface2.is_linked:
+            self.logger.error(
+                "[%s] %s is already linked",
+                mo2.name, i2
+            )
+            return False
+        # Relink
+        self.logger.info("Relinking")
+        l.delete()
+        iface1.link_ptp(iface2, method="macfix")
+        return True
