@@ -261,3 +261,35 @@ class SegmentTopology(BaseTopology):
             else:
                 # @todo: Calculate new positions
                 pass
+
+    def get_object_uplinks(self):
+        """
+        Returns a dict of <object id> -> [<uplink object id>, ...]
+        """
+        uplinks = self.get_uplinks()
+        r = {}
+        for o in self.G.node:
+            if o in uplinks:
+                continue
+            ups = set()
+            for u in uplinks:
+                paths = list(nx.all_simple_paths(self.G, o, u))
+                if paths:
+                    ups |= set(p[1] for p in paths)
+            r[o] = sorted(ups)
+        return r
+
+
+def update_uplinks(seg_id):
+    from noc.inv.models.networksegment import NetworkSegment
+    from noc.inv.models.objectuplink import ObjectUplink
+
+    try:
+        segment = NetworkSegment.objects.get(id=seg_id)
+    except NetworkSegment.DoesNotExist:
+        return
+    st = SegmentTopology(segment)
+    st.load()
+    ObjectUplink.update_uplinks(
+        st.get_object_uplinks()
+    )
