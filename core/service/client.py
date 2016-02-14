@@ -22,7 +22,7 @@ from noc.core.service.catalog import ServiceCatalog
 
 
 # Connection time
-CONNECT_TIMEOUT = 1
+CONNECT_TIMEOUT = 3
 # Total request time
 REQUEST_TIMEOUT = 3600
 #
