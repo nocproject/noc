@@ -98,9 +98,14 @@ class ActiveAlarm(nosql.Document):
                     "%s has decreased alarm severity by %s" % (
                         user, delta))
         elif severity:
-            self.severity = severity.severity
-            self.log_message(
-                "%s has changed severity to %s" % (user, severity.name))
+            if type(severity) in (int, long, float):
+                self.severity = int(severity)
+                self.log_message(
+                    "%s has changed severity to %s" % (user, severity))
+            else:
+                self.severity = severity.severity
+                self.log_message(
+                    "%s has changed severity to %s" % (user, severity.name))
         self._change_root_severity()
         self.save()
 
