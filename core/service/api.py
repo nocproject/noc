@@ -45,7 +45,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
                 id=id
             )
             raise tornado.gen.Return()
-        api = self.api_class(self.service, self.request)
+        api = self.api_class(self.service, self.request, self)
         h = getattr(api, method)
         if not getattr(h, "api", False):
             self.api_error(
@@ -125,10 +125,21 @@ class API(object):
     # API name
     name = None
 
-    def __init__(self, service, request):
+    def __init__(self, service, request, handler):
         self.service = service
         self.logger = service.logger
         self.request = request
+        self.handler = handler
+
+    @classmethod
+    def get_methods(cls):
+        """
+        Returns a list of available API methods
+        """
+        return [
+            m for m in dir(cls)
+            if getattr(getattr(cls, m), "api", False)
+        ]
 
 
 def api(method):
