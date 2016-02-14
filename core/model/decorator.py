@@ -6,11 +6,12 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
+## Third-party modules
 from django.db.models import signals as django_signals
+from mongoengine import signals as mongo_signals
 
 
-def _on_save_handler(sender, instance, *args, **kwargs):
+def _on_model_save_handler(sender, instance, *args, **kwargs):
     if hasattr(instance, "initial_data"):
         instance.changed_fields = set(
             f for f in instance.initial_data
@@ -19,6 +20,10 @@ def _on_save_handler(sender, instance, *args, **kwargs):
     else:
         instance.changed_fields = set()
     instance.on_save()
+
+
+def _on_document_save_handler(sender, document, *args, **kwargs):
+    document.on_save()
 
 
 def on_save(cls):
@@ -36,15 +41,25 @@ def on_save(cls):
            ...
     """
     if hasattr(cls, "on_save"):
-        django_signals.post_save.connect(
-            _on_save_handler,
-            sender=cls
-        )
+        if isinstance(cls._meta, dict):
+            mongo_signals.post_save.connect(
+                _on_document_save_handler,
+                sender=cls
+            )
+        else:
+            django_signals.post_save.connect(
+                _on_model_save_handler,
+                sender=cls
+            )
     return cls
 
 
-def _on_delete_handler(sender, instance, *args, **kwargs):
+def _on_model_delete_handler(sender, instance, *args, **kwargs):
     instance.on_delete()
+
+
+def _on_document_delete_handler(sender, document, *args, **kwargs):
+    document.on_delete()
 
 
 def on_delete(cls):
@@ -61,10 +76,16 @@ def on_delete(cls):
            ...
     """
     if hasattr(cls, "on_delete"):
-        django_signals.pre_delete.connect(
-            _on_delete_handler,
-            sender=cls
-        )
+        if isinstance(cls._meta, dict):
+            mongo_signals.pre_delete.connect(
+                _on_document_delete_handler,
+                sender=cls
+            )
+        else:
+            django_signals.pre_delete.connect(
+                _on_model_delete_handler,
+                sender=cls
+            )
     return cls
 
 
