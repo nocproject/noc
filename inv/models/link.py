@@ -131,9 +131,11 @@ class Link(Document):
 
     def on_save(self):
         self.update_pop_links()
+        self.update_segments()
 
     def on_delete(self):
         self.update_pop_links()
+        self.update_segments()
 
     def update_pop_links(self):
         for i in self.interfaces:
@@ -148,6 +150,17 @@ class Link(Document):
                         20,
                         pop_id=pop.id
                     )
+
+    def update_segments(self):
+        segments = set()
+        for i in self.interfaces:
+            segments.add(i.managed_object.segment.id)
+        for s in segments:
+            call_later(
+                "noc.core.topology.segment.update_uplinks",
+                60,
+                segment_id=s
+            )
 
 
 ##
