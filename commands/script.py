@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ./noc script
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,7 +10,8 @@
 import os
 import argparse
 import pprint
-import logging
+import re
+import json
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_int
@@ -71,6 +72,8 @@ class Command(BaseCommand):
         obj = self.get_object(object_name[0])
         # Build credentials
         credentials = self.get_credentials(obj)
+        # Parse arguments
+        args = self.get_script_args(arguments)
         # Load script
         script = script[0]
         if "." not in script:
@@ -92,6 +95,7 @@ class Command(BaseCommand):
             service=service,
             credentials=credentials,
             capabilities=caps,
+            args=args,
             version=None,  #@todo: Fix
             timeout=3600,
             name=script
@@ -143,6 +147,46 @@ class Command(BaseCommand):
                 2: "ssh"
             }[obj.scheme]
         return credentials
+
+    rx_arg = re.compile(
+        r"^(?P<name>[a-zA-Z][a-zA-Z0-9_]*)(?P<op>:?=@?)(?P<value>.*)$"
+    )
+
+    def get_script_args(self, arguments):
+        """
+        Parse arguments and return script's
+        """
+        def read_file(path):
+            if not os.path.exists(path):
+                self.die("Cannot open file '%s'" % path)
+            with open(path) as f:
+                return f.read()
+
+        def parse_json(j):
+            try:
+                return json.loads(j)
+            except ValueError, why:
+                self.die("Failed to parse JSON: %s" % why)
+
+        args = {}
+        for a in arguments:
+            match = self.rx_arg.match(a)
+            if not match:
+                self.die("Malformed parameter: '%s'" % a)
+            name, op, value = match.groups()
+            if op == "=":
+                # Set parameter
+                args[name] = value
+            elif op == "=@":
+                # Read from file
+                args[name] = read_file(value)
+            elif op == ":=":
+                # Set to JSON value
+                args[name] = parse_json(value)
+            elif op == ":=@":
+                # Set to JSON value from a file
+                args[name] = parse_json(read_file(value))
+        return args
 
 
 class ServiceStub(object):
