@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.managedobject.InterfacePanel");
 Ext.define("NOC.sa.managedobject.InterfacePanel", {
     extend: "NOC.core.ApplicationPanel",
     app: null,
-    autoScroll: false,
+    autoScroll: true,
     historyHashPrefix: "interfaces",
 
     initComponent: function() {

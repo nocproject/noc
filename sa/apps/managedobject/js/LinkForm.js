@@ -172,10 +172,13 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
                 if(data) {
                     NOC.info("Fixed");
                     self.close();
-                    me.app.app.onRefresh();
+                    me.app.onRefresh();
                 } else {
                     NOC.info("Failed to fix");
                 }
+            },
+            failure: function() {
+                NOC.error("Failed to fix");
             }
         });
     },
