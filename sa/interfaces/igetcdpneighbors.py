@@ -20,6 +20,8 @@ class IGetCDPNeighbors(Interface):
             # Local interface
             "local_interface": InterfaceNameParameter(),
             # Remote interface
-            "remote_interface": StringParameter()
+            "remote_interface": StringParameter(),
+            # Remote IP
+            "remote_ip": IPParameter(required=False)
         }))
     })
