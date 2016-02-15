@@ -1,0 +1,9 @@
+---
+- name: Enabling Grafana
+  lineinfile: dest=/etc/rc.conf regexp=^grafana2_enable= line=grafana2_enable=\"YES\"
+
+- name: Setting Grafana conf file
+  lineinfile: dest=/etc/rc.conf regexp=^grafana2_conf= line=grafana2_conf=\"{{ noc_root }}/var/etc/grafana/grafana.ini\"
+
+- name: Install Grafana
+  pkgng: name="grafana2" state=present
