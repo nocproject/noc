@@ -527,6 +527,9 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 scope: me,
                                 change: function(combo, newValue, oldValue, eOpts) {
                                     combo.nextSibling().setHidden(newValue !== "s");
+                                },
+                                afterrender: function(combo, eOpts) {
+                                    combo.nextSibling().setHidden(combo.value !== "s");
                                 }
                             }
                         },
@@ -553,6 +556,9 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 scope: me,
                                 change: function(combo, newValue, oldValue, eOpts) {
                                     combo.nextSibling().setHidden(newValue !== "s");
+                                },
+                                afterrender: function(combo, eOpts) {
+                                    combo.nextSibling().setHidden(combo.value !== "s");
                                 }
                             }
                         },
