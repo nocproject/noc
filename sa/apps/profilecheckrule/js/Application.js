@@ -27,20 +27,21 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: "Profile Check Rule Name",
                     dataIndex: "name",
                     width: 200
                 },
                 {
                     text: "Blt",
                     dataIndex: "is_builtin",
-                    width: 50,
-                    renderer: NOC.render.Bool
+                    width: 40,
+                    renderer: NOC.render.Bool,
+                    align: "center"
                 },
                 {
                     text: "Pref.",
                     dataIndex: "preference",
-                    width: 50,
+                    width: 40,
                     align: "right"
                 },
                 {
@@ -51,17 +52,18 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 {
                     text: "Parameter",
                     dataIndex: "param",
-                    width: 250
+                    width: 180
                 },
                 {
                     text: "Match",
                     dataIndex: "match_method",
-                    width: 50
+                    width: 50,
+                    align: "center"
                 },
                 {
                     text: "Value",
                     dataIndex: "value",
-                    width: 250
+                    width: 200
                 },
                 {
                     text: "Action",
@@ -71,6 +73,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 {
                     text: "Profile",
                     dataIndex: "profile",
+                    flex: 1,
                     width: 150
                 }
             ],
@@ -127,7 +130,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                             xtype: "textfield",
                             fieldLabel: "Parameter",
                             allowBlank: false,
-                            uiStyle: "medium"
+                            uiStyle: "large"
                         },
                         {
                             name: "match_method",
@@ -176,7 +179,8 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                             name: "profile",
                             xtype: "main.ref.profile.LookupField",
                             fieldLabel: "Profile",
-                            allowBlank: false
+                            allowBlank: false,
+                            uiStyle: "medium"
                         }
                     ]
                 }
