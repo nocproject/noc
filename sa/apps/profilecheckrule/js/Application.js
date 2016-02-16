@@ -33,6 +33,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 },
                 {
                     text: "Blt",
+                    // tooltip: "Built-in", - broken in ExtJS 5.1
                     dataIndex: "is_builtin",
                     width: 40,
                     renderer: NOC.render.Bool,
@@ -40,6 +41,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 },
                 {
                     text: "Pref.",
+                    // tooltip: "Preference", - broken in ExtJS 5.1
                     dataIndex: "preference",
                     width: 40,
                     align: "right"
@@ -89,7 +91,8 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 {
                     xtype: "displayfield",
                     name: "uuid",
-                    fieldLabel: "UUID"
+                    fieldLabel: "UUID",
+                    disabled: true
                 },
                 {
                     name: "description",
