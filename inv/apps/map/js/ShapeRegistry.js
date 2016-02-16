@@ -12,17 +12,37 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
 
     getShape: function (name) {
         var me = this,
-            sc,
-            n = name.replace("/", ".");
+            sc, sv,
+            n = name.replace("/", ".").replace(" ", "_"),
+            typeName = "noc." + n,
+            registerClass = function (name, cls) {
+                var sr = joint.shapes,
+                    tns = name.split(".").reverse(),
+                    v;
+                for (;;) {
+                    v = tns.pop();
+                    if (tns.length) {
+                        if (sr[v] === undefined) {
+                            sr[v] = {};
+                        }
+                        sr = sr[v];
+                    } else {
+                        sr[v] = cls;
+                        break;
+                    }
+                }
+            };
+
         sc = me.shapes[name];
         if (sc) {
             return sc;
         }
+        // Shape class
         sc = joint.shapes.basic.Generic.extend({
             markup: '<g class="rotatable"><g class="scalable"><image/></g><text/></g>',
             defaults: joint.util.deepSupplement({
                 //type: "basic." + n,
-                type: "basic.Generic.nocobject",
+                type: typeName,
                 size: {
                     width: 50,
                     height: 50
@@ -35,20 +55,29 @@ Ext.define("NOC.inv.map.ShapeRegistry", {
                     },
                     text: {
                         text: 'New Object',
-                        fill: 'black',
+                        fill: '#000000',
                         ref: 'image',
-                        'ref-x':.5,
+                        'ref-x': .5,
                         'text-anchor': 'middle',
-                        'ref-y':.99
+                        'ref-y': .99
                     }
                 }
             }, joint.shapes.basic.Generic.prototype.defaults),
-            setFilter: function(filter) {
+            setFilter: function (filter) {
                 var me = this;
                 me.attr("image/filter", "url(#" + filter + ")");
             }
         });
         me.shapes[name] = sc;
+        registerClass(typeName, sc);
+        // Shape view
+        sv = joint.dia.ElementView.extend({
+            getStrokeBBox: function(el) {
+                el = el || V(this.el).find("image")[0].node;
+                return joint.dia.ElementView.prototype.getStrokeBBox.apply(this, [el]);
+            }
+        });
+        registerClass(typeName + "View", sv);
         return sc;
     }
 });
