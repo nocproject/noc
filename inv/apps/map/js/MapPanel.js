@@ -240,13 +240,13 @@ Ext.define("NOC.inv.map.MapPanel", {
                     text: data.name
                 },
                 image: {
-                    width: data.width,
-                    height: data.height
+                    width: data.shape_width,
+                    height: data.shape_height
                 }
             },
             size: {
-                width: data.width,
-                height: data.height
+                width: data.shape_width,
+                height: data.shape_height
             },
             data: {
                 type: data.type,
@@ -254,7 +254,6 @@ Ext.define("NOC.inv.map.MapPanel", {
             }
         });
         me.objectNodes[data.id] = node;
-        console.log("node>", node);
         me.objectsList.push(data.id);
         return node;
     },
