@@ -347,6 +347,8 @@ class MapApplication(ExtApplication):
                         q(o)
                     )
                 ]
+        if not query:
+            return {}
         query = ";".join(query)
         client = tornado.httpclient.HTTPClient()
         response = client.fetch(
