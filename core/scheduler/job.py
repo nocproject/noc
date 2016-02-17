@@ -96,7 +96,7 @@ class Job(object):
         if self.dereference():
             if self.can_run():
                 try:
-                    data = self.attrs[self.ATTR_DATA] or {}
+                    data = self.attrs.get(self.ATTR_DATA) or {}
                     result = self.handler(**data)
                     if tornado.gen.is_future(result):
                         # Wait for future
