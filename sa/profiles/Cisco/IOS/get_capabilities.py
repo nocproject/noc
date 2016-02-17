@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOS.get_capabilities_ex
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -52,6 +52,6 @@ class Script(BaseScript):
         """
         r = self.cli("show spanning-tree summary")
         if "No spanning tree instance exists" in r \
-        or "No spanning tree instance exists" in r:
+        or "No spanning tree instances exist" in r:
             return False
         return True
