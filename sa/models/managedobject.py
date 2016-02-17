@@ -403,6 +403,16 @@ class ManagedObject(Model):
         self.ensure_discovery_jobs()
         # Rebuild selector cache
         SelectorCache.refresh()
+        #
+        if (
+            not self.initial_data["id"] is None and
+            "is_managed" in self.changed_fields and
+            not self.is_managed
+        ):
+            # Clear alarms
+            from noc.fm.models.activealarm import ActiveAlarm
+            for aa in ActiveAlarm.objects.filter(managed_object=self.id):
+                aa.clear_alarm("Management is disabled")
 
     def on_delete(self):
         # Rebuild selector cache
