@@ -44,3 +44,14 @@ class Script(BaseScript):
         """
         r = self.cli("show ethernet oam summary")
         return "% OAM is not enabled" not in r  # @todo:  not tested
+
+    @false_on_cli_error
+    def has_stp(self):
+        """
+        Check box has stp enabled
+        """
+        r = self.cli("show spanning-tree summary")
+        if "No spanning tree instance exists" in r \
+        or "No spanning tree instance exists" in r:
+            return False
+        return True
