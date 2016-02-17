@@ -25,7 +25,7 @@ class VLANCheck(DiscoveryCheck):
                 "No vc domain. Skipping"
             )
             return
-        result = self.object.get_vlans()
+        result = self.object.scripts.get_vlans()
         for v in result:
             self.submit(
                 vc_domain=self.object.vc_domain,
