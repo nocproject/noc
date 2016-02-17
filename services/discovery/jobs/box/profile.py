@@ -30,7 +30,7 @@ class ProfileCheck(DiscoveryCheck):
     name = "profile"
 
     def handler(self):
-        self.logger.info("Checking profile")
+        self.logger.info("Checking profile accordance")
         profile = self.get_profile()
         if not profile:
             return  # Cannot detect
@@ -60,7 +60,7 @@ class ProfileCheck(DiscoveryCheck):
                                          profile, rname)
                         # @todo: process MAYBE rule
                         return profile
-        self.logger.info("Cannot find profile")
+        self.logger.info("Cannot find profile in \"Profile Check Rules\"")
         return None
 
     def get_rules(self):
@@ -82,9 +82,9 @@ class ProfileCheck(DiscoveryCheck):
         with cache_lock:
             if (cached_time is not None and
                     cached_time + CACHED_RULE_TTL > now):
-                self.logger.info("Using cached rules")
+                self.logger.info("Using cached \"Profile Check rules\"")
                 return cached_rules
-            self.logger.info("Compiling rules")
+            self.logger.info("Compiling \"Profile Check rules\"")
             d = {}  # preference -> (method, param) -> [rule, ..]
             for r in ProfileCheckRule.objects.all().order_by("preference"):
                 if r.preference not in d:
