@@ -21,7 +21,7 @@ class Script(BaseScript):
     """
     Retrieve data for topology discovery
     """
-    name = "Generic.get_discovery_id"
+    name = "Generic.get_metrics"
     interface = IGetMetrics
     requires = []
 
