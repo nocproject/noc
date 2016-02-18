@@ -2,13 +2,13 @@
 ##----------------------------------------------------------------------
 ## Topology received from external NRI system
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import IntField, ObjectIdField
+from mongoengine.fields import IntField, ObjectIdField, StringField
 
 
 class ExtNRILink(Document):
@@ -27,24 +27,15 @@ class ExtNRILink(Document):
         "allow_inheritance": False,
         "indexes": ["src_mo", "dst_mo"]
     }
-
-    # Source managed object
+    # Source system
+    system = StringField()
+    # Source managed object (NOC's ManagedObject.id)
     src_mo = IntField()
-    # Source managed object's chassis number, starting with 1
-    # 1 for single-chassis system
-    src_chassis = IntField(default=1)
-    # Source slot number, starting with 0
-    src_slot = IntField(default=0)
-    # Source port number, starting with 1
-    src_port = IntField(default=1)
-    # Destination managed object
+    # Source interface name in remote system notation
+    src_interface = StringField()
+    # Destination managed object (NOC's ManagedObject.id)
     dst_mo = IntField()
-    # Destination managed object's chassis number, starting with 1
-    # 1 for single-chassis system
-    dst_chassis = IntField(default=1)
-    # Destination slot number
-    dst_slot = IntField(default=0)
-    # Destination port number
-    dst_port = IntField(default=1)
+    # Source interface name in remote system notation
+    dst_interface = StringField()
     # Created link id
     link = ObjectIdField()

@@ -19,14 +19,11 @@ class LinkLoader(BaseLoader):
     model = ExtNRILink
     fields = [
         "id",
+        "source",
         "src_mo",
-        "src_chassis",
-        "src_slot",
-        "src_port",
+        "src_interface",
         "dst_mo",
-        "dst_chassis",
-        "dst_slot",
-        "dst_port",
+        "dst_interface"
     ]
 
     mapped_fields = {
