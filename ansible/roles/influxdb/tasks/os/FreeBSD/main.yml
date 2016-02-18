@@ -4,3 +4,9 @@
 
 - name: Install InfluxDB
   pkgng: name="influxdb" state=present
+
+- name: Create /var/run/influxdb directory
+  file: path=/var/run/influxdb state=directory owner={{influxdb_user}} mode=0755
+
+- name: Create /var/log/influxdb directory
+  file: path=/var/log/influxdb state=directory owner={{influxdb_user}} mode=0755
