@@ -16,6 +16,15 @@
         {
             "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
             "value_re": "^CISCO-CONFIG-MAN-MIB::ciscoConfigManMIBNotificationPrefix$"
+        },
+        {
+            "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventConfigDestination\\.\\d+$",
+            "value_re": "^startup$"
+        },
+        {
+            "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventConfigSource\\.\\d+$",
+            "value_re": "^running$"
         }
+
     ]
 }
