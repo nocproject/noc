@@ -17,5 +17,8 @@ class IPing(Interface):
     vrf = StringParameter(required=False)
     returns = DictParameter(attrs={
         "success": IntParameter(),
-        "count": IntParameter()
+        "count": IntParameter(),
+        "min": FloatParameter(required=False),
+        "avg": FloatParameter(required=False),
+        "max": FloatParameter(required=False)
     })

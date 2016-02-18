@@ -12,6 +12,7 @@ from base import *
 
 class IGetARP(Interface):
     vrf = StringParameter(required=False)
+    interface = InterfaceNameParameter(required=False)
     returns = ListOfParameter(element=DictParameter(attrs={
         "ip": IPv4Parameter(),
         # NONE for incomplete entries
