@@ -563,5 +563,5 @@ class BaseLoader(object):
             elif o and n is None:
                 dump("-", o)
             else:
-                dump("-", o)
-                dump("+", n)
+                dump("/", o)
+                dump("\\", n)
