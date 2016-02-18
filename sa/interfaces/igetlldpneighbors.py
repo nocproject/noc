@@ -54,7 +54,9 @@ class IGetLLDPNeighbors(Interface):
             # LldpPortIdSubtype TC, interfaceName(5)
             "remote_port_subtype": IntParameter(default=5),
             "remote_port": MACAddressParameter(accept_bin=False) | IPv4Parameter() | StringParameter(),
+            "remote_port_description": StringParameter(required=False),
             "remote_system_name": StringParameter(required=False),
+            "remote_system_description": StringParameter(required=False),
             # LldpSystemCapabilitiesMap TC bitmask
             "remote_capabilities": IntParameter(default=0),
         }))
