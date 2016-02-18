@@ -45,43 +45,53 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 {
                     text: "Level",
                     dataIndex: "level",
-                    width: 50,
+                    width: 60,
                     align: "right"
                 },
                 {
                     text: "Ping",
                     dataIndex: "enable_ping",
-                    width: 50,
+                    width: 60,
                     renderer: function(value, meta, record) {
                         var v = NOC.render.Bool(value);
                         if(value) {
                             v += " " + record.get("ping_interval");
                         }
                         return v
-                    }
+                    },
+                    align: "center"
+                },
+                {
+                    text: "Sync IPAM",
+                    dataIndex: "sync_ipam",
+                    width: 60,
+                    renderer: NOC.render.Bool,
+                    align: "center"
                 },
                 {
                     text: "Box",
                     dataIndex: "enable_box_discovery",
-                    width: 50,
-                    renderer: NOC.render.Bool
+                    width: 60,
+                    renderer: NOC.render.Bool,
+                    align: "center"
                 },
                 {
                     text: "Periodic",
                     dataIndex: "enable_periodic_discovery",
-                    width: 50,
+                    width: 60,
                     renderer: function(value, meta, record) {
                         var v = NOC.render.Bool(value);
                         if(value) {
                             v += " " + record.get("periodic_discovery_interval");
                         }
                         return v
-                    }
+                    },
+                    align: "center"
                 },
                 {
                     text: "Objects",
                     dataIndex: "mo_count",
-                    width: 50,
+                    width: 60,
                     align: "right",
                     sortable: false
                 }
