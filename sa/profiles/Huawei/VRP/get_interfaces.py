@@ -19,7 +19,7 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_interfaces"
     interface = IGetInterfaces
 
-    rx_iface_sep = re.compile(r"^(\S+) current state\s*:\s+",
+    rx_iface_sep = re.compile(r"^(?:\s)?(\S+) current state\s*:\s+",
                               re.MULTILINE)
     rx_line_proto = re.compile(
         r"Line protocol current state : (?P<o_state>UP|DOWN)",
