@@ -177,21 +177,23 @@ class Profile(BaseProfile):
         else:
             try:
                 if interface is not None:
-                    objects = script.cli_object_stream(
-                        ("show ports %s description" % interface),
-                        parser=self.parse_interface,
-                        cmd_next="n", cmd_stop="q")
+                    objects = script.cli(
+                        "show ports %s description" % interface,
+                        obj_parser=self.parse_interface,
+                        cmd_next="n", cmd_stop="q"
+                    )
                 else:
-                    objects = script.cli_object_stream(
-                        "show ports description", parser=self.parse_interface,
-                        cmd_next="n", cmd_stop="q")
+                    objects = script.cli(
+                        "show ports description",
+                        obj_parser=self.parse_interface,
+                        cmd_next="n", cmd_stop="q"
+                    )
             except:
                 objects = []
             # DES-3226S does not support `show ports description` command
             if objects == []:
-                script.reset_cli_queue()
-                objects = script.cli_object_stream(
-                    "show ports", parser=self.parse_interface,
+                objects = script.cli(
+                    "show ports", obj_parser=self.parse_interface,
                     cmd_next="n", cmd_stop="q")
         prev_port = None
         ports = []

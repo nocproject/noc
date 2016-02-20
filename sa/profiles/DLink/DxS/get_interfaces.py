@@ -8,6 +8,7 @@
  
 ## Python modules
 import re
+import functools
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -270,16 +271,19 @@ class Script(BaseScript):
         if ctp_enable:
             c = []
             try:
-                c = self.cli_object_stream(
-                "show loopdetect ports all", parser=self.parse_ctp,
-                cmd_next="n", cmd_stop="q")
+                c = self.cli(
+                    "show loopdetect ports all",
+                    obj_parser=self.parse_ctp,
+                    cmd_next="n", cmd_stop="q"
+                )
             except self.CLISyntaxError:
                 c = []
-            if c == []:
-                self.reset_cli_queue()
-                c = self.cli_object_stream(
-                "show loopdetect ports", parser=self.parse_ctp,
-                cmd_next="n", cmd_stop="q")
+            if not c:
+                c = self.cli(
+                    "show loopdetect ports",
+                    obj_parser=self.parse_ctp,
+                    cmd_next="n", cmd_stop="q"
+                )
             for i in c:
                 if i['state'] == 'Enabled':
                     ctp += [i['port']]
@@ -308,9 +312,11 @@ class Script(BaseScript):
             pass
         stp_enable = self.rx_stp_gs.search(c) is not None
         if stp_enable:
-            c = self.cli_object_stream(
-            "show stp ports", parser=self.parse_stp,
-            cmd_next="n", cmd_stop="q")
+            c = self.cli(
+                "show stp ports",
+                obj_parser=self.parse_stp,
+                cmd_next="n", cmd_stop="q"
+            )
             for i in c:
                 if i['state'] in ['Enabled', 'Yes']:
                     stp += [i['port']]
