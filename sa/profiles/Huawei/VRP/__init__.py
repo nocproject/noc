@@ -24,7 +24,7 @@ class Profile(BaseProfile):
         (r"^Squeeze flash:", "y\n\r")
     ]
     pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
-    pattern_syntax_error = r"^Error: "
+    pattern_syntax_error = r"^Error: | % Wrong parameter found at| % Unrecognized command found at"
     command_more = " "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "screen-length 0 temporary"
