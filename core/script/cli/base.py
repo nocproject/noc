@@ -9,9 +9,11 @@
 ## Python modules
 import socket
 import re
+import functools
 ## Third-party modules
 import tornado.gen
 import tornado.ioloop
+import tornado.iostream
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.text import replace_re_group
@@ -45,6 +47,7 @@ class CLI(object):
         self.buffer = ""
         self.is_started = False
         self.result = None
+        self.error = None
         self.pattern_table = None
         self.collected_data = []
         self.tos = tos
@@ -65,17 +68,27 @@ class CLI(object):
             )
         return self.iostream_class(s, self)
 
-    def execute(self, cmd):
+    def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None):
         self.buffer = ""
         self.command = cmd
         if not self.ioloop:
             self.logger.debug("Creating IOLoop")
             self.ioloop = tornado.ioloop.IOLoop()
-        self.ioloop.run_sync(self.submit)
-        return self.result
+        if obj_parser:
+            parser = functools.partial(
+                self.parse_object_stream,
+                obj_parser, cmd_next, cmd_stop
+            )
+        else:
+            parser = self.read_until_prompt
+        self.ioloop.run_sync(functools.partial(self.submit, parser))
+        if self.error:
+            raise self.error
+        else:
+            return self.result
 
     @tornado.gen.coroutine
-    def submit(self):
+    def submit(self, parser=None):
         # Create iostream and connect, when necessary
         if not self.iostream:
             self.iostream = self.create_iostream()
@@ -84,7 +97,12 @@ class CLI(object):
                 self.script.credentials.get("port", self.default_port)
             )
             self.logger.debug("Connecting %s", address)
-            yield self.iostream.connect(address)
+            try:
+                yield self.iostream.connect(address)
+            except tornado.iostream.StreamClosedError:
+                self.logger.debug("Connection refused")
+                self.error = self.CLIError("Connection refused")
+                raise tornado.gen.Return(None)
             self.logger.debug("Connected")
             yield self.iostream.startup()
         # Perform all necessary login procedures
@@ -95,12 +113,11 @@ class CLI(object):
         # Send command
         # @todo: encode to object's encoding
         self.send(self.command)
-        result = yield self.read_until_prompt()
+        parser = parser or self.read_until_prompt
+        self.result = yield parser()
         self.logger.debug("Command: %s\n%s",
-                          self.command.strip(), result)
-        # @todo: decode from object's encoding
-        self.result = result
-        raise tornado.gen.Return(result)
+                          self.command.strip(), self.result)
+        raise tornado.gen.Return(self.result)
 
     def cleaned_input(self, s):
         """
@@ -143,6 +160,84 @@ class CLI(object):
                     r = handler(matched, match)
                     if r is not None:
                         raise tornado.gen.Return(r)
+
+    @tornado.gen.coroutine
+    def parse_object_stream(self, parser=None,
+                            cmd_next=None, cmd_stop=None):
+        """
+        :param cmd:
+        :param command_submit:
+        :param parser: callable accepting buffer and returning
+                       (key, data, rest) or None.
+                       key - string with object distinguisher
+                       data - dict containing attributes
+                       rest -- unparsed rest of string
+        :param cmd_next: Sequence to go to the next page
+        :param cmd_stop: Sequence to stop
+        :return:
+        """
+        self.logger.debug("Parsing object stream")
+        objects = []
+        seen = set()
+        buffer = ""
+        repeats = 0
+        r_key = None
+        stop_sent = False
+        done = False
+        while not done:
+            r = yield self.iostream.read_bytes(self.BUFFER_SIZE,
+                                               partial=True)
+            self.logger.debug("Received: %r", r)
+            buffer = self.cleaned_input(buffer + r)
+            # Check for syntax error
+            if (self.profile.rx_pattern_syntax_error and
+                    self.profile.rx_pattern_syntax_error.search(self.buffer)):
+                self.error = self.script.CLISyntaxError(self.buffer)
+                break
+            # Then check for operaion error
+            if (self.profile.rx_pattern_operation_error and
+                    self.profile.rx_pattern_operation_error.search(self.buffer)):
+                self.error = self.script.CLIOperationError(self.buffer)
+                break
+            # Parse all possible objects
+            while buffer:
+                pr = parser(buffer)
+                if not pr:
+                    break  # No new objects
+                key, obj, buffer = pr
+                if key not in seen:
+                    seen.add(key)
+                    objects += [obj]
+                    repeats = 0
+                    r_key = None
+                elif r_key:
+                    if r_key == key:
+                        repeats += 1
+                        if repeats >= 3 and cmd_stop and not stop_sent:
+                            # Stop loop at final page
+                            # After 3 repeats
+                            self.logger.debug("Stopping stream. Sending %r" % cmd_stop)
+                            self.send(cmd_stop)
+                            stop_sent = True
+                else:
+                    r_key = key
+                    if cmd_next:
+                        self.logger.debug("Next screen. Sending %r" % cmd_next)
+                        self.send(cmd_next)
+            # Check for prompt
+            for rx, handler in self.pattern_table.iteritems():
+                offset = max(0, len(buffer) - self.MATCH_TAIL)
+                match = rx.search(buffer, offset)
+                if match:
+                    self.logger.debug("Match: %s", rx.pattern)
+                    matched = buffer[:match.start()]
+                    buffer = self.buffer[match.end():]
+                    r = handler(matched, match)
+                    if r is not None:
+                        self.logger.debug("Prompt matched")
+                        done = True
+                        break
+        raise tornado.gen.Return(objects)
 
     def send_pager_reply(self, data, match):
         """

@@ -558,7 +558,7 @@ class BaseScript(object):
 
     def cli(self, cmd, command_submit=None, bulk_lines=None,
             list_re=None, cached=False, file=None, ignore_errors=False,
-            nowait=False):
+            nowait=False, obj_parser=None, cmd_next=None, cmd_stop=None):
         """
         Execute CLI command and return result. Initiate cli session
         when necessary
@@ -581,26 +581,28 @@ class BaseScript(object):
                 return f.read()
         command_submit = command_submit or self.profile.command_submit
         stream = self.get_cli_stream()
-        r = stream.execute(cmd + command_submit)
-        # Check for syntax errors
-        if not ignore_errors:
-            # Check for syntax error
-            if (self.profile.rx_pattern_syntax_error and
-                    self.profile.rx_pattern_syntax_error.search(r)):
-                raise self.CLISyntaxError(r)
-            # Then check for operation error
-            if (self.profile.rx_pattern_operation_error and
-                    self.profile.rx_pattern_operation_error.search(r)):
-                raise self.CLIOperationError(r)
-        # Echo cancelation
-        if r[:4096].lstrip().startswith(cmd):
-            r = r.lstrip()
-            if r.startswith(cmd + "\n"):
-                # Remove first line
-                r = self.strip_first_lines(r.lstrip())
-            else:
-                # Some switches, like ProCurve do not send \n after the echo
-                r = r[len(cmd):]
+        r = stream.execute(cmd + command_submit, obj_parser=obj_parser,
+                           cmd_next=cmd_next, cmd_stop=cmd_stop)
+        if isinstance(r, basestring):
+            # Check for syntax errors
+            if not ignore_errors:
+                # Check for syntax error
+                if (self.profile.rx_pattern_syntax_error and
+                        self.profile.rx_pattern_syntax_error.search(r)):
+                    raise self.CLISyntaxError(r)
+                # Then check for operation error
+                if (self.profile.rx_pattern_operation_error and
+                        self.profile.rx_pattern_operation_error.search(r)):
+                    raise self.CLIOperationError(r)
+            # Echo cancelation
+            if r[:4096].lstrip().startswith(cmd):
+                r = r.lstrip()
+                if r.startswith(cmd + "\n"):
+                    # Remove first line
+                    r = self.strip_first_lines(r.lstrip())
+                else:
+                    # Some switches, like ProCurve do not send \n after the echo
+                    r = r[len(cmd):]
         # Convert to list of dicts if list_re is defined
         if list_re:
             x = []
