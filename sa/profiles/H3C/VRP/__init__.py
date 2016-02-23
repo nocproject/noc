@@ -4,13 +4,14 @@
 ## OS:     VRP
 ## Compatible: 3.1
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from noc.core.profile.base import BaseProfile
+
+## Python modules
 import re
+## NOC modules
+from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
@@ -20,6 +21,7 @@ class Profile(BaseProfile):
     command_more = " "
     config_volatile = ["^%.*?$"]
     command_disable_pager = ""
+    pattern_syntax_error = r"% Wrong parameter"
 
     def generate_prefix_list(self, name, pl, strict=True):
         p = "ip ip-prefix %s permit %%s" % name
@@ -38,6 +40,8 @@ class Profile(BaseProfile):
         if not match:
             return s
         return "%s%s" % ({"GE": "GigabitEthernet"}[match.group("type")], match.group("number"))
+
+    convert_mac = BaseProfile.convert_mac_to_huawei
 
     def clean_spaces(self, config):
         rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
