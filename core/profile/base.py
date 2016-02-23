@@ -148,6 +148,13 @@ class BaseProfile(object):
         v = mac.replace(":", "").lower()
         return "%s.%s.%s" % (v[:4], v[4:8], v[8:])
 
+    def convert_mac_to_huawei(self, mac):
+        """
+        Convert 00:11:22:33:44:55 style MAC-address to 0011.2233.4455
+        """
+        v = mac.replace(":", "").lower()
+        return "%s-%s-%s" % (v[:4], v[4:8], v[8:])
+
     def convert_mac_to_dashed(self, mac):
         """
         Convert 00:11:22:33:44:55 style MAC-address to 00-11-22-33-44-55
