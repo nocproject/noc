@@ -44,7 +44,7 @@ class Script(BaseScript):
         if interface:
             cmd = "show interfaces terse | match \"^%s\" " % interface
         else:
-            cmd = "show interfaces terse"
+            cmd = "show interfaces terse | except demux"
 
         for l in self.cli(cmd).splitlines():
             match = self.rx_interface_status.search(l)
