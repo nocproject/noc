@@ -40,7 +40,7 @@ class BasePortMapper(object):
                             n._platform_to_local[d["platform"]] = mm
                         elif not d["local"] and d["profile"]:
                             n._profile_to_remote[d["profile"]] = mm
-                        elif not d["local"] and d["plaform"]:
+                        elif not d["local"] and d["platform"]:
                             n._platform_to_remote[d["platform"]] = mm
             return n
 
