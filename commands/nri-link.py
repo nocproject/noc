@@ -191,7 +191,23 @@ class Command(BaseCommand):
         self.bulk_op(id, warn=None, error=msg)
 
     def handle_status(self):
-        pass
+        n_total = ExtNRILink.objects.count()
+        if not n_total:
+            self.stdout.write("No NRI links\n")
+            return
+        n_correct = ExtNRILink.objects.filter(link__exists=True).count()
+        n_warn = ExtNRILink.objects.filter(warn__exists=True).count()
+        n_error = ExtNRILink.objects.filter(error__exists=True).count()
+        n_ignored = n_total - n_correct - n_warn - n_error
+        self.stdout.write("\n".join([
+            "NRI Links:"
+            "Correct  : %d (%.2f%%)" % (n_correct, n_correct * 100.0 / n_total),
+            "Warnings : %d (%.2f%%)" % (n_warn, n_warn * 100.0 / n_total),
+            "Errors   : %d (%.2f%%)" % (n_error, n_error * 100.0 / n_total),
+            "Ignored  : %d (%.2f%%)" % (n_ignored, n_ignored * 100.0 / n_total),
+            "Total    : %d" % n_total
+        ]))
+        self.stdout.write("\n")
 
 
 if __name__ == "__main__":
