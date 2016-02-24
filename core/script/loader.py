@@ -53,10 +53,10 @@ class ScriptLoader(object):
                         )
                 ):
                     # Common script
-                    module_name = "sa.profiles.%s" % name
+                    module_name = "noc.sa.profiles.%s" % name
                 else:
                     # Generic script
-                    module_name = "sa.profiles.Generic.%s" % sn
+                    module_name = "noc.sa.profiles.Generic.%s" % sn
                 try:
                     sm = __import__(module_name, {}, {}, "*")
                     for n in dir(sm):
@@ -95,6 +95,7 @@ class ScriptLoader(object):
         """
         Scan all available scripts
         """
+        ns = set()
         # Load generic scripts
         generics = {}  # Name -> dependencies
         for path in glob.glob("sa/profiles/Generic/*.py"):
@@ -111,8 +112,8 @@ class ScriptLoader(object):
                         for s in match.group(1).split(",")
                         if s.strip()
                     ]
+                    ns.add("Generic.Host.%s" % gn)
         # Load common scripts
-        ns = set()
         profiles = set()
         for path in glob.glob("sa/profiles/*/*/*.py"):
             vendor, system, name = path.split(os.sep)[-3:]
