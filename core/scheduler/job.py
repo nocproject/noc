@@ -114,9 +114,9 @@ class Job(object):
             self.logger.info("Cannot dereference")
             status = self.E_DEREFERENCE
         self.duration = time.time() - self.start_time
-        self.logger.debug("Completed. Status: %s (%.2fms)",
-                          self.STATUS_MAP.get(status, status),
-                          self.duration * 1000)
+        self.logger.info("Completed. Status: %s (%.2fms)",
+                         self.STATUS_MAP.get(status, status),
+                         self.duration * 1000)
         # Schedule next run
         self.schedule_next(status)
 
