@@ -14,21 +14,14 @@ from mongoengine.fields import IntField, ObjectIdField, StringField
 class ExtNRILink(Document):
     """
     Links received from external NRI system via ETL.
-    When *xnri* topology discovery is enabled
+    When *nri* topology discovery is enabled
     interface discovery pre-populating links using this table
-
-    Profile's split_interface() method is used to convert
-    normalized interface name to (chassis, slot, port) form,
-    while join_interface method is used to merge them back
-    to normalized interface name
     """
     meta = {
         "collection": "noc.extnrilinks",
         "allow_inheritance": False,
-        "indexes": ["src_mo", "dst_mo"]
+        "indexes": ["src_mo", "dst_mo", "link"]
     }
-    # Source system
-    system = StringField()
     # Source managed object (NOC's ManagedObject.id)
     src_mo = IntField()
     # Source interface name in remote system notation
@@ -39,3 +32,7 @@ class ExtNRILink(Document):
     dst_interface = StringField()
     # Created link id
     link = ObjectIdField()
+    # Mapping warnings
+    warn = StringField(required=False)
+    # NRI link comparison errors
+    error = StringField(required=False)
