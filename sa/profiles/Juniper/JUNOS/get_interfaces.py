@@ -68,7 +68,7 @@ class Script(BaseScript):
             internal = self.internal_interfaces_olive
         else:
             internal = self.internal_interfaces
-        v = self.cli("show interfaces")
+        v = self.cli("show interfaces | except demux")
         for I in self.rx_phy_split.split(v)[1:]:
             L = self.rx_log_split.split(I)
             phy = L.pop(0)
