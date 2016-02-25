@@ -370,8 +370,8 @@ class MapApplication(ExtApplication):
             }
         ):
             r[if_ids[d["_id"]]] = {
-                "admin_status": d["admin_status"],
-                "oper_status": d["oper_status"]
+                "admin_status": d.get("admin_status", True),
+                "oper_status": d.get("oper_status", True)
             }
         # Apply metrics
         for qr in data["results"]:
