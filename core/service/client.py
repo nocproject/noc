@@ -19,6 +19,7 @@ import errno
 import tornado.httpclient
 ## NOC modules
 from noc.core.service.catalog import ServiceCatalog
+import httpclient  # Setup global httpclient
 
 
 # Connection time
