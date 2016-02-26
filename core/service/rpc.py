@@ -21,6 +21,7 @@ import tornado.httpclient
 from noc.lib.log import PrefixLoggerAdapter
 from client import (RPCError, RPCNoService, RPCHTTPError,
                     RETRY_SOCKET_ERRORS, RPCException, RPCRemoteError)
+import httpclient  # Setup global httpclient
 
 logger = logging.getLogger(__name__)
 
