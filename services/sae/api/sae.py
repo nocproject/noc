@@ -144,16 +144,7 @@ class SAEAPI(API):
         else:
             version = None
         # Build capabilities
-        oc = ObjectCapabilities.objects.filter(object=object_id).first()
-        if oc:
-            capabilities = {}
-            for c in oc.caps:
-                v = c.local_value if c.local_value is not None else c.discovered_value
-                if v is None:
-                    continue
-                capabilities[c.capability.name] = v
-        else:
-            capabilities = {}
+        capabilities = ObjectCapabilities.get_capabilities(object_id)
         return self.ObjectData(
             profile=profile_name,
             pool_id=pool_id,
