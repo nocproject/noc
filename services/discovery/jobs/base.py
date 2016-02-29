@@ -130,7 +130,7 @@ class DiscoveryCheck(object):
         if changes:
             kwargs = {}
             if async:
-                kwargs["write_concert"] = {"w": 0}
+                kwargs["write_concern"] = {"w": 0}
             obj.save(**kwargs)
         return changes
 
