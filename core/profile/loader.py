@@ -37,7 +37,10 @@ class ProfileLoader(object):
                 if not self.is_valid_name(name):
                     logger.error("Invalid profile name")
                     return None
-                module_name = "sa.profiles.%s" % name
+                if name == "Generic.Host":
+                    module_name = "noc.sa.profiles.Generic"
+                else:
+                    module_name = "noc.sa.profiles.%s" % name
                 try:
                     sm = __import__(module_name, {}, {}, "*")
                     for n in dir(sm):
