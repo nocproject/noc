@@ -2,14 +2,13 @@
 ##----------------------------------------------------------------------
 ## SDL Request handler
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import json
 ## Third-party modules
 import tornado.web
+import ujson
 
 
 class SDLRequestHandler(tornado.web.RequestHandler):
@@ -18,4 +17,4 @@ class SDLRequestHandler(tornado.web.RequestHandler):
 
     def get(self):
         self.set_header("Content-Type", "text/javascript")
-        self.write("var SDL = %s;" % json.dumps(self.sdl))
+        self.write("var SDL = %s;" % ujson.dumps(self.sdl))
