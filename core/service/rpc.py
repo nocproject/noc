@@ -8,7 +8,6 @@
 
 ## Python modules
 import itertools
-import json
 import logging
 import socket
 import random
@@ -17,6 +16,7 @@ import time
 import tornado.concurrent
 import tornado.gen
 import tornado.httpclient
+import ujson
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from client import (RPCError, RPCNoService, RPCHTTPError,
@@ -62,7 +62,7 @@ class RPCProxy(object):
         is_notify = "_notify" in kwargs
         if not is_notify:
             msg["id"] = tid
-        body = json.dumps(msg)
+        body = ujson.dumps(msg)
         # Get services
         services = self._service.config.get_service(
             self._service_name
@@ -106,7 +106,7 @@ class RPCProxy(object):
                 raise RPCException(why)
         if response:
             if not is_notify:
-                result = json.loads(response.body)
+                result = ujson.loads(response.body)
                 if result.get("error"):
                     self._logger.error("RPC call failed: %s",
                                        result["error"])

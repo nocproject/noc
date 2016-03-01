@@ -6,11 +6,11 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Import modules
-import json
+## Python modules
 import urllib
 ## Third-party modules
 import tornado.httpclient
+import ujson
 
 
 class InfluxDBClient(object):
@@ -27,7 +27,7 @@ class InfluxDBClient(object):
         url = "http://127.0.0.1:8086/query?db=noc&q=%s" % urllib.quote(query)
         client = tornado.httpclient.HTTPClient()
         response = client.fetch(url)
-        data = json.loads(response.body)
+        data = ujson.loads(response.body)
         for qr in data["results"]:
             if not qr:
                 continue

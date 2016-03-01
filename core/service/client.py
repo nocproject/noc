@@ -9,7 +9,6 @@
 ## Python modules
 import itertools
 from collections import defaultdict
-import json
 import logging
 import time
 import random
@@ -17,6 +16,7 @@ import socket
 import errno
 ## Third-party modules
 import tornado.httpclient
+import ujson
 ## NOC modules
 from noc.core.service.catalog import ServiceCatalog
 import httpclient  # Setup global httpclient
@@ -81,7 +81,7 @@ class RPCClient(object):
             headers = {}
             if calling_service:
                 headers[CALLING_SERVICE_HEADER] = calling_service
-            body = json.dumps(req)
+            body = ujson.dumps(req)
             # Build service candidates
             services = catalog.get_service(service).listen
             if len(services) < RETRIES:
@@ -126,7 +126,7 @@ class RPCClient(object):
                 raise RPCNoService(
                     "No active service %s found" % service
                 )
-            data = json.loads(response.body)
+            data = ujson.loads(response.body)
             if data.get("error"):
                 raise RPCRemoteError(data["error"])
             t = time.time() - t0
