@@ -82,8 +82,8 @@ class PingService(Service):
         Periodic task to send collected messages to fmwriter
         """
         if self.messages:
-            yield self.fmwriter.events(self.messages, _notify=True)
-            self.messages = []
+            messages, self.messages = self.messages, []
+            yield self.fmwriter.events(messages, _notify=True)
 
     @tornado.gen.coroutine
     def get_object_mappings(self):
