@@ -24,8 +24,12 @@ from noc.lib.solutions import get_solution
 class Scheduler(object):
     COLLECTION_BASE = "noc.schedules."
 
+    SUBMIT_THRESHOLD_FACTOR = 10
+    MAX_CHUNK_FACTOR = 4
+
     def __init__(self, name, pool=None, reset_running=False,
-                 max_threads=5, ioloop=None):
+                 max_threads=5, ioloop=None, check_time=1000,
+                 submit_threshold=None, max_chunk=None):
         """
         Create scheduler
         :param name: Unique scheduler name
@@ -34,6 +38,11 @@ class Scheduler(object):
             wait state on start
         :param max_threads: Thread executor threads
         :param ioloop: IOLoop instance
+        :param check_time: time in milliseconds to check for new jobs
+        :param max_chunk: Maximum amount of jobs which can be submitted
+            at one step
+        :param submit_threshold: Maximal executor queue length
+            when submitting of next chunk is allowed
         """
         self.logger = logging.getLogger("scheduler.%s" % name)
         self.name = name
@@ -48,6 +57,21 @@ class Scheduler(object):
         self.max_threads = max_threads
         self.executor = None
         self.run_callback = None
+        self.check_time = check_time
+        if submit_threshold:
+            self.submit_threshold = submit_threshold
+        else:
+            self.submit_threshold = max(
+                self.max_threads // self.SUBMIT_THRESHOLD_FACTOR,
+                1
+            )
+        if max_chunk:
+            self.max_chunk = max_chunk
+        else:
+            self.max_chunk = max(
+                self.max_threads // self.MAX_CHUNK_FACTOR,
+                2
+            )
 
     def run(self):
         """
@@ -62,7 +86,7 @@ class Scheduler(object):
         self.logger.info("Running scheduler")
         self.run_callback = tornado.ioloop.PeriodicCallback(
             self.run_pending,
-            1000,  # 1s
+            self.check_time,
             self.ioloop
         )
         self.run_callback.start()
@@ -141,11 +165,12 @@ class Scheduler(object):
         executor = self.get_executor()
         collection = self.get_collection()
         n = 0
-        while executor._work_queue.qsize() < self.max_threads:
+        # Check we can submit new jobs
+        while executor._work_queue.qsize() < self.submit_threshold:
             jobs = []
             jids = []
             n = 0
-            for job_data in self.iter_pending_jobs(self.max_threads):
+            for job_data in self.iter_pending_jobs(self.max_chunk):
                 try:
                     jcls = get_solution(job_data[Job.ATTR_CLASS])
                 except ImportError, why:
