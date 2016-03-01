@@ -2,16 +2,14 @@
 ##----------------------------------------------------------------------
 ## Service API handler
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import json
-import functools
 ## Third-party modules
 import tornado.web
 import tornado.gen
+import ujson
 ## NOC modules
 from noc.lib.debug import error_report
 
@@ -31,7 +29,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
     def post(self, *args, **kwargs):
         # Parse JSON
         try:
-            req = json.loads(self.request.body)
+            req = ujson.loads(self.request.body)
         except ValueError, why:
             self.api_error(why)
             raise tornado.gen.Return()
@@ -84,7 +82,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
                 result = h(*params)
             if tornado.gen.is_future(result):
                 result = yield result
-            self.write(json.dumps({
+            self.write(ujson.dumps({
                 "id": id,
                 "error": None,
                 "result": result
@@ -108,7 +106,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
             }
             if id:
                 rsp["id"] = id
-            self.write(json.dumps(rsp))
+            self.write(ujson.dumps(rsp))
 
 
 class API(object):
