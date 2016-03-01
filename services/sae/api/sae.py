@@ -30,6 +30,30 @@ class SAEAPI(API):
          "credentials", "capabilities", "version"]
     )
 
+    PREPARE_SQL = """
+      PREPARE sae_mo AS
+            SELECT
+            mo.name, mo.is_managed, mo.profile_name,
+            mo.scheme, mo.address, mo.port, mo."user",
+            mo.password,
+            mo.super_password, mo.remote_path,
+            mo.snmp_ro, mo.pool,
+            mo.auth_profile_id,
+            ap.user, ap.password, ap.super_password,
+            ap.snmp_ro, ap.snmp_rw,
+            ARRAY(
+              SELECT key || ' := ' || value
+              FROM sa_managedobjectattribute
+              WHERE managed_object_id = $1
+            )
+        FROM
+            sa_managedobject mo
+            LEFT JOIN sa_authprofile ap
+                ON (mo.auth_profile_id = ap.id)
+        WHERE mo.id=$1
+    """
+    RUN_SQL = "EXECUTE sae_mo(%s)"
+
     @api
     @tornado.gen.coroutine
     def script(self, object_id, script, args=None, timeout=None):
@@ -72,22 +96,10 @@ class SAEAPI(API):
         object_id = int(object_id)
         # Get Object's attributes
         cursor = connection.cursor()
-        cursor.execute("""
-            SELECT
-                mo.name, mo.is_managed, mo.profile_name,
-                mo.scheme, mo.address, mo.port, mo."user",
-                mo.password,
-                mo.super_password, mo.remote_path,
-                mo.snmp_ro, mo.pool,
-                mo.auth_profile_id,
-                ap.user, ap.password, ap.super_password,
-                ap.snmp_ro, ap.snmp_rw
-            FROM
-                sa_managedobject mo
-                LEFT JOIN sa_authprofile ap
-                    ON (mo.auth_profile_id = ap.id)
-            WHERE mo.id=%s
-        """, [object_id])
+        if not hasattr(connection, "_prepare_sae"):
+            cursor.execute(self.PREPARE_SQL)
+            connection._prepare_sae = True
+        cursor.execute(self.RUN_SQL, [object_id])
         data = cursor.fetchall()
         if not data:
             raise APIError("Object is not found")
@@ -97,14 +109,9 @@ class SAEAPI(API):
          snmp_ro, pool_id,
          auth_profile_id,
          ap_user, ap_password, ap_super_password,
-         ap_snmp_ro, ap_snmp_rw) = data[0]
+         ap_snmp_ro, ap_snmp_rw, attrs) = data[0]
         # Get attributes
-        cursor.execute("""
-            SELECT key, value
-            FROM sa_managedobjectattribute
-            WHERE managed_object_id=%s
-        """, [object_id])
-        attributes = dict(cursor.fetchall())
+        attributes = dict(a.split(" := ", 1) for a in attrs)
         # Check object is managed
         if not is_managed:
             raise APIError("Object is not managed")
