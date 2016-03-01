@@ -51,7 +51,10 @@ DATABASES = {
         "PASSWORD": config.get("database", "password"),
         "HOST": config.get("database", "host"),
         "PORT": config.get("database", "port"),
-        "TEST_NAME": "test_" + config.get("database", "name")
+        "TEST_NAME": "test_" + config.get("database", "name"),
+        "OPTIONS": {
+            "sslmode": "disable"
+        }
     }
 }
 DATABASE_SUPPORTS_TRANSACTIONS = True
