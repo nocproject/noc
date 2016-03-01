@@ -104,6 +104,8 @@ class RPCProxy(object):
                 raise RPCException(str(e))
             except Exception, why:
                 raise RPCException(why)
+            finally:
+                client.close()
         if response:
             if not is_notify:
                 result = ujson.loads(response.body)
