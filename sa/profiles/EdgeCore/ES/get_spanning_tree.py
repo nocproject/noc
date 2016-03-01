@@ -23,6 +23,7 @@ class Script(BaseScript):
         "spanning tree mode": "STP_MODE",
         "spanning tree enabled/disabled": "STP_ENABLED",
         "vlans configuration": "VLANS",
+        "vlans configured": "VLANS",
         "designated root": "DESG_ROOT",
         "designated bridge": "DESG_BRIDGE",
         "designated port": "DESG_PORT",
