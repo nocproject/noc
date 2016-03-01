@@ -48,7 +48,9 @@ class CorrelatorService(Service):
         self.scheduler = Scheduler(
             self.name,
             reset_running=True,
-            ioloop=self.ioloop
+            ioloop=self.ioloop,
+            submit_threshold=100,
+            max_chunk=100
         )
         self.scheduler.correlator = self
         ActiveAlarm.enable_caching(600)
