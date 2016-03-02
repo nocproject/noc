@@ -10,6 +10,8 @@
 ## Python modules
 from collections import defaultdict
 import cStringIO
+import contextlib
+import time
 ## Third-party modules
 import gridfs
 ## NOC modules
@@ -36,8 +38,13 @@ class MODiscoveryJob(PeriodicJob):
             "",
             target=self.out_log
         )
+        self.check_timings = []
 
     def schedule_next(self, status):
+        if self.check_timings:
+            self.logger.info("Timings: %s", ", ".join(
+                "%s = %.2fms" % (n, t * 1000) for n, t in self.check_timings
+            ))
         super(MODiscoveryJob, self).schedule_next(status)
         key = "discovery-%s-%s" % (
             self.attrs[self.ATTR_CLASS],
@@ -49,6 +56,12 @@ class MODiscoveryJob(PeriodicJob):
 
     def can_run(self):
         return self.object.is_managed
+
+    @contextlib.contextmanager
+    def check_timer(self, name):
+        t = time.time()
+        yield
+        self.check_timings += [(name, time.time() - t)]
 
 
 class DiscoveryCheck(object):
@@ -73,35 +86,36 @@ class DiscoveryCheck(object):
         self.profile_cache = {}
 
     def run(self):
-        # Check required scripts
-        if (self.required_script and
-                self.required_script not in self.object.scripts):
-            self.logger.info("%s script is not supported. Skipping",
-                             self.required_script)
-            return
-        # Check required capabilities
-        if self.required_capabilities:
-            caps = self.object.get_caps()
-            for cn in self.required_capabilities:
-                if cn not in caps:
-                    self.logger.info(
-                        "Object hasn't required capability '%s'. "
-                        "Skipping",
-                        cn
-                    )
-                    return
-                v = caps[cn]
-                if not v:
-                    self.logger.info(
-                        "Capability '%s' is disabled. Skipping",
-                        cn
-                    )
-                    return
-        # Run check
-        try:
-            self.handler()
-        except Exception:
-            error_report(logger=self.logger)
+        with self.job.check_timer(self.name):
+            # Check required scripts
+            if (self.required_script and
+                    self.required_script not in self.object.scripts):
+                self.logger.info("%s script is not supported. Skipping",
+                                 self.required_script)
+                return
+            # Check required capabilities
+            if self.required_capabilities:
+                caps = self.object.get_caps()
+                for cn in self.required_capabilities:
+                    if cn not in caps:
+                        self.logger.info(
+                            "Object hasn't required capability '%s'. "
+                            "Skipping",
+                            cn
+                        )
+                        return
+                    v = caps[cn]
+                    if not v:
+                        self.logger.info(
+                            "Capability '%s' is disabled. Skipping",
+                            cn
+                        )
+                        return
+            # Run check
+            try:
+                self.handler()
+            except Exception:
+                error_report(logger=self.logger)
 
     def handler(self):
         pass
