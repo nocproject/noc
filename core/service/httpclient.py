@@ -21,7 +21,7 @@ def setup_httpclient():
     except ImportError:
         pycurl = None
 
-    if pycurl and os.environ.get("NOC_CURL_CLIENT"):
+    if pycurl:
         logger.info("Using curl http client")
         tornado.httpclient.AsyncHTTPClient.configure(
             "tornado.curl_httpclient.CurlAsyncHTTPClient"
