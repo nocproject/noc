@@ -736,16 +736,7 @@ class ManagedObject(Model):
         """
         Returns a dict of effective object capabilities
         """
-        caps = ObjectCapabilities.objects.filter(object=self).first()
-        if not caps:
-            return {}
-        r = {}
-        for c in caps.caps:
-            v = c.local_value if c.local_value is not None else c.discovered_value
-            if v is None:
-                continue
-            r[c.capability.name] = v
-        return r
+        return ObjectCapabilities.get_capabilities(self)
 
     def update_caps(self, caps, local=False):
         """
