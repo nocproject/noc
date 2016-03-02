@@ -16,6 +16,7 @@
     - quilt
     - gcc
     - libpq-dev
+    - libcurl-dev
     - apt-transport-https
 
 - name: Install supervisord init script
