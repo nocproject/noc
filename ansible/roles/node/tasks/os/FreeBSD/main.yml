@@ -9,6 +9,7 @@
     - mercurial
     - sudo
     - quilt
+    - curl
 
 - name: Create rc.d directory
   file: path=/usr/local/etc/rc.d state=directory mode=0755
