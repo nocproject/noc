@@ -101,7 +101,7 @@ class SAEAPI(API):
                 (" ".join([
                     data.version.get("vendor", ""),
                     data.version.get("platform", "")
-                ])).strip(),
+                ])).strip() if data.version else "",
                 status,
                 "%.2fms" % ((time.time() - t) * 1000)
             ]))
