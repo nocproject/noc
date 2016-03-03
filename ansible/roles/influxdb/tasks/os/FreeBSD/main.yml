@@ -1,7 +1,4 @@
 ---
-- name: Enabling influxdb
-  lineinfile: dest=/etc/rc.conf regexp=^influxd_enable= line=influxd_enable=\"YES\"
-
 - name: Install InfluxDB
   pkgng: name="influxdb" state=present
 

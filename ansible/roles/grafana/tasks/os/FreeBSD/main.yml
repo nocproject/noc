@@ -1,7 +1,4 @@
 ---
-- name: Enabling Grafana
-  lineinfile: dest=/etc/rc.conf regexp=^grafana2_enable= line=grafana2_enable=\"YES\"
-
 - name: Create Grafana config
   template:
     src: grafana.ini
