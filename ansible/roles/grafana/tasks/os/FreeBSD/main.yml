@@ -15,8 +15,8 @@
 - name: Install Grafana
   pkgng: name="grafana2" state=present
 
-- name: Create /var/run/grafana2 directory
-  file: path=/var/run/grafana2 state=directory owner={{grafana_user}} mode=0755
-
-- name: Create /var/log/grafana2 directory
-  file: path=/var/log/grafana2 state=directory owner={{grafana_user}} mode=0755
+- name: Create Grafana directories
+  file: path={{item}} state=directory owner={{grafana_user}} mode=0755
+  with_items:
+    - /var/run/grafana2
+    - /var/log/grafana2
