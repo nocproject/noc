@@ -2,10 +2,12 @@
 ##----------------------------------------------------------------------
 ## SAE API
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import time
 ## Third-party modules
 from django.db import connection
 from django.db import transaction
@@ -64,6 +66,7 @@ class SAEAPI(API):
         :param args: Dict with input arguments
         :param timeout: Script timeout in seconds
         """
+        t = time.time()
         # Resolve object data
         data = yield self.service.get_executor("db").submit(
             self.get_object_data, object_id
@@ -79,13 +82,29 @@ class SAEAPI(API):
         if not loader.has_script(script_name):
             raise APIError("Invalid script")
         # Pass call
+        status = "UNKNOWN"
         try:
             result = yield activator.script(
                 script_name, data.credentials, data.capabilities,
                 data.version, args, timeout
             )
+            status = "OK"
         except RPCError, why:
+            status = "FAIL"
             raise APIError("RPC Error: %s" % why)
+        finally:
+
+            self.logger.info("Timing: %s", ",".join([
+                data.credentials["name"],
+                script_name,
+                data.credentials["address"],
+                (" ".join([
+                    data.version.get("vendor", ""),
+                    data.version.get("platform", "")
+                ])).strip(),
+                status,
+                "%.2fms" % ((time.time() - t) * 1000)
+            ]))
         raise tornado.gen.Return(result)
 
     @transaction.autocommit
