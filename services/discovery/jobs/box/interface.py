@@ -335,7 +335,10 @@ class InterfaceCheck(DiscoveryCheck):
         """
         missed_ifindexes = [
             n[1] for n in self.if_name_cache
-            if n in self.if_name_cache and self.if_name_cache[n].ifindex is None
+            if (n in self.if_name_cache and
+                self.if_name_cache[n].ifindex is None and
+                self.if_name_cache[n].type in ("physical", "aggregated")
+                )
         ]
         if not missed_ifindexes:
             return
