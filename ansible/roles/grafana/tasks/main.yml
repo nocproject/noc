@@ -1,7 +1,7 @@
 ---
 - include: "os/{{ ansible_distribution }}/main.yml"
 
-- name: Create grafana directories
+- name: Create Grafana directories
   file:
     path: "{{ noc_root }}/{{ item.path }}"
     state: directory
