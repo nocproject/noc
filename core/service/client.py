@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Synchronous RPC Client
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -14,12 +14,13 @@ import time
 import random
 import socket
 import errno
+import cStringIO
 ## Third-party modules
 import tornado.httpclient
 import ujson
+import pycurl
 ## NOC modules
 from noc.core.service.catalog import ServiceCatalog
-import httpclient  # Setup global httpclient
 
 
 # Connection time
@@ -78,17 +79,16 @@ class RPCClient(object):
                 "method": self.method,
                 "params": list(args)
             }
-            headers = {}
+            headers = []
             if calling_service:
-                headers[CALLING_SERVICE_HEADER] = calling_service
+                headers += ["%s: %s" % (CALLING_SERVICE_HEADER,
+                                        calling_service)]
             body = ujson.dumps(req)
             # Build service candidates
             services = catalog.get_service(service).listen
             if len(services) < RETRIES:
                 services *= RETRIES
             # Call
-            client = tornado.httpclient.HTTPClient()
-            response = None
             last = None
             st = RETRY_TIMEOUT
             for l in random.sample(services, RETRIES):
@@ -99,39 +99,38 @@ class RPCClient(object):
                 #
                 last = l
                 logger.debug("Sending request to %s", l)
+                url = "http://%s/api/%s/" % (l, self.client._api)
+                buff = cStringIO.StringIO()
+                c = pycurl.Curl()
+                c.setopt(c.URL, url)
+                c.setopt(c.POST, 1)
+                c.setopt(c.POSTFIELDS, body)
+                if headers:
+                    c.setopt(c.HTTPHEADER, headers)
+                c.setopt(c.WRITEDATA, buff)
+                c.setopt(c.NOPROXY, "*")
+                c.setopt(c.RESOLVE, ["%s:%s" % (l, l.split(":")[0])])
+                c.setopt(c.TIMEOUT, REQUEST_TIMEOUT)
+                c.setopt(c.CONNECTTIMEOUT, CONNECT_TIMEOUT)
                 try:
-                    response = client.fetch(
-                        "http://%s/api/%s/" % (l, self.client._api),
-                        method="POST",
-                        body=body,
-                        headers=headers,
-                        connect_timeout=CONNECT_TIMEOUT,
-                        request_timeout=REQUEST_TIMEOUT
-                    )
-                    break
-                except tornado.httpclient.HTTPError, why:
-                    if why.code == 599:
-                        logger.debug("Timed out")
-                        continue
-                    raise RPCHTTPError("HTTP Error %s: %s" % (
-                        why.code, why.message))
-                except socket.error as e:
-                    if e.args[0] in RETRY_SOCKET_ERRORS:
-                        logger.debug("Socket error: %s" % e)
-                        continue
+                    c.perform()
+                except pycurl.error:
+                    # @todo: Retry on timeout
                     raise RPCException(str(e))
-                except Exception, why:
-                    raise RPCException(why)
-            if not response:
-                raise RPCNoService(
-                    "No active service %s found" % service
-                )
-            data = ujson.loads(response.body)
-            if data.get("error"):
-                raise RPCRemoteError(data["error"])
-            t = time.time() - t0
-            logger.debug("[<CALL] %s (%.2fms)", self.method, t * 1000)
-            return data["result"]
+                finally:
+                    c.close()
+                try:
+                    data = ujson.loads(buff.getvalue())
+                except ValueError, why:
+                    raise RPCRemoteError("Failed to decode JSON: %s", why)
+                if data.get("error"):
+                    raise RPCRemoteError(data["error"])
+                t = time.time() - t0
+                logger.debug("[<CALL] %s (%.2fms)", self.method, t * 1000)
+                return data["result"]
+            raise RPCNoService(
+                "No active service %s found" % service
+            )
 
     def __init__(self, service, calling_service=None):
         self._service = service
