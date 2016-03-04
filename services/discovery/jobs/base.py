@@ -298,7 +298,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 self.logger.debug(
                     "Remote object '%s' does not support %s script. "
                     "Cannot confirm links",
-                    remote_object.name
+                    remote_object.name, self.required_script
                 )
             confirmed = set()
             for li, ro_id, ri in self.iter_neighbors(remote_object):
