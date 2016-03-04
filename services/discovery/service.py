@@ -42,7 +42,9 @@ class DiscoveryService(Service):
         self.send_callback.start()
         if self.config.numprocs > 1:
             ifilter = {
-                "$mod": [self.config.numprocs, self.config.instance]
+                "key": {
+                    "$mod": [self.config.numprocs, self.config.instance]
+                }
             }
         else:
             ifilter = None
