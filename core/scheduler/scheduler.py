@@ -29,7 +29,8 @@ class Scheduler(object):
 
     def __init__(self, name, pool=None, reset_running=False,
                  max_threads=5, ioloop=None, check_time=1000,
-                 submit_threshold=None, max_chunk=None):
+                 submit_threshold=None, max_chunk=None,
+                 filter=None):
         """
         Create scheduler
         :param name: Unique scheduler name
@@ -43,6 +44,8 @@ class Scheduler(object):
             at one step
         :param submit_threshold: Maximal executor queue length
             when submitting of next chunk is allowed
+        :param filter: Additional filter to be applied to
+            pending jobs
         """
         self.logger = logging.getLogger("scheduler.%s" % name)
         self.name = name
@@ -72,6 +75,7 @@ class Scheduler(object):
                 self.max_threads // self.MAX_CHUNK_FACTOR,
                 2
             )
+        self.filter = filter
 
     def run(self):
         """
@@ -80,7 +84,7 @@ class Scheduler(object):
         scheduler.run(ioloop=ioloop)
         ioloop.run()
         """
-        if self.reset_running:
+        if self.to_reset_running:
             self.reset_running()
         self.ensure_indexes()
         self.logger.info("Running scheduler")
@@ -116,9 +120,9 @@ class Scheduler(object):
         Reset all running jobs to waiting status
         """
         self.logger.debug("Reset running jobs")
-        r = self.get_collection().update({
+        r = self.get_collection().update(self.get_query({
             Job.ATTR_STATUS: Job.S_RUN
-        }, {
+        }), {
             "$set": {
                 Job.ATTR_STATUS: Job.S_WAIT
             }
@@ -138,16 +142,27 @@ class Scheduler(object):
         self.get_collection().ensure_index([("jcls", 1), ("key", 1)])
         self.logger.debug("Indexes are ready")
 
+    def get_query(self, q):
+        """
+        Combine filter with query and return resulting query
+        """
+        if self.filter:
+            qq = self.filter.copy()
+            qq.update(q)
+            return qq
+        else:
+            return q
+
     def iter_pending_jobs(self, limit):
         """
         Yields pending jobs
         """
-        qs = self.get_collection().find({
+        qs = self.get_collection().find(self.get_query({
             Job.ATTR_TS: {
                 "$lte": datetime.datetime.now(),
             },
             Job.ATTR_STATUS: Job.S_WAIT
-        }).limit(limit).sort(Job.ATTR_TS)
+        })).limit(limit).sort(Job.ATTR_TS)
         try:
             for job in qs:
                 yield job
