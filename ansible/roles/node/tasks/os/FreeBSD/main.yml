@@ -18,4 +18,4 @@
   template: src="os/FreeBSD/etc/rc.d/noc.j2" dest="/usr/local/etc/rc.d/{{ noc_system_service }}" mode="a+rx"
 
 - name: Enable NOC system service
-  service: name="{{ noc_system_service }}" enabled=yes state=started
+  service: name="{{ noc_system_service }}" enabled=yes
