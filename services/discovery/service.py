@@ -40,13 +40,19 @@ class DiscoveryService(Service):
             self.ioloop
         )
         self.send_callback.start()
-        #
+        if self.config.numprocs > 1:
+            ifilter = {
+                "$mod": [self.config.numprocs, self.config.instance]
+            }
+        else:
+            ifilter = None
         self.scheduler = Scheduler(
             "discovery",
             pool=self.config.pool,
             reset_running=True,
             max_threads=self.config.max_threads,
-            ioloop=self.ioloop
+            ioloop=self.ioloop,
+            filter=ifilter
         )
         self.scheduler.service = self
         self.scheduler.run()

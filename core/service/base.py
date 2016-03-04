@@ -123,6 +123,14 @@ class Service(object):
             help="Instance number"
         )
         parser.add_argument(
+            "--numprocs",
+            action="store",
+            dest="numprocs",
+            type=int,
+            default=os.environ.get("NOC_NUMPROCS", "1"),
+            help="Total instances"
+        )
+        parser.add_argument(
             "--debug",
             action="store_true",
             dest="debug",
