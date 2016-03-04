@@ -114,7 +114,7 @@ class RPCClient(object):
                 c.setopt(c.CONNECTTIMEOUT, CONNECT_TIMEOUT)
                 try:
                     c.perform()
-                except pycurl.error:
+                except pycurl.error as e:
                     # @todo: Retry on timeout
                     raise RPCException(str(e))
                 finally:
