@@ -112,7 +112,10 @@ class RingLayout(LayoutBase):
                 p = main
                 while chain:
                     neighbors = set(nx.all_neighbors(GG, p))
-                    p = (neighbors & chain).pop()
+                    try:
+                        p = (neighbors & chain).pop()
+                    except KeyError:
+                        break  # Do not crash on splitting chain
                     cdata += [p]
                     chain.remove(p)
                 r[main] += [cdata]
