@@ -46,22 +46,58 @@ class SelectorCache(Document):
     @classmethod
     def rebuild_for_object(cls, object):
         from managedobjectselector import ManagedObjectSelector
-        # Remove old data
-        cls.objects.filter(object=object.id).delete()
-        #
-        r = []
+        from managedobject import ManagedObject
+        # Stored data
+        old = {}  # selector -> doc
+        for d in SelectorCache._get_collection().find({"object": object.id}):
+            old[d["selector"]] = d
+        # Refreshed data
+        vcdomain = object.vc_domain.id if object.vc_domain else None
+        bulk = SelectorCache._get_collection().initialize_unordered_bulk_op()
+        nb = 0
         for s in ManagedObjectSelector.objects.filter(is_enabled=True):
-            for o in s.managed_objects:
-                d = o.vc_domain.id if o.vc_domain else None
-                r += [
-                    {
-                        "object": o.id,
+            if ManagedObject.objects.filter(id=object.id).filter(s.Q).exists():
+                sdata = old.get(s.id)
+                if sdata:
+                    # Cache record exists
+                    if sdata.get("vc_domain") != vcdomain:
+                        # VC Domain changed
+                        logger.debug(
+                            "[%s] Changing VC Domain to %s",
+                            object.name,
+                            vcdomain
+                        )
+                        bulk.find({"_id": sdata["_id"]}).update({
+                            "vc_domain": vcdomain
+                        })
+                        nb += 1
+                    del old[s.id]
+                else:
+                    # New record
+                    logging.debug(
+                        "[%s] Add to selector %s",
+                        object.name, s.name
+                    )
+                    bulk.insert({
+                        "object": object.id,
                         "selector": s.id,
-                        "vc_domain": d
-                    }
-                ]
-        if r:
-            cls._get_collection().insert(r)
+                        "vc_domain": vcdomain
+                    })
+                    nb += 1
+        # Delete stale records
+        for sdata in old.itervalues():
+            logging.debug(
+                "[%s] Remove from selector %s",
+                object.name, sdata["id"]
+            )
+            bulk.remove({"_id": sdata["_id"]})
+        # Apply changes
+        if nb:
+            logging.debug(
+                "[%s] Committing %d changes",
+                object.name, nb
+            )
+            bulk.execute({"w": 0})
 
 
 def refresh():

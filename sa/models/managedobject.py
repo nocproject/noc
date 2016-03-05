@@ -402,7 +402,7 @@ class ManagedObject(Model):
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache
-        SelectorCache.refresh()
+        SelectorCache.rebuild_for_object(self)
         #
         if (
             not self.initial_data["id"] is None and
