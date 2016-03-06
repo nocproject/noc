@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Base service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -23,6 +23,7 @@ import tornado.netutil
 import tornado.httpserver
 import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor
+from setproctitle import setproctitle
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
 from .config import Config
@@ -41,7 +42,10 @@ class Service(object):
     """
     # Service name
     name = None
-    # Leager group name
+    # Format string to set process name
+    # config variables can be expanded as %(name)s
+    process_name = "noc-%(name)10s"
+    # Leader group name
     # Only one service in leader group can be running at a time
     # Config variables can be expanded as %(varname)s
     leader_group_name = None
@@ -211,6 +215,18 @@ class Service(object):
         signal.signal(signal.SIGTERM, self.on_SIGTERM)
         signal.signal(signal.SIGHUP, self.on_SIGHUP)
 
+    def set_proc_title(self):
+        """
+        Set process title
+        """
+        vars = {
+            "name": self.name
+        }
+        vars.update(self.config._conf)
+        title = self.process_name % vars
+        self.logger.debug("Setting process title to: %s", title)
+        setproctitle(title)
+
     def start(self):
         """
         Run main server loop
@@ -226,7 +242,9 @@ class Service(object):
         # Read
         self.config = Config(self, **cmd_options)
         self.load_config()
-        #
+        # Setup title
+        self.set_proc_title()
+        # Setup signal handlers
         self.setup_signal_handlers()
         # Starting IOLoop
         if self.pooled:

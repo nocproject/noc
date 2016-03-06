@@ -29,4 +29,5 @@ noc-pkg-pyclips==1.0.7
 distribute>=0.7.3
 pycurl==7.43.0
 PyYAML>=3.11
+setproctitle>=1.1.9
 ujson>=1.35
