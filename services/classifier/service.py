@@ -19,6 +19,7 @@ import re
 from cachetools import TTLCache, cachedmethod
 import tornado.gen
 import tornado.queues
+import pymongo.errors
 ## NOC modules
 from noc.core.service.base import Service
 from noc.fm.models.newevent import NewEvent
@@ -718,17 +719,24 @@ class ClassifierService(Service):
         """
         Producer generating unclassified events
         """
+        q = NewEvent.seq_range(self.config.pool)
+        if self.config.numprocs > 1:
+            q["managed_object__mod"] = [self.config.numprocs,
+                                        self.config.instance]
         while True:
             n = 0
-            for e in NewEvent.objects.filter(
-                **NewEvent.seq_range(self.config.pool)
-            ).order_by("seq"):
-                yield self.ev_queue.put(e)
-                n += 1
-            if not n:
-                # No data, sleep a while
-                yield  self.ev_queue.put(None)  # Report end of data
-                yield tornado.gen.sleep(0.25)
+            try:
+                for e in NewEvent.objects.filter(**q).order_by("seq"):
+                    yield self.ev_queue.put(e)
+                    n += 1
+                if not n:
+                    # No data, sleep a while
+                    yield self.ev_queue.put(None)  # Report end of data
+                    yield tornado.gen.sleep(0.25)
+            except pymongo.errors.CursorNotFound:
+                self.logger.info(
+                    "Server cursor timed out. Continuing with new cursor"
+                )
 
     @tornado.gen.coroutine
     def event_consumer(self):
