@@ -41,7 +41,7 @@ class HTTP(object):
         # Build full URL
         url = self.get_url(path)
         # Prepare client
-        is_ssl = False
+        is_ssl = self.script.credentials.get("http_protocol", "http") == "https"
         c = pycurl.Curl()
         c.setopt(c.URL, url)
         if headers:

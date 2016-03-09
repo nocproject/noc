@@ -149,7 +149,7 @@ class Command(BaseCommand):
             if obj.port:
                 credentials["cli_port"] = obj.port
         elif obj.scheme in (3, 4):
-            credentials["http_protocol"] = "https" if obj.scheme == 3 else "http"
+            credentials["http_protocol"] = "https" if obj.scheme == 4 else "http"
             if obj.port:
                 credentials["http_port"] = obj.port
         return credentials
