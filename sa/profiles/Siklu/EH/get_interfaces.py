@@ -28,6 +28,8 @@ class Script(BaseScript):
         name = None
         for match in self.rx_ecfg.finditer(section):
             name = match.group("name")
+            if name == 'host':
+                continue
             r[match.group("key")] = match.group("value").strip()
         return name, r
 
@@ -38,6 +40,8 @@ class Script(BaseScript):
             if not section:
                 continue
             name, cfg = self.parse_section(section)
+            if name == 'host':
+                continue
             i = {
                 "name": name,
                 "type": "physical",
