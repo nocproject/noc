@@ -12,8 +12,6 @@ import logging
 import time
 import itertools
 import operator
-## Third-party modules
-from tornado.httpclient import HTTPClient, HTTPError
 ## NOC modules
 from snmp.base import SNMP
 from snmp.beef import BeefSNMP
@@ -79,8 +77,6 @@ class BaseScript(object):
     class UnexpectedResultError(ScriptError):
         """Unexpected result"""
 
-    HTTPError = HTTPError
-
     hexbin = {
         "0": "0000", "1": "0001", "2": "0010", "3": "0011",
         "4": "0100", "5": "0101", "6": "0110", "7": "0111",
@@ -127,7 +123,7 @@ class BaseScript(object):
                 self.snmp = BeefSNMP(self)
             else:
                 self.snmp = SNMP(self)
-        self.http = HTTPClient(self)
+        self.http = HTTP(self)
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.to_shutdown_session = False
         self.scripts = ScriptsHub(self)

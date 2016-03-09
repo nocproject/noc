@@ -105,3 +105,6 @@ class HTTP(object):
                 raise self.HTTPError("Failed to decode JSON: %s", why)
         self.logger.debug("Result: %r", result)
         return result
+
+    def close(self):
+        pass
