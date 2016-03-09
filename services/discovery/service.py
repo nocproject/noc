@@ -22,6 +22,7 @@ class DiscoveryService(Service):
     name = "discovery"
     leader_group_name = "discovery-%(pool)s"
     pooled = True
+    process_name = "noc-%(name).10s-%(instance).2s-%(pool).3s"
 
     def __init__(self):
         super(DiscoveryService, self).__init__()

@@ -25,6 +25,7 @@ from api.fmwriter import FMWriterAPI
 class FMWriterService(Service):
     name = "fmwriter"
     pooled = True
+    process_name = "noc-%(name).10s-%(pool).3s"
 
     # Dict parameter containing values accepted
     # via dynamic configuration
