@@ -25,6 +25,7 @@ class PingService(Service):
     #
     leader_group_name = "ping-%(pool)s"
     pooled = True
+    process_name = "noc-%(name).10s-%(pool).3s"
 
     def __init__(self):
         super(PingService, self).__init__()
