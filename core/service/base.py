@@ -44,7 +44,7 @@ class Service(object):
     name = None
     # Format string to set process name
     # config variables can be expanded as %(name)s
-    process_name = "noc-%(name)10s"
+    process_name = "noc-%(name).10s"
     # Leader group name
     # Only one service in leader group can be running at a time
     # Config variables can be expanded as %(varname)s
@@ -220,7 +220,9 @@ class Service(object):
         Set process title
         """
         vars = {
-            "name": self.name
+            "name": self.name,
+            "instance": self.config.instance or "",
+            "pool": self.config.pool or ""
         }
         vars.update(self.config._conf)
         title = self.process_name % vars
