@@ -22,6 +22,7 @@ from noc.core.service.base import Service
 class WebService(Service):
     name = "web"
     api = []
+    process_name = "noc-%(name).10s-%(instance).2s"
 
     def __init__(self):
         super(WebService, self).__init__()
