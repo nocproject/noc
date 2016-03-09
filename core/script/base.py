@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## SA Script base
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,6 +17,7 @@ from tornado.httpclient import HTTPClient, HTTPError
 ## NOC modules
 from snmp.base import SNMP
 from snmp.beef import BeefSNMP
+from http.base import HTTP
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
 from context import (ConfigurationContextManager, CacheContextManager,
@@ -126,7 +127,7 @@ class BaseScript(object):
                 self.snmp = BeefSNMP(self)
             else:
                 self.snmp = SNMP(self)
-        self.http = HTTPClient()
+        self.http = HTTPClient(self)
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.to_shutdown_session = False
         self.scripts = ScriptsHub(self)
