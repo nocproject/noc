@@ -159,6 +159,10 @@ class SAEAPI(API):
             }[scheme]
             if port:
                 credentials["cli_port"] = port
+        elif scheme in (3, 4):
+            credentials["http_protocol"] = "https" if scheme == 3 else "http"
+            if port:
+                credentials["http_port"] = port
         # Build version
         if ("vendor" in attributes and "platform" in attributes
             and "version" in attributes):

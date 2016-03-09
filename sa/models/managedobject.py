@@ -45,7 +45,7 @@ from noc.core.model.decorator import on_save, on_init, on_delete
 from noc.inv.models.object import Object
 
 
-scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http")]
+scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
 CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 Credentials = namedtuple("Credentials", [

@@ -146,6 +146,12 @@ class Command(BaseCommand):
                 1: "telnet",
                 2: "ssh"
             }[obj.scheme]
+            if obj.port:
+                credentials["cli_port"] = obj.port
+        elif obj.scheme in (3, 4):
+            credentials["http_protocol"] = "https" if obj.scheme == 3 else "http"
+            if obj.port:
+                credentials["http_port"] = obj.port
         return credentials
 
     rx_arg = re.compile(
