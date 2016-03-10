@@ -109,6 +109,9 @@ class RPCProxy(object):
                 raise RPCException(why)
             finally:
                 client.close()
+                # Resolve CurlHTTPClient circular dependencies
+                client._force_timeout_callback = None
+                client._multi = None
         if response:
             if not is_notify:
                 result = ujson.loads(response.body)
