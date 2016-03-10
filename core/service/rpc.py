@@ -74,7 +74,10 @@ class RPCProxy(object):
         response = None
         last = None
         for svc in random.sample(services, retries):
-            client = tornado.httpclient.AsyncHTTPClient(force_instance=True)
+            client = tornado.httpclient.AsyncHTTPClient(
+                force_instance=True,
+                max_clients=1
+            )
             # Sleep when trying same instance
             if svc == last:
                 yield tornado.gen.sleep(timeouts.pop())
