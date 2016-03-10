@@ -24,9 +24,6 @@ import tornado.httpserver
 import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor
 from setproctitle import setproctitle
-if os.environ.get("PYTHONMANHOLE") is not None:
-    import manhole
-    manhole.install()
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
 from .config import Config
@@ -249,6 +246,10 @@ class Service(object):
         self.load_config()
         # Setup title
         self.set_proc_title()
+        # Setup manhole
+        if os.environ.get("NOC_MANHOLE"):
+            import manhole
+            manhole.install()
         # Setup signal handlers
         self.setup_signal_handlers()
         # Starting IOLoop
