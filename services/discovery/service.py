@@ -72,7 +72,10 @@ class DiscoveryService(Service):
             self.metrics = []
         # Send collected metrics
         for s in self.resolve_service("influxdb"):
-            client = tornado.httpclient.AsyncHTTPClient(force_instance=True)
+            client = tornado.httpclient.AsyncHTTPClient(
+                force_instance=True,
+                max_clients=1
+            )
             try:
                 response = yield client.fetch(
                     # @todo: Configurable database name
@@ -92,7 +95,11 @@ class DiscoveryService(Service):
                     "Failed to spool collected metrics to %s: %s",
                     s, str(e)
                 )
-            client.close()
+            finally:
+                client.close()
+                # Resolve CurlHTTPClient circular dependencies
+                client._force_timeout_callback = None
+                client._multi = None
         if msg:
             # Return metrics to queue
             with self.metrics_lock:
