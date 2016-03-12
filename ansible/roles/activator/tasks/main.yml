@@ -4,7 +4,6 @@
 - name: Install python packages
   pip: >
     chdir="{{noc_root}}"
-    executable="{{noc_root}}/bin/pip"
     requirements="requirements/activator.txt"
     virtualenv="{{noc_root}}"
 
