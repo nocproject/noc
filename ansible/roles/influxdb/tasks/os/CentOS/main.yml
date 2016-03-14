@@ -12,5 +12,5 @@
 - name: Install CentOS packages
   yum:
     name: influxdb
-    state: latest
+    state: present
     update_cache: yes
