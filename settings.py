@@ -1,9 +1,10 @@
 # Django settings for noc project.
 # Do not modify this file directly
-# Edit etc/noc.conf instead
+# All necessary configurations will be written by noc-tower
 import ConfigParser
 import sys
 import os
+from noc.core.config.base import config as cfg
 
 # Check when started from notebook
 if not os.path.isfile("etc/noc.defaults") and os.path.isfile("../etc/noc.defaults"):
@@ -42,30 +43,22 @@ MANAGERS = ADMINS
 SERVER_EMAIL = config.get("main", "server_email")
 
 ## RDBMS settings
-DATABASE_ENGINE = config.get("database", "engine")
+DATABASE_ENGINE = "django.db.backends.postgresql_psycopg2"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": config.get("database", "name"),
-        "USER": config.get("database", "user"),
-        "PASSWORD": config.get("database", "password"),
-        "HOST": config.get("database", "host"),
-        "PORT": config.get("database", "port"),
-        "TEST_NAME": "test_" + config.get("database", "name"),
+        "NAME": cfg.pg_db,
+        "USER": cfg.pg_user,
+        "PASSWORD": cfg.pg_password,
+        "HOST": cfg.pg_connection_args["host"],
+        "PORT": cfg.pg_connection_args["port"]
+        "TEST_NAME": "test_" + cfg.pg_db,
         "OPTIONS": {
             "sslmode": "disable"
         }
     }
 }
 DATABASE_SUPPORTS_TRANSACTIONS = True
-## NoSQL settings
-NOSQL_DATABASE_NAME = config.get("nosql_database", "name")
-NOSQL_DATABASE_TEST_NAME = NOSQL_DATABASE_NAME + "_test"
-NOSQL_DATABASE_USER = config.get("nosql_database", "user")
-NOSQL_DATABASE_PASSWORD = config.get("nosql_database", "password")
-NOSQL_DATABASE_HOST = config.get("nosql_database", "host")
-NOSQL_DATABASE_PORT = config.get("nosql_database", "port")
-NOSQL_DATABASE_REPLICA_SET = config.get("nosql_database", "replica_set")
 
 TIME_ZONE = config.get("main", "timezone")
 LANGUAGE_CODE = config.get("main", "language_code")
