@@ -22,8 +22,8 @@ if config.has_section("solutions"):
     for sn in config.options("solutions"):
         if config.getboolean("solutions", sn):
             v, s = sn.split(".")
-            cfg = os.path.join("solutions", v, s, "etc", "noc.")
-            config.read([cfg + "defaults", cfg + "conf"])
+            scfg = os.path.join("solutions", v, s, "etc", "noc.")
+            config.read([scfg + "defaults", scfg + "conf"])
 
 DEBUG = config.getboolean("main", "debug")
 TEMPLATE_DEBUG = DEBUG
@@ -51,7 +51,7 @@ DATABASES = {
         "USER": cfg.pg_user,
         "PASSWORD": cfg.pg_password,
         "HOST": cfg.pg_connection_args["host"],
-        "PORT": cfg.pg_connection_args["port"]
+        "PORT": cfg.pg_connection_args["port"],
         "TEST_NAME": "test_" + cfg.pg_db,
         "OPTIONS": {
             "sslmode": "disable"
