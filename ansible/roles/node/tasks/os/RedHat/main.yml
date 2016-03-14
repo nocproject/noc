@@ -9,6 +9,7 @@
       name: /media
       state: mounted
       fstype: iso9660
+      opts: ro
 
 - name: Yum update
   shell: yum update
