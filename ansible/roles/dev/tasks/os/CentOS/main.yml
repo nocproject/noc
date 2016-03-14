@@ -1,0 +1,5 @@
+---
+- name: Install Centos Development tools
+  yum:
+    name: "@Development tools"
+    state: latest
