@@ -12,7 +12,7 @@
 - name: Install CentOS packages
   yum:
     name: grafana
-    state: latest
+    state: present
     update_cache: yes
   notify: restart grafana
 
