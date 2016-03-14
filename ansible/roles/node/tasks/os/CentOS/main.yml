@@ -4,7 +4,7 @@
     state: present
 
 - name: Install CentOS system packages
-  yum: name={{item}} state=latest update_cache=yes
+  yum: name={{item}} state=present update_cache=yes
   with_items:
    - tcpdump
    - net-tools
