@@ -1,10 +1,10 @@
-# mongodb CentOS
+# mongodb RedHat
 ---
 - name: Add MongoDB repository
-  template: src=os/CentOS/etc/yum.repos.d/mongodb-org-3.0.repo.j2 dest=/etc/yum.repos.d/mongodb-org-3.0.repo
+  template: src=os/RedHat/etc/yum.repos.d/mongodb-org-3.2.repo.j2 dest=/etc/yum.repos.d/mongodb-org-3.2.repo
 
 - name: Disable Transparent Hugepages (bootloader)
-  template: src="os/CentOS/etc/grub.d/50_disable_transparent_hugepages.j2"
+  template: src="os/RedHat/etc/grub.d/50_disable_transparent_hugepages.j2"
             dest=/etc/grub.d/50_disable_transparent_hugepages
   register: dht_status
 
@@ -20,7 +20,7 @@
   yum: name="mongodb-org" state=present update_cache=yes
 
 - name: Set mongod defaults
-  template: src="os/CentOS/etc/sysconfig/mongod.j2" dest="/etc/sysconfig/mongod"
+  template: src="os/RedHat/etc/sysconfig/mongod.j2" dest="/etc/sysconfig/mongod"
   notify: restart mongod
 
 - include: "arbiter.yml"

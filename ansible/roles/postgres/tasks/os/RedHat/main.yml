@@ -1,4 +1,7 @@
 ---
+- name: Enable the PostgreSQL repository RHEL
+  yum: name=http://yum.postgresql.org/9.4/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat94-9.4-2.noarch.rpm state=present
+
 - name: "Install PostgreSQL"
   yum: name="{{item}}" state=present update_cache=yes
   with_items:
@@ -8,7 +11,7 @@
     - python-psycopg2
 
 - name: PostgreSQL init db
-  command: postgresql-setup initdb creates=/var/lib/pgsql/data/
+  command: postgresql-setup initdb creates=/var/lib/pgsql/data/postgresql.conf
 
 - name: Set config paths
   set_fact:
