@@ -9,8 +9,6 @@
 ## Python modules
 import time
 ## Third-party modules
-from django.db import connection
-from django.db import transaction
 import tornado.gen
 from collections import namedtuple
 ## NOC modules
@@ -107,19 +105,16 @@ class SAEAPI(API):
             ]))
         raise tornado.gen.Return(result)
 
-    @transaction.autocommit
     def get_object_data(self, object_id):
         """
         Worker to resolve
         """
         object_id = int(object_id)
         # Get Object's attributes
-        cursor = connection.cursor()
-        if not hasattr(connection, "_prepare_sae"):
-            cursor.execute(self.PREPARE_SQL)
-            connection._prepare_sae = True
-        cursor.execute(self.RUN_SQL, [object_id])
-        data = cursor.fetchall()
+        with self.service.get_pg_connect() as connection:
+            cursor = connection.cursor()
+            cursor.execute(self.RUN_SQL, [object_id])
+            data = cursor.fetchall()
         if not data:
             raise APIError("Object is not found")
         (name, is_managed, profile_name,
