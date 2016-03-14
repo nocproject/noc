@@ -35,3 +35,4 @@ grafana_user: grafana
 grafana_group: grafana
 grafana_home: /usr/share/grafana
 #
+pycurl_ssl_library: nss
