@@ -32,7 +32,7 @@ class InfluxDBClient(object):
         if not svc:
             raise ValueError("No service configured")
         url = "http://%s/query?db=%s&q=%s" % (
-            svc,
+            svc[0],
             config.influx_db,
             urllib.quote(query)
         )
