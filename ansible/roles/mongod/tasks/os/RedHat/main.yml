@@ -1,0 +1,27 @@
+# mongodb RedHat
+---
+- name: Add MongoDB repository
+  template: src=os/RedHat/etc/yum.repos.d/mongodb-org-3.2.repo.j2 dest=/etc/yum.repos.d/mongodb-org-3.2.repo
+
+- name: Disable Transparent Hugepages (bootloader)
+  template: src="os/RedHat/etc/grub.d/50_disable_transparent_hugepages.j2"
+            dest=/etc/grub.d/50_disable_transparent_hugepages
+  register: dht_status
+
+- name: Disable Transparent Hugepages (runtime)
+  shell: if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
+            echo never > /sys/kernel/mm/transparent_hugepage/enabled;
+            echo never > /sys/kernel/mm/transparent_hugepage/defrag;
+         fi
+  when: dht_status.changed
+  notify: restart mongod
+
+- name: Install MongoDB
+  yum: name="mongodb-org" state=present update_cache=yes
+
+- name: Set mongod defaults
+  template: src="os/RedHat/etc/sysconfig/mongod.j2" dest="/etc/sysconfig/mongod"
+  notify: restart mongod
+
+- include: "arbiter.yml"
+  when: "'svc-mongod-arbiter' in group_names"

@@ -1,0 +1,38 @@
+- name: Add cdrom repo
+  copy: 
+      src: roles/node/templates/os/RedHat/etc/yum.repos.d/cdrom.repo
+      dest: /etc/yum.repos.d/cdrom.repo
+
+- name: mount cdrom
+  mount:
+      src: /dev/cdrom 
+      name: /media
+      state: mounted
+      fstype: iso9660
+
+- name: Yum update
+  shell: yum update
+
+- name: Add EPEL Repo
+  yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version  }}.noarch.rpm state=present
+
+- name: Install RedHat system packages
+  yum: name={{item}} state=latest update_cache=yes
+  with_items:
+   - tcpdump
+   - net-tools
+   - man
+   - mercurial
+   - python-virtualenv
+   - telnet
+   - quilt
+   - gcc
+   - postgresql
+   - postgresql-devel
+   - libcurl-devel
+
+- name: Install supervisord init script
+  template: src="os/RedHat/etc/systemd/system/noc.service.j2" dest="/usr/lib/systemd/system//{{ noc_system_service }}.service" mode="a+rx"
+
+- name: Reload systemd daemon
+  shell: /usr/bin/systemctl daemon-reload
