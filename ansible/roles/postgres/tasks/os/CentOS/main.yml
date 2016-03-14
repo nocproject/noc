@@ -8,7 +8,9 @@
     - python-psycopg2
 
 - name: PostgreSQL init db
-  command: postgresql-setup initdb creates=/var/lib/pgsql/data/
+  command: postgresql-setup initdb
+  args:
+    creates: /var/lib/pgsql/initdb.log
 
 - name: Set config paths
   set_fact:
