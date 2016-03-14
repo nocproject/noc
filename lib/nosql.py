@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MongoDB wrappers
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,7 +10,6 @@
 import logging
 import sys
 import time
-import urllib
 ## Django modules
 from django.db.models import Model
 from django.db import IntegrityError
@@ -21,65 +20,17 @@ from mongoengine.base import *
 from mongoengine import *
 import mongoengine
 ## NOC modules
-from noc import settings
+from noc.core.config.base import config
 
 logger = logging.getLogger(__name__)
 
-##
-## Create database connection
-## @todo: Handle tests
-if settings.IS_TEST:
-    db_name = settings.NOSQL_DATABASE_TEST_NAME
-else:
-    db_name = settings.NOSQL_DATABASE_NAME
-connection_args = {
-    "db": db_name,
-    "username": settings.NOSQL_DATABASE_USER,
-    "password": settings.NOSQL_DATABASE_PASSWORD
-}
-has_credentials = connection_args.get("username") or connection_args.get("password")
-if has_credentials:
-    connection_args["authentication_source"] = db_name
-if settings.NOSQL_DATABASE_HOST:
-    if "," in settings.NOSQL_DATABASE_HOST:
-        # Replica set connection
-        url = "mongodb://"
-        if has_credentials:
-            url += "%s:%s@" % (
-                urllib.quote(connection_args.get("username") or ""),
-                urllib.quote(connection_args.get("password") or "")
-            )
-        url += "%s/%s" % (settings.NOSQL_DATABASE_HOST, db_name)
-        connection_args["host"] = url
-        connection_args["replicaSet"] = True
-        connection_args["slave_okay"] = True
-    elif ":" in settings.NOSQL_DATABASE_HOST:
-        # host:port form
-        h, p = settings.NOSQL_DATABASE_HOST.rsplit(":", 1)
-        connection_args["host"] = h
-        connection_args["port"] = int(p)
-    else:
-        # Simple host settings
-        connection_args["host"] = settings.NOSQL_DATABASE_HOST
-if settings.NOSQL_DATABASE_PORT:
-    if "port" in connection_args:
-        logger.info("Port is already specified in host setting. Ignoring")
-    else:
-        logger.info("Using deprecated [nosql_database]/port option. Consider using host option")
-        connection_args["port"] = int(settings.NOSQL_DATABASE_PORT)
-if settings.NOSQL_DATABASE_REPLICA_SET:
-    connection_args["replicaSet"] = settings.NOSQL_DATABASE_REPLICA_SET
-elif "," in settings.NOSQL_DATABASE_HOST:
-    logger.error("[nosql_database]/replica_set must be set for replicaset connection")
-    sys.exit(1)
-
 ## Connect to the database
 try:
-    ca = connection_args.copy()
-    if connection_args.get("password"):
+    ca = config.mongo_connection_args
+    if ca.get("password"):
         ca["password"] = "********"
     logger.info("Connecting to MongoDB %s", ca)
-    connect(**connection_args)
+    connect(**config.mongo_connection_args)
 except mongoengine.connection.ConnectionError, why:
     logger.error("Cannot connect to mongodb: %s" % why)
     sys.exit(1)
@@ -242,7 +193,7 @@ class ForeignKeyField(BaseField):
                                   "must be a Model class")
         self.document_type = model
         super(ForeignKeyField, self).__init__(**kwargs)
-        if not settings.IS_TEST:
+        if True:  # not settings.IS_TEST:
             django.db.models.signals.pre_delete.connect(self.on_ref_delete,
                                                         sender=model)
 
@@ -361,9 +312,9 @@ class IntSequence(object):
         return s[self.FIELD]
 
 
-def create_test_db(verbosity, autoclobber):
-    connect(**connection_args)
-
-    
-def destroy_test_db(verbosity):
-    get_connection().drop_database(settings.NOSQL_DATABASE_TEST_NAME)
+# def create_test_db(verbosity, autoclobber):
+#     connect(**connection_args)
+#
+#
+# def destroy_test_db(verbosity):
+#     get_connection().drop_database(settings.NOSQL_DATABASE_TEST_NAME)
