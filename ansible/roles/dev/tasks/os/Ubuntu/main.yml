@@ -1,5 +1,4 @@
 ---
----
 - name: Install Debian system packages
   apt:
     name: "{{item}}"
