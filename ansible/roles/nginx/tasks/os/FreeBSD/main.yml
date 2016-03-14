@@ -4,6 +4,3 @@
 - name: Remove old nginx.conf file
   file: path=/usr/local/etc/nginx/nginx.conf state=absent
   notify: restart nginx
-
-- name: Enable Nginx system service
-  service: name="{{ nginx_system_service }}" enabled=yes state=started
