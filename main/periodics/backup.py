@@ -18,6 +18,7 @@ from noc.lib.periodic import Task as PeriodicTask
 from noc.settings import config
 from noc import settings
 from noc.lib.fileutils import safe_rewrite
+from noc.core.config.base import config as cfg
 
 
 class Task(PeriodicTask):
@@ -144,17 +145,16 @@ class Task(PeriodicTask):
         # Build pg_dump command and options
         cmd = [config.get("path", "pg_dump"), "-Fc"]
         cmd += ["-f", out]
-        if settings.DATABASES["default"]["USER"]:
-            cmd += ["-U", settings.DATABASES["default"]["USER"]]
-            pgpass[3] = settings.DATABASES["default"]["USER"]
-        if settings.DATABASES["default"]["PASSWORD"]:
-            pgpass[4] = settings.DATABASES["default"]["PASSWORD"]
-        if settings.DATABASES["default"]["HOST"]:
-            cmd += ["-h", settings.DATABASES["default"]["HOST"]]
-            pgpass[0] = settings.DATABASES["default"]["HOST"]
-        if settings.DATABASES["default"]["PORT"]:
-            cmd += ["-p", str(settings.DATABASES["default"]["PORT"])]
-            pgpass[1] = settings.DATABASES["default"]["PORT"]
+        if cfg.pg_user:
+            cmd += ["-U", cfg.pg_user]
+            pgpass[3] = cfg.pg_user
+        if cfg.pg_password:
+            pgpass[4] = cfg.pg_password
+        cmd += ["-h", cfg.pg_connection_args["host"]]
+        pgpass[0] = cfg.pg_connection_args["host"]
+        if cfg.pg_connection_args["port"]:
+            cmd += ["-p", str(cfg.pg_connection_args["port"])]
+            pgpass[1] = cfg.pg_connection_args["port"]
         cmd += [settings.DATABASES["default"]["NAME"]]
         pgpass[2] = settings.DATABASES["default"]["NAME"]
         # Create temporary .pgpass
@@ -189,16 +189,13 @@ class Task(PeriodicTask):
             self.error("Cannot create directory %s: %s" % (out, why))
             return False
         cmd = [config.get("path", "mongodump"),
-               "-d", settings.NOSQL_DATABASE_NAME,
-               "-o", out]
-        if settings.NOSQL_DATABASE_HOST:
-            cmd += ["-h", settings.NOSQL_DATABASE_HOST]
-        if settings.NOSQL_DATABASE_PORT:
-            cmd += ["--port", settings.NOSQL_DATABASE_PORT]
-        if settings.NOSQL_DATABASE_USER:
-            cmd += ["-u", settings.NOSQL_DATABASE_USER]
-        if settings.NOSQL_DATABASE_PASSWORD:
-            cmd += ["-p", settings.NOSQL_DATABASE_PASSWORD]
+               "-d", cfg.mongo_db,
+               "-o", out,
+               "-h", cfg.mongo_connection_args["url"]]
+        if cfg.mongo_user:
+            cmd += ["-u", cfg.mongo_user]
+        if cfg.mongo_password:
+            cmd += ["-p", cfg.mongo_password]
         self.info("Dumping MongoDB database into %s" % out)
         retcode = self.subprocess_call(cmd)
         if retcode:
@@ -206,7 +203,7 @@ class Task(PeriodicTask):
             self.safe_unlink(out)
             return False
         self.info("Archiving dump")
-        r = self.tar(out + ".tar.gz", [settings.NOSQL_DATABASE_NAME], cwd=out)
+        r = self.tar(out + ".tar.gz", [cfg.mongo_db], cwd=out)
         self.safe_unlink(out)
         return r
 
