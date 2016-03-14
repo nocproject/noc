@@ -1,0 +1,18 @@
+---
+- name: Add InfluxDB apt key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+
+- name: Add InfluxDB repo
+  apt_repository:
+    repo: "deb https://repos.influxdata.com/ubuntu {{ ansible_lsb.codename }} stable"
+    state: present
+    update_cache: yes
+
+- name: Install Ubuntu packages
+  apt:
+    name: influxdb
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+
