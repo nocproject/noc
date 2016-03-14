@@ -63,8 +63,8 @@
     requirements: "requirements/node.txt"
     virtualenv: "{{noc_root}}"
     extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --upgrade"
-  environment: 
-    PYCURL_SSL_LIBRARY: "{{ pycurl_ssl_library }}"
+  environment:
+    PYCURL_SSL_LIBRARY: "{{ pycurl_ssl_library | default("openssl")}}"
 
 - name: Install python 2.6 compatibility packages
   pip:
