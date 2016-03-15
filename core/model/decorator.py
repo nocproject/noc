@@ -11,11 +11,23 @@ from django.db.models import signals as django_signals
 from mongoengine import signals as mongo_signals
 
 
+def _get_field_snapshot(sender, instance):
+    def g(field):
+        n = getattr(field, "raw_name", field.attname)
+        return getattr(instance, n)
+
+    return dict(
+        (f.name, g(f))
+        for f in sender._meta.local_fields
+    )
+
+
 def _on_model_save_handler(sender, instance, *args, **kwargs):
     if hasattr(instance, "initial_data"):
+        ns = _get_field_snapshot(sender, instance)
         instance.changed_fields = set(
             f for f in instance.initial_data
-            if getattr(instance, f) != instance.initial_data.get(f)
+            if instance.initial_data[f] != ns.get(f)
         )
     else:
         instance.changed_fields = set()
@@ -90,11 +102,7 @@ def on_delete(cls):
 
 
 def _on_init_handler(sender, instance, *args, **kwargs):
-    d = dict(
-        (f.name, getattr(instance, f.attname))
-        for f in sender._meta.local_fields
-    )
-    instance.initial_data = d
+    instance.initial_data = _get_field_snapshot(sender, instance)
 
 
 def on_init(cls):
