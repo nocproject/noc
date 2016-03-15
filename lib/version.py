@@ -13,6 +13,7 @@ import subprocess
 import platform
 ## NOC modules
 from noc import settings
+from noc.core.config.base import config
 
 
 ## Version cache
@@ -141,19 +142,25 @@ def get_python_version():
 def get_pg_version():
     with os.popen("pg_config --version") as f:
         return f.read().strip().split(" ", 1)[1]
+    try:
+        import psycopg2
+    except ImportError:
+        return ""
+    connect = psycopg2.connect(((config.pg_connection_args)))
+    cursor = connect.cursor()
+    # version string like
+    # PostgreSQL 9.4.4 on ....
+    cursor.execute("SELECT version()")
+    return cursor.fetchall()[0][0].split()[1]
 
 
 def get_mongo_version():
     try:
-        import pymongo
+        import mongoengine
     except ImportError:
         return ""
-    connection_args = {}
-    if settings.NOSQL_DATABASE_HOST:
-        connection_args["host"] = settings.NOSQL_DATABASE_HOST
-    if settings.NOSQL_DATABASE_PORT:
-        connection_args["port"] = int(settings.NOSQL_DATABASE_PORT)
-    c = pymongo.Connection(**connection_args)
+    mongoengine.connect(**config.mongo_connection_args)
+    c = mongoengine.connection._get_connection()
     i = c.server_info()
     return "%s (%dbit)" % (i["version"], i["bits"])
 
