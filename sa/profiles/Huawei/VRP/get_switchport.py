@@ -27,7 +27,7 @@ class Script(BaseScript):
         try:
             v = self.cli("display interface description")
         except self.CLISyntaxError:
-           rx_descr = re.compile(
+            rx_descr = re.compile(
                 r"^(?P<interface>(?:Eth|GE|TENGE)\d+/\d+/\d+)\s+"
                 r"(?P<status>(?:UP|(?:ADM\s)?DOWN))\s+(?P<speed>.+?)\s+"
                 r"(?P<duplex>.+?)\s+(?P<mode>access|trunk|hybrid|trunking)\s+"
