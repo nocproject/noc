@@ -11,7 +11,6 @@ import types
 import cPickle
 ## Django modules
 from django.db import models
-from django.contrib.admin.widgets import AdminTextInputWidget
 ## Third-party modules
 from south.modelsinspector import add_introspection_rules
 ## NOC Modules
@@ -333,23 +332,68 @@ class ColorField(models.Field):
             return value
 
 
-class DocumentReferenceField(models.Field):
-    __metaclass__ = models.SubfieldBase
+class DocumentReferenceDescriptor(object):
+    def __init__(self, field):
+        self.field = field
+        self.cache_name = field.get_cache_name()
+        self.raw_name = field.raw_name
 
+    def is_cached(self, instance):
+        return hasattr(instance, self.cache_name)
+
+    def __get__(self, instance, instance_type=None):
+        if instance is None:
+            return self
+        try:
+            # Try already resolved value
+            return getattr(instance, self.cache_name)
+        except AttributeError:
+            val = getattr(instance, self.raw_name)
+            if val is None:
+                # If NULL is an allowed value, return it.
+                if self.field.null:
+                    return None
+                raise self.field.document.DoesNotExist
+            rel_obj = self.field.document.objects.get(id=val)
+            setattr(instance, self.cache_name, rel_obj)
+            return rel_obj
+
+    def __set__(self, instance, value):
+        if instance is None:
+            raise AttributeError(
+                "%s must be accessed via instance" % self.field.name)
+        # If null=True, we can assign null here, but otherwise the value needs
+        # to be an instance of the related class.
+        if value is None and self.field.null == False:
+            raise ValueError(
+                "Cannot assign None: \"%s.%s\" does not allow null values." % (
+                    instance._meta.object_name, self.field.name)
+            )
+        elif value is not None and not isinstance(value, (self.field.document, basestring)):
+            raise ValueError(
+                "Cannot assign \"%r\": \"%s.%s\" must be a \"%s\" instance." % (
+                    value, instance._meta.object_name,
+                    self.field.name, self.field.document))
+        elif value and isinstance(value, self.field.document):
+            # Save to cache
+            setattr(instance, self.cache_name, value)
+            value = str(value.id)
+        setattr(instance, self.raw_name, value)
+
+
+class DocumentReferenceField(models.Field):
     def __init__(self, document, *args, **kwargs):
         self.document = document
         super(DocumentReferenceField, self).__init__(*args, **kwargs)
 
+    def contribute_to_class(self, cls, name):
+        super(DocumentReferenceField, self).contribute_to_class(cls,
+                                                                name)
+        self.raw_name = name + "_raw"
+        setattr(cls, self.name, DocumentReferenceDescriptor(self))
+
     def db_type(self, connection):
         return "CHAR(24)"
-
-    def to_python(self, value):
-        if not value:
-            return None
-        elif hasattr(value, "id"):
-            return value
-        else:
-            return self.document.objects.get(id=value)
 
     def get_prep_value(self, value):
         if value is None:
@@ -359,6 +403,6 @@ class DocumentReferenceField(models.Field):
         else:
             return str(value.id)
 
-
 ##
 add_introspection_rules([], ["^noc\.core\.model\.fields\."])
+from django.contrib.admin.widgets import AdminTextInputWidget
