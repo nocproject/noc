@@ -1,7 +1,4 @@
 ---
-- name: Add InfluxDB repository
-  template: src=os/RedHat/etc/yum.repos.d/influxdb.repo.j2 dest=/etc/yum.repos.d/influxdb.repo
-
 - name: Install InfluxDB
   yum: name="influxdb" state=present update_cache=yes
 

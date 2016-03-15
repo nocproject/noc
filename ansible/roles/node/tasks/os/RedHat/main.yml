@@ -15,7 +15,10 @@
   shell: yum update
 
 - name: Add EPEL Repo
-  yum: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version  }}.noarch.rpm state=present
+  template: src=os/RedHat/etc/yum.repos.d/epel.repo.j2 dest=/etc/yum.repos.d/epel.repo
+
+- name: Add InfluxDB repository
+  template: src=os/RedHat/etc/yum.repos.d/influxdb.repo.j2 dest=/etc/yum.repos.d/influxdb.repo
 
 - name: Install RedHat system packages
   yum: name={{item}} state=present update_cache=yes
@@ -31,6 +34,13 @@
    - postgresql
    - postgresql-devel
    - libcurl-devel
+   - telegraf
+
+- name: render telegraf config
+  template: src="etc/telegraf/telegraf.conf.j2" dest="/etc/telegraf/telegraf.conf"
+
+- name: Enable telegraf system service
+  service: name=telegraf enabled=yes state=started
 
 - name: Install supervisord init script
   template: src="os/RedHat/etc/systemd/system/noc.service.j2" dest="/usr/lib/systemd/system//{{ noc_system_service }}.service" mode="a+rx"
