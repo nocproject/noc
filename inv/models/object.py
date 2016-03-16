@@ -23,6 +23,7 @@ from noc.lib.nosql import PlainReferenceField
 from noc.lib.utils import deep_merge
 from noc.lib.middleware import get_user
 from noc.core.gridvcs.manager import GridVCSField
+from noc.core.defer import call_later
 
 
 class Object(Document):
@@ -486,9 +487,11 @@ class Object(Document):
             if document.container:
                 pop = document.get_pop()
                 if pop:
-                    refresh_schedule(
-                        "main.jobs", "inv.update_pop_links",
-                        key=pop.id, delta=5)
+                    call_later(
+                        "noc.inv.util.pop_links.update_pop_links",
+                        20,
+                        pop_id=pop.id
+                    )
             return
         # Changed object
         if "container" not in document._changed_fields:
