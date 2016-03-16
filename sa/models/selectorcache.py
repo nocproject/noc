@@ -88,9 +88,9 @@ class SelectorCache(Document):
         for sdata in old.itervalues():
             logging.debug(
                 "[%s] Remove from selector %s",
-                object.name, sdata["id"]
+                object.name, sdata["_id"]
             )
-            bulk.remove({"_id": sdata["_id"]})
+            bulk.find({"_id": sdata["_id"]}).remove()
         # Apply changes
         if nb:
             logging.debug(
