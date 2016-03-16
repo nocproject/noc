@@ -2,18 +2,14 @@
 ##----------------------------------------------------------------------
 ## Rebuild pop links
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-import datetime
-import random
 import logging
 ## NOC modules
-from noc.lib.scheduler.intervaljob import IntervalJob
 from noc.inv.models.object import Object
-from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 
