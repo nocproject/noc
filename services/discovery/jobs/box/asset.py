@@ -176,8 +176,12 @@ class AssetCheck(DiscoveryCheck):
                 data["asset"]["revision"] = revision
             if mfg_date:
                 data["asset"]["mfg_date"] = mfg_date
+            if self.object.container:
+                container = self.object.container.id
+            else:
+                container = self.lost_and_found
             o = Object(model=m, data=data,
-                       container=self.lost_and_found)
+                       container=container)
             o.save()
             o.log(
                 "Created by asset_discovery",
@@ -582,8 +586,12 @@ class AssetCheck(DiscoveryCheck):
         # Create object
         self.logger.info("Creating new object. model='%s', serial='%s'",
             m, serial)
+        if self.object.container:
+            container = self.object.container.id
+        else:
+            container = self.lost_and_found
         o = Object(model=model, data={"asset": {"serial": serial}},
-                   container=self.lost_and_found)
+                   container=container)
         o.save()
         o.log("Created by asset_discovery",
               system="DISCOVERY", managed_object=self.object,
