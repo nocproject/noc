@@ -5,6 +5,9 @@
 - name: Add Debian Nginx repo
   apt_repository: repo='deb http://nginx.org/packages/debian/ {{ ansible_distribution_release }} nginx' state=present  update_cache=yes
 
+- name: Install nginx monitoring
+  template: src="etc/telegraf/telegraf.d/nginx.conf.j2" dest="/etc/telegraf/telegraf.d/nginx.conf"
+
 - name: Install Nginx
   apt: name="nginx" update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
 

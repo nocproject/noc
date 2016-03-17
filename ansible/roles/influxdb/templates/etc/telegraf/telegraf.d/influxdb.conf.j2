@@ -1,0 +1,15 @@
+[[inputs.influxdb]]
+  ## Works with InfluxDB debug endpoints out of the box,
+  ## but other services can use this format too.
+  ## See the influxdb plugin's README for more details.
+
+  ## Multiple URLs from which to read InfluxDB-formatted JSON
+  urls = [
+    "http://{{noc_config.services.influxdb.0}}"
+  ]
+
+
+[[inputs.procstat]]
+pattern = "influxd"
+prefix = "influxd"
+

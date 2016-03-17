@@ -19,6 +19,9 @@
 - name: Install MongoDB
   yum: name="mongodb-org" state=present update_cache=yes
 
+- name: Install mongodb monitoring
+  template: src="etc/telegraf/telegraf.d/mongodb.conf.j2" dest="/etc/telegraf/telegraf.d/mongodb.conf"
+
 - name: Set mongod defaults
   template: src="os/RedHat/etc/sysconfig/mongod.j2" dest="/etc/sysconfig/mongod"
   notify: restart mongod

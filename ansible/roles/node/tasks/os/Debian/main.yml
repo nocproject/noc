@@ -2,20 +2,7 @@
 - name: Add InfluxDB apt key
   apt_key:
     url: https://repos.influxdata.com/influxdb.key
-
-- name: Add InfluxDB repo
-  apt_repository:
-    repo: "deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable"
-    state: present
-    update_cache: yes
-
-- name: Install apt-transport-https package
-  apt:
-    name: "{{item}}"
-    update_cache: yes
-    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
-  with_items:
-    - apt-transport-https
+    validate_certs: no
 
 - name: Install Debian system packages
   apt:
@@ -35,6 +22,20 @@
     - gcc
     - libpq-dev
     - libcurl4-openssl-dev
+    - apt-transport-https
+
+- name: Add InfluxDB repo
+  apt_repository:
+    repo: "deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+
+- name: Install Telegraf
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+  with_items:
     - telegraf
     - lsof
 

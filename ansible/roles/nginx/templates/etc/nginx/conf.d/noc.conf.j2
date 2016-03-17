@@ -62,6 +62,12 @@ server {
         return 302 /api/login/;
     }
 
+    location /ng_stats {
+        stub_status;
+        allow 127.0.0.1;
+        deny any;
+    }
+
 {% if noc_config["services"].get("login", []) %}
     # Login service api
     location /api/login/ {
