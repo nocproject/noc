@@ -35,6 +35,13 @@
    - postgresql-devel
    - libcurl-devel
    - telegraf
+   - lsof
+
+- name: Install Telegraf system packages
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+   - telegraf
+   - lsof
 
 - name: render telegraf config
   template: src="etc/telegraf/telegraf.conf.j2" dest="/etc/telegraf/telegraf.conf"

@@ -18,3 +18,7 @@
   set_fact:
     postgresql_conf_path: "/etc/postgresql/{{pg_cluster_version}}/{{pg_cluster_name}}/postgresql.conf"
     postgresql_hba_path: "/etc/postgresql/{{pg_cluster_version}}/{{pg_cluster_name}}/pg_hba.conf"
+
+- name: Install postgres monitoring
+  template: src="etc/telegraf/telegraf.d/postgres.conf.j2" dest="/etc/telegraf/telegraf.d/postgres.conf"
+

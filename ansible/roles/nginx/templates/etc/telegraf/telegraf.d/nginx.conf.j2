@@ -1,0 +1,9 @@
+[[inputs.nginx]]
+  ## An array of Nginx stub_status URI to gather stats.
+  urls = ["https://{{ noc_web_host }}/ng_stats"]
+
+
+[[inputs.procstat]]
+pid_file = "/var/run/nginx.pid"
+prefix = "nginx"
+

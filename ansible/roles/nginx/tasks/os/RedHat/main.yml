@@ -2,6 +2,9 @@
 - name: Add RedHat Nginx repo
   yum: name=http://nginx.org/packages/rhel/{{ ansible_distribution_major_version }}/noarch/RPMS/nginx-release-rhel-{{ ansible_distribution_major_version }}-0.el{{ ansible_distribution_major_version }}.ngx.noarch.rpm state=present
 
+- name: Install nginx monitoring
+  template: src="etc/telegraf/telegraf.d/nginx.conf.j2" dest="/etc/telegraf/telegraf.d/nginx.conf"
+
 - name: Install Nginx
   yum: name=nginx state=present disable_gpg_check=yes
 
