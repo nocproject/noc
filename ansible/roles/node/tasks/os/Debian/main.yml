@@ -1,4 +1,14 @@
 ---
+- name: Add InfluxDB apt key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+
+- name: Add InfluxDB repo
+  apt_repository:
+    repo: "deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+
 - name: Install Debian system packages
   apt:
     name: "{{item}}"
@@ -18,6 +28,8 @@
     - libpq-dev
     - libcurl4-openssl-dev
     - apt-transport-https
+    - telegraf
+    - lsof
 
 - name: Install supervisord init script
   template:
@@ -32,6 +44,12 @@
     dest: "/etc/systemd/system/{{ noc_system_service }}.service"
   when: "ansible_service_mgr == 'systemd'"
   notify: reload systemd
+
+- name: render telegraf config
+  template: src="etc/telegraf/telegraf.conf.j2" dest="/etc/telegraf/telegraf.conf"
+
+- name: Enable telegraf system service
+  service: name=telegraf enabled=yes state=started
 
 - name: reload systemd
   command: /bin/systemctl daemon-reload
