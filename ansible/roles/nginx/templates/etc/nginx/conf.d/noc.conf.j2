@@ -65,7 +65,7 @@ server {
     location /ng_stats {
         stub_status;
         allow 127.0.0.1;
-        deny any;
+        deny all;
     }
 
 {% if noc_config["services"].get("login", []) %}
