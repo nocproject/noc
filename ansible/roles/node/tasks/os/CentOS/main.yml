@@ -1,11 +1,7 @@
-- name: Enable EPEL repo
-  yum:
-    name: "https://mirrors.fedoraproject.org/metalink?repo=epel-{{ ansible_distribution_major_version }}&arch=$basearch"
-    state: present
-
 - name: Install CentOS system packages
   yum: name={{item}} state=present update_cache=yes
   with_items:
+   - epel-release
    - tcpdump
    - net-tools
    - man
@@ -16,6 +12,8 @@
    - gcc
    - postgresql
    - postgresql-devel
+   - openssl-devel
+   - libcurl-devel
 
 - name: Install supervisord init script
   template: src="os/CentOS/etc/systemd/system/noc.service.j2" dest="/usr/lib/systemd/system//{{ noc_system_service }}.service" mode="a+rx"
