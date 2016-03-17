@@ -5,11 +5,11 @@
 
 - name: Add InfluxDB repo
   apt_repository:
-    repo: "deb https://repos.influxdata.com/debian {{ ansible_lsb.codename }} stable"
+    repo: "deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
 
-- name: Install Debian packages
+- name: Install InfluxDB package
   apt:
     name: influxdb
     state: present
