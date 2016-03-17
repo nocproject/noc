@@ -9,6 +9,14 @@
     state: present
     update_cache: yes
 
+- name: Install apt-transport-https package
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+  with_items:
+    - apt-transport-https
+
 - name: Install Debian system packages
   apt:
     name: "{{item}}"
@@ -27,7 +35,6 @@
     - gcc
     - libpq-dev
     - libcurl4-openssl-dev
-    - apt-transport-https
     - telegraf
     - lsof
 
