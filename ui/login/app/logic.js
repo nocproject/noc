@@ -14,7 +14,7 @@ NOC.login.app.logic = {
         API.login.login(data).then(
             function(result) {
                 if(result === true) {
-                    NOC.msg.complete("Logged in");
+                    document.location = NOC.login.app.original_uri;
                 } else {
                     NOC.msg.failed("Failed to log in");
                 }
