@@ -24,6 +24,14 @@ upstream login {
 }
 {% endif %}
 
+{% if noc_config["services"].get("card", []) %}
+upstream card {
+{% for n in noc_config["services"].get("card", []) %}
+    server {{ n }};
+{% endfor %}
+}
+{% endif %}
+
 {% if noc_config["services"].get("notebook", []) %}
 upstream notebook {
 {% for n in noc_config["services"].get("notebook", []) %}
@@ -59,7 +67,7 @@ server {
     error_page 401 = @error401;
 
     location @error401 {
-        return 302 /api/login/;
+        return 302 /api/login/?uri=$request_uri;
     }
 
     location /ng_stats {
@@ -82,6 +90,22 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Original-URI $request_uri;
+    }
+{% endif %}
+
+{% if noc_config["services"].get("card", []) %}
+    # Card service api
+    location /api/card/ {
+        proxy_pass http://card;
+        rewrite  ^/api/card/(.*)  /$1 break;
+        # internal;
+        gzip on;
+        gzip_types text/css text/x-js;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 {% endif %}
 
@@ -161,6 +185,10 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request_set $user $upstream_http_remote_user;
+        proxy_set_header Remote-User $user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        proxy_set_header Remote-Groups $groups;
     }
 {% endif %}
 
