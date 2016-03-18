@@ -1,0 +1,18 @@
+- name: Add InfluxDB repository
+  template: src=os/RedHat/etc/yum.repos.d/influxdb.repo.j2 dest=/etc/yum.repos.d/influxdb.repo
+
+- name: Add GPG key influxdb
+  rpm_key: state=present key=https://repos.influxdata.com/influxdb.key
+
+
+- name: Install RedHat system packages
+  yum: name={{item}} state=present update_cache=yes
+  with_items:
+   - telegraf
+   - lsof
+
+- name: render telegraf config
+  template: src="etc/telegraf/telegraf.conf.j2" dest="/etc/telegraf/telegraf.conf"
+
+- name: Enable telegraf system service
+  service: name=telegraf enabled=yes state=started
