@@ -24,6 +24,5 @@ class LoginService(UIService):
             ("^/auth/$", AuthRequestHandler)
         ]
 
-
 if __name__ == "__main__":
     LoginService().start()
