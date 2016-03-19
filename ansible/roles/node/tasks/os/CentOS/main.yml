@@ -1,5 +1,8 @@
 - name: Install CentOS system packages
-  yum: name={{item}} state=present update_cache=yes
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
   with_items:
    - epel-release
    - tcpdump
@@ -12,11 +15,18 @@
    - gcc
    - postgresql
    - postgresql-devel
-   - openssl-devel
    - libcurl-devel
+   - openssl-devel
 
 - name: Install supervisord init script
-  template: src="os/CentOS/etc/systemd/system/noc.service.j2" dest="/usr/lib/systemd/system//{{ noc_system_service }}.service" mode="a+rx"
+  template:
+    src: "os/CentOS/etc/systemd/system/noc.service.j2"
+    dest: "/usr/lib/systemd/system//{{ noc_system_service }}.service"
+    mode: "a+rx"
+
+- include: "firewall.yml"
+
+- include: "telegraf.yml"
 
 - name: Reload systemd daemon
-  shell: /usr/bin/systemctl daemon-reload
+  command: /usr/bin/systemctl daemon-reload

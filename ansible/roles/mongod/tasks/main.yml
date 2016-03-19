@@ -1,41 +1,58 @@
-# mongodb role
 ---
 - name: Creating mongodb directories
-  file: path="{{item}}" state="directory" mode=0755
+  file:
+    path: "{{ item }}"
+    state: "directory"
+    mode: 0755
   with_items:
-    - "{{noc_root}}/var/etc/mongo"
+    - "{{ noc_root }}/var/etc/mongo"
 
 - name: Setting mongod config
-  template: src="mongod.conf.j2" dest="{{noc_root}}/var/etc/mongo/mongod.conf"
+  template:
+    src: mongod.conf.j2
+    dest: "{{ noc_root }}/var/etc/mongo/mongod.conf"
   notify: restart mongod
 
 - name: Setting mongod-arbiter config
-  template: src="mongod-arbiter.conf.j2" dest="{{noc_root}}/var/etc/mongo/mongod-arbiter.conf"
+  template:
+    src: mongod-arbiter.conf.j2
+    dest: "{{ noc_root }}/var/etc/mongo/mongod-arbiter.conf"
   notify: restart mongod-arbiter
   when: "'svc-mongod-arbiter' in group_names"
 
 - name: Generating mongo key file
   copy:
-    src: "{{lookup('mongo_key', tower_data + '/mongo/mongo.key')}}"
-    dest: "{{noc_root}}/var/etc/mongo/mongo.key"
+    src: "{{ lookup('mongo_key', tower_data + '/mongo/mongo.key') }}"
+    dest: "{{ noc_root }}/var/etc/mongo/mongo.key"
 
 - include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Setting mongo.key permissions
   file:
-    path: "{{noc_root}}/var/etc/mongo/mongo.key"
-    owner: "{{mongo_user}}"
+    path: "{{ noc_root }}/var/etc/mongo/mongo.key"
+    owner: "{{ mongo_user }}"
     mode: 0400
 
 - name: Enable MongoDB system service
-  service: name="{{mongod_system_service}}" enabled=yes state=started
+  service:
+    name: "{{ mongod_system_service }}"
+    enabled: yes
+    state: started
 
 - name: Create MongoDB arbiter directory
-  file: path="{{noc_root}}/var/db/mongo-arbiter" owner="{{mongo_user}}" mode=0700 state=directory
+  file:
+    path: "{{ noc_root }}/var/db/mongo-arbiter"
+    owner: "{{ mongo_user }}"
+    group: "{{ mongo_user }}"
+    mode: 0700
+    state: directory
   when: "'svc-mongod-arbiter' in group_names"
 
 - name: Enable MongoDB arbiter system service
-  service: name="{{mongod_arbiter_system_service}}" enabled=yes state=started
+  service:
+    name: "{{ mongod_arbiter_system_service }}"
+    enabled: yes
+    state: started
   when: "'svc-mongod-arbiter' in group_names"
 
 - include: "master.yml"
