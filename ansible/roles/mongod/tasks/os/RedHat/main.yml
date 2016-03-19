@@ -1,5 +1,8 @@
 # mongodb RedHat
 ---
+- name: Add GPG key EPEL
+  rpm_key: state=present key=https://www.mongodb.org/static/pgp/server-3.2.asc
+
 - name: Add MongoDB repository
   template: src=os/RedHat/etc/yum.repos.d/mongodb-org-3.2.repo.j2 dest=/etc/yum.repos.d/mongodb-org-3.2.repo
 
