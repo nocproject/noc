@@ -7,3 +7,12 @@
   service: name="{{ noc_system_service }}" state=stopped
   failed_when: False
   changed_when: False
+
+- name: Mount cache dir 
+  mount:
+      src: cache
+      name: /root/.cache
+      state: mounted
+      fstype: vboxsf
+  when: "'guest' in ansible_virtualization_role"
+  ignore_errors: yes

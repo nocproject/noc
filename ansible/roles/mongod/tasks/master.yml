@@ -38,3 +38,8 @@
 - name: Update replica set configuration
   shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p {{ noc_mongo_admin_password }} admin {{ noc_root }}/var/etc/mongo/rsinit.js"
   when: rs_conf_status.changed and rs_status.rc == 0
+
+- name: Install logrotated config
+  template:
+    src: "etc/logroate.d/mongodb.conf"
+    dest: "/etc/logroate.d/mongodb.conf"
