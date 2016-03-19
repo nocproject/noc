@@ -41,5 +41,6 @@
 
 - name: Install logrotated config
   template:
-    src: "etc/logroate.d/mongodb.conf"
-    dest: "/etc/logroate.d/mongodb.conf"
+    src: "etc/logrotate.d/mongodb.conf"
+    dest: "/etc/logrotate.d/mongodb.conf"
+
