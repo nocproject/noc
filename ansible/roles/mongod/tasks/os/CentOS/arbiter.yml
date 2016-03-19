@@ -2,7 +2,7 @@
 - name: Copy mongod-arbiter service file
   template:
     src: mongod-arbiter.service.j2
-    dest: /lib/systemd/system/mongod-arbiter.service
+    dest: /etc/systemd/system/mongod-arbiter.service
   register: arbiter_service
   notify: restart mongod-arbiter
 
