@@ -1,7 +1,7 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Login service
+## Card service
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
@@ -9,20 +9,16 @@
 
 ## NOC modules
 from noc.core.service.ui import UIService
-from auth import AuthRequestHandler
-from api.login import LoginAPI
+from card import CardRequestHandler
 
 
-class LoginService(UIService):
-    name = "login"
-    api = [
-        LoginAPI
-    ]
+class CardService(UIService):
+    name = "card"
 
     def get_handlers(self):
-        return super(LoginService, self).get_handlers() + [
-            ("^/auth/$", AuthRequestHandler)
+        return super(CardService, self).get_handlers() + [
+            ("^/view/(\S+)/(\S+)/$", CardRequestHandler)
         ]
 
 if __name__ == "__main__":
-    LoginService().start()
+    CardService().start()

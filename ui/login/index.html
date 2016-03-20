@@ -21,6 +21,7 @@
 </head>
 <body>
     <script type="text/javascript" charset="utf-8">
+        NOC.login.app.original_uri = "{{ request.arguments['uri'][0] }}";
         webix.ready(NOC.login.app.logic.init);
     </script>
 </body>

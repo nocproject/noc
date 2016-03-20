@@ -11,7 +11,7 @@ NOC.login.app.ui = {
                     rows: [
                         {
                             type: "header",
-                            template: "NOC Tower Login"
+                            template: "NOC Login"
                         },
                         // Login form
                         {

@@ -34,13 +34,15 @@ class UIHandler(tornado.web.RequestHandler):
         self.name = name
 
     def get(self):
-        # @todo: Expose addiitonal context variables
         index_path = os.path.join(self.PREFIX, "ui",
                                   self.name, "index.html")
+        self.set_header("Cache-Control", "no-cache; must-revalidate")
+        self.set_header("Expires", "0")
         return self.render(
             index_path,
             mergecache=self.mergecache,
-            hashed=self.hashed
+            hashed=self.hashed,
+            request=self.request
         )
 
     def mergecache(self, jslist):

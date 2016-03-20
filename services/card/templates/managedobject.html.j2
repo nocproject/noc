@@ -1,0 +1,175 @@
+<table class="table table-condensed table-hover">
+<thead>
+    <tr>
+        <th colspan="2">{{ object_profile_name }}</th>
+    </tr>
+</thead>
+<tbody>
+<tr>
+    <th colspan="2" class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[current_state] }}">
+        {{ name }}
+        <span style="float: right">
+        {% if current_state == "down" %}Down{% else %}Up{% endif %}{%if current_start %}: {{ current_duration }} ({{ current_start }}){% endif %}
+        </span>
+    </th>
+</tr>
+<tr>
+    <th scope="row" class="col-sm-1">Container</th>
+    <td>
+        {% for p in container_path %}
+        {% if not loop.first %}&gt;{% endif %}
+        {{ p.name }}
+        {% endfor %}
+    </td>
+</tr>
+<tr>
+    <th scope="row">Administrative domain</th>
+    <td>{{ object.administrative_domain.name }}</td>
+</tr>
+<tr>
+    <th scope="row">Segment</th>
+    <td>{% if segment %}{{ segment.name }}{% endif %}</td>
+</tr>
+<tr>
+    <th scope="row">Model</th>
+    <td>{{ platform }}</td>
+</tr>
+<tr>
+    <th scope="row">IP</th>
+    <td>{{ address }}</td>
+</tr>
+<tr>
+    <th scope="row">MAC</th>
+    <td>{{ macs }}</td>
+</tr>
+<tr {% if recommended_version %}class="warning"{% endif %}>
+    <th scope="row">Version</th>
+    <td>{% if version %}{{ version }}
+            {% if recommended_version %}
+            (Recommended: {{ recommended_version }})
+            {% endif %}
+        {% endif %}
+    </td>
+</tr>
+<tr>
+    <th scope="row">Description</th>
+    <td>{% if description %}{{ description }}{% endif %}</td>
+</tr>
+<tr>
+    <th scope="row">Service Range</th>
+    <td>N/A</td>
+</tr>
+<tr>
+    <th scope="row">L2 Terminator</th>
+    <td>
+        {% if l2_terminators %}
+        <table class="table table-condensed table-hover">
+            <thead>
+                <th>Name</th>
+                <th>Address</th>
+                <th>Model</th>
+            </thead>
+            <tbody>
+                {% for t in l2_terminators %}
+                <tr>
+                    <td><a href="/api/card/view/managedobject/{{ t.id }}/">{{ t.name }}</a></td>
+                    <td>{{ t.address }}</td>
+                    <td>{{ t.platform }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </td>
+</tr>
+<tr>
+    <th scope="row">L3 Terminator</th>
+    <td>N/A</td>
+</tr>
+<tr>
+    <th scope="row">Neighbors</th>
+    <td>
+        {% if links %}
+            <table class="table table-condensed hable-hover">
+                <thead>
+                    <th>Role</th>
+                    <th>Local port</th>
+                    <th>Remote object</th>
+                    <th>Remote port</th>
+                </thead>
+                <tbody>
+                    {% for l in links %}
+                        <tr class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[l["remote_status"]] }}">
+                            <td>
+                                {% if l["role"] == "uplink" %}
+                                    Uplink
+                                {% else %}
+                                    Downlink
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for i in l["local_interface"] %}
+                                {{ i.name }}{% if not loop.first %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a href="/api/card/view/managedobject/{{ l["remote_object"].id }}/">
+                                    {{ l["remote_object"].name }}
+                                </a>
+                            </td>
+                            <td>
+                                {% for i in l["remote_interface"] %}
+                                {{ i.name }}{% if not loop.first %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </td>
+</tr>
+<tr>
+    <th scope="row">TT</th>
+    <td>N/A</td>
+</td>
+<tr>
+    <th scope="row">Alarms</th>
+    <td>N/A</td>
+<td>
+</tbody>
+</table>
+<table class="table table-condensed table-hover">
+    <thead>
+        <th>Port</th>
+        <th>Admin/Oper</th>
+        <th>Speed/Duplex</th>
+        <th>VLAN</th>
+        <th>Errors</th>
+        <th>Service</th>
+    </thead>
+    <tbody>
+        {% for i in interfaces %}
+            <tr>
+                <td>{{ i["name"] }}</td>
+                <td{% if not i["oper_status"] %} class="danger"{% endif %}>
+                    {{ {True: "Up", False: "Down"}[i["admin_status"]] }}/
+                    {{ {True: "Up", False: "Down"}[i["oper_status"]] }}
+                </td>
+                <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
+                    {% if i["oper_status"] %}
+                        {{ i["speed"] }}M/{{ {True: "Full", False: "Half"}[i.full_duplex] }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                    {% if i["untagged_vlan"] %}U: {{ i["untagged_vlan"] }}{% endif %}
+                    {% if i["tagged_vlans"] %}T: {{ i["tagged_vlans"] }}{% endif %}
+                </td>
+                <td></td>
+                <td>{{ i["description"] }}</td>
+            <tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -66,6 +66,12 @@ class ManagedObjectProfile(models.Model):
         max_length=256, blank=True, null=True,
         default=",60"
     )
+    #
+    card = models.CharField(
+        _("Card name"),
+        max_length=256, blank=True, null=True,
+        default="managedobject"
+    )
     # Enable box discovery.
     # Box discovery launched on system changes
     enable_box_discovery = models.BooleanField(default=True)
