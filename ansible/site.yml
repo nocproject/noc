@@ -60,4 +60,10 @@
     - role: ping
       when: "'svc-ping' in group_names"
 
+    - role: sae
+      when: "'svc-sae' in group_names"
+
+    - role: discovery
+      when: "'svc-discovery' in group_names"
+
     - role: post
