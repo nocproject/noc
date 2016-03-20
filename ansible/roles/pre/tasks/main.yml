@@ -8,11 +8,11 @@
   failed_when: False
   changed_when: False
 
-- name: Mount cache dir 
+- name: Mount cache dir
   mount:
       src: cache
       name: /root/.cache
       state: mounted
       fstype: vboxsf
-  when: "'guest' in ansible_virtualization_role"
+  when: "'virtualbox' in ansible_virtualization_type"
   ignore_errors: yes
