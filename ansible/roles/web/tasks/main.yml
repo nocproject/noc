@@ -6,4 +6,5 @@
     virtualenv: "{{noc_root}}"
     extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
 
-- include: "os/{{ ansible_distribution }}/main.yml"
+- name: "Include OS-specific tasks"
+  include: "os/{{ ansible_distribution }}/main.yml"
