@@ -19,16 +19,16 @@ class BaseCard(object):
         "custom/services/card/templates/",
         "services/card/templates/"
     ]
+    model = None
 
-    def __init__(self, query):
-        self.query = query
-        self.object = self.find(**query)
+    def __init__(self, id):
+        self.object = self.dereference(id)
 
-    def find(self, **kwargs):
-        """
-        Find object by keywords
-        """
-        return None
+    def dereference(self, id):
+        try:
+            return self.model.objects.get(pk=id)
+        except self.model.DoesNotExist:
+            return None
 
     def get_data(self):
         """
@@ -47,7 +47,7 @@ class BaseCard(object):
         Return Template instance
         """
         name = self.get_template_name()
-        if name not in self.template_cache[name]:
+        if name not in self.template_cache:
             self.template_cache[name] = None
             for p in self.TEMPLATE_PATH:
                 tp = os.path.join(p, name + ".html.j2")
@@ -59,6 +59,7 @@ class BaseCard(object):
     def render(self):
         template = self.get_template()
         if template:
-            return template.render(**self.get_data())
+            data = self.get_data()
+            return template.render(**data)
         else:
             return None
