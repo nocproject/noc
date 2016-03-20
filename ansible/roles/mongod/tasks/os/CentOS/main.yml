@@ -1,27 +1,42 @@
-# mongodb CentOS
 ---
 - name: Add MongoDB repository
-  template: src=os/CentOS/etc/yum.repos.d/mongodb-org-3.0.repo.j2 dest=/etc/yum.repos.d/mongodb-org-3.0.repo
-
-- name: Disable Transparent Hugepages (bootloader)
-  template: src="os/CentOS/etc/grub.d/50_disable_transparent_hugepages.j2"
-            dest=/etc/grub.d/50_disable_transparent_hugepages
-  register: dht_status
+  template:
+    src: os/CentOS/etc/yum.repos.d/mongodb-org.repo.j2
+    dest: /etc/yum.repos.d/mongodb-org.repo
 
 - name: Disable Transparent Hugepages (runtime)
   shell: if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
             echo never > /sys/kernel/mm/transparent_hugepage/enabled;
             echo never > /sys/kernel/mm/transparent_hugepage/defrag;
          fi
-  when: dht_status.changed
   notify: restart mongod
 
 - name: Install MongoDB
-  yum: name="mongodb-org" state=present update_cache=yes
+  yum:
+    name: mongodb-org
+    state: present
+    update_cache: yes
 
-- name: Set mongod defaults
-  template: src="os/CentOS/etc/sysconfig/mongod.j2" dest="/etc/sysconfig/mongod"
+- name: Delete mongod init file
+  file:
+    path: /etc/init.d/mongod
+    state: absent
+
+- name: Copy mongod service file
+  template:
+    src: mongod.service.j2
+    dest: /lib/systemd/system/mongod.service
+  register: mongod_service
   notify: restart mongod
+
+- name: Copy systemd tmpfile
+  template:
+    src: mongo-tmpd.conf.j2
+    dest: /etc/tmpfiles.d/mongo.conf
 
 - include: "arbiter.yml"
   when: "'svc-mongod-arbiter' in group_names"
+
+- name: Reload systemd daemon
+  command: /usr/bin/systemctl daemon-reload
+  when: mongod_service.changed

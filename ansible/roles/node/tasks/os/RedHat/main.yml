@@ -11,14 +11,14 @@
       fstype: iso9660
       opts: ro
 
-- name: Yum update
-  shell: yum update
-
 - name: Add EPEL Repo
   template: src=os/RedHat/etc/yum.repos.d/epel.repo.j2 dest=/etc/yum.repos.d/epel.repo
 
-- name: Add InfluxDB repository
-  template: src=os/RedHat/etc/yum.repos.d/influxdb.repo.j2 dest=/etc/yum.repos.d/influxdb.repo
+- name: Add GPG key EPEL
+  rpm_key: state=present key=http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+
+- name: Yum update
+  shell: yum update
 
 - name: Install RedHat system packages
   yum: name={{item}} state=present update_cache=yes
@@ -34,20 +34,10 @@
    - postgresql
    - postgresql-devel
    - libcurl-devel
-   - telegraf
-   - lsof
 
-- name: Install Telegraf system packages
-  yum: name={{item}} state=present update_cache=yes
-  with_items:
-   - telegraf
-   - lsof
+- include: "telegraf.yml"
 
-- name: render telegraf config
-  template: src="etc/telegraf/telegraf.conf.j2" dest="/etc/telegraf/telegraf.conf"
-
-- name: Enable telegraf system service
-  service: name=telegraf enabled=yes state=started
+- include: "firewall.yml"
 
 - name: Install supervisord init script
   template: src="os/RedHat/etc/systemd/system/noc.service.j2" dest="/usr/lib/systemd/system//{{ noc_system_service }}.service" mode="a+rx"

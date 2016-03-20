@@ -1,0 +1,9 @@
+- name: Add firewall permissions for nodes
+  firewalld:
+    rich_rule: "rule family='ipv4' source address={{ item.value.address }} accept"
+    permanent: true
+    state: enabled
+  with_dict: "{{ noc_config.nodes }}"
+
+- name: Reload firewalld service
+  command: firewall-cmd --reload
