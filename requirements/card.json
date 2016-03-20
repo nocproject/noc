@@ -1,0 +1,9 @@
+{
+  "url": "https://cdn.nocproject.org/pkg/",
+  "packages": [
+      {
+        "name": "bootstrap",
+        "version": "3.3.6"
+      }
+  ]
+}

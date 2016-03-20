@@ -18,11 +18,12 @@ class AuthRequestHandler(tornado.web.RequestHandler):
         """
         Checks Basic auth or noc_user secure cookie
         """
-        original_uri = self.request.headers["X-Original-Uri"]
-        user_cookie = self.get_secure_cookie(
+        user = self.get_secure_cookie(
             self.USER_COOKIE
         )
-        if user_cookie:
+        if user:
             self.set_status(200, "OK")
+            self.set_header("Remote-User", user)
+            # Remote-Groups
         else:
             self.set_status(401, "Not authorized")
