@@ -18,7 +18,7 @@ mongo_path: /usr/bin/mongo
 mongo_db_path: /var/lib/mongodb/
 mongo_log_path: /var/log/mongodb/mongod.log
 mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
-mongo_pid: " "
+mongo_pid: "/var/run/mongod.pid"
 mongo_arbiter_pid: " "
 mongo_fork: "false"
 # InfluxDB settings
