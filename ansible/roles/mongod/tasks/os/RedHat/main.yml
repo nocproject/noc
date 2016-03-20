@@ -31,3 +31,15 @@
 
 - include: "arbiter.yml"
   when: "'svc-mongod-arbiter' in group_names"
+
+- name: Find blockdev for readahead tuning
+  shell: df -P {{ mongo_db_path }} |tail -1|awk '{print $1}'
+  register: mongodb_blockdev
+
+- name: persist read ahead value
+  template:
+    src: "etc/systemd/system/custom-mongodb-readahead.service"
+    dest: "/etc/systemd/system/custom-mongodb-readahead.service"
+
+- name: enable persist read ahead value service
+  service: custom-mongodb-readahead state=restarted
