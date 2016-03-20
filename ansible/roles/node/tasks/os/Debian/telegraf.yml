@@ -1,0 +1,27 @@
+---
+- name: Add InfluxDB apt key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    validate_certs: no
+
+- name: Add InfluxDB repo
+  apt_repository:
+    repo: "deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+
+- name: Install Telegraf
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+  with_items:
+    - telegraf
+    - lsof
+
+- name: render telegraf config
+  template: src="etc/telegraf/telegraf.conf.j2" dest="/etc/telegraf/telegraf.conf"
+
+- name: Enable telegraf system service
+  service: name=telegraf enabled=yes state=started
+

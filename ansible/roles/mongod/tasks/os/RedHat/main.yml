@@ -1,5 +1,8 @@
 # mongodb RedHat
 ---
+- name: Add GPG key EPEL
+  rpm_key: state=present key=https://www.mongodb.org/static/pgp/server-3.2.asc
+
 - name: Add MongoDB repository
   template: src=os/RedHat/etc/yum.repos.d/mongodb-org-3.2.repo.j2 dest=/etc/yum.repos.d/mongodb-org-3.2.repo
 
@@ -28,3 +31,15 @@
 
 - include: "arbiter.yml"
   when: "'svc-mongod-arbiter' in group_names"
+
+- name: Find blockdev for readahead tuning
+  shell: df -P {{ mongo_db_path }} |tail -1|awk '{print $1}'
+  register: mongodb_blockdev
+
+- name: persist read ahead value
+  template:
+    src: "etc/systemd/system/custom-mongodb-readahead.service"
+    dest: "/etc/systemd/system/custom-mongodb-readahead.service"
+
+- name: enable persist read ahead value service
+  service: custom-mongodb-readahead state=restarted
