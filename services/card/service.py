@@ -17,9 +17,8 @@ class CardService(UIService):
 
     def get_handlers(self):
         return super(CardService, self).get_handlers() + [
-            ("^/card/(\S+)/$", CardRequestHandler)
+            ("^/view/(\S+)/(\S+)/$", CardRequestHandler)
         ]
-
 
 if __name__ == "__main__":
     CardService().start()
