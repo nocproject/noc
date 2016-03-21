@@ -36,9 +36,8 @@ class ManagedObjectCard(BaseCard):
     def get_data(self):
         # @todo: Stage
         # @todo: Service range
-        # @todo: Neighbors
         # @todo: Open TT
-        # @todo: Alarms
+        now = datetime.datetime.now()
         # Get card title
         title_tpl = self.object.object_profile.card_title_template or self.DEFAULT_CARD_TEMPLATE
         title = Template(title_tpl).render({"object": self.object})
@@ -66,7 +65,7 @@ class ManagedObjectCard(BaseCard):
             if outage:
                 current_start = outage.start
         if current_start:
-            duration = datetime.datetime.now() - current_start
+            duration = now - current_start
         # Get container path
         cp = []
         if self.object.container:
@@ -155,6 +154,16 @@ class ManagedObjectCard(BaseCard):
             )
             l2_terminators = sorted(l2_terminators, key=operator.attrgetter("name"))
         # @todo: Administrative domain path
+        # Alarms
+        alarm_list = []
+        for a in alarms:
+            alarm_list += [{
+                "id": a.id,
+                "timestamp": a.timestamp,
+                "duration": now - a.timestamp,
+                "subject": a.subject
+            }]
+        alarm_list = sorted(alarm_list, key=operator.itemgetter("timestamp"))
         # Build result
         r = {
             "id": self.object.id,
@@ -181,6 +190,7 @@ class ManagedObjectCard(BaseCard):
             "l2_terminators": l2_terminators,
             "tt": [],
             "links": links,
+            "alarms": alarm_list,
             "interfaces": interfaces
         }
         # @todo: admin status, oper status, speed/duplex, errors in/out,

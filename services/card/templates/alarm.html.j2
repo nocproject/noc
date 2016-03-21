@@ -1,0 +1,56 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2" class="{{ {'C': 'success', 'A': 'danger'}[alarm.status] }}">
+            {{ subject }}
+            <span style="float: right">
+                {{ duration }}({{ timestamp }})
+            </span>
+        </th>
+    </tr>
+    <tr>
+        <th scope="row">Class</th>
+        <td>{{ alarm.alarm_class.name }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Object</th>
+        <td>
+            <a href="/api/card/view/managedobject/{{ managed_object.id }}/">{{ managed_object.name }}</a>
+            ({{ managed_object.address }}, {{ managed_object.platform }})
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="col-sm-1">Container</th>
+        <td>
+            {% for p in container_path %}
+            {% if not loop.first %}&gt;{% endif %}
+            {{ p.name }}
+            {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">Segment</th>
+        <td>{{ managed_object.segment.name }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Administrative Domain</th>
+        <td>{{ managed_object.administrative_domain.name }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Body</th>
+        <td><pre>{{ body }}</pre></td>
+    </tr>
+    <tr>
+        <th scope="row">Symptoms</th>
+        <td><pre>{{ alarm.alarm_class.symptoms }}</pre></td>
+    </tr>
+    <tr>
+        <th scope="row">Probable Causes</th>
+        <td><pre>{{ alarm.alarm_class.probable_causes }}</pre></td>
+    </tr>
+    <tr>
+        <th scope="row">Recommended Actions</th>
+        <td><pre>{{ alarm.alarm_class.recommended_actions }}</pre></td>
+    </tr>
+</tbody>
+</table>
