@@ -1,13 +1,8 @@
 <table class="table table-condensed table-hover">
-<thead>
-    <tr>
-        <th colspan="2">{{ object_profile_name }}</th>
-    </tr>
-</thead>
 <tbody>
 <tr>
     <th colspan="2" class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[current_state] }}">
-        {{ name }}
+        {{ title }}
         <span style="float: right">
         {% if current_state == "down" %}Down{% else %}Up{% endif %}{%if current_start %}: {{ current_duration }} ({{ current_start }}){% endif %}
         </span>
