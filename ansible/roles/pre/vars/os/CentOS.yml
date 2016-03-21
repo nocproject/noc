@@ -4,11 +4,12 @@
 noc_system_service: noc
 noc_service_pidfile: /var/run/noc.pid
 # Postgres settings
-postgres_system_service: postgresql
+postgres_system_service: postgresql-{{ postgresql_version }}
 postgres_user: postgres
 postgres_path: /usr/bin/postgres
 postgresql_conf_path: /var/lib/pgsql/data/postgresql.conf
 postgresql_hba_path: /var/lib/pgsql/data/pg_hba.conf
+postgresql_version: "9.4"
 # Mongo settings
 mongod_system_service: mongod
 mongod_arbiter_system_service: mongod-arbiter
