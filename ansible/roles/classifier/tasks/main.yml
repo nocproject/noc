@@ -1,2 +1,8 @@
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
+
+- name: Install python packages
+  pip:
+    chdir: "{{noc_root}}"
+    requirements: "requirements/classifier.txt"
+    virtualenv: "{{noc_root}}"
