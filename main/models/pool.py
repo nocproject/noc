@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Pool model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -20,5 +20,17 @@ class Pool(Document):
                        regex="^[0-9a-zA-Z]{1,16}$")
     description = StringField()
 
+    _name_cache = {}
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    def get_name_by_id(cls, id):
+        id = str(id)
+        if id not in cls._name_cache:
+            try:
+                cls._name_cache[id] = Pool.objects.get(id=id).name
+            except Pool.DoesNotExist:
+                cls._name_cache[id] = None
+        return cls._name_cache[id]
