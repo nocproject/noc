@@ -1,2 +1,7 @@
 - name: reload systemd
   command: /bin/systemctl daemon-reload
+
+- name: reload telegraf
+  service:
+    name: telegraf
+    state: reloaded
