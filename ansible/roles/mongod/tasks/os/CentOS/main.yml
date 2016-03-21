@@ -17,6 +17,12 @@
     state: present
     update_cache: yes
 
+- name: Install mongodb monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/mongodb.conf"
+  notify: reload telegraf
+
 - name: Delete mongod init file
   file:
     path: /etc/init.d/mongod
