@@ -15,6 +15,8 @@ from jinja2 import Template
 from base import BaseCard
 from noc.fm.models.utils import get_alarm
 from noc.inv.models.object import Object
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.archivedalarm import ArchivedAlarm
 
 
 class AlarmCard(BaseCard):
@@ -41,6 +43,19 @@ class AlarmCard(BaseCard):
                     c = o.container
                 except Object.DoesNotExist:
                     break
+        # Build log
+        log = []
+        if self.object.log:
+            log = [
+                {
+                    "timestamp": l.timestamp,
+                    "from_status": l.from_status,
+                    "to_status": l.to_status,
+                    "message": l.message
+                } for l in self.object.log
+            ]
+        # Build alarm tree
+        alarms = self.get_alarms()
         # Build result
         r = {
             "id": self.object.id,
@@ -50,6 +65,40 @@ class AlarmCard(BaseCard):
             "duration": now - self.object.timestamp,
             "subject": self.object.subject,
             "body": self.object.body,
-            "container_path": cp
+            "container_path": cp,
+            "log": log,
+            "alarms": alarms
         }
         return r
+
+    def get_alarms(self):
+        def get_children(ca):
+            ca._children = []
+            for ac in [ActiveAlarm, ArchivedAlarm]:
+                for a in ac.objects.filter(root=ca.id):
+                    ca._children += [a]
+                    get_children(a)
+
+        def flatten(ca, r, level):
+            ca._level = level
+            r += [ca]
+            if hasattr(ca, "_children"):
+                for c in sorted(ca._children, key=operator.attrgetter("timestamp")):
+                    flatten(c, r, level + 1)
+
+        # Step upwards
+        r = self.object
+        a = r
+        while r and r.root:
+            a = get_alarm(r.root)
+            if a:
+                a._children = [r]
+                r = a
+            else:
+                break
+        # Fill children
+        get_children(self.object)
+        # Flatten
+        result = []
+        flatten(a, result, 0)
+        return result
