@@ -16,7 +16,6 @@
    - postgresql
    - postgresql-devel
    - libcurl-devel
-   - openssl-devel
 
 - name: Install supervisord init script
   template:
