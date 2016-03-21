@@ -52,5 +52,57 @@
         <th scope="row">Recommended Actions</th>
         <td><pre>{{ alarm.alarm_class.recommended_actions }}</pre></td>
     </tr>
+    <tr>
+        <th scope="row">Alarms</th>
+        <td>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Timestamp</th>
+                        <th>Object</th>
+                        <th>Class</th>
+                        <th>Subject</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in alarms %}
+                    <tr>
+                        <td>{% if a.id == alarm.id %}==&gt;{% endif %}</td>
+                        <td> {{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * a._level) }}
+                            <a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp }}</a>
+                        </td>
+                        <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object.name }}</a></td>
+                        <td>{{ a.alarm_class.name }}</td>
+                        <td>{{ a.subject }}</td>
+                    </th>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    {% if log %}
+    <tr>
+        <th scope="row">Log</th>
+        <td>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for l in log %}
+                    <tr>
+                        <td>{{ l["timestamp"] }}</td>
+                        <td>{{ l["message"] }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    {% endif %}
 </tbody>
 </table>
