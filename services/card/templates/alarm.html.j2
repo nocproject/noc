@@ -4,7 +4,7 @@
         <th colspan="2" class="{{ {'C': 'success', 'A': 'danger'}[alarm.status] }}">
             {{ subject }}
             <span style="float: right">
-                {{ duration }}({{ timestamp }})
+                {{ duration }}({{ timestamp | timestamp}})
             </span>
         </th>
     </tr>
@@ -71,7 +71,7 @@
                     <tr>
                         <td>{% if a.id == alarm.id %}<i class="fa fa-arrow-right"></i>{% endif %}</td>
                         <td> {{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * a._level) }}
-                            <a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp }}</a>
+                            <a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp | timestamp }}</a>
                         </td>
                         <td>{{ a.display_duration }}</td>
                         <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object | managed_object_title }}</a></td>
@@ -97,7 +97,7 @@
                 <tbody>
                 {% for l in log %}
                     <tr>
-                        <td>{{ l["timestamp"] }}</td>
+                        <td>{{ l["timestamp"] | timestamp }}</td>
                         <td>{{ l["message"] }}</td>
                     </tr>
                 {% endfor %}
