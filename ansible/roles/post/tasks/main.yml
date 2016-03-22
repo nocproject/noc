@@ -21,3 +21,12 @@
     sleep: 3
     enabled: yes
   changed_when: False
+
+- name: umount cache dir
+  mount:
+      src: cache
+      name: /root/.cache
+      state: absent
+      fstype: vboxsf
+  when: "'virtualbox' in ansible_virtualization_type"
+  ignore_errors: yes
