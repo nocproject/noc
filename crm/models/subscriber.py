@@ -21,6 +21,11 @@ class Subscriber(Document):
     name = StringField()
     description = StringField()
     profile = ReferenceField(SubscriberProfile)
+    # Main address
+    address = StringField()
+    # Technical contacts
+    tech_contact_person = StringField()
+    tech_contact_phone = StringField()
     tags = ListField(StringField())
 
     def __unicode__(self):
