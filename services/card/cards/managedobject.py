@@ -28,7 +28,6 @@ from noc.lib.text import split_alnum, list_to_ranges
 class ManagedObjectCard(BaseCard):
     default_template_name = "managedobject"
     model = ManagedObject
-    DEFAULT_CARD_TEMPLATE = "{{ object.object_profile.name }}: "
 
     def get_template_name(self):
         return self.object.object_profile.card or "managedobject"
@@ -38,9 +37,6 @@ class ManagedObjectCard(BaseCard):
         # @todo: Service range
         # @todo: Open TT
         now = datetime.datetime.now()
-        # Get card title
-        title_tpl = self.object.object_profile.card_title_template or self.DEFAULT_CARD_TEMPLATE
-        title = Template(title_tpl).render({"object": self.object})
         # Get object status and uptime
         alarms = list(ActiveAlarm.objects.filter(managed_object=self.object.id))
         current_start = None
@@ -170,7 +166,6 @@ class ManagedObjectCard(BaseCard):
         r = {
             "id": self.object.id,
             "object": self.object,
-            "title": title,
             "name": self.object.name,
             "address": self.object.address,
             "platform": self.object.platform or "Unknown",

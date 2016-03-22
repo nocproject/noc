@@ -15,7 +15,7 @@
     <tr>
         <th scope="row">Object</th>
         <td>
-            <a href="/api/card/view/managedobject/{{ managed_object.id }}/">{{ managed_object.name }}</a>
+            <a href="/api/card/view/managedobject/{{ managed_object.id }}/">{{ managed_object | managed_object_title }}</a>
             ({{ managed_object.address }}, {{ managed_object.platform }})
         </td>
     </tr>
@@ -74,7 +74,7 @@
                             <a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp }}</a>
                         </td>
                         <td>{{ a.display_duration }}</td>
-                        <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object.name }}</a></td>
+                        <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object | managed_object_title }}</a></td>
                         <td>{{ a.alarm_class.name }}</td>
                         <td>{{ a.subject }}</td>
                     </th>
