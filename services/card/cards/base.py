@@ -9,7 +9,7 @@
 ## Python modules
 import os
 ## Third-party modules
-from jinja2 import Template
+from jinja2 import Template, Environment
 
 
 class BaseCard(object):
@@ -20,6 +20,7 @@ class BaseCard(object):
         "services/card/templates/"
     ]
     model = None
+    DEFAULT_MO_TITLE_TEMPLATE = "{{ object.object_profile.name }}: {{ object.name }}"
 
     def __init__(self, id):
         self.object = self.dereference(id)
@@ -52,8 +53,12 @@ class BaseCard(object):
             for p in self.TEMPLATE_PATH:
                 tp = os.path.join(p, name + ".html.j2")
                 if os.path.exists(tp):
+                    env = Environment()
+                    env.filters.update({
+                        "managed_object_title": self.f_managed_object_title
+                    })
                     with open(tp) as f:
-                        self.template_cache[name] = Template(f.read())
+                        self.template_cache[name] = env.from_string(f.read())
         return self.template_cache[name]
 
     def render(self):
@@ -63,3 +68,11 @@ class BaseCard(object):
             return template.render(**data)
         else:
             return None
+
+    def f_managed_object_title(self, obj):
+        """
+        Convert managed object instance to title
+        using profile card_title_template
+        """
+        title_tpl = obj.object_profile.card_title_template or self.DEFAULT_MO_TITLE_TEMPLATE
+        return Template(title_tpl).render({"object": obj})

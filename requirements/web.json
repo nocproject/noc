@@ -20,6 +20,10 @@
     {
       "name": "backbone",
       "version": "1.2.1"
+    },
+    {
+      "name": "fontawesome",
+      "version": "4.5.0"
     }
   ]
 }

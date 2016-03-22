@@ -46,6 +46,14 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             type: "string"
         },
         {
+            name: "card",
+            type: "string"
+        },
+        {
+            name: "card_title_template",
+            type: "string"
+        },
+        {
             name: "fqdn_template",
             type: "string"
         },
