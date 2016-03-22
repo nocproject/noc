@@ -35,7 +35,7 @@
                    db=postgres
                    role_attr_flags=CREATEDB,NOSUPERUSER
   become_user: "{{postgres_user}}"
-  when: "'svc-postgres-master' in group_names"
+  when: has_svc_postgres_master
 
 - name: Create database
   postgresql_db: name="{{noc_pg_db}}"
@@ -44,4 +44,4 @@
                  login_user="{{ postgres_user }}"
                  state="present"
   become_user: "{{postgres_user}}"
-  when: "'svc-postgres-master' in group_names"
+  when: has_svc_postgres_master
