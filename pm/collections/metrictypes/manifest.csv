@@ -1,3 +1,9 @@
 name,uuid,path,hash
+Interface | Discards | In,a37bd080-9430-4ca9-b9dd-53ee05afa724,Interface/Discards/In.json,8fd5831e216892912987d6697b87df7fdf94a07452ca639c480676a278c8e5a3
+Interface | Discards | Out,30495e96-1c94-4a2f-812e-ceb0b237e146,Interface/Discards/Out.json,ae93085e64cdbf85e92bba146d4fc1bb33909fdb20da8ac221d3399e7cf0b149
+Interface | Errors | In,1b761068-6bb0-4c98-84c3-67851179fb61,Interface/Errors/In.json,d20b6e1661d1ae8c3f2d7eb8b021625e8d2e7c3d836965300f23ca30c6b42355
+Interface | Errors | Out,c04a97d2-3bfc-4164-ad46-b35aba0cacad,Interface/Errors/Out.json,ec399ca2bad23a14f037d72433b32aa563ca0acb236de95dc6dea7ff50e7ff10
 Interface | Load | In,b43cc414-1067-4c18-ada0-2eb4feac28a2,Interface/Load/In.json,f63aad69623d6f8c1aece24698322c8a2ee9c61321e2432bdf9a2e4f4c9e0338
 Interface | Load | Out,a7651240-aef7-48a4-881d-1b6585532259,Interface/Load/Out.json,8f1a00823fada68235e72d2c9f7d609aede1942974ee651dc75c7779b8b61ce4
+Interface | Packets | In,8edc53be-0b58-4ebe-9840-727816288c3c,Interface/Packets/In.json,b8988ad6bf298e7551b331a78f32f14896142f1c2496ed1c8ff8ae6257220ca3
+Interface | Packets | Out,ca7ce345-1380-4ab3-a81e-2d7142ff7c8c,Interface/Packets/Out.json,6e01173e7b831bd4ddf1f0940a6eca3dff9a15c23d4d18b300d0c947db3087be

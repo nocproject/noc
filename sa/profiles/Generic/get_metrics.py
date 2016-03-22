@@ -35,7 +35,31 @@ class Script(BaseScript):
         "Interface | Load | Out": [
             ("SNMP | IF-MIB | HC", "IF-MIB::ifHCOutOctets", "counter", 8),
             ("SNMP | IF-MIB", "IF-MIB::ifOutOctets", "counter", 8)
-        ]
+        ],
+        "Interface | Errors | In": [
+            ("SNMP | IF-MIB | HC", "IF-MIB::ifInErrors", "counter", 1),
+            ("SNMP | IF-MIB", "IF-MIB::ifInErrors", "counter", 1)
+        ],
+        "Interface | Errors | Out": [
+            ("SNMP | IF-MIB | HC", "IF-MIB::ifOutErrors", "counter", 1),
+            ("SNMP | IF-MIB", "IF-MIB::ifOutErrors", "counter", 1)
+        ],
+        "Interface | Discards | In": [
+            ("SNMP | IF-MIB | HC", "IF-MIB::ifInDiscards", "counter", 1),
+            ("SNMP | IF-MIB", "IF-MIB::ifInDiscards", "counter", 1)
+        ],
+        "Interface | Discards | Out": [
+            ("SNMP | IF-MIB | HC", "IF-MIB::ifOutDiscards", "counter", 1),
+            ("SNMP | IF-MIB", "IF-MIB::ifOutDiscards", "counter", 1)
+        ],
+        "Interface | Packets | In": [
+            ("SNMP | IF-MIB | HC", "IF-MIB::ifHCInUcastPkts", "counter", 1),
+            ("SNMP | IF-MIB", "IF-MIB::ifInUcastPkts", "counter", 1)
+        ],
+        "Interface | Packets | Out": [
+            ("SNMP | IF-MIB | HC", "IF-MIB::ifHCOutUcastPkts", "counter", 1),
+            ("SNMP | IF-MIB", "IF-MIB::ifOutUcastPkts", "counter", 1)
+        ],
     }
 
     GAUGE = "gauge"
