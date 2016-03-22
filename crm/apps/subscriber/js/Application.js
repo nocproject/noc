@@ -46,7 +46,7 @@ Ext.define("NOC.crm.subscriber.Application", {
                     xtype: "textfield",
                     fieldLabel: "Name",
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "large"
                 },
                 {
                     name: "profile",
@@ -60,6 +60,27 @@ Ext.define("NOC.crm.subscriber.Application", {
                     fieldLabel: "Description",
                     allowBlank: true,
                     uiStyle: "expand"
+                },
+                {
+                    name: "address",
+                    xtype: "textfield",
+                    fieldLabel: "Address",
+                    allowBlank: true,
+                    uiStyle: "extra"
+                },
+                {
+                    name: "tech_contact_person",
+                    xtype: "textfield",
+                    fieldLabel: "Contact",
+                    allowBlank: true,
+                    uiStyle: "extra"
+                },
+                {
+                    name: "tech_contact_phone",
+                    xtype: "textfield",
+                    fieldLabel: "Phone",
+                    allowBlank: true,
+                    uiStyle: "extra"
                 },
                 {
                     name: "tags",
