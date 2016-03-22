@@ -1,1 +1,0 @@
-python-cjson>=1.0.5
