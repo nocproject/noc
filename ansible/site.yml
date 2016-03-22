@@ -10,60 +10,60 @@
       when: "'nodes' in group_names"
       
     - role: dev
-      when: "'svc-dev' in group_names or 'svc-notebook' in group_names"
+      when: has_svc_dev or has_svc_notebook
 
     - role: mongod
-      when: "'svc-mongod' in group_names"
+      when: has_svc_mongod
 
     - role: postgres
-      when: "'svc-postgres' in group_names"
+      when: has_svc_postgres
 
     - role: influxdb
-      when: "'svc-influxdb' in group_names"
+      when: has_svc_influxdb
 
     - role: migrate
       when: "'svc-mongod-master' in group_names"
 
     - role: web
-      when: "'svc-web' in group_names"
+      when: has_svc_web
 
     - role: notebook
-      when: "'svc-notebook' in group_names"
+      when: has_svc_notebook
 
     - role: nginx
-      when: "'svc-nginx' in group_names"
+      when: has_svc_nginx
 
     - role: omap
-      when: "'svc-omap' in group_names"
+      when: has_svc_omap
 
     - role: fmwriter
-      when: "'svc-fmwriter' in group_names"
+      when: has_svc_fmwriter
 
     - role: activator
-      when: "'svc-activator' in group_names"
+      when: has_svc_activator
 
     - role: classifier
-      when: "'svc-classifier' in group_names"
+      when: has_svc_classifier
 
     - role: correlator
-      when: "'svc-correlator' in group_names"
+      when: has_svc_correlator
 
     - role: syslogcollector
-      when: "'svc-syslogcollector' in group_names"
+      when: has_svc_syslogcollector
 
     - role: trapcollector
-      when: "'svc-trapcollector' in group_names"
+      when: has_svc_trapcollector
 
     - role: grafana
-      when: "'svc-grafana' in group_names"
+      when: has_svc_grafana
 
     - role: ping
-      when: "'svc-ping' in group_names"
+      when: has_svc_ping
 
     - role: sae
-      when: "'svc-sae' in group_names"
+      when: has_svc_sae
 
     - role: discovery
-      when: "'svc-discovery' in group_names"
+      when: has_svc_discovery
 
     - role: post
