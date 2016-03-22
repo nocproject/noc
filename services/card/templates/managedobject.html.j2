@@ -135,15 +135,15 @@
         <table class="table table-condensed">
             <thead>
                 <tr>
-                    <td>Timestamp</td>
-                    <td>Duration</td>
-                    <td>Subject</td>
+                    <th>Timestamp</th>
+                    <th>Duration</th>
+                    <th>Subject</th>
                 </tr>
             </thead>
             <tbody>
                 {% for a in alarms %}
                 <tr>
-                    <td><a href="/api/card/view/alarm/{{ a["id"] }}/">{{ a["timestamp"] }}</a></td>
+                    <td><a href="/api/card/view/alarm/{{ a["id"] }}/">{{ a["timestamp"] | timestamp}}</a></td>
                     <td>{{ a["duration"] }}</td>
                     <td>{{ a["subject"] }}</td>
                 </td>

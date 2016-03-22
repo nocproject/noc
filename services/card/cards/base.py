@@ -8,6 +8,7 @@
 
 ## Python modules
 import os
+import datetime
 ## Third-party modules
 from jinja2 import Template, Environment
 
@@ -55,7 +56,8 @@ class BaseCard(object):
                 if os.path.exists(tp):
                     env = Environment()
                     env.filters.update({
-                        "managed_object_title": self.f_managed_object_title
+                        "managed_object_title": self.f_managed_object_title,
+                        "timestamp": self.f_timestamp
                     })
                     with open(tp) as f:
                         self.template_cache[name] = env.from_string(f.read())
@@ -76,3 +78,13 @@ class BaseCard(object):
         """
         title_tpl = obj.object_profile.card_title_template or self.DEFAULT_MO_TITLE_TEMPLATE
         return Template(title_tpl).render({"object": obj})
+
+    def f_timestamp(self, ts):
+        """
+        Convert to readable timestamp like YYYY-MM-DD HH:MM:SS
+        """
+        if isinstance(ts, datetime.datetime):
+            return ts.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            return ts
+
