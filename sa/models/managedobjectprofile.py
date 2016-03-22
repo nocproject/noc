@@ -72,6 +72,11 @@ class ManagedObjectProfile(models.Model):
         max_length=256, blank=True, null=True,
         default="managedobject"
     )
+    card_title_template = models.CharField(
+        _("Card title template"),
+        max_length=256,
+        default="{{ object.object_profile.name }}: {{ object.name }}"
+    )
     # Enable box discovery.
     # Box discovery launched on system changes
     enable_box_discovery = models.BooleanField(default=True)

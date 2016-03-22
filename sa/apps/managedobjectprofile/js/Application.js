@@ -152,6 +152,25 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             ]
                         },
                         {
+                            title: "Card",
+                            items: [
+                                {
+                                    name: "card",
+                                    xtype: "textfield",
+                                    fieldLabel: "Card",
+                                    allowBlank: true,
+                                    uiStyle: "extra"
+                                },
+                                {
+                                    name: "card_title_template",
+                                    xtype: "textfield",
+                                    fieldLabel: "Card Title Template",
+                                    allowBlank: true,
+                                    uiStyle: "extra"
+                                }
+                            ]
+                        },
+                        {
                             title: "IPAM",
                             items: [
                                 {

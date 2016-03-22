@@ -389,6 +389,22 @@ class ManagedObject(Model):
         # Notify new object
         if not self.initial_data["id"]:
             self.event(self.EV_NEW, {"object": self})
+        # Remove discovery jobs from old pool
+        if "pool" in self.changed_fields and self.initial_data["id"]:
+            pool_name = Pool.get_name_by_id(self.initial_data["pool"])
+            Job.remove(
+                "discovery",
+                self.BOX_DISCOVERY_JOB,
+                key=self.id,
+                pool=pool_name
+            )
+            Job.remove(
+                "discovery",
+                self.PERIODIC_DISCOVERY_JOB,
+                key=self.id,
+                pool=pool_name
+            )
+        # Rebuild object maps
         if (
             not self.initial_data["id"] is None or
             "trap_source_type" in self.changed_fields or
@@ -403,7 +419,7 @@ class ManagedObject(Model):
         self.ensure_discovery_jobs()
         # Rebuild selector cache
         SelectorCache.rebuild_for_object(self)
-        #
+        # Clear alarm when necessary
         if (
             not self.initial_data["id"] is None and
             "is_managed" in self.changed_fields and

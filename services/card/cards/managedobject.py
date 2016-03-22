@@ -9,6 +9,8 @@
 ## Python modules
 import datetime
 import operator
+## Third-party modules
+from jinja2 import Template
 ## NOC modules
 from base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
@@ -33,9 +35,8 @@ class ManagedObjectCard(BaseCard):
     def get_data(self):
         # @todo: Stage
         # @todo: Service range
-        # @todo: Neighbors
         # @todo: Open TT
-        # @todo: Alarms
+        now = datetime.datetime.now()
         # Get object status and uptime
         alarms = list(ActiveAlarm.objects.filter(managed_object=self.object.id))
         current_start = None
@@ -60,7 +61,7 @@ class ManagedObjectCard(BaseCard):
             if outage:
                 current_start = outage.start
         if current_start:
-            duration = datetime.datetime.now() - current_start
+            duration = now - current_start
         # Get container path
         cp = []
         if self.object.container:
@@ -79,11 +80,13 @@ class ManagedObjectCard(BaseCard):
                     break
         # MAC addresses
         macs = []
-        for f, l in DiscoveryID.macs_for_object(self.object):
-            if f == l:
-                macs += [f]
-            else:
-                macs += ["%s - %s" % (f, l)]
+        o_macs = DiscoveryID.macs_for_object(self.object)
+        if o_macs:
+            for f, l in o_macs:
+                if f == l:
+                    macs += [f]
+                else:
+                    macs += ["%s - %s" % (f, l)]
         # Links
         uplinks = ObjectUplink.objects.filter(object=self.object.id).first()
         if uplinks:
@@ -149,6 +152,16 @@ class ManagedObjectCard(BaseCard):
             )
             l2_terminators = sorted(l2_terminators, key=operator.attrgetter("name"))
         # @todo: Administrative domain path
+        # Alarms
+        alarm_list = []
+        for a in alarms:
+            alarm_list += [{
+                "id": a.id,
+                "timestamp": a.timestamp,
+                "duration": now - a.timestamp,
+                "subject": a.subject
+            }]
+        alarm_list = sorted(alarm_list, key=operator.itemgetter("timestamp"))
         # Build result
         r = {
             "id": self.object.id,
@@ -174,6 +187,7 @@ class ManagedObjectCard(BaseCard):
             "l2_terminators": l2_terminators,
             "tt": [],
             "links": links,
+            "alarms": alarm_list,
             "interfaces": interfaces
         }
         # @todo: admin status, oper status, speed/duplex, errors in/out,

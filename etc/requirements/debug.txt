@@ -1,4 +1,0 @@
-noc-pkg-handlebars-debug==1.0.0
-noc-pkg-shjs-debug==0.6
-noc-pkg-extjs-debug==5.1.0
-noc-pkg-openlayers-debug==2.13

@@ -17,6 +17,12 @@
     state: present
     update_cache: yes
 
+- name: Install mongodb monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/mongodb.conf"
+  notify: reload telegraf
+
 - name: Delete mongod init file
   file:
     path: /etc/init.d/mongod
@@ -24,14 +30,14 @@
 
 - name: Copy mongod service file
   template:
-    src: mongod.service.j2
-    dest: /lib/systemd/system/mongod.service
+    src:  etc/systemd/system/mongod.service.j2
+    dest: /etc/systemd/system/mongod.service
   register: mongod_service
   notify: restart mongod
 
 - name: Copy systemd tmpfile
   template:
-    src: mongo-tmpd.conf.j2
+    src: etc/tmpfiles.d/mongo.conf.j2
     dest: /etc/tmpfiles.d/mongo.conf
 
 - include: "arbiter.yml"
