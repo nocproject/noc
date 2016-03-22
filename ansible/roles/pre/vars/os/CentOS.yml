@@ -4,11 +4,12 @@
 noc_system_service: noc
 noc_service_pidfile: /var/run/noc.pid
 # Postgres settings
-postgres_system_service: postgresql
+postgres_system_service: postgresql-{{ postgresql_version }}
 postgres_user: postgres
 postgres_path: /usr/bin/postgres
 postgresql_conf_path: /var/lib/pgsql/data/postgresql.conf
 postgresql_hba_path: /var/lib/pgsql/data/pg_hba.conf
+postgresql_version: "9.4"
 # Mongo settings
 mongod_system_service: mongod
 mongod_arbiter_system_service: mongod-arbiter
@@ -21,6 +22,7 @@ mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
 mongo_pid: /var/run/mongodb/mongod.pid
 mongo_arbiter_pid: /var/run/mongodb/mongod-arbiter.pid
 mongo_fork: "true"
+mongo_version: "3.2"
 # InfluxDB settings
 influxdb_system_service: influxdb
 influxdb_user: influxdb
@@ -41,3 +43,5 @@ grafana_system_service: grafana-server
 grafana_user: grafana
 grafana_group: grafana
 grafana_home: /usr/share/grafana
+#
+pycurl_ssl_library: nss

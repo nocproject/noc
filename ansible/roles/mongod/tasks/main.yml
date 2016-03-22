@@ -33,6 +33,12 @@
     owner: "{{ mongo_user }}"
     mode: 0400
 
+- name: Install MongoDB logrotated config
+  template:
+    src: "etc/logrotate.d/mongod.conf.j2"
+    dest: "/etc/logrotate.d/mongod.conf"
+  when: "'Linux' in ansible_system"
+
 - name: Enable MongoDB system service
   service:
     name: "{{ mongod_system_service }}"
@@ -47,6 +53,13 @@
     mode: 0700
     state: directory
   when: "'svc-mongod-arbiter' in group_names"
+
+- name: Install MongoDB arbiter logrotated config
+  template:
+    src: "etc/logrotate.d/mongod-arbiter.conf.j2"
+    dest: "/etc/logrotate.d/mongod-arbiter.conf"
+  when: "'svc-mongod-arbiter' in group_names and 'Linux' in ansible_system"
+
 
 - name: Enable MongoDB arbiter system service
   service:
