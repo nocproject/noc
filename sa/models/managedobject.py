@@ -24,7 +24,6 @@ from managedobjectprofile import ManagedObjectProfile
 from objectstatus import ObjectStatus
 from objectmap import ObjectMap
 from terminationgroup import TerminationGroup
-from service import Service
 from noc.main.models.pool import Pool
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
@@ -215,8 +214,6 @@ class ManagedObject(Model):
         "Max. Scripts",
         null=True, blank=True,
         help_text="Concurrent script session limits")
-    #
-    service = DocumentReferenceField(Service, null=True, blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
