@@ -20,11 +20,28 @@ Ext.define("NOC.crm.subscriber.Model", {
             type: "string"
         },
         {
+            name: "profile__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "description",
             type: "string"
         },
         {
             name: "name",
+            type: "string"
+        },
+        {
+            name: "address",
+            type: "string"
+        },
+        {
+            name: "tech_contact_person",
+            type: "string"
+        },
+        {
+            name: "tech_contact_phone",
             type: "string"
         },
         {
