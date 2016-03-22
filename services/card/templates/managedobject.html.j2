@@ -2,7 +2,7 @@
 <tbody>
 <tr>
     <th colspan="2" class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[current_state] }}">
-        {{ title }}
+        {{ object | managed_object_title }}
         <span style="float: right">
         {% if current_state == "down" %}Down{% else %}<i class="fa fa-check"></i>Up{% endif %}{%if current_start %}: {{ current_duration }} ({{ current_start }}){% endif %}
         </span>
