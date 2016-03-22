@@ -1,0 +1,9 @@
+{
+    "name": "Interface | Errors | Out",
+    "$collection": "pm.metrictypes",
+    "uuid": "c04a97d2-3bfc-4164-ad46-b35aba0cacad",
+    "description": "",
+    "scope": "i",
+    "measure": "packet/s",
+    "vector_tag": ""
+}
