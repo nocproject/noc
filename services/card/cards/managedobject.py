@@ -84,11 +84,13 @@ class ManagedObjectCard(BaseCard):
                     break
         # MAC addresses
         macs = []
-        for f, l in DiscoveryID.macs_for_object(self.object):
-            if f == l:
-                macs += [f]
-            else:
-                macs += ["%s - %s" % (f, l)]
+        o_macs = DiscoveryID.macs_for_object(self.object)
+        if o_macs:
+            for f, l in o_macs:
+                if f == l:
+                    macs += [f]
+                else:
+                    macs += ["%s - %s" % (f, l)]
         # Links
         uplinks = ObjectUplink.objects.filter(object=self.object.id).first()
         if uplinks:
