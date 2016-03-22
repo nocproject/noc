@@ -30,7 +30,7 @@
   notify: restart mongod
 
 - include: "arbiter.yml"
-  when: "'svc-mongod-arbiter' in group_names"
+  when: "{{ has_svc_mongo_arbiter | default(False) }}"
 
 - name: Find blockdev for readahead tuning
   shell: "df -P {{ mongo_db_path }} |tail -1|awk '{print $1}'"
