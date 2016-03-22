@@ -62,7 +62,7 @@ class AlarmCard(BaseCard):
             "alarm": self.object,
             "managed_object": self.object.managed_object,
             "timestamp": self.object.timestamp,
-            "duration": now - self.object.timestamp,
+            "duration": self.object.display_duration,
             "subject": self.object.subject,
             "body": self.object.body,
             "container_path": cp,

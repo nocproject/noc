@@ -60,6 +60,7 @@
                     <tr>
                         <th></th>
                         <th>Timestamp</th>
+                        <th>Duration</th>
                         <th>Object</th>
                         <th>Class</th>
                         <th>Subject</th>
@@ -68,10 +69,11 @@
                 <tbody>
                     {% for a in alarms %}
                     <tr>
-                        <td>{% if a.id == alarm.id %}==&gt;{% endif %}</td>
+                        <td>{% if a.id == alarm.id %}<i class="fa fa-arrow-right"></i>{% endif %}</td>
                         <td> {{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * a._level) }}
                             <a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp }}</a>
                         </td>
+                        <td>{{ a.display_duration }}</td>
                         <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object.name }}</a></td>
                         <td>{{ a.alarm_class.name }}</td>
                         <td>{{ a.subject }}</td>
