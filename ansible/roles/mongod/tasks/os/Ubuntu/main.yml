@@ -27,4 +27,4 @@
   apt: name="mongodb-org" state=present update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
 
 - include: "arbiter.yml"
-  when: "'svc-mongod-arbiter' in group_names"
+  when: "{{ has_svc_mongo_arbiter | default(False) }}"
