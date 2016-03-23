@@ -1,0 +1,9 @@
+---
+- name: Add firewall permissions for nodes
+  firewalld:
+    service: https
+    permanent: true
+    state: enabled
+
+- name: Reload firewalld service
+  command: firewall-cmd --reload
