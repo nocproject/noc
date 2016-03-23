@@ -66,7 +66,7 @@
   register: node_stat
 
 - name: Check requirement files for changes
-  command: test {{ lookup('env', 'NOC_NODE_MD5') }} = {{ node_stat.stat.md5 }}
+  command: test "{{ lookup('env', 'NOC_NODE_MD5') }}" = {{ node_stat.stat.md5 }}
   changed_when: "node_check.rc != 0"
   failed_when: node_check.stderr
   register: node_check
