@@ -2,10 +2,12 @@
 ##----------------------------------------------------------------------
 ## Extract/Transfer/Load commands
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import argparse
 ## Third-party modules
 import yaml
 ## NOC modules
@@ -26,6 +28,11 @@ class Command(BaseCommand):
         diff = subparsers.add_parser("diff")
         # extract command
         extract_parser = subparsers.add_parser("extract")
+        extract_parser.add_argument(
+            "extractors",
+            nargs=argparse.REMAINDER,
+            help="List of extractor names"
+        )
 
     def get_config(self):
         with open(self.CONF) as f:
@@ -51,12 +58,15 @@ class Command(BaseCommand):
                 l.purge()
 
     def handle_extract(self, *args, **options):
+        extractors = set(options.get("extractors", []))
         config = self.get_config()
         for system in config:
             system_config = system.get("config", {})
             for x_config in system.get("data", []):
                 config = system_config.copy()
                 config.update(x_config.get("config", {}))
+                if extractors and x_config["type"] not in extractors:
+                    continue
                 xc = get_solution(x_config["extractor"])
                 extractor = xc(system["system"], config=config)
                 extractor.extract()
