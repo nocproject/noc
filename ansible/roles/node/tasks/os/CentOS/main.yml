@@ -1,3 +1,9 @@
+---
+- name: Disable selinux
+  selinux:
+    policy: targeted
+    state: permissive
+
 - name: Install CentOS system packages
   yum:
     name: "{{ item }}"
