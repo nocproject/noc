@@ -1,3 +1,8 @@
+- name: Disable selinux
+  selinux:
+    policy: targeted
+    state: permissive
+
 - name: Add cdrom repo
   copy: 
       src: roles/node/templates/os/RedHat/etc/yum.repos.d/cdrom.repo
