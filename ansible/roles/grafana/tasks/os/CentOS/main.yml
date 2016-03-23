@@ -1,9 +1,4 @@
 ---
-- name: Add Grafana GPG key
-  rpm_key:
-    key: https://packagecloud.io/gpg.key
-    state: present
-
 - name: Add Grafana repository
   template:
     src: os/CentOS/etc/yum.repos.d/grafana.repo.j2
