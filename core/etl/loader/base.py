@@ -31,7 +31,7 @@ class BaseLoader(object):
             <system name>/
                 <loader name>/
                     import.csv[.gz]  -- state to load, can have .gz extension
-                    mapping.csv -- ID mappings
+                    mappings.csv -- ID mappings
                     archive/
                         import-YYYY-MM-DD-HH-MM-SS.csv.gz -- imported state
 
@@ -507,7 +507,10 @@ class BaseLoader(object):
         # Load mapped ids
         for f in self.mapped_fields:
             l = chain.get_loader(self.mapped_fields[f])
-            ms = csv.reader(l.get_new_state())
+            ls = l.get_new_state()
+            if not ls:
+                ls = l.get_current_state()
+            ms = csv.reader(ls)
             m_data[self.fields.index(f)] = set(row[0] for row in ms)
         # Process data
         n_errors = 0
@@ -537,8 +540,8 @@ class BaseLoader(object):
                 v = row[i]
                 if v and v not in m_data[i]:
                     self.logger.error(
-                            "ERROR: Field #%d(%s) refers to non-existent record: %s",
-                            i, self.fields[i], ",".join(row)
+                        "ERROR: Field #%d(%s) == '%s' refers to non-existent record: %s",
+                        i, self.fields[i], row[i], ",".join(row)
                     )
                     n_errors += 1
         if n_errors:
