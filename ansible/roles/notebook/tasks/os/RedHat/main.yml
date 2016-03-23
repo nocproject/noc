@@ -1,0 +1,9 @@
+---
+- name: Install REHL system packages
+  yum:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+  with_items:
+   - zeromq3
+   - zeromq3-devel
