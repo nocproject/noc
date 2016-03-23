@@ -7,63 +7,62 @@
     - role: pre
 
     - role: node
-      when: "'nodes' in group_names"
-      
+
     - role: dev
-      when: has_svc_dev or has_svc_notebook
+      when: "{{ has_svc_dev | default(False) }} or {{ has_svc_notebook | default(False) }}"
 
     - role: mongod
-      when: has_svc_mongod
+      when: "{{ has_svc_mongod | default(False) }}"
 
     - role: postgres
-      when: has_svc_postgres
+      when: "{{ has_svc_postgres | default(False) }}"
 
     - role: influxdb
-      when: has_svc_influxdb
+      when: "{{ has_svc_influxdb | default(False) }}"
 
     - role: migrate
-      when: "'svc-mongod-master' in group_names"
+      when: "{{ has_svc_mongod_master }}"
 
     - role: web
-      when: has_svc_web
+      when: "{{ has_svc_web | default(False) }}"
 
     - role: notebook
-      when: has_svc_notebook
+      when: "{{ has_svc_notebook | default(False) }}"
 
     - role: nginx
-      when: has_svc_nginx
+      when: "{{ has_svc_nginx | default(False) }}"
 
     - role: omap
-      when: has_svc_omap
+      when: "{{ has_svc_omap | default(False) }}"
 
     - role: fmwriter
-      when: has_svc_fmwriter
+      when: "{{ has_svc_fmwriter | default(False) }}"
 
     - role: activator
-      when: has_svc_activator
+      when: "{{ has_svc_activator | default(False) }}"
 
     - role: classifier
-      when: has_svc_classifier
+      when: "{{ has_svc_classifier | default(False) }}"
 
     - role: correlator
-      when: has_svc_correlator
+      when: "{{ has_svc_correlator | default(False) }}"
 
     - role: syslogcollector
-      when: has_svc_syslogcollector
+      when: "{{ has_svc_syslogcollector | default(False) }}"
 
     - role: trapcollector
-      when: has_svc_trapcollector
+      when: "{{ has_svc_trapcollector | default(False) }}"
 
     - role: grafana
-      when: has_svc_grafana
+      when: "{{ has_svc_grafana | default(False) }}"
 
     - role: ping
-      when: has_svc_ping
+      when: "{{ has_svc_ping | default(False) }}"
 
     - role: sae
-      when: has_svc_sae
+      when: "{{ has_svc_sae | default(False) }}"
 
     - role: discovery
-      when: has_svc_discovery
+      when: "{{ has_svc_discovery | default(False) }}"
 
     - role: post
