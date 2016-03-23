@@ -1,0 +1,5 @@
+---
+- name: Install RHEL Development tools
+  yum:
+    name: "@Development tools"
+    state: present
