@@ -13,6 +13,8 @@
     state: restarted
     enabled: yes
   changed_when: False
+  when: "'FreeBSD' in ansible_distribution"
+
 
 - name: Start NOC node
   service:
