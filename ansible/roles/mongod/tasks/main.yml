@@ -69,4 +69,4 @@
   when: "{{ has_svc_mongo_arbiter | default(False) }}"
 
 - include: "master.yml"
-  when: has_svc_mongod_master
+  when: "{{ has_svc_mongod_master  | default(False) }}"
