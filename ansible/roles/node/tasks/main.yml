@@ -6,6 +6,10 @@
   hostname: name="{{ inventory_hostname }}"
   when: "'Linux' in ansible_system"
 
+- name: Setup hostname
+  hostname: name="{{ inventory_hostname }}"
+  when: "'Linux' in ansible_system"
+
 - name: Setup /etc/hosts
   lineinfile: dest=/etc/hosts
               line="{{ hostvars[item].ansible_ssh_host }} {{ item }}"
@@ -61,6 +65,16 @@
   args:
     chdir: "{{ noc_root }}"
 
+- name: Calculate md5 of node requirements
+  stat: path="{{noc_root}}/requirements/node.txt"
+  register: node_stat
+
+- name: Check requirement files for changes
+  command: test {{ lookup('env', 'NOC_NODE_MD5') }} = {{ node_stat.stat.md5 }}
+  changed_when: "node_check.rc != 0"
+  failed_when: node_check.stderr
+  register: node_check
+
 - name: Install python packages
   pip:
     chdir: "{{noc_root}}"
@@ -69,6 +83,7 @@
     extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --upgrade"
   environment:
     PYCURL_SSL_LIBRARY: "{{ pycurl_ssl_library | default('openssl')}}"
+  when: node_check.changed
 
 - name: Install python 2.6 compatibility packages
   pip:
