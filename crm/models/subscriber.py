@@ -15,7 +15,10 @@ from subscriberprofile import SubscriberProfile
 
 class Subscriber(Document):
     meta = {
-        "collection": "noc.subscribers"
+        "collection": "noc.subscribers",
+        "indexes": [
+            "name"
+        ]
     }
 
     name = StringField()
