@@ -1,47 +1,6 @@
 # CentOS settings
 ---
-# NOC settings
-noc_system_service: noc
-noc_service_pidfile: /var/run/noc.pid
-# Postgres settings
-postgres_system_service: postgresql-{{ postgresql_version }}
-postgres_user: postgres
-postgres_path: /usr/bin/postgres
-postgresql_conf_path: /var/lib/pgsql/data/postgresql.conf
-postgresql_hba_path: /var/lib/pgsql/data/pg_hba.conf
-postgresql_version: "9.4"
-# Mongo settings
-mongod_system_service: mongod
-mongod_arbiter_system_service: mongod-arbiter
-mongo_user: mongod
-mongod_path: /usr/bin/mongod
-mongo_path: /usr/bin/mongo
-mongo_db_path: /var/lib/mongo/
-mongo_log_path: /var/log/mongodb/mongod.log
-mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
-mongo_pid: /var/run/mongodb/mongod.pid
-mongo_arbiter_pid: /var/run/mongodb/mongod-arbiter.pid
 mongo_fork: "true"
-mongo_version: "3.2"
-# InfluxDB settings
-influxdb_system_service: influxdb
-influxdb_user: influxdb
-influxdb_group: influxdb
-influxdb_conf: /etc/influxdb/influxdb.conf
-influxdb_db_path: /var/lib/influxdb
-influx_path: /usr/bin/influx
-# Nginx settings
-nginx_system_service: nginx
-nginx_user: nginx
-nginx_path: /usr/sbin/nginx
-nginx_conf_path: /etc/nginx/conf.d/noc.conf
-nginx_log_dir: /var/log/nginx
-nginx_ssl_key_path: /etc/nginx/ssl/noc.key
-nginx_ssl_cert_path: /etc/nginx/ssl/noc.crt
-# Grafana settings
-grafana_system_service: grafana-server
-grafana_user: grafana
-grafana_group: grafana
-grafana_home: /usr/share/grafana
-#
+mongo_user: mongod
+postgres_system_service: postgresql-{{ postgresql_version }}
 pycurl_ssl_library: nss

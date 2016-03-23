@@ -1,45 +1,26 @@
 # FreeBSD settings
 ---
-# NOC settings
-noc_system_service: noc
-noc_service_pidfile: /var/run/noc.pid
-# Postgres settings
-postgres_system_service: postgresql
-postgres_user: pgsql
-postgres_path: /usr/local/bin/postgres
-postgresql_conf_path: /usr/local/pgsql/data/postgresql.conf
-postgresql_hba_path: /usr/local/pgsql/data/pg_hba.conf
-# Mongo settings
-mongod_system_service: mongod
-mongod_arbiter_system_service: mongod-arbiter
-mongo_user: mongodb
-mongod_path: /usr/local/bin/mongod
-mongo_path: /usr/local/bin/mongo
-mongo_db_path: /var/db/mongodb/
-mongo_log_path: /var/db/mongodb/mongod.log
-mongo_arbiter_log_path: /var/log/mongodb/mongod-arbiter.log
-mongo_pid: /var/db/mongodb/mongod.lock
-mongo_arbiter_pid: " "
-mongo_fork: "false"
-# InfluxDB settings
-influxdb_system_service: influxd
-influxdb_user: influxd
-influxdb_group: influxd
+grafana_home: /usr/local/share/grafana
+grafana_system_service: grafana2
+influx_path: /usr/local/bin/influx
 influxdb_conf: /usr/local/etc/influxd.conf
 influxdb_db_path: /var/db/influxdb
-influx_path: /usr/local/bin/influx
-# Nginx settings
-nginx_system_service: nginx
-nginx_user: www
-nginx_path: /usr/local/sbin/nginx
+influxdb_group: influxd
+influxdb_system_service: influxd
+influxdb_user: influxd
+mongo_arbiter_pid: " "
+mongo_db_path: /var/db/mongodb/
+mongo_log_path: /var/db/mongodb/mongod.log
+mongo_path: /usr/local/bin/mongo
+mongo_pid: /var/db/mongodb/mongod.lock
+mongod_path: /usr/local/bin/mongod
 nginx_conf_path: /usr/local/etc/nginx/nginx.conf
 nginx_log_dir: /var/log
-nginx_ssl_key_path: /usr/local/etc/nginx/ssl/noc.key
+nginx_path: /usr/local/sbin/nginx
 nginx_ssl_cert_path: /usr/local/etc/nginx/ssl/noc.crt
-# Grafana settings
-grafana_system_service: grafana2
-grafana_user: grafana
-grafana_group: grafana
-grafana_home: /usr/local/share/grafana
-# APT settings
-apt_cache_valid_time: 3600
+nginx_ssl_key_path: /usr/local/etc/nginx/ssl/noc.key
+nginx_user: www
+postgres_path: /usr/local/bin/postgres
+postgres_user: pgsql
+postgresql_conf_path: /usr/local/pgsql/data/postgresql.conf
+postgresql_hba_path: /usr/local/pgsql/data/pg_hba.conf
