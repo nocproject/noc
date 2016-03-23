@@ -43,5 +43,6 @@ class ServiceLoader(BaseLoader):
     mapped_fields = {
         "parent": "service",
         "subscriber": "subscriber",
-        "managed_object": "managed_object"
+        "profile": "serviceprofile",
+        "managed_object": "managedobject"
     }
