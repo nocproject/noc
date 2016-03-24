@@ -1,8 +1,12 @@
 - name: restart mongod
-  service: name="{{mongod_system_service}}" state=restarted
+  service:
+    name: "{{ mongod_system_service }}"
+    state: restarted
 
 - name: restart mongod-arbiter
-  service: name="{{mongod_arbiter_system_service}}" state=restarted
+  service:
+    name: "{{ mongod_arbiter_system_service }}"
+    state: restarted
 
 - name: reload telegraf
   service:
