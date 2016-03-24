@@ -58,6 +58,7 @@ class Service(Document):
     parent = ReferenceField("self", required=False)
     # Subscriber information
     subscriber = ReferenceField(Subscriber)
+    description = StringField()
     #
     agreement_id = StringField()
     # Order Fulfillment order id
