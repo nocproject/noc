@@ -64,15 +64,16 @@ class BaseExtractor(object):
         self.logger.info("Extracting %s from %s",
                          self.name, self.system)
         t0 = time.time()
-        with self.get_new_state() as f:
-            writer = csv.writer(f)
-            n = 0
-            for row in self.iter_data():
-                row = self.clean(row)
-                writer.writerow([q(x) for x in row])
-                n += 1
-                if n % self.REPORT_INTERVAL == 0:
-                    self.logger.info("   ... %d records", n)
+        f = self.get_new_state()
+        writer = csv.writer(f)
+        n = 0
+        for row in self.iter_data():
+            row = self.clean(row)
+            writer.writerow([q(x) for x in row])
+            n += 1
+            if n % self.REPORT_INTERVAL == 0:
+                self.logger.info("   ... %d records", n)
+        f.close()
         dt = time.time() - t0
         speed = n / dt
         self.logger.info(
