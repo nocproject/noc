@@ -1,15 +1,22 @@
 ---
 - name: Set mongod-arbiter defaults
-  template: src="os/Ubuntu/etc/default/mongod-arbiter.j2" dest="/etc/default/mongod-arbiter"
+  template:
+    src: "os/Ubuntu/etc/default/mongod-arbiter.j2"
+    dest: "/etc/default/mongod-arbiter"
   notify: restart mongod-arbiter
 
 - name: Check mongod-arbiter init file
-  stat: path=/etc/init/mongod-arbiter.conf
+  stat:
+    path: /etc/init/mongod-arbiter.conf
   register: s
 
 - name: Create mongod-arbiter init file
   shell: "sed -e 's/\\/var\\/lib\\/mongodb/\\/opt\\/noc\\/var\\/db\\/mongo-arbiter/g' -e 's/mongodb\\.pid/mongodb-arbiter\\.pid/g' -e 's/\\/etc\\/default\\/mongod/\\/etc\\/default\\/mongod-arbiter/g' < /etc/init/mongod.conf > /etc/init/mongod-arbiter.conf"
-  when: s.stat.isfile is not defined
+  when: s.stat.islnk is not defined
+  notify: restart mongod-arbiter
 
 - name: Create symlink mongod-arbiter init.d file to upstart-job
-  file: src=/lib/init/upstart-job dest=/etc/init.d/mongod-arbiter state=link
+  file:
+    src: /lib/init/upstart-job
+    dest: /etc/init.d/mongod-arbiter
+    state: link
