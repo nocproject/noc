@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 import os
 import tempfile
 import hashlib
@@ -41,6 +40,7 @@ def safe_rewrite(path, text, mode=None):
     h, p = tempfile.mkstemp(suffix=".tmp", prefix=b, dir=d)
     f = os.fdopen(h, "w")
     f.write(text)
+    f.flush()
     f.close()
     if os.path.exists(path):
         os.unlink(path)
