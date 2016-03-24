@@ -1,4 +1,4 @@
-# Ubintu settings
+# Ubuntu settings
 ---
 mongo_arbiter_pid: /var/run/mongodb-arbiter.pid
 mongo_db_path: /var/lib/mongodb/

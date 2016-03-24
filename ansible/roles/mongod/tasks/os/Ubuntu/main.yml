@@ -1,30 +1,49 @@
-# mongodb  ubuntu
 ---
-- name: "Add MongoDB apt key"
-  apt_key: keyserver=keyserver.ubuntu.com id=7F0CEB10
+- name: Add MongoDB apt key
+  apt_key:
+    keyserver: keyserver.ubuntu.com
+    id: "{{ item }}"
+  with_items:
+    - 7F0CEB10
+    - EA312927
 
-- name: "Add MongoDB repository"
-  apt_repository: repo="deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse" state=present update_cache=yes
+- name: Add MongoDB repository
+  apt_repository:
+    repo: "deb http://repo.mongodb.org/apt/ubuntu {{ ansible_distribution_release }}/mongodb-org/{{ mongo_version }} multiverse"
+    state: present
+    update_cache: yes
 
-- name: Disable Transparent Hugepages (bootloader)
-  lineinfile: "dest=/etc/default/grub state=present backrefs=yes regexp='^GRUB_CMDLINE_LINUX_DEFAULT=\"\"' line='GRUB_CMDLINE_LINUX_DEFAULT=\"transparent_hugepage=never\"'"
-  register: dht_status
-
-- name: Disable Transparent Hugepages (runtime)
-  shell: if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
-            echo never > /sys/kernel/mm/transparent_hugepage/enabled;
-            echo never > /sys/kernel/mm/transparent_hugepage/defrag;
-         fi
-  when: dht_status.changed
-  shell: update-grub
+- name: Install DTH service file
+  template:
+    src: "os/Ubuntu/etc/init.d/disable-transparent-hugepages.j2"
+    dest: "/etc/init.d/disable-transparent-hugepages"
+    mode: "a+x"
   notify: restart mongod
+
+- name: Run DTH service (boot, runtime)
+  service:
+    name: disable-transparent-hugepages
+    enabled: yes
+    state: restarted
 
 - name: Set mongod defaults
-  template: src="os/Ubuntu/etc/default/mongod.j2" dest="/etc/default/mongod"
+  template:
+    src: "os/Ubuntu/etc/default/mongod.j2"
+    dest: "/etc/default/mongod"
   notify: restart mongod
 
+- name: Install mongodb monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/mongodb.conf"
+  notify: reload telegraf
+
 - name: Install MongoDB
-  apt: name="mongodb-org" state=present update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
+  apt:
+    name: mongodb-org
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
 
 - include: "arbiter.yml"
-  when: "{{ has_svc_mongo_arbiter | default(False) }}"
+  when: "{{ has_svc_mongod_arbiter | default(False) }}"
