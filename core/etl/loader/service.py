@@ -37,7 +37,8 @@ class ServiceLoader(BaseLoader):
         "cpe_serial",
         "cpe_mac",
         "cpe_model",
-        "cpe_group"
+        "cpe_group",
+        "description"
     ]
 
     mapped_fields = {
