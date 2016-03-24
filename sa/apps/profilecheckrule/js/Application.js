@@ -91,8 +91,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 {
                     xtype: "displayfield",
                     name: "uuid",
-                    fieldLabel: "UUID",
-                    disabled: true
+                    fieldLabel: "UUID"
                 },
                 {
                     name: "description",
