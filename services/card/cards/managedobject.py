@@ -156,9 +156,19 @@ class ManagedObjectCard(BaseCard):
                             "glyph": glyph,
                             "count": 1
                         }
-                        ss += [sr]
+                        ss += [sr[pname]]
                 interfaces[-1]["service_summary"] = ss
         interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
+        # Build global services summary
+        service_summary = []
+        sr = {}
+        for i in interfaces:
+            for s in i["service_summary"]:
+                if s["name"] in sr:
+                    sr[s["name"]] += s["count"]
+                else:
+                    sr[s["name"]] = s.copy()
+                    service_summary += [sr[s["name"]]]
         # Termination group
         l2_terminators = []
         if self.object.termination_group:
@@ -191,6 +201,7 @@ class ManagedObjectCard(BaseCard):
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,
             "recommended_version": "X.Y.Z",
+            "service_summary": service_summary,
             #
             "container_path": cp,
             #
