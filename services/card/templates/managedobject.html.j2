@@ -87,19 +87,19 @@
         {% if links %}
             <table class="table table-condensed hable-hover">
                 <thead>
-                    <th>Role</th>
-                    <th>Local port</th>
+                    <th class="cols-sm-1">Role</th>
+                    <th class="col-sm-1">Local port</th>
                     <th>Remote object</th>
-                    <th>Remote port</th>
+                    <th class="col-sm-1">Remote port</th>
                 </thead>
                 <tbody>
                     {% for l in links %}
                         <tr class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[l["remote_status"]] }}">
                             <td>
                                 {% if l["role"] == "uplink" %}
-                                    Uplink
+                                    <i class="fa fa-chevron-up" title="Uplink"></i>
                                 {% else %}
-                                    Downlink
+                                    <i class="fa fa-chevron-down" title="Downlink"></i>
                                 {% endif %}
                             </td>
                             <td>
@@ -157,11 +157,12 @@
 </table>
 <table class="table table-condensed table-hover">
     <thead>
-        <th>Port</th>
-        <th>Admin/Oper</th>
-        <th>Speed/Duplex</th>
-        <th>VLAN</th>
-        <th>Errors</th>
+        <th class="col-sm-1">Port</th>
+        <th class="col-sm-1">Admin/Oper</th>
+        <th class="col-sm-1">Speed/Duplex</th>
+        <th class="col-sm-1">VLAN</th>
+        <th class="col-sm-1">Errors</th>
+        <th class="col-sm-1">Status</th>
         <th>Service</th>
     </thead>
     <tbody>
@@ -169,8 +170,8 @@
             <tr>
                 <td>{{ i["name"] }}</td>
                 <td{% if not i["oper_status"] %} class="danger"{% endif %}>
-                    {{ {True: "Up", False: "Down"}[i["admin_status"]] }}/
-                    {{ {True: "Up", False: "Down"}[i["oper_status"]] }}
+                    {{ {True: "<i class='fa fa-circle' title='Admin Up'></i>", False: "<i class='fa fa-circle-o' title='Admin Down'></i>"}[i["admin_status"]] }}/
+                    {{ {True: "<i class='fa fa-circle' title='Oper Up'></i>", False: "<i class='fa fa-circle-o' title='Oper Down'></i>"}[i["oper_status"]] }}
                 </td>
                 <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
                     {% if i["oper_status"] %}
@@ -184,7 +185,30 @@
                     {% if i["tagged_vlans"] %}T: {{ i["tagged_vlans"] }}{% endif %}
                 </td>
                 <td></td>
+                {% if i["service"] %}
+                <td>
+                    {{ i["service"].logical_status }}<br>
+                    <span class="small">{{ i["service"].stage_name }}</span>
+                </td>
+                <td>
+                    {{ i["service"].order_id }}:
+                    {{ i["service"].subscriber.name }}<br/>
+                    {% if i["service_summary"] %}
+                        <span style="float: right">
+                            {% for s in i["service_summary"] %}
+                            <i class='{{ s["glyph"] }}"' title='{{ s["name"] }}'></i>
+                            {% if s["count"] > 1 %}
+                                <span class="badge">{{ s["count"] }}</span>
+                            {% endif %}
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                    <span class="small">{{ i["service"].address }}</span>
+                </td>
+                {% else %}
+                <td></td>
                 <td>{{ i["description"] }}</td>
+                {% endif %}
             <tr>
         {% endfor %}
     </tbody>

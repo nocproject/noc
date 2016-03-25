@@ -25,7 +25,12 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     data_index: "glyph",
                     width: 25,
                     renderer: function(v) {
-                        return "<i class='" + v + "></i>";
+                        if(v !== undefined && v !== "")
+                        {
+                            return "<i class='" + v + "'></i>";
+                        } else {
+                            return "";
+                        }
                     }
                 },
                 {

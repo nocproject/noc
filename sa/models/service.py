@@ -31,7 +31,8 @@ class Service(Document):
         "collection": "noc.services",
         "indexes": [
             "subscriber",
-            "managed_object"
+            "managed_object",
+            "parent"
         ]
     }
     profile = ReferenceField(ServiceProfile, required=True)

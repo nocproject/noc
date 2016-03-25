@@ -9,8 +9,6 @@
 ## Python modules
 import datetime
 import operator
-## Third-party modules
-from jinja2 import Template
 ## NOC modules
 from base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
@@ -22,6 +20,7 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.objectuplink import ObjectUplink
+from noc.sa.models.service import Service
 from noc.lib.text import split_alnum, list_to_ranges
 
 
@@ -136,13 +135,29 @@ class ManagedObjectCard(BaseCard):
                 "speed": max([i.in_speed or 0, i.out_speed or 0]) / 1000,
                 "untagged_vlan": None,
                 "tagged_vlan": None,
-                "service": i.description
+                "service": i.service,
+                "service_summary": []
             }]
             si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
             if len(si) == 1:
                 si = si[0]
                 interfaces[-1]["untagged_vlan"] = si.untagged_vlan
-                interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans)
+                interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
+            # Build service summary
+            if i.service:
+                ss = []
+                sr = {}
+                for pname, glyph in self.get_service_glyphs(i.service):
+                    if pname in sr:
+                        sr[pname]["count"] += 1
+                    else:
+                        sr[pname] = {
+                            "name": pname,
+                            "glyph": glyph,
+                            "count": 1
+                        }
+                        ss += [sr]
+                interfaces[-1]["service_summary"] = ss
         interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
         # Termination group
         l2_terminators = []
@@ -190,6 +205,15 @@ class ManagedObjectCard(BaseCard):
             "alarms": alarm_list,
             "interfaces": interfaces
         }
-        # @todo: admin status, oper status, speed/duplex, errors in/out,
-        # @todo: vlan/mac, service
+        return r
+
+    def get_service_glyphs(self, service):
+        """
+        Returns a list of (service profile name, glyph)
+        """
+        r = []
+        if service.profile.glyph:
+            r += [(service.profile.name, service.profile.glyph)]
+        for svc in Service.objects.filter(parent=service):
+            r += self.get_service_glyphs(svc)
         return r
