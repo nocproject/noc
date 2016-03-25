@@ -407,6 +407,19 @@ class BaseLoader(object):
                 raise self.Deferred()
             return self.chain.cache[r_model, value]
 
+    def clean_int_reference(self, mappings, r_model, value):
+        if not value:
+            return None
+        else:
+            # @todo: Get proper mappings
+            try:
+                value = int(mappings[value])
+            except KeyError:
+                self.logger.info("Deferred. Unknown value %s:%s",
+                                 r_model, value)
+                raise self.Deferred()
+            return self.chain.cache[r_model, value]
+
     def set_mappings(self, rv, lv):
         self.logger.debug("Set mapping remote: %s, local: %s", rv, lv)
         self.mappings[str(rv)] = str(lv)
@@ -414,7 +427,7 @@ class BaseLoader(object):
     def update_document_clean_map(self):
         from mongoengine.fields import (BooleanField, IntField,
                                         FloatField, ReferenceField)
-        from noc.lib.nosql import PlainReferenceField
+        from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 
         for fn, ft in self.model._fields.iteritems():
             if fn not in self.clean_map:
@@ -424,10 +437,16 @@ class BaseLoader(object):
             elif isinstance(ft, (PlainReferenceField, ReferenceField)):
                 if fn in self.mapped_fields:
                     self.clean_map[fn] = functools.partial(
-                            self.clean_reference,
-                            self.chain.get_mappings(
-                                    self.mapped_fields[fn]),
-                            ft.document_type
+                        self.clean_reference,
+                        self.chain.get_mappings(self.mapped_fields[fn]),
+                        ft.document_type
+                    )
+            elif isinstance(ft, ForeignKeyField):
+                if fn in self.mapped_fields:
+                    self.clean_map[fn] = functools.partial(
+                        self.clean_int_reference,
+                        self.chain.get_mappings(self.mapped_fields[fn]),
+                        ft.document_type
                     )
             elif fn in self.mapped_fields:
                 self.clean_map[fn] = functools.partial(
