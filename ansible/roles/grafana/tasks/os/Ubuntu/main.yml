@@ -30,4 +30,3 @@
     - key: CONF_FILE
       value: "{{ noc_root }}/var/etc/grafana/grafana.ini"
   notify: restart grafana
-

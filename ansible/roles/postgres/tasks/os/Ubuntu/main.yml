@@ -1,9 +1,23 @@
 ---
+- name: Add Ubuntu PostgreSQL key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+    state: present
+
+- name: Add Ubuntu PostgreSQL repo
+  apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_lsb.codename }}-pgdg main"
+    state: present
+    update_cache: yes
+
 - name: "Install PostgreSQL"
-  apt: name="{{item}}" update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   with_items:
-    - postgresql
-    - postgresql-contrib
+    - postgresql-{{ postgresql_version }}
+    - postgresql-contrib-{{ postgresql_version }}
     - python-psycopg2
 
 - name: Find suitable PostgreSQL cluster
@@ -19,3 +33,9 @@
   set_fact:
     postgresql_conf_path: "/etc/postgresql/{{pg_cluster_version}}/{{pg_cluster_name}}/postgresql.conf"
     postgresql_hba_path: "/etc/postgresql/{{pg_cluster_version}}/{{pg_cluster_name}}/pg_hba.conf"
+
+- name: Install postgres monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/postgres.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/postgres.conf"
+  notify: reload telegraf
