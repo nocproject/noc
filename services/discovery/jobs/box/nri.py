@@ -41,7 +41,7 @@ class NRICheck(DiscoveryCheck):
             )
             return
         self.nri = src_tags[0]
-        pm = portmapper_loader(self.nri)
+        pm = portmapper_loader.get_loader(self.nri)
         if not pm:
             self.logger.info("No portmapper for %s. Skipping checks",
                              src_tags[0])
@@ -77,8 +77,8 @@ class NRICheck(DiscoveryCheck):
                     i["name"], self.object.platform
                 )
                 continue
-            self.logger.info("Mapping %s to %s",)
-            bulk.find({"_id": i["_id"]}).update({"nri_name": nri_name})
+            self.logger.info("Mapping %s to %s", i["name"], nri_name)
+            bulk.find({"_id": i["_id"]}).update({"$set": {"nri_name": nri_name}})
             n += 1
         if n:
             bulk.execute()
