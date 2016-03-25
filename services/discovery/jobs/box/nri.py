@@ -96,7 +96,7 @@ class NRICheck(DiscoveryCheck):
             (s["nri_port"], s["_id"])
             for s in Service._get_collection().find({
                 "managed_object": self.object.id,
-                "nri_name": {
+                "nri_port": {
                     "$exists": True
                 }
             }, {
@@ -121,7 +121,7 @@ class NRICheck(DiscoveryCheck):
         }):
             if i["nri_name"] in smap:
                 svc = smap[i["nri_name"]]
-                if svc != i["service"]:
+                if svc != i.get("service"):
                     self.logger.info(
                         "Binding service %s to interface %s",
                         svc, i["name"]
@@ -133,7 +133,7 @@ class NRICheck(DiscoveryCheck):
                     })
                     n += 1
                 del smap[i["nri_name"]]
-            else:
+            elif i.get("service"):
                 self.logger.info(
                     "Removing service %s from interface %s",
                     i["service"], i["name"]
