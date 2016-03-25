@@ -28,3 +28,9 @@
     name: "{{ grafana_system_service }}"
     enabled: yes
     state: started
+
+- name: Wait for Grafana
+  wait_for:
+    port: 8002
+    timeout: 30
+    state: present

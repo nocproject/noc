@@ -1,0 +1,6 @@
+---
+- name: Install correlator monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/noc-correlator.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/noc-correlator.conf"
+  notify: reload telegraf
