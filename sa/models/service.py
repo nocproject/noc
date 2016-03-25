@@ -11,29 +11,27 @@ import datetime
 import logging
 from collections import defaultdict
 ## Third-party modules
-from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, DateTimeField, DictField,
-                                ReferenceField, IntField,
-                                EmbeddedDocumentField, ListField,
-                                ObjectIdField)
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, DateTimeField,
+                                ReferenceField)
 ## NOC modules
 from serviceprofile import ServiceProfile
-from noc.crm.models.supplier import Supplier
 from noc.crm.models.subscriber import Subscriber
-from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.decorator import on_save, on_delete
-from noc.models import get_object, get_model
 
 logger = logging.getLogger(__name__)
 
 
+@on_save
+@on_delete
 class Service(Document):
     meta = {
         "collection": "noc.services",
         "indexes": [
-            "subscriber"
+            "subscriber",
+            "managed_object"
         ]
     }
     profile = ReferenceField(ServiceProfile, required=True)
@@ -79,3 +77,22 @@ class Service(Document):
     cpe_mac = StringField()
     cpe_model = StringField()
     cpe_group = StringField()
+
+    def on_delete(self):
+        if self.nri_port:
+            self.unbind_interface()
+
+    def on_save(self):
+        if "nri_port" in self._changed_fields:
+            self.unbind_interface()
+
+    def unbind_interface(self):
+        from noc.inv.models.interface import Interface
+
+        Interface._get_collection().update({
+            "service": self.id
+        }, {
+            "$unset": {
+                "service": ""
+            }
+        })

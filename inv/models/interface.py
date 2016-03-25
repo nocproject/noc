@@ -12,7 +12,7 @@ import logging
 ## NOC Modules
 from noc.lib.nosql import (Document, ForeignKeyField, StringField,
     IntField, BooleanField, PlainReferenceField, ListField,
-    DateTimeField)
+    DateTimeField, ReferenceField)
 from interfaceprofile import InterfaceProfile
 from coverage import Coverage
 from noc.sa.models.managedobject import ManagedObject
@@ -21,6 +21,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
+from noc.sa.models.service import Service
 
 
 INTERFACE_TYPES = (IGetInterfaces.returns
@@ -45,7 +46,8 @@ class Interface(Document):
         "indexes": [
             ("managed_object", "name"),
             "mac",
-            ("managed_object", "ifindex")
+            ("managed_object", "ifindex"),
+            "service"
         ]
     }
     managed_object = ForeignKeyField(ManagedObject)
@@ -80,6 +82,8 @@ class Interface(Document):
     technologies = ListField(StringField())
     # External NRI interface name
     nri_name = StringField()
+    #
+    service = ReferenceField(Service)
 
     PROFILE_LINK = "profile"
 

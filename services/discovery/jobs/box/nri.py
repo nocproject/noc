@@ -9,6 +9,8 @@
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
+from noc.inv.models.extnrilink import ExtNRILink
+from noc.sa.models.service import Service
 from noc.core.etl.portmapper.loader import loader as portmapper_loader
 
 
@@ -87,4 +89,81 @@ class NRICheck(DiscoveryCheck):
         pass
 
     def process_services(self):
-        pass
+        """
+        Bind services to interfaces
+        """
+        smap = dict(
+            (s["nri_port"], s["_id"])
+            for s in Service._get_collection().find({
+                "managed_object": self.object.id,
+                "nri_name": {
+                    "$exists": True
+                }
+            }, {
+                "_id": 1,
+                "nri_port": 1
+            }))
+
+        nmap = {}
+        bulk = Interface._get_collection().initialize_unordered_bulk_op()
+        n = 0
+        for i in Interface._get_collection().find({
+            "managed_object": self.object.id,
+            "type": "physical",
+            "nri_name": {
+                "$exists": True
+            }
+        }, {
+            "_id": 1,
+            "name": 1,
+            "nri_name": 1,
+            "service": 1
+        }):
+            if i["nri_name"] in smap:
+                svc = smap[i["nri_name"]]
+                if svc != i["service"]:
+                    self.logger.info(
+                        "Binding service %s to interface %s",
+                        svc, i["name"]
+                    )
+                    bulk.find({"_id": i["_id"]}).update({
+                        "$set": {
+                            "service": svc
+                        }
+                    })
+                    n += 1
+                del smap[i["nri_name"]]
+            else:
+                self.logger.info(
+                    "Removing service %s from interface %s",
+                    i["service"], i["name"]
+                )
+                bulk.find({"_id": i["_id"]}).update({
+                    "$unset": {
+                        "service": ""
+                    }
+                })
+                n += 1
+            nmap[i["nri_name"]] = i
+        for n in smap:
+            svc = smap[n]
+            if n not in nmap:
+                self.logger.info(
+                    "Cannot bind service %s. "
+                    "Cannot find NRI interface %s",
+                    svc, n
+                )
+                continue
+            i = nmap[n]
+            self.logger.info(
+                "Binding service %s to interface %s",
+                svc, i["name"]
+            )
+            bulk.find({"_id": i["_id"]}).update({
+                "$set": {
+                    "service": svc
+                }
+            })
+            n += 1
+        if n:
+            bulk.execute()
