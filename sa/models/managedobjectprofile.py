@@ -108,6 +108,8 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_config = models.BooleanField(default=False)
     # Collect hardware configuration
     enable_box_discovery_asset = models.BooleanField(default=False)
+    # Collect hardware configuration
+    enable_box_discovery_nri = models.BooleanField(default=False)
     # Collect interface IP addresses
     # enable_box_discovery_ip = models.BooleanField(default=False)
     # Collect static vlans

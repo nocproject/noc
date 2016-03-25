@@ -350,6 +350,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: "VLAN"
                                         },
                                         {
+                                            name: "enable_box_discovery_nri",
+                                            xtype: "checkboxfield",
+                                            boxLabel: "NRI"
+                                        },
+                                        {
                                             name: "enable_box_discovery_bfd",
                                             xtype: "checkboxfield",
                                             boxLabel: "BFD"
