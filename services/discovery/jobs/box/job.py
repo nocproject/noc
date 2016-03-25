@@ -21,6 +21,7 @@ from cdp import CDPCheck
 from oam import OAMCheck
 from lldp import LLDPCheck
 from stp import STPCheck
+from nri import NRICheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -30,7 +31,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
         OAMCheck,
         LLDPCheck,
         CDPCheck,
-        STPCheck
+        STPCheck,
+        NRICheck
     ]
 
     TOPOLOGY_NAMES = [m.name for m in TOPOLOGY_METHODS]
@@ -52,11 +54,13 @@ class BoxDiscoveryJob(MODiscoveryJob):
             AssetCheck(self).run()
         if self.object.object_profile.enable_box_discovery_vlan:
             VLANCheck(self).run()
+        if self.object.object_profile.enable_box_discovery_nri:
+            NRICheck(self).run()
         # Topology discovery
         # Most preferable methods first
         for check in self.TOPOLOGY_METHODS:
             if getattr(self.object.object_profile,
-                       "enable_box_discovery_%s" % check.name):
+                       "enable_box_discovery_%s" % check.name) and check.name != "nri":
                 check(self).run()
 
     def can_run(self):

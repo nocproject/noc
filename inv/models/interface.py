@@ -78,6 +78,8 @@ class Interface(Document):
     # Coverage
     coverage = PlainReferenceField(Coverage)
     technologies = ListField(StringField())
+    # External NRI interface name
+    nri_name = StringField()
 
     PROFILE_LINK = "profile"
 
