@@ -15,6 +15,7 @@
     state: present
     update_cache: yes
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+  notify: restart grafana
 
 - name: Set up Grafana service
   lineinfile:
