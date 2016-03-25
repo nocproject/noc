@@ -2,12 +2,13 @@
 ##----------------------------------------------------------------------
 ## main.ref application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import os
+import re
 ## Django modules
 from django.db import models
 ## Third-party modules
@@ -18,7 +19,6 @@ from noc.sa.interfaces.base import interface_registry
 from noc.lib.stencil import stencil_registry
 from noc import settings
 from noc.main.models.notification import USER_NOTIFICATION_METHOD_CHOICES
-from noc.pm.probes.base import probe_registry
 from noc.cm.validators.base import validator_registry
 from noc.core.profile.loader import loader as profile_loader
 
@@ -34,6 +34,8 @@ class RefAppplication(ExtApplication):
     sort_param = "__sort"
     format_param = "__format"  # List output format
     query_param = "__query"
+
+    FA_CSS_PATH = "ui/pkg/fontawesome/css/font-awesome.min.css"
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
@@ -142,6 +144,26 @@ class RefAppplication(ExtApplication):
                     r += [{
                         "id": t,
                         "label": t
+                    }]
+        return r
+
+    rx_fa_glyph = re.compile(
+        r"\.fa-([^:]+):before\{content:",
+        re.MULTILINE | re.DOTALL
+    )
+
+    def build_glyph(self):
+        r = [{
+            "id": "",
+            "label": "---"
+        }]
+        if os.path.exists(self.FA_CSS_PATH):
+            with open(self.FA_CSS_PATH) as f:
+                for match in self.rx_fa_glyph.finditer(f.read()):
+                    glyph = match.group(1)
+                    r += [{
+                        "id": "fa %s" % glyph,
+                        "label": glyph[3:]
                     }]
         return r
 

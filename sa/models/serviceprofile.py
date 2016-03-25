@@ -20,6 +20,8 @@ class ServiceProfile(Document):
     description = StringField()
     # Jinja2 service label template
     label_template = StringField()
+    # FontAwesome glyph
+    glyph = StringField()
 
     def __unicode__(self):
         return self.name
