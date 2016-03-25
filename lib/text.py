@@ -371,23 +371,25 @@ def to_seconds(v):
     return v * m
 
 
-def format_table(widths, data):
+def format_table(widths, data, sep=" ", hsep=" "):
     """
     Print formatted table.
-    widths -- list of minimal column widths
-    data -- list of rows, first row is the header
+    :param widths: list of minimal column widths
+    :param data: list of rows, first row is the header
+    :param sep: column separator
+    :param hsep: header line separator
     """
     # Calculate column widths
     widths = list(widths)
     for row in data:
         widths = [max(x, len(y)) for x, y in zip(widths, row)]
     # Build print mask
-    mask = " ".join("%%-%ds" % w for w in widths)
+    mask = sep.join("%%-%ds" % w for w in widths)
     out = [
         # Header line
         mask % tuple(data[0]),
         # Header separator
-        " ".join("-" * w for w in widths)
+        hsep.join("-" * w for w in widths)
     ]
     out += [mask % tuple(row) for row in data[1:]]
     return "\n".join(out)
