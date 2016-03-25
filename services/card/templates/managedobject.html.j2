@@ -29,6 +29,17 @@
     <th scope="row">Model</th>
     <td>{{ platform }}</td>
 </tr>
+{% if i["service_summary"] %}
+<tr>
+    <th scope="row">Services</th>
+    <td>
+        {% for s in service_summary %}
+        <i class='{{ s["glyph"] }}' title='{{ s["name"] }}'></i>
+        <span class="badge">{{ s["count"] }}</span>
+        {% endfor %}
+    </td>
+</tr>
+{% endif %}
 <tr>
     <th scope="row">IP</th>
     <td>{{ address }}</td>
@@ -170,8 +181,8 @@
             <tr>
                 <td>{{ i["name"] }}</td>
                 <td{% if not i["oper_status"] %} class="danger"{% endif %}>
-                    {{ {True: "<i class='fa fa-circle' title='Admin Up'></i>", False: "<i class='fa fa-circle-o' title='Admin Down'></i>"}[i["admin_status"]] }}/
-                    {{ {True: "<i class='fa fa-circle' title='Oper Up'></i>", False: "<i class='fa fa-circle-o' title='Oper Down'></i>"}[i["oper_status"]] }}
+                    {{ {True: "<i class='text-success fa fa-circle' title='Admin Up'></i>", False: "<i class='text-danger fa fa-circle-o' title='Admin Down'></i>"}[i["admin_status"]] }}/
+                    {{ {True: "<i class='text-success fa fa-circle' title='Oper Up'></i>", False: "<i class='text-danger fa fa-circle-o' title='Oper Down'></i>"}[i["oper_status"]] }}
                 </td>
                 <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
                     {% if i["oper_status"] %}
@@ -192,18 +203,21 @@
                 </td>
                 <td>
                     {{ i["service"].order_id }}:
-                    {{ i["service"].subscriber.name }}<br/>
+                    {{ i["service"].subscriber.name }}
                     {% if i["service_summary"] %}
                         <span style="float: right">
                             {% for s in i["service_summary"] %}
-                            <i class='{{ s["glyph"] }}"' title='{{ s["name"] }}'></i>
+                            <i class='{{ s["glyph"] }}' title='{{ s["name"] }}'></i>
                             {% if s["count"] > 1 %}
                                 <span class="badge">{{ s["count"] }}</span>
                             {% endif %}
                             {% endfor %}
                         </span>
                     {% endif %}
+                    {% if i["service"].address %}
+                    <br/>
                     <span class="small">{{ i["service"].address }}</span>
+                    {% endif %}
                 </td>
                 {% else %}
                 <td></td>
