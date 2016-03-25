@@ -162,8 +162,8 @@ class RefAppplication(ExtApplication):
                 for match in self.rx_fa_glyph.finditer(f.read()):
                     glyph = match.group(1)
                     r += [{
-                        "id": "fa %s" % glyph,
-                        "label": glyph[3:]
+                        "id": "fa fa-%s" % glyph,
+                        "label": glyph
                     }]
         return r
 
