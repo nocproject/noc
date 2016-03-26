@@ -112,13 +112,31 @@
     <th scope="row">Terminator</th>
     <td></td>
 </tr>
+{% if interface %}
 <tr>
     <th scope="row">Session</th>
-    <td></td>
+    <td id="session-data">
+        <i class="fa fa-spinner fa-spin"></i> <span class="text-muted">Getting data...</span>
+    </td>
 </tr>
+{% endif %}
 <tr>
     <th scope="row">TT</th>
     <td></td>
 </tr>
 </tbody>
 </table>
+
+{% if interface %}
+<script>
+$(document).ready(
+    $.ajax("/api/card/view/subscribersession/{{ interface.id }}/").done(
+        function(data) {
+            $("#session-data").html(data);
+        }
+    ).fail(function() {
+        $("session-data").html("Failed to get data");
+    })
+);
+</script>
+{% endif %}

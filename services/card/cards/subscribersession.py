@@ -1,0 +1,26 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Subscriber Sessions Subcard
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2016 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Third-party modules
+import tornado.gen
+## NOC modules
+from base import BaseCard
+from noc.inv.models.interface import Interface
+
+
+class SubscriberSessionCard(BaseCard):
+    default_template_name = "subscribersession"
+    model = Interface
+
+    def get_data(self):
+        macs = self.object.managed_object.scripts.get_mac_address_table(
+            interface=self.object.name
+        )
+        return {
+            "macs": macs
+        }
