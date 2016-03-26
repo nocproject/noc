@@ -223,8 +223,9 @@ class ManagedObjectCard(BaseCard):
         Returns a list of (service profile name, glyph)
         """
         r = []
-        if service.profile.glyph:
-            r += [(service.profile.name, service.profile.glyph)]
-        for svc in Service.objects.filter(parent=service):
-            r += self.get_service_glyphs(svc)
+        if service.logical_status in ("T", "R", "S"):
+            if service.profile.glyph:
+                r += [(service.profile.name, service.profile.glyph)]
+            for svc in Service.objects.filter(parent=service):
+                r += self.get_service_glyphs(svc)
         return r
