@@ -11,6 +11,7 @@ import tornado.gen
 ## NOC modules
 from base import BaseCard
 from noc.inv.models.interface import Interface
+from noc.inv.models.macvendor import MACVendor
 
 
 class SubscriberSessionCard(BaseCard):
@@ -21,6 +22,9 @@ class SubscriberSessionCard(BaseCard):
         macs = self.object.managed_object.scripts.get_mac_address_table(
             interface=self.object.name
         )
+        if macs:
+            for m in macs:
+                m["mac_vendor"] = MACVendor.get_vendor(m["mac"]) or ""
         return {
             "macs": macs
         }
