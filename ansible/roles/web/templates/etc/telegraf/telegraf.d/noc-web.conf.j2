@@ -1,3 +1,18 @@
 [[inputs.procstat]]
 pattern = "noc-web"
 prefix = "web"
+
+[[inputs.httpjson]]
+  name = "noc-web"
+  servers = [
+{% for service in noc_config.services -%}
+    {% if "web" in service -%}
+        {% for host in noc_config.services[service] -%}
+            {% if ansible_ssh_host in host -%}
+"http://{{host}}/mon/",
+            {%- endif %}
+        {%- endfor %}
+    {%- endif %}
+{%- endfor %}
+  ]
+  method = "GET"
