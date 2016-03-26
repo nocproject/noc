@@ -24,7 +24,7 @@
       when: "{{ has_svc_influxdb | default(False) }}"
 
     - role: migrate
-      when: "{{ has_svc_mongod_master }}"
+      when: "{{ has_svc_mongod_master | default(False) }}"
 
     - role: web
       when: "{{ has_svc_web | default(False) }}"
