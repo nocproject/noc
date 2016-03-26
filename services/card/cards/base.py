@@ -22,6 +22,7 @@ class BaseCard(object):
     ]
     model = None
     DEFAULT_MO_TITLE_TEMPLATE = "{{ object.object_profile.name }}: {{ object.name }}"
+    DEFAULT_SERVICE_TITLE_TEMPLATE = "{% if object.profile.glyph %}<i class='{{ object.profile.glyph }}'></i> {%endif %}{{ object.profile.name }}: {{ object.order_id }}"
 
     def __init__(self, id):
         self.object = self.dereference(id)
@@ -57,6 +58,8 @@ class BaseCard(object):
                     env = Environment()
                     env.filters.update({
                         "managed_object_title": self.f_managed_object_title,
+                        "service_title": self.f_service_title,
+                        "logical_status": self.f_logical_status,
                         "timestamp": self.f_timestamp
                     })
                     with open(tp) as f:
@@ -79,6 +82,14 @@ class BaseCard(object):
         title_tpl = obj.object_profile.card_title_template or self.DEFAULT_MO_TITLE_TEMPLATE
         return Template(title_tpl).render({"object": obj})
 
+    def f_service_title(self, obj):
+        """
+        Convert service object instance to title
+        using profile card_title_template
+        """
+        title_tpl = obj.profile.card_title_template or self.DEFAULT_SERVICE_TITLE_TEMPLATE
+        return Template(title_tpl).render({"object": obj})
+
     def f_timestamp(self, ts):
         """
         Convert to readable timestamp like YYYY-MM-DD HH:MM:SS
@@ -87,4 +98,16 @@ class BaseCard(object):
             return ts.strftime("%Y-%m-%d %H:%M:%S")
         else:
             return ts
+
+    def f_logical_status(self, s):
+        return {
+            "P": "Planned",
+            "p": "Provisioning",
+            "T": "Testing",
+            "R": "Ready",
+            "S": "Suspended",
+            "r": "Removing",
+            "C": "Closed",
+            "U": "Unknown"
+        }.get(s, "Unknown")
 

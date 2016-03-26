@@ -195,11 +195,11 @@
                 <td></td>
                 {% if i["service"] %}
                 <td>
-                    {{ i["service"].logical_status }}<br>
+                    {{ i["service"].logical_status | logical_status }}<br>
                     <span class="small">{{ i["service"].stage_name }}</span>
                 </td>
                 <td>
-                    {{ i["service"].order_id }}:
+                    <a href="/api/card/view/service/{{ i["service"].id }}/">{{ i["service"].order_id }}</a>:
                     {{ i["service"].subscriber.name }}
                     {% if i["service_summary"] %}
                         <span style="float: right">

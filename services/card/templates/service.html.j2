@@ -1,0 +1,124 @@
+<table class="table table-condensed table-hover">
+<tbody>
+<tr>
+    <th colspan="2" class="{{ {
+        "P": "info",
+        "p": "info",
+        "T": "info",
+        "R": "success",
+        "S": "warning",
+        "r": "danger",
+        "C": "danger",
+        "U": ""
+    }.get(service.logical_status, '') }}">
+        {{ service | service_title }}
+        <span style="float: right">
+            {{ service.logical_status | logical_status }}
+            {{ current_duration }}
+            ({{ service.logical_status_start | timestamp }})
+        </span>
+    </th>
+</tr>
+<tr>
+    <th scope="row" class="col-sm-1">Services</th>
+    <td>
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Service</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in services %}
+                <tr>
+                    <td>{% if s.id == service.id %}<i class="fa fa-arrow-right"></i>{% endif %}</td>
+                    <td> {{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * s._level) }}
+                        <a href="/api/card/view/service/{{ s.id }}/">{{ s | service_title }}</a>
+                    </td>
+                    <td>{{ s.logical_status | logical_status }}</td>
+                </th>
+                {% endfor %}
+            </tbody>
+        </table>
+    </td>
+</tr>
+<tr>
+    <th scope="row">Address</th>
+    <td>{{ service.address }}</td>
+</tr>
+<tr>
+    <th scope="row">Subscriber</th>
+    <td>{{ service.subscriber.name }}</td>
+</tr>
+<tr>
+    <th scope="row">Contacts</th>
+    <td>
+        {{ service.subscriber.tech_contact_person }},
+        {{ service.subscriber.tech_contact_phone }}
+    </td>
+</tr>
+{% if service.description %}
+<tr>
+    <th scope="row">Comment</th>
+    <td>{{ service.description }}</td>
+</tr>
+{% endif %}
+{% if interface %}
+<tr class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[managed_object_status] }}">
+    <th scope="row">Connection</th>
+    <td>
+        <a href="/api/card/view/managedobject/{{ managed_object.id }}/">{{ managed_object | managed_object_title }}</a>
+        ({{ managed_object.platform }}, {{ managed_object.address }})
+        <br/><small>@todo: Container</small>
+        {% if alarms %}
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Duration</th>
+                    <th>Subject</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in alarms %}
+                <tr>
+                    <td><a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp | timestamp}}</a></td>
+                    <td>{{ a.duration }}</td>
+                    <td>{{ a.subject }}</td>
+                </td>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </td>
+</tr>
+<tr class="{{ {True: 'success', False: 'danger'}[interface.oper_status] }}">
+    <th scope="row">Port</th>
+    <td>
+        {{ interface.name }}
+        {% if interface.oper_status %}
+            ({{ interface.speed }}M/{{ {True: "Full", False: "Half"}[interface.full_duplex] }})
+        {% endif %}
+    </td>
+</tr>
+{% endif %}
+<tr>
+    <th scope="row">CPE</th>
+    <td></td>
+</tr>
+<tr>
+    <th scope="row">Terminator</th>
+    <td></td>
+</tr>
+<tr>
+    <th scope="row">Session</th>
+    <td></td>
+</tr>
+<tr>
+    <th scope="row">TT</th>
+    <td></td>
+</tr>
+</tbody>
+</table>
