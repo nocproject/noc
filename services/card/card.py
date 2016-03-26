@@ -13,12 +13,14 @@ from jinja2 import Template
 from noc.core.service.ui import UIHandler
 from cards.managedobject import ManagedObjectCard
 from cards.alarm import AlarmCard
+from cards.service import ServiceCard
 
 
 class CardRequestHandler(UIHandler):
     CARDS = {
         "managedobject": ManagedObjectCard,
-        "alarm": AlarmCard
+        "alarm": AlarmCard,
+        "service": ServiceCard
     }
     CARD_TEMPLATE_PATH = "services/card/templates/card.html.j2"
     CARD_TEMPLATE = None
