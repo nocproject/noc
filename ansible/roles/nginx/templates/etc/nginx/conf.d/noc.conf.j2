@@ -72,7 +72,9 @@ server {
 
     location /ng_stats {
         stub_status;
-        allow 127.0.0.1;
+{% for ip in ansible_all_ipv4_addresses %}
+        allow {{ ip }};
+{% endfor %}
         deny all;
     }
 
