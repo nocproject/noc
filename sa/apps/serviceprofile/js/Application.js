@@ -60,9 +60,9 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     uiStyle: "extra"
                 },
                 {
-                    name: "label_template",
+                    name: "card_title_template",
                     xtype: "textfield",
-                    fieldLabel: "Label Template",
+                    fieldLabel: "Title Template",
                     uiStyle: "extra",
                     allowBlank: true
                 },

@@ -19,7 +19,7 @@ class ServiceProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     # Jinja2 service label template
-    label_template = StringField()
+    card_title_template = StringField()
     # FontAwesome glyph
     glyph = StringField()
 
