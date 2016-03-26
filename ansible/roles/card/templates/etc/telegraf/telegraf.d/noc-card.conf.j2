@@ -1,12 +1,12 @@
 [[inputs.procstat]]
-pattern = "noc-omap"
-prefix = "omap"
+pattern = "noc-card"
+prefix = "card"
 
 [[inputs.httpjson]]
-  name = "noc-omap"
+  name = "noc-card"
   servers = [
 {% for service in noc_config.services -%}
-    {% if "omap" in service -%}
+    {% if "card" in service -%}
         {% for host in noc_config.services[service] -%}
             {% if ansible_ssh_host in host -%}
 "http://{{host}}/mon/",
@@ -16,3 +16,4 @@ prefix = "omap"
 {%- endfor %}
   ]
   method = "GET"
+  tag_keys = ["service", "instance"]
