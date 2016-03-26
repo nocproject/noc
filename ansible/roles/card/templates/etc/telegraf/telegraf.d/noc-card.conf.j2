@@ -1,0 +1,18 @@
+[[inputs.procstat]]
+pattern = "noc-omap"
+prefix = "omap"
+
+[[inputs.httpjson]]
+  name = "noc-omap"
+  servers = [
+{% for service in noc_config.services -%}
+    {% if "omap" in service -%}
+        {% for host in noc_config.services[service] -%}
+            {% if ansible_ssh_host in host -%}
+"http://{{host}}/mon/",
+            {%- endif %}
+        {%- endfor %}
+    {%- endif %}
+{%- endfor %}
+  ]
+  method = "GET"
