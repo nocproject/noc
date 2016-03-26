@@ -165,7 +165,7 @@ class ManagedObjectCard(BaseCard):
         for i in interfaces:
             for s in i["service_summary"]:
                 if s["name"] in sr:
-                    sr[s["name"]] += s["count"]
+                    sr[s["name"]]["count"] += s["count"]
                 else:
                     sr[s["name"]] = s.copy()
                     service_summary += [sr[s["name"]]]
