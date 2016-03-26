@@ -1,0 +1,21 @@
+{% if macs %}
+<table class="table table-condensed">
+    <thead>
+        <tr>
+            <th>VLAN</th>
+            <th>MAC</th>
+            <th>MAC Vendor</th>
+        <tr>
+    </thead>
+    <tbody>
+        {% for m in macs %}
+        <tr>
+            <td>{{ m["vlan_id"] }}</td>
+            <td>{{ m["mac"] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+No MAC addresses found
+{% endif %}
