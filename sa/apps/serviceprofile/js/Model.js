@@ -24,7 +24,7 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "string"
         },
         {
-            name: "label_template",
+            name: "card_title_template",
             type: "string"
         },
         {
