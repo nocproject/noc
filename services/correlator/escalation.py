@@ -23,11 +23,11 @@ class Escalation(object):
     def __init__(self, delay, notification_group,
                  tt_system, tt_queue, template):
         self.delay = int(delay)
-        if self.notification_group:
+        if notification_group:
             self.notification_group = notification_group.id
         else:
             self.notification_group = None
-        if self.tt_system:
+        if tt_system:
             self.tt_system = tt_system.id
             self.tt_queue = tt_queue
         else:
@@ -43,6 +43,7 @@ class Escalation(object):
         call_later(
             "noc.services.correlator.escalation.escalate",
             delay=self.delay,
+            scheduler="correlator",
             alarm_id=alarm.id,
             notificaiton_group_id=self.notification_group,
             tt_system_id=self.tt_system,
