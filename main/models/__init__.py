@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Database models for main module
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -20,8 +20,6 @@ from django.contrib.auth.models import User, Group
 from django.core.validators import MaxLengthValidator
 from django.db.models.signals import class_prepared, pre_save, pre_delete,\
                                      post_save, post_delete
-from django.template import Template as DjangoTemplate
-from django.template import Context
 ## Third-party modules
 from mongoengine.django.sessions import MongoSession
 ## NOC Modules
@@ -485,89 +483,9 @@ class Schedule(models.Model):
                                          seconds=seconds))
         t.save()
 
-
-class Shard(models.Model):
-    class Meta:
-        verbose_name = _("Shard")
-        verbose_name_plural = _("Shards")
-        ordering = ["name"]
-
-    name = models.CharField(_("Name"), max_length=128, unique=True)
-    is_active = models.BooleanField(_("Is Active"), default=True)
-    description = models.TextField(_("Description"), null=True, blank=True)
-
-    def __unicode__(self):
-        return self.name
-
 from prefixtable import PrefixTable, PrefixTablePrefix
-
-
-class Template(models.Model):
-    class Meta:
-        verbose_name = _("Template")
-        verbose_name_plural = _("Templates")
-        ordering = ["name"]
-
-    name = models.CharField(_("Name"), unique=True, max_length=128)
-    subject = models.TextField(_("Subject"))
-    body = models.TextField(_("Body"))
-
-    def __unicode__(self):
-        return self.name
-
-    def render_subject(self, LANG=None, **kwargs):
-        return DjangoTemplate(self.subject).render(Context(kwargs))
-
-    def render_body(self, LANG=None, **kwargs):
-        return DjangoTemplate(self.body).render(Context(kwargs))
-
-
-class SystemTemplate(models.Model):
-    class Meta:
-        verbose_name = _("System template")
-        verbose_name_plural = _("System templates")
-        ordering = ["name"]
-
-    name = models.CharField(_("Name"), max_length=64, unique=True)
-    description = models.TextField(_("Description"), null=True, blank=True)
-    template = models.ForeignKey(Template, verbose_name=_("Template"))
-
-    def __unicode__(self):
-        return self.name
-
-    def render_subject(self, LANG=None, **kwargs):
-        return self.template.render_subject(lang=LANG, **kwargs)
-
-    def render_body(self, LANG=None, **kwargs):
-        return self.template.render_body(lang=LANG, **kwargs)
-
-    @classmethod
-    def notify_users(cls, name, users, **kwargs):
-        """
-        Send notifications via template to users
-        :param name: System template name
-        :param users: List of User instances or id's
-        """
-        # Find system template by name
-        try:
-            t = cls.objects.get(name=name)
-        except cls.DoesNotExist:
-            return
-        # Fix users
-        u_list = []
-        for u in users:
-            if type(u) in (types.IntType, types.LongType):
-                try:
-                    u_list += [User.objects.get(id=u)]
-                except User.DoesNotExist:
-                    continue
-            elif type(u) in (types.StringType, types.UnicodeType):
-                u_list += [User.objects.get(username=u)]
-            elif isinstance(u, User):
-                u_list += [u]
-        # Left only active users
-        u_list = [u for u in u_list if u.is_active]
-        # Send notifications
+from template import Template
+from systemtemtemplate import SystemTemplate
 
 
 class Checkpoint(models.Model):

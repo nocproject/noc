@@ -59,6 +59,10 @@ class ActiveAlarm(nosql.Document):
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = nosql.ObjectIdField(required=False)
+    # Escalated TT ID in form
+    # <external system name>:<external tt id>
+    escalation_ts = nosql.DateTimeField(required=False)
+    escalation_tt = nosql.StringField(required=False)
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -148,6 +152,8 @@ class ActiveAlarm(nosql.Document):
                           vars=self.vars,
                           log=log,
                           root=self.root,
+                          escalation_ts=self.escalation_ts,
+                          escalation_tt=self.escalation_tt,
                           opening_event=self.opening_event,
                           closing_event=self.closing_event,
                           discriminator=self.discriminator,
@@ -290,6 +296,12 @@ class ActiveAlarm(nosql.Document):
     @classmethod
     def enable_caching(cls, ttl=600):
         cls._fields["alarm_class"].set_cache(ttl)
+
+    def escalate(self, tt_id):
+        self.escalation_tt = tt_id
+        self.escalation_ts = datetime.datetime.now()
+        self.log_message("Escalated to %s" % tt_id)
+        self.save()
 
 ## Avoid circular references
 from archivedalarm import ArchivedAlarm
