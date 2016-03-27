@@ -51,7 +51,7 @@
 <tr {% if firmware_status in ('n', 'd') %}class="warning"{% endif %}>
     <th scope="row">Version</th>
     <td>{% if version %}{{ version }}
-            {% if firmware_recommended != version %}
+            {% if firmware_recommended != version and firmware_recommended %}
             (Recommended: {{ firmware_recommended }})
             {% endif %}
         {% endif %}
