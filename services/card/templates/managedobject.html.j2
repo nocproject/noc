@@ -48,11 +48,11 @@
     <th scope="row">MAC</th>
     <td>{{ macs }}</td>
 </tr>
-<tr {% if recommended_version %}class="warning"{% endif %}>
+<tr {% if firmware_status in ('n', 'd') %}class="warning"{% endif %}>
     <th scope="row">Version</th>
     <td>{% if version %}{{ version }}
-            {% if recommended_version %}
-            (Recommended: {{ recommended_version }})
+            {% if firmware_recommended != version %}
+            (Recommended: {{ firmware_recommended }})
             {% endif %}
         {% endif %}
     </td>

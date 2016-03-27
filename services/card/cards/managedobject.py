@@ -21,6 +21,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.objectuplink import ObjectUplink
 from noc.sa.models.service import Service
+from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.lib.text import split_alnum, list_to_ranges
 
 
@@ -200,7 +201,8 @@ class ManagedObjectCard(BaseCard):
             "object_profile_name": self.object.object_profile.name,
             "macs": ", ".join(sorted(macs)),
             "segment": self.object.segment,
-            "recommended_version": "X.Y.Z",
+            "firmware_status": FirmwarePolicy.get_status(self.object.platform, self.object.version.version),
+            "firmware_recommended": FirmwarePolicy.get_recommended_version(self.object.platform),
             "service_summary": service_summary,
             #
             "container_path": cp,
