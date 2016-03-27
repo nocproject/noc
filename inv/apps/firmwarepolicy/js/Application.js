@@ -26,7 +26,7 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                 },
                 {
                     text: "Platform",
-                    dataIndex: "Platform",
+                    dataIndex: "platform",
                     width: 150
                 },
                 {
@@ -38,7 +38,13 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                 {
                     text: "Status",
                     dataIndex: "status",
-                    flex: 1
+                    flex: 1,
+                    renderer: NOC.render.Choices({
+                        r: "Recommended",
+                        a: "Acceptable",
+                        n: "Not recommended",
+                        d: "Denied"
+                    })
                 }
             ],
 
