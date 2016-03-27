@@ -45,14 +45,16 @@ class Escalation(object):
             delay=self.delay,
             scheduler="correlator",
             alarm_id=alarm.id,
-            notificaiton_group_id=self.notification_group,
+            notification_group_id=self.notification_group,
             tt_system_id=self.tt_system,
-            tt_queue_id=self.tt_queue,
+            tt_queue=self.tt_queue,
             template_id=self.template
         )
 
 
 def get_item(model, id):
+    if not id:
+        return None
     try:
         return model.objects.get(id=id)
     except model.DoesNotExist:
