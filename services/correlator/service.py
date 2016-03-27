@@ -18,11 +18,13 @@ from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
 from rule import Rule
 from rcacondition import RCACondition
+from escalation import Escalation
 from trigger import Trigger
 from joblauncher import JobLauncher
-from noc.fm.models import ActiveEvent, EventClass,\
-                          ActiveAlarm, AlarmLog, AlarmTrigger, AlarmClass
+from noc.fm.models import (ActiveEvent, EventClass,ActiveAlarm,
+                           AlarmLog, AlarmTrigger, AlarmClass)
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.solutions import get_alarm_class_handlers, get_alarm_jobs
@@ -40,6 +42,7 @@ class CorrelatorService(Service):
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
+        self.escalations = {}  # (alarm class, administrative domain) ->
         self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
         self.handlers = {}  # alamr class id -> [<handler>]
         self.scheduler = None
@@ -64,6 +67,7 @@ class CorrelatorService(Service):
         self.load_rules()
         self.load_triggers()
         self.load_rca_rules()
+        self.load_escalation_rules()
         self.load_alarm_jobs()
         self.load_handlers()
 
@@ -132,6 +136,27 @@ class CorrelatorService(Service):
                 self.rca_reverse[rc.root.id] += [rc]
                 n += 1
         logging.debug("%d RCA Rules have been loaded" % n)
+
+    def load_escalation_rules(self):
+        """
+        Load escalation rules
+        """
+        logging.debug("Loading escalations")
+        self.escalations = {}
+        n = 0
+        for ae in AlarmEscalation.objects.all():
+            for e in ae.escalations:
+                esc = Escalation(
+                    delay=e.delay,
+                    notification_group=e.notification_group,
+                    tt_system=e.tt_system,
+                    tt_queue=e.tt_queue,
+                    template=e.template
+                )
+                for ac in ae.alarm_classes:
+                    self.escalations[ac.alarm_class.id, e.administrative_domain.id] = esc
+                n += 1
+        logging.debug("%d escalation rules have been loaded", n)
 
     def load_alarm_jobs(self):
         """
@@ -348,6 +373,13 @@ class CorrelatorService(Service):
                 "recommended_actions": a.alarm_class.recommended_actions,
                 "probable_causes": a.alarm_class.probable_causes
             }, delay=a.alarm_class.get_notification_delay())
+        # Watch for escalations, when necessary
+        if not a.root:
+            esc = self.escalations.get(
+                (a.alarm_class.id, a.managed_object.administrative_domain.id)
+            )
+            if esc:
+                esc.watch(a)
 
     def clear_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)

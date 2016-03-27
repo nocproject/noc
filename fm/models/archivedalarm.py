@@ -51,6 +51,10 @@ class ArchivedAlarm(nosql.Document):
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = nosql.ObjectIdField(required=False)
+    # Escalated TT ID in form
+    # <external system name>:<external tt id>
+    escalation_ts = nosql.DateTimeField(required=False)
+    escalation_tt = nosql.StringField(required=False)
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -125,6 +129,8 @@ class ArchivedAlarm(nosql.Document):
             vars=self.vars,
             log=log,
             root=self.root,
+            escalation_ts=self.escalation_ts,
+            escalation_tt=self.escalation_tt,
             opening_event=self.opening_event,
             discriminator=self.discriminator,
             reopens=reopens + 1

@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.main.models import Template
+from noc.main.models.template import Template
 
 
 class TemplateApplication(ExtModelApplication):
