@@ -38,8 +38,8 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Name",
-                    allowBlank: false
+                    fieldLabel: "Description",
+                    allowBlank: true
                 },
                 {
                     name: "alarm_classes",
@@ -50,6 +50,7 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                             text: "Alarm Class",
                             dataIndex: "alarm_class",
                             editor: "fm.alarmclass.LookupField",
+                            renderer: NOC.render.Lookup("alarm_class"),
                             flex: 1
                         }
                     ]
@@ -62,32 +63,42 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                         {
                             text: "Administrative Domain",
                             dataIndex: "administrative_domain",
-                            editor: "sa.administrativedomain.LookupField"
+                            editor: "sa.administrativedomain.LookupField",
+                            width: 150,
+                            renderer: NOC.render.Lookup("administrative_domain")
                         },
                         {
                             text: "Delay",
                             dataIndex: "delay",
-                            editor: "numberfield"
+                            editor: "numberfield",
+                            width: 50
                         },
                         {
                             text: "Notification Group",
                             dataIndex: "notification_group",
-                            editor: "main.notificationgroup.LookupField"
+                            editor: "main.notificationgroup.LookupField",
+                            width: 150,
+                            renderer: NOC.render.Lookup("notification_group")
                         },
                         {
                             text: "TT System",
                             dataIndex: "tt_system",
-                            editor: "fm.ttsystem.LookupField"
+                            editor: "fm.ttsystem.LookupField",
+                            width: 150
+                            renderer: NOC.render.Lookup("tt_system")
                         },
                         {
                             text: "TT Queue",
                             dataIndex: "tt_queue",
-                            editor: "textfield"
+                            editor: "textfield",
+                            width: 100
                         },
                         {
                             text: "Template",
                             dataIndex: "template",
-                            editor: "main.template.LookupField"
+                            editor: "main.template.LookupField",
+                            flex: 1,
+                            renderer: NOC.render.Lookup("template")
                         }
                     ]
                 }
