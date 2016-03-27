@@ -84,7 +84,7 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                             text: "TT System",
                             dataIndex: "tt_system",
                             editor: "fm.ttsystem.LookupField",
-                            width: 150
+                            width: 150,
                             renderer: NOC.render.Lookup("tt_system")
                         },
                         {
