@@ -120,7 +120,7 @@ class CorrelatorService(Service):
         """
         Load root cause analisys rules
         """
-        logging.debug("Loading RCA Rules")
+        logging.info("Loading RCA Rules")
         n = 0
         self.rca_forward = {}
         self.rca_reverse = {}
@@ -135,13 +135,13 @@ class CorrelatorService(Service):
                     self.rca_reverse[rc.root.id] = []
                 self.rca_reverse[rc.root.id] += [rc]
                 n += 1
-        logging.debug("%d RCA Rules have been loaded" % n)
+        logging.info("%d RCA Rules have been loaded" % n)
 
     def load_escalation_rules(self):
         """
         Load escalation rules
         """
-        logging.debug("Loading escalations")
+        logging.info("Loading escalations")
         self.escalations = {}
         n = 0
         for ae in AlarmEscalation.objects.all():
@@ -156,7 +156,7 @@ class CorrelatorService(Service):
                 for ac in ae.alarm_classes:
                     self.escalations[ac.alarm_class.id, e.administrative_domain.id] = esc
                 n += 1
-        logging.debug("%d escalation rules have been loaded", n)
+        logging.info("%d escalation rules have been loaded", n)
 
     def load_alarm_jobs(self):
         """
