@@ -142,7 +142,7 @@ class CorrelatorService(Service):
         Load escalation rules
         """
         logging.info("Loading escalations")
-        self.escalations = {}
+        self.escalations = defaultdict(list)
         n = 0
         for ae in AlarmEscalation.objects.all():
             for ac in ae.alarm_classes:
@@ -369,7 +369,7 @@ class CorrelatorService(Service):
         if not a.root:
             esc = self.escalations.get(a.alarm_class.id)
             if esc:
-                self.watch_escalation(a, esc)
+                self.watch_escalations(a, esc)
 
     def clear_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
@@ -483,19 +483,20 @@ class CorrelatorService(Service):
                 if r.stop_disposition:
                     break
 
-    def watch_escalation(self, alarm, escalation):
-        for delay in escalation.delays:
-            self.logger.debug(
-                "[%s] Watch for %s after %s seconds",
-                alarm.id, escalation.name, delay
-            )
-            call_later(
-                "noc.services.correlator.escalation.escalate",
-                delay=delay,
-                alarm_id=alarm.id,
-                escalation_id=escalation.id,
-                escalation_delay=delay
-            )
+    def watch_escalations(self, alarm, escalations):
+        for esc in escalations:
+            for delay in esc.delays:
+                self.logger.debug(
+                    "[%s] Watch for %s after %s seconds",
+                    alarm.id, esc.name, delay
+                )
+                call_later(
+                    "noc.services.correlator.escalation.escalate",
+                    delay=delay,
+                    alarm_id=alarm.id,
+                    escalation_id=esc.id,
+                    escalation_delay=delay
+                )
 
 if __name__ == "__main__":
     CorrelatorService().start()
