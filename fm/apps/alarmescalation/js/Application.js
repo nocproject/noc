@@ -13,6 +13,7 @@ Ext.define("NOC.fm.alarmescalation.Application", {
         "NOC.sa.administrativedomain.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.fm.alarmclass.LookupField",
+        "NOC.fm.ttsystem.LookupField",
         "NOC.main.template.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.timepattern.LookupField",
@@ -46,7 +47,7 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                     name: "global_limit",
                     xtype: "numberfield",
                     fieldLabel: "Global limit",
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "alarm_classes",
@@ -91,12 +92,12 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                             text: "Delay",
                             dataIndex: "delay",
                             editor: "numberfield",
-                            width: 50
+                            width: 75
                         },
                         {
                             text: "Adm. domain",
                             dataIndex: "administrative_domain",
-                            editor: "main.notificationgroup.LookupField",
+                            editor: "sa.administrativedomain.LookupField",
                             width: 150,
                             renderer: NOC.render.Lookup("administrative_domain")
                         },

@@ -13,7 +13,6 @@ from mongoengine.fields import (StringField, IntField, ReferenceField,
                                 BooleanField)
 ## NOC modules
 from noc.fm.models.alarmclass import AlarmClass
-from noc.fm.models.escalationchain import EscalationChain
 from noc.fm.models.ttsystem import TTSystem
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
