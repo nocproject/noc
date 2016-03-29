@@ -493,6 +493,7 @@ class CorrelatorService(Service):
                 call_later(
                     "noc.services.correlator.escalation.escalate",
                     delay=delay,
+                    scheduler="correlator",
                     alarm_id=alarm.id,
                     escalation_id=esc.id,
                     escalation_delay=delay
