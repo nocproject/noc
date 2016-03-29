@@ -44,6 +44,27 @@ class BaseTTSystem(object):
         """
         Get TT information
         :param tt_id: TT id, as returned by create_tt
+        :returns: dict with keys
+            *tt_id* - tt id
+            *obj* - Supported object's identifier
+            *resolved* - True if TT has been resolved
+            *stage_id* - Current TT stage id (in terms of external system)
+            *stage* - Current TT stage text
+            *open_ts* - TT creation timestamp
+            *close_ts* - TT closing timestamp (only if resolved)
+            *stage_ts* - Current stage starting timestamp
+            *owner* - Login of TT owner (if any)
+            *dept* - Department currently holding TT (only if not resolved)
+            *close_dept* - Department which closed TT (only for resolved)
+            *subject* - TT subject
+            *body* - TT body
+            *comments*: dict of TT comments
+                *id* - Comment id
+                *reply_to* - id of parent comment
+                *ts* - timestamp
+                *login* - Login of user leaving comment
+                *subject* - Comment subject
+                *body* - Comment body
         :raises TTError:
         """
         raise NotImplementedError()
