@@ -10,46 +10,111 @@
 import logging
 import cachetools
 ## NOC modules
-from noc.core.defer import call_later
 from noc.fm.models.utils import get_alarm
 from noc.main.models.template import Template
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.fm.models.ttsystem import TTSystem
+from noc.core.tt.base import BaseTTSystem
+from noc.sa.models.selectorcache import SelectorCache
+from noc.inv.models.extnrittmap import ExtNRITTMap
+from noc.fm.models.alarmescalation import AlarmEscalation
+
 
 logger = logging.getLogger(__name__)
 
 
-class Escalation(object):
-    def __init__(self, delay, notification_group,
-                 tt_system, tt_queue, template):
-        self.delay = int(delay)
-        if notification_group:
-            self.notification_group = notification_group.id
-        else:
-            self.notification_group = None
-        if tt_system:
-            self.tt_system = tt_system.id
-            self.tt_queue = tt_queue
-        else:
-            self.tt_system = None
-            self.tt_queue = None
-        self.template = template.id
+def escalate(alarm_id, escalation_id, escalation_delay):
+    def log(message, *args):
+        msg = message % args
+        logger.info("[%s] %s", alarm_id, msg)
+        alarm.log_message(msg, to_save=True)
 
-    def watch(self, alarm):
-        """
-        Watch for further escalations
-        """
-        logger.info("[%s] Watching for possible escalation", alarm.id)
-        call_later(
-            "noc.services.correlator.escalation.escalate",
-            delay=self.delay,
-            scheduler="correlator",
-            alarm_id=alarm.id,
-            notification_group_id=self.notification_group,
-            tt_system_id=self.tt_system,
-            tt_queue=self.tt_queue,
-            template_id=self.template
-        )
+    logger.info("[%s] Performing escalations", alarm_id)
+    alarm = get_alarm(alarm_id)
+    if alarm is None:
+        logger.info("[%s] Missing alarm, skipping", alarm_id)
+        return
+    if alarm.status == "C":
+        logger.info("[%s] Alarm is closed, skipping", alarm_id)
+        return
+    if alarm.root:
+        log("Alarm is not root cause, skipping")
+        return
+    #
+    escalation = escalation_cache[escalation_id]
+    if not escalation:
+        log("Escalation %s is not found, skipping", escalation_id)
+        return
+
+    # Evaluate escalation chain
+    mo = alarm.managed_object
+    for a in escalation.escalations:
+        if a.delay != escalation_delay:
+            continue  # Try other type
+        # Check administrative domain
+        if (
+            a.administrative_domain and
+            mo.administrative_domain.id != a.administrative_domain.id
+        ):
+            continue
+        # Check selector
+        if a.selector and not SelectorCache.is_in_selector(mo, a.selector):
+            continue
+        # Render escalation message
+        if not a.template:
+            log("No escalation template, skipping")
+            return
+
+        ctx = {
+            "alarm": alarm
+        }
+        subject = a.template.render_subject(**ctx)
+        body = a.render_body(**ctx)
+        logger.debug("[%s] Escalation message:\nSubject: %s\n%s",
+                     alarm_id, subject, body)
+        # Send notification
+        if a.notification_group:
+            a.notification_group.notify(subject, body)
+        # Escalate to TT
+        if a.create_tt:
+            if alarm.escalation_tt:
+                log(
+                    "Already escalated with TT #%s",
+                    alarm.escalation_tt
+                )
+            else:
+                # Get external TT system
+                d = ExtNRITTMap._get_collection().find_one({
+                    "managed_object": mo.id
+                })
+                if d:
+                    tt_system = tt_system_cache[d["tt_system"]]
+                    if tt_system:
+                        pre_reason = escalation.get_pre_reason(tt_system)
+                        if pre_reason is not None:
+                            try:
+                                tts = tt_system.get_system()
+                                tt_id = tts.create_tt(
+                                    queue=d["queue"],
+                                    obj=d["remote_id"],
+                                    subject=subject,
+                                    body=body,
+                                    login="correlator"
+                                )
+                                alarm.escalate(tt_id)
+                            except tt_system.TTError as e:
+                                log("Failed to create TT: %s", e)
+                        else:
+                            log("Cannot find pre reason")
+                    else:
+                        log("Cannot find TT system %s", d["tt_system"])
+                else:
+                    log("Cannot find TT system for %s",
+                        alarm.managed_object.name)
+        #
+        if a.stop_processing:
+            logger.debug("[%s] Stopping processing")
+            break
 
 
 def get_item(model, id):
@@ -63,54 +128,10 @@ def get_item(model, id):
 TTL = 60
 CACHE_SIZE = 256
 
-template_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(Template, x)
+escalation_cache = cachetools.TTLCache(
+    CACHE_SIZE, TTL, missing=lambda x: get_item(AlarmEscalation, x)
 )
-notification_group_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(NotificationGroup, x)
-)
+
 tt_system_cache = cachetools.TTLCache(
     CACHE_SIZE, TTL, missing=lambda x: get_item(TTSystem, x)
 )
-
-
-def escalate(alarm_id, notification_group_id=None, tt_system_id=None,
-             tt_queue=None, template_id=None):
-    logger.info("[%s] Performing escalations", alarm_id)
-    alarm = get_alarm(alarm_id)
-    if alarm is None:
-        logger.info("[%s] Missing alarm, skipping", alarm_id)
-        return
-    if alarm.status == "C":
-        logger.info("[%s] Alarm is closed, skipping", alarm_id)
-        return
-    if alarm.root:
-        logger.info("[%s] Alarm is not root cause, skipping", alarm_id)
-        return
-    if not template_id:
-        logger.info("[%s] Missed template, skipping", alarm_id)
-        return
-    if not notification_group_id and not tt_system_id:
-        logger.info("[%s] Neither TT system nor notification group specified, skipping", alarm_id)
-        return
-    template = template_cache[template_id]
-    if not template:
-        logger.info("[%s] Template not found, skipping", alarm_id)
-        return
-    notification_group = notification_group_cache[notification_group_id]
-    tt_system = tt_system_cache[tt_system_id]
-    if not notification_group and not tt_system:
-        logger.info("[%s] Cannot resolve notification group nor tt system. Skipping", alarm_id)
-        return
-    ctx = {
-        "alarm": alarm
-    }
-    subject = template.render_subject(**ctx)
-    body = template.render_body(**ctx)
-    logger.debug("[%s] Escalation message:\nSubject: %s\n%s", alarm_id, subject, body)
-    tt_id = "NOTIFY"
-    if notification_group:
-        notification_group.notify(subject, body)
-    # @todo: Escalate to TT System
-    # Mark alarm as escalated
-    alarm.escalate(tt_id)

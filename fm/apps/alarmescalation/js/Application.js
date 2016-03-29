@@ -11,13 +11,14 @@ Ext.define("NOC.fm.alarmescalation.Application", {
     requires: [
         "NOC.fm.alarmescalation.Model",
         "NOC.sa.administrativedomain.LookupField",
+        "NOC.sa.managedobjectselector.LookupField",
         "NOC.fm.alarmclass.LookupField",
         "NOC.main.template.LookupField",
         "NOC.main.notificationgroup.LookupField",
-        "NOC.fm.ttsystem.LookupField"
+        "NOC.main.timepattern.LookupField",
     ],
     model: "NOC.fm.alarmescalation.Model",
-    initComponent: function() {
+    initComponent: function () {
         var me = this;
         Ext.apply(me, {
             columns: [
@@ -42,6 +43,12 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "global_limit",
+                    xtype: "numberfield",
+                    fieldLabel: "Global limit",
+                    allowBlank: false
+                },
+                {
                     name: "alarm_classes",
                     xtype: "gridfield",
                     fieldLabel: "Alarm Classes",
@@ -56,22 +63,55 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                     ]
                 },
                 {
+                    name: "pre_reasons",
+                    xtype: "gridfield",
+                    fieldLabel: "Pre Reasons",
+                    columns: [
+                        {
+                            text: "TT System",
+                            dataIndex: "tt_system",
+                            editor: "fm.ttsystem.LookupField",
+                            renderer: NOC.render.Lookup("tt_system"),
+                            width: 150
+                        },
+                        {
+                            text: "Pre Reason",
+                            dataIndex: "pre_reason",
+                            editor: "textfield",
+                            flex: 1
+                        }
+                    ]
+                },
+                {
                     name: "escalations",
                     xtype: "gridfield",
                     fieldLabel: "Escalations",
                     columns: [
                         {
-                            text: "Administrative Domain",
-                            dataIndex: "administrative_domain",
-                            editor: "sa.administrativedomain.LookupField",
-                            width: 150,
-                            renderer: NOC.render.Lookup("administrative_domain")
-                        },
-                        {
                             text: "Delay",
                             dataIndex: "delay",
                             editor: "numberfield",
                             width: 50
+                        },
+                        {
+                            text: "Adm. domain",
+                            dataIndex: "administrative_domain",
+                            editor: "main.notificationgroup.LookupField",
+                            width: 150,
+                            renderer: NOC.render.Lookup("administrative_domain")
+                        },
+                        {
+                            text: "Selector",
+                            dataIndex: "selector",
+                            editor: "sa.managedobjectselector.LookupField",
+                            width: 150,
+                            renderer: NOC.render.Lookup("selector")
+                        },
+                        {
+                            text: "Time Pattern",
+                            dataIndex: "time_pattern",
+                            editor: "main.timepattern.LookupField",
+                            renderer: NOC.render.Lookup("time_pattern")
                         },
                         {
                             text: "Notification Group",
@@ -81,24 +121,25 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                             renderer: NOC.render.Lookup("notification_group")
                         },
                         {
-                            text: "TT System",
-                            dataIndex: "tt_system",
-                            editor: "fm.ttsystem.LookupField",
-                            width: 150,
-                            renderer: NOC.render.Lookup("tt_system")
-                        },
-                        {
-                            text: "TT Queue",
-                            dataIndex: "tt_queue",
-                            editor: "textfield",
-                            width: 100
-                        },
-                        {
                             text: "Template",
                             dataIndex: "template",
                             editor: "main.template.LookupField",
                             flex: 1,
                             renderer: NOC.render.Lookup("template")
+                        },
+                        {
+                            text: "TT",
+                            dataIndex: "create_tt",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: "Stop",
+                            dataIndex: "stop_processing",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
                         }
                     ]
                 }
