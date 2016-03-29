@@ -44,6 +44,19 @@ class SelectorCache(Document):
         return cls.objects.filter(object=oid).values_list("selector")
 
     @classmethod
+    def is_in_selector(cls, object, selector):
+        oid = object
+        if hasattr(object, "id"):
+            oid = object.id
+        sid = selector
+        if hasattr(selector, "id"):
+            sid = selector.id
+        return bool(cls._get_collection().count({
+            "object": oid,
+            "selector": sid
+        }))
+
+    @classmethod
     def rebuild_for_object(cls, object):
         from managedobjectselector import ManagedObjectSelector
         from managedobject import ManagedObject

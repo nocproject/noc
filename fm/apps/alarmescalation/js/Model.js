@@ -24,11 +24,19 @@ Ext.define("NOC.fm.alarmescalation.Model", {
             type: "string"
         },
         {
+            name: "global_limit",
+            type: "integer"
+        },
+        {
             name: "description",
             type: "string"
         },
         {
             name: "escalations",
+            type: "auto"
+        },
+        {
+            name: "pre_reasons",
             type: "auto"
         }
     ]
