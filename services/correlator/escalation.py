@@ -74,6 +74,7 @@ def escalate(alarm_id, escalation_id, escalation_delay):
                      alarm_id, subject, body)
         # Send notification
         if a.notification_group:
+            log("Sending notification to group %s", a.notification_group.name)
             a.notification_group.notify(subject, body)
         # Escalate to TT
         if a.create_tt:
@@ -92,8 +93,9 @@ def escalate(alarm_id, escalation_id, escalation_delay):
                     if tt_system:
                         pre_reason = escalation.get_pre_reason(tt_system)
                         if pre_reason is not None:
+                            log("Creating TT in system %s", tt_system.name)
+                            tts = tt_system.get_system()
                             try:
-                                tts = tt_system.get_system()
                                 tt_id = tts.create_tt(
                                     queue=d["queue"],
                                     obj=d["remote_id"],
@@ -102,7 +104,9 @@ def escalate(alarm_id, escalation_id, escalation_delay):
                                     body=body,
                                     login="correlator"
                                 )
-                                alarm.escalate(tt_id)
+                                alarm.escalate(
+                                    "%s:%s" % (d["tt_system"], tt_id)
+                                )
                             except tts.TTError as e:
                                 log("Failed to create TT: %s", e)
                         else:
