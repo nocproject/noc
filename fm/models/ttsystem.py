@@ -8,7 +8,8 @@
 
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField
+from mongoengine.fields import StringField, ListField
+from noc.lib.solutions import get_solution
 
 
 class TTSystem(Document):
@@ -18,10 +19,22 @@ class TTSystem(Document):
     }
 
     name = StringField(unique=True)
+    # Full path to BaseTTSystem instance
     handler = StringField()
     description = StringField()
     # Connection string
     connection = StringField()
+    #
+    tags = ListField(StringField())
 
     def __unicode__(self):
         return self.name
+
+    def get_system(self):
+        """
+        Return BaseTTSystem instance
+        """
+        h = get_solution(self.handler)
+        if not h:
+            raise ValueError
+        return h(self.name, self.connection)
