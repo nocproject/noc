@@ -69,7 +69,7 @@ def escalate(alarm_id, escalation_id, escalation_delay):
             "alarm": alarm
         }
         subject = a.template.render_subject(**ctx)
-        body = a.render_body(**ctx)
+        body = a.template.render_body(**ctx)
         logger.debug("[%s] Escalation message:\nSubject: %s\n%s",
                      alarm_id, subject, body)
         # Send notification
@@ -97,12 +97,13 @@ def escalate(alarm_id, escalation_id, escalation_delay):
                                 tt_id = tts.create_tt(
                                     queue=d["queue"],
                                     obj=d["remote_id"],
+                                    reason=pre_reason,
                                     subject=subject,
                                     body=body,
                                     login="correlator"
                                 )
                                 alarm.escalate(tt_id)
-                            except tt_system.TTError as e:
+                            except tts.TTError as e:
                                 log("Failed to create TT: %s", e)
                         else:
                             log("Cannot find pre reason")
