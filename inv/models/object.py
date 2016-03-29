@@ -514,13 +514,17 @@ class Object(Document):
             new_pop = pop.id
         if old_pop != new_pop:
             if old_pop:
-                refresh_schedule(
-                    "main.jobs", "inv.update_pop_links",
-                    key=old_pop, delta=5)
+                call_later(
+                    "noc.inv.util.pop_links.update_pop_links",
+                    20,
+                    pop_id=old_pop
+                )
             if new_pop:
-                refresh_schedule(
-                    "main.jobs", "inv.update_pop_links",
-                    key=new_pop, delta=5)
+                call_later(
+                    "noc.inv.util.pop_links.update_pop_links",
+                    20,
+                    pop_id=new_pop
+                )
 
     @classmethod
     def _pre_init(cls, sender, document, values, **kwargs):
