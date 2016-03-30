@@ -2,10 +2,12 @@
 ##----------------------------------------------------------------------
 ## ManagedObjectProfile
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import cachetools
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -18,6 +20,7 @@ from noc.core.model.fields import TagsField
 from noc.core.model.decorator import on_save, on_init
 from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job
+from noc.core.defer import call_later
 
 
 @on_init
@@ -165,46 +168,60 @@ class ManagedObjectProfile(models.Model):
         return f
 
     def on_save(self):
-        def iter_objects():
-            pool_ids = {}
-            for o_id, is_managed, pool_id in self.managedobject_set.values_list("id", "is_managed", "pool"):
-                pool = pool_ids.get(pool_id)
-                if not pool:
-                    pool = Pool.objects.get(id=pool_id)
-                    pool_ids[pool_id] = pool.name
-                yield o_id, is_managed, pool
+        box_changed = self.initial_data["enable_box_discovery"] != self.enable_box_discovery
+        periodic_changed = self.initial_data["enable_periodic_discovery"] != self.enable_periodic_discovery
 
-        if self.initial_data["enable_box_discovery"] != self.enable_box_discovery:
-            enable = self.enable_box_discovery
-            for mo_id, is_managed, pool in iter_objects():
-                if enable and is_managed:
-                    Job.submit(
-                        "discovery",
-                        "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
-                        key=mo_id,
-                        pool=pool
-                    )
-                else:
-                    Job.remove(
-                        "discovery",
-                        "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
-                        key=mo_id,
-                        pool=pool
-                    )
-        if self.initial_data["enable_periodic_discovery"] != self.enable_periodic_discovery:
-            enable = self.enable_periodic_discovery
-            for mo_id, is_managed, pool in iter_objects():
-                if enable and is_managed:
-                    Job.submit(
-                        "discovery",
-                        "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
-                        key=mo_id,
-                        pool=pool
-                    )
-                else:
-                    Job.remove(
-                        "discovery",
-                        "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
-                        key=mo_id,
-                        pool=pool
-                    )
+        if box_changed or periodic_changed:
+            call_later(
+                "noc.sa.models.managedobjectprofile.apply_discovery_jobs",
+                profile_id=self.id,
+                box_changed=box_changed,
+                periodic_changed=periodic_changed
+            )
+
+
+def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
+    def iter_objects():
+        pool_cache = cachetools.LRUCache(
+            maxsize=200,
+            missing=lambda x: Pool.objects.get(id=x)
+        )
+        for o_id, is_managed, pool_id in profile.managedobject_set.values_list("id", "is_managed", "pool"):
+            yield o_id, is_managed, pool_cache[pool_id]
+
+    try:
+        profile = ManagedObjectProfile.objects.get(id=profile_id)
+    except ManagedObjectProfile.DoesNotExist:
+        return
+
+    for mo_id, is_managed, pool in iter_objects():
+        if box_changed:
+            if profile.enable_box_discovery and is_managed:
+                Job.submit(
+                    "discovery",
+                    "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                    key=mo_id,
+                    pool=pool
+                )
+            else:
+                Job.remove(
+                    "discovery",
+                    "noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
+                    key=mo_id,
+                    pool=pool
+                )
+        if periodic_changed:
+            if profile.enable_periodic_discovery and is_managed:
+                Job.submit(
+                    "discovery",
+                    "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
+                    key=mo_id,
+                    pool=pool
+                )
+            else:
+                Job.remove(
+                    "discovery",
+                    "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob",
+                    key=mo_id,
+                    pool=pool
+                )
