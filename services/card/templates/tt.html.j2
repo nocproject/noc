@@ -2,7 +2,7 @@
 <tbody>
     <tr>
         <th colspan="2" class="{{ {True: 'success', False: 'danger'}[resolved] }}">
-            TT: {{ tt_full_id }}
+            TT: {{ full_id }}
             <span style="float: right">
                 {% if duration %}{{ duration }}{% endif %}({{ open_ts | timestamp}})
             </span>
@@ -10,18 +10,53 @@
     </tr>
     <tr>
         <th scope="row">Stage</th>
-        <td>{{ stage }}</td>
+        <td>
+            {{ stage }}
+            <span style="float: right">
+                {% if owner %}
+                    <span class="label label-primary">{{ owner }}</span>
+                {% endif %}
+                ({{ stage_ts | timestamp }})
+            </span>
+        </td>
     </tr>
     <tr>
         <th scope="row">Description</th>
         <td>
             <div class="panel panel-default">
+                {% if subject %}
                 <div class="panel-heading">
-                    <div class="panel-title">{{ subject | e}}</div>
+                    {{ subject | e }}
+                </div>
+                {% endif %}
+                <div class="panel-body" style="white-space: pre">
                     {{ body | e }}
                 </div>
             </div>
         </td>
     </tr>
+    {% if comments %}
+    <tr>
+        <th scope="row">Comments</th>
+        <td>
+            {% for c in comments %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        {% if c["subject"] %}{{ c["subject"] | e }}{% endif %}
+                        <span style="float: right">
+                            {% if c["login"] %}
+                                <span class="label label-primary">{{ c["login"] }}</span>
+                            {% endif %}
+                            ({{ c["ts"] }})
+                        </span>
+                    </div>
+                    <div class="panel-body" style="white-space: pre">
+                        {{ c["body"] | e }}
+                    </div>
+                </div>
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
 </tbody>
 </table>

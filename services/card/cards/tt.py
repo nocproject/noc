@@ -8,17 +8,11 @@
 
 ## Python modules
 import datetime
-import operator
 ## Third-party modules
 import cachetools
 ## NOC modules
 from base import BaseCard
 from noc.fm.models.ttsystem import TTSystem
-
-from noc.fm.models.utils import get_alarm
-from noc.inv.models.object import Object
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
 
 
 class TTCard(BaseCard):
@@ -50,5 +44,5 @@ class TTCard(BaseCard):
         if r["resolved"]:
             r["duration"] = r["close_ts"] - r["open_ts"]
         else:
-            r["dunration"] = None
+            r["duration"] = datetime.datetime.now() - r["open_ts"]
         return r
