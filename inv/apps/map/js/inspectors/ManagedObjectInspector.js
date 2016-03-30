@@ -21,10 +21,18 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
         });
 
         me.lookButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.pencil,
+            scope: me,
+            tooltip: "Edit",
+            handler: me.onLook,
+            disabled: true
+        });
+
+        me.cardButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.eye,
             scope: me,
-            tooltip: "Look details",
-            handler: me.onLook,
+            tooltip: "View card",
+            handler: me.onMOCard,
             disabled: true
         });
 
@@ -52,6 +60,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
                 xtype: "toolbar",
                 dock: "top",
                 items: [
+                    me.cardButton,
                     me.lookButton,
                     me.segmentButton,
                     me.dashboardButton
@@ -98,6 +107,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
         me.infoText.setHtml(t);
         me.currentObjectId = data.id;
         me.lookButton.setDisabled(false);
+        me.cardButton.setDisabled(false);
         me.dashboardButton.setDisabled(false);
     },
 
@@ -111,6 +121,15 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     onJumpSegment: function() {
         var me = this;
         me.app.loadSegment(me.externalSegmentId);
+    },
+
+    onMOCard: function() {
+        var me = this;
+        if(me.currentObjectId) {
+            window.open(
+                "/api/card/view/managedobject/" + me.currentObjectId + "/"
+            );
+        }
     },
 
     onDashboard: function() {
