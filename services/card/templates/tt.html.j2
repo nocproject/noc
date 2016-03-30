@@ -1,0 +1,27 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2" class="{{ {True: 'success', False: 'danger'}[resolved] }}">
+            TT: {{ tt_full_id }}
+            <span style="float: right">
+                {% if duration %}{{ duration }}{% endif %}({{ open_ts | timestamp}})
+            </span>
+        </th>
+    </tr>
+    <tr>
+        <th scope="row">Stage</th>
+        <td>{{ stage }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Description</th>
+        <td>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">{{ subject | e}}</div>
+                    {{ body | e }}
+                </div>
+            </div>
+        </td>
+    </tr>
+</tbody>
+</table>
