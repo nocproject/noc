@@ -14,6 +14,7 @@ from noc.core.service.ui import UIHandler
 from cards.managedobject import ManagedObjectCard
 from cards.alarm import AlarmCard
 from cards.service import ServiceCard
+from cards.tt import TTCard
 from cards.subscribersession import SubscriberSessionCard
 
 
@@ -22,7 +23,8 @@ class CardRequestHandler(UIHandler):
         "managedobject": ManagedObjectCard,
         "alarm": AlarmCard,
         "service": ServiceCard,
-        "subscribersession": SubscriberSessionCard
+        "subscribersession": SubscriberSessionCard,
+        "tt": TTCard
     }
     CARD_TEMPLATE_PATH = "services/card/templates/card.html.j2"
     CARD_TEMPLATE = None
