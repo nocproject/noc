@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ObjectModel model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -37,7 +37,8 @@ class Object(Document):
             "data",
             "container",
             ("name", "container"),
-            ("model", "data.asset.serial")
+            ("model", "data.asset.serial"),
+            "data.management.managed_object"
         ]
     }
 
