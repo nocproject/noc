@@ -57,6 +57,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onConfig
         });
 
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: "Card",
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         me.consoleButton = Ext.create("Ext.button.Button", {
             text: "Console",
             glyph: NOC.glyph.terminal,
@@ -647,6 +654,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 }
             ],
             formToolbar: [
+                me.cardButton,
                 me.consoleButton,
                 me.scriptsButton,
                 me.configPreviewButton,
@@ -756,6 +764,15 @@ Ext.define("NOC.sa.managedobject.Application", {
             ]
         }
     ],
+    //
+    onCard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/managedobject/" + me.currentRecord.get("id") + "/"
+            );
+        }
+    },
     //
     onConsole: function() {
         var me = this;
