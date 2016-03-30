@@ -20,6 +20,18 @@
             </span>
         </td>
     </tr>
+    {% if pre_reason %}
+    <tr>
+        <th scope="row">Pre Reason</th>
+        <td>{{ pre_reason }}</td>
+    </tr>
+    {% endif %}
+    {% if final_reason %}
+    <tr>
+        <th scope="row">Final Reason</th>
+        <td>{{ final_reason }}</td>
+    </tr>
+    {% endif %}
     <tr>
         <th scope="row">Description</th>
         <td>
