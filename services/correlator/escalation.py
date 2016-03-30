@@ -105,7 +105,7 @@ def escalate(alarm_id, escalation_id, escalation_delay):
                                     login="correlator"
                                 )
                                 alarm.escalate(
-                                    "%s:%s" % (d["tt_system"], tt_id)
+                                    "%s:%s" % (tt_system.name, tt_id)
                                 )
                             except tts.TTError as e:
                                 log("Failed to create TT: %s", e)
