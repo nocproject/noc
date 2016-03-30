@@ -36,7 +36,8 @@ class Object(Document):
         "indexes": [
             "data",
             "container",
-            ("name", "container")
+            ("name", "container"),
+            ("model", "data.asset.serial")
         ]
     }
 
