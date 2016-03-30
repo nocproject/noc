@@ -46,6 +46,7 @@ class BaseTTSystem(object):
         :param tt_id: TT id, as returned by create_tt
         :returns: dict with keys
             *tt_id* - tt id
+            *queue* - internal queue id
             *obj* - Supported object's identifier
             *resolved* - True if TT has been resolved
             *stage_id* - Current TT stage id (in terms of external system)
@@ -56,6 +57,10 @@ class BaseTTSystem(object):
             *owner* - Login of TT owner (if any)
             *dept* - Department currently holding TT (only if not resolved)
             *close_dept* - Department which closed TT (only for resolved)
+            *pre_reason_id* - Internal pre reason id
+            *pre_reason* - Pre-reason name
+            *final_reason_id* - Internal final reason id
+            *final_reason* - Final reason name
             *subject* - TT subject
             *body* - TT body
             *comments*: dict of TT comments
