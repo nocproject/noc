@@ -10,7 +10,8 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.crm.subscriberprofile.Model",
-        "NOC.main.style.LookupField"
+        "NOC.main.style.LookupField",
+        "NOC.main.ref.glyph.LookupField"
     ],
     model: "NOC.crm.subscriberprofile.Model",
     search: true,
@@ -20,6 +21,19 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
         var me = this;
         Ext.apply(me, {
             columns: [
+                {
+                    text: "Glyph",
+                    data_index: "glyph",
+                    width: 25,
+                    renderer: function(v) {
+                        if(v !== undefined && v !== "")
+                        {
+                            return "<i class='" + v + "'></i>";
+                        } else {
+                            return "";
+                        }
+                    }
+                },
                 {
                     text: "Name",
                     dataIndex: "name",
@@ -53,6 +67,13 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                     xtype: "main.style.LookupField",
                     fieldLabel: "Style",
                     allowBlank: true
+                },
+                {
+                    name: "glyph",
+                    xtype: "main.ref.glyph.LookupField",
+                    fieldLabel: "Handler",
+                    allowBlank: true,
+                    uiStyle: "large"
                 },
                 {
                     name: "tags",
