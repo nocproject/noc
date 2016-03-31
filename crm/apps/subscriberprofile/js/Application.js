@@ -71,7 +71,7 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                 {
                     name: "glyph",
                     xtype: "main.ref.glyph.LookupField",
-                    fieldLabel: "Handler",
+                    fieldLabel: "Icon",
                     allowBlank: true,
                     uiStyle: "large"
                 },
