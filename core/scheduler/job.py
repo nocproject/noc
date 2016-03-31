@@ -31,6 +31,7 @@ class Job(object):
     group_name = None
 
     # Collection attributes
+    ATTR_ID = "_id"
     ATTR_TS = "ts"
     ATTR_CLASS = "jcls"
     ATTR_STATUS = "s"
@@ -176,20 +177,11 @@ class Job(object):
     def get_group(self):
         return self.group_name
 
-    def set_next_run(self, ts, status=E_SUCCESS):
-        self.scheduler.set_next_run(
-            status=status,
-            ts=ts
-        )
-
     def remove_job(self):
         """
         Remove job from schedule
         """
-        self.scheduler.remove_job(
-            self.attrs[self.ATTR_CLASS],
-            self.attrs[self.ATTR_KEY]
-        )
+        self.scheduler.remove_job_by_id(self.attrs[self.ATTR_ID])
 
     def schedule_next(self, status):
         """
