@@ -32,6 +32,10 @@ Ext.define("NOC.crm.subscriberprofile.Model", {
             type: "auto"
         },
         {
+            name: "glyph",
+            type: "string"
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false
