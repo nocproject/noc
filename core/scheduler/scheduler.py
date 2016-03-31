@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Scheduler Job Class
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ class Scheduler(object):
     COLLECTION_BASE = "noc.schedules."
 
     SUBMIT_THRESHOLD_FACTOR = 10
-    MAX_CHUNK_FACTOR = 4
+    MAX_CHUNK_FACTOR = 1
 
     def __init__(self, name, pool=None, reset_running=False,
                  max_threads=5, ioloop=None, check_time=1000,
@@ -61,6 +61,7 @@ class Scheduler(object):
         self.executor = None
         self.run_callback = None
         self.check_time = check_time
+        self.read_ahead_interval = datetime.timedelta(milliseconds=check_time)
         if submit_threshold:
             self.submit_threshold = submit_threshold
         else:
@@ -76,6 +77,7 @@ class Scheduler(object):
                 2
             )
         self.filter = filter
+        self.to_shutdown = False
 
     def run(self):
         """
@@ -88,12 +90,7 @@ class Scheduler(object):
             self.reset_running()
         self.ensure_indexes()
         self.logger.info("Running scheduler")
-        self.run_callback = tornado.ioloop.PeriodicCallback(
-            self.run_pending,
-            self.check_time,
-            self.ioloop
-        )
-        self.run_callback.start()
+        self.ioloop.spawn_callback(self.scheduler_loop)
 
     def get_collection(self):
         """
@@ -153,19 +150,44 @@ class Scheduler(object):
         else:
             return q
 
+    @tornado.gen.coroutine
+    def scheduler_loop(self):
+        """
+        Primary scheduler loop
+        """
+        while not self.to_shutdown:
+            t0 = self.ioloop.time()
+            try:
+                yield self.run_pending()
+            except Exception as e:
+                self.logger.error("Failed to schedule next tasks: %s", e)
+            dt = self.check_time - (self.ioloop.time() - t0) * 1000
+            if dt > 0:
+                yield tornado.gen.sleep(dt / 1000.0)
+
     def iter_pending_jobs(self, limit):
         """
         Yields pending jobs
         """
         qs = self.get_collection().find(self.get_query({
             Job.ATTR_TS: {
-                "$lte": datetime.datetime.now(),
+                "$lte": datetime.datetime.now() + self.read_ahead_interval
             },
             Job.ATTR_STATUS: Job.S_WAIT
         })).limit(limit).sort(Job.ATTR_TS)
         try:
             for job in qs:
-                yield job
+                try:
+                    jcls = get_solution(job[Job.ATTR_CLASS])
+                    yield jcls(self, job)
+                except ImportError as e:
+                    self.logger.error("Invalid job class %s",
+                                      job[Job.ATTR_CLASS])
+                    self.logger.error("Error: %s", e)
+                    self.remove_job(
+                        job[Job.ATTR_CLASS],
+                        job[Job.ATTR_KEY]
+                    )
         except pymongo.errors.CursorNotFound:
             self.logger.info("Server cursor timed out. Waiting for next cycle")
         except pymongo.errors.OperationFailure, why:
@@ -177,49 +199,50 @@ class Scheduler(object):
         """
         Read and launch all pending jobs
         """
+        run_id = int(self.ioloop.time()) % 100
         executor = self.get_executor()
         collection = self.get_collection()
-        n = 0
-        # Check we can submit new jobs
-        while executor._work_queue.qsize() < self.submit_threshold:
-            jobs = []
-            jids = []
-            n = 0
-            for job_data in self.iter_pending_jobs(self.max_chunk):
-                try:
-                    jcls = get_solution(job_data[Job.ATTR_CLASS])
-                except ImportError, why:
-                    self.logger.error("Invalid job class %s",
-                                      job_data[Job.ATTR_CLASS])
-                    self.logger.error("Error: %s", why)
-                    self.remove_job(
-                        job_data[Job.ATTR_CLASS],
-                        job_data[Job.ATTR_KEY]
-                    )
-                    continue
-                jobs += [jcls(self, job_data)]
-                jids += [job_data["_id"]]
-                n += 1
-            if not n:
-                break  # No pending data
-            if jobs:
-                self.logger.debug(
-                    "update({_id: {$in: %s}}, {$set: {%s: '%s'}})",
-                    jids, Job.ATTR_STATUS, Job.S_RUN
+        if self.submit_threshold >= executor._work_queue.qsize():
+            jobs = list(self.iter_pending_jobs(self.max_chunk))
+            while jobs:
+                may_submit = max(
+                    self.submit_threshold - executor._work_queue.qsize(),
+                    0
                 )
-                collection.update({
-                    "_id": {
-                        "$in": jids
-                    }
-                }, {
-                    "$set": {
-                        Job.ATTR_STATUS: Job.S_RUN
-                    }
-                }, multi=True, safe=True)
-                for job in jobs:
-                    executor.submit(job.run)
-        if n:
-            self.logger.info("All workers are busy. Waiting")
+                if not may_submit:
+                    self.logger.info("All workers are busy. Waiting")
+                    break
+                now = datetime.datetime.now()
+                rl = min(
+                    sum(1 for j in jobs if j.attrs[Job.ATTR_TS] <= now),
+                    may_submit
+                )
+                rjobs, jobs = jobs[:rl], jobs[rl:]
+                if rjobs:
+                    jids = [j.attrs["_id"] for j in rjobs]
+                    self.logger.debug(
+                        "update({_id: {$in: %s}}, {$set: {%s: '%s'}})",
+                        jids, Job.ATTR_STATUS, Job.S_RUN
+                    )
+                    collection.update({
+                        "_id": {
+                            "$in": jids
+                        }
+                    }, {
+                        "$set": {
+                            Job.ATTR_STATUS: Job.S_RUN
+                        }
+                    }, multi=True, safe=True)
+                    for job in rjobs:
+                        executor.submit(job.run)
+                if jobs:
+                    # Wait for next job within check_interval
+                    njts = jobs[0].attrs[Job.ATTR_TS]
+                    now = datetime.datetime.now()
+                    if njts > now:
+                        dt = njts - now
+                        dt = (dt.microseconds + dt.seconds * 1000000.0) / 1000000.0
+                        yield tornado.gen.sleep(dt)
 
     def remove_job(self, jcls, key=None):
         """
@@ -293,8 +316,7 @@ class Scheduler(object):
         if ts:
             set_op[Job.ATTR_TS] = ts
         elif delta:
-            set_op[Job.ATTR_TS] = (now +
-                                    datetime.timedelta(seconds=delta))
+            set_op[Job.ATTR_TS] = (now + datetime.timedelta(seconds=delta))
         else:
             set_op[Job.ATTR_TS] = now
         if duration:
