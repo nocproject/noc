@@ -69,7 +69,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                 {
                     name: "glyph",
                     xtype: "main.ref.glyph.LookupField",
-                    fieldLabel: "Handler",
+                    fieldLabel: "Icon",
                     allowBlank: true,
                     uiStyle: "large"
                 }

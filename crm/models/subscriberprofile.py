@@ -22,6 +22,8 @@ class SubscriberProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     style = ForeignKeyField(Style, required=False)
+    # FontAwesome glyph
+    glyph = StringField()
     tags = ListField(StringField())
 
     def __unicode__(self):
