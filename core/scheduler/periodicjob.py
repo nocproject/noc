@@ -51,8 +51,7 @@ class PeriodicJob(Job):
                 t0 += interval
             ts = datetime.datetime.fromtimestamp(t0)
             self.scheduler.set_next_run(
-                self.attrs[self.ATTR_CLASS],
-                self.attrs[self.ATTR_KEY],
+                self.attrs[self.ATTR_ID],
                 status=status,
                 ts=ts,
                 duration=self.duration

@@ -184,10 +184,7 @@ class Scheduler(object):
                     self.logger.error("Invalid job class %s",
                                       job[Job.ATTR_CLASS])
                     self.logger.error("Error: %s", e)
-                    self.remove_job(
-                        job[Job.ATTR_CLASS],
-                        job[Job.ATTR_KEY]
-                    )
+                    self.remove_job_by_id(job[Job.ATTR_ID])
         except pymongo.errors.CursorNotFound:
             self.logger.info("Server cursor timed out. Waiting for next cycle")
         except pymongo.errors.OperationFailure, why:
@@ -199,7 +196,6 @@ class Scheduler(object):
         """
         Read and launch all pending jobs
         """
-        run_id = int(self.ioloop.time()) % 100
         executor = self.get_executor()
         collection = self.get_collection()
         if self.submit_threshold >= executor._work_queue.qsize():
@@ -219,7 +215,7 @@ class Scheduler(object):
                 )
                 rjobs, jobs = jobs[:rl], jobs[rl:]
                 if rjobs:
-                    jids = [j.attrs["_id"] for j in rjobs]
+                    jids = [j.attrs[Job.ATTR_ID] for j in rjobs]
                     self.logger.debug(
                         "update({_id: {$in: %s}}, {$set: {%s: '%s'}})",
                         jids, Job.ATTR_STATUS, Job.S_RUN
@@ -252,6 +248,15 @@ class Scheduler(object):
         self.get_collection().remove({
             Job.ATTR_CLASS: jcls,
             Job.ATTR_KEY: key
+        })
+
+    def remove_job_by_id(self, jid):
+        """
+        Remove job from schedule
+        """
+        self.logger.info("Remove job %s", jid)
+        self.get_collection().remove({
+            Job.ATTR_ID: jid
         })
 
     def submit(self, jcls, key=None, data=None, ts=None, delta=None):
@@ -293,12 +298,11 @@ class Scheduler(object):
         self.logger.debug("update(%s, %s, upsert=True)", q, op)
         self.get_collection().update(q, op, upsert=True)
 
-    def set_next_run(self, jcls, key, status=None, ts=None, delta=None,
+    def set_next_run(self, jid, status=None, ts=None, delta=None,
                      duration=None):
         """
         Reschedule job and set next run time
-        :param jcls: Job class name
-        :param key: Job key
+        :param jid: Job id
         :param status: Register run status
         :param ts: Set next run time (datetime)
         :param delta: Set next run time after delta seconds
@@ -338,8 +342,7 @@ class Scheduler(object):
 
         if op:
             q = {
-                Job.ATTR_CLASS: jcls,
-                Job.ATTR_KEY: key
+                Job.ATTR_ID: jid
             }
             self.logger.debug("update(%s, %s)", q, op)
             self.get_collection().update(q, op)
