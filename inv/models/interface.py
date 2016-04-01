@@ -22,6 +22,8 @@ from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.service import Service
+from noc.sa.models.servicesummary import ServiceSummary
+from noc.core.model.decorator import on_delete
 
 
 INTERFACE_TYPES = (IGetInterfaces.returns
@@ -36,6 +38,7 @@ INTERFACE_PROTOCOLS = (IGetInterfaces.returns
 logger = logging.getLogger(__name__)
 
 
+@on_delete
 class Interface(Document):
     """
     Interfaces
@@ -91,12 +94,15 @@ class Interface(Document):
         return u"%s: %s" % (self.managed_object.name, self.name)
 
     def save(self, *args, **kwargs):
-        self.name = self.managed_object.profile.convert_interface_name(self.name)
-        if self.mac:
+        if "name" in self._changed_fields:
+            self.name = self.managed_object.profile.convert_interface_name(self.name)
+        if "mac" in self._changed_fields and self.mac:
             self.mac = MACAddressParameter().clean(self.mac)
         super(Interface, self).save(*args, **kwargs)
+        if "service" in self._changed_fields:
+            ServiceSummary.refresh_object(self.managed_object)
 
-    def delete(self, *args, **kwargs):
+    def on_delete(self):
         # Remove all subinterfaces
         for si in self.subinterface_set.all():
             si.delete()
@@ -106,8 +112,6 @@ class Interface(Document):
             self.unlink()
         # Flush MACDB
         MACDB.objects.filter(interface=self.id).delete()
-        # Remove interface
-        super(Interface, self).delete(*args, **kwargs)
 
     @property
     def link(self):
