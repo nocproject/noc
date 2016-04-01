@@ -23,6 +23,12 @@
     - role: influxdb
       when: "{{ has_svc_influxdb | default(False) }}"
 
+    - role: nginx
+      when: "{{ has_svc_nginx | default(False) }}"
+
+    - role: grafana
+      when: "{{ has_svc_grafana | default(False) }}"
+
     - role: migrate
       when: "{{ has_svc_mongod_master | default(False) }}"
 
@@ -31,9 +37,6 @@
 
     - role: notebook
       when: "{{ has_svc_notebook | default(False) }}"
-
-    - role: nginx
-      when: "{{ has_svc_nginx | default(False) }}"
 
     - role: omap
       when: "{{ has_svc_omap | default(False) }}"
@@ -55,9 +58,6 @@
 
     - role: trapcollector
       when: "{{ has_svc_trapcollector | default(False) }}"
-
-    - role: grafana
-      when: "{{ has_svc_grafana | default(False) }}"
 
     - role: ping
       when: "{{ has_svc_ping | default(False) }}"

@@ -5,6 +5,7 @@
 # packages
 postgresql_version: "9.4"
 mongo_version: "3.2"
+grafana_version: "2.6.0"
 
 grafana_group: grafana
 grafana_home: /usr/share/grafana
