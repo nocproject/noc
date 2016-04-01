@@ -5,7 +5,7 @@
   rpm_key: state=present key=https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
 
 - name: Install Grafana
-  yum: name=grafana state=present update_cache=yes
+  yum: name=grafana-{{grafana_version}} state=present update_cache=yes
 
 - name: Set up Grafana service
   lineinfile:
