@@ -15,8 +15,6 @@ from mongoengine.fields import IntField, ObjectIdField, \
     EmbeddedDocumentField, ListField
 ## NOC modules
 from noc.crm.models.subscriber import Subscriber
-from noc.inv.models.interface import Interface
-from noc.sa.models.service import Service
 from noc.core.defer import call_later
 
 logger = logging.getLogger(__name__)
@@ -229,3 +227,7 @@ class ServiceSummary(Document):
 
 def refresh_object(managed_object):
     ServiceSummary._refresh_object(managed_object)
+
+## Resolve circular dependencies
+from noc.inv.models.interface import Interface
+from noc.sa.models.service import Service
