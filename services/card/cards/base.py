@@ -9,6 +9,7 @@
 ## Python modules
 import os
 import datetime
+import operator
 ## Third-party modules
 from jinja2 import Template, Environment
 
@@ -60,7 +61,8 @@ class BaseCard(object):
                         "managed_object_title": self.f_managed_object_title,
                         "service_title": self.f_service_title,
                         "logical_status": self.f_logical_status,
-                        "timestamp": self.f_timestamp
+                        "timestamp": self.f_timestamp,
+                        "glyph_summary": self.f_glyph_summary
                     })
                     with open(tp) as f:
                         self.template_cache[name] = env.from_string(f.read())
@@ -74,23 +76,26 @@ class BaseCard(object):
         else:
             return None
 
-    def f_managed_object_title(self, obj):
+    @classmethod
+    def f_managed_object_title(cls, obj):
         """
         Convert managed object instance to title
         using profile card_title_template
         """
-        title_tpl = obj.object_profile.card_title_template or self.DEFAULT_MO_TITLE_TEMPLATE
+        title_tpl = obj.object_profile.card_title_template or cls.DEFAULT_MO_TITLE_TEMPLATE
         return Template(title_tpl).render({"object": obj})
 
-    def f_service_title(self, obj):
+    @classmethod
+    def f_service_title(cls, obj):
         """
         Convert service object instance to title
         using profile card_title_template
         """
-        title_tpl = obj.profile.card_title_template or self.DEFAULT_SERVICE_TITLE_TEMPLATE
+        title_tpl = obj.profile.card_title_template or cls.DEFAULT_SERVICE_TITLE_TEMPLATE
         return Template(title_tpl).render({"object": obj})
 
-    def f_timestamp(self, ts):
+    @classmethod
+    def f_timestamp(cls, ts):
         """
         Convert to readable timestamp like YYYY-MM-DD HH:MM:SS
         """
@@ -99,7 +104,8 @@ class BaseCard(object):
         else:
             return ts
 
-    def f_logical_status(self, s):
+    @classmethod
+    def f_logical_status(cls, s):
         return {
             "P": "Planned",
             "p": "Provisioning",
@@ -110,4 +116,33 @@ class BaseCard(object):
             "C": "Closed",
             "U": "Unknown"
         }.get(s, "Unknown")
+
+    @classmethod
+    def f_glyph_summary(cls, s):
+        def get_summary(d, profile):
+            v = []
+            for p, c in sorted(d.items(), key=lambda x: -x[1]):
+                pv = profile.get_by_id(p)
+                if pv:
+                    v += [
+                        "<i class=\"%s\" title=\"%s\"></i>"
+                        "<span class=\"badge\">%s</span>" % (
+                            pv.glyph,
+                            pv.name,
+                            c
+                        )
+                    ]
+            return "".join(v)
+
+        if not isinstance(s, dict):
+            return ""
+        r = []
+        if "subscriber" in s:
+            from noc.crm.models.subscriberprofile import SubscriberProfile
+            r += [get_summary(s["subscriber"], SubscriberProfile)]
+        if "service":
+            from noc.sa.models.serviceprofile import ServiceProfile
+            r += [get_summary(s["service"], ServiceProfile)]
+        return "<i class='fa fa-ellipsis-v'></i>".join(r)
+
 
