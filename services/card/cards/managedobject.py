@@ -141,7 +141,7 @@ class ManagedObjectCard(BaseCard):
                 "untagged_vlan": None,
                 "tagged_vlan": None,
                 "service": i.service,
-                "service_summary": service_summary[interfaces].get(i.id, {})
+                "service_summary": service_summary.get("interface").get(i.id, {})
             }]
             si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
             if len(si) == 1:
