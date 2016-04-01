@@ -4,7 +4,7 @@
     <th colspan="2" class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[current_state] }}">
         {{ object | managed_object_title }}
         <span style="float: right">
-        {% if current_state == "down" %}Down{% else %}<i class="fa fa-check"></i>Up{% endif %}{%if current_start %}: {{ current_duration }} ({{ current_start }}){% endif %}
+        {% if current_state == "down" %}Down{% else %}<i class="fa fa-check"></i>Up{% endif %}{%if current_start %}: {{ current_duration }} ({{ current_start | timestamp }}){% endif %}
         </span>
     </th>
 </tr>
@@ -33,10 +33,7 @@
 <tr>
     <th scope="row">Services</th>
     <td>
-        {% for s in service_summary %}
-        <i class='{{ s["glyph"] }}' title='{{ s["name"] }}'></i>
-        <span class="badge">{{ s["count"] }}</span>
-        {% endfor %}
+        {{ service_summary | glyph_summary }}
     </td>
 </tr>
 {% endif %}
@@ -202,13 +199,8 @@
                     <a href="/api/card/view/service/{{ i["service"].id }}/">{{ i["service"].order_id }}</a>:
                     {{ i["service"].subscriber.name }}
                     {% if i["service_summary"] %}
-                        <span style="float: right">
-                            {% for s in i["service_summary"] %}
-                            <i class='{{ s["glyph"] }}' title='{{ s["name"] }}'></i>
-                            {% if s["count"] > 1 %}
-                                <span class="badge">{{ s["count"] }}</span>
-                            {% endif %}
-                            {% endfor %}
+                        <span class="pull-right">
+                            {{ i["service_summary"] | glyph_summary }}
                         </span>
                     {% endif %}
                     {% if i["service"].address %}
