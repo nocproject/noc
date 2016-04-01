@@ -22,6 +22,7 @@ from noc.inv.models.link import Link
 from noc.inv.models.objectuplink import ObjectUplink
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
+from noc.sa.models.servicesummary import ServiceSummary
 from noc.lib.text import split_alnum, list_to_ranges
 
 
@@ -123,6 +124,9 @@ class ManagedObjectCard(BaseCard):
                     "remote_status": "up" if ro.get_status() else "down"
                 }]
             links = sorted(links, key=lambda x: (x["role"] != "uplink", split_alnum(x["local_interface"][0])))
+        # Build global services summary
+        service_summary = ServiceSummary.get_object_summary(
+            self.object)
         # Interfaces
         interfaces = []
         for i in Interface.objects.filter(managed_object=self.object.id,
@@ -137,39 +141,14 @@ class ManagedObjectCard(BaseCard):
                 "untagged_vlan": None,
                 "tagged_vlan": None,
                 "service": i.service,
-                "service_summary": []
+                "service_summary": service_summary[interfaces].get(i.id, {})
             }]
             si = list(i.subinterface_set.filter(enabled_afi="BRIDGE"))
             if len(si) == 1:
                 si = si[0]
                 interfaces[-1]["untagged_vlan"] = si.untagged_vlan
                 interfaces[-1]["tagged_vlans"] = list_to_ranges(si.tagged_vlans).replace(",", ", ")
-            # Build service summary
-            if i.service:
-                ss = []
-                sr = {}
-                for pname, glyph in self.get_service_glyphs(i.service):
-                    if pname in sr:
-                        sr[pname]["count"] += 1
-                    else:
-                        sr[pname] = {
-                            "name": pname,
-                            "glyph": glyph,
-                            "count": 1
-                        }
-                        ss += [sr[pname]]
-                interfaces[-1]["service_summary"] = ss
         interfaces = sorted(interfaces, key=lambda x: split_alnum(x["name"]))
-        # Build global services summary
-        service_summary = []
-        sr = {}
-        for i in interfaces:
-            for s in i["service_summary"]:
-                if s["name"] in sr:
-                    sr[s["name"]]["count"] += s["count"]
-                else:
-                    sr[s["name"]] = s.copy()
-                    service_summary += [sr[s["name"]]]
         # Termination group
         l2_terminators = []
         if self.object.termination_group:
