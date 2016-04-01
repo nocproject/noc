@@ -26,6 +26,7 @@ class Scheduler(object):
 
     SUBMIT_THRESHOLD_FACTOR = 10
     MAX_CHUNK_FACTOR = 1
+    UPDATES_PER_CHECK = 4
 
     def __init__(self, name, pool=None, reset_running=False,
                  max_threads=5, ioloop=None, check_time=1000,
@@ -78,6 +79,7 @@ class Scheduler(object):
             )
         self.filter = filter
         self.to_shutdown = False
+        self.min_sleep = float(check_time) / self.UPDATES_PER_CHECK / 1000.0
 
     def run(self):
         """
@@ -158,11 +160,14 @@ class Scheduler(object):
         while not self.to_shutdown:
             t0 = self.ioloop.time()
             try:
-                yield self.run_pending()
+                n = yield self.run_pending()
             except Exception as e:
                 self.logger.error("Failed to schedule next tasks: %s", e)
+                n = 0
             dt = self.check_time - (self.ioloop.time() - t0) * 1000
             if dt > 0:
+                if n:
+                    dt = min(dt, self.check_time / n)
                 yield tornado.gen.sleep(dt / 1000.0)
 
     def iter_pending_jobs(self, limit):
@@ -198,6 +203,7 @@ class Scheduler(object):
         """
         executor = self.get_executor()
         collection = self.get_collection()
+        n = 0
         if self.submit_threshold >= executor._work_queue.qsize():
             jobs = list(self.iter_pending_jobs(self.max_chunk))
             while jobs:
@@ -231,6 +237,7 @@ class Scheduler(object):
                     }, multi=True, safe=True)
                     for job in rjobs:
                         executor.submit(job.run)
+                        n += 1
                 if jobs:
                     # Wait for next job within check_interval
                     njts = jobs[0].attrs[Job.ATTR_TS]
@@ -238,7 +245,9 @@ class Scheduler(object):
                     if njts > now:
                         dt = njts - now
                         dt = (dt.microseconds + dt.seconds * 1000000.0) / 1000000.0
+                        dt = max(dt, self.min_sleep)
                         yield tornado.gen.sleep(dt)
+        raise tornado.gen.Return(n)
 
     def remove_job(self, jcls, key=None):
         """
