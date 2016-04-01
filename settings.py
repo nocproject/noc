@@ -188,9 +188,7 @@ AUTH_PROFILE_MODULE = "main.UserProfile"
 ##
 ## Determine WEB process
 ##
-IS_WEB = ((len(sys.argv) >= 2 and sys.argv[0] == "manage.py" and
-           sys.argv[1] in ["runserver", "test", "sync-perm", "shell"])
-          or sys.argv[0].endswith("noc-web.py"))
+IS_WEB = sys.argv[0].endswith("/web/service.py")
 IS_TEST = len(sys.argv) >= 2 and sys.argv[:2] == ["manage.py", "test"]
 
 SKIP_SOUTH_TESTS = True
