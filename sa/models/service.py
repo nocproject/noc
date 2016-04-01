@@ -13,12 +13,13 @@ from collections import defaultdict
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField,
-                                ReferenceField)
+                                ReferenceField, ListField)
 ## NOC modules
 from serviceprofile import ServiceProfile
 from noc.crm.models.subscriber import Subscriber
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.model.decorator import on_save, on_delete
 
 logger = logging.getLogger(__name__)
@@ -78,6 +79,8 @@ class Service(Document):
     cpe_mac = StringField()
     cpe_model = StringField()
     cpe_group = StringField()
+    #
+    tags = ListField(StringField())
 
     def on_delete(self):
         if self.nri_port:
@@ -86,6 +89,10 @@ class Service(Document):
     def on_save(self):
         if "nri_port" in self._changed_fields:
             self.unbind_interface()
+        if "parent" in self._changed_fields:
+            mo = self.get_managed_object()
+            if mo:
+                ServiceSummary.refresh_object(mo)
 
     def unbind_interface(self):
         from noc.inv.models.interface import Interface
@@ -97,3 +104,14 @@ class Service(Document):
                 "service": ""
             }
         })
+        mo = self.get_managed_object()
+        if mo:
+            ServiceSummary.refresh_object(mo)
+
+    def get_managed_object(self):
+        r = self
+        while r:
+            if r.managed_object:
+                return self.managed_object
+            r = r.parent
+        return None
