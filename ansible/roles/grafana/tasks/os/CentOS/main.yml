@@ -6,7 +6,7 @@
 
 - name: Install CentOS packages
   yum:
-    name: grafana
+    name: grafana-{{ grafana_version }}
     state: present
     update_cache: yes
   notify: restart grafana
