@@ -200,7 +200,7 @@
                     {{ i["service"].subscriber.name }}
                     {% if i["service_summary"] %}
                         <span class="pull-right">
-                            {{ i["service_summary"] | glyph_summary }}
+                            {{ i["service_summary"] | glyph_summary(True) }}
                         </span>
                     {% endif %}
                     {% if i["service"].address %}

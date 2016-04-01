@@ -118,21 +118,24 @@ class BaseCard(object):
         }.get(s, "Unknown")
 
     @classmethod
-    def f_glyph_summary(cls, s):
+    def f_glyph_summary(cls, s, collapse=False):
         def get_summary(d, profile):
             v = []
             for p, c in sorted(d.items(), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
                 if pv:
+                    if collapse and c < 2:
+                        badge = ""
+                    else:
+                        badge = " <span class=\"badge\">%s</span>" % c
                     v += [
-                        "<i class=\"%s\" title=\"%s\"></i>"
-                        "<span class=\"badge\">%s</span>" % (
+                        "<i class=\"%s\" title=\"%s\"></i>%s" % (
                             pv.glyph,
                             pv.name,
-                            c
+                            badge
                         )
                     ]
-            return "".join(v)
+            return " ".join(v)
 
         if not isinstance(s, dict):
             return ""
@@ -143,6 +146,6 @@ class BaseCard(object):
         if "service":
             from noc.sa.models.serviceprofile import ServiceProfile
             r += [get_summary(s["service"], ServiceProfile)]
-        return "<i class='fa fa-ellipsis-v'></i>".join(r)
+        return " <i class='fa fa-ellipsis-v'></i> ".join(r)
 
 
