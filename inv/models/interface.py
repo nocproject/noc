@@ -22,7 +22,6 @@ from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.sa.models.service import Service
-from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.model.decorator import on_delete
 
 
@@ -315,3 +314,4 @@ class Interface(Document):
 ## Avoid circular references
 from link import Link
 from macdb import MACDB
+from noc.sa.models.servicesummary import ServiceSummary

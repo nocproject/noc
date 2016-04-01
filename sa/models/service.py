@@ -19,7 +19,6 @@ from serviceprofile import ServiceProfile
 from noc.crm.models.subscriber import Subscriber
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.model.decorator import on_save, on_delete
 
 logger = logging.getLogger(__name__)
@@ -90,9 +89,13 @@ class Service(Document):
         if "nri_port" in self._changed_fields:
             self.unbind_interface()
         if "parent" in self._changed_fields:
-            mo = self.get_managed_object()
-            if mo:
-                ServiceSummary.refresh_object(mo)
+            self._refresh_managed_object()
+
+    def _refresh_managed_object(self):
+        from noc.sa.models.servicesummary import ServiceSummary
+        mo = self.get_managed_object()
+        if mo:
+            ServiceSummary.refresh_object(mo)
 
     def unbind_interface(self):
         from noc.inv.models.interface import Interface
@@ -104,9 +107,7 @@ class Service(Document):
                 "service": ""
             }
         })
-        mo = self.get_managed_object()
-        if mo:
-            ServiceSummary.refresh_object(mo)
+        self._refresh_managed_object()
 
     def get_managed_object(self):
         r = self
