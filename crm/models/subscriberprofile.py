@@ -34,6 +34,7 @@ class SubscriberProfile(Document):
     def __unicode__(self):
         return self.name
 
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
     def get_by_id(self, id):
         return SubscriberProfile.objects.filter(id=id).first()

@@ -30,6 +30,7 @@ class ServiceProfile(Document):
     def __unicode__(self):
         return self.name
 
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
-    def get_by_id(self, id):
+    def get_by_id(cls, id):
         return ServiceProfile.objects.filter(id=id).first()
