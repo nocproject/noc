@@ -11,6 +11,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
 from noc.inv.models.extnrilink import ExtNRILink
 from noc.sa.models.service import Service
+from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.etl.portmapper.loader import loader as portmapper_loader
 
 
@@ -167,3 +168,4 @@ class NRICheck(DiscoveryCheck):
             n += 1
         if n:
             bulk.execute()
+            ServiceSummary.refresh_object(self.object)
