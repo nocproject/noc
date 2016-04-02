@@ -24,7 +24,7 @@ from noc.fm.models import (ActiveEvent, EventClass,ActiveAlarm,
                            AlarmLog, AlarmTrigger, AlarmClass)
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
-from noc.sa.models.servicesummary import ServiceSummary
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.solutions import get_alarm_class_handlers, get_alarm_jobs
@@ -311,10 +311,10 @@ class CorrelatorService(Service):
             severity=r.severity,
             vars=vars,
             discriminator=discriminator,
-            direct_services=summary["service"],
-            direct_subscribers=summary["subscriber"],
-            total_services=summary["service"],
-            total_subscribers=summary["subscriber"],
+            direct_services=SummaryItem.dict_to_items(summary["service"]),
+            direct_subscribers=SummaryItem.dict_to_items(summary["subscriber"]),
+            total_services=SummaryItem.dict_to_items(summary["service"]),
+            total_subscribers=SummaryItem.dict_to_items(summary["subscriber"]),
             log=[
                 AlarmLog(
                     timestamp=datetime.datetime.now(),
