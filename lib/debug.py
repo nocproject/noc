@@ -283,7 +283,10 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
     if ENABLE_CP:
         fp = error_fingerprint()
         path = os.path.join(CP_NEW, fp + ".json")
-        if not os.path.exists(path):
+        if os.path.exists(path):
+            # Touch file
+            os.utime(path, None)
+        else:
             # @todo: TZ
             # @todo: Installation ID
             c = {
