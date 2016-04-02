@@ -1,0 +1,7 @@
+<div style="text-align: center; font-size: 72pt">
+{% if is_clear %}
+It's all quiet in Baghdad
+{% else %}
+{{ summary | glyph_summary }}
+{% endif %}
+<div>

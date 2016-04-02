@@ -29,9 +29,12 @@ class BaseCard(object):
         self.object = self.dereference(id)
 
     def dereference(self, id):
-        try:
-            return self.model.objects.get(pk=id)
-        except self.model.DoesNotExist:
+        if self.model:
+            try:
+                return self.model.objects.get(pk=id)
+            except self.model.DoesNotExist:
+                return None
+        else:
             return None
 
     def get_data(self):
