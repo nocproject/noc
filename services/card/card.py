@@ -16,6 +16,7 @@ from cards.alarm import AlarmCard
 from cards.service import ServiceCard
 from cards.tt import TTCard
 from cards.subscribersession import SubscriberSessionCard
+from cards.totaloutage import TotalOutageCard
 
 
 class CardRequestHandler(UIHandler):
@@ -24,7 +25,8 @@ class CardRequestHandler(UIHandler):
         "alarm": AlarmCard,
         "service": ServiceCard,
         "subscribersession": SubscriberSessionCard,
-        "tt": TTCard
+        "tt": TTCard,
+        "totaloutage": TotalOutageCard
     }
     CARD_TEMPLATE_PATH = "services/card/templates/card.html.j2"
     CARD_TEMPLATE = None
