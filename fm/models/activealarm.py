@@ -19,7 +19,7 @@ from noc.main.models.style import Style
 from noc.main.models.notification import Notification
 from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+from noc.sa.models.servicesummary import SummaryItem
 
 
 class ActiveAlarm(nosql.Document):
