@@ -115,7 +115,14 @@ class Script(BaseScript):
                 # @todo: Switch to bulk ops when necessary
                 for oid in batch:
                     ts = self.get_ts()
-                    v = self.snmp.get(oid)
+                    try:
+                        v = self.snmp.get(oid)
+                    except self.snmp.TimeOutError as e:
+                        self.logger.error(
+                            "Failed to get SNMP OID %s: %s",
+                            oid, e
+                        )
+                        v = None
                     if v is not None:
                         self.set_metric(
                             name=batch[oid]["name"],
