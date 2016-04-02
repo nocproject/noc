@@ -17,6 +17,7 @@ from noc.fm.models.utils import get_alarm
 from noc.inv.models.object import Object
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.sa.models.servicesummary import SummaryItem
 
 
 class AlarmCard(BaseCard):
@@ -56,6 +57,17 @@ class AlarmCard(BaseCard):
             ]
         # Build alarm tree
         alarms = self.get_alarms()
+        # Service summary
+        if self.object.root:
+            service_summary = {
+                "service": SummaryItem.items_to_dict(self.object.direct_services),
+                "subscriber": SummaryItem.items_to_dict(self.object.direct_subscribers)
+            }
+        else:
+            service_summary = {
+                "service": self.object.total_services,
+                "subscriber": self.object.total_subscribers
+            }
         # Build result
         r = {
             "id": self.object.id,
@@ -67,6 +79,7 @@ class AlarmCard(BaseCard):
             "body": self.object.body,
             "container_path": cp,
             "log": log,
+            "service_summary": service_summary,
             "alarms": alarms
         }
         return r
@@ -81,6 +94,10 @@ class AlarmCard(BaseCard):
 
         def flatten(ca, r, level):
             ca._level = level
+            ca.service_summary = {
+                "service": SummaryItem.items_to_dict(ca.direct_services),
+                "subscriber": SummaryItem.items_to_dict(ca.direct_subscribers)
+            }
             r += [ca]
             if hasattr(ca, "_children"):
                 for c in sorted(ca._children, key=operator.attrgetter("timestamp")):
