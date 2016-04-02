@@ -85,7 +85,7 @@ class ServiceSummary(Document):
             profiles = defaultdict(int)
             service = services.get(interfaces[i])
             if not service:
-                return
+                continue
             subscribers.add(service["subscriber"])
             profiles[service["profile"]] += 1
             update_children(interfaces[i])
