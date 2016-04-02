@@ -19,6 +19,7 @@ from noc.main.models.style import Style
 from noc.main.models.notification import Notification
 from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 
 
 class ActiveAlarm(nosql.Document):
@@ -63,6 +64,14 @@ class ActiveAlarm(nosql.Document):
     # <external system name>:<external tt id>
     escalation_ts = nosql.DateTimeField(required=False)
     escalation_tt = nosql.StringField(required=False)
+    # Directly affected services summary, grouped by profiles
+    # (connected to the same managed object)
+    direct_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    direct_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    # Indirectly affected services summary, groupped by profiles
+    # (covered by this and all inferred alarms)
+    total_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    total_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -143,22 +152,27 @@ class ActiveAlarm(nosql.Document):
         ts = datetime.datetime.now()
         log = self.log + [AlarmLog(timestamp=ts, from_status="A",
                                    to_status="C", message=message)]
-        a = ArchivedAlarm(id=self.id,
-                          timestamp=self.timestamp,
-                          clear_timestamp=ts,
-                          managed_object=self.managed_object,
-                          alarm_class=self.alarm_class,
-                          severity=self.severity,
-                          vars=self.vars,
-                          log=log,
-                          root=self.root,
-                          escalation_ts=self.escalation_ts,
-                          escalation_tt=self.escalation_tt,
-                          opening_event=self.opening_event,
-                          closing_event=self.closing_event,
-                          discriminator=self.discriminator,
-                          reopens=self.reopens
-                          )
+        a = ArchivedAlarm(
+            id=self.id,
+            timestamp=self.timestamp,
+            clear_timestamp=ts,
+            managed_object=self.managed_object,
+            alarm_class=self.alarm_class,
+            severity=self.severity,
+            vars=self.vars,
+            log=log,
+            root=self.root,
+            escalation_ts=self.escalation_ts,
+            escalation_tt=self.escalation_tt,
+            opening_event=self.opening_event,
+            closing_event=self.closing_event,
+            discriminator=self.discriminator,
+            reopens=self.reopens,
+            direct_services=self.direct_services,
+            direct_subscribers=self.direct_subscribers,
+            total_services=self.total_services,
+            total_subscribers=self.total_subscribers
+        )
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
@@ -266,6 +280,48 @@ class ActiveAlarm(nosql.Document):
             return self.custom_style
         else:
             return AlarmSeverity.get_severity(self.severity).style
+
+    def get_root(self):
+        """
+        Get top-level root alarm
+        """
+        root = self
+        while root.root:
+            root = get_alarm(root.root)
+        return root
+
+    def update_summary(self):
+        def to_dict(sl):
+            return dict((i.profile, i.summary) for i in sl)
+
+        def to_list(v):
+            return [{"profile": k, "summary": v[k]} for k in sorted(v)]
+
+        def update_dict(d1, d2):
+            for k in d2:
+                if k in d1:
+                    d1[k] += d2[k]
+                else:
+                    d1[k] = d2[k]
+
+        services = to_dict(self.direct_services)
+        subscribers = to_dict(self.direct_subscribers)
+        for a in ActiveAlarm.objects.filter(root=self.id):
+            a.update_summary()
+            update_dict(
+                services,
+                to_dict(a.total_services)
+            )
+            update_dict(
+                subscribers,
+                to_dict(a.total_subscribers)
+            )
+        svc_list = to_list(services)
+        sub_list = to_dict(subscribers)
+        if svc_list != self.total_services or sub_list != self.total_subscribers:
+            self.total_services = svc_list
+            self.total_subscribers = sub_list
+            self.save()
 
     def set_root(self, root_alarm):
         """

@@ -55,6 +55,15 @@ class ArchivedAlarm(nosql.Document):
     # <external system name>:<external tt id>
     escalation_ts = nosql.DateTimeField(required=False)
     escalation_tt = nosql.StringField(required=False)
+    # Directly affected services summary, grouped by profiles
+    # (connected to the same managed object)
+    direct_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    direct_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    # Indirectly affected services summary, groupped by profiles
+    # (covered by this and all inferred alarms)
+    total_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    total_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -133,7 +142,11 @@ class ArchivedAlarm(nosql.Document):
             escalation_tt=self.escalation_tt,
             opening_event=self.opening_event,
             discriminator=self.discriminator,
-            reopens=reopens + 1
+            reopens=reopens + 1,
+            direct_services=self.direct_services,
+            direct_subscribers=self.direct_subscribers,
+            total_services=self.total_services,
+            total_subscribers=self.total_subscribers
         )
         a.save()
         # @todo: Clear related correlator jobs

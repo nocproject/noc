@@ -24,6 +24,7 @@ from noc.fm.models import (ActiveEvent, EventClass,ActiveAlarm,
                            AlarmLog, AlarmTrigger, AlarmClass)
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.sa.models.servicesummary import ServiceSummary
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 from noc.lib.solutions import get_alarm_class_handlers, get_alarm_jobs
@@ -299,6 +300,8 @@ class CorrelatorService(Service):
                     str(a.id), a.alarm_class.name))
                 a.contribute_event(e)
                 return
+        # Calculate alarm coverage
+        summary = ServiceSummary.get_object_summary(managed_object)
         # Create new alarm
         a = ActiveAlarm(
             timestamp=e.timestamp,
@@ -308,6 +311,10 @@ class CorrelatorService(Service):
             severity=r.severity,
             vars=vars,
             discriminator=discriminator,
+            direct_services=summary["service"],
+            direct_subscribers=summary["subscriber"],
+            total_services=summary["service"],
+            total_subscribers=summary["subscriber"],
             log=[
                 AlarmLog(
                     timestamp=datetime.datetime.now(),
@@ -400,22 +407,25 @@ class CorrelatorService(Service):
         discriminator, vars = r.get_vars(e)
         ws = e.timestamp - datetime.timedelta(seconds=r.combo_window)
         de = ActiveEvent.objects.filter(
-                managed_object=e.managed_object_id,
-                event_class=r.event_class,
-                discriminator=discriminator,
-                timestamp__gte=ws
-                ).first()
+            managed_object=e.managed_object_id,
+            event_class=r.event_class,
+            discriminator=discriminator,
+            timestamp__gte=ws
+        ).first()
         if not de:
             # No starting event
             return None
         # Probable starting event found, get all interesting following event
         # classes
-        fe = [ee.event_class.id
-              for ee in ActiveEvent.objects.filter(
+        fe = [
+            ee.event_class.id
+            for ee in ActiveEvent.objects.filter(
                 managed_object=e.managed_object_id,
                 event_class__in=r.combo_event_classes,
                 discriminator=discriminator,
-                timestamp__gte=ws).order_by("timestamp")]
+                timestamp__gte=ws
+            ).order_by("timestamp")
+        ]
         if r.combo_condition == "sequence":
             # Exact match
             if fe == self.combo_event_classes:
