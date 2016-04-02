@@ -50,7 +50,12 @@
 </tr>
 <tr>
     <th scope="row">Subscriber</th>
-    <td>{{ service.subscriber.name }}</td>
+    <td>
+        {% if service.subscriber.profile.glyph %}
+        <i class="{{ service.subscriber.profile.glyph }}"></i>
+        {% endif %}
+        {{ service.subscriber.name }}
+    </td>
 </tr>
 <tr>
     <th scope="row">Contacts</th>
