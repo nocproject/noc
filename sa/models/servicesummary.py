@@ -24,6 +24,23 @@ class SummaryItem(EmbeddedDocument):
     profile = ObjectIdField()
     summary = IntField()
 
+    @classmethod
+    def items_to_dict(cls, items):
+        """
+        Convert a list of summary items to dict profile -> summary
+        """
+        return dict(
+            (r.profile, r.summary)
+            for r in items
+        )
+
+    @classmethod
+    def dict_to_items(cls, d):
+        """
+        Convert a dict of profile -> sumamry to list of SummaryItem
+        """
+        return [{"profile": k, "summary": d[k]} for k in sorted(d)]
+
 
 class ServiceSummary(Document):
     meta = {

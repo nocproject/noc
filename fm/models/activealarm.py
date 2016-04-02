@@ -291,12 +291,6 @@ class ActiveAlarm(nosql.Document):
         return root
 
     def update_summary(self):
-        def to_dict(sl):
-            return dict((i.profile, i.summary) for i in sl)
-
-        def to_list(v):
-            return [{"profile": k, "summary": v[k]} for k in sorted(v)]
-
         def update_dict(d1, d2):
             for k in d2:
                 if k in d1:
@@ -304,20 +298,20 @@ class ActiveAlarm(nosql.Document):
                 else:
                     d1[k] = d2[k]
 
-        services = to_dict(self.direct_services)
-        subscribers = to_dict(self.direct_subscribers)
+        services = SummaryItem.items_to_dict(self.direct_services)
+        subscribers = SummaryItem.items_to_dict(self.direct_subscribers)
         for a in ActiveAlarm.objects.filter(root=self.id):
             a.update_summary()
             update_dict(
                 services,
-                to_dict(a.total_services)
+                SummaryItem.items_to_dict(a.total_services)
             )
             update_dict(
                 subscribers,
-                to_dict(a.total_subscribers)
+                SummaryItem.items_to_dict(a.total_subscribers)
             )
-        svc_list = to_list(services)
-        sub_list = to_dict(subscribers)
+        svc_list = SummaryItem.dict_to_items(services)
+        sub_list = SummaryItem.dict_to_items(subscribers)
         if svc_list != self.total_services or sub_list != self.total_subscribers:
             self.total_services = svc_list
             self.total_subscribers = sub_list
