@@ -1,4 +1,20 @@
-<div style="text-align: center; font-size: 72pt">
+<style>
+.summary {
+    text-align: center;
+    font-size: 72pt;
+    position: fixed;
+    width: 100%;
+    top: 50%;
+    margin-top: -36pt;
+}
+
+.summary .badge {
+    font-size: 72pt;
+    border-radius: 42pt;
+    padding: 12pt 12pt;
+}
+</style>
+<div class="summary">
 {% if is_clear %}
 It's all quiet in Baghdad
 {% else %}

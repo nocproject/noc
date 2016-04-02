@@ -35,11 +35,11 @@ class TotalOutageCard(BaseCard):
         ).only("total_subscribers", "total_services"):
             update_dict(
                 summary["subscriber"],
-                SummaryItem.items_to_dict(a.total_subscribers)
+                SummaryItem.items_to_dict(a.total_subscribers or [])
             )
             update_dict(
                 summary["service"],
-                SummaryItem.items_to_dict(a.total_services)
+                SummaryItem.items_to_dict(a.total_services or [])
             )
         return {
             "summary": summary,
