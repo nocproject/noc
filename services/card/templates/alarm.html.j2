@@ -3,6 +3,7 @@
     <tr>
         <th colspan="2" class="{{ {'C': 'success', 'A': 'danger'}[alarm.status] }}">
             Alarm: {{ subject }}
+            {{ alarm.service_summary | glyph_summary }}
             <span style="float: right">
                 {{ duration }}({{ timestamp | timestamp}})
             </span>
@@ -80,6 +81,7 @@
                         <td>{% if a.id == alarm.id %}<i class="fa fa-arrow-right"></i>{% endif %}</td>
                         <td> {{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * a._level) }}
                             <a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp | timestamp }}</a>
+                            {{ a.service_summary | glyph_summary }}
                         </td>
                         <td>{{ a.display_duration }}</td>
                         <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object | managed_object_title }}</a></td>
