@@ -16,6 +16,7 @@ from noc.sa.models.managedobject import ManagedObject
 from alarmclass import AlarmClass
 from alarmlog import AlarmLog
 from alarmseverity import AlarmSeverity
+from noc.sa.models.servicesummary import SummaryItem
 
 
 class ArchivedAlarm(nosql.Document):
