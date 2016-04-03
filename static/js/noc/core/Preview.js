@@ -89,7 +89,7 @@ Ext.define("NOC.core.Preview", {
         if(name !== "default") {
             Ext.util.CSS.swapStyleSheet(
                 "cmcss-" + me.id,  // Fake one
-                "/static/pkg/codemirror/theme/" + name + ".css"
+                "/ui/pkg/codemirror/theme/" + name + ".css"
             );
         }
         me.viewer.setOption("theme", name);

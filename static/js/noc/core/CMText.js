@@ -92,7 +92,7 @@ Ext.define("NOC.core.CMText", {
         var me = this;
 
         // Create CodeMirror
-        CodeMirror.modeURL = "/static/pkg/codemirror/mode/%N/%N.js";
+        CodeMirror.modeURL = "/ui/pkg/codemirror/mode/%N/%N.js";
         me.editor = new CodeMirror(me.containerEl.dom, {
             readOnly: me.readOnly,
             lineNumbers: me.lineNumbers,
@@ -120,7 +120,7 @@ Ext.define("NOC.core.CMText", {
         if (name !== "default") {
             Ext.util.CSS.swapStyleSheet(
                 "cmcss-" + me.id,  // Fake one
-                "/static/pkg/codemirror/theme/" + name + ".css"
+                "/ui/pkg/codemirror/theme/" + name + ".css"
             );
         }
         me.editor.setOption("theme", name);
@@ -130,7 +130,7 @@ Ext.define("NOC.core.CMText", {
         var me = this;
         syntax = syntax || null;
         text = text || "NO DATA";
-        CodeMirror.modeURL = "/static/pkg/codemirror/mode/%N/%N.js";
+        CodeMirror.modeURL = "/ui/pkg/codemirror/mode/%N/%N.js";
         me.editor.setValue(text);
         if (syntax) {
             me.editor.setOption("mode", syntax);
