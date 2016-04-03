@@ -83,7 +83,7 @@ server {
     location /api/auth/ {
         internal;
         proxy_pass http://login;
-        rewrite  ^/api/login/(.*)  /$1 break;
+        rewrite  ^/api/auth/(.*)  /$1 break;
         # internal;
         gzip on;
         gzip_types text/css text/x-js;
