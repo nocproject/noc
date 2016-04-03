@@ -32,6 +32,9 @@
     - role: migrate
       when: "{{ has_svc_mongod_master | default(False) }}"
 
+    - role: login
+      when: "{{ has_svc_login | default(False) }}"
+
     - role: web
       when: "{{ has_svc_web | default(False) }}"
 

@@ -1,0 +1,9 @@
+{
+  "url": "https://cdn.nocproject.org/pkg/",
+  "packages": [
+    {
+      "name": "webix",
+      "version": "3.1.2"
+    }
+  ]
+}
