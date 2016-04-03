@@ -18,7 +18,6 @@ from noc.lib.app import ExtApplication, ModelApplication, view, PermitLogged
 from noc.lib.version import get_version
 from noc.lib.middleware import set_user
 from noc.settings import LANGUAGE_CODE
-from noc.main.auth.backends import backend as auth_backend
 from noc.main.models import Group, UserSession, UserState, Permission
 from noc.main.models.favorites import Favorites
 from noc.support.cp import CPClient
@@ -197,7 +196,7 @@ class DesktopApplication(ExtApplication):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "theme": self.get_theme(request),
-            "can_change_credentials": auth_backend.can_change_credentials,
+            "can_change_credentials": True,
             "idle_timeout": self.idle_timeout,
             "navigation": {
                 "id": "root",
@@ -267,14 +266,6 @@ class DesktopApplication(ExtApplication):
         except KeyError:
             return self.response_not_found()
         return menu["app"].get_launch_info(request)
-
-    @view(method=["GET"], url="^login_fields/$", access=True, api=True)
-    def api_login_fields(self, request):
-        """
-        Returns a list of login form form fields, suitable to use as
-        ExtJS Ext.form.Panel items
-        """
-        return auth_backend.get_login_fields()
 
     @view(method=["GET"], url="^change_credentials_fields/$",
           access=PermitLogged(), api=True)
