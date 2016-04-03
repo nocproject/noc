@@ -10,7 +10,6 @@
 import base64
 ## Third-party modules
 import tornado.web
-from api.login import LoginAPI
 
 
 class AuthRequestHandler(tornado.web.RequestHandler):

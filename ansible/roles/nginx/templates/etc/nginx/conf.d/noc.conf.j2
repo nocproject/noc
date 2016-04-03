@@ -80,6 +80,23 @@ server {
 
 {% if noc_config["services"].get("login", []) %}
     # Login service api
+    location /api/auth/ {
+        internal;
+        proxy_pass http://login;
+        rewrite  ^/api/login/(.*)  /$1 break;
+        # internal;
+        gzip on;
+        gzip_types text/css text/x-js;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Original-URI $request_uri;
+        proxy_set_header Content-Length '0';
+    }
+
+    # Login service api
     location /api/login/ {
         proxy_pass http://login;
         rewrite  ^/api/login/(.*)  /$1 break;
@@ -99,7 +116,7 @@ server {
     # Card service api
     location /api/card/ {
         proxy_pass http://card;
-        auth_request /api/login/auth/;
+        auth_request /api/auth/auth/;
         rewrite  ^/api/card/(.*)  /$1 break;
         # internal;
         gzip on;
@@ -187,7 +204,7 @@ server {
 {% if noc_config["services"].get("grafana", []) %}
     location /ui/grafana {
         proxy_pass http://grafana;
-        # auth_request /api/login/auth/;
+        # auth_request /api/auth/auth/;
         rewrite  ^/ui/grafana/(.*)  /$1 break;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
@@ -205,7 +222,7 @@ server {
     location / {
         rewrite ^/$ /main/desktop/;
         proxy_pass http://noc-web;
-        auth_request /api/login/auth/;
+        auth_request /api/auth/auth/;
         proxy_read_timeout 900;
         gzip on;
         gzip_types text/css text/x-js;
