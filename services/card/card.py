@@ -46,6 +46,13 @@ class CardRequestHandler(UIHandler):
             raise tornado.web.HTTPError(404, "Not found")
         self.set_header("Content-Type", "text/html; charset=utf-8")
         self.set_header("Cache-Control", "no-cache, must-revalidate")
+        refresh = self.get_argument("refresh", None)
+        if refresh:
+            try:
+                refresh = int(refresh)
+                self.set_header("Refresh", str(refresh))
+            except ValueError:
+                pass
         self.write(
             self.get_card_template().render({
                 "card_data": data,
