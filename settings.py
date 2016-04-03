@@ -114,7 +114,6 @@ MIDDLEWARE_CLASSES = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.auth.middleware.RemoteUserMiddleware",
-    "noc.lib.middleware.HTTPBasicAuthMiddleware",
     "django.middleware.transaction.TransactionMiddleware",
     "noc.lib.middleware.TLSMiddleware",  # Thread local storage
     "noc.lib.middleware.ExtFormatMiddleware"
