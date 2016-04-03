@@ -24,6 +24,10 @@
     {
       "name": "fontawesome",
       "version": "4.5.0"
+    },
+    {
+      "name": "codemirror",
+      "version": "5.13.2"
     }
   ]
 }

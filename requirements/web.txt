@@ -4,6 +4,5 @@ noc-pkg-silk-companion1==1.0
 noc-pkg-extjs==5.1.0
 noc-pkg-openlayers==2.13
 noc-pkg-flot==0.8.3
-noc-pkg-codemirror==5.2
 noc-pkg-stacktrace==1.0.0
 noc-pkg-pyclips==1.0.7
