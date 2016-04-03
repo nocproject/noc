@@ -16,24 +16,6 @@ except ImportError:
 from django.contrib import auth
 
 
-class HTTPBasicAuthMiddleware(object):
-    """
-    Process HTTP Basic auth
-    """
-    def process_request(self, request):
-        if request.user.is_authenticated():
-            # Already authenticated
-            return
-        if "HTTP_AUTHORIZATION" in request.META:
-            a = request.META["HTTP_AUTHORIZATION"]
-            if a.startswith("Basic "):
-                username, password = base64.b64decode(a[6:]).split(":")
-                user = auth.authenticate(username=username, password=password)
-                if user:
-                    # Authentication passed
-                    request.user = user
-
-
 ##
 ## Thread local storage
 ##
