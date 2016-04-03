@@ -241,54 +241,11 @@ Ext.define("NOC.main.desktop.Application", {
                 if (status) {
                     me.onLogin();
                 } else {
-                    me.showLogin();
+                    NOC.error("Login failed");
                 }
             },
             failure: function(response) {
-                me.showLogin();
-            }
-        });
-    },
-    // Show Login window
-    showLogin: function() {
-        var me = this;
-        Ext.Ajax.request({
-            method: "GET",
-            url: "/main/desktop/login_fields/",
-            scope: this,
-            success: function(response) {
-                var fields = Ext.decode(response.responseText);
-                me.loginWindow = Ext.create("NOC.main.desktop.Login", {
-                    app: me,
-                    fields: fields
-                });
-            }
-        });
-    },
-    //
-    login: function(values) {
-        var me = this;
-        Ext.Ajax.request({
-            method: "POST",
-            url: "/main/desktop/login/",
-            params: values,
-            scope: me,
-            success: function(response) {
-                var r = Ext.decode(response.responseText);
-                if(r.status) {
-                    // Login successfull
-                    if(me.loginWindow) {
-                        me.loginWindow.close();
-                        delete me.loginWindow;
-                    }
-                    me.onLogin();
-                } else {
-                    // Login failed
-                    NOC.error("Failed to change credentials: " + r.message);
-                }
-            },
-            failure: function(response) {
-                Ext.Msg.alert("Failed", "Login failed due to internal error");
+                NOC.error("Login failed");
             }
         });
     },
@@ -342,19 +299,7 @@ Ext.define("NOC.main.desktop.Application", {
     // Start logout sequence
     onLogout: function() {
         var me = this;
-        Ext.Ajax.request({
-            method: "POST",
-            url: "/main/desktop/logout/",
-            scope: me,
-            success: function(response) {
-                me.stopIdleTimer();
-                Ext.History.setHash("");
-                me.restartApplication("Logging out");
-            },
-            failure: function(response) {
-                Ext.Msg.alert("Failed", "Logout failed");
-            }
-        });
+        document.location = "/api/login/logout/";
     },
     //
     // Process autologout
