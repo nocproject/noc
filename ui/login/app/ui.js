@@ -47,7 +47,8 @@ NOC.login.app.ui = {
                                             view: "button",
                                             value: "Login",
                                             width: 100,
-                                            click: "NOC.login.app.logic.on_login"
+                                            click: "NOC.login.app.logic.on_login",
+                                            hotkey: "enter"
                                         },
                                         {
                                             view: "button",
