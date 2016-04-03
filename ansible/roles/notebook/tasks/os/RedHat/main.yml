@@ -1,5 +1,5 @@
 ---
-- name: Install REHL system packages
+- name: Install RHEL system packages
   yum:
     name: "{{item}}"
     state: present

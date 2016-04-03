@@ -1,11 +1,18 @@
 - name: Add Grafana repository
-  template: src=os/RedHat/etc/yum.repos.d/grafana.repo.j2 dest=/etc/yum.repos.d/grafana.repo
+  template:
+    src: os/RedHat/etc/yum.repos.d/grafana.repo.j2
+    dest: /etc/yum.repos.d/grafana.repo
 
 - name: Add GPG key
-  rpm_key: state=present key=https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+  rpm_key:
+    state: present
+    key: https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
 
 - name: Install Grafana
-  yum: name=grafana-{{grafana_version}} state=present update_cache=yes
+  yum:
+    name: grafana-{{grafana_version}}
+    state: present
+    update_cache: yes
 
 - name: Set up Grafana service
   lineinfile:
