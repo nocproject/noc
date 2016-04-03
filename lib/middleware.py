@@ -66,6 +66,16 @@ class TLSMiddleware(object):
         _tls.user = None
 
 
+class WSGISetupMiddleware(object):
+    """
+    Set up WSGI headers
+    """
+    def process_request(self, request):
+        ru = request.META.get("HTTP_REMOTE_USER")
+        if ru:
+            request.META["REMOTE_USER"] = ru
+
+
 class ExtFormatMiddleware(object):
     """
     Set request.is_extjs when __format=ext found in request

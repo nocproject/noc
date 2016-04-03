@@ -99,6 +99,7 @@ server {
     # Card service api
     location /api/card/ {
         proxy_pass http://card;
+        auth_request /api/login/auth/;
         rewrite  ^/api/card/(.*)  /$1 break;
         # internal;
         gzip on;
@@ -108,6 +109,10 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request_set $user $upstream_http_remote_user;
+        proxy_set_header Remote-User $user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        proxy_set_header Remote-Groups $groups;
     }
 {% endif %}
 
@@ -198,7 +203,9 @@ server {
 {% endif %}
 
     location / {
+        rewrite ^/$ /main/desktop/;
         proxy_pass http://noc-web;
+        auth_request /api/login/auth/;
         proxy_read_timeout 900;
         gzip on;
         gzip_types text/css text/x-js;
@@ -207,6 +214,10 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request_set $user $upstream_http_remote_user;
+        proxy_set_header Remote-User $user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        proxy_set_header Remote-Groups $groups;
     }
 }
 {% if ansible_distribution == "FreeBSD" %}

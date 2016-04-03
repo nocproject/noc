@@ -107,20 +107,22 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     )
 #
 MIDDLEWARE_CLASSES = [
+    "noc.lib.middleware.WSGISetupMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.RemoteUserMiddleware",
     "noc.lib.middleware.HTTPBasicAuthMiddleware",
-    "django.middleware.doc.XViewMiddleware",
     "django.middleware.transaction.TransactionMiddleware",
-    "noc.lib.middleware.TLSMiddleware", # Thread local storage
+    "noc.lib.middleware.TLSMiddleware",  # Thread local storage
     "noc.lib.middleware.ExtFormatMiddleware"
 ]
 
-if config.get("authentication", "method") == "http":
-    MIDDLEWARE_CLASSES += ["django.contrib.auth.middleware.RemoteUserMiddleware"]
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.RemoteUserBackend'
+]
 
 ROOT_URLCONF = "noc.urls"
 
@@ -193,8 +195,6 @@ IS_TEST = len(sys.argv) >= 2 and sys.argv[:2] == ["manage.py", "test"]
 
 SKIP_SOUTH_TESTS = True
 SOUTH_TESTS_MIGRATE = True
-##
-LOGIN_URL = "/main/auth/login/"  # @todo: remove
 ## Do not enforce lowercase tags
 FORCE_LOWERCASE_TAGS = False
 ## Message application setup
@@ -223,11 +223,6 @@ if config.get("audit", "log_mrt_commands"):
         sys.stderr.write(
             "Cannot write to '%s'. MRT command logging disabled\n" % lmc
         )
-##
-## Graphite settings
-## @todo: Remove
-GRAPHTEMPLATES_CONF = ""
-LEGEND_MAX_ITEMS = 10
 ## Set up logging
 ## Disable SQL statement logging
 import logging

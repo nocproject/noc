@@ -1,0 +1,15 @@
+- name: Install RADIUS python packages
+  pip:
+    chdir: "{{noc_root}}"
+    requirements: "requirements/login-radius.txt"
+    virtualenv: "{{noc_root}}"
+    extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
+  when: "False"
+
+- name: Install LDAP python packages
+  pip:
+    chdir: "{{noc_root}}"
+    requirements: "requirements/login-ldap.txt"
+    virtualenv: "{{noc_root}}"
+    extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
+  when: "False"
