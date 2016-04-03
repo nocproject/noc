@@ -5,6 +5,7 @@
   any_errors_fatal: true
   vars_files:
     - vars/main.yml
+    - vars/local.yml
 
   roles:
     - role: pre

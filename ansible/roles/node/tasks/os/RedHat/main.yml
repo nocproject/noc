@@ -3,18 +3,15 @@
     policy: targeted
     state: permissive
 
-- name: Add cdrom repo
-  copy: 
-      src: roles/node/templates/os/RedHat/etc/yum.repos.d/cdrom.repo
-      dest: /etc/yum.repos.d/cdrom.repo
+- name: Register to RHN
+  redhat_subscription:
+    state: present
+    username: "{{rhel_subscription_username}}"
+    password: "{{rhel_subscription_password}}"
+    autosubscribe: true
 
-- name: mount cdrom
-  mount:
-      src: /dev/cdrom 
-      name: /media
-      state: mounted
-      fstype: iso9660
-      opts: ro
+- name: Add Devel repos
+  command: "/sbin/subscription-manager repos --enable rhel-7-server-optional-rpms"
 
 - name: Add EPEL Repo
   template: src=os/RedHat/etc/yum.repos.d/epel.repo.j2 dest=/etc/yum.repos.d/epel.repo
@@ -22,11 +19,11 @@
 - name: Add GPG key EPEL
   rpm_key: state=present key=http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
 
-- name: Yum update
-  shell: yum update
-
 - name: Install RedHat system packages
-  yum: name={{item}} state=present update_cache=yes
+  yum:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
   with_items:
    - tcpdump
    - net-tools
