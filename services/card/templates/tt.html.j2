@@ -3,7 +3,7 @@
     <tr>
         <th colspan="2" class="{{ {True: 'success', False: 'danger'}[resolved] }}">
             TT: {{ full_id }}
-            <span style="float: right">
+            <span class="pull-right">
                 {% if duration %}{{ duration }}{% endif %}({{ open_ts | timestamp}})
             </span>
         </th>
@@ -12,7 +12,7 @@
         <th scope="row">Stage</th>
         <td>
             {{ stage }}
-            <span style="float: right">
+            <span class="pull-right">
                 {% if owner %}
                     <span class="label label-primary">{{ owner }}</span>
                 {% endif %}
@@ -41,7 +41,7 @@
                     {{ subject | e }}
                 </div>
                 {% endif %}
-                <div class="panel-body" style="white-space: pre">
+                <div class="panel-body" style="white-space: pre-line">
                     {{ body | e }}
                 </div>
             </div>
@@ -55,14 +55,14 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         {% if c["subject"] %}{{ c["subject"] | e }}{% endif %}
-                        <span style="float: right">
+                        <span class="pull-right">
                             {% if c["login"] %}
                                 <span class="label label-primary">{{ c["login"] }}</span>
                             {% endif %}
                             ({{ c["ts"] }})
                         </span>
                     </div>
-                    <div class="panel-body" style="white-space: pre">
+                    <div class="panel-body" style="white-space: pre-line">
                         {{ c["body"] | e }}
                     </div>
                 </div>
