@@ -101,7 +101,7 @@ Ext.define("NOC.core.JSONPreview", {
         if(name !== "default") {
             Ext.util.CSS.swapStyleSheet(
                 "cmcss-" + me.id,  // Fake one
-                "/static/pkg/codemirror/theme/" + name + ".css"
+                "/ui/pkg/codemirror/theme/" + name + ".css"
             );
         }
         me.viewer.setOption("theme", name);
@@ -110,7 +110,7 @@ Ext.define("NOC.core.JSONPreview", {
     renderText: function(text, syntax) {
         var me = this;
         syntax = syntax || null;
-        CodeMirror.modeURL = "/static/pkg/codemirror/mode/%N/%N.js";
+        CodeMirror.modeURL = "/ui/pkg/codemirror/mode/%N/%N.js";
         me.viewer.setValue(text);
         if(syntax) {
             me.viewer.setOption("mode", syntax);

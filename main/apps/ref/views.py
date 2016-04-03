@@ -137,8 +137,8 @@ class RefAppplication(ExtApplication):
             "id": "default",
             "label": "default"
         }]
-        if os.path.isdir("static/pkg/codemirror/theme"):
-            for f in os.listdir("static/pkg/codemirror/theme"):
+        if os.path.isdir("ui/pkg/codemirror/theme"):
+            for f in os.listdir("ui/pkg/codemirror/theme"):
                 if f.endswith(".css"):
                     t = f[:-4]
                     r += [{
