@@ -84,7 +84,8 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     name: "weight",
                     xtype: "numberfield",
                     fieldLabel: "Alarm weight",
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "small"
                 }
             ]
         });

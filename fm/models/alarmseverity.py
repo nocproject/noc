@@ -81,7 +81,7 @@ class AlarmSeverity(Document):
             return i
 
         # Build caches
-        if not hasattr("_weights"):
+        if not hasattr(cls, "_weights"):
             cls._weights = []
             cls._severities = []
             cls._alpha = []
