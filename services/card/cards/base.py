@@ -149,6 +149,7 @@ class BaseCard(object):
         if "service":
             from noc.sa.models.serviceprofile import ServiceProfile
             r += [get_summary(s["service"], ServiceProfile)]
-        return " <i class='fa fa-ellipsis-v'></i> ".join(r)
+        r = [x for x in r if x]
+        return "&nbsp;".join(r)
 
 
