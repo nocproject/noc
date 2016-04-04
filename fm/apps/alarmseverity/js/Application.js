@@ -33,6 +33,12 @@ Ext.define("NOC.fm.alarmseverity.Application", {
             align: "right"
         },
         {
+            text: "Min. Weight",
+            dataIndex: "min_weight",
+            width: 50,
+            align: "right"
+        },
+        {
             text: "Description",
             dataIndex: "description",
             flex: 1
