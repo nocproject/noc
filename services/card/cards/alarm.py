@@ -18,6 +18,7 @@ from noc.inv.models.object import Object
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.servicesummary import SummaryItem
+from noc.fm.models.alarmseverity import AlarmSeverity
 
 
 class AlarmCard(BaseCard):
@@ -72,6 +73,7 @@ class AlarmCard(BaseCard):
         r = {
             "id": self.object.id,
             "alarm": self.object,
+            "severity": AlarmSeverity.get_severity(self.object.severity),
             "managed_object": self.object.managed_object,
             "timestamp": self.object.timestamp,
             "duration": self.object.display_duration,
