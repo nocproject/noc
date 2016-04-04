@@ -41,7 +41,7 @@ class SummaryItem(EmbeddedDocument):
         """
         Convert a dict of profile -> sumamry to list of SummaryItem
         """
-        return [{"profile": k, "summary": d[k]} for k in sorted(d)]
+        return [SummaryItem(profile=k, summary=d[k]) for k in sorted(d)]
 
 
 class ServiceSummary(Document):
