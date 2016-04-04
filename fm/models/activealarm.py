@@ -331,6 +331,7 @@ class ActiveAlarm(nosql.Document):
         # self.save()  Saved by log_message
         root_alarm.log_message(
             "Alarm %s has been marked as child" % self.id)
+        root_alarm.update_summary()
         # Clear pending notifications
         Notification.purge_delayed("alarm:%s" % self.id)
 
