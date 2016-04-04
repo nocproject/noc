@@ -10,8 +10,7 @@
 import logging
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobject import ManagedObjectAttribute
+from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
@@ -38,6 +37,11 @@ logger = logging.getLogger(__name__)
 
 
 def wipe(o):
+    if not hasattr(o, "id"):
+        try:
+            o = ManagedObject.objects.get(id=o)
+        except ManagedObject.DoesNotExist:
+            return True
     if o.profile_name.startswith("NOC."):
         return True
     log = PrefixLoggerAdapter(logger, str(o.id))
