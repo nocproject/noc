@@ -36,6 +36,10 @@ Ext.define("NOC.crm.subscriberprofile.Model", {
             type: "string"
         },
         {
+            name: "weight",
+            type: "weight"
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

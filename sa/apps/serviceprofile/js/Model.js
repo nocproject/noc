@@ -36,6 +36,10 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "string"
         },
         {
+            name: "weight",
+            type: "weight"
+        },
+        {
             name: "interface_profile__label",
             type: "string",
             persist: false

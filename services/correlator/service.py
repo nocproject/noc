@@ -308,7 +308,7 @@ class CorrelatorService(Service):
             last_update=e.timestamp,
             managed_object=managed_object.id,
             alarm_class=r.alarm_class,
-            severity=r.severity,
+            severity=max(ServiceSummary.get_severity(summary), 1),
             vars=vars,
             discriminator=discriminator,
             direct_services=SummaryItem.dict_to_items(summary["service"]),

@@ -16,6 +16,9 @@ from mongoengine.fields import IntField, ObjectIdField, \
 ## NOC modules
 from noc.crm.models.subscriber import Subscriber
 from noc.core.defer import call_later
+from serviceprofile import ServiceProfile
+from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.fm.models.alarmseverity import AlarmSeverity
 
 logger = logging.getLogger(__name__)
 
@@ -240,6 +243,33 @@ class ServiceSummary(Document):
                 else:
                     r["subscriber"][k] = v
         return r
+
+    @classmethod
+    def get_weight(cls, summary):
+        """
+        Convert result of *get_object_summary* to alarm weight
+        """
+        w = 0
+        subscribers = summary.get("subscriber")
+        for s in subscribers:
+            sp = SubscriberProfile.get_by_id(s)
+            if sp and sp.weight:
+                w += sp.weight
+        services = summary.get("service")
+        for s in services:
+            sp = ServiceProfile.get_by_id(s)
+            if sp and sp.weight:
+                w += sp.weight
+        return w
+
+    @classmethod
+    def get_severity(cls, summary):
+        """
+        Convert result of *get_object_summary* to alarm severity
+        """
+        return AlarmSeverity.severity_for_weight(
+            cls.get_weight(summary)
+        )
 
 
 def refresh_object(managed_object):

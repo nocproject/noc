@@ -19,7 +19,7 @@ from noc.main.models.style import Style
 from noc.main.models.notification import Notification
 from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
-from noc.sa.models.servicesummary import SummaryItem
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 
 
 class ActiveAlarm(nosql.Document):
@@ -81,19 +81,6 @@ class ActiveAlarm(nosql.Document):
             self.last_update = self.timestamp
         return super(ActiveAlarm, self).save(*args, **kwargs)
 
-    def _change_root_severity(self):
-        """
-        Change root severity, when necessary
-        """
-        if not self.root:
-            return
-        root = get_alarm(self.root)
-        if root and root.severity < self.severity:
-            root.change_severity(self.severity)
-            root.log_message(
-                "Severity has been increased by child alarm %s" % self.id
-            )
-
     def change_severity(self, user="", delta=None, severity=None):
         """
         Change alarm severity
@@ -119,7 +106,6 @@ class ActiveAlarm(nosql.Document):
                 self.severity = severity.severity
                 self.log_message(
                     "%s has changed severity to %s" % (user, severity.name))
-        self._change_root_severity()
         self.save()
 
     def log_message(self, message, to_save=True):
@@ -313,8 +299,14 @@ class ActiveAlarm(nosql.Document):
         svc_list = SummaryItem.dict_to_items(services)
         sub_list = SummaryItem.dict_to_items(subscribers)
         if svc_list != self.total_services or sub_list != self.total_subscribers:
+            ns = ServiceSummary.get_severity({
+                "service": services,
+                "subscriber": subscribers
+            })
             self.total_services = svc_list
             self.total_subscribers = sub_list
+            if ns != self.severity:
+                self.change_severity(severity=ns)
             self.save()
 
     def set_root(self, root_alarm):
@@ -339,7 +331,6 @@ class ActiveAlarm(nosql.Document):
         # self.save()  Saved by log_message
         root_alarm.log_message(
             "Alarm %s has been marked as child" % self.id)
-        self._change_root_severity()
         # Clear pending notifications
         Notification.purge_delayed("alarm:%s" % self.id)
 

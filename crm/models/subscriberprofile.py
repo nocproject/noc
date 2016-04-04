@@ -10,7 +10,7 @@
 import operator
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ListField
+from mongoengine.fields import StringField, ListField, IntField
 import cachetools
 # NOC models
 from noc.lib.nosql import ForeignKeyField
@@ -28,6 +28,9 @@ class SubscriberProfile(Document):
     # FontAwesome glyph
     glyph = StringField()
     tags = ListField(StringField())
+    # Alarm weight
+    weight = IntField(default=0)
+
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
