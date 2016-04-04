@@ -10,7 +10,9 @@
 import operator
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField
+from mongoengine.fields import StringField, ReferenceField
+from noc.inv.models.interfaceprofile import InterfaceProfile
+
 import cachetools
 
 
@@ -24,6 +26,8 @@ class ServiceProfile(Document):
     card_title_template = StringField()
     # FontAwesome glyph
     glyph = StringField()
+    # Auto-assign interface profile when service binds to interface
+    interface_profile = ReferenceField(InterfaceProfile)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 

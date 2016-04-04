@@ -10,6 +10,7 @@
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
 from noc.inv.models.extnrilink import ExtNRILink
+from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.service import Service
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.etl.portmapper.loader import loader as portmapper_loader
@@ -93,18 +94,23 @@ class NRICheck(DiscoveryCheck):
         """
         Bind services to interfaces
         """
-        smap = dict(
-            (s["nri_port"], s["_id"])
-            for s in Service._get_collection().find({
+        slist = [
+            s for s in Service._get_collection().find({
                 "managed_object": self.object.id,
                 "nri_port": {
                     "$exists": True
                 }
             }, {
                 "_id": 1,
-                "nri_port": 1
-            }))
-
+                "nri_port": 1,
+                "profile": 1
+            })
+        ]
+        smap = dict((s["nri_port"], s["_id"]) for s in slist)
+        prof_map = dict(
+            (s["_id"], ServiceProfile.get_by_id(s["profile"]))
+             for s in slist
+        )
         nmap = {}
         bulk = Interface._get_collection().initialize_unordered_bulk_op()
         n = 0
@@ -127,10 +133,14 @@ class NRICheck(DiscoveryCheck):
                         "Binding service %s to interface %s",
                         svc, i["name"]
                     )
+                    op = {
+                        "service": svc
+                    }
+                    p = prof_map.get(svc)
+                    if p:
+                        op["profile"] = p.id
                     bulk.find({"_id": i["_id"]}).update({
-                        "$set": {
-                            "service": svc
-                        }
+                        "$set": op
                     })
                     n += 1
                 del smap[i["nri_name"]]
@@ -139,10 +149,15 @@ class NRICheck(DiscoveryCheck):
                     "Removing service %s from interface %s",
                     i["service"], i["name"]
                 )
+                op = {
+                    "service": ""
+                }
+                p = prof_map.get(i["service"])
+                if p:
+                    op["profile"] = ""
+
                 bulk.find({"_id": i["_id"]}).update({
-                    "$unset": {
-                        "service": ""
-                    }
+                    "$unset": op
                 })
                 n += 1
             nmap[i["nri_name"]] = i
@@ -160,10 +175,14 @@ class NRICheck(DiscoveryCheck):
                 "Binding service %s to interface %s",
                 svc, i["name"]
             )
+            op = {
+                "service": svc
+            }
+            p = prof_map.get(svc)
+            if p:
+                op["profile"] = p.id
             bulk.find({"_id": i["_id"]}).update({
-                "$set": {
-                    "service": svc
-                }
+                "$set": op
             })
             n += 1
         if n:
