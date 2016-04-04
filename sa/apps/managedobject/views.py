@@ -44,6 +44,7 @@ from noc.sa.models.action import Action
 from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
 from noc.lib.nosql import get_db
+from noc.core.defer import call_later
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -515,7 +516,10 @@ class ManagedObjectApplication(ExtModelApplication):
         o.is_managed = False
         o.description = "Wiping! Do not touch!"
         o.save()
-        submit_job("main.jobs", "sa.wipe_managed_object", key=o.id)
+        call_later(
+            "noc.sa.wipe.managedobject.wipe",
+            o=o.id
+        )
         return HttpResponse(status=self.DELETED)
 
     @view(url="^actions/run_discovery/$", method=["POST"],
