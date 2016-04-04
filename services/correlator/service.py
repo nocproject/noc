@@ -3,14 +3,13 @@
 ##----------------------------------------------------------------------
 ## noc-correlator daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012, The NOC Project
+## Copyright (C) 2007-2016, The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import sys
 import datetime
-import logging
 import re
 from collections import defaultdict
 ## NOC modules
@@ -76,7 +75,7 @@ class CorrelatorService(Service):
         """
         Load rules from database
         """
-        logging.debug("Loading rules")
+        self.logger.debug("Loading rules")
         self.rules = {}
         self.back_rules = {}
         nr = 0
@@ -96,16 +95,16 @@ class CorrelatorService(Service):
                                 self.back_rules[cc.id] = [dr]
                             nbr += 1
                 self.rules[c.id] = r
-        logging.debug("%d rules are loaded. %d combos" % (nr, nbr))
+        self.logger.debug("%d rules are loaded. %d combos" % (nr, nbr))
 
     def load_triggers(self):
-        logging.info("Loading triggers")
+        self.logger.info("Loading triggers")
         self.triggers = {}
         n = 0
         cn = 0
         ec = [(c.name, c.id) for c in AlarmClass.objects.all()]
         for t in AlarmTrigger.objects.filter(is_enabled=True):
-            logging.debug("Trigger '%s' for classes:" % t.name)
+            self.logger.debug("Trigger '%s' for classes:" % t.name)
             for c_name, c_id in ec:
                 if re.search(t.alarm_class_re, c_name, re.IGNORECASE):
                     try:
@@ -113,15 +112,15 @@ class CorrelatorService(Service):
                     except KeyError:
                         self.triggers[c_id] = [Trigger(t)]
                     cn += 1
-                    logging.debug("    %s" % c_name)
+                    self.logger.debug("    %s" % c_name)
             n += 1
-        logging.info("%d triggers has been loaded to %d classes" % (n, cn))
+        self.logger.info("%d triggers has been loaded to %d classes" % (n, cn))
 
     def load_rca_rules(self):
         """
         Load root cause analisys rules
         """
-        logging.info("Loading RCA Rules")
+        self.logger.info("Loading RCA Rules")
         n = 0
         self.rca_forward = {}
         self.rca_reverse = {}
@@ -136,27 +135,27 @@ class CorrelatorService(Service):
                     self.rca_reverse[rc.root.id] = []
                 self.rca_reverse[rc.root.id] += [rc]
                 n += 1
-        logging.info("%d RCA Rules have been loaded" % n)
+        self.logger.info("%d RCA Rules have been loaded" % n)
 
     def load_escalation_rules(self):
         """
         Load escalation rules
         """
-        logging.info("Loading escalations")
+        self.logger.info("Loading escalations")
         self.escalations = defaultdict(list)
         n = 0
         for ae in AlarmEscalation.objects.all():
             for ac in ae.alarm_classes:
                 self.escalations[ac.alarm_class.id] += [ae]
                 n += 1
-        logging.info("%d escalation rules have been loaded", n)
+        self.logger.info("%d escalation rules have been loaded", n)
 
     def load_alarm_jobs(self):
         """
         Load alarm jobs
         :return:
         """
-        logging.info("Loading alarm jobs")
+        self.logger.info("Loading alarm jobs")
         n = 0
         self.alarm_jobs = {}  # class id ->
         for ac in AlarmClass.objects.all():
@@ -164,21 +163,21 @@ class CorrelatorService(Service):
             jobs = get_alarm_jobs(ac)
             if not jobs:
                 continue
-            logging.debug("    <%s>: %s", ac.name, ", ".join(j.job for j in jobs))
+            self.logger.debug("    <%s>: %s", ac.name, ", ".join(j.job for j in jobs))
             self.alarm_jobs[ac.id] = [
                 JobLauncher(self.scheduler, j.job, j.interval, j.vars)
                 for j in jobs]
             n += len(jobs)
-        logging.debug("%d alarm jobs have been loaded" % n)
+        self.logger.debug("%d alarm jobs have been loaded" % n)
 
     def load_handlers(self):
-        logging.info("Loading handlers")
+        self.logger.info("Loading handlers")
         self.handlers = {}
         for ac in AlarmClass.objects.filter():
             handlers = get_alarm_class_handlers(ac)
             if not handlers:
                 continue
-            logging.debug("    <%s>: %s", ac.name, ", ".join(handlers))
+            self.logger.debug("    <%s>: %s", ac.name, ", ".join(handlers))
             hl = []
             for h in ac.handlers:
                 # Resolve handler
@@ -187,27 +186,26 @@ class CorrelatorService(Service):
                     hl += [hh]
             if hl:
                 self.handlers[ac.id] = hl
-        logging.info("Handlers are loaded")
+        self.logger.info("Handlers are loaded")
 
-    @classmethod
-    def resolve_handler(cls, h):
+    def resolve_handler(self, h):
         mn, s = h.rsplit(".", 1)
         try:
             m = __import__(mn, {}, {}, s)
         except ImportError:
-            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            self.logger.error("Failed to load handler '%s'. Ignoring" % h)
             return None
         try:
             return getattr(m, s)
         except AttributeError:
-            logging.error("Failed to load handler '%s'. Ignoring" % h)
+            self.logger.error("Failed to load handler '%s'. Ignoring" % h)
             return None
 
     def mark_as_failed(self, event):
         """
         Write error log and mark event as failed
         """
-        logging.error("Failed to process event %s" % str(event.id))
+        self.logger.error("Failed to process event %s" % str(event.id))
         # Prepare traceback
         t, v, tb = sys.exc_info()
         now = datetime.datetime.now()
@@ -231,7 +229,7 @@ class CorrelatorService(Service):
             root = ActiveAlarm.objects.filter(**q).first()
             if root:
                 # Root cause found
-                logging.debug("%s is root cause for %s (Rule: %s)",
+                self.logger.debug("%s is root cause for %s (Rule: %s)",
                     root.id, a.id, rc.name)
                 a.set_root(root)
                 return True
@@ -257,7 +255,7 @@ class CorrelatorService(Service):
                 rr = ActiveAlarm.objects.filter(**q).first()
                 if rr:
                     # Reverse root cause found
-                    logging.debug(
+                    self.logger.debug(
                         "%s is root cause for %s (Reverse rule: %s)",
                         a.id, ca.id, rc.name
                     )
@@ -268,10 +266,10 @@ class CorrelatorService(Service):
     def raise_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
-            logging.debug("Empty managed object, ignoring")
+            self.logger.debug("Empty managed object, ignoring")
             return
         if e.managed_object.id != managed_object.id:
-            logging.debug("Changing managed object to %s",
+            self.logger.debug("Changing managed object to %s",
                           managed_object.name)
         discriminator, vars = r.get_vars(e)
         if r.unique:
@@ -289,26 +287,30 @@ class CorrelatorService(Service):
                 ).first()
                 if a:
                     # Reopen alarm
-                    logging.debug("%s: Event %s(%s) reopens alarm %s(%s)" % (
+                    self.logger.debug("%s: Event %s(%s) reopens alarm %s(%s)" % (
                         r.u_name, str(e.id), e.event_class.name,
                         str(a.id), a.alarm_class.name))
                     a = a.reopen("Reopened by disposition rule '%s'" % r.u_name)
             if a:
                 # Active alarm found, refresh
-                logging.debug("%s: Contributing event %s(%s) to active alarm %s(%s)" % (
+                self.logger.debug("%s: Contributing event %s(%s) to active alarm %s(%s)" % (
                     r.u_name, str(e.id), e.event_class.name,
                     str(a.id), a.alarm_class.name))
                 a.contribute_event(e)
                 return
         # Calculate alarm coverage
         summary = ServiceSummary.get_object_summary(managed_object)
+        #
+        severity = ServiceSummary.get_severity(summary)
+        self.logger.debug("%s: Calculated alarm severity is: %s",
+                      r.u_name, severity)
         # Create new alarm
         a = ActiveAlarm(
             timestamp=e.timestamp,
             last_update=e.timestamp,
             managed_object=managed_object.id,
             alarm_class=r.alarm_class,
-            severity=max(ServiceSummary.get_severity(summary), 1),
+            severity=severity,
             vars=vars,
             discriminator=discriminator,
             direct_services=SummaryItem.dict_to_items(summary["service"]),
@@ -327,7 +329,7 @@ class CorrelatorService(Service):
         )
         a.save()
         a.contribute_event(e, open=True)
-        logging.debug("%s: Event %s (%s) raises alarm %s (%s): %r",
+        self.logger.debug("%s: Event %s (%s) raises alarm %s (%s): %r",
                       r.u_name, str(e.id), e.event_class.name,
                       str(a.id), r.alarm_class.name, a.vars)
         # RCA
@@ -355,7 +357,7 @@ class CorrelatorService(Service):
         if not a.severity:
             # Alarm severity has been reset to 0 by handlers
             # Silently drop alarm
-            logging.debug("Alarm severity is 0, dropping")
+            self.logger.debug("Alarm severity is 0, dropping")
             a.delete()
             return
         # Launch jobs when necessary
@@ -381,7 +383,7 @@ class CorrelatorService(Service):
     def clear_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
-            logging.debug("Empty managed object, ignoring")
+            self.logger.debug("Empty managed object, ignoring")
             return
         if r.unique:
             discriminator, vars = r.get_vars(e)
@@ -390,7 +392,7 @@ class CorrelatorService(Service):
                 managed_object=managed_object.id,
                 discriminator=discriminator).first()
             if a:
-                logging.debug("%s: Event %s(%s) clears alarm %s(%s)" % (
+                self.logger.debug("%s: Event %s(%s) clears alarm %s(%s)" % (
                     r.u_name, str(e.id), e.event_class.name,
                     str(a.id), a.alarm_class.name))
                 a.contribute_event(e, close=True)
