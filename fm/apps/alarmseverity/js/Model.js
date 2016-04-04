@@ -45,6 +45,10 @@ Ext.define("NOC.fm.alarmseverity.Model", {
             name: "row_class",
             type: "string",
             persist: false
+        },
+        {
+            name: "min_weight",
+            type: "int"
         }
     ]
 });

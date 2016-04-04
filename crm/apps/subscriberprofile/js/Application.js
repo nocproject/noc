@@ -76,6 +76,12 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                     uiStyle: "large"
                 },
                 {
+                    name: "weight",
+                    xtype: "numberfield",
+                    fieldLabel: "Alarm weight",
+                    allowBlank: true
+                },
+                {
                     name: "tags",
                     xtype: "tagsfield",
                     fieldLabel: "Tags",

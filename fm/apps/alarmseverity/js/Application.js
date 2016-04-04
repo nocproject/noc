@@ -63,6 +63,12 @@ Ext.define("NOC.fm.alarmseverity.Application", {
             allowBlank: false
         },
         {
+            name: "min_weight",
+            xtype: "numberfield",
+            fieldLabel: "Min. Weight",
+            allowBlank: false
+        },
+        {
             name: "style",
             xtype: "main.style.LookupField",
             fieldLabel: "Style",

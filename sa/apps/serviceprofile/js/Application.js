@@ -79,6 +79,12 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     xtype: "inv.interfaceprofile.LookupField",
                     fieldLabel: "Interface Profile",
                     allowBlank: true
+                },
+                {
+                    name: "weight",
+                    xtype: "numberfield",
+                    fieldLabel: "Alarm weight",
+                    allowBlank: true
                 }
             ]
         });

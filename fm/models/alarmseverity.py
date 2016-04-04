@@ -32,6 +32,8 @@ class AlarmSeverity(Document):
     description = StringField(required=False)
     severity = IntField(required=True)
     style = ForeignKeyField(Style)
+    # Minimal alarm weight to reach severity
+    min_weight = IntField(required=False)
 
     def __unicode__(self):
         return self.name
@@ -64,3 +66,34 @@ class AlarmSeverity(Document):
             "style__name": self.style.name
         }, order=["name", "$collection", "uuid",
                   "description", "severity", "style"])
+
+    @classmethod
+    def severity_for_weight(cls, w):
+        """
+        Calculate absolute severity for given weight *w*
+        :returns: severity as int
+        """
+        def find(weights, w):
+            i = 0
+            for i, mw in enumerate(weights):
+                if w < mw:
+                    return max(i - 1, 0)
+            return i
+
+        # Build caches
+        if not hasattr("_weights"):
+            cls._weights = []
+            cls._severities = []
+            cls._alpha = []
+            for i, s in enumerate(AlarmSeverity.objects.order_by("severity")):
+                cls._weights += [s.min_weight]
+                cls._severities = [s.severity]
+                if i:
+                    ds = float(cls._severities[i] - cls._severities[i - 1])
+                    dw = float(cls._weights[i] - cls._weights[i - 1])
+                    cls._alpha += [ds / dw]
+            if cls._alpha:
+                cls._alpha += [cls._alpha[-1]]
+        # Calculate severities
+        i = find(cls._weights, w)
+        return cls._severities[i] + int(cls._alpha[i] * (w - cls._weights[i]))

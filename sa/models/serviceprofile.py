@@ -10,7 +10,7 @@
 import operator
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ReferenceField
+from mongoengine.fields import StringField, ReferenceField, IntField
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.model.decorator import on_save
 from noc.core.defer import call_later
@@ -31,6 +31,8 @@ class ServiceProfile(Document):
     glyph = StringField()
     # Auto-assign interface profile when service binds to interface
     interface_profile = ReferenceField(InterfaceProfile)
+    # Alarm weight
+    weight = IntField(default=0)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
