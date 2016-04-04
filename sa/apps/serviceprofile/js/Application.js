@@ -10,7 +10,8 @@ Ext.define("NOC.sa.serviceprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sa.serviceprofile.Model",
-        "NOC.main.ref.glyph.LookupField"
+        "NOC.main.ref.glyph.LookupField",
+        "NOC.inv.interfaceprofile.LookupField"
     ],
     model: "NOC.sa.serviceprofile.Model",
     search: true,
@@ -72,6 +73,12 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     fieldLabel: "Icon",
                     allowBlank: true,
                     uiStyle: "large"
+                },
+                {
+                    name: "interface_profile",
+                    xtype: "inv.interfaceprofile.LookupField",
+                    fieldLabel: "Interface Profile",
+                    allowBlank: true
                 }
             ]
         });

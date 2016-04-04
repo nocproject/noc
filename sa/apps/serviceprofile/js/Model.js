@@ -30,6 +30,15 @@ Ext.define("NOC.sa.serviceprofile.Model", {
         {
             name: "glyph",
             type: "string"
+        },
+        {
+            name: "interface_profile",
+            type: "string"
+        },
+        {
+            name: "interface_profile__label",
+            type: "string",
+            persist: false
         }
     ]
 });
