@@ -85,13 +85,19 @@ class AlarmSeverity(Document):
             cls._weights = []
             cls._severities = []
             cls._alpha = []
+            lw = 0
             for i, s in enumerate(AlarmSeverity.objects.order_by("severity")):
-                cls._weights += [s.min_weight]
-                cls._severities = [s.severity]
+                cw = s.min_weight or lw
+                lw = w
+                cls._weights += [cw]
+                cls._severities += [s.severity]
                 if i:
                     ds = float(cls._severities[i] - cls._severities[i - 1])
                     dw = float(cls._weights[i] - cls._weights[i - 1])
-                    cls._alpha += [ds / dw]
+                    if dw:
+                        cls._alpha += [ds / dw]
+                    else:
+                        cls._alpha += [0]
             if cls._alpha:
                 cls._alpha += [cls._alpha[-1]]
         # Calculate severities
