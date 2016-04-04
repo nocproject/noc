@@ -253,12 +253,12 @@ class ServiceSummary(Document):
         for s in subscribers:
             sp = SubscriberProfile.get_by_id(s)
             if sp and sp.weight:
-                w += sp.weight
+                w += sp.weight * subscribers[s]
         services = summary.get("service")
         for s in services:
             sp = ServiceProfile.get_by_id(s)
             if sp and sp.weight:
-                w += sp.weight
+                w += sp.weight * services[s]
         return w
 
     @classmethod
