@@ -134,7 +134,7 @@ server {
 {% endif %}
 
     # Legacy django media
-    location /media/ {
+    location ^~ /media/ {
         alias {{ noc_root }}/django/contrib/admin/static/;
         gzip on;
         gzip_types text/css text/x-js;
@@ -162,9 +162,9 @@ server {
     }
 
     # Legacy JS mappings
-    location ~ ^([^/]+)/([^/]+)/(js|css|img)/(.+)$ {
-        root {{ noc_root }};
-        rewrite ^([^/]+)/([^/]+)/(js|css|img)/(.+)$
+    location ~  ^/([^/]+)/([^/]+)/(js|css|img)/(.+)$ {
+        root /opt/noc;
+        rewrite ^/([^/]+)/([^/]+)/(js|css|img)/(.+)$
                 /$1/apps/$2/$3/$4 break;
         gzip on;
         gzip_types text/css text/x-js;
