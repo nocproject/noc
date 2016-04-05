@@ -343,7 +343,11 @@ class ActiveAlarm(nosql.Document):
         self.escalation_tt = tt_id
         self.escalation_ts = datetime.datetime.now()
         self.log_message("Escalated to %s" % tt_id)
-        self.save()
+        self.save(save_condition={
+            "managed_object": {
+                "$exists": True
+            }
+        })
 
 ## Avoid circular references
 from archivedalarm import ArchivedAlarm
