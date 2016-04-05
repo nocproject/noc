@@ -61,13 +61,13 @@ class AlarmCard(BaseCard):
         # Service summary
         if self.object.root:
             service_summary = {
-                "service": SummaryItem.items_to_dict(self.object.direct_services),
-                "subscriber": SummaryItem.items_to_dict(self.object.direct_subscribers)
+                "service": self.object.total_services,
+                "subscriber": self.object.total_subscribers
             }
         else:
             service_summary = {
-                "service": self.object.total_services,
-                "subscriber": self.object.total_subscribers
+                "service": SummaryItem.items_to_dict(self.object.total_services),
+                "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers)
             }
         # Build result
         r = {
