@@ -3,7 +3,7 @@
     <tr>
         <th colspan="2" class="{{ {'C': 'success', 'A': 'danger'}[alarm.status] }}">
             Alarm: {{ subject }}
-            {{ alarm.service_summary | glyph_summary }}
+            {{ service_summary | glyph_summary }}
             <span style="float: right">
                 {{ duration }}({{ timestamp | timestamp}})
             </span>
@@ -73,6 +73,7 @@
                     <tr>
                         <th></th>
                         <th>Timestamp</th>
+                        <th>Services</th>
                         <th>Duration</th>
                         <th>Object</th>
                         <th>Class</th>
@@ -85,6 +86,8 @@
                         <td>{% if a.id == alarm.id %}<i class="fa fa-arrow-right"></i>{% endif %}</td>
                         <td> {{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * a._level) }}
                             <a href="/api/card/view/alarm/{{ a.id }}/">{{ a.timestamp | timestamp }}</a>
+                        </td>
+                        <td>
                             {{ a.service_summary | glyph_summary }}
                         </td>
                         <td>{{ a.display_duration }}</td>
@@ -101,22 +104,18 @@
     <tr>
         <th scope="row">Log</th>
         <td>
-            <table class="table table-condensed">
-                <thead>
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>Message</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for l in log %}
-                    <tr>
-                        <td>{{ l["timestamp"] | timestamp }}</td>
-                        <td>{{ l["message"] }}</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {% for l in log %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="pull-right">
+                            ({{ l["timestamp"] | timestamp }})
+                        </span>
+                    </div>
+                    <div class="panel-body" style="white-space: pre-line">
+                        {{ l["message"] | e }}
+                    </div>
+                </div>
+            {% endfor %}
         </td>
     </tr>
     {% endif %}
