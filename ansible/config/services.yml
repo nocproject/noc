@@ -132,11 +132,22 @@ config:
       type: str
       default: 0.0.0.0:514
 
+    buffer_size:
+      label: Message buffer size
+      type: int
+      default: 100000
+
+
   trapcollector:
     listen_traps:
       label: Listen SNNP Traps
       type: str
       default: 0.0.0.0:162
+
+    buffer_size:
+      label: Message buffer size
+      type: int
+      default: 100000
 
   sae:
     db_threads:
@@ -172,6 +183,11 @@ config:
       label: IP ToS mark
       type: int
       default: 0
+
+    buffer_size:
+      label: Message buffer size
+      type: int
+      default: 100000
 
   login:
     method:
