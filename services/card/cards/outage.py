@@ -107,4 +107,17 @@ class OutageCard(BaseCard):
             }
         # Calculate segment summaries
         update_summary(tree)
+        # Calculate total summaries
+        services = {}
+        subscribers = {}
+        for s in tree["segments"]:
+            update_dict(services, s["summary"]["service"])
+            update_dict(subscribers, s["summary"]["subscriber"])
+        for o in tree["objects"]:
+            update_dict(services, o["summary"]["service"])
+            update_dict(subscribers, o["summary"]["subscriber"])
+        tree["summary"] = {
+            "subscriber": subscribers,
+            "service": services
+        }
         return tree
