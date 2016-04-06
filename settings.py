@@ -165,6 +165,7 @@ INSTALLED_APPS = [
     "noc.dns",
     "noc.peer",
     "noc.kb",
+    "noc.maintainance",
     "noc.support"
 ]
 # Populate list of locally-installed apps
