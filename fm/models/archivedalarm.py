@@ -27,7 +27,8 @@ class ArchivedAlarm(nosql.Document):
             "root",
             "control_time",
             "timestamp",
-            "managed_object"
+            "managed_object",
+            "escalation_tt"
         ]
     }
     status = "C"
