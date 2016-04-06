@@ -70,10 +70,10 @@ class BoxDiscoveryJob(MODiscoveryJob):
         )
 
     def get_interval(self):
-        return self.object.object_profile.box_discovery_failed_interval
+        return self.object.object_profile.box_discovery_interval
 
     def get_failed_interval(self):
-        return self.object.object_profile.box_discovery_interval
+        return self.object.object_profile.box_discovery_failed_interval
 
     def is_preferable_method(self, m1, m2):
         """
