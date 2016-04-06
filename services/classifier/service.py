@@ -721,9 +721,11 @@ class ClassifierService(Service):
         Producer generating unclassified events
         """
         q = NewEvent.seq_range(self.config.pool)
-        if self.config.numprocs > 1:
-            q["managed_object__mod"] = [self.config.numprocs,
-                                        self.config.instance]
+        if self.config.global_n_instances > 1:
+            q["managed_object__mod"] = [
+                self.config.global_n_instances,
+                self.config.self.config.instance + self.config.global_offset
+            ]
         while True:
             n = 0
             try:
