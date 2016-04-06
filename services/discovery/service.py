@@ -41,10 +41,13 @@ class DiscoveryService(Service):
             self.ioloop
         )
         self.send_callback.start()
-        if self.config.numprocs > 1:
+        if self.config.global_n_instances > 1:
             ifilter = {
                 "key": {
-                    "$mod": [self.config.numprocs, self.config.instance]
+                    "$mod": [
+                        self.config.global_n_instances,
+                        self.config.instance + self.config.global_offset
+                    ]
                 }
             }
         else:
