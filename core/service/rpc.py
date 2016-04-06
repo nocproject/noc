@@ -30,6 +30,8 @@ class RPCProxy(object):
     """
     API Proxy
     """
+    RPCError = RPCError
+
     def __init__(self, service, service_name):
         self._logger = PrefixLoggerAdapter(logger, service_name)
         self._service = service
