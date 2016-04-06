@@ -1,0 +1,53 @@
+<table class="table table-condensed table-hover">
+    <thead>
+        <tr>
+            <th colspan="5">
+                Outages Summary
+            </th>
+        </tr>
+        <tr>
+            <th class="col-sm-4">Object</th>
+            <th class="col-sm-2">Start</th>
+            <th class="col-sm-2">Duration</th>
+            <th class="col-sm-2">TT</th>
+            <th class="col-sm-2">Services</th>
+        <tr>
+    </thead>
+{% for segment in segments recursive%}
+    {% set level = loop.depth0 %}
+    <tr>
+        <td colspan="5" class="col-sm-12">
+            {{ "&nbsp;&nbsp;&nbsp;&nbsp;" * level }}
+            <i class="fa fa-angle-right"></i>
+            {{ segment["segment"].name }}
+            {{ segment["summary"] | glyph_summary }}
+        </td>
+    </tr>
+    {{ loop(segment["segments"]) }}
+    {% for object in segment["objects"] %}
+        <tr>
+            <td class="col-sm-4">
+                {{ "&nbsp;&nbsp;&nbsp;&nbsp;" * (level + 1) }}
+                <a href="/api/card/view/alarm/{{ object["alarm"].id }}/">
+                    {{ object["object"].name }}
+                </a>
+            </td>
+            <td class="col-sm-2">
+                {{ object["timestamp"] | timestamp }}
+            </td>
+            <td class="col-sm-2">
+                {{ object["duration"] }}
+            </td>
+            <td class="col-sm-2">
+                {% if object["escalation_tt"] %}
+                    <a href="/api/card/view/tt/{{ object["escalation_tt"] }}/">
+                        {{ object["escalation_tt"] }}
+                    </a>
+                {% endif %}
+            </td>
+            <td class="col-sm-2">
+                {{ object["summary"] | glyph_summary }}
+            </td>
+        </tr>
+    {% endfor %}
+{% endfor %}
