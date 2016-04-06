@@ -29,7 +29,8 @@ class ActiveAlarm(nosql.Document):
         "indexes": [
             "timestamp", "discriminator", "root", "-severity",
             "alarm_class",
-            ("timestamp", "managed_object")
+            ("timestamp", "managed_object"),
+            "escalation_tt"
         ]
     }
     status = "A"

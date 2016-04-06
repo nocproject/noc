@@ -20,6 +20,33 @@
             </span>
         </td>
     </tr>
+    {% if alarms %}
+    <tr>
+        <th scope="row">Alarms</th>
+        <td>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Duration</th>
+                        <th>Object</th>
+                        <th>Subject</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in alarms %}
+                    <tr>
+                        <td><a href="/api/card/view/alarm/{{ a["id"] }}/">{{ a["timestamp"] | timestamp}}</a></td>
+                        <td><a href="/api/card/view/managedobject/{{ a["alarm"].managed_object.id }}/">{{ a["alarm"].managed_object.name }}</a></td>
+                        <td>{{ a["duration"] }}</td>
+                        <td>{{ a["subject"] }}</td>
+                    </td>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <td>
+    {% endif %}
     {% if pre_reason %}
     <tr>
         <th scope="row">Pre Reason</th>

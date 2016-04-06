@@ -13,6 +13,8 @@ import cachetools
 ## NOC modules
 from base import BaseCard
 from noc.fm.models.ttsystem import TTSystem
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.archivedalarm import ArchivedAlarm
 
 
 class TTCard(BaseCard):
@@ -45,4 +47,19 @@ class TTCard(BaseCard):
             r["duration"] = r["close_ts"] - r["open_ts"]
         else:
             r["duration"] = datetime.datetime.now() - r["open_ts"]
+        r["alarms"] = []
+        now = datetime.datetime.now()
+        for ac in (ActiveAlarm, ArchivedAlarm):
+            for a in ac.objects.filter(escalation_tt=r["full_id"]):
+                if a.status == "C":
+                    duration = a.clear_timestamp - a.timestamp
+                else:
+                    duration = now - a.timestamp
+                r["alarms"] += [{
+                    "alarm": a,
+                    "id": a.id,
+                    "timestamp": a.timestamp,
+                    "duration": duration,
+                    "subject": a.subject
+                }]
         return r
