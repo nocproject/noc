@@ -19,6 +19,30 @@
         </span>
     </th>
 </tr>
+{% if errors %}
+<tr>
+    <td colspan="2" class="alert alert-danger">
+        <ul>
+            {% for e in errors %}
+                <li>{{ e }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+{% endif %}
+<tr>
+</tr>
+{% if warnings %}
+<tr>
+    <td colspan="2" class="alert alert-warning">
+        <ul>
+            {% for e in warnings %}
+                <li>{{ e }}</li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+{% endif %}
 <tr>
     <th scope="row" class="col-sm-1">Services</th>
     <td>
