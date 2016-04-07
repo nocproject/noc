@@ -69,12 +69,6 @@ class Script(BaseScript):
         }
         self.ifindexes = {}
 
-    def get_oid(self, m):
-        if m in self.SNMP_OIDS:
-            return self.SNMP_OIDS[m]
-        else:
-            return None
-
     def execute(self, metrics, hints=None):
         # Populate ifindexes
         hints = hints or {}
@@ -98,13 +92,12 @@ class Script(BaseScript):
         for m in metrics:
             batch = {}
             # Calculate oids
-            oid = self.get_oid(m)
-            if oid:
+            if m in self.SNMP_OIDS:
                 if metrics[m]["scope"] == "i":
                     for i in metrics[m]["interfaces"]:
                         ifindex = self.get_ifindex(i)
                         if ifindex:
-                            oid, vtype, scale = self.resolve_oid(oid, ifindex)
+                            oid, vtype, scale = self.resolve_oid(self.SNMP_OIDS[m], ifindex)
                             if oid:
                                 batch[oid] = {
                                     "name": m,

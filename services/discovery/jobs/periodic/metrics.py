@@ -9,6 +9,7 @@
 ## Python modules
 import threading
 import datetime
+from collections import defaultdict
 ## Third-party modules
 import cachetools
 ## NOC modules
@@ -94,7 +95,7 @@ class MetricsCheck(DiscoveryCheck):
         # <metric type name> -> {interfaces: [....], scope}
         metrics = {}
         # <metric type name> -> <interface name> -> thresholds
-        i_thresholds = {}
+        i_thresholds = defaultdict(dict)
         for i in Interface._get_collection().find({
             "managed_object": self.object.id,
             "type": "physical"
@@ -117,7 +118,7 @@ class MetricsCheck(DiscoveryCheck):
                         "interfaces": [i["name"]],
                         "scope": "i"
                     }
-                i_thresholds[metric][i["name"]] = ipr["metric"]
+                i_thresholds[metric][i["name"]] = ipr[metric]
         # Collect metrics
         self.logger.debug("Collecting metrics: %s hints: %s",
                           metrics, hints)
@@ -204,7 +205,7 @@ class MetricsCheck(DiscoveryCheck):
         if oot_level == self.S_OK and alarm:
             # Clear alarm
             self.logger.info("Metrics are OK. Clearing alarm %s", alarm.id)
-            alarm.clear("All metrics are back in thresholds range")
+            alarm.clear_alarm("All metrics are back in thresholds range")
         elif oot_level != self.S_OK and not alarm:
             # Raise alarm
             alarm = ActiveAlarm(
