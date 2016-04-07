@@ -29,7 +29,5 @@ class IGetMetrics(Interface):
             choices=["gauge", "counter"]
         ),
         #
-        "scale": FloatParameter(default=1),
-        #
-        "thresholds": ListParameter(required=False)
+        "scale": FloatParameter(default=1)
     })
