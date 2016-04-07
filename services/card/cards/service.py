@@ -29,6 +29,8 @@ class ServiceCard(BaseCard):
         managed_object = interface.managed_object if interface else None
         managed_obect_status = None
         alarms = []
+        errors = []
+        warnings = []
         if managed_object:
             alarms = list(ActiveAlarm.objects.filter(managed_object=managed_object.id))
             if managed_object.get_status():
@@ -38,7 +40,12 @@ class ServiceCard(BaseCard):
                     managed_obect_status = "up"
             else:
                 managed_obect_status = "down"
+                errors += ["Object is down"]
             interface.speed = max([interface.in_speed or 0, interface.out_speed or 0]) / 1000
+            if not interface.full_duplex:
+                errors += ["Half-Duplex"]
+            # @todo: pending maintainance
+        # Build warnings
         # Build result
         r = {
             "id": self.object.id,
@@ -48,7 +55,9 @@ class ServiceCard(BaseCard):
             "interface": interface,
             "managed_object": managed_object,
             "managed_object_status": managed_obect_status,
-            "alarms": alarms
+            "alarms": alarms,
+            "errors": errors,
+            "warnings": warnings
         }
         return r
 
