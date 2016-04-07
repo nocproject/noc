@@ -27,6 +27,8 @@ class Capability(Document):
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
     type = StringField(choices=["bool", "str", "int", "float"])
+    # Jinja2 template for managed object's card tags
+    card_template = StringField(required=False)
     category = ObjectIdField()
 
     def __unicode__(self):
@@ -39,14 +41,16 @@ class Capability(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
-            "type": self.type
+            "type": self.type,
+            "card_template": self.card_template
         }
         return r
 
     def to_json(self):
         return to_json(self.json_data,
                        order=["name", "$collection",
-                              "uuid", "description", "type"])
+                              "uuid", "description", "type",
+                              "card_template"])
 
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]

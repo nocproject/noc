@@ -36,6 +36,10 @@ Ext.define("NOC.inv.capability.Model", {
         {
             name: "type",
             type: "string"
+        },
+        {
+            name: "card_template",
+            type: "string"
         }
     ]
 });

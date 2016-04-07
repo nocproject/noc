@@ -73,6 +73,12 @@ Ext.define("NOC.inv.capability.Application", {
                         ["int", "Integer"],
                         ["float", "Float"]
                     ]
+                },
+                {
+                    name: "card_template",
+                    xtype: "textfield",
+                    fieldLabel: "Card Template",
+                    allowBlank: false
                 }
             ],
 
