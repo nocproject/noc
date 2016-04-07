@@ -25,6 +25,8 @@ MAX64 = 0xFFFFFFFFFFFFFFFFL
 
 NS = 1000000000.0
 
+DEFAULT_THRESHOLDS = [None, None, None, None]
+
 
 def get_interface_profile_metrics(p_id):
     with interface_profile_metrics_lock:
@@ -89,7 +91,10 @@ class MetricsCheck(DiscoveryCheck):
         hints = {
             "ifindexes": {}
         }
+        # <metric type name> -> {interfaces: [....], scope}
         metrics = {}
+        # <metric type name> -> <interface name> -> thresholds
+        i_thresholds = {}
         for i in Interface._get_collection().find({
             "managed_object": self.object.id,
             "type": "physical"
@@ -99,6 +104,7 @@ class MetricsCheck(DiscoveryCheck):
             "profile": 1
         }):
             ipr = self.interface_profile_metrics_cache[i["profile"]]
+            self.logger.debug("Interface %s. ipr=%s", i["name"], ipr)
             if not ipr:
                 continue
             if "ifindex" in i:
@@ -109,9 +115,9 @@ class MetricsCheck(DiscoveryCheck):
                 else:
                     metrics[metric] = {
                         "interfaces": [i["name"]],
-                        "scope": "i",
-                        "thresholds": ipr[metric]
+                        "scope": "i"
                     }
+                i_thresholds[metric][i["name"]] = ipr["metric"]
         # Collect metrics
         self.logger.debug("Collecting metrics: %s hints: %s",
                           metrics, hints)
@@ -171,7 +177,17 @@ class MetricsCheck(DiscoveryCheck):
         oot = []
         oot_level = self.S_OK
         for m in result:
-            v = self.check_thresholds(m)
+            thresholds = i_thresholds.get(
+                m["name"], {}
+            ).get(
+                m["tags"].get("interface"), DEFAULT_THRESHOLDS
+            )
+            v = self.check_thresholds(m, thresholds)
+            self.logger.debug(
+                "Checking thresholds. %s@%s %s. Result: %s",
+                m["name"], m["tags"].get("interface"), thresholds,
+                self.SMAP[v]
+            )
             if v != self.S_OK:
                 oot_level = max(oot_level, v)
                 oot += [{
@@ -255,9 +271,9 @@ class MetricsCheck(DiscoveryCheck):
             return (float(new_value) - float(old_value)) / dt
 
     @classmethod
-    def check_thresholds(cls, v):
+    def check_thresholds(cls, v, thresholds):
         value = v["value"]
-        low_error, low_warn, high_warn, high_error = v["thresholds"]
+        low_error, low_warn, high_warn, high_error = thresholds
         if low_error is not None and value < low_error:
             return cls.S_ERROR
         if low_warn is not None and value < low_warn:

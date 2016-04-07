@@ -55,7 +55,7 @@ class Script(BaseScript):
         "Interface | Packets | Out": [
             ("SNMP | IF-MIB | HC", "IF-MIB::ifHCOutUcastPkts", "counter", 1),
             ("SNMP | IF-MIB", "IF-MIB::ifOutUcastPkts", "counter", 1)
-        ],
+        ]
     }
 
     GAUGE = "gauge"
@@ -68,6 +68,12 @@ class Script(BaseScript):
             "object": self.credentials.get("name")
         }
         self.ifindexes = {}
+
+    def get_oid(self, m):
+        if m in self.SNMP_OIDS:
+            return self.SNMP_OIDS[m]
+        else:
+            return None
 
     def execute(self, metrics, hints=None):
         # Populate ifindexes
@@ -91,13 +97,14 @@ class Script(BaseScript):
         """
         for m in metrics:
             batch = {}
-            # Calucate iods
-            if m in self.SNMP_OIDS:
+            # Calculate oids
+            oid = self.get_oid(m)
+            if oid:
                 if metrics[m]["scope"] == "i":
                     for i in metrics[m]["interfaces"]:
                         ifindex = self.get_ifindex(i)
                         if ifindex:
-                            oid, vtype, scale = self.resolve_oid(self.SNMP_OIDS[m], ifindex)
+                            oid, vtype, scale = self.resolve_oid(oid, ifindex)
                             if oid:
                                 batch[oid] = {
                                     "name": m,
@@ -105,8 +112,7 @@ class Script(BaseScript):
                                         "interface": i
                                     },
                                     "type": vtype,
-                                    "scale": scale,
-                                    "thresholds": metrics[m]["thresholds"]
+                                    "scale": scale
                                 }
                 else:
                     pass  # @todo: Spool object's metrics
@@ -130,8 +136,7 @@ class Script(BaseScript):
                             ts=ts,
                             tags=batch[oid]["tags"],
                             type=batch[oid]["type"],
-                            scale=batch[oid]["scale"],
-                            thresholds=batch[oid]["thresholds"]
+                            scale=batch[oid]["scale"]
                         )
 
     def resolve_oid(self, chain, ifindex=None):
@@ -156,7 +161,7 @@ class Script(BaseScript):
         """
         return int(time.time() * NS)
 
-    def set_metric(self, name, value, ts=None, tags=None, type="gauge", scale=1, thresholds=None):
+    def set_metric(self, name, value, ts=None, tags=None, type="gauge", scale=1):
         """
         Append metric to output
         """
@@ -169,8 +174,7 @@ class Script(BaseScript):
             "value": value,
             "tags": tags,
             "type": type,
-            "scale": scale,
-            "thresholds": thresholds or [None, None, None, None]
+            "scale": scale
         }]
 
     def get_metrics(self):
