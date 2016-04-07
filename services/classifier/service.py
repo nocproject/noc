@@ -724,7 +724,7 @@ class ClassifierService(Service):
         if self.config.global_n_instances > 1:
             q["managed_object__mod"] = [
                 self.config.global_n_instances,
-                self.config.self.config.instance + self.config.global_offset
+                self.config.instance + self.config.global_offset
             ]
         while True:
             n = 0
