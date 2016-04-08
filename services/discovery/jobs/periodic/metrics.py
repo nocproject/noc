@@ -161,10 +161,11 @@ class MetricsCheck(DiscoveryCheck):
                     "[%s] Measured value: %s. Scale: %s. Resuling value: %s",
                     key, m["value"], m["scale"], m["value"] * m["scale"]
                 )
+                m["abs_value"] = m["value"] * m["scale"]
                 batch += [
                     "%s value=%s %s" % (
                         key,
-                        m["value"] * m["scale"],
+                        m["abs_value"],
                         m["ts"]
                     )
                 ]
@@ -174,20 +175,25 @@ class MetricsCheck(DiscoveryCheck):
             self.job.scheduler.service.register_metrics("\n".join(batch))
         else:
             self.logger.debug("No metrics to spool")
+            return
         # Calculate max triggered threshold level
         oot = []
         oot_level = self.S_OK
         for m in result:
+            if "abs_value" not in m:
+                continue
             thresholds = i_thresholds.get(
                 m["name"], {}
             ).get(
                 m["tags"].get("interface"), DEFAULT_THRESHOLDS
             )
+            if thresholds == DEFAULT_THRESHOLDS:
+                continue
             v = self.check_thresholds(m, thresholds)
             self.logger.debug(
-                "Checking thresholds. %s@%s %s. Result: %s",
+                "Checking thresholds for %s@%s %s. measure=%s Result: %s",
                 m["name"], m["tags"].get("interface"), thresholds,
-                self.SMAP[v]
+                m["abs_value"], self.SMAP[v]
             )
             if v != self.S_OK:
                 oot_level = max(oot_level, v)
@@ -273,7 +279,7 @@ class MetricsCheck(DiscoveryCheck):
 
     @classmethod
     def check_thresholds(cls, v, thresholds):
-        value = v["value"]
+        value = v["abs_value"]
         low_error, low_warn, high_warn, high_error = thresholds
         if low_error is not None and value < low_error:
             return cls.S_ERROR
