@@ -12,7 +12,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.sa.managedobjectprofile.Model",
         "NOC.main.style.LookupField",
         "NOC.main.ref.stencil.LookupField",
-        "Ext.ux.form.MultiIntervalField"
+        "Ext.ux.form.MultiIntervalField",
+        "NOC.pm.metrictype.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -444,6 +445,65 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: "Metrics"
                                         }
                                     ]
+                                }
+                            ]
+                        },
+                        {
+                            title: "Metrics",
+                            items: [
+                                {
+                                    name: "metrics",
+                                    xtype: "gridfield",
+                                    fieldLabel: "Metrics",
+                                    columns: [
+                                        {
+                                            text: "Metric Type",
+                                            dataIndex: "metric_type",
+                                            width: 150,
+                                            editor: "pm.metrictype.LookupField",
+                                            renderer: NOC.render.Lookup("metric_type")
+                                        },
+                                        {
+                                            text: "Active",
+                                            dataIndex: "is_active",
+                                            width: 50,
+                                            renderer: NOC.render.Bool,
+                                            editor: "checkbox"
+                                        },
+                                        {
+                                            text: "Low Error",
+                                            dataIndex: "low_error",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: "Low Warn",
+                                            dataIndex: "low_warn",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: "High Warn",
+                                            dataIndex: "high_warn",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: "High Error",
+                                            dataIndex: "high_error",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        }
+                                    ]
+
                                 }
                             ]
                         }

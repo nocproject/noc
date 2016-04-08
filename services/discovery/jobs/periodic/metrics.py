@@ -18,6 +18,7 @@ from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
+from noc.pm.models.metrictype import MetricType
 
 
 MAX31 = 0x7FFFFFFFL
@@ -96,6 +97,27 @@ class MetricsCheck(DiscoveryCheck):
         metrics = {}
         # <metric type name> -> <interface name> -> thresholds
         i_thresholds = defaultdict(dict)
+        # <metric type name> -> thresholds
+        o_thresholds = defaultdict(dict)
+        # Get objects metrics
+        o_metrics = self.object.object_profile.metrics or []
+        for m in o_metrics:
+            mt_id = m.get("metric_type")
+            if not mt_id:
+                continue
+            mt = MetricType.get_by_id(mt_id)
+            if not mt:
+                continue
+            metrics[mt.name] = {
+                "scope": "o"
+            }
+            o_thresholds[mt.name] = [
+                m.get("low_error"),
+                m.get("low_warn"),
+                m.get("high_error"),
+                m.get("high_warn")
+            ]
+        # Get interface metrics
         for i in Interface._get_collection().find({
             "managed_object": self.object.id,
             "type": "physical"
@@ -182,11 +204,14 @@ class MetricsCheck(DiscoveryCheck):
         for m in result:
             if "abs_value" not in m:
                 continue
-            thresholds = i_thresholds.get(
-                m["name"], {}
-            ).get(
-                m["tags"].get("interface"), DEFAULT_THRESHOLDS
-            )
+            if m["name"] in o_thresholds:
+                thresholds = o_thresholds[m["name"]]
+            else:
+                thresholds = i_thresholds.get(
+                    m["name"], {}
+                ).get(
+                    m["tags"].get("interface"), DEFAULT_THRESHOLDS
+                )
             if thresholds == DEFAULT_THRESHOLDS:
                 continue
             v = self.check_thresholds(m, thresholds)
