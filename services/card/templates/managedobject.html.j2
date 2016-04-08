@@ -175,8 +175,8 @@
             <tr>
                 <td>{{ i["name"] }}</td>
                 <td{% if not i["oper_status"] %} class="danger"{% endif %}>
-                    {{ {True: "<i class='text-success fa fa-circle' title='Admin Up'></i>", False: "<i class='text-danger fa fa-circle-o' title='Admin Down'></i>"}[i["admin_status"]] }}/
-                    {{ {True: "<i class='text-success fa fa-circle' title='Oper Up'></i>", False: "<i class='text-danger fa fa-circle-o' title='Oper Down'></i>"}[i["oper_status"]] }}
+                    {{ {True: "<i class='text-success fa fa-circle' title='Admin Up'></i>", False: "<i class='text-danger fa fa-circle' title='Admin Down'></i>"}[i["admin_status"]] }}&nbsp;
+                    {{ {True: "<i class='text-success fa fa-circle' title='Oper Up'></i>", False: "<i class='text-danger fa fa-circle' title='Oper Down'></i>"}[i["oper_status"]] }}
                 </td>
                 <td{% if not i["full_duplex"]%} class="danger"{% endif %}>
                     {% if i["oper_status"] %}
