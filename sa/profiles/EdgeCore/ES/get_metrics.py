@@ -14,6 +14,10 @@ class Script(GetMetricsScript):
 
     SNMP_OIDS = GetMetricsScript.merge_oids({
         "CPU | Usage": [
-            ("SNMP", "1.3.6.1.4.1.259.8.1.3.100.1.11.5.0", "gauge", lambda x: 100 - x)
+            ("SNMP", ".1.3.6.1.4.1.259.6.10.94.1.39.2.1", "gauge", 1)
+        ],
+        "Memory | Usage": [
+            ("SNMP", ".1.3.6.1.4.1.259.6.10.94.1.39.3.2", "gauge", 1)
         ]
+
     })
