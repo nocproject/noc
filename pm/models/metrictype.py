@@ -2,16 +2,18 @@
 ##----------------------------------------------------------------------
 ## MetricType model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import os
+import operator
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField,
                                 UUIDField, ObjectIdField)
+import cachetools
 ## NOC Modules
 from noc.inv.models.capability import Capability
 from noc.main.models.doccategory import category
@@ -46,6 +48,8 @@ class MetricType(Document):
     #
     category = ObjectIdField()
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
 
@@ -73,3 +77,8 @@ class MetricType(Document):
     def get_json_path(self):
         p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
         return os.path.join(*p) + ".json"
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    def get_by_id(cls, id):
+        return MetricType.objects.filter(id=id).first()

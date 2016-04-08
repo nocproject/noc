@@ -16,7 +16,7 @@ from django.template import Template, Context
 from noc.main.models.style import Style
 from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
-from noc.core.model.fields import TagsField
+from noc.core.model.fields import TagsField, PickledField
 from noc.core.model.decorator import on_save, on_init
 from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job
@@ -148,6 +148,9 @@ class ManagedObjectProfile(models.Model):
     enable_periodic_discovery_metrics = models.BooleanField(default=False)
     # Collect ARP cache
     # enable_periodic_discovery_ip = models.BooleanField(default=False)
+    #
+    metrics = PickledField()
+    #
     tags = TagsField("Tags", null=True, blank=True)
 
     def __unicode__(self):
