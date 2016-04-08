@@ -515,8 +515,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         if lrpolicy == "O" or rrpolicy == "O":
             self.logger.info(
                 "Not linking: %s:%s -- %s:%s. "
-                "Blocked by 'Create new' policy on existing link"
-                "'Ignore' interface discovery policy set",
+                "Blocked by 'Create new' policy on existing link",
                 local_object.name, local_interface,
                 remote_object.name, remote_interface
             )
