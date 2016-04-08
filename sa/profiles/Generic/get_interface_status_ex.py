@@ -53,9 +53,9 @@ class Script(BaseScript):
                 "interface": v
             }
         # Apply ifAdminStatus
-        self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: str(x) == "1")
+        self.apply_table(r, "IF-MIB::ifAdminStatus", "admin_status", lambda x: x == 1)
         # Apply ifOperStatus
-        self.apply_table(r, "IF-MIB::ifOperStatus", "oper_status", lambda x: str(x) == "1")
+        self.apply_table(r, "IF-MIB::ifOperStatus", "oper_status", lambda x: x == 1)
         # Apply ifSpeed
         s_table = self.get_iftable("IF-MIB::ifSpeed")
         highspeed = set()
