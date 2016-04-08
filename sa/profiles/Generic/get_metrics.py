@@ -27,6 +27,10 @@ class Script(BaseScript):
 
     # Dict of
     # metric type -> list of (capability, oid, type, scale)
+    # To override use
+    # SNMP_OIDS = BaseScript.merge_oids({
+    # ...
+    # })
     SNMP_OIDS = {
         "Interface | Load | In": [
             ("SNMP | IF-MIB | HC", "IF-MIB::ifHCInOctets", "counter", 8),
@@ -161,6 +165,9 @@ class Script(BaseScript):
         tags = tags or {}
         tags = tags.copy()
         tags.update(self.tags)
+        if callable(scale):
+            value = scale(value)
+            scale = 1
         self.metrics += [{
             "ts": ts or self.get_ts(),
             "name": name,
@@ -172,3 +179,12 @@ class Script(BaseScript):
 
     def get_metrics(self):
         return self.metrics
+
+    @classmethod
+    def merge_oids(cls, oids):
+        """
+        Build summary oids for SNMP_OIDS
+        """
+        r = Script.SNMP_OIDS.copy()
+        r.update(oids)
+        return r
