@@ -93,11 +93,12 @@ class Script(BaseScript):
         """
         Collect all collectable SNMP metrics
         """
+        batch = {}
         for m in metrics:
-            batch = {}
             # Calculate oids
             if m in self.SNMP_OIDS:
                 if metrics[m]["scope"] == "i":
+                    # Apply interface metrics
                     for i in metrics[m]["interfaces"]:
                         ifindex = self.get_ifindex(i)
                         if ifindex:
@@ -112,29 +113,71 @@ class Script(BaseScript):
                                     "scale": scale
                                 }
                 else:
-                    pass  # @todo: Spool object's metrics
-            # Run snmp batch
-            if batch:
-                # @todo: Switch to bulk ops when necessary
-                for oid in batch:
-                    ts = self.get_ts()
+                    # Apply object metric
+                    oid, vtype, scale = self.resolve_oid(self.SNMP_OIDS[m])
+                    if oid:
+                        batch[oid] = {
+                            "name": m,
+                            "tags": {},
+                            "type": vtype,
+                            "scale": scale
+                        }
+        # Run snmp batch
+        if batch:
+            # @todo: Switch to bulk ops when necessary
+            for oid in batch:
+                ts = self.get_ts()
+                if isinstance(oid, basestring):
+                    # Single oid
                     try:
                         v = self.snmp.get(oid)
+                        if v is None:
+                            continue
                     except self.snmp.TimeOutError as e:
                         self.logger.error(
                             "Failed to get SNMP OID %s: %s",
                             oid, e
                         )
-                        v = None
-                    if v is not None:
-                        self.set_metric(
-                            name=batch[oid]["name"],
-                            value=v,
-                            ts=ts,
-                            tags=batch[oid]["tags"],
-                            type=batch[oid]["type"],
-                            scale=batch[oid]["scale"]
+                        continue
+                elif callable(batch[oid]["scale"]):
+                    # Multiple oids and calculated value
+                    v = []
+                    for o in oid:
+                        try:
+                            vv = self.snmp.get(oid)
+                            v += [vv]
+                            if vv is None:
+                                break
+                        except self.snmp.TimeOutError as e:
+                            self.logger.error(
+                                "Failed to get SNMP OID %s: %s",
+                                o, e
+                            )
+                            v += [None]
+                            break
+                    # Check result does not contain None
+                    if any(1 for vv in v if vv is None):
+                        self.logger.error(
+                            "Cannot calculate complex value for %s "
+                            "due to missed values: %s",
+                            oid, v
                         )
+                        continue
+                else:
+                    self.logger.error(
+                        "Cannot evaluate complex oid %s. "
+                        "Scale must be callable",
+                        oid
+                    )
+                    continue
+                self.set_metric(
+                    name=batch[oid]["name"],
+                    value=v,
+                    ts=ts,
+                    tags=batch[oid]["tags"],
+                    type=batch[oid]["type"],
+                    scale=batch[oid]["scale"]
+                )
 
     def resolve_oid(self, chain, ifindex=None):
         """
@@ -158,7 +201,8 @@ class Script(BaseScript):
         """
         return int(time.time() * NS)
 
-    def set_metric(self, name, value, ts=None, tags=None, type="gauge", scale=1):
+    def set_metric(self, name, value, ts=None, tags=None,
+                   type="gauge", scale=1):
         """
         Append metric to output
         """
@@ -166,7 +210,9 @@ class Script(BaseScript):
         tags = tags.copy()
         tags.update(self.tags)
         if callable(scale):
-            value = scale(value)
+            if not isinstance(value, list):
+                value = [value]
+            value = scale(*value)
             scale = 1
         self.metrics += [{
             "ts": ts or self.get_ts(),
