@@ -78,7 +78,7 @@ class NRICheck(DiscoveryCheck):
             if not nri_name:
                 self.logger.info(
                     "Cannot map interface name '%s' to NRI '%s' (%s)",
-                    i["name"], self.object.platform
+                    i["name"], self.nri, self.object.platform
                 )
                 continue
             self.logger.info("Mapping %s to %s", i["name"], nri_name)
