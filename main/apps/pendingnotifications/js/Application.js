@@ -66,7 +66,8 @@ Ext.define("NOC.main.pendingnotifications.Application", {
             name: "body",
             xtype: "textarea",
             fieldLabel: "Body",
-            allowBlank: false
+            allowBlank: false,
+            height: 420
         },
         {
             name: "link",
