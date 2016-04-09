@@ -46,7 +46,7 @@ class Script(BaseScript):
             try:
                 platform = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.15.0",
                                         cached=True)
-                if platform == '':
+                if platform == '' or platform == None:
                     raise self.snmp.TimeOutError
                 platform = platform.split(' ')[1]
                 version = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.2.2.0",
