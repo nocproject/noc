@@ -14,7 +14,9 @@ report_types=[
             ("profile","By Profile"),
             ("domain","By Administrative Domain"),
             ("domain-profile","By Administrative Domain and Profile"),
-            ("tag","By Tags")
+            ("tag","By Tags"),
+            ("platform", "By Platform"),
+            ("version", "By Version"),
             ]
 class ReportForm(forms.Form):
     report_type=forms.ChoiceField(choices=report_types)
@@ -58,6 +60,18 @@ class ReportObjectsSummary(SimpleReport):
               GROUP BY 1
               ORDER BY 2 DESC;
             """
+        elif report_type=="platform":
+            columns = ["Platform", "Profile"]
+            query="""select sam.profile_name, sama.value,count(value)
+                    from sa_managedobject sam join  sa_managedobjectattribute sama on (sam.id=sama.managed_object_id)
+                    where sama.key='platform' group by 1,2 order by count(value) desc;"""
+
+        elif report_type == "version":
+            columns = ["Platform", "version"]
+            query = """select sam.profile_name, sama.value,count(value)
+                      from sa_managedobject sam join  sa_managedobjectattribute sama on (sam.id=sama.managed_object_id)
+                    where sama.key='version' group by 1,2 order by count(value) desc;"""
+
         else:
             raise Exception("Invalid report type: %s"%report_type)
         for r,t in report_types:
