@@ -108,7 +108,6 @@ class ManagedObjectDashboard(BaseDashboard):
                         "max": True,
                         "min": True,
                         "show": True,
-                        "total": True,
                         "values": True,
                         "sortDesc": True
                     },
