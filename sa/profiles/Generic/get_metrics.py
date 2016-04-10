@@ -142,6 +142,7 @@ class Script(BaseScript):
         results = {}  # oid -> value
         while oids:
             chunk, oids = oids[:self.GET_CHUNK], oids[self.GET_CHUNK:]
+            chunk = dict((x, x) for x in chunk)
             try:
                 results.update(
                     self.snmp.get(chunk)
