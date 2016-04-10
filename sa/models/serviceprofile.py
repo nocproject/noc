@@ -45,7 +45,7 @@ class ServiceProfile(Document):
         return ServiceProfile.objects.filter(id=id).first()
 
     def on_save(self):
-        if "interface_profile" in self._changed_fields:
+        if not hasattr(self, "_changed_fields") or "interface_profile" in self._changed_fields:
             call_later(
                 "noc.sa.models.serviceprofile.refresh_interface_profiles",
                 sp_id=self.id,
