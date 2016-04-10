@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Huawei.VRP.get_metrics
+## Alcatel.TIMOS.get_metrics
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
@@ -11,7 +11,7 @@ from noc.core.script.metrics import percent
 
 
 class Script(GetMetricsScript):
-    name = "Huawei.VRP.get_metrics"
+    name = "Alcatel.TIMOS.get_metrics"
 
     SNMP_OIDS = GetMetricsScript.merge_oids({
         "Subscribers | IPOE": [
