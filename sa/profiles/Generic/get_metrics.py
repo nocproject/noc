@@ -8,7 +8,8 @@
 
 ## Python modules
 import time
-from collections import namedtuple
+## Third-party modules
+import six
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmetrics import IGetMetrics
@@ -24,6 +25,9 @@ class Script(BaseScript):
     name = "Generic.get_metrics"
     interface = IGetMetrics
     requires = []
+
+    # Aggregate up to GET_CHUNK requests
+    GET_CHUNK = 15
 
     # Dict of
     # metric type -> list of (capability, oid, type, scale)
@@ -123,61 +127,83 @@ class Script(BaseScript):
                             "scale": scale
                         }
         # Run snmp batch
-        if batch:
-            # @todo: Switch to bulk ops when necessary
-            for oid in batch:
-                ts = self.get_ts()
-                if isinstance(oid, basestring):
-                    # Single oid
-                    try:
-                        v = self.snmp.get(oid)
-                        if v is None:
-                            continue
-                    except self.snmp.TimeOutError as e:
-                        self.logger.error(
-                            "Failed to get SNMP OID %s: %s",
-                            oid, e
-                        )
-                        continue
-                elif callable(batch[oid]["scale"]):
-                    # Multiple oids and calculated value
-                    v = []
-                    for o in oid:
-                        try:
-                            vv = self.snmp.get(oid)
-                            v += [vv]
-                            if vv is None:
-                                break
-                        except self.snmp.TimeOutError as e:
-                            self.logger.error(
-                                "Failed to get SNMP OID %s: %s",
-                                o, e
-                            )
-                            v += [None]
-                            break
-                    # Check result does not contain None
-                    if any(1 for vv in v if vv is None):
-                        self.logger.error(
-                            "Cannot calculate complex value for %s "
-                            "due to missed values: %s",
-                            oid, v
-                        )
+        if not batch:
+            self.logger.debug("Nothing to fetch via SNMP")
+            return
+        # Optimize fetching, aggregating up to GET_CHUNK
+        # in single request
+        oids = set()
+        for o in batch:
+            if isinstance(o, six.string_types):
+                oids.add(o)
+            else:
+                oids.update(o)
+        oids = list(oids)
+        results = {}  # oid -> value
+        while oids:
+            chunk, oids = oids[:self.GET_CHUNK], oids[self.GET_CHUNK:]
+            try:
+                results.update(
+                    self.snmp.get(chunk)
+                )
+            except self.snmp.TimeOutError as e:
+                self.logger.error(
+                    "Failed to get SNMP OIDs %s: %s",
+                    oids, e
+                )
+        # Process results
+        for oid in batch:
+            ts = self.get_ts()
+            if isinstance(oid, six.string_types):
+                if oid in results:
+                    v = results[oid]
+                    if v is None:
                         continue
                 else:
                     self.logger.error(
-                        "Cannot evaluate complex oid %s. "
-                        "Scale must be callable",
+                        "Failed to get SNMP OID %s",
                         oid
                     )
                     continue
-                self.set_metric(
-                    name=batch[oid]["name"],
-                    value=v,
-                    ts=ts,
-                    tags=batch[oid]["tags"],
-                    type=batch[oid]["type"],
-                    scale=batch[oid]["scale"]
+            elif callable(batch[oid]["scale"]):
+                # Multiple oids and calculated value
+                v = []
+                for o in oid:
+                    if o in results:
+                        vv = results[o]
+                        if vv is None:
+                            break
+                        else:
+                            v += [vv]
+                    else:
+                        self.logger.error(
+                            "Failed to get SNMP OID %s",
+                            o
+                        )
+                        break
+                # Check result does not contain None
+                if len(v) < len(oid):
+                    self.logger.error(
+                        "Cannot calculate complex value for %s "
+                        "due to missed values: %s",
+                        oid, v
+                    )
+                    continue
+            else:
+                self.logger.error(
+                    "Cannot evaluate complex oid %s. "
+                    "Scale must be callable",
+                    oid
                 )
+                continue
+            self.set_metric(
+                name=batch[oid]["name"],
+                value=v,
+                ts=ts,
+                tags=batch[oid]["tags"],
+                type=batch[oid]["type"],
+                scale=batch[oid]["scale"]
+            )
 
     def resolve_oid(self, chain, ifindex=None):
         """
