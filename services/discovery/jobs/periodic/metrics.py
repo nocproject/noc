@@ -163,14 +163,14 @@ class MetricsCheck(DiscoveryCheck):
                     # Store value
                     self.counter_values[key] = (m["ts"], m["value"])
                     if r:
+                        self.logger.debug(
+                            "[%s] Old value: %s@%s, new value: %s@%s.",
+                            key, r[1], r[0], m["value"], m["ts"]
+                        )
                         # Calculate counter
                         m["value"] = self.convert_counter(
                             m["ts"], m["value"],
                             r[0], r[1]
-                        )
-                        self.logger.debug(
-                            "[%s] Old value: %s@%s, new value: %s@%s.",
-                            key, r[1], r[0], m["value"], m["ts"]
                         )
                     else:
                         self.logger.debug(
@@ -179,11 +179,11 @@ class MetricsCheck(DiscoveryCheck):
                             key
                         )
                         continue  # Skip the step
+                m["abs_value"] = m["value"] * m["scale"]
                 self.logger.debug(
                     "[%s] Measured value: %s. Scale: %s. Resuling value: %s",
-                    key, m["value"], m["scale"], m["value"] * m["scale"]
+                    key, m["value"], m["scale"], m["abs_value"]
                 )
-                m["abs_value"] = m["value"] * m["scale"]
                 batch += [
                     "%s value=%s %s" % (
                         key,
