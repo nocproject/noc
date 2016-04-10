@@ -28,6 +28,10 @@
     {
       "name": "codemirror",
       "version": "5.13.2"
+    },
+    {
+      "name": "nocsound",
+      "version": "1.0.0"
     }
   ]
 }

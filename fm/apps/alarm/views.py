@@ -9,6 +9,8 @@
 ## Python modules
 import os
 import inspect
+## Third-party modules
+import dateutil.parser
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.fm.models.activealarm import ActiveAlarm
@@ -329,3 +331,23 @@ class AlarmApplication(ExtApplication):
             return self.response_not_found()
         alarm.set_root(r)
         return True
+
+    @view(url="notification/$", method=["GET"],
+          api=True, access="launch")
+    def api_notification(self, request):
+        ts = request.GET.get("ts")
+        n = 0
+        sound = None
+        if ts:
+            t0 = dateutil.parser.parse(ts)
+            n = ActiveAlarm._get_collection().find({
+                "timestamp": {
+                    "$gt": t0
+                }
+            }).count()
+            if n > 0:
+                sound = "/ui/pkg/nocsound/alarm.mp3"
+        return {
+            "new_alarms": n,
+            "sound": sound
+        }
