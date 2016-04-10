@@ -217,7 +217,7 @@ class Script(BaseScript):
                 else:
                     return mib[v]
             else:
-                return [rmib(x) for x in v]
+                return tuple(rmib(x) for x in v)
 
         for cap, o, type, scale in chain:
             if cap in self.capabilities:
