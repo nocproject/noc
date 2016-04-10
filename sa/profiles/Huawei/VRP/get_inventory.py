@@ -10,12 +10,12 @@ __author__ = 'FeNikS'
 # Python modules
 import re
 ## NOC modules
-from noc.sa.script import Script as NOCScript
+from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
-class Script(NOCScript):
+class Script(BaseScript):
     name = "Huawei.VRP.get_inventory"
-    implements = [IGetInventory]
+    interface = IGetInventory
 
     rx_slot_key = re.compile(
         r"^\d+|PWR\d+|FAN\d+|CMU\d", re.DOTALL | re.MULTILINE | re.VERBOSE)
@@ -94,7 +94,11 @@ class Script(NOCScript):
 
     def execute(self):
         objects = []
-        cmd_result = self.cli("display elabel")
+        try:
+            cmd_result = self.cli("display elabel")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
+
 
         backplane_regexp = self.rx_backplane.search(cmd_result)
         if backplane_regexp:
