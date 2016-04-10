@@ -64,6 +64,14 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onCard
         });
 
+        me.dashboardButton = Ext.create("Ext.button.Button", {
+            text: "Dashboard",
+            glyph: NOC.glyph.line_chart,
+            scope: me,
+            tooltip: "Show dashboard",
+            handler: me.onDashboard
+        });
+
         me.consoleButton = Ext.create("Ext.button.Button", {
             text: "Console",
             glyph: NOC.glyph.terminal,
@@ -655,6 +663,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             ],
             formToolbar: [
                 me.cardButton,
+                me.dashboardButton,
                 me.consoleButton,
                 me.scriptsButton,
                 me.configPreviewButton,
@@ -770,6 +779,15 @@ Ext.define("NOC.sa.managedobject.Application", {
         if(me.currentRecord) {
             window.open(
                 "/api/card/view/managedobject/" + me.currentRecord.get("id") + "/"
+            );
+        }
+    },
+    //
+    onDashboard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.currentRecord.get("id")
             );
         }
     },
