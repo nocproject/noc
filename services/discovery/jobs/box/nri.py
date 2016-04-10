@@ -137,8 +137,8 @@ class NRICheck(DiscoveryCheck):
                         "service": svc
                     }
                     p = prof_map.get(svc)
-                    if p:
-                        op["profile"] = p.id
+                    if p and p.interface_profile:
+                        op["profile"] = p.interface_profile.id
                     bulk.find({"_id": i["_id"]}).update({
                         "$set": op
                     })
