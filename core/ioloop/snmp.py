@@ -73,6 +73,11 @@ def snmp_get(address, oids, port=161,
             for k, v in resp.varbinds:
                 if k in oid_map:
                     result[oid_map[k]] = v
+                else:
+                    logger.error(
+                        "[%s] Invalid oid %s returned in reply",
+                        address, k
+                    )
         else:
             result = resp.varbinds[0][1]
         logger.debug("[%s] GET result: %s", address, result)
