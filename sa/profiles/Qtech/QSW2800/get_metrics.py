@@ -7,6 +7,8 @@
 ##----------------------------------------------------------------------
 
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
+from noc.core.script.metrics import percent
+
 
 
 class Script(GetMetricsScript):
@@ -16,11 +18,15 @@ class Script(GetMetricsScript):
         "CPU | Usage": [
             ("SNMP", "1.3.6.1.4.1.27514.100.1.11.10.0", "gauge", 1)
         ],
-        "Memory | Total": [
-            ("SNMP", "1.3.6.1.4.1.27514.100.1.11.6.0", "gauge", 1)
-        ],
-        "Memory | Used": [
-            ("SNMP", "1.3.6.1.4.1.27514.100.1.11.7.0", "gauge", 1)
+        "Memory | Usage": [
+            (
+                "SNMP",
+                [
+                    "1.3.6.1.4.1.27514.100.1.11.7.0",
+                    "1.3.6.1.4.1.27514.100.1.11.6.0"
+                ],
+                "gauge",
+                percent
+            )
         ]
-
     })

@@ -19,7 +19,7 @@ class Script(GetMetricsScript):
         "CPU | Usage": [
             ("SNMP", "1.3.6.1.4.1.27514.100.1.11.10.0", "gauge", 1)
         ],
-        "Memory | Used": [
+        "Memory | Usage": [
             (
                 "SNMP",
                 [
