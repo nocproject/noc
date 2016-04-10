@@ -11,6 +11,7 @@ from noc.sa.models.managedobject import ManagedObject
 from base import BaseDashboard
 from noc.inv.models.interface import Interface
 from noc.lib.text import split_alnum
+from noc.pm.models.metrictype import MetricType
 
 
 class ManagedObjectDashboard(BaseDashboard):
@@ -23,7 +24,7 @@ class ManagedObjectDashboard(BaseDashboard):
             raise self.NotFound()
 
     def render(self):
-        def profile_has_metrics(profile):
+        def interface_profile_has_metrics(profile):
             """
             Check interface profile has metrics
             """
@@ -74,8 +75,8 @@ class ManagedObjectDashboard(BaseDashboard):
         ))
         iprof = set(i.profile for i in all_ifaces)
         # @todo: Order by priority
-        profiles = [p for p in iprof if profile_has_metrics(p)]
-        # Create charts for configured metrics
+        profiles = [p for p in iprof if interface_profile_has_metrics(p)]
+        # Create charts for configured interface metrics
         for profile in profiles:
             ifaces = [i for i in all_ifaces if i.profile == profile]
             r["rows"] += [{
@@ -238,4 +239,100 @@ class ManagedObjectDashboard(BaseDashboard):
                         "short"
                     ]
                 }]
+        r["rows"] += [{
+            "title": "Object metrics",
+            "showTitle": True,
+            "collapse": False,
+            "editable": False,
+            "height": "250px",
+            "panels": []
+        }]
+        # Create charts for object metrics
+        for m in self.object.object_profile.metrics:
+            mt = MetricType.get_by_id(m["metric_type"])
+            if not mt or not m.get("is_active", False):
+                continue
+            r["rows"][-1]["panels"] += [{
+                "span": 6,  # 2-column
+                "lines": True,
+                "linewidth": 2,
+                "links": [],
+                "nullPointMode": "connected",
+                "percentage": False,
+                "pointradius": 5,
+                "points": False,
+                "renderer": "flot",
+                "legend": {
+                    "alignAsTable": True,
+                    "avg": True,
+                    "current": True,
+                    "max": True,
+                    "min": True,
+                    "show": True,
+                    "values": True,
+                    "sortDesc": True
+                },
+                "targets": [
+                    {
+                        "dsType": "influxdb",
+                        "alias": mt.name,
+                        "groupBy": [
+                            {
+                                "params": ["$interval"],
+                                "type": "time"
+                            },
+                            {
+                                "params": ["null"],
+                                "type": "fill"
+                            }
+                        ],
+                        "measurement": mt.name,
+                        "query": "SELECT mean(\"value\") "
+                                 "FROM \"%s\" "
+                                 "WHERE "
+                                 "  \"object\" = '%s' "
+                                 "  AND $timeFilter "
+                                 "GROUP BY time($interval) "
+                                 "fill(null)" % (mt.name,
+                                                 self.object.name),
+                        "refId": "A",
+                        "resultFormat": "time_series",
+                        "select": [
+                            [
+                                {
+                                    "params": ["value"],
+                                    "type": "field"
+                                },
+                                {
+                                    "params": [],
+                                    "type": "mean"
+                                }
+                            ]
+                        ],
+                        "tags": [
+                            {
+                                "key": "object",
+                                "operator": "=",
+                                "value": self.object.name
+                            }
+                        ]
+                    }
+                ],
+                "timeFrom": None,
+                "timeShift": None,
+                "title": mt.name,
+                "tooltip": {
+                    "shared": True,
+                    "value_type": "cumulative"
+                },
+                "type": "graph",
+                "x-axis": True,
+                "y-axis": True,
+                "y_formats": [
+                    "bps",
+                    "short"
+                ]
+            }]
+        if not r["rows"][-1]["panels"]:
+            r["rows"].pop(-1)  # Remove empty row
         return r
