@@ -194,7 +194,7 @@ class BERDecoder(object):
                 v = ord(c)
                 r = (r << 7) + (v & 0x7f)
                 n += 1
-                if v < 127:
+                if v <= 127:
                     break
             return r, msg[n:]
 
