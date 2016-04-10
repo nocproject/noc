@@ -16,3 +16,17 @@ def percent(value, total):
         return float(value) * 100.0 / float(total)
     else:
         return 100.0
+
+
+def sum(*args):
+    """
+    Returns sum of all arguments
+    """
+    return reduce(lambda x, y: x + y, args)
+
+
+def subtract(*args):
+    """
+    Subtract from first arguments
+    """
+    return args[0] - reduce(lambda x, y: x + y, args[1:])
