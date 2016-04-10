@@ -86,9 +86,9 @@ class Service(Document):
             self.unbind_interface()
 
     def on_save(self):
-        if "nri_port" in self._changed_fields:
+        if not hasattr(self, "_changed_fields") or "nri_port" in self._changed_fields:
             self.unbind_interface()
-        if "parent" in self._changed_fields:
+        if not hasattr(self, "_changed_fields") or "parent" in self._changed_fields:
             self._refresh_managed_object()
 
     def _refresh_managed_object(self):

@@ -93,12 +93,12 @@ class Interface(Document):
         return u"%s: %s" % (self.managed_object.name, self.name)
 
     def save(self, *args, **kwargs):
-        if "name" in self._changed_fields:
+        if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:
             self.name = self.managed_object.profile.convert_interface_name(self.name)
-        if "mac" in self._changed_fields and self.mac:
+        if not hasattr(self, "_changed_fields") or "mac" in self._changed_fields and self.mac:
             self.mac = MACAddressParameter().clean(self.mac)
         super(Interface, self).save(*args, **kwargs)
-        if "service" in self._changed_fields:
+        if  not hasattr(self, "_changed_fields") or "service" in self._changed_fields:
             ServiceSummary.refresh_object(self.managed_object)
 
     def on_delete(self):

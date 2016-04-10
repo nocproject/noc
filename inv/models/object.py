@@ -496,7 +496,7 @@ class Object(Document):
                     )
             return
         # Changed object
-        if "container" not in document._changed_fields:
+        if not hasattr(document, "_changed_fields") or "container" not in document._changed_fields:
             return
         old_container = getattr(document, "_cache_container", None)
         old_pop = None
