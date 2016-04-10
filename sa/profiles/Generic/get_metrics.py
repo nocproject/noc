@@ -210,13 +210,19 @@ class Script(BaseScript):
         """
         Return first suitable oid for OID_*, or None if not founc
         """
+        def rmib(v):
+            if isinstance(v, six.string_types):
+                if ifindex:
+                    return mib[v, ifindex]
+                else:
+                    return mib[v]
+            else:
+                return [rmib(x) for x in v]
+
         for cap, o, type, scale in chain:
             if cap in self.capabilities:
-                if ifindex:
-                    return mib[o, ifindex], type, scale
-                else:
-                    return mib[o], type, scale
-        return None, None
+                return rmib(o), type, scale
+        return None, None, None
 
     def get_ifindex(self, name):
         return self.ifindexes.get(name)
