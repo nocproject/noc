@@ -52,11 +52,14 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 {
                     text: "Ping",
                     dataIndex: "enable_ping",
-                    width: 60,
+                    width: 100,
                     renderer: function(value, meta, record) {
                         var v = NOC.render.Bool(value);
                         if(value) {
                             v += " " + record.get("ping_interval");
+                            if(record.get("report_ping_rtt")) {
+                                v += "+RTT"
+                            }
                         }
                         return v
                     },
