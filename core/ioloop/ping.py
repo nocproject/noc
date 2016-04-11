@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## PingSocket implementation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -100,17 +100,16 @@ class PingSocket(object):
             if why[0] in (EINTR, EAGAIN):
                 return  # Exit silently
             raise socket.error, why
-        status, address, req_id, seq = self.parse_reply(msg,
-                                                        addr[0])
+        status, address, req_id, seq, rtt = self.parse_reply(msg, addr[0])
         if status is None:
             return
-        logger.debug("[%s] Reply (req=%s, seq=%s, status=%s)",
-                     address, req_id, seq, status)
+        logger.debug("[%s] Reply (req=%s, seq=%s, status=%s, rtt=%s)",
+                     address, req_id, seq, status, rtt)
         sid = (address, req_id, seq)
         if sid in self.sessions:
             f = self.sessions.pop(sid)
             # Resolve future
-            f.set_result(status)
+            f.set_result(rtt)
         else:
             logger.debug(
                 "[%s] Ignoring stale session (req=%s, seq=%s)",
@@ -125,7 +124,7 @@ class PingSocket(object):
             if future.sid in self.sessions:
                 logger.debug("[%s] Timed out", future.sid[0])
                 del self.sessions[future.sid]
-            future.set_result(False)
+            future.set_result(None)
 
     def get_checksum(self, msg):
         """
@@ -154,7 +153,8 @@ class PingSocket(object):
             self.ECHO_TYPE, 0,
             checksum, request_id, seq)
         # Pad to size
-        payload = "A" * (size - self.HEADER_SIZE)
+        ts = self.io_loop.time()
+        payload = (struct.pack("!d", ts) + "A" * (size - self.HEADER_SIZE - 8))[:size - self.HEADER_SIZE]
         # Get checksum
         checksum = self.get_checksum(header + payload)
         # Rebuild header with proper checksum
@@ -223,15 +223,19 @@ class Ping4Socket(PingSocket):
         req_id, seq) = struct.unpack(
             "!BBHHH", icmp_header)
         if icmp_type == ICMPv4_ECHOREPLY:
-            return True, addr, req_id, seq
+            rtt = None
+            if len(msg) > 36:
+                t0 = struct.unpack("!d", msg[28:36])[0]
+                rtt = self.io_loop.time() - t0
+            return True, addr, req_id, seq, rtt
         elif icmp_type in (ICMPv4_UNREACHABLE, ICMPv4_TTL_EXCEEDED):
             if plen >= 48:
                 (_, _, _, _, _, _, o_proto, _, o_src_ip, o_dst_ip) = struct.unpack("!BBHHHBBHII", msg[28:48])
                 if o_proto == ICMPv4_PROTO:
                     (o_icmp_type, _, _, o_req_id, _) = struct.unpack("!BBHHH", msg[48:56])
                     if o_icmp_type == ICMPv4_ECHO:
-                        return False, addr, req_id, seq
-        return None, None, None, None
+                        return False, addr, req_id, seq, None
+        return None, None, None, None, None
 
 
 class Ping6Socket(PingSocket):
@@ -252,7 +256,7 @@ class Ping6Socket(PingSocket):
 
     def parse_reply(self, msg, addr):
         """
-        Returns status, address, request_id, sequence
+        Returns status, address, request_id, sequence, rtt
         """
         # (ver_tc_flow, plen, hdr, ttl) = struct.unpack("!IHBB", msg[:8])
         # src_ip = msg[64: 192]
@@ -264,10 +268,14 @@ class Ping6Socket(PingSocket):
         (icmp_type, icmp_code, icmp_checksum,
          req_id, seq) = struct.unpack("!BBHHH", icmp_header)
         payload = msg[8:]
+        rtt = None
+        if len(payload) >= 8:
+            t0 = struct.unpack("!d", payload[:8])[0]
+            rtt = self.io_loop.time() - t0
         if icmp_type == ICMPv6_ECHOREPLY:
-            return True, addr, req_id, seq
+            return True, addr, req_id, seq, rtt
         else:
-            return None, None, None, None
+            return None, None, None, None, None
 
 
 class Ping(object):
@@ -295,8 +303,8 @@ class Ping(object):
                 if not self.ping4:
                     self.ping4 = Ping4Socket(self.io_loop, tos=self.tos)
                 return self.ping4
-        except socket.error, why:
-            logger.error("Failed to create ping socket: %s", why)
+        except socket.error as e:
+            logger.error("Failed to create ping socket: %s", e)
             return None
 
     @tornado.gen.coroutine
@@ -327,3 +335,39 @@ class Ping(object):
                 break
         logger.debug("[%s] Result: %s", address, result)
         raise tornado.gen.Return(result)
+
+    @tornado.gen.coroutine
+    def ping_check_rtt(self, address, size=64, count=1, timeout=1000,
+                       policy=CHECK_FIRST):
+        """
+        Perform ping check and return round-trip time
+        :param address: IPv4/IPv6 address of host
+        :param size: Packet size, in octets
+        :param count: Maximal number of packets to send
+        :param timeout: Ping timeout, in milliseconds
+        :param policy: Check policy. CHECK_FIRST - return True on
+            first success. CHECK_ALL - return True when all checks succeded
+        :returns: rtt in seconds as float or None for failure
+        """
+        socket = self.get_socket(address)
+        if not socket:
+            raise tornado.gen.Return(None)
+        req_id = self.iter_request.next() & 0xFFFF
+        result = False
+        rtts = []
+        for seq in range(count):
+            rtt = yield socket.ping(address, timeout, size, req_id, seq)
+            rtts += [rtt]
+            if rtt and policy == self.CHECK_FIRST:
+                result = True
+                break
+            elif not rtt and policy == self.CHECK_ALL:
+                result = False
+                break
+        if result:
+            rtt = sum(rtts) / len(rtts)
+            logger.debug("[%s] Result: success, rtt=%s", address, rtt)
+            raise tornado.gen.Return(rtt)
+        else:
+            logger.debug("[%s] Result: failed", address)
+            raise tornado.gen.Return(None)
