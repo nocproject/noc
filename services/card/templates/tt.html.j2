@@ -28,9 +28,10 @@
                 <thead>
                     <tr>
                         <th>Timestamp</th>
-                        <th>Duration</th>
                         <th>Object</th>
+                        <th>Duration</th>
                         <th>Subject</th>
+                        <th>Services</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -40,6 +41,7 @@
                         <td><a href="/api/card/view/managedobject/{{ a["alarm"].managed_object.id }}/">{{ a["alarm"].managed_object.name }}</a></td>
                         <td>{{ a["duration"] }}</td>
                         <td>{{ a["subject"] }}</td>
+                        <td>{{ a["summary"] | glyph_summary }}</td>
                     </td>
                     {% endfor %}
                 </tbody>
