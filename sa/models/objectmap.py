@@ -89,14 +89,20 @@ class ObjectMap(Document):
             object_profile__enable_ping=True
         ).select_related(
             "object_profile"
-        ).only("id", "address", "object_profile",
-               "object_profile__ping_interval"
+        ).only(
+            "id", "address",
+            "name",
+            "object_profile",
+            "object_profile__ping_interval",
+            "object_profile__report_ping_rtt"
         ):
             if mo.object_profile.ping_interval and mo.object_profile.ping_interval > 0:
                 ping_sources[aq(mo.address)] = {
                     "id": mo.id,
                     "interval": mo.object_profile.ping_interval,
-                    "status": None
+                    "report_rtt": mo.object_profile.report_ping_rtt,
+                    "status": None,
+                    "name": mo.name
                 }
         # Resolve object statuses
         oids = dict((d["id"], q) for q, d in ping_sources.iteritems())

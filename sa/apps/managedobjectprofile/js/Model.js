@@ -73,6 +73,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: 60
         },
         {
+            name: "report_ping_rtt",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
             name: "down_severity",
             type: "int",
             defaultValue: 4000

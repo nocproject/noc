@@ -203,6 +203,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     xtype: "numberfield",
                                     fieldLabel: "Interval",
                                     uiStyle: "small"
+                                },
+                                {
+                                    name: "report_ping_rtt",
+                                    xtype: "checkboxfield",
+                                    boxLabel: "Report ping RTT",
+                                    allowBlank: false
                                 }
                             ]
                         },
