@@ -189,6 +189,11 @@ config:
       type: int
       default: 100000
 
+    max_packets:
+      label: Maximum number of packets to check
+      type: int
+      default: 3
+
   login:
     method:
       label: Authentication method
