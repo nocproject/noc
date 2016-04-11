@@ -247,6 +247,88 @@ class ManagedObjectDashboard(BaseDashboard):
             "height": "250px",
             "panels": []
         }]
+        # Create chart for ping RTT
+        if self.object.object_profile.report_ping_rtt:
+            r["rows"][-1]["panels"] += [{
+                "span": 6,  # 2-column
+                "lines": True,
+                "linewidth": 2,
+                "links": [],
+                "nullPointMode": "connected",
+                "percentage": False,
+                "pointradius": 5,
+                "points": False,
+                "renderer": "flot",
+                "legend": {
+                    "alignAsTable": True,
+                    "avg": True,
+                    "current": True,
+                    "max": True,
+                    "min": True,
+                    "show": True,
+                    "values": True,
+                    "sortDesc": True
+                },
+                "targets": [
+                    {
+                        "dsType": "influxdb",
+                        "alias": "Ping | RTT",
+                        "groupBy": [
+                            {
+                                "params": ["$interval"],
+                                "type": "time"
+                            },
+                            {
+                                "params": ["null"],
+                                "type": "fill"
+                            }
+                        ],
+                        "measurement": "Ping | RTT",
+                        "query": "SELECT mean(\"value\") "
+                                 "FROM \"Ping | RTT\" "
+                                 "WHERE "
+                                 "  \"object\" = '%s' "
+                                 "  AND $timeFilter "
+                                 "GROUP BY time($interval) "
+                                 "fill(null)" % (self.object.name),
+                        "refId": "A",
+                        "resultFormat": "time_series",
+                        "select": [
+                            [
+                                {
+                                    "params": ["value"],
+                                    "type": "field"
+                                },
+                                {
+                                    "params": [],
+                                    "type": "mean"
+                                }
+                            ]
+                        ],
+                        "tags": [
+                            {
+                                "key": "object",
+                                "operator": "=",
+                                "value": self.object.name
+                            }
+                        ]
+                    }
+                ],
+                "timeFrom": None,
+                "timeShift": None,
+                "title": "Ping | RTT",
+                "tooltip": {
+                    "shared": True,
+                    "value_type": "cumulative"
+                },
+                "type": "graph",
+                "x-axis": True,
+                "y-axis": True,
+                "y_formats": [
+                    "s",
+                    "short"
+                ]
+            }]
         # Create charts for object metrics
         for m in (self.object.object_profile.metrics or []):
             mt = MetricType.get_by_id(m["metric_type"])
