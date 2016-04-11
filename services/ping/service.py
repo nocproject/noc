@@ -207,7 +207,7 @@ class PingService(Service):
         if not name or rtt is None:
             return
         self.metrics += [
-            "\"Ping | RTT\",object=\"%s\" value=%s %s" % (
+            "Ping\\ |\\ RTT,object=%s value=%s %s" % (
                 name, rtt, int(time.time())
             )
         ]
