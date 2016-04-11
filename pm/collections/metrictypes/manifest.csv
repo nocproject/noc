@@ -1,4 +1,7 @@
 name,uuid,path,hash
+CPU | Usage,d43538e6-d6f7-44c5-b8eb-049c5e8af6f0,CPU/Usage.json,4aa31b827604c1a03eb673084d203b7587a009e4967f94d29c13bddff85d4e29
+Environment | Temperature,4337cbc5-2055-4f5c-bf2c-9cb9a39d9073,Environment/Temperature.json,60351267435afffd3aca00ddb8a5406e1406736128da99e50542c50304adab2f
+Environment | Voltage,292b6e06-6d91-4391-b80c-a5a55333b9e1,Environment/Voltage.json,99a3128e6dce0b4cb9aad78d7bf1d1a61af49036b1d4da7ab8017c611169cd1b
 Interface | Discards | In,a37bd080-9430-4ca9-b9dd-53ee05afa724,Interface/Discards/In.json,8fd5831e216892912987d6697b87df7fdf94a07452ca639c480676a278c8e5a3
 Interface | Discards | Out,30495e96-1c94-4a2f-812e-ceb0b237e146,Interface/Discards/Out.json,ae93085e64cdbf85e92bba146d4fc1bb33909fdb20da8ac221d3399e7cf0b149
 Interface | Errors | In,1b761068-6bb0-4c98-84c3-67851179fb61,Interface/Errors/In.json,d20b6e1661d1ae8c3f2d7eb8b021625e8d2e7c3d836965300f23ca30c6b42355
@@ -7,3 +10,10 @@ Interface | Load | In,b43cc414-1067-4c18-ada0-2eb4feac28a2,Interface/Load/In.jso
 Interface | Load | Out,a7651240-aef7-48a4-881d-1b6585532259,Interface/Load/Out.json,8f1a00823fada68235e72d2c9f7d609aede1942974ee651dc75c7779b8b61ce4
 Interface | Packets | In,8edc53be-0b58-4ebe-9840-727816288c3c,Interface/Packets/In.json,b8988ad6bf298e7551b331a78f32f14896142f1c2496ed1c8ff8ae6257220ca3
 Interface | Packets | Out,ca7ce345-1380-4ab3-a81e-2d7142ff7c8c,Interface/Packets/Out.json,6e01173e7b831bd4ddf1f0940a6eca3dff9a15c23d4d18b300d0c947db3087be
+Memory | Usage,d446b645-3b67-489e-a8e3-89f554dc0eda,Memory/Usage.json,8b7f0dd741829089f91bff18366dae7fbc2fbf6d95d25cecb9dd4de439b233b5
+Radio | CINR,f0eec8df-0cec-44d6-b40a-9cdf8892272e,Radio/CINR.json,274f601ef937596b7dabcffd5bccdd8dfcf426d498c2848e3a7c182f564d1543
+Radio | RSSI,0497c151-06e8-43bb-bc76-ec6d860fc656,Radio/RSSI.json,e3c29182c42904cc8a5d84ef43c61f10a92067b3885aa8a4df0eddf5407f1c37
+Subscribers | IPoE,e3657b75-3607-4abb-8a30-cb7c5b8eca5a,Subscribers/IPoE.json,b67533ce63d04995756fc51971aca9ab36f0d2b6b7789d144e6c6f21c86691b4
+Subscribers | L2TP,700c1712-4fcf-488f-b5e1-043ee8a3e8de,Subscribers/L2TP.json,dda33cc4df109d9701699720fff5df3cc505373fd49fdb32a51462ff440a47f2
+Subscribers | PPP,8f13dc04-0d88-4eb7-b5e1-985b36cb5bb1,Subscribers/PPP.json,7fe25962ca7809cbc2c2a5d5717ed57b670cf1ddcd730356b2626c08f87f672a
+Subscribers | PPTP,18a6cb2b-8060-4487-8a2f-c65ae062f4bd,Subscribers/PPTP.json,d951c0b8b843229192c804da56ac2f6f8f6d45eeb56705a4e0fa6e762493b5ef
