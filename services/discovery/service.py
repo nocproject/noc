@@ -82,7 +82,7 @@ class DiscoveryService(Service):
             try:
                 response = yield client.fetch(
                     # @todo: Configurable database name
-                    "http://%s/write?db=noc" % s,
+                    "http://%s/write?db=noc&precision=s" % s,
                     method="POST",
                     body=msg
                 )

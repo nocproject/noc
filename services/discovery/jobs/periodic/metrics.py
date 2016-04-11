@@ -188,7 +188,7 @@ class MetricsCheck(DiscoveryCheck):
                     "%s value=%s %s" % (
                         key,
                         m["abs_value"],
-                        m["ts"]
+                        m["ts"] // 1000000000
                     )
                 ]
         # Send metrics
