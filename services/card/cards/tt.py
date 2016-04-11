@@ -15,6 +15,7 @@ from base import BaseCard
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.sa.models.servicesummary import SummaryItem
 
 
 class TTCard(BaseCard):
@@ -60,6 +61,10 @@ class TTCard(BaseCard):
                     "id": a.id,
                     "timestamp": a.timestamp,
                     "duration": duration,
-                    "subject": a.subject
+                    "subject": a.subject,
+                    "summary": {
+                        "subscriber": SummaryItem.items_to_dict(a.total_subscribers),
+                        "service": SummaryItem.items_to_dict(a.total_services)
+                    }
                 }]
         return r
