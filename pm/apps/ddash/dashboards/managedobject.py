@@ -248,7 +248,7 @@ class ManagedObjectDashboard(BaseDashboard):
             "panels": []
         }]
         # Create charts for object metrics
-        for m in self.object.object_profile.metrics:
+        for m in (self.object.object_profile.metrics or []):
             mt = MetricType.get_by_id(m["metric_type"])
             if not mt or not m.get("is_active", False):
                 continue
