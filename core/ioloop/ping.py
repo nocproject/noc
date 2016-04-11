@@ -357,7 +357,8 @@ class Ping(object):
         rtts = []
         for seq in range(count):
             rtt = yield socket.ping(address, timeout, size, req_id, seq)
-            rtts += [rtt]
+            if rtt is not None:
+                rtts += [rtt]
             if rtt and policy == self.CHECK_FIRST:
                 result = True
                 break
