@@ -16,7 +16,7 @@ from noc.sa.models.managedobject import ManagedObject
 from alarmclass import AlarmClass
 from alarmlog import AlarmLog
 from alarmseverity import AlarmSeverity
-from noc.sa.models.servicesummary import SummaryItem
+from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 
 
 class ArchivedAlarm(nosql.Document):
@@ -63,7 +63,7 @@ class ArchivedAlarm(nosql.Document):
     direct_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
     # Indirectly affected services summary, groupped by profiles
     # (covered by this and all inferred alarms)
-    total_objects = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    total_objects = nosql.ListField(nosql.EmbeddedDocumentField(ObjectSummaryItem))
     total_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
     total_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
 
