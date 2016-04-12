@@ -19,6 +19,7 @@ from noc.main.models.style import Style
 from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
+from ttsystem import TTSystem
 
 
 class ActiveAlarm(nosql.Document):
@@ -179,9 +180,16 @@ class ActiveAlarm(nosql.Document):
             })
         elif ct:
             pass
-            # Schedule delayed job
-            #submit_job("fm.correlator", "control_notify",
-            #           key=a.id, ts=a.control_time)
+        if a.escalation_tt:
+            # Sent message to TT
+            tt_system, tt_id = a.escalation_tt.split(":")
+            tts = TTSystem.get_by_name(tt_system)
+            if tts:
+                tts.add_comment(
+                    tt_id,
+                    subject="Alarm cleared",
+                    body="Alarm has been cleared"
+                )
         return a
 
     def get_template_vars(self):

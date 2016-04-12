@@ -6,10 +6,15 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import operator
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
+import cachetools
+## NOC modules
 from noc.lib.solutions import get_solution
+
 
 
 class TTSystem(Document):
@@ -27,8 +32,19 @@ class TTSystem(Document):
     #
     tags = ListField(StringField())
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    def get_by_name(cls, name):
+        t = TTSystem.objects.filter(name=name).first()
+        if t:
+            return t.get_system()
+        else:
+            return None
 
     def get_system(self):
         """
