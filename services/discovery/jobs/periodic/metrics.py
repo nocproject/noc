@@ -159,7 +159,16 @@ class MetricsCheck(DiscoveryCheck):
                 m["key"] = key
                 if m["type"] == "counter":
                     # Resolve counter
-                    r = self.counter_values.get(key)
+                    if self.job.reboot_detected:
+                        # Drop previous counters on reboot
+                        r = None
+                        self.logger.info(
+                            "[%s] Resetting counters due to device reboot",
+                            key
+                        )
+                    else:
+                        # Get previous value
+                        r = self.counter_values.get(key)
                     # Store value
                     self.counter_values[key] = (m["ts"], m["value"])
                     if r:

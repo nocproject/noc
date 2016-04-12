@@ -18,6 +18,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     name = "periodic"
 
     def handler(self, **kwargs):
+        self.reboot_detected = False
         if self.object.object_profile.enable_periodic_discovery_uptime:
             UptimeCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_interface_status:

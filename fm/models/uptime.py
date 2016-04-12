@@ -56,9 +56,10 @@ class Uptime(Document):
         Register uptime
         :param managed_object: Managed object reference
         :param uptime: Registered uptime in seconds
+        :returns: False, if object has been rebooted, True otherwise
         """
         if not uptime:
-            return
+            return True
         oid = managed_object.id
         now = datetime.datetime.now()
         delta = datetime.timedelta(seconds=uptime)
@@ -70,9 +71,9 @@ class Uptime(Document):
             "object": oid,
             "stop": None
         })
+        is_rebooted = False
         if d:
             # Check for reboot
-            is_rebooted = False
             if d["last_value"] > uptime:
                 # Check for counter wrapping
                 # Get wrapped delta
@@ -137,3 +138,4 @@ class Uptime(Document):
                 "last": now,
                 "last_value": uptime
             })
+        return not is_rebooted
