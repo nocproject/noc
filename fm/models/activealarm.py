@@ -18,7 +18,7 @@ from noc.main.models import User
 from noc.main.models.style import Style
 from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
-from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 
 
 class ActiveAlarm(nosql.Document):
@@ -70,7 +70,7 @@ class ActiveAlarm(nosql.Document):
     direct_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
     # Indirectly affected services summary, groupped by profiles
     # (covered by this and all inferred alarms)
-    total_objects = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    total_objects = nosql.ListField(nosql.EmbeddedDocumentField(ObjectSummaryItem))
     total_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
     total_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
 
@@ -306,7 +306,7 @@ class ActiveAlarm(nosql.Document):
                 subscribers,
                 SummaryItem.items_to_dict(a.total_subscribers)
             )
-        obj_list = SummaryItem.dict_to_items(objects)
+        obj_list = ObjectSummaryItem.dict_to_items(objects)
         svc_list = SummaryItem.dict_to_items(services)
         sub_list = SummaryItem.dict_to_items(subscribers)
         if svc_list != self.total_services or sub_list != self.total_subscribers or obj_list != self.total_objects:

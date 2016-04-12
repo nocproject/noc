@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import cachetools
+import operator
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
+import cachetools
 ## NOC modules
 from noc.main.models.style import Style
 from noc.lib.validators import is_fqdn
@@ -157,8 +158,18 @@ class ManagedObjectProfile(models.Model):
     #
     tags = TagsField("Tags", null=True, blank=True)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    def get_by_id(cls, id):
+        try:
+            return ManagedObjectProfile.objects.get(id=id)
+        except ManagedObjectProfile.DoesNotExist:
+            return None
 
     def get_fqdn(self, object):
         if self.fqdn_template:

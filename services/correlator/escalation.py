@@ -11,13 +11,13 @@ import logging
 import cachetools
 ## NOC modules
 from noc.fm.models.utils import get_alarm
-from noc.main.models.template import Template
-from noc.main.models.notificationgroup import NotificationGroup
 from noc.fm.models.ttsystem import TTSystem
-from noc.core.tt.base import BaseTTSystem
 from noc.sa.models.selectorcache import SelectorCache
 from noc.inv.models.extnrittmap import ExtNRITTMap
 from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.sa.models.serviceprofile import ServiceProfile
+from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
 
 logger = logging.getLogger(__name__)
@@ -28,6 +28,18 @@ def escalate(alarm_id, escalation_id, escalation_delay):
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
         alarm.log_message(msg, to_save=True)
+
+    def summary_to_list(summary, model):
+        r = []
+        for k in summary:
+            p = model.get_by_id(k)
+            if not p:
+                continue
+            r += [{
+                "profile": p.name,
+                "summary": summary[k]
+            }]
+        return sorted(r, key=lambda x: -r["summary"])
 
     logger.info("[%s] Performing escalations", alarm_id)
     alarm = get_alarm(alarm_id)
@@ -64,9 +76,15 @@ def escalate(alarm_id, escalation_id, escalation_delay):
         if not a.template:
             log("No escalation template, skipping")
             return
-
+        # Check TT limits
+        if escalation.global_limit:
+            pass
+        #
         ctx = {
-            "alarm": alarm
+            "alarm": alarm,
+            "total_objects": summary_to_list(alarm.total_objects, ManagedObjectProfile),
+            "total_subscribers": summary_to_list(alarm.total_subscribers, SubscriberProfile),
+            "total_services": summary_to_list(alarm.total_services, ServiceProfile)
         }
         subject = a.template.render_subject(**ctx)
         body = a.template.render_body(**ctx)
