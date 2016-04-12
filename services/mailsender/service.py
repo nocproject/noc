@@ -24,9 +24,10 @@ class MailSenderService(Service):
 
     def __init__(self, *args, **kwargs):
         super(MailSenderService, self).__init__(*args, **kwargs)
-        self.tz = pytz.timezone(self.config.timezone)
+        self.tz = None
 
     def on_activate(self):
+        self.tz = pytz.timezone(self.config.timezone)
         self.subscribe(
             topic=self.name,
             channel="sender",
@@ -37,7 +38,7 @@ class MailSenderService(Service):
         self.logger.info(
             "[%s] Sending message: %s (%s) [%s, attempt %d]",
             message.id, subject, address,
-            datetime.datetime.fromtimestamp(message.timestamp),
+            datetime.datetime.fromtimestamp(message.timestamp / 1000000000.0),
             message.attempts
         )
         return self.send_mail(address, subject, body)
@@ -50,7 +51,7 @@ class MailSenderService(Service):
         :param body: mail body
         :returns: sending status as boolean
         """
-        now = datetime.datetime.now(self.TZ)
+        now = datetime.datetime.now(self.tz)
         md = now.strftime("%a, %d %b %Y %H:%M:%S %z")
         from_address = self.config.from_address
         message = MIMEText(body, _charset="utf-8")
@@ -106,6 +107,7 @@ class MailSenderService(Service):
             self.logger.error("Data error: %s", e)
             return False
         self.logger.debug("Sent")
+        return True
 
 
 if __name__ == "__main__":
