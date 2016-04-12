@@ -2,6 +2,11 @@
 ---
 product: "noc"
 services:
+  nsqlookupd:
+    description: NSQ lookup daemon
+    level: system
+    port: 4160
+
   postgres:
     description: PostgreSQL server
     level: system
@@ -98,12 +103,21 @@ services:
     required_assets:
       - login
 
+  mailsender:
+    description: SMTP mail sender
+    level: global
+
 config:
   noc:
     installation_name:
       label: Installation name
       type: str
       default: Unconfigured installation
+
+    timezone:
+      label: Time Zone
+      type: str
+      default: Europe/Moscow
 
     rpc_choose_services:
       label: Choose RPC services
@@ -215,4 +229,37 @@ config:
 
     ldap_server:
       label: LDAP Server
+      type: str
+
+  mailsender:
+    smtp_server:
+      label: SMTP server address
+      type: str
+
+    smtp_port:
+      label: SMTP server port
+      type: int
+      default: 25
+
+    use_tls:
+      label: Use SMTP TLS
+      type: bool
+      default: false
+
+    helo_hostname:
+      label: SMTP HELO hostname
+      type: str
+      default: noc
+
+    from_address:
+      label: Email sender address
+      type: str
+      default: noc@example.com
+
+    smtp_user:
+      label: SMTP User
+      type: str
+
+    smtp_password:
+      label: SMTP Password
       type: str
