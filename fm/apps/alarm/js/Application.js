@@ -26,7 +26,6 @@ Ext.define("NOC.fm.alarm.Application", {
             bs = Math.max(50, Math.ceil(screen.height / 24) + 10);
         me.pollingTaskId = null;
         me.lastCheckTS = null;
-        me.setLastCheckTS();
         me.sounds = {};  // url -> audio object
         me.currentQuery = {status: "A"};
         me.store = Ext.create("NOC.core.ModelStore", {
@@ -396,26 +395,25 @@ Ext.define("NOC.fm.alarm.Application", {
     },
     //
     checkNewAlarms: function() {
-        var me = this;
-        Ext.Ajax.request({
-            url: "/fm/alarm/notification/?ts=" + me.lastCheckTS,
-            scope: me,
-            success: function(response) {
-                var data = Ext.decode(response.responseText);
-                if(data.sound) {
-                    if(!me.sounds[data.sound]) {
-                        me.sounds[data.sound] = new Audio(data.sound);
-                    }
-                    me.sounds[data.sound].play();
-                }
-            }
-        });
-        me.setLastCheckTS();
-    },
-    //
-    setLastCheckTS: function() {
         var me = this,
-            now = new Date();
-        me.lastCheckTS = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString();
+            ts, delta;
+        ts = new Date().getTime();
+        if(me.lastCheckTS) {
+            delta = Math.ceil((ts - me.lastCheckTS) / 1000.0);
+            Ext.Ajax.request({
+                url: "/fm/alarm/notification/?delta=" + delta,
+                scope: me,
+                success: function (response) {
+                    var data = Ext.decode(response.responseText);
+                    if (data.sound) {
+                        if (!me.sounds[data.sound]) {
+                            me.sounds[data.sound] = new Audio(data.sound);
+                        }
+                        me.sounds[data.sound].play();
+                    }
+                }
+            });
+        }
+        me.lastCheckTS = ts;
     }
 });

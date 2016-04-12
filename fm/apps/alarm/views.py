@@ -9,8 +9,7 @@
 ## Python modules
 import os
 import inspect
-## Third-party modules
-import dateutil.parser
+import datetime
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.fm.models.activealarm import ActiveAlarm
@@ -335,11 +334,12 @@ class AlarmApplication(ExtApplication):
     @view(url="notification/$", method=["GET"],
           api=True, access="launch")
     def api_notification(self, request):
-        ts = request.GET.get("ts")
+        delta = request.GET.get("delta")
         n = 0
         sound = None
-        if ts:
-            t0 = dateutil.parser.parse(ts)
+        if delta:
+            dt = datetime.timedelta(seconds=int(delta))
+            t0 = datetime.datetime.now() - dt
             n = ActiveAlarm._get_collection().find({
                 "timestamp": {
                     "$gt": t0
