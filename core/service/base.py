@@ -452,7 +452,6 @@ class Service(object):
             channel=channel,
             lookupd_http_addresses=self.config.get_service("nsqlookupd")
         )
-        nsq.run()
 
     def get_nsq_writer(self):
         if not self.nsq_writer:
