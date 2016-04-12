@@ -8,6 +8,7 @@
 
 ## Python modules
 import datetime
+import logging
 ## Django modules
 from django.db import models
 from django.contrib.auth.models import User
@@ -15,7 +16,19 @@ from django.contrib.auth.models import User
 from noc.settings import LANGUAGE_CODE
 from noc.lib.timepattern import TimePatternList
 from timepattern import TimePattern
-from notification import (Notification, NOTIFICATION_METHOD_CHOICES)
+from noc.core.service.pub import pub
+
+
+logger = logging.getLogger(__name__)
+
+
+NOTIFICATION_TOPICS = {
+    "mail": "mailsender"
+}
+
+NOTIFICATION_METHOD_CHOICES = [
+    (x, x) for x in sorted(NOTIFICATION_TOPICS)
+]
 
 
 class NotificationGroup(models.Model):
@@ -91,22 +104,39 @@ class NotificationGroup(models.Model):
                 return messages[cl]
         return "Cannot translate message"
 
+    @classmethod
+    def send_notification(cls, method, address, subject, body):
+        topic = NOTIFICATION_TOPICS.get(method)
+        if not topic:
+            logging.error("Unknown notification method: %s", method)
+            return
+        logging.debug("Sending notification to %s via %s",
+                      address, method)
+        pub(
+            topic,
+            {
+                "address": address,
+                "subject": subject,
+                "body": body
+            }
+        )
+
     def notify(self, subject, body, link=None):
         """
         Send message to active members
         """
+        logger.debug("Notify group %s: %s", self.name, subject)
         if not isinstance(subject, dict):
             subject = {LANGUAGE_CODE: subject}
         if not isinstance(body, dict):
             body = {LANGUAGE_CODE: body}
         for method, params, lang in self.active_members:
-            Notification(
-                notification_method=method,
-                notification_params=params,
-                subject=self.get_effective_message(subject, lang),
-                body=self.get_effective_message(body, lang),
-                link=link
-            ).save()
+            self.send_notification(
+                method,
+                params,
+                self.get_effective_message(subject, lang),
+                self.get_effective_message(body, lang)
+            )
 
     @classmethod
     def group_notify(cls, groups, subject, body, link=None, delay=None,
@@ -133,18 +163,12 @@ class NotificationGroup(models.Model):
                 lang[(method, params)] = l
         for method, params in ngs:
             l = lang[(method, params)]
-            n = Notification(
-                notification_method=method,
-                notification_params=params,
-                subject=cls.get_effective_message(subject, l),
-                body=cls.get_effective_message(body, l),
-                link=link
+            cls.send_notification(
+                method,
+                params,
+                cls.get_effective_message(subject, l),
+                cls.get_effective_message(body, l)
             )
-            if delay:
-                n.next_try = datetime.datetime.now() + datetime.timedelta(seconds=delay)
-            if tag:
-                n.tag = tag
-            n.save()
 
 
 class NotificationGroupUser(models.Model):

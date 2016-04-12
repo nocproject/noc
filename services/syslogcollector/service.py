@@ -43,8 +43,8 @@ class SyslogCollectorService(Service):
         self.omap = self.open_rpc("omap")
         self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
         # Set event listeners
-        self.subscribe("objmapchange.%(pool)s",
-                       self.on_object_map_change)
+        # self.subscribe("objmapchange.%(pool)s",
+        #                self.on_object_map_change)
         # Listen sockets
         server = SyslogServer(service=self)
         for l in [self.config.listen_syslog]:

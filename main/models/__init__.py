@@ -393,7 +393,6 @@ from timepattern import TimePattern
 from timepatternterm import TimePatternTerm
 
 
-from notification import (Notification, NOTIFICATION_METHOD_CHOICES, USER_NOTIFICATION_METHOD_CHOICES)
 from notificationgroup import (
     NotificationGroup, NotificationGroupUser, NotificationGroupOther,
     )

@@ -51,8 +51,8 @@ class PingService(Service):
         self.omap = self.open_rpc("omap")
         self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
         # Set event listeners
-        self.subscribe("objmapchange.%(pool)s",
-                       self.on_object_map_change)
+        # self.subscribe("objmapchange.%(pool)s",
+        #                self.on_object_map_change)
         # Send spooled messages every 250ms
         self.logger.debug("Stating message sender task")
         self.send_callback = tornado.ioloop.PeriodicCallback(
