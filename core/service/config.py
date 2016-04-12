@@ -38,6 +38,10 @@ class Config(object):
                         v = int(d)
                 elif t == "str":
                     v = d or ""
+                elif t == "bool":
+                    v = False
+                    if d:
+                        v = d.lower() in ("true", "yes")
                 else:
                     raise Exception("Unknown type")
                 config[k] = v
