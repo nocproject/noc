@@ -16,7 +16,6 @@ from alarmlog import AlarmLog
 from alarmclass import AlarmClass
 from noc.main.models import User
 from noc.main.models.style import Style
-from noc.main.models.notification import Notification
 from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
@@ -334,7 +333,7 @@ class ActiveAlarm(nosql.Document):
             "Alarm %s has been marked as child" % self.id)
         root_alarm.update_summary()
         # Clear pending notifications
-        Notification.purge_delayed("alarm:%s" % self.id)
+        # Notification.purge_delayed("alarm:%s" % self.id)
 
     @classmethod
     def enable_caching(cls, ttl=600):

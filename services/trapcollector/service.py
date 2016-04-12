@@ -43,8 +43,8 @@ class TrapCollectorService(Service):
         self.omap = self.open_rpc("omap")
         self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
         # Set event listeners
-        self.subscribe("objmapchange.%(pool)s",
-                       self.on_object_map_change)
+        # self.subscribe("objmapchange.%(pool)s",
+        #                self.on_object_map_change)
         # Listen sockets
         server = TrapServer(service=self)
         for l in [self.config.listen_traps]:
@@ -56,10 +56,10 @@ class TrapCollectorService(Service):
                              addr, port)
             try:
                 server.listen(port, addr)
-            except socket.error, why:
+            except socket.error as e:
                 self.logger.error(
                     "Failed to start SNMP Trap server at %s:%s: %s",
-                    addr, port, why
+                    addr, port, e
                 )
         server.start()
         # Send spooled messages every 250ms
