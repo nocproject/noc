@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import time
 import os
 import sys
 import logging
@@ -23,7 +24,9 @@ import tornado.netutil
 import tornado.httpserver
 import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor
-from setproctitle import setproctitle
+import setproctitle
+import nsq
+import ujson
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
 from .config import Config
@@ -78,6 +81,10 @@ class Service(object):
         self.service_id = str(uuid.uuid4())
         self.perf_metrics = defaultdict(int)
         self.executors = {}
+        self.start_time = time.time()
+        self.pid = os.getpid()
+        self.nsq_readers = {}  # handler -> Reader
+        self.nsq_writer = None
 
     def create_parser(self):
         """
@@ -227,7 +234,7 @@ class Service(object):
         vars.update(self.config._conf)
         title = self.process_name % vars
         self.logger.debug("Setting process title to: %s", title)
-        setproctitle(title)
+        setproctitle.setproctitle(title)
 
     def start(self):
         """
@@ -322,7 +329,9 @@ class Service(object):
         """
         Initialize services before run
         """
-        handlers = []
+        handlers = [
+            (r"^/mon/$", MonRequestHandler, {"service": self})
+        ]
         if self.api:
             addr, port = self.get_service_address()
             sdl = {}  # api -> [methods]
@@ -341,7 +350,6 @@ class Service(object):
                 # Populate sdl
                 sdl[a.name] = a.get_methods()
             handlers += [
-                (r"^/mon/$", MonRequestHandler, {"service": self}),
                 ("^/doc/$", DocRequestHandler, {"service": self}),
                 ("^/sdl.js", SDLRequestHandler, {"sdl": sdl})
             ]
@@ -382,8 +390,23 @@ class Service(object):
         Returns monitoring data
         """
         r = {
-            "status": True
+            "status": True,
+            "service": self.name,
+            "instance": self.config.instance,
+            "node": self.config.node,
+            "dc": self.config.dc,
+            "config": self.config._conf,
+            "pid": self.pid,
+            # Current process uptime
+            "uptime": time.time() - self.start_time
         }
+        if self.executors:
+            r["threadpools"] = {}
+            for x in self.executors:
+                r["threadpools"][x] = {
+                    "qsize": self.executors[x]._work_queue.qsize(),
+                    "threads": len(self.executors[x]._threads)
+                }
         r.update(self.perf_metrics)
         return r
 
@@ -407,8 +430,48 @@ class Service(object):
         for t in self.config.rpc_retry_timeout.split(","):
             yield float(t)
 
-    def subscribe(self, topic, callback):
-        pass
+    def subscribe(self, topic, channel, handler):
+        """
+        Subscribe message to channel
+        """
+        def call_handler(message):
+            try:
+                data = ujson.loads(message.body)
+            except ValueError as e:
+                self.logger.debug("Cannot decode JSON message: %s", e)
+                return
+            if isinstance(data, dict):
+                return handler(message, **data)
+            else:
+                return handler(message, data)
+
+        self.logger.debug("Subscribing to %s/%s", topic, channel)
+        self.nsq_readers[handler] = nsq.Reader(
+            message_handler=call_handler,
+            topic=topic,
+            channel=channel,
+            lookupd_http_addresses=self.config.get_service("nsqlookupd")
+        )
+        nsq.run()
+
+    def get_nsq_writer(self):
+        if not self.nsq_writer:
+            self.nsq_writer = nsq.Writer(["127.0.0.1:4150"])
+        return self.nsq_writer
+
+    def pub(self, topic, data):
+        """
+        Publish message to topic
+        """
+        w = self.get_nsq_writer()
+        w.pub(topic, ujson.dumps(data))
+
+    def mpub(self, topic, messages):
+        """
+        Publish multiple messages to topic
+        """
+        w = self.get_nsq_writer()
+        w.mpub(topic, [ujson.dumps(m) for m in messages])
 
     def get_executor(self, name):
         """
