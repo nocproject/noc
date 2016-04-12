@@ -5,7 +5,7 @@ services:
   nsqlookupd:
     description: NSQ lookup daemon
     level: system
-    port: 4160
+    port: 4161
 
   postgres:
     description: PostgreSQL server
