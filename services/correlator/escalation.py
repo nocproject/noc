@@ -32,14 +32,14 @@ def escalate(alarm_id, escalation_id, escalation_delay):
     def summary_to_list(summary, model):
         r = []
         for k in summary:
-            p = model.get_by_id(k)
+            p = model.get_by_id(k.profile)
             if not p:
                 continue
             r += [{
                 "profile": p.name,
-                "summary": summary[k]
+                "summary": k.summary
             }]
-        return sorted(r, key=lambda x: -r["summary"])
+        return sorted(r, key=lambda x: -x["summary"])
 
     logger.info("[%s] Performing escalations", alarm_id)
     alarm = get_alarm(alarm_id)
