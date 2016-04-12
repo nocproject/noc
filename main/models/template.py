@@ -8,8 +8,7 @@
 
 ## Third-party modules
 from django.db import models
-from django.template import Template as DjangoTemplate
-from django.template import Context
+import jinja2
 
 
 class Template(models.Model):
@@ -28,7 +27,7 @@ class Template(models.Model):
         return self.name
 
     def render_subject(self, LANG=None, **kwargs):
-        return DjangoTemplate(self.subject).render(Context(kwargs))
+        return jinja2.Template(self.subject).render(**kwargs)
 
     def render_body(self, LANG=None, **kwargs):
-        return DjangoTemplate(self.body).render(Context(kwargs))
+        return jinja2.Template(self.body).render(**kwargs)
