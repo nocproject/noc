@@ -70,6 +70,7 @@ class ActiveAlarm(nosql.Document):
     direct_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
     # Indirectly affected services summary, groupped by profiles
     # (covered by this and all inferred alarms)
+    total_objects = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
     total_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
     total_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
 
@@ -156,6 +157,7 @@ class ActiveAlarm(nosql.Document):
             reopens=self.reopens,
             direct_services=self.direct_services,
             direct_subscribers=self.direct_subscribers,
+            total_objects=self.total_objects,
             total_services=self.total_services,
             total_subscribers=self.total_subscribers
         )
@@ -286,8 +288,16 @@ class ActiveAlarm(nosql.Document):
 
         services = SummaryItem.items_to_dict(self.direct_services)
         subscribers = SummaryItem.items_to_dict(self.direct_subscribers)
+        objects = {
+            self.managed_object.object_profile.id: 1
+        }
+
         for a in ActiveAlarm.objects.filter(root=self.id):
             a.update_summary()
+            update_dict(
+                objects,
+                SummaryItem.items_to_dict(a.total_objects)
+            )
             update_dict(
                 services,
                 SummaryItem.items_to_dict(a.total_services)
@@ -296,13 +306,16 @@ class ActiveAlarm(nosql.Document):
                 subscribers,
                 SummaryItem.items_to_dict(a.total_subscribers)
             )
+        obj_list = SummaryItem.dict_to_items(objects)
         svc_list = SummaryItem.dict_to_items(services)
         sub_list = SummaryItem.dict_to_items(subscribers)
-        if svc_list != self.total_services or sub_list != self.total_subscribers:
+        if svc_list != self.total_services or sub_list != self.total_subscribers or obj_list != self.total_objects:
             ns = ServiceSummary.get_severity({
                 "service": services,
-                "subscriber": subscribers
+                "subscriber": subscribers,
+                "objects": objects
             })
+            self.total_objects = obj_list
             self.total_services = svc_list
             self.total_subscribers = sub_list
             if ns != self.severity:
