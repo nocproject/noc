@@ -71,7 +71,7 @@
   failed_when: node_check.stderr
   register: node_check
 
-- name: Install python packages
+- name: Install node python packages(should be loooong running task at first time)
   pip:
     chdir: "{{noc_root}}"
     requirements: "requirements/node.txt"
@@ -211,3 +211,6 @@
     - section: customization
       option: installation_name
       value: "{{ noc_installation_name }}"
+
+- name: install nsq
+  include: "nsq.yml"
