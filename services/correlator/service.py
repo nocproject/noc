@@ -381,9 +381,14 @@ class CorrelatorService(Service):
             if esc:
                 # Check global limits
                 ets = datetime.datetime.now() - datetime.timedelta(seconds=60)
-                ae = ActiveAlarm.objects.filter({
+                ae = ActiveAlarm._get_collection().find({
                     "escalation_ts": {
-                        "$gt": ets
+                        "$gte": ets
+                    }
+                }).count()
+                ae += ArchivedAlarm._get_collection().find({
+                    "escalation_ts": {
+                        "$gte": ets
                     }
                 }).count()
                 if ae > self.config.tt_escalation_limit:
