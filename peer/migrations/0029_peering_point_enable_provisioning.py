@@ -2,8 +2,7 @@
 
 from south.db import db
 from django.db import models
-from noc.peer.models import *
-from noc.main.models import *
+
 
 class Migration:
     

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from south.db import db
-from noc.main.models import *
 
 
 class Migration:

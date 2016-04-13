@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 from south.db import db
-from noc.main.models import *
+from django.db import models
 
 LANGUAGES=[
     ("Afar",            "Afaraf"),

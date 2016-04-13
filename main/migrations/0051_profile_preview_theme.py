@@ -4,7 +4,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from south.db import db
-from noc.main.models import *
+from django.db import models
 
 
 class Migration:
