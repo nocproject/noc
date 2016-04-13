@@ -1,1 +1,14 @@
 ---
+- name: include nsqd os specific tasks
+  include: "os/{{ ansible_distribution }}/main.yml"
+
+- name: install nsqlookupd config
+  template:
+    src: config/nsqlookupd.conf.j2
+    dest: "{{noc_root}}/var/etc/nsq/nsqlookupd.conf"
+
+- name: Enable nsqlookupd system service
+  service:
+    name: "nsqlookupd"
+    enabled: yes
+    state: started
