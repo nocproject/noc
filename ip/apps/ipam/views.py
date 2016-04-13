@@ -23,7 +23,10 @@ from noc.lib.widgets import *
 from noc.lib.colors import *
 from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.ip.models import *
-from noc.main.models import Permission, Style, CustomField, ResourceState
+from noc.main.models.permission import Permission
+from noc.main.models.style import Style
+from noc.main.models.customfield import CustomField
+from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.peer.models import AS
 from noc.vc.models import VCBindFilter

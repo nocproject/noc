@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.main.models import Style
+from noc.main.models.style import Style
 from noc.sa.interfaces.base import ColorParameter
 
 

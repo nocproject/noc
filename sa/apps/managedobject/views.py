@@ -20,7 +20,6 @@ from noc.lib.app import ExtModelApplication, view
 from noc.sa.models.managedobject import (ManagedObject,
                                          ManagedObjectAttribute)
 from noc.sa.models.useraccess import UserAccess
-from noc.sa.models.maptask import MapTask
 from noc.sa.models.interactionlog import InteractionLog
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.inv.models.link import Link

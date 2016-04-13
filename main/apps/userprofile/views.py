@@ -13,7 +13,7 @@ from noc.sa.interfaces.base import (StringParameter, ListOfParameter,
                                     DictParameter, ModelParameter)
 from noc.settings import LANGUAGES
 from noc.main.models.timepattern import TimePattern
-from noc.main.models.notification import USER_NOTIFICATION_METHOD_CHOICES
+from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.main.models.userprofilecontact import UserProfileContact
 
 

@@ -11,8 +11,8 @@ from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (ListField, StringField, ReferenceField,
                                 DynamicField, EmbeddedDocumentField)
 ## NOC modules
-from managedobject import ManagedObject
 from noc.inv.models.capability import Capability
+from managedobject import ManagedObject
 from noc.lib.nosql import ForeignKeyField
 
 

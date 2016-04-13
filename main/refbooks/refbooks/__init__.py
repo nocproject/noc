@@ -8,7 +8,9 @@
 """
 """
 from noc.main.models import RefBook as RB
-from noc.main.models import RefBookField,Language
+from noc.main.models.language import Language
+from noc.main.models import RefBookField
+from noc.main.models.language import Language
 ##
 lang_cache={}
 def get_language(name):

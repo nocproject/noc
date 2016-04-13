@@ -11,7 +11,7 @@ from django.db import models
 ## NOC modules
 from vctype import VCType
 from vcfilter import VCFilter
-from noc.main.models import Style
+from noc.main.models.style import Style
 from noc.core.model.decorator import on_save, on_delete
 
 

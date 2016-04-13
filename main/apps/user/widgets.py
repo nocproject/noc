@@ -10,7 +10,7 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User,Group
 from noc.lib.app import site
-from noc.main.models import Permission
+from noc.main.models.permission import Permission
 
 ##
 ## Application access widget

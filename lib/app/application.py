@@ -178,7 +178,7 @@ class Application(object):
         """
         Return desktop launch information
         """
-        from noc.main.models import Permission
+        from noc.main.models.permission import Permission
 
         user = request.user
         ps = self.get_app_id().replace(".", ":") + ":"

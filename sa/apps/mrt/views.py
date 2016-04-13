@@ -14,7 +14,7 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.reducetask import ReduceTask
 from noc.sa.models.mrtconfig import MRTConfig
-from noc.main.models import Permission
+from noc.main.models.permission import Permission
 from noc.lib.serialize import json_decode
 
 
