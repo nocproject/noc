@@ -5,7 +5,7 @@
   rpm_key: state=present key=https://repos.influxdata.com/influxdb.key
 
 
-- name: Install RedHat system packages
+- name: Install Telegraf packages
   yum: name={{item}} state=present update_cache=yes
   with_items:
    - telegraf
