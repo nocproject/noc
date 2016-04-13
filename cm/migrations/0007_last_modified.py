@@ -6,7 +6,7 @@
 """
 """
 from south.db import db
-from noc.cm.models import *
+from django.db import models
 from noc.settings import config
 import os,stat,datetime
 
