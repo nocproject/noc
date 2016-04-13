@@ -91,7 +91,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                 "$gte": ets
             }
         }).count()
-        if ae > tt_escalation_limit:
+        if ae >= tt_escalation_limit:
             logger.error(
                 "Escalation limit exceeded (%s/%s). Skipping",
                 ae, tt_escalation_limit
