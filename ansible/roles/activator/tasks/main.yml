@@ -1,7 +1,7 @@
 ---
 - include: "os/{{ ansible_distribution }}/main.yml"
 
-- name: Install python packages
+- name: Install activator python packages
   pip: >
     chdir="{{noc_root}}"
     requirements="requirements/activator.txt"
