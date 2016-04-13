@@ -11,9 +11,6 @@
 
     - role: node
 
-    - role: nsqlookupd
-      when: "{{ has_svc_nsqlookupd | default(False) }}"
-
     - role: nsqd
 
     - role: dev
@@ -33,6 +30,11 @@
 
     - role: grafana
       when: "{{ has_svc_grafana | default(False) }}"
+
+      when: "{{ has_svc_nsqd | default(False) }}"
+
+    - role: nsqlookupd
+      when: "{{ has_svc_nsqlookupd| default(False) }}"
 
     - role: migrate
       when: "{{ has_svc_mongod_master | default(False) }}"
