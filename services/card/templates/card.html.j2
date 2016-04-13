@@ -11,6 +11,9 @@
     <!--<script src="/ui/pkg/bootstrap/bootstrap/3.3.6/js/bootstrap.min.js"></script>-->
     <link rel="stylesheet" href="{{ hashed("/ui/pkg/fontawesome/css/font-awesome.min.css") }}">
     <script src="{{ hashed("/ui/pkg/jquery/jquery.min.js") }}"></script>
+    {% for js in card_js -%}
+    <script src="{{ hashed(js) }}"></script>
+    {%- endfor %}
 </head>
 <body>
 <div class="container-fluid">
