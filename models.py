@@ -104,13 +104,13 @@ _MODELS = {
     "main.SystemNotification": "noc.main.models.SystemNotification",
     "main.SystemTemplate": "noc.main.models.SystemTemplate",
     "main.Tag": "noc.main.models.tag.Tag",
-    "main.Template": "noc.main.models.Template",
+    "main.Template": "noc.main.models.template.Template",
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
     "main.TimePatternTerm": "noc.main.models.timepatternterm.TimePatternTerm",
     "main.UserProfile": "noc.main.models.userprofile.UserProfile",
     "main.UserProfileContact": "noc.main.models.userprofilecontact.UserProfileContact",
-    "main.UserSession": "noc.main.models.UserSession",
-    "main.UserState": "noc.main.models.UserState",
+    "main.UserSession": "noc.main.models.usersession.UserSession",
+    "main.UserState": "noc.main.models.userstate.UserState",
     # project models
     "project.Project": "noc.project.models.project.Project",
     # gis models
