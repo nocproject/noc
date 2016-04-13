@@ -30,7 +30,8 @@ class ActiveAlarm(nosql.Document):
             "timestamp", "discriminator", "root", "-severity",
             "alarm_class",
             ("timestamp", "managed_object"),
-            "escalation_tt"
+            "escalation_tt",
+            "escalation_ts"
         ]
     }
     status = "A"
@@ -188,7 +189,8 @@ class ActiveAlarm(nosql.Document):
                 tts.add_comment(
                     tt_id,
                     subject="Alarm cleared",
-                    body="Alarm has been cleared"
+                    body="Alarm has been cleared",
+                    login="NOC"
                 )
         return a
 
