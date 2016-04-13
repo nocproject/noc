@@ -6,7 +6,7 @@
 """
 """
 from south.db import db
-from noc.cm.models import *
+from django.db import models
 
 OBJECT_TYPES=["config","dns","prefixlist","rpsl"]
 OBJECT_TYPE_CHOICES=[(x,x) for x in OBJECT_TYPES]

@@ -2,7 +2,7 @@
 
 from south.db import db
 from django.db import models
-from noc.cm.models import *
+from django.db import models
 
 class Migration:
     def create_notification_group(self,name,emails):
