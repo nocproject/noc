@@ -168,7 +168,7 @@ server {
 
     # Legacy JS mappings
     location ~*  ^/([^/]+)/([^/]+)/(js|css|img)/(.+)$ {
-        root /opt/noc;
+        root {{ noc_root }};
         rewrite ^/([^/]+)/([^/]+)/(js|css|img)/(.+)$
                 /$1/apps/$2/$3/$4 break;
         gzip on;
