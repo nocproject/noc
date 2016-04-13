@@ -14,7 +14,8 @@ from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
 from django.db import transaction,reset_queries
 from django.contrib.auth.models import User
-from noc.main.models import Language,DatabaseStorage,database_storage
+from noc.main.models.language import Language
+from noc.main.models.databasestorage import database_storage
 from noc.kb.models import KBEntry,KBEntryAttachment
 from optparse import OptionParser, make_option
 import os,re,stat,datetime,sys,types,gc

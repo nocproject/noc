@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.test import ModelTestCase
-from noc.main.models import Language
+from noc.main.models.language import Language
 
 
 class LanguageModelTestCase(ModelTestCase):

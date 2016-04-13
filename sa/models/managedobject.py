@@ -749,6 +749,7 @@ class ManagedObject(Model):
         """
         Returns a dict of effective object capabilities
         """
+        from objectcapabilities import ObjectCapabilities
         return ObjectCapabilities.get_capabilities(self)
 
     def update_caps(self, caps, local=False):
@@ -756,6 +757,8 @@ class ManagedObject(Model):
         Update existing capabilities with a new ones.
         :param caps: dict of caps name -> caps value
         """
+        from objectcapabilities import ObjectCapabilities, CapsItem
+
         def get_cap(name):
             if name in ccache:
                 return ccache[name]
@@ -900,7 +903,6 @@ class ManagedObjectAttribute(Model):
 from useraccess import UserAccess
 from groupaccess import GroupAccess
 from objectnotification import ObjectNotification
-from objectcapabilities import ObjectCapabilities, CapsItem
 from noc.inv.models.capability import Capability
 from action import Action
 from selectorcache import SelectorCache

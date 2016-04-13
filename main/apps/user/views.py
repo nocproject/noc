@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 ## NOC modules
 from noc.lib.app import ModelApplication, view
-from noc.main.models import Permission
+from noc.main.models.permission import Permission
 from widgets import AccessWidget
 
 

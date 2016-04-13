@@ -18,7 +18,7 @@ from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces.base import interface_registry
 from noc.lib.stencil import stencil_registry
 from noc import settings
-from noc.main.models.notification import USER_NOTIFICATION_METHOD_CHOICES
+from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.cm.validators.base import validator_registry
 from noc.core.profile.loader import loader as profile_loader
 

@@ -15,7 +15,8 @@ from mongoengine.queryset import Q as MEQ
 ## NOC modules
 from error import InvalidLabelException, MissedLabelException
 from vcdomain import VCDomain
-from noc.main.models import ResourceState, Style
+from noc.main.models.style import Style
+from noc.main.models import ResourceState
 from noc.project.models.project import Project
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site

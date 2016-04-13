@@ -20,12 +20,8 @@ from django.contrib.auth.models import User, Group
 from django.core.validators import MaxLengthValidator
 from django.db.models.signals import class_prepared, pre_save, pre_delete,\
                                      post_save, post_delete
-## Third-party modules
-from mongoengine.django.sessions import MongoSession
 ## NOC Modules
 from noc import settings
-from noc.core.model.fields import BinaryField
-from noc.lib.database_storage import DatabaseStorage as DBS
 from noc.main.refbooks.downloaders import downloader_registry
 from noc.core.model.fields import TextArrayField, CIDRField
 from noc.lib.middleware import get_user, get_request
@@ -51,105 +47,6 @@ downloader_registry.register_all()
 from customfieldenumgroup import CustomFieldEnumGroup
 from customfieldenumvalue import CustomFieldEnumValue
 from customfield import CustomField
-from permission import Permission
-
-
-class UserSession(nosql.Document):
-    meta = {
-        "collection": "noc.user_sessions",
-        "allow_inheritance": False
-    }
-    session_key = nosql.StringField(primary_key=True)
-    user_id = nosql.IntField()
-
-    @classmethod
-    def register(cls, session_key, user):
-        UserSession(session_key=session_key,
-                    user_id=user.id).save(force_insert=True)
-
-    @classmethod
-    def unregister(cls, session_key):
-        UserSession.objects.filter(session_key=session_key).delete()
-
-    @classmethod
-    def active_sessions(cls, user=None, group=None):
-        """
-        Calculate current active sessions for user and group
-        """
-        ids = []
-        if user:
-            ids += [user.id]
-        if group:
-            ids += group.user_set.values_list("id", flat=True)
-        n = 0
-        now = datetime.datetime.now()
-        for us in UserSession.objects.filter(user_id__in=ids):
-            s = MongoSession.objects.filter(session_key=us.session_key).first()
-            if s:
-                # Session exists
-                if s.expire_date < now:
-                    # Expired session
-                    s.delete()
-                else:
-                    n += 1  # Count as active
-            else:
-                # Hanging session, schedule to kill
-                us.delete()
-        return n
-
-
-class UserState(nosql.Document):
-    meta = {
-        "collection": "noc.userstate",
-        "allow_inheritance": False
-    }
-    user_id = nosql.IntField()
-    key = nosql.StringField()
-    value = nosql.StringField()
-
-    def __unicode__(self):
-        return "%s: %s" % (self.user_id, self.key)
-
-from style import Style
-from language import Language
-
-
-class DatabaseStorage(models.Model):
-    """
-    Database Storage
-    """
-    class Meta:
-        verbose_name = "Database Storage"
-        verbose_name_plural = "Database Storage"
-
-    name = models.CharField("Name", max_length=256, unique=True)
-    data = BinaryField("Data")
-    size = models.IntegerField("Size")
-    mtime = models.DateTimeField("MTime")
-
-    ##
-    ## Options for DatabaseStorage
-    ##
-    @classmethod
-    def dbs_options(cls):
-        return {
-            "db_table": DatabaseStorage._meta.db_table,
-            "name_field": "name",
-            "data_field": "data",
-            "mtime_field": "mtime",
-            "size_field": "size",
-        }
-
-    @classmethod
-    def get_dbs(cls):
-        """
-        Get DatabaseStorage instance
-        """
-        return DBS(cls.dbs_options())
-##
-## Default database storage
-##
-database_storage = DatabaseStorage.get_dbs()
 
 
 class MIMEType(models.Model):
@@ -200,7 +97,7 @@ class RefBook(models.Model):
         verbose_name_plural = "Ref Books"
 
     name = models.CharField("Name", max_length=128, unique=True)
-    language = models.ForeignKey(Language, verbose_name="Language")
+    language = models.ForeignKey("main.Language", verbose_name="Language")
     description = models.TextField("Description", blank=True, null=True)
     is_enabled = models.BooleanField("Is Enabled", default=False)
     is_builtin = models.BooleanField("Is Builtin", default=False)
