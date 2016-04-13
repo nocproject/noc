@@ -688,11 +688,12 @@ class ClassifierService(Service):
                     return CR_DELETED
         # Finally dispose event to further processing by correlator
         if disposable and rule.to_dispose:
-            Job.submit(
-                "correlator",
-                "noc.services.correlator.jobs.dispose.DisposeJob",
-                key=str(event.id)
-            )
+            self.pub("correlator.dispose", {"event_id": str(event.id)})
+            # Job.submit(
+            #     "correlator",
+            #     "noc.services.correlator.jobs.dispose.DisposeJob",
+            #     key=str(event.id)
+            # )
             return CR_DISPOSED
         elif rule.is_unknown:
             return CR_UNKNOWN

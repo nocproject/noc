@@ -57,6 +57,11 @@ class CorrelatorService(Service):
         )
         self.scheduler.correlator = self
         ActiveAlarm.enable_caching(600)
+        self.subscribe(
+            "correlator.dispose",
+            "dispose",
+            self.on_dispose_event
+        )
         self.scheduler.run()
 
     def load_config(self):
@@ -471,6 +476,19 @@ class CorrelatorService(Service):
         }
         env.update(kwargs)
         return eval(expression, {}, env)
+
+    def on_dispose_event(self, message, event_id, *args, **kwargs):
+        """
+        Called on new dispose message
+        """
+        self.logger.debug("Dispose event %s", event_id)
+        try:
+            event = ActiveEvent.objects.get(id=event_id)
+        except ActiveEvent.DoesNotExist:
+            self.logger.info("Event not found, skipping")
+            return True
+        self.dispose_event(event)
+        return True
 
     def dispose_event(self, e):
         """
