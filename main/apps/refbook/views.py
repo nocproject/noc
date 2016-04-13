@@ -11,7 +11,8 @@ from django.views.generic import list_detail
 from django.shortcuts import get_object_or_404
 ## NOC modules
 from noc.lib.app import Application, view, HasPerm
-from noc.main.models import *
+from noc.main.models.permission import Permission
+from noc.main.models import RefBook, RefBookData
 
 
 class RefBookAppplication(Application):

@@ -1,6 +1,6 @@
 
 from south.db import db
-from noc.main.models import *
+from django.db import models
 from noc.core.model.fields import TextArrayField
 
 class Migration:
