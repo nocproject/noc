@@ -9,6 +9,7 @@
 ## Python modules
 import logging
 import cachetools
+import datetime
 ## NOC modules
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.ttsystem import TTSystem
@@ -18,12 +19,14 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.archivedalarm import ArchivedAlarm
 
 
 logger = logging.getLogger(__name__)
 
 
-def escalate(alarm_id, escalation_id, escalation_delay):
+def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
     def log(message, *args):
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
@@ -76,9 +79,24 @@ def escalate(alarm_id, escalation_id, escalation_delay):
         if not a.template:
             log("No escalation template, skipping")
             return
-        # Check TT limits
-        if escalation.global_limit:
-            pass
+        # Check global limits
+        ets = datetime.datetime.now() - datetime.timedelta(seconds=60)
+        ae = ActiveAlarm._get_collection().find({
+            "escalation_ts": {
+                "$gte": ets
+            }
+        }).count()
+        ae += ArchivedAlarm._get_collection().find({
+            "escalation_ts": {
+                "$gte": ets
+            }
+        }).count()
+        if ae > tt_escalation_limit:
+            logger.error(
+                "Escalation limit exceeded (%s/%s). Skipping",
+                ae, tt_escalation_limit
+            )
+            return
         #
         ctx = {
             "alarm": alarm,

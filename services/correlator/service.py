@@ -384,25 +384,7 @@ class CorrelatorService(Service):
         if not a.root:
             esc = self.escalations.get(a.alarm_class.id)
             if esc:
-                # Check global limits
-                ets = datetime.datetime.now() - datetime.timedelta(seconds=60)
-                ae = ActiveAlarm._get_collection().find({
-                    "escalation_ts": {
-                        "$gte": ets
-                    }
-                }).count()
-                ae += ArchivedAlarm._get_collection().find({
-                    "escalation_ts": {
-                        "$gte": ets
-                    }
-                }).count()
-                if ae > self.config.tt_escalation_limit:
-                    self.logger.error(
-                        "Escalation limit exceeded (%s/%s). Skipping",
-                        ae, self.config.tt_escalation_limit
-                    )
-                else:
-                    self.watch_escalations(a, esc)
+                self.watch_escalations(a, esc)
 
     def clear_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
@@ -545,7 +527,8 @@ class CorrelatorService(Service):
                     scheduler="correlator",
                     alarm_id=alarm.id,
                     escalation_id=esc.id,
-                    escalation_delay=delay
+                    escalation_delay=delay,
+                    tt_escalation_limit=self.config.tt_escalation_limit
                 )
 
 if __name__ == "__main__":
