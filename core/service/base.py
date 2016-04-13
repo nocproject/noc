@@ -439,7 +439,7 @@ class Service(object):
                 data = ujson.loads(message.body)
             except ValueError as e:
                 self.logger.debug("Cannot decode JSON message: %s", e)
-                return
+                return True  # Broken message
             if isinstance(data, dict):
                 return handler(message, **data)
             else:
