@@ -18,6 +18,7 @@ from cards.tt import TTCard
 from cards.subscribersession import SubscriberSessionCard
 from cards.totaloutage import TotalOutageCard
 from cards.outage import OutageCard
+from cards.alarmheat import AlarmHeatCard
 
 
 class CardRequestHandler(UIHandler):
@@ -28,7 +29,8 @@ class CardRequestHandler(UIHandler):
         "subscribersession": SubscriberSessionCard,
         "tt": TTCard,
         "totaloutage": TotalOutageCard,
-        "outage": OutageCard
+        "outage": OutageCard,
+        "alarmheat": AlarmHeatCard
     }
     CARD_TEMPLATE_PATH = "services/card/templates/card.html.j2"
     CARD_TEMPLATE = None
@@ -58,7 +60,9 @@ class CardRequestHandler(UIHandler):
         self.write(
             self.get_card_template().render({
                 "card_data": data,
-                "hashed": self.hashed
+                "hashed": self.hashed,
+                "card_js": card.card_js,
+                "card_css": card.card_css
             })
         )
 
