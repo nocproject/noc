@@ -2,14 +2,13 @@
 
 from south.db import db
 from django.db import models
-from django.db import models
 
 class Migration:
     
     def forwards(self):
         TimePattern = db.mock_model(model_name='TimePattern', db_table='main_timepattern', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         Language = db.mock_model(model_name='Language', db_table='main_language', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+        User = db.mock_model(model_name='User', db_table='auth_user', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         # Adding model 'UserProfile'
         db.create_table('main_userprofile', (
             ('id', models.AutoField(primary_key=True)),
