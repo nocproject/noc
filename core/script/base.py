@@ -42,6 +42,8 @@ class BaseScript(object):
 
     # Script name in form of <vendor>.<system>.<name>
     name = None
+    # Default script timeout
+    TIMEOUT = 120
     # Enable call cache
     # If True, script result will be cached and reused
     # during lifetime of parent script
@@ -549,9 +551,8 @@ class BaseScript(object):
         except self.snmp.TimeOutError:
             return False
 
-    @classmethod
-    def get_timeout(cls):
-        return 120
+    def get_timeout(self):
+        return self.TIMEOUT
 
     def cli(self, cmd, command_submit=None, bulk_lines=None,
             list_re=None, cached=False, file=None, ignore_errors=False,
