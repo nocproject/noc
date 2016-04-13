@@ -18,7 +18,10 @@ from noc.lib.app import ExtApplication, ModelApplication, view, PermitLogged
 from noc.lib.version import get_version
 from noc.lib.middleware import set_user
 from noc.settings import LANGUAGE_CODE
-from noc.main.models import Group, UserSession, UserState, Permission
+from noc.main.models import Group
+from noc.main.models.permission import Permission
+from noc.main.models.usersession import UserSession
+from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
 from noc.support.cp import CPClient
 
@@ -267,21 +270,14 @@ class DesktopApplication(ExtApplication):
             return self.response_not_found()
         return menu["app"].get_launch_info(request)
 
-    @view(method=["GET"], url="^change_credentials_fields/$",
-          access=PermitLogged(), api=True)
-    def api_change_credentials_fields(self, request):
-        """
-        Returns a list of change credentials field, suitable to use as
-        ExtJS Ext.form.Panel items
-        """
-        return auth_backend.get_change_credentials_fields()
-
     @view(method=["POST"], url="^change_credentials/$",
           access=PermitLogged(), api=True)
     def api_change_credentials(self, request):
         """
         Change user's credentials if allowed by current backend
         """
+
+
         if not auth_backend.can_change_credentials:
             return self.render_json({
                 "status": False,

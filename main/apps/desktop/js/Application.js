@@ -213,20 +213,35 @@ Ext.define("NOC.main.desktop.Application", {
     // Show change credentials form
     onChangeCredentials: function() {
         var me = this;
-        Ext.Ajax.request({
-            method: "GET",
-            url: "/main/desktop/change_credentials_fields/",
-            scope: me,
-            success: function(response) {
-                var fields = Ext.decode(response.responseText);
-                Ext.create("NOC.main.desktop.ChangeCredentials", {
-                    app: me,
-                    fields: fields
-                });
-            },
-            failure: function() {
-                NOC.error("Failed to get credentials fields");
-            }
+        Ext.create("NOC.main.desktop.ChangeCredentials", {
+            app: me,
+            fields: [
+                {
+                    xtype: "textfield",
+                    name: "old_password",
+                    fieldLabel: "Old Password",
+                    allowBlank: false,
+                    inputType: "password"
+                },
+
+                {
+                    xtype: "textfield",
+                    name: "new_password",
+                    fieldLabel: "New Password",
+                    allowBlank: false,
+                    inputType: "password"
+                },
+
+                {
+                    xtype: "textfield",
+                    name: "retype_password",
+                    fieldLabel: "Retype New Password",
+                    allowBlank: false,
+                    inputType: "password",
+                    vtype: "password",
+                    peerField: "new_password"
+                }
+            ]
         });
     },
     // Check session is authenticated
