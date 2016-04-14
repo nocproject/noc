@@ -31,6 +31,7 @@ Heatmap.prototype.run = function () {
 Heatmap.prototype.poll_data = function () {
     var me = this;
     $.ajax("/api/card/view/alarmheat/ajax/").done(function(data) {
+        // Replace heatmap
         var heat_data = [];
         $.each(data.alarms, function(i, v) {
             if(v.x && v.y && v.w) {
@@ -41,6 +42,8 @@ Heatmap.prototype.poll_data = function () {
             me.map.removeLayer(me.heatmap);
         }
         me.heatmap = L.heatLayer(heat_data, {radius: 15}).addTo(me.map);
+        // Replace summary
+        $("#summary").html(data.summary);
         setTimeout(function() {me.poll_data(); }, 60000);
     });
 };
