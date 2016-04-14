@@ -1,0 +1,127 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## translation cli
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2016 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import subprocess
+import argparse
+import os
+import glob
+## NOC modules
+from noc.core.management.base import BaseCommand
+
+
+class Command(BaseCommand):
+    SERVICES = {
+        "card": ["services/card/", "ui/card/"],
+        "login": ["services/login/", "ui/login/"],
+        "web": ["services/web/", "*/apps/"]
+    }
+
+    TRANSLATIONS = ["ru"]
+
+    BABEL_CFG = "etc/babel.cfg"
+    BABEL = "./bin/pybabel"
+    PROJECT = "The NOC Project"
+    COPYRIGHT = "The NOC Project"
+
+    def add_arguments(self, parser):
+        subparsers = parser.add_subparsers(dest="cmd")
+        #
+        extract_parser = subparsers.add_parser("extract")
+        extract_parser.add_argument(
+            "services",
+            nargs=argparse.REMAINDER,
+            help="Services to extract"
+        )
+        #
+        update_parser = subparsers.add_parser("update")
+        update_parser.add_argument(
+            "services",
+            nargs=argparse.REMAINDER,
+            help="Services to update"
+        )
+        #
+        update_parser = subparsers.add_parser("compile")
+        update_parser.add_argument(
+            "services",
+            nargs=argparse.REMAINDER,
+            help="Services to compile"
+        )
+
+    def handle(self, cmd, *args, **options):
+        return getattr(self, "handle_%s" % cmd)(*args, **options)
+
+    def handle_extract(self, services=None, *args, **options):
+        if not services:
+            services = sorted(self.SERVICES)
+        for svc in services:
+            if svc not in self.SERVICES:
+                self.die("Unknown service: %s" % svc)
+            t_dir = "services/%s/translations" % svc
+            if not os.path.exists(t_dir):
+                os.makedirs(t_dir)
+            src = []
+            for expr in self.SERVICES[svc]:
+                src += glob.glob(expr)
+            subprocess.check_call([
+                self.BABEL, "extract",
+                "-F", self.BABEL_CFG,
+                "--project=%s" % self.PROJECT,
+                "--copyright-holder=%s" % self.COPYRIGHT,
+                "-o", "%s/messages.pot" % t_dir
+            ] + src)
+
+    def handle_update(self, services=None, *args, **options):
+        if not services:
+            services = sorted(self.SERVICES)
+        for svc in services:
+            if svc not in self.SERVICES:
+                self.die("Unknown service: %s" % svc)
+            t_dir = "services/%s/translations" % svc
+            pot = os.path.join(t_dir, "messages.pot")
+            for lang in self.TRANSLATIONS:
+                po = os.path.join(
+                    t_dir, lang, "LC_MESSAGES", "messages.po"
+                )
+                if not os.path.exists(po):
+                    subprocess.check_call([
+                        self.BABEL, "init",
+                        "-i", pot,
+                        "-d", t_dir,
+                        "-l", lang
+                    ])
+                else:
+                    subprocess.check_call([
+                        self.BABEL, "update",
+                        "-i", pot,
+                        "-d", t_dir,
+                        "-l", lang
+                    ])
+
+    def handle_compile(self, services=None, *args, **options):
+        if not services:
+            services = sorted(self.SERVICES)
+        for svc in services:
+            if svc not in self.SERVICES:
+                self.die("Unknown service: %s" % svc)
+            t_dir = "services/%s/translations" % svc
+            for lang in self.TRANSLATIONS:
+                po = os.path.join(
+                    t_dir, lang, "LC_MESSAGES", "messages.po"
+                )
+                mo = os.path.join(
+                    t_dir, lang, "LC_MESSAGES", "messages.mo"
+                )
+                subprocess.check_call([
+                    self.BABEL, "compile",
+                    "-i", po,
+                    "-o", mo
+                ])
+
+if __name__ == "__main__":
+    Command().run()
