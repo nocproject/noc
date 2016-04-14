@@ -1,0 +1,3 @@
+---
+- name: restart nsqadmin
+  service: name=nsqadmin state=restarted
