@@ -1,9 +1,9 @@
 [Unit]
-Description=Admin interface Realtime distributed messaging (nsdadmin)
+Description=Admin interface Realtime distributed messaging (nsddmin)
 After=network.target
 
 [Service]
-ExecStart={{noc_root}}/bin/nsqadmin -config {{noc_root}}/var/etc/nsq/nsqdadmin.conf
+ExecStart={{noc_root}}/bin/nsqadmin -config {{noc_root}}/var/etc/nsq/nsqadmin.conf
 Restart=always
 User=nsq
 Group=nsq
