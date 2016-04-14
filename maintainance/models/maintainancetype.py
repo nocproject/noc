@@ -18,6 +18,7 @@ class MaintainanceType(Document):
     name = StringField(unique=True)
     description = StringField()
     suppress_alarms = BooleanField()
+    card_template = StringField()
 
     def __unicode__(self):
         return self.name

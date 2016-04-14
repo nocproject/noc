@@ -26,6 +26,10 @@ Ext.define("NOC.maintainance.maintainancetype.Model", {
         {
             name: "suppress_alarms",
             type: "boolean"
+        },
+        {
+            name: "card_template",
+            type: "string"
         }
     ]
 });

@@ -53,6 +53,12 @@ Ext.define("NOC.maintainance.maintainancetype.Application", {
                     name: "suppress_alarms",
                     xtype: "checkbox",
                     boxLabel: "Suppress Alarms"
+                },
+                {
+                    name: "card_template",
+                    xtype: "textfield",
+                    fieldLabel: "Card Template",
+                    allowBlank: true
                 }
             ]
         });

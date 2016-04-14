@@ -114,6 +114,12 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                     boxLabel: "Completed"
                 },
                 {
+                    name: "description",
+                    xtype: "textarea",
+                    fieldLabel: "Description",
+                    allowBlank: true
+                },
+                {
                     name: "contacts",
                     xtype: "textarea",
                     fieldLabel: "Contacts",
