@@ -19,10 +19,10 @@ http_address = "0.0.0.0:4151"
 ## cluster of nsqlookupd TCP addresses
 nsqlookupd_tcp_addresses = [
 {% for service in noc_config.services -%}
-    {% if "syslogcollector" in service -%}
+    {% if "nsqlookupd" in service -%}
         {% for host in noc_config.services[service] -%}
             {% if ansible_ssh_host in host -%}
-     "{{host}}:4160"
+     "{{host[:-5]}}:4160"
             {%- endif %}
         {%- endfor %}
     {%- endif %}

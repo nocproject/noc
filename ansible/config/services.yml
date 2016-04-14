@@ -10,12 +10,12 @@ services:
   nsqd:
     description: NSQD daemon
     level: system
-    port: 4161
+    port: 4151
 
-  nsqdadmin:
+  nsqadmin:
     description: NSQ Admin interface
     level: system
-    port: 4151
+    port: 4171
 
   postgres:
     description: PostgreSQL server
