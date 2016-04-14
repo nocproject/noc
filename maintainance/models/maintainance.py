@@ -24,7 +24,10 @@ class MaintainanceObject(EmbeddedDocument):
 @on_save
 class Maintainance(Document):
     meta = {
-        "collection": "noc.maintainance"
+        "collection": "noc.maintainance",
+        "indexes": [
+            "affected_objects.object"
+        ]
     }
 
     type = ReferenceField(MaintainanceType)
@@ -49,7 +52,7 @@ class Maintainance(Document):
         Calculate and fill affected objects
         """
         # @todo:
-        direct = set(o.managed_object.id for o in self.objects)
+        direct = set(o.object.id for o in self.direct_objects)
         # @todo: Calculate affected objects considering topology
         affected = [{"object": o} for o in sorted(direct)]
         Maintainance._get_collection().update(

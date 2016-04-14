@@ -25,7 +25,7 @@ Ext.define("NOC.maintainance.maintainancetype.Application", {
                     text: "Suppress",
                     dataIndex: "suppress_alarms",
                     width: 75,
-                    renderer: NOC.rendeer.Bool
+                    renderer: NOC.render.Bool
                 },
                 {
                     text: "Description",
