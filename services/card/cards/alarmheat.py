@@ -54,15 +54,26 @@ class AlarmHeatCard(BaseCard):
         return None, None
 
     def get_ajax_data(self, **kwargs):
+        def update_dict(d, s):
+            for k in s:
+                if k in d:
+                    d[k] += s[k]
+                else:
+                    d[k] = s[k]
+
         alarms = []
+        services = {}
+        subscribers = {}
         for a in ActiveAlarm.objects.all():
             mo = a.managed_object
             x, y = self.get_object_coords(mo)
             w = 0
+            s_sub = SummaryItem.items_to_dict(a.direct_subscribers)
+            s_service = SummaryItem.items_to_dict(a.direct_services)
             if x and y:
                 w = ServiceSummary.get_weight({
-                    "subscriber": SummaryItem.items_to_dict(a.direct_subscribers),
-                    "service": SummaryItem.items_to_dict(a.direct_services)
+                    "subscriber": s_sub,
+                    "service": s_service
                 })
             alarms += [{
                 "alarm_id": str(a.id),
@@ -71,7 +82,13 @@ class AlarmHeatCard(BaseCard):
                 "y": y,
                 "w": max(w, 1)
             }]
+            update_dict(services, s_service)
+            update_dict(subscribers, s_sub)
 
         return {
-            "alarms": alarms
+            "alarms": alarms,
+            "summary": self.f_glyph_summary({
+                "service": services,
+                "subscriber": subscribers
+            })
         }
