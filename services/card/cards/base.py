@@ -46,6 +46,11 @@ class BaseCard(object):
         """
         return {}
 
+    def get_ajax_data(self, **kwargs):
+        """
+        Returns dynamic ajax variables
+        """
+
     def get_template_name(self):
         """
         Calculate and return template name

@@ -8,6 +8,10 @@
     {
       "name": "leaflet",
       "version": "0.7.7"
+    },
+    {
+      "name": "leaflet.heat",
+      "version": "0.2.0"
     }
   ]
 }

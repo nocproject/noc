@@ -9,6 +9,7 @@
 ## Third-party modules
 import tornado.web
 from jinja2 import Template
+import ujson
 ## NOC modules
 from noc.core.service.ui import UIHandler
 from cards.managedobject import ManagedObjectCard
@@ -41,30 +42,38 @@ class CardRequestHandler(UIHandler):
                 self.CARD_TEMPLATE = Template(f.read())
 
     def get(self, card_type, card_id, *args, **kwargs):
+        is_ajax = card_id == "ajax"
         tpl = self.CARDS.get(card_type)
         if not tpl:
             raise tornado.web.HTTPError(404, "Card template not found")
         card = tpl(card_id)
-        data = card.render()
+        if is_ajax:
+            data = card.get_ajax_data()
+        else:
+            data = card.render()
         if not data:
             raise tornado.web.HTTPError(404, "Not found")
-        self.set_header("Content-Type", "text/html; charset=utf-8")
         self.set_header("Cache-Control", "no-cache, must-revalidate")
-        refresh = self.get_argument("refresh", None)
-        if refresh:
-            try:
-                refresh = int(refresh)
-                self.set_header("Refresh", str(refresh))
-            except ValueError:
-                pass
-        self.write(
-            self.get_card_template().render({
-                "card_data": data,
-                "hashed": self.hashed,
-                "card_js": card.card_js,
-                "card_css": card.card_css
-            })
-        )
+        if is_ajax:
+            self.set_header("Content-Type", "text/json")
+            self.write(ujson.dumps(data))
+        else:
+            self.set_header("Content-Type", "text/html; charset=utf-8")
+            refresh = self.get_argument("refresh", None)
+            if refresh:
+                try:
+                    refresh = int(refresh)
+                    self.set_header("Refresh", str(refresh))
+                except ValueError:
+                    pass
+            self.write(
+                self.get_card_template().render({
+                    "card_data": data,
+                    "hashed": self.hashed,
+                    "card_js": card.card_js,
+                    "card_css": card.card_css
+                })
+            )
 
     def get_card_template(self):
         if not self.CARD_TEMPLATE:
