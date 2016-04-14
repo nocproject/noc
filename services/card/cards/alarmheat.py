@@ -20,7 +20,8 @@ from noc.sa.models.servicesummary import ServiceSummary , SummaryItem
 
 class AlarmHeatCard(BaseCard):
     card_css = [
-        "/ui/pkg/leaflet/leaflet.css"
+        "/ui/pkg/leaflet/leaflet.css",
+        "/ui/card/css/alarmheat.css"
     ]
     card_js = [
         "/ui/pkg/leaflet/leaflet.js",
