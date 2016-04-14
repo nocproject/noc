@@ -51,7 +51,8 @@ Ext.define("NOC.inv.capability.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name"
+                    fieldLabel: "Name",
+                    allowBlank: false
                 },
                 {
                     name: "uuid",
@@ -61,7 +62,8 @@ Ext.define("NOC.inv.capability.Application", {
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description"
+                    fieldLabel: "Description",
+                    allowBlank: true
                 },
                 {
                     name: "type",
@@ -78,7 +80,7 @@ Ext.define("NOC.inv.capability.Application", {
                     name: "card_template",
                     xtype: "textfield",
                     fieldLabel: "Card Template",
-                    allowBlank: false
+                    allowBlank: true
                 }
             ],
 
