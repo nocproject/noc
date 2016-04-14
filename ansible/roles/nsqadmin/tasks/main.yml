@@ -1,0 +1,14 @@
+---
+- name: include nsqadmin os specific tasks
+  include: "os/{{ ansible_distribution }}/main.yml"
+
+- name: install nsqadmin config
+  template:
+    src: etc/config/nsqadmin.conf.j2
+    dest: "{{noc_root}}/var/etc/nsq/nsqadmin.conf"
+
+- name: Enable nsqadmin system service
+  service:
+    name: "nsqadmin"
+    enabled: yes
+    state: started

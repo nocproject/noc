@@ -1,5 +1,5 @@
 ---
-- name: include nsqd os specific tasks
+- name: include nsqlookupd os specific tasks
   include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: install nsqlookupd config
