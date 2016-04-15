@@ -279,3 +279,9 @@ config:
     smtp_password:
       label: SMTP Password
       type: str
+
+  mongo:
+    wal_directory:
+      type: srt
+      label: Wal directory
+      default:

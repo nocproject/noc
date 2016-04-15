@@ -9,6 +9,7 @@
     username: "{{rhel_subscription_username}}"
     password: "{{rhel_subscription_password}}"
     autosubscribe: true
+  when: "rhel_subscription_username is defined"
 
 - name: Add Devel repos
   command: "/sbin/subscription-manager repos --enable rhel-7-server-optional-rpms"

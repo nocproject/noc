@@ -8,6 +8,8 @@ mongo_version: "3.2"
 grafana_version: "2.6.0"
 nsq_version: "0.3.7"
 
+http_proxy: "{{ lookup('env','http_proxy') }}"
+
 grafana_group: grafana
 grafana_home: /usr/share/grafana
 grafana_system_service: grafana-server
