@@ -167,7 +167,6 @@ config:
       type: int
       default: 100000
 
-
   trapcollector:
     listen_traps:
       label: Listen SNNP Traps
@@ -231,7 +230,7 @@ config:
       default: en
 
   login:
-      language:
+    language:
       label: Translation language
       type: str
       default: en
