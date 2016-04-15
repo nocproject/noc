@@ -107,14 +107,5 @@
                 "managed_object": "alarm.managed_object.id"
             }
         }
-    ],
-    "jobs": [
-        {
-            "job": "check_link",
-            "interval": 60,
-            "vars": {
-                "interface": "alarm.vars['interface']"
-            }
-        }
     ]
 }
