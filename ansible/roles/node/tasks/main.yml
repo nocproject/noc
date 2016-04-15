@@ -41,6 +41,9 @@
     chdir: "{{ noc_root }}"
   register: result
   changed_when: "'CHANGED' in result.stdout"
+  environment:
+    http_proxy: "{{http_proxy}}"
+
 
 - name: Upgrade PIP
   pip:
@@ -48,6 +51,9 @@
     virtualenv: "{{noc_root}}"
     name: "pip"
     state: latest
+  environment:
+    http_proxy: "{{http_proxy}}"
+
 
 - name: Relink site-packages
   command: "{{ noc_root }}/scripts/deploy/link-site-packages"
@@ -79,6 +85,7 @@
     extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --upgrade"
   environment:
     PYCURL_SSL_LIBRARY: "{{ pycurl_ssl_library | default('openssl')}}"
+    http_proxy: "{{http_proxy}}"
   when: node_check.changed
 
 - name: Install python 2.6 compatibility packages
