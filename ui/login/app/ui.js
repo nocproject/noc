@@ -11,7 +11,7 @@ NOC.login.app.ui = {
                     rows: [
                         {
                             type: "header",
-                            template: "NOC Login"
+                            template: _("NOC Login")
                         },
                         // Login form
                         {
@@ -26,33 +26,33 @@ NOC.login.app.ui = {
                                     view: "text",
                                     name: "user",
                                     id: "user",
-                                    placeholder: "Username",
-                                    label: "User",
+                                    placeholder: _("Username"),
+                                    label: _("User"),
                                     required: true,
-                                    invalidMessage: "User name cannot be empty"
+                                    invalidMessage: _("User name cannot be empty")
                                 },
                                 {
                                     view: "text",
                                     type: "password",
                                     name: "password",
-                                    label: "Password",
-                                    placeholder: "Password",
+                                    label: _("Password"),
+                                    placeholder: _("Password"),
                                     required: true,
-                                    invalidMessage: "Password cannot be empty"
+                                    invalidMessage: _("Password cannot be empty")
                                 },
                                 //
                                 {
                                     cols: [
                                         {
                                             view: "button",
-                                            value: "Login",
+                                            value: _("Login"),
                                             width: 100,
                                             click: "NOC.login.app.logic.on_login",
                                             hotkey: "enter"
                                         },
                                         {
                                             view: "button",
-                                            value: "Reset",
+                                            value: _("Reset"),
                                             width: 100,
                                             click: "NOC.login.app.logic.clear_form"
                                         }
