@@ -224,7 +224,18 @@ config:
       type: int
       default: 3
 
+  card:
+    language:
+      label: Translation language
+      type: str
+      default: en
+
   login:
+      language:
+      label: Translation language
+      type: str
+      default: en
+
     method:
       label: Authentication method
       type: str

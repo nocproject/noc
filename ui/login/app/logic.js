@@ -16,11 +16,11 @@ NOC.login.app.logic = {
                 if(result === true) {
                     document.location = NOC.login.app.original_uri;
                 } else {
-                    NOC.msg.failed("Failed to log in");
+                    NOC.msg.failed(_("Failed to log in"));
                 }
             },
             function(response) {
-                NOC.msg.failed("Failed to login");
+                NOC.msg.failed(_("Failed to login"));
             }
         );
     },
