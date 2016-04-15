@@ -60,6 +60,8 @@ class Service(object):
 
     ## List of API instances
     api = []
+    ## Initialize gettext and process *language* configuration
+    use_translation = False
 
     LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
 
@@ -202,6 +204,11 @@ class Service(object):
         self.logger = logging.getLogger(self.name)
         logging.captureWarnings(True)
 
+    def setup_translation(self):
+        from noc.core.translation import set_translation
+
+        set_translation(self.name, self.config.language)
+
     def on_change_loglevel(self, old_value, new_value):
         if new_value not in self.LOG_LEVELS:
             self.logger.error("Invalid loglevel '%s'. Ignoring", new_value)
@@ -289,6 +296,8 @@ class Service(object):
         """
         self.config.load(self.config.config)
         self.setup_logging()
+        if self.use_translation:
+            self.setup_translation()
 
     def stop(self):
         self.logger.warn("Stopping")
