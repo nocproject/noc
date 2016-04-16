@@ -7,3 +7,6 @@
     virtualenv: "{{noc_root}}"
     extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
     requirements: "requirements/dev.txt"
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"

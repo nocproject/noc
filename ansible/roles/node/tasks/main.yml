@@ -42,7 +42,7 @@
   register: result
   changed_when: "'CHANGED' in result.stdout"
   environment:
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
 
 
 - name: Upgrade PIP
@@ -86,6 +86,7 @@
   environment:
     PYCURL_SSL_LIBRARY: "{{ pycurl_ssl_library | default('openssl')}}"
     http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
   when: node_check.changed
 
 - name: Install python 2.6 compatibility packages
@@ -94,6 +95,9 @@
     requirements: "requirements/python-2.6.txt"
     virtualenv: "{{ noc_root }}"
     extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
   when: "ansible_python_version.startswith('2.6')"
 
 - name: Install assets
@@ -103,6 +107,10 @@
   register: s
   changed_when: "'CHANGED' in s.stdout"
   with_items: "{{ required_assets }}"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+
 
 - name: Apply local patches
   command: "{{ noc_root }}/scripts/deploy/apply-patches"
