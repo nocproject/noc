@@ -10,17 +10,28 @@
     password: "{{rhel_subscription_password}}"
     autosubscribe: true
   when: "rhel_subscription_username is defined"
+  environment:
+    http_proxy: "{{http_proxy}}"
 
 - name: Add Devel repos
   command: "/sbin/subscription-manager repos --enable rhel-7-server-optional-rpms"
+  ignore_errors: yes
+  environment:
+    http_proxy: "{{http_proxy}}"
+  when: "rhel_subscription_username is defined"
 
 - name: Add EPEL Repo
-  template: src=os/RedHat/etc/yum.repos.d/epel.repo.j2 dest=/etc/yum.repos.d/epel.repo
+  template:
+    src: os/RedHat/etc/yum.repos.d/epel.repo.j2
+    dest: /etc/yum.repos.d/epel.repo
 
 - name: Add GPG key EPEL
   rpm_key: state=present key=http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
 
-- name: Install RedHat system packages
+- name: Install RedHat system packages 1/2
   yum:
     name: "{{item}}"
     state: present
@@ -32,11 +43,32 @@
    - mercurial
    - python-virtualenv
    - telnet
-   - quilt
    - gcc
    - postgresql
    - postgresql-devel
    - libcurl-devel
+   - diffstat
+   - dwz
+   - elfutils
+   - gdb
+   - patch
+   - perl-Thread-Queue
+   - perl-srpm-macros
+   - procmail
+   - redhat-rpm-config
+   - rpm-build
+   - unzip
+   - zip
+   - lsof
+
+- name: Install RedHat system packages 2/2
+  yum:
+    name: "{{item}}"
+    state: present
+  with_items:
+   - quilt
+  environment:
+    http_proxy: "{{http_proxy}}"
 
 - include: "telegraf.yml"
 
@@ -47,3 +79,4 @@
 
 - name: Reload systemd daemon
   shell: /usr/bin/systemctl daemon-reload
+

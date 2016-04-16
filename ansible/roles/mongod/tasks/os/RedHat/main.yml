@@ -1,14 +1,22 @@
 # mongodb RedHat
 ---
-- name: Add GPG key EPEL
-  rpm_key: state=present key=https://www.mongodb.org/static/pgp/server-3.2.asc
+- name: Add GPG key Mongo
+  rpm_key:
+    state: present
+    key: https://www.mongodb.org/static/pgp/server-3.2.asc
+    validate_certs: no
+  environment:
+    https_proxy: "{{http_proxy}}"
 
 - name: Add MongoDB repository
-  template: src=os/RedHat/etc/yum.repos.d/mongodb-org-3.2.repo.j2 dest=/etc/yum.repos.d/mongodb-org-3.2.repo
+  template:
+    src: os/RedHat/etc/yum.repos.d/mongodb-org-3.2.repo.j2
+    dest: /etc/yum.repos.d/mongodb-org-3.2.repo
 
 - name: Disable Transparent Hugepages (bootloader)
-  template: src="os/RedHat/etc/grub.d/50_disable_transparent_hugepages.j2"
-            dest=/etc/grub.d/50_disable_transparent_hugepages
+  template:
+    src: "os/RedHat/etc/grub.d/50_disable_transparent_hugepages.j2"
+    dest: /etc/grub.d/50_disable_transparent_hugepages
   register: dht_status
 
 - name: Disable Transparent Hugepages (runtime)
@@ -20,13 +28,22 @@
   notify: restart mongod
 
 - name: Install MongoDB
-  yum: name="mongodb-org" state=present update_cache=yes
+  yum:
+    name: "mongodb-org"
+    state: present
+    update_cache: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
 
 - name: Install mongodb monitoring
-  template: src="etc/telegraf/telegraf.d/mongodb.conf.j2" dest="/etc/telegraf/telegraf.d/mongodb.conf"
+  template:
+    src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/mongodb.conf"
 
 - name: Set mongod defaults
-  template: src="os/RedHat/etc/sysconfig/mongod.j2" dest="/etc/sysconfig/mongod"
+  template:
+    src: "os/RedHat/etc/sysconfig/mongod.j2"
+    dest: "/etc/sysconfig/mongod"
   notify: restart mongod
 
 - include: "arbiter.yml"
@@ -35,16 +52,19 @@
 - name: Find blockdev for readahead tuning
   shell: "df -P {{ mongo_db_path }} |tail -1|awk '{print $1}'"
   register: mongodb_blockdev
+  when: "'wiredTiger' not in noc_mongo_storageengine"
 
 - name: chech if it on lvm
   shell: "lvs --noheadings -o devices /dev/mapper/rhel_template-root |awk -F '(' '{print $1}'"
-  when: "'mapper' in mongodb_blockdev.stdout"
+  when: "'mapper' in mongodb_blockdev.stdout and 'wiredTiger' not in noc_mongo_storageengine"
   register: mongodb_blockdev
 
 - name: persist read ahead value
   template:
     src: "os/RedHat/etc/systemd/system/custom-mongodb-readahead.service"
     dest: "/etc/systemd/system/custom-mongodb-readahead.service"
+  when: "'wiredTiger' not in noc_mongo_storageengine"
 
 - name: enable persist read ahead value service
   service: name=custom-mongodb-readahead state=restarted
+  when: "'wiredTiger' not in noc_mongo_storageengine"

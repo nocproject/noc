@@ -2,11 +2,14 @@
 - include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Install packages
-  pip: >
-    chdir="{{noc_root}}"
-    requirements="requirements/notebook.txt"
-    virtualenv="{{noc_root}}"
-    extra_args="--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
+  pip:
+    chdir: "{{noc_root}}"
+    requirements: "requirements/notebook.txt"
+    virtualenv: "{{noc_root}}"
+    extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Create notebook directories
   file: path="{{ noc_root }}/{{ item }}" owner="{{ noc_user }}" mode=0700 state=directory
