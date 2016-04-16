@@ -48,23 +48,3 @@
 
 - include: "arbiter.yml"
   when: "{{ has_svc_mongo_arbiter | default(False) }}"
-
-- name: Find blockdev for readahead tuning
-  shell: "df -P {{ mongo_db_path }} |tail -1|awk '{print $1}'"
-  register: mongodb_blockdev
-  when: "'wiredTiger' not in noc_mongo_storageengine"
-
-- name: chech if it on lvm
-  shell: "lvs --noheadings -o devices /dev/mapper/rhel_template-root |awk -F '(' '{print $1}'"
-  when: "'mapper' in mongodb_blockdev.stdout and 'wiredTiger' not in noc_mongo_storageengine"
-  register: mongodb_blockdev
-
-- name: persist read ahead value
-  template:
-    src: "os/RedHat/etc/systemd/system/custom-mongodb-readahead.service"
-    dest: "/etc/systemd/system/custom-mongodb-readahead.service"
-  when: "'wiredTiger' not in noc_mongo_storageengine"
-
-- name: enable persist read ahead value service
-  service: name=custom-mongodb-readahead state=restarted
-  when: "'wiredTiger' not in noc_mongo_storageengine"
