@@ -12,7 +12,7 @@ reporting-disabled = true
   lease-duration = "1m0s"
 
 [data]
-  dir = ""{{ influxdb_db_path }}/data"
+  dir = "{{ influxdb_db_path }}/data"
   engine = "tsm1"
   wal-dir = "{{ influxdb_db_path }}/wal"
   wal-logging-enabled = true
