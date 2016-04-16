@@ -1,18 +1,31 @@
 - name: Add InfluxDB repository
-  template: src=os/RedHat/etc/yum.repos.d/influxdb.repo.j2 dest=/etc/yum.repos.d/influxdb.repo
+  template:
+    src: os/RedHat/etc/yum.repos.d/influxdb.repo.j2
+    dest: /etc/yum.repos.d/influxdb.repo
 
 - name: Add GPG key influxdb
-  rpm_key: state=present key=https://repos.influxdata.com/influxdb.key
+  rpm_key:
+    state: present
+    key: https://repos.influxdata.com/influxdb.key
+    validate_certs: no
+  environment:
+    https_proxy: "{{http_proxy}}"
 
 
 - name: Install Telegraf packages
-  yum: name={{item}} state=present update_cache=yes
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
   with_items:
    - telegraf
-   - lsof
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
 
 - name: render telegraf config
   template: src="etc/telegraf/telegraf.conf.j2" dest="/etc/telegraf/telegraf.conf"
 
 - name: Enable telegraf system service
   service: name=telegraf enabled=yes state=started
+

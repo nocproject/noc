@@ -2,10 +2,13 @@
 - include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Install activator python packages
-  pip: >
-    chdir="{{noc_root}}"
-    requirements="requirements/activator.txt"
-    virtualenv="{{noc_root}}"
+  pip:
+    chdir: "{{noc_root}}"
+    requirements: "requirements/activator.txt"
+    virtualenv: "{{noc_root}}"
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Create ssh keys directories
   file:

@@ -1,22 +1,33 @@
 ---
 - name: Enable the PostgreSQL repository RHEL
-  yum: name=http://yum.postgresql.org/9.4/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat94-9.4-2.noarch.rpm state=present
+  yum:
+    name: http://yum.postgresql.org/{{postgresql_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat94-9.4-2.noarch.rpm
+    state: present
+  environment:
+    http_proxy: "{{http_proxy}}"
 
 - name: "Install PostgreSQL"
   yum: name="{{item}}" state=present update_cache=yes
   with_items:
-    - postgresql-server
-    - postgresql-contrib
-    - postgresql-plpython
+    - postgresql{{postgresql_version|replace(".","")}}-server
+    - postgresql{{postgresql_version|replace(".","")}}-contrib
+    - postgresql{{postgresql_version|replace(".","")}}-plpython
     - python-psycopg2
-
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
 - name: PostgreSQL init db
-  command: postgresql-setup initdb creates=/var/lib/pgsql/data/postgresql.conf
+  command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql94-setup initdb
+  args:
+    creates: /var/lib/pgsql/{{ postgresql_version }}/initdb.log
 
 - name: Set config paths
   set_fact:
-    postgresql_conf_path: "/var/lib/pgsql/data/postgresql.conf"
-    postgresql_hba_path: "/var/lib/pgsql/data/pg_hba.conf"
+    postgresql_conf_path: "/var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf"
+    postgresql_hba_path: "/var/lib/pgsql/{{ postgresql_version }}/data/pg_hba.conf"
 
 - name: Install postgres monitoring
-  template: src="etc/telegraf/telegraf.d/postgres.conf.j2" dest="/etc/telegraf/telegraf.d/postgres.conf"
+  template:
+    src: "os/CentOS/etc/telegraf/telegraf.d/postgres.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/postgres.conf"
+  notify: reload telegraf
