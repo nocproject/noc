@@ -290,13 +290,13 @@ config:
       label: SMTP Password
       type: str
 
-  mongo:
-    mongo_journal_directory:
+  mongod:
+    mongod_journal_directory:
       type: str
       label: Mongo journal directory
       default: /var/lib/mongo/journal
 
-    mongo_data_directory:
+    mongod_data_directory:
       type: str
       label: Mongo journal directory
       default: /var/lib/mongo/
