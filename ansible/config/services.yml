@@ -291,7 +291,34 @@ config:
       type: str
 
   mongo:
-    wal_directory:
-      type: srt
-      label: Wal directory
-      default:
+    mongo_journal_directory:
+      type: str
+      label: Mongo journal directory
+      default: /var/lib/mongo/journal
+
+    mongo_data_directory:
+      type: str
+      label: Mongo journal directory
+      default: /var/lib/mongo/
+
+  influxdb:
+    influxdb_wal_directory:
+      type: str
+      label: InfluxDB Wal directory
+      default: /var/lib/influxdb/wal/
+
+    influxdb_data_directory:
+      type: str
+      label: InfluxDB Wal directory
+      default: /var/lib/influxdb/data/
+
+  postgres:
+    postgres_wal_directory:
+      type: str
+      label: Postgresql wal directory
+      default: /var/lib/postgresql/9.4/main/pg_xlog
+
+    postgres_data_directory:
+      type: str
+      label: Postgresql data directory
+      default: /var/lib/postgresql/9.4/main/
