@@ -9,8 +9,6 @@
 
     ],
     "handlers": [
-        "noc.fm.handlers.alarm.managed_object.set_down_severity",
-
         "noc.fm.handlers.alarm.managed_object.topology_rca"
     ],
     "subject_template": "Ping Failed",

@@ -219,17 +219,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             title: "FM",
                             items: [
                                 {
-                                    name: "down_severity",
+                                    name: "weight",
                                     xtype: "numberfield",
-                                    fieldLabel: "Down severity",
+                                    fieldLabel: "Alarm Weight",
                                     allowBlank: false,
                                     uiStyle: "small"
-                                },
-                                {
-                                    name: "check_link_interval",
-                                    xtype: "multiintervalfield",
-                                    fieldLabel: "check_link interval",
-                                    allowBlank: true
                                 }
                             ]
                         },
