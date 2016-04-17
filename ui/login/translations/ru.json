@@ -1,0 +1,56 @@
+{
+    "": {
+        "Content-Transfer-Encoding": "8bit",
+        "Content-Type": "text/plain; charset=utf-8",
+        "Generated-By": "Babel 2.3.3",
+        "Language": "ru",
+        "Language-Team": "ru <LL@li.org>",
+        "Last-Translator": "FULL NAME <EMAIL@ADDRESS>",
+        "MIME-Version": "1.0",
+        "PO-Revision-Date": "2016-04-17 22:39+0300",
+        "POT-Creation-Date": "2016-04-17 22:39+0300",
+        "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)",
+        "Project-Id-Version": "The NOC Project VERSION",
+        "Report-Msgid-Bugs-To": "EMAIL@ADDRESS"
+    },
+    "Failed to log in": [
+        null,
+        "Доступ запрещен"
+    ],
+    "Failed to login": [
+        null,
+        "Доступ запрещен"
+    ],
+    "Login": [
+        null,
+        "Вход"
+    ],
+    "NOC Login": [
+        null,
+        "NOC Вход в систему"
+    ],
+    "Password": [
+        null,
+        "Пароль"
+    ],
+    "Password cannot be empty": [
+        null,
+        "Не задан пароль"
+    ],
+    "Reset": [
+        null,
+        "Сброс"
+    ],
+    "User": [
+        null,
+        "Имя"
+    ],
+    "User name cannot be empty": [
+        null,
+        "Не задано имя пользователя"
+    ],
+    "Username": [
+        null,
+        "Имя"
+    ]
+}
