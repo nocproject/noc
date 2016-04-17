@@ -9,7 +9,7 @@
     </th>
 </tr>
 <tr>
-    <th scope="row" class="col-sm-1">Container</th>
+    <th scope="row" class="col-sm-1">{{ _("Location") }}</th>
     <td>
         {% for p in container_path %}
         {% if not loop.first %}&gt;{% endif %}
@@ -18,35 +18,35 @@
     </td>
 </tr>
 <tr>
-    <th scope="row">Administrative domain</th>
+    <th scope="row">{{ _("Administrative Domain") }}</th>
     <td>{{ object.administrative_domain.name }}</td>
 </tr>
 <tr>
-    <th scope="row">Segment</th>
+    <th scope="row">{{ _("Segment") }}</th>
     <td>{% if segment %}{{ segment.name }}{% endif %}</td>
 </tr>
 <tr>
-    <th scope="row">Model</th>
+    <th scope="row">{{ _("Model") }}</th>
     <td>{{ platform }}</td>
 </tr>
 {% if service_summary %}
 <tr>
-    <th scope="row">Services</th>
+    <th scope="row">{{ _("Services") }}</th>
     <td>
         {{ service_summary | glyph_summary }}
     </td>
 </tr>
 {% endif %}
 <tr>
-    <th scope="row">IP</th>
+    <th scope="row">{{ _("IP") }}</th>
     <td>{{ address }}</td>
 </tr>
 <tr>
-    <th scope="row">MAC</th>
+    <th scope="row">{{ _("MAC") }}</th>
     <td>{{ macs }}</td>
 </tr>
 <tr {% if firmware_status in ('n', 'd') %}class="warning"{% endif %}>
-    <th scope="row">Version</th>
+    <th scope="row">{{ _("Version") }}</th>
     <td>{% if version %}{{ version }}
             {% if firmware_recommended != version and firmware_recommended %}
             (Recommended: {{ firmware_recommended }})
@@ -55,15 +55,15 @@
     </td>
 </tr>
 <tr>
-    <th scope="row">Description</th>
+    <th scope="row">{{ _("Description") }}</th>
     <td>{% if description %}{{ description }}{% endif %}</td>
 </tr>
 <tr>
-    <th scope="row">Service Range</th>
+    <th scope="row">{{ _("Service Range") }}</th>
     <td>N/A</td>
 </tr>
 <tr>
-    <th scope="row">L2 Terminator</th>
+    <th scope="row">{{ _("L2 Terminator") }}</th>
     <td>
         {% if l2_terminators %}
         <table class="table table-condensed table-hover">
