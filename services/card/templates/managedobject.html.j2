@@ -49,7 +49,7 @@
     <th scope="row">{{ _("Version") }}</th>
     <td>{% if version %}{{ version }}
             {% if firmware_recommended != version and firmware_recommended %}
-            (Recommended: {{ firmware_recommended }})
+            ({{ _("Recommended") }}: {{ firmware_recommended }})
             {% endif %}
         {% endif %}
     </td>
@@ -68,9 +68,9 @@
         {% if l2_terminators %}
         <table class="table table-condensed table-hover">
             <thead>
-                <th>Name</th>
-                <th>Address</th>
-                <th>Model</th>
+                <th>{{ _("Name") }}</th>
+                <th>{{ _("Address") }}</th>
+                <th>{{ _("Model") }}</th>
             </thead>
             <tbody>
                 {% for t in l2_terminators %}
@@ -86,18 +86,18 @@
     </td>
 </tr>
 <tr>
-    <th scope="row">L3 Terminator</th>
+    <th scope="row">{{ _("L3 Terminator") }}</th>
     <td>N/A</td>
 </tr>
 <tr>
-    <th scope="row">Neighbors</th>
+    <th scope="row">{{ _("Neighbors") }}</th>
     <td>
         {% if links %}
             <table class="table table-condensed hable-hover">
                 <thead>
-                    <th class="col-sm-1">Local port</th>
-                    <th class="col-sm-4">Remote object</th>
-                    <th class="col-sm-1">Remote port</th>
+                    <th class="col-sm-1">{{ _("Local port") }}</th>
+                    <th class="col-sm-4">{{ _("Remote object") }}</th>
+                    <th class="col-sm-1">{{ _("Remote port") }}</th>
                 </thead>
                 <tbody>
                     {% for l in links %}
@@ -130,19 +130,19 @@
     </td>
 </tr>
 <tr>
-    <th scope="row">TT</th>
+    <th scope="row">{{ _("TT") }}</th>
     <td>N/A</td>
 </td>
 {% if alarms %}
 <tr>
-    <th scope="row">Alarms</th>
+    <th scope="row">{{ _("Alarms") }}</th>
     <td>
         <table class="table table-condensed">
             <thead>
                 <tr>
-                    <th>Timestamp</th>
-                    <th>Duration</th>
-                    <th>Subject</th>
+                    <th>{{ _("Timestamp") }}</th>
+                    <th>{{ _("Duration") }}</th>
+                    <th>{{ _("Subject") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -162,13 +162,13 @@
 </table>
 <table class="table table-condensed table-hover">
     <thead>
-        <th class="col-sm-1">Port</th>
-        <th class="col-sm-1">Admin/Oper</th>
-        <th class="col-sm-1">Speed/Duplex</th>
-        <th class="col-sm-1">VLAN</th>
-        <th class="col-sm-1">Errors</th>
-        <th class="col-sm-1">Status</th>
-        <th>Service</th>
+        <th class="col-sm-1">{{ _("Port") }}</th>
+        <th class="col-sm-1">{{ _("Admin") }}/{{ _("Oper") }}</th>
+        <th class="col-sm-1">{{ _("Speed") }}/{{ _("Duplex") }}</th>
+        <th class="col-sm-1">{{ _("VLAN") }}</th>
+        <th class="col-sm-1">{{ _("Errors") }}</th>
+        <th class="col-sm-1">{{ _("Status") }}</th>
+        <th>{{ _("Service") }}</th>
     </thead>
     <tbody>
         {% for i in interfaces %}

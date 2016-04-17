@@ -2,16 +2,16 @@
     <thead>
         <tr>
             <th colspan="5">
-                Outages Summary
+                {{ _("Outages Summary") }}
                 <a href="/api/card/view/totaloutage/1/" style="color: black">{{ summary | glyph_summary }}</a>
             </th>
         </tr>
         <tr>
-            <th class="col-sm-2">Services</th>
-            <th class="col-sm-4">Object</th>
-            <th class="col-sm-2">Start</th>
-            <th class="col-sm-2">Duration</th>
-            <th class="col-sm-2">TT</th>
+            <th class="col-sm-2">{{ _("Services") }}</th>
+            <th class="col-sm-4">{{ _("Object") }}</th>
+            <th class="col-sm-2">{{ _("Start") }}</th>
+            <th class="col-sm-2">{{ _("Duration") }}</th>
+            <th class="col-sm-2">{{ _("TT") }}</th>
         <tr>
     </thead>
 {% for segment in segments recursive%}

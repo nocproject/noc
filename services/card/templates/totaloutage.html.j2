@@ -16,7 +16,7 @@
 </style>
 <div class="summary">
 {% if is_clear %}
-It's all quiet in Baghdad
+{{ _("No outages detected") }}
 {% else %}
 {{ summary | glyph_summary }}
 {% endif %}
