@@ -78,13 +78,8 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: true
         },
         {
-            name: "down_severity",
-            type: "int",
-            defaultValue: 4000
-        },
-        {
-            name: "check_link_interval",
-            type: "string"
+            name: "weight",
+            type: "int"
         },
         {
             name: "enable_box_discovery",

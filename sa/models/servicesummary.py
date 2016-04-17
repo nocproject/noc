@@ -18,6 +18,7 @@ from noc.crm.models.subscriber import Subscriber
 from noc.core.defer import call_later
 from serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
 logger = logging.getLogger(__name__)
 
@@ -271,16 +272,21 @@ class ServiceSummary(Document):
         Convert result of *get_object_summary* to alarm weight
         """
         w = 0
-        subscribers = summary.get("subscriber")
+        subscribers = summary.get("subscriber", {})
         for s in subscribers:
             sp = SubscriberProfile.get_by_id(s)
             if sp and sp.weight:
                 w += sp.weight * subscribers[s]
-        services = summary.get("service")
+        services = summary.get("service", {})
         for s in services:
             sp = ServiceProfile.get_by_id(s)
             if sp and sp.weight:
                 w += sp.weight * services[s]
+        objects = summary.get("object", {})
+        for s in objects:
+            sp = ManagedObjectProfile.get_by_id(s)
+            if sp and sp.weight:
+                w += sp.weight * objects[s]
         return w
 
     @classmethod
