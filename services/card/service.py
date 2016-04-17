@@ -14,6 +14,8 @@ from card import CardRequestHandler
 
 class CardService(UIService):
     name = "card"
+    use_translation = True
+    use_jinja = True
 
     def get_handlers(self):
         return super(CardService, self).get_handlers() + [

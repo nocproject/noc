@@ -1,0 +1,30 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2" class="{{ {"before": "warning", "progress": "danger", "complete": "success"}[status] }}">
+            {{ title }}
+        </th>
+    </tr>
+    <tr>
+        <th scope="row" class="col-sm-1">{{ _("Type") }}</th>
+        <td>{{ object.type.name }}</td>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Date") }}</th>
+        <td>{{ start | timestamp }} - {{ stop | timestamp }}</td>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Description") }}</th>
+        <td>{{ description }}</td>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Contacts") }}</th>
+        <td>{{ contacts }}</td>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Affected objects") }}</td>
+        <td>
+        </td>
+    </tr>
+</tbody>
+</table>
