@@ -59,7 +59,11 @@ dc = "{{noc_dc}}" # will tag all metrics with dc=us-east-1
   # Multiple urls can be specified but it is assumed that they are part of the same
   # cluster, this means that only ONE of the urls will be written to each interval.
   # urls = ["udp://localhost:8089"] # UDP endpoint example
-  urls = ["http://{{noc_config.services.influxdb.0}}"] # required
+  {% if "influxdb" in noc_config.services %}
+  urls = ["http://{{ noc_config.services.influxdb.0 }}"] # required
+  {% else %}
+  urls = []
+  {% endif %}
   # The target database for metrics (telegraf will create it if not exists)
   database = "telegraf" # required
   # Precision of writes, valid values are "ns", "us" (or "µs"), "ms", "s", "m", "h".
