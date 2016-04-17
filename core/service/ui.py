@@ -30,19 +30,23 @@ class UIHandler(tornado.web.RequestHandler):
     CACHE_ROOT = "var/ui/cache"
     CACHE_URL = "/ui/cache/"
 
-    def initialize(self, name, *args, **kwargs):
-        self.name = name
+    def initialize(self, service, *args, **kwargs):
+        self.service = service
+        self.name = self.service.name
 
     def get(self):
         index_path = os.path.join(self.PREFIX, "ui",
                                   self.name, "index.html")
         self.set_header("Cache-Control", "no-cache; must-revalidate")
         self.set_header("Expires", "0")
+        language = self.service.config.language
         return self.render(
             index_path,
             mergecache=self.mergecache,
             hashed=self.hashed,
-            request=self.request
+            request=self.request,
+            language=language,
+            name=self.name
         )
 
     def mergecache(self, jslist):
@@ -92,6 +96,6 @@ class UIService(Service):
         """
         return super(UIService, self).get_handlers() + [
             (r"^/$", UIHandler, {
-                "name": self.name
+                "service": self
             })
         ]
