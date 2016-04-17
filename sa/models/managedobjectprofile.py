@@ -62,17 +62,10 @@ class ManagedObjectProfile(models.Model):
         _("Report RTT"),
         default=False
     )
-    # Host down alarm severity
-    # Default impact is MAJOR/4000
-    down_severity = models.IntegerField(
-        _("Down severity"), default=4000)
-    # check_link alarm job interval settings
-    # Either None or T0,I0,T1,I1,...,Tn-1,In-1,,In
-    # See MultiIntervalJob settings for details
-    check_link_interval = models.CharField(
-        _("check_link interval"),
-        max_length=256, blank=True, null=True,
-        default=",60"
+    # Additional alarm weight
+    weight = models.IntegerField(
+        "Alarm weight",
+        default=0
     )
     #
     card = models.CharField(
