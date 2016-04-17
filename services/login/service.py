@@ -20,6 +20,7 @@ class LoginService(UIService):
     api = [
         LoginAPI
     ]
+    use_translation = True
 
     def get_handlers(self):
         return super(LoginService, self).get_handlers() + [
