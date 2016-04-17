@@ -44,14 +44,14 @@
 </tr>
 {% endif %}
 <tr>
-    <th scope="row" class="col-sm-1">Services</th>
+    <th scope="row" class="col-sm-1">{{ _("Services") }}</th>
     <td>
         <table class="table table-condensed">
             <thead>
                 <tr>
                     <th></th>
-                    <th>Service</th>
-                    <th>Status</th>
+                    <th>{{ _("Service") }}</th>
+                    <th>{{ _("Status") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -69,11 +69,11 @@
     </td>
 </tr>
 <tr>
-    <th scope="row">Address</th>
+    <th scope="row">{{ _("Address") }}</th>
     <td>{{ service.address }}</td>
 </tr>
 <tr>
-    <th scope="row">Subscriber</th>
+    <th scope="row">{{ _("Subscriber") }}</th>
     <td>
         {% if service.subscriber.profile.glyph %}
         <i class="{{ service.subscriber.profile.glyph }}"></i>
@@ -82,7 +82,7 @@
     </td>
 </tr>
 <tr>
-    <th scope="row">Contacts</th>
+    <th scope="row">{{ _("Contacts") }}</th>
     <td>
         {{ service.subscriber.tech_contact_person }},
         {{ service.subscriber.tech_contact_phone }}
@@ -90,13 +90,13 @@
 </tr>
 {% if service.description %}
 <tr>
-    <th scope="row">Comment</th>
+    <th scope="row">{{ _("Comment") }}</th>
     <td>{{ service.description }}</td>
 </tr>
 {% endif %}
 {% if interface %}
 <tr class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[managed_object_status] }}">
-    <th scope="row">Connection</th>
+    <th scope="row">{{ _("Connection") }}</th>
     <td>
         <a href="/api/card/view/managedobject/{{ managed_object.id }}/">{{ managed_object | managed_object_title }}</a>
         ({{ managed_object.platform }}, {{ managed_object.address }})
@@ -105,9 +105,9 @@
         <table class="table table-condensed">
             <thead>
                 <tr>
-                    <th>Timestamp</th>
-                    <th>Duration</th>
-                    <th>Subject</th>
+                    <th>{{ _("Timestamp") }}</th>
+                    <th>{{ _("Duration") }}</th>
+                    <th>{{ _("Subject") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -124,7 +124,7 @@
     </td>
 </tr>
 <tr class="{{ {True: 'success', False: 'danger'}[interface.oper_status] }}">
-    <th scope="row">Port</th>
+    <th scope="row">{{ _("Port") }}</th>
     <td>
         {{ interface.name }}
         {% if interface.oper_status %}
@@ -134,23 +134,23 @@
 </tr>
 {% endif %}
 <tr>
-    <th scope="row">CPE</th>
+    <th scope="row">{{ _("CPE") }}</th>
     <td></td>
 </tr>
 <tr>
-    <th scope="row">Terminator</th>
+    <th scope="row">{{ _("Terminator") }}</th>
     <td></td>
 </tr>
 {% if interface %}
 <tr>
-    <th scope="row">Session</th>
+    <th scope="row">{{ _("Session") }}</th>
     <td id="session-data">
         <i class="fa fa-spinner fa-spin"></i> <span class="text-muted">Getting data...</span>
     </td>
 </tr>
 {% endif %}
 <tr>
-    <th scope="row">TT</th>
+    <th scope="row">{{ _("TT") }}</th>
     <td></td>
 </tr>
 </tbody>

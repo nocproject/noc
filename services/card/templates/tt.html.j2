@@ -2,14 +2,14 @@
 <tbody>
     <tr>
         <th colspan="2" class="{{ {True: 'success', False: 'danger'}[resolved] }}">
-            TT: {{ full_id }}
+            {{ _("TT") }}: {{ full_id }}
             <span class="pull-right">
                 {% if duration %}{{ duration }}{% endif %}({{ open_ts | timestamp}})
             </span>
         </th>
     </tr>
     <tr>
-        <th scope="row">Stage</th>
+        <th scope="row">{{ _("Stage") }}</th>
         <td>
             {{ stage }}
             <span class="pull-right">
@@ -22,16 +22,16 @@
     </tr>
     {% if alarms %}
     <tr>
-        <th scope="row">Alarms</th>
+        <th scope="row">{{ _("Alarms") }}</th>
         <td>
             <table class="table table-condensed">
                 <thead>
                     <tr>
-                        <th>Timestamp</th>
-                        <th>Object</th>
-                        <th>Duration</th>
-                        <th>Subject</th>
-                        <th>Services</th>
+                        <th>{{ _("Timestamp") }}</th>
+                        <th>{{ _("Object") }}</th>
+                        <th>{{ _("Duration") }}</th>
+                        <th>{{ _("Subject") }}</th>
+                        <th>{{ _("Services") }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,18 +51,18 @@
     {% endif %}
     {% if pre_reason %}
     <tr>
-        <th scope="row">Pre Reason</th>
+        <th scope="row">{{ _("Pre Reason") }}</th>
         <td>{{ pre_reason }}</td>
     </tr>
     {% endif %}
     {% if final_reason %}
     <tr>
-        <th scope="row">Final Reason</th>
+        <th scope="row">{{ _("Final Reason") }}</th>
         <td>{{ final_reason }}</td>
     </tr>
     {% endif %}
     <tr>
-        <th scope="row">Description</th>
+        <th scope="row">{{ _("Description") }}</th>
         <td>
             <div class="panel panel-default">
                 {% if subject %}
@@ -78,7 +78,7 @@
     </tr>
     {% if comments %}
     <tr>
-        <th scope="row">Comments</th>
+        <th scope="row">{{ _("Comments") }}</th>
         <td>
             {% for c in comments %}
                 <div class="panel panel-default">
