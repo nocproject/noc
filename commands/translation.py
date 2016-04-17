@@ -131,10 +131,10 @@ class Command(BaseCommand):
                         t_dir, lang, "LC_MESSAGES", "%s.po" % domain
                     )
                     if domain.endswith("_js"):
-                        js = os.path.join(
-                            t_dir, lang, "LC_MESSAGES",
-                            "%s.json" % domain
-                        )
+                        jsp = os.path.join("ui", svc, "translations")
+                        js = os.path.join(jsp, "%s.json" % lang)
+                        if not os.path.isdir(jsp):
+                            os.makedirs(jsp)
                         print "compiling catalog '%s' to '%s'" % (
                             po, js
                         )
