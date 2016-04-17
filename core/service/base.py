@@ -62,6 +62,8 @@ class Service(object):
     api = []
     ## Initialize gettext and process *language* configuration
     use_translation = False
+    ## Initialize jinja2 templating engine
+    use_jinja = False
 
     LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
 
@@ -205,9 +207,13 @@ class Service(object):
         logging.captureWarnings(True)
 
     def setup_translation(self):
-        from noc.core.translation import set_translation
+        from noc.core.translation import set_translation, ugettext
 
         set_translation(self.name, self.config.language)
+        if self.use_jinja:
+            from jinja2.defaults import DEFAULT_NAMESPACE
+            if "_" not in DEFAULT_NAMESPACE:
+                DEFAULT_NAMESPACE["_"] = ugettext
 
     def on_change_loglevel(self, old_value, new_value):
         if new_value not in self.LOG_LEVELS:
