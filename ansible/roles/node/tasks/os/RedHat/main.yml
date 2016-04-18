@@ -26,7 +26,9 @@
     dest: /etc/yum.repos.d/epel.repo
 
 - name: Add GPG key EPEL
-  rpm_key: state=present key=http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+  rpm_key:
+    key: http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+    state: present
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
@@ -78,7 +80,10 @@
 - include: "firewall.yml"
 
 - name: Install supervisord init script
-  template: src="os/RedHat/etc/systemd/system/noc.service.j2" dest="/usr/lib/systemd/system//{{ noc_system_service }}.service" mode="a+rx"
+  template:
+    src: "os/RedHat/etc/systemd/system/noc.service.j2"
+    dest: "/usr/lib/systemd/system//{{ noc_system_service }}.service"
+    mode: "a+rx"
 
 - name: Reload systemd daemon
   shell: /usr/bin/systemctl daemon-reload

@@ -30,5 +30,5 @@
       name: /root/.cache
       state: absent
       fstype: vboxsf
-  when: "'virtualbox' in ansible_virtualization_type"
+  when: "'virtualbox' in ansible_virtualization_type and 'vboxsf in 'vboxsf_support.output"
   ignore_errors: yes
