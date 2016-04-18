@@ -21,9 +21,7 @@ nsqlookupd_tcp_addresses = [
 {% for service in noc_config.services -%}
     {% if "nsqlookupd" in service -%}
         {% for host in noc_config.services[service] -%}
-            {% if ansible_ssh_host in host -%}
      "{{host[:-5]}}:4160"
-            {%- endif %}
         {%- endfor %}
     {%- endif %}
 {%- endfor %}
