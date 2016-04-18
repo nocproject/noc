@@ -92,6 +92,8 @@ class ManagedObjectCard(BaseCard):
         uplinks = ObjectUplink.objects.filter(object=self.object.id).first()
         if uplinks:
             uplinks = set(uplinks.uplinks)
+        else:
+            uplinks = set()
         links = []
         for l in Link.object_links(self.object):
             local_interfaces = []
