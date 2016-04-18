@@ -7,3 +7,6 @@
   with_items:
    - zeromq3
    - zeromq3-devel
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"

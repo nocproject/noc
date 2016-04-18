@@ -3,12 +3,18 @@
   apt_key:
     url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
     state: present
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Add Ubuntu PostgreSQL repo
   apt_repository:
     repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_lsb.codename }}-pgdg main"
     state: present
     update_cache: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: "Install PostgreSQL"
   apt:
@@ -19,6 +25,9 @@
     - postgresql-{{ postgresql_version }}
     - postgresql-contrib-{{ postgresql_version }}
     - python-psycopg2
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Find suitable PostgreSQL cluster
   shell: /usr/bin/pg_lsclusters -h | grep 5432 | awk '{print $1 " " $2}'

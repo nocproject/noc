@@ -60,6 +60,9 @@
    - unzip
    - zip
    - lsof
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Install RedHat system packages 2/2
   yum:

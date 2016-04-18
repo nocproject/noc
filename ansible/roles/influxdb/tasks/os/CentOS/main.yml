@@ -3,6 +3,9 @@
   rpm_key:
     key: https://repos.influxdata.com/influxdb.key
     state: present
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Add InfluxDB repository
   template:
@@ -14,3 +17,6 @@
     name: influxdb
     state: present
     update_cache: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"

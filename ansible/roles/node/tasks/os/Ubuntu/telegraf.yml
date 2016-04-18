@@ -2,12 +2,18 @@
 - name: Add Ubuntu InfluxDB apt key
   apt_key:
     url: https://repos.influxdata.com/influxdb.key
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Add Ubuntu InfluxDB repo
   apt_repository:
     repo: "deb https://repos.influxdata.com/ubuntu {{ ansible_lsb.codename }} stable"
     state: present
     update_cache: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Install Ubuntu system packages
   apt:
@@ -17,6 +23,9 @@
   with_items:
    - telegraf
    - lsof
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: render telegraf config
   template:
