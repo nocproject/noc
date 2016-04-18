@@ -10,6 +10,9 @@
     state: present
     update_cache: yes
   notify: restart grafana
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Set up Grafana service
   lineinfile:

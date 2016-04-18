@@ -34,6 +34,9 @@
     name: "pip"
     virtualenv: "{{ noc_root }}"
     state: "present"
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Fix broken PIP versions
   command: "{{ noc_root }}/scripts/deploy/fix-pip"

@@ -3,12 +3,16 @@
   apt_key:
     url: http://nginx.org/keys/nginx_signing.key
     state: present
+  environment:
+    http_proxy: "{{http_proxy}}"
 
 - name: Add Debian Nginx repo
   apt_repository:
     repo: 'deb http://nginx.org/packages/ubuntu/ {{ ansible_distribution_release }} nginx'
     state: present
     update_cache: yes
+  environment:
+    http_proxy: "{{http_proxy}}"
 
 - name: Install nginx monitoring
   template:
@@ -21,6 +25,9 @@
     name: nginx
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Remove default.conf site
   file:

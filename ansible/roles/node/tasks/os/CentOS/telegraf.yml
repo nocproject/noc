@@ -12,6 +12,9 @@
   with_items:
    - telegraf
    - lsof
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: render telegraf config
   template:

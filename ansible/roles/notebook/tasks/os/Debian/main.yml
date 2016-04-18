@@ -7,6 +7,9 @@
   with_items:
     - libzmq3
     - libzmq3-dev
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Install notebook monitoring
   template: src="etc/telegraf/telegraf.d/notebook.conf.j2" dest="/etc/telegraf/telegraf.d/notebook.conf"

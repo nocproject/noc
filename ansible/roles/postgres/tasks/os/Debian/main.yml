@@ -4,6 +4,9 @@
   with_items:
     - postgresql
     - python-psycopg2
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Find suitable PostgreSQL cluster
   shell: /usr/bin/pg_lsclusters -h | grep 5432 | awk '{print $1 " " $2}'

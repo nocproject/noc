@@ -3,6 +3,8 @@
   yum:
     name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-centos94-9.4-2.noarch.rpm"
     state: present
+  environment:
+    https_proxy: "{{http_proxy}}"
 
 - name: "Install PostgreSQL"
   yum:
@@ -14,6 +16,9 @@
     - postgresql94-contrib
     - postgresql94-plpython
     - python-psycopg2
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: PostgreSQL init db
   command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql94-setup initdb
