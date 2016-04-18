@@ -6,3 +6,6 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/classifier.txt"
     virtualenv: "{{noc_root}}"
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
