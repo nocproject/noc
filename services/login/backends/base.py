@@ -19,3 +19,12 @@ class BaseAuthBackend(object):
         Raise LoginError when failed
         """
         raise self.LoginError()
+
+    def change_credentials(self, **kwargs):
+        """
+        Change credentials.
+        Raise LoginError when failed
+        """
+        raise self.LoginError(
+            "Cannot change credentials with selected method"
+        )

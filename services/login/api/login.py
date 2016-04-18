@@ -26,3 +26,17 @@ class LoginAPI(API):
             return True
         else:
             return False
+
+    @api
+    def change_credentials(self, credentials):
+        """
+        Change credentials
+        """
+        status, message = self.service.change_credentials(
+            self.handler,
+            credentials
+        )
+        return {
+            "status": status,
+            "message": message
+        }

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-17 22:39+0300\n"
+"POT-Creation-Date: 2016-04-18 11:52+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,4 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.3\n"
+
+#: services/login/backends/local.py:20 services/login/backends/local.py:29
+msgid "User does not exists"
+msgstr ""
+
+#: services/login/backends/local.py:22 services/login/backends/local.py:31
+msgid "Invalid password"
+msgstr ""
 
