@@ -5,7 +5,7 @@
   with_items:
     - 7F0CEB10
     - EA312927
-   environment:
+  environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
 
