@@ -62,6 +62,18 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
             help="Services to compile"
         )
+        #
+        edit_parser = subparsers.add_parser("edit")
+        edit_parser.add_argument(
+            "service",
+            nargs=1,
+            help="Service to edit"
+        )
+        edit_parser.add_argument(
+            "language",
+            nargs=1,
+            help="Language to translate"
+        )
 
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -153,6 +165,16 @@ class Command(BaseCommand):
                             "-i", po,
                             "-o", mo
                         ])
+
+    def handle_edit(self, service=None, language=None, *args, **options):
+        pfx = os.path.join("services", service[0],
+                           "translations", language[0], "LC_MESSAGES")
+
+        for path in [
+            os.path.join(pfx, "messages.po"),
+            os.path.join(pfx, "messages_js.po")
+        ]:
+            subprocess.check_call(["open", path])
 
 if __name__ == "__main__":
     Command().run()
