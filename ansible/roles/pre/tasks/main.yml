@@ -11,11 +11,15 @@
   failed_when: False
   changed_when: False
 
+- name: Check if vboxsf is supported
+  shell: "cat /proc/filesystems"
+  register: vboxsf_support
+
 - name: Mount cache dir
   mount:
       src: cache
       name: /root/.cache
       state: mounted
       fstype: vboxsf
-  when: "'virtualbox' in ansible_virtualization_type"
+  when: "'virtualbox' in ansible_virtualization_type and 'vboxsf in 'vboxsf_support.output"
   ignore_errors: yes
