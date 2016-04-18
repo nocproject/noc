@@ -21,6 +21,7 @@ class WebService(Service):
     name = "web"
     api = []
     process_name = "noc-%(name).10s-%(instance).2s"
+    use_translation = True
 
     def __init__(self):
         super(WebService, self).__init__()
@@ -38,6 +39,7 @@ class WebService(Service):
         # Initialize site
         self.logger.info("Registering web applications")
         from noc.lib.app import site
+        site.service = self
         site.autodiscover()
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.desktop.ChangeCredentials");
 
 Ext.define("NOC.main.desktop.ChangeCredentials", {
     extend: "Ext.Window",
-    title: "Change Password",
+    title: _("Change Password"),
     layout: "fit",
     autoShow: true,
     draggable: false,
@@ -37,19 +37,19 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
             buttonAlign: "center",
             buttons: [
                 {
-                    text: "Close",
+                    text: _("Close"),
                     glyph: NOC.glyph.times,
                     scope: me,
                     handler: me.onClose
                 },
                 {
-                    text: "Reset",
+                    text: _("Reset"),
                     glyph: NOC.glyph.undo,
                     scope: me,
                     handler: me.onReset
                 },
                 {
-                    text: "Change",
+                    text: _("Change"),
                     glyph: NOC.glyph.save,
                     disabled: true,
                     formBind: true,
@@ -97,13 +97,18 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
             url: "/main/desktop/change_credentials/",
             params: values,
             scope: me,
-            success: function() {
-                NOC.info("Credentials has been changed");
-                me.close();
+            success: function(response) {
+                var status = Ext.decode(response.responseText);
+                if(status.status) {
+                    NOC.info(_("Credentials has been changed"));
+                    me.close();
+                } else {
+                    NOC.error(_("Failed to change credentials: ") + status.error);
+                }
             },
             failure: function(response) {
                 var status = Ext.decode(response.responseText);
-                NOC.error("Failed to change credentials: " + status.error);
+                NOC.error(_("Failed to change credentials: ") + status.error);
             }
         });
     },

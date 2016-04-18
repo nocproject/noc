@@ -24,6 +24,7 @@ from noc.main.models.usersession import UserSession
 from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
 from noc.support.cp import CPClient
+from noc.core.service.client import RPCClient, RPCError
 
 
 class DesktopApplication(ExtApplication):
@@ -140,10 +141,14 @@ class DesktopApplication(ExtApplication):
             "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap"),
             "trace_extjs_events": config.getboolean("main", "trace_extjs_events"),
             "preview_theme": self.get_preview_theme(request)
+
         }
         theme = self.get_theme(request)
         return self.render(
-            request, "desktop.html", apps=apps, setup=setup,
+            request, "desktop.html",
+            language=self.site.service.config.language,
+            apps=apps,
+            setup=setup,
             theme=theme,
             theme_css=self.themes[theme]["css"],
             theme_js=self.themes[theme]["js"]
@@ -276,21 +281,25 @@ class DesktopApplication(ExtApplication):
         """
         Change user's credentials if allowed by current backend
         """
-
-
-        if not auth_backend.can_change_credentials:
-            return self.render_json({
-                "status": False,
-                "error": "Cannot change credentials with selected auth method"},
-                status=401)
+        credentials = dict((str(k), v) for k, v in request.POST.items())
+        credentials["user"] = request.user.username
+        client = RPCClient("login", calling_service="web")
         try:
-            auth_backend.change_credentials(request.user,
-                        **dict([(str(k), v) for k, v in request.POST.items()]))
-        except ValueError, why:
+            r = client.change_credentials(credentials)
+        except RPCError as e:
             return self.render_json({
                 "status": False,
-                "error": str(why)},
-                status=401)
+                "error": str(e)
+            })
+        if r["status"]:
+            return self.render_json({
+                "status": True
+            })
+        else:
+            return self.render_json({
+                "status": False,
+                "error": r["message"]
+            })
 
     @view(method=["GET"], url=r"^theme/lookup/$",
           access=PermitLogged(), api=True)

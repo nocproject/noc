@@ -322,3 +322,9 @@ config:
       type: str
       label: Postgresql data directory
       default: /var/lib/postgresql/9.4/main/
+
+  web:
+    language:
+      label: Translation language
+      type: str
+      default: en
