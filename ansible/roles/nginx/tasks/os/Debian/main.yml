@@ -1,15 +1,24 @@
 ---
 - name: Add Nginx key Debian
   apt_key: url=http://nginx.org/keys/nginx_signing.key state=present
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Add Debian Nginx repo
   apt_repository: repo='deb http://nginx.org/packages/debian/ {{ ansible_distribution_release }} nginx' state=present  update_cache=yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Install nginx monitoring
   template: src="etc/telegraf/telegraf.d/nginx.conf.j2" dest="/etc/telegraf/telegraf.d/nginx.conf"
 
 - name: Install Nginx
   apt: name="nginx" update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Remove default.conf site
   file: path=/etc/nginx/conf.d/default.conf state=absent

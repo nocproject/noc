@@ -17,6 +17,9 @@
     - gcc
     - libpq-dev
     - libcurl4-openssl-dev
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Install supervisord init script
   template:

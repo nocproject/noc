@@ -2,12 +2,18 @@
 - name: Add Grafana apt key
   apt_key:
     url: https://packagecloud.io/gpg.key
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Add Grafana repo
   apt_repository:
     repo: "deb https://packagecloud.io/grafana/testing/debian/ wheezy main"
     state: present
     update_cache: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Install Ubuntu packages
   apt:
@@ -16,6 +22,9 @@
     update_cache: yes
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   notify: restart grafana
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Set up Grafana service
   lineinfile:

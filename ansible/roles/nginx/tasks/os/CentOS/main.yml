@@ -3,6 +3,8 @@
   yum:
     name: "http://nginx.org/packages/centos/{{ ansible_distribution_major_version }}/noarch/RPMS/nginx-release-centos-{{ ansible_distribution_major_version }}-0.el{{ ansible_distribution_major_version }}.ngx.noarch.rpm"
     state: present
+  environment:
+    http_proxy: "{{http_proxy}}"
 
 - name: Install nginx monitoring
   template:
@@ -15,6 +17,9 @@
     name: nginx
     state: present
     update_cache: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Remove default.conf site
   file:

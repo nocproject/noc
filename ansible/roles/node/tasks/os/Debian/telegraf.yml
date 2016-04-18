@@ -3,12 +3,17 @@
   apt_key:
     url: https://repos.influxdata.com/influxdb.key
     validate_certs: no
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Add InfluxDB repo
   apt_repository:
     repo: "deb https://repos.influxdata.com/debian {{ ansible_distribution_release }} stable"
     state: present
     update_cache: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
 
 - name: Install Telegraf
   apt:
@@ -18,6 +23,9 @@
   with_items:
     - telegraf
     - lsof
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: render telegraf config
   template: src="etc/telegraf/telegraf.conf.j2" dest="/etc/telegraf/telegraf.conf"

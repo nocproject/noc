@@ -22,6 +22,9 @@
    - postgresql
    - postgresql-devel
    - libcurl-devel
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
 
 - name: Install supervisord init script
   template:

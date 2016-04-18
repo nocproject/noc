@@ -16,6 +16,7 @@
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
+
 - name: PostgreSQL init db
   command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql94-setup initdb
   args:
