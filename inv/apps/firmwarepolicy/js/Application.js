@@ -38,13 +38,21 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                 {
                     text: "Status",
                     dataIndex: "status",
-                    flex: 1,
+                    width: 50,
                     renderer: NOC.render.Choices({
                         r: "Recommended",
                         a: "Acceptable",
                         n: "Not recommended",
                         d: "Denied"
                     })
+                },
+                {
+                    text: "Management",
+                    dataIndex: "management",
+                    flex: 1,
+                    renderer: function(v) {
+                        return map((v || []).map(function(x) {return x.protocol;})).join(", ")
+                    }
                 }
             ],
 
@@ -77,6 +85,32 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                         ["a", "Acceptable"],
                         ["n", "Not recommended"],
                         ["d", "Denied"]
+                    ]
+                },
+                {
+                    name: "description",
+                    xtype: "textarea",
+                    fieldLabel: "Description",
+                    allowBlank: true
+                },
+                {
+                    name: "management",
+                    xtype: "gridfield",
+                    fieldLabel: "Management",
+                    columns: [
+                        {
+                            text: "Protocol",
+                            dataIndex: "protocol",
+                            flex: 1,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["cli", "CLI"],
+                                    ["snmp", "SNMP"],
+                                    ["http", "HTTP"]
+                                ]
+                            }
+                        }
                     ]
                 }
             ]
