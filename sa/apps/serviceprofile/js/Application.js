@@ -41,7 +41,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                 },
                 {
                     text: "Summary",
-                    data_index: "show_in_summary",
+                    dataIndex: "show_in_summary",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
