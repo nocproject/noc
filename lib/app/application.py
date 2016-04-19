@@ -124,6 +124,7 @@ class Application(object):
     glyph = "file"
     extra_permissions = []  # List of additional permissions, not related with views
     implied_permissions = {}  # permission -> list of implied permissions
+    link = None  # Open link in another tab instead of application
 
     Form = NOCForm  # Shortcut for form class
     config = settings.config
@@ -194,7 +195,8 @@ class Application(object):
             "params": {
                 "url": self.menu_url,
                 "permissions": perms,
-                "app_id": self.app_id
+                "app_id": self.app_id,
+                "link": self.link
             }
         }
 

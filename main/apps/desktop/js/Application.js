@@ -122,9 +122,13 @@ Ext.define("NOC.main.desktop.Application", {
             return;
         }
         li = record.get("launch_info");
-        me.launchTab(
-            li.class, li.title, li.params, record.get("id"), reuse
-        );
+        if(li.params && li.params.link) {
+            window.open(li.params.link);
+        } else {
+            me.launchTab(
+                li.class, li.title, li.params, record.get("id"), reuse
+            );
+        }
     },
     // Launch application in tab
     launchTab: function(panel_class, title, params, node, reuse) {
