@@ -309,7 +309,7 @@ config:
 
     influxdb_data_directory:
       type: str
-      label: InfluxDB Wal directory
+      label: InfluxDB Data directory
       default: /var/lib/influxdb/data/
 
   postgres:
