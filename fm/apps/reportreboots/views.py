@@ -14,28 +14,54 @@ from django.db import connection
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.fm.models.reboot import Reboot
+from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):
     interval = forms.ChoiceField(choices=[
-        (1, "1 day"),
-        (7, "1 week"),
-        (30, "1 month")
+        (0, _("Range")),
+        (1, _("1 day")),
+        (7, _("1 week")),
+        (30, _("1 month"))
     ])
+    from_date = forms.CharField(
+        widget=forms.widgets.DateInput,
+        required=False
+    )
+    to_date = forms.CharField(
+        widget=forms.widgets.DateInput,
+        required=False
+    )
 
 
 class ReportRebootsApplication(SimpleReport):
-    title = "Reboots"
+    title = _("Reboots")
     form = ReportForm
 
-    def get_data(self, interval, **kwargs):
+    def get_data(self, interval, from_date, to_date, **kwargs):
         interval = int(interval)
-        ts = datetime.datetime.now() - datetime.timedelta(days=interval)
+        if interval:
+            ts = datetime.datetime.now() - datetime.timedelta(days=interval)
+            match = {
+                "ts": {
+                    "$gte": ts
+                }
+            }
+        else:
+            t0 = datetime.datetime.strptime(from_date, "%d.%m.%Y")
+            if not to_date:
+                t1 = datetime.datetime.now()
+            else:
+                t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
+            match = {
+                "ts": {
+                    "$gte": t0,
+                    "$lte": t1
+                }
+            }
         pipeline = [
             {
-                "$match": {
-                    "ts": {"$gte": ts}
-                }
+                "$match": match
             },
             {"$group": {"_id": "$object", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}}
@@ -63,8 +89,8 @@ class ReportRebootsApplication(SimpleReport):
         return self.from_dataset(
             title=self.title,
             columns=[
-                "Managed Object",
-                TableColumn("Reboots", align="right",
+                _("Managed Object"),
+                TableColumn(_("Reboots"), align="right",
                             format="numeric", total="sum")
             ],
             data=data,
