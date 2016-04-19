@@ -44,6 +44,12 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
             }]
         return sorted(r, key=lambda x: -x["summary"])
 
+    def iter_affected_objects(alarm):
+        yield alarm.managed_object
+        for a in ActiveAlarm.objects.find(root=alarm.id):
+            for o in iter_affected_objects(a):
+                yield o
+
     logger.info("[%s] Performing escalations", alarm_id)
     alarm = get_alarm(alarm_id)
     if alarm is None:
@@ -143,6 +149,29 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                                 alarm.escalate(
                                     "%s:%s" % (tt_system.name, tt_id)
                                 )
+                                if tts.promote_group_tt:
+                                    # Greate group TT
+                                    log("Promoting to group tt")
+                                    gtt = tts.create_group_tt(tt_id)
+                                    # Add objects
+                                    objects = dict(
+                                        (o.id, o.name)
+                                        for o in iter_affected_objects(alarm)
+                                    )
+                                    for d in ExtNRITTMap._get_collection().find({
+                                        "managed_object": {
+                                            "$in": list(objects)
+                                        }
+                                    }):
+                                        log(
+                                            "Appending object %s to group tt %s",
+                                            objects[d["managed_object"]],
+                                            gtt
+                                        )
+                                        tts.add_to_group_tt(
+                                            gtt,
+                                            d["managed_object"]
+                                        )
                             except tts.TTError as e:
                                 log("Failed to create TT: %s", e)
                         else:
@@ -154,7 +183,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                         alarm.managed_object.name)
         #
         if a.stop_processing:
-            logger.debug("[%s] Stopping processing")
+            logger.debug("Stopping processing")
             break
 
 
