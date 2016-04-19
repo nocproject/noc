@@ -7,13 +7,22 @@
 ##----------------------------------------------------------------------
 
 ## Third-party modules
-from mongoengine.document import Document
-from mongoengine.fields import StringField, ReferenceField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (StringField, ReferenceField, ListField,
+                                EmbeddedDocumentField)
 ## NOC modules
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from firmware import Firmware
 from noc.lib.nosql import ForeignKeyField
 from noc.lib.text import split_alnum
+
+
+class ManagementPolicy(EmbeddedDocument):
+    protocol = StringField(choices=[
+        ("cli", "CLI"),
+        ("snmp", "SNMP"),
+        ("http", "HTTP")
+    ])
 
 
 class FirmwarePolicy(Document):
@@ -24,6 +33,8 @@ class FirmwarePolicy(Document):
     }
     # Platform (Matched with get_version)
     platform = StringField()
+    #
+    description = StringField()
     #
     object_profile = ForeignKeyField(ManagedObjectProfile)
     #
@@ -36,6 +47,8 @@ class FirmwarePolicy(Document):
             ("d", "Denied")
         ]
     )
+    #
+    management = ListField(EmbeddedDocumentField(ManagementPolicy))
 
     @classmethod
     def get_status(cls, platform, version):
