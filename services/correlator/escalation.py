@@ -46,7 +46,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
 
     def iter_affected_objects(alarm):
         yield alarm.managed_object
-        for a in ActiveAlarm.objects.find(root=alarm.id):
+        for a in ActiveAlarm.objects.filter(root=alarm.id):
             for o in iter_affected_objects(a):
                 yield o
 

@@ -72,6 +72,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             handler: me.onDashboard
         });
 
+        me.showMapButton = Ext.create("Ext.button.Button", {
+            text: "Show Map",
+            glyph: NOC.glyph.globe,
+            scope: me,
+            handler: me.onShowMap
+        });
+
         me.consoleButton = Ext.create("Ext.button.Button", {
             text: "Console",
             glyph: NOC.glyph.terminal,
@@ -664,6 +671,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             formToolbar: [
                 me.cardButton,
                 me.dashboardButton,
+                me.showMapButton,
                 me.consoleButton,
                 me.scriptsButton,
                 me.configPreviewButton,
@@ -790,6 +798,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                 "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.currentRecord.get("id")
             );
         }
+    },
+    //
+    onShowMap: function() {
+        var me = this;
+        NOC.launch("inv.map", "history", {
+            args: [me.currentRecord.get("segment")]
+        });
     },
     //
     onConsole: function() {
