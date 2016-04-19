@@ -11,6 +11,8 @@ import logging
 
 
 class BaseTTSystem(object):
+    promote_group_tt = False
+
     class TTError(Exception):
         pass
 
@@ -104,5 +106,21 @@ class BaseTTSystem(object):
         :param body: Closing message body
         :param login: User login
         :raises TTError:
+        """
+        raise NotImplementedError()
+
+    def create_group_tt(self, tt_id):
+        """
+        Promote tt as the group tt.
+        Called only when promote_group_tt is set
+        :param tt_id: tt_id as returned by create_tt
+        """
+        raise NotImplementedError()
+
+    def add_to_group_tt(self, gtt_id, obj):
+        """
+        Add object to the group tt
+        :param gtt_id: Group tt id, as returned by create_group_tt
+        :param obj: Supported object's identifier
         """
         raise NotImplementedError()
