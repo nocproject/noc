@@ -84,6 +84,8 @@ class UIHandler(tornado.web.RequestHandler):
         if u.startswith("/"):
             u = url[1:]
         path = os.path.join(self.PREFIX, u)
+        if not os.path.exists(path):
+            return "00000000"
         with open(path) as f:
             hash = hashlib.sha256(f.read()).hexdigest()[:8]
         return "%s?%s" % (url, hash)
