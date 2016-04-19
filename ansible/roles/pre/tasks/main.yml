@@ -21,5 +21,5 @@
       name: /root/.cache
       state: mounted
       fstype: vboxsf
-  when: "'virtualbox' in ansible_virtualization_type and 'vboxsf in 'vboxsf_support.output"
+  when: "'virtualbox' in ansible_virtualization_type and 'vboxsf' in vboxsf_support.stdout"
   ignore_errors: yes
