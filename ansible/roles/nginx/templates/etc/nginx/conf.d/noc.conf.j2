@@ -210,7 +210,7 @@ server {
 {% if noc_config["services"].get("grafana", []) %}
     location /ui/grafana {
         proxy_pass http://grafana;
-        # auth_request /api/auth/auth/;
+        auth_request /api/auth/auth/;
         rewrite  ^/ui/grafana/(.*)  /$1 break;
         proxy_set_header Host $http_host;
         proxy_set_header X-Scheme $scheme;
