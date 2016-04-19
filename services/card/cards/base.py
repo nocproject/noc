@@ -132,7 +132,7 @@ class BaseCard(object):
     def f_glyph_summary(cls, s, collapse=False):
         def get_summary(d, profile):
             v = []
-            if profile == ServiceProfile:
+            if hasattr(profile, "show_in_summary"):
                 show_in_summary = lambda p: p.show_in_summary
             else:
                 show_in_summary = lambda p: True
@@ -158,7 +158,7 @@ class BaseCard(object):
         if "subscriber" in s:
             from noc.crm.models.subscriberprofile import SubscriberProfile
             r += [get_summary(s["subscriber"], SubscriberProfile)]
-        if "service":
+        if "service" in s:
             from noc.sa.models.serviceprofile import ServiceProfile
             r += [get_summary(s["service"], ServiceProfile)]
         r = [x for x in r if x]
