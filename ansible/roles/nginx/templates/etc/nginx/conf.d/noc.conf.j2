@@ -114,6 +114,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Original-URI $request_uri;
+        access_log  /var/log/nginx/login.access.log;
     }
 {% endif %}
 
