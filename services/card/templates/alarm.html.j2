@@ -2,7 +2,7 @@
 <tbody>
     <tr>
         <th colspan="2" class="{{ {'C': 'success', 'A': 'danger'}[alarm.status] }}">
-            Alarm: {{ subject }}
+            {{ _("Alarm") }}: {{ subject }}
             {{ service_summary | glyph_summary }}
             <span style="float: right">
                 {{ duration }}({{ timestamp | timestamp}})
@@ -62,7 +62,7 @@
         <td><pre>{{ alarm.alarm_class.probable_causes }}</pre></td>
     </tr>
     <tr>
-        <th scope="row">_{{ _("Recommended Actions") }}</th>
+        <th scope="row">{{ _("Recommended Actions") }}</th>
         <td><pre>{{ alarm.alarm_class.recommended_actions }}</pre></td>
     </tr>
     <tr>
