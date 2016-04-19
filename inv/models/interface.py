@@ -95,7 +95,7 @@ class Interface(Document):
     def save(self, *args, **kwargs):
         if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:
             self.name = self.managed_object.profile.convert_interface_name(self.name)
-        if not hasattr(self, "_changed_fields") or "mac" in self._changed_fields and self.mac:
+        if (not hasattr(self, "_changed_fields") or "mac" in self._changed_fields) and self.mac:
             self.mac = MACAddressParameter().clean(self.mac)
         super(Interface, self).save(*args, **kwargs)
         if  not hasattr(self, "_changed_fields") or "service" in self._changed_fields:

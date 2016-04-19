@@ -170,7 +170,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                                         )
                                         tts.add_to_group_tt(
                                             gtt,
-                                            d["managed_object"]
+                                            d["remote_id"]
                                         )
                             except tts.TTError as e:
                                 log("Failed to create TT: %s", e)
