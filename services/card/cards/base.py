@@ -132,9 +132,13 @@ class BaseCard(object):
     def f_glyph_summary(cls, s, collapse=False):
         def get_summary(d, profile):
             v = []
+            if profile == ServiceProfile:
+                show_in_summary = lambda p: p.show_in_summary
+            else:
+                show_in_summary = lambda p: True
             for p, c in sorted(d.items(), key=lambda x: -x[1]):
                 pv = profile.get_by_id(p)
-                if pv:
+                if pv and show_in_summary(pv):
                     if collapse and c < 2:
                         badge = ""
                     else:

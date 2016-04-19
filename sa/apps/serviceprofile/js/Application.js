@@ -40,6 +40,12 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     width: 200
                 },
                 {
+                    text: "Summary",
+                    data_index: "show_in_summary",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: "Description",
                     dataIndex: "description",
                     flex: 1
@@ -73,6 +79,12 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     fieldLabel: "Icon",
                     allowBlank: true,
                     uiStyle: "large"
+                },
+                {
+                    name: "show_in_summary",
+                    xtype: "checkbox",
+                    boxLabel: "Show in summary",
+                    allowBlank: true
                 },
                 {
                     name: "interface_profile",

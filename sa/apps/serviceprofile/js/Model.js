@@ -40,6 +40,10 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "int"
         },
         {
+            name: "show_in_summary",
+            type: "boolean"
+        },
+        {
             name: "interface_profile__label",
             type: "string",
             persist: false
