@@ -10,7 +10,8 @@
 import operator
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ReferenceField, IntField
+from mongoengine.fields import (StringField, ReferenceField, IntField,
+                                BooleanField)
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.model.decorator import on_save
 from noc.core.defer import call_later
@@ -29,6 +30,8 @@ class ServiceProfile(Document):
     card_title_template = StringField()
     # FontAwesome glyph
     glyph = StringField()
+    #
+    show_in_summary = BooleanField(default=True)
     # Auto-assign interface profile when service binds to interface
     interface_profile = ReferenceField(InterfaceProfile)
     # Alarm weight
