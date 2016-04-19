@@ -32,6 +32,14 @@ Ext.define("NOC.inv.firmwarepolicy.Model", {
             type: "string"
         },
         {
+            name: "description",
+            type: "string"
+        },
+        {
+            name: "management",
+            type: "auto"
+        },
+        {
             name: "firmware__label",
             type: "string",
             persist: false
