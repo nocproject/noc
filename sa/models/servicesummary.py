@@ -237,6 +237,7 @@ class ServiceSummary(Document):
         if hasattr(managed_object, "id"):
             managed_object = managed_object.id
         r = {
+            "object": {managed_object.object_profile.id: 1},
             "service": {},
             "subscriber": {},
             "interface": {}
