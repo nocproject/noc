@@ -15,6 +15,9 @@
         }
     ],
     "data": {
+        "address": {
+            "has_address": true
+        },
         "container": {
             "container": true
         },
