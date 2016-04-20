@@ -141,10 +141,11 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         uiStyle: "medium"
                     },
                     {
-                        name: "check_link_interval",
-                        xtype: "multiintervalfield",
-                        fieldLabel: "check_link interval",
-                        allowBlank: true
+                        name: "weight",
+                        xtype: "numberfield",
+                        fieldLabel: "Alarm Weight",
+                        allowBlank: false,
+                        uiStyle: "small"
                     },
                     {
                         name: "mac_discovery",
@@ -156,12 +157,6 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         name: "status_change_notification",
                         xtype: "main.notificationgroup.LookupField",
                         fieldLabel: "Status Change Notification",
-                        allowBlank: true
-                    },
-                    {
-                        name: "is_customer",
-                        xtype: "checkbox",
-                        boxLabel: "Customer port",
                         allowBlank: true
                     },
                     {
@@ -188,28 +183,32 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 dataIndex: "low_error",
                                 width: 60,
                                 editor: "textfield",
-                                align: "right"
+                                align: "right",
+                                renderer: NOC.render.Size
                             },
                             {
                                 text: "Low Warn",
                                 dataIndex: "low_warn",
                                 width: 60,
                                 editor: "textfield",
-                                align: "right"
+                                align: "right",
+                                renderer: NOC.render.Size
                             },
                             {
                                 text: "High Warn",
                                 dataIndex: "high_warn",
                                 width: 60,
                                 editor: "textfield",
-                                align: "right"
+                                align: "right",
+                                renderer: NOC.render.Size
                             },
                             {
                                 text: "High Error",
                                 dataIndex: "high_error",
                                 width: 60,
                                 editor: "textfield",
-                                align: "right"
+                                align: "right",
+                                renderer: NOC.render.Size
                             }
                         ]
 

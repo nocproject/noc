@@ -38,8 +38,8 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             defaultValue: false
         },
         {
-            name: "check_link_interval",
-            type: "string"
+            name: "weight",
+            type: "int"
         },
         {
             name: "discovery_policy",
@@ -48,11 +48,6 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
         {
             name: "status_change_notification",
             type: "string"
-        },
-        {
-            name: "is_customer",
-            type: "bool",
-            defaultValue: false
         },
         {
             name: "status_change_notification__label",
