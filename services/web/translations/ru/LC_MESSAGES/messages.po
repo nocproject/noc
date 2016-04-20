@@ -8,8 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-20 18:29+0300\n"
-"PO-Revision-Date: 2016-04-20 18:31+0300\n"
+"POT-Creation-Date: 2016-04-20 19:36+0300\n"
+"PO-Revision-Date: 2016-04-20 19:40+0300\n"
+"Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
@@ -18,7 +19,6 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.3\n"
-"Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "X-Generator: Poedit 1.8.7\n"
 
 #: dns/apps/reportmissedp2p/views.py:18
@@ -383,13 +383,50 @@ msgstr ""
 msgid "%(count)s IP addresses uploaded via zone transfer"
 msgstr ""
 
+#: main/apps/calculator/calculators/cir2cbr.py:22
+msgid "CIR(bps). K, M and G suffixes can be used"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:24
+msgid ""
+"Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 is "
+"default)"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:27
+msgid "Cisco IOS policer"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:28
+msgid "Cisco IOS rate-limit"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:29
+msgid "Juniper JUNOS policer"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:50
+msgid "Integer is required"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:58
+msgid "CIR/CAR(bps) to Burst-rate"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:59
+msgid ""
+"Recommended way for policy-map values calculating is: normal-burst-"
+"bytes=bits-per-second*Tc/8.Recommended way for rate-limit values calculating "
+"is: burst-normal=bits-per-second*Tc/8, burst-max=2*burst-normal"
+msgstr ""
+
 #: main/apps/checkpoint/views.py:20
 msgid "Checkpoints"
 msgstr ""
 
 #: main/apps/checkpoint/views.py:23 main/apps/checkpoint/views.py:26
 msgid "Comment"
-msgstr ""
+msgstr "Комментарий"
 
 #: main/apps/checkpoint/views.py:27
 msgid "Private"
@@ -436,7 +473,7 @@ msgstr ""
 
 #: main/apps/user/views.py:59
 msgid "User category"
-msgstr ""
+msgstr "Категория пользователя"
 
 #: main/apps/user/views.py:60
 msgid "Groups"

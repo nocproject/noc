@@ -7,11 +7,12 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-04-20 18:27+0300",
-        "POT-Creation-Date": "2016-04-20 18:28+0300",
-        "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)",
+        "PO-Revision-Date": "2016-04-20 19:39+0300",
+        "POT-Creation-Date": "2016-04-20 19:36+0300",
+        "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
-        "Report-Msgid-Bugs-To": "EMAIL@ADDRESS"
+        "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
+        "X-Generator": "Poedit 1.8.7"
     },
     "About NOC ...": [
         null,
@@ -64,6 +65,10 @@
     "Collapse panels": [
         null,
         "Свернуть панели"
+    ],
+    "Condition": [
+        null,
+        "Условие"
     ],
     "Credentials has been changed": [
         null,
@@ -133,6 +138,22 @@
         null,
         "ID"
     ],
+    "Interface": [
+        null,
+        "Интерфейс"
+    ],
+    "Jump to Segment": [
+        null,
+        "Перейти в сегмент"
+    ],
+    "Level": [
+        null,
+        "Уровень"
+    ],
+    "Link Inspector": [
+        null,
+        "Свойства линка"
+    ],
     "Log": [
         null,
         "Журнал"
@@ -144,6 +165,10 @@
     "Message": [
         null,
         "Сообщение"
+    ],
+    "Metric": [
+        null,
+        "Метрика"
     ],
     "Navigation": [
         null,
@@ -160,6 +185,10 @@
     "Object": [
         null,
         "Объект"
+    ],
+    "Object Inspector": [
+        null,
+        "Свойства объекта"
     ],
     "Overview": [
         null,
@@ -197,6 +226,10 @@
         null,
         "Сегмент"
     ],
+    "Segment Inspector": [
+        null,
+        "Свойства сегмента"
+    ],
     "Selector": [
         null,
         "Селектор"
@@ -225,6 +258,10 @@
         null,
         "Объект"
     ],
+    "Show dashboard": [
+        null,
+        "Показать графики"
+    ],
     "Show interface load": [
         null,
         "Загрузка интерфейсов"
@@ -249,6 +286,14 @@
         null,
         "Компактный режим"
     ],
+    "Threshold": [
+        null,
+        "Порог"
+    ],
+    "Thresholds": [
+        null,
+        "Пороги"
+    ],
     "Time": [
         null,
         "Время"
@@ -260,6 +305,10 @@
     "User profile ...": [
         null,
         "Профиль пользователя ..."
+    ],
+    "Value": [
+        null,
+        "Значение"
     ],
     "Watch": [
         null,
