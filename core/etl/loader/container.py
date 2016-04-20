@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Administrative division loader
+## Container loader
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -23,9 +23,10 @@ class ContainerLoader(BaseLoader):
         "name",
         "model",
         "path",
-        "address",
+        "addr_id",
         "lon",
-        "lat"
+        "lat",
+        "addr_text"
     ]
 
     CONTAINER_MODEL = "Group"
@@ -71,6 +72,9 @@ class ContainerLoader(BaseLoader):
         if v.get("lon") and v.get("lat"):
             o.set_data("geopoint", "x", v["lon"])
             o.set_data("geopoint", "y", v["lat"])
+        if v.get("addr_id") and v.get("addr_text"):
+            o.set_data("address", "id", v["addr_id"])
+            o.set_data("address", "text", v["addr_text"])
         o.save()
         return o
 
@@ -85,4 +89,7 @@ class ContainerLoader(BaseLoader):
         if v.get("lon") and v.get("lat"):
             o.set_data("geopoint", "x", v["lon"])
             o.set_data("geopoint", "y", v["lat"])
+        if v.get("addr_id") and v.get("addr_text"):
+            o.set_data("address", "id", v["addr_id"])
+            o.set_data("address", "text", v["addr_text"])
         o.save()
