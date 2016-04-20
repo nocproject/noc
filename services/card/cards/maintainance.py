@@ -45,17 +45,18 @@ class MaintainanceCard(BaseCard):
             "subscriber": {}
         }
         for ao in self.object.affected_objects:
-            mo = ManagedObject.get_by_id(ao.object)
+            mo = ao.object
             ss = ServiceSummary.get_object_summary(mo)
             affected += [{
                 "id": mo.id,
+                "object": mo,
                 "name": mo.name,
                 "address": mo.address,
                 "platform": mo.platform,
                 "summary": ss
             }]
-            update_dict(summary, ss)
-
+            update_dict(summary["service"], ss.get("service", {}))
+            update_dict(summary["subscriber"], ss.get("subscriber", {}))
         #
         return {
             "title": jinja2.Template(stpl).render({"object": self.object}),

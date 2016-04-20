@@ -16,6 +16,14 @@ Ext.define("NOC.maintainance.maintainance.Application", {
     model: "NOC.maintainance.maintainance.Model",
     initComponent: function() {
         var me = this;
+
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: "Card",
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -144,6 +152,9 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                         }
                     ]
                 }
+            ],
+            formToolbar: [
+                me.cardButton
             ]
         });
         me.callParent();
@@ -187,5 +198,14 @@ Ext.define("NOC.maintainance.maintainance.Application", {
             };
         return "" + year + "-" + q(month + 1) + "-" + q(day) + "T" +
                 q(hour) + ":" + q(min) + ":" + q(sec);
+    },
+
+    onCard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/maintainance/" + me.currentRecord.get("id") + "/"
+            );
+        }
     }
 });
