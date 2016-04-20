@@ -8,18 +8,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-20 18:11+0300\n"
-"PO-Revision-Date: 2016-04-20 18:15+0300\n"
+"POT-Creation-Date: 2016-04-20 18:28+0300\n"
+"PO-Revision-Date: 2016-04-20 18:27+0300\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.3\n"
-"X-Generator: Poedit 1.8.7\n"
 
 #: fm/apps/alarm/js/AlarmPanel.js:44
 msgid "Overview"
@@ -132,9 +131,7 @@ msgstr "Очистить аварию?"
 
 #: fm/apps/alarm/js/AlarmPanel.js:460
 msgid "Please confirm the alarm is closed and must be cleared?"
-msgstr ""
-"Пожалуйста, подтвердите, что проблема решена и авария должна быть "
-"закрыта"
+msgstr "Пожалуйста, подтвердите, что проблема решена и авария должна быть закрыта"
 
 #: fm/apps/alarm/js/AlarmPanel.js:473
 msgid "Failed to clear alarm"
@@ -176,10 +173,6 @@ msgstr "Показать/свернуть область"
 msgid "Status"
 msgstr "Статус"
 
-#: fm/apps/alarm/js/Application.js:194
-msgid "Segment"
-msgstr "Сегмент"
-
 #: fm/apps/alarm/js/Application.js:206
 msgid "Severity"
 msgstr "Серьезность"
@@ -187,6 +180,50 @@ msgstr "Серьезность"
 #: fm/apps/alarm/js/Application.js:223
 msgid "Duration"
 msgstr "Длительность"
+
+#: fm/apps/alarm/js/Application.js:194 inv/apps/map/js/Application.js:22
+msgid "Segment"
+msgstr "Сегмент"
+
+#: inv/apps/map/js/Application.js:36
+msgid "Edit"
+msgstr "Редактировать"
+
+#: inv/apps/map/js/Application.js:39
+msgid "Edit map"
+msgstr "Редактировать карту"
+
+#: inv/apps/map/js/Application.js:46
+msgid "Save"
+msgstr "Сохранить"
+
+#: inv/apps/map/js/Application.js:54
+msgid "Revert"
+msgstr "Отменить"
+
+#: inv/apps/map/js/Application.js:62
+msgid "New layout"
+msgstr "Новая раскладка"
+
+#: inv/apps/map/js/Application.js:117
+msgid "Show static map"
+msgstr "Статичная карта"
+
+#: inv/apps/map/js/Application.js:128
+msgid "Show interface load"
+msgstr "Загрузка интерфейсов"
+
+#: inv/apps/map/js/Application.js:258
+msgid "Reset Layout"
+msgstr "Сбросить раскладку"
+
+#: inv/apps/map/js/Application.js:259
+msgid "Would you like to reset current layout and generate new?"
+msgstr "Сбросить раскладку карты и перестроить заново?"
+
+#: inv/apps/map/js/SelectIconForm.js:43
+msgid "Set"
+msgstr "Установить"
 
 #: main/apps/desktop/js/ChangeCredentials.js:11
 msgid "Change Password"
@@ -245,3 +282,4 @@ msgstr "Свернуть панели"
 #: main/apps/desktop/js/WorkplacePanel.js:108
 msgid "Expand panels"
 msgstr "Развернуть панели"
+

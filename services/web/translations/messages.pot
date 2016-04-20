@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-18 15:52+0300\n"
+"POT-Creation-Date: 2016-04-20 18:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,4 +17,434 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.3\n"
+
+#: dns/apps/reportmissedp2p/views.py:18
+msgid "Missed Link Addresses"
+msgstr ""
+
+#: dns/apps/reportmissedreverse/views.py:18
+msgid "Missed Reverse Zones"
+msgstr ""
+
+#: fm/apps/heatmap/views.py:15 fm/apps/heatmap/views.py:16
+msgid "Heatmap"
+msgstr ""
+
+#: fm/apps/outage/views.py:15 fm/apps/outage/views.py:16
+msgid "Outages"
+msgstr ""
+
+#: fm/apps/reportreboots/views.py:22
+msgid "Range"
+msgstr ""
+
+#: fm/apps/reportreboots/views.py:23
+msgid "1 day"
+msgstr ""
+
+#: fm/apps/reportreboots/views.py:24
+msgid "1 week"
+msgstr ""
+
+#: fm/apps/reportreboots/views.py:25
+msgid "1 month"
+msgstr ""
+
+#: fm/apps/reportreboots/views.py:38 fm/apps/reportreboots/views.py:93
+msgid "Reboots"
+msgstr ""
+
+#: fm/apps/reportreboots/views.py:92
+msgid "Managed Object"
+msgstr ""
+
+#: fm/apps/totaloutage/views.py:15 fm/apps/totaloutage/views.py:16
+msgid "Total Outages"
+msgstr ""
+
+#: inv/apps/map/views.py:39 inv/apps/map/views.py:40
+msgid "Network Map"
+msgstr ""
+
+#: ip/apps/ipam/views.py:404
+msgid "Invalid address"
+msgstr ""
+
+#: ip/apps/ipam/views.py:409
+#, python-format
+msgid "Redirected to %(prefix)s"
+msgstr ""
+
+#: ip/apps/ipam/views.py:430
+#, python-format
+msgid "Bookmark set to %(prefix)s"
+msgstr ""
+
+#: ip/apps/ipam/views.py:433
+#, python-format
+msgid "Bookmark removed from %(prefix)s"
+msgstr ""
+
+#: ip/apps/ipam/views.py:446
+#, python-format
+msgid "IPv%(afi)s prefix"
+msgstr ""
+
+#: ip/apps/ipam/views.py:448 ip/apps/ipam/views.py:639
+#: ip/apps/ipam/views.py:822 ip/apps/ipam/views.py:827
+msgid "State"
+msgstr ""
+
+#: ip/apps/ipam/views.py:451 ip/apps/ipam/views.py:641
+#: ip/apps/ipam/views.py:824 ip/apps/ipam/views.py:829
+msgid "Prefix state"
+msgstr ""
+
+#: ip/apps/ipam/views.py:453 ip/apps/ipam/views.py:455
+#: ip/apps/ipam/views.py:643 ip/apps/ipam/views.py:645
+#: ip/apps/ipam/views.py:831 ip/apps/ipam/views.py:833
+msgid "Project"
+msgstr ""
+
+#: ip/apps/ipam/views.py:459 ip/apps/ipam/views.py:636
+msgid "ASN"
+msgstr ""
+
+#: ip/apps/ipam/views.py:471 ip/apps/ipam/views.py:664
+#: ip/apps/ipam/views.py:856
+msgid "TT #"
+msgstr ""
+
+#: ip/apps/ipam/views.py:473 ip/apps/ipam/views.py:666
+#: ip/apps/ipam/views.py:858
+msgid "Ticket #"
+msgstr ""
+
+#: ip/apps/ipam/views.py:475 ip/apps/ipam/views.py:668
+#: ip/apps/ipam/views.py:860
+msgid "Style"
+msgstr ""
+
+#: ip/apps/ipam/views.py:478 ip/apps/ipam/views.py:671
+#: ip/apps/ipam/views.py:863
+msgid "Visual appearance"
+msgstr ""
+
+#: ip/apps/ipam/views.py:480 ip/apps/ipam/views.py:673
+msgid "Dual-stack prefix"
+msgstr ""
+
+#: ip/apps/ipam/views.py:482 ip/apps/ipam/views.py:675
+msgid "Appropriative dual-stack allocation"
+msgstr ""
+
+#: ip/apps/ipam/views.py:485 ip/apps/ipam/views.py:678
+msgid "Enable IP Discovery"
+msgstr ""
+
+#: ip/apps/ipam/views.py:505 ip/apps/ipam/views.py:874
+msgid "Permission denied"
+msgstr ""
+
+#: ip/apps/ipam/views.py:520
+#, python-format
+msgid "Prefix %s is already exists in vrf %s"
+msgstr ""
+
+#: ip/apps/ipam/views.py:534 ip/apps/ipam/views.py:698
+msgid "Permission denied. Cannot set dual-stack allocation"
+msgstr ""
+
+#: ip/apps/ipam/views.py:574
+#, python-format
+msgid "Prefix %(prefix)s has been created"
+msgstr ""
+
+#: ip/apps/ipam/views.py:650
+msgid "VC"
+msgstr ""
+
+#: ip/apps/ipam/views.py:654
+msgid ""
+"VC Related with prefix. Adjust VC Bind Filters if you cannot see required"
+" VC"
+msgstr ""
+
+#: ip/apps/ipam/views.py:729
+#, python-format
+msgid "Prefix %(prefix)s has been changed"
+msgstr ""
+
+#: ip/apps/ipam/views.py:785 ip/apps/ipam/views.py:798
+#, python-format
+msgid "Prefix %(prefix)s has been successfully deleted"
+msgstr ""
+
+#: ip/apps/ipam/views.py:791 ip/apps/ipam/views.py:804
+#, python-format
+msgid "Prefix %(prefix)s and all descendans have been successfully deleted"
+msgstr ""
+
+#: ip/apps/ipam/views.py:817
+msgid "Address"
+msgstr ""
+
+#: ip/apps/ipam/views.py:818
+#, python-format
+msgid "IPv%(afi)s address"
+msgstr ""
+
+#: ip/apps/ipam/views.py:836
+msgid "FQDN"
+msgstr ""
+
+#: ip/apps/ipam/views.py:837
+msgid "MAC"
+msgstr ""
+
+#: ip/apps/ipam/views.py:839
+msgid "Auto-update MAC"
+msgstr ""
+
+#: ip/apps/ipam/views.py:841
+msgid "Check to automatically fetch MAC from ARP cache"
+msgstr ""
+
+#: ip/apps/ipam/views.py:846
+msgid "Set if address belong to managed object's interface"
+msgstr ""
+
+#: ip/apps/ipam/views.py:879
+msgid "Address is already exists"
+msgstr ""
+
+#: ip/apps/ipam/views.py:896
+msgid "Invalid Managed Object"
+msgstr ""
+
+#: ip/apps/ipam/views.py:925 ip/apps/ipam/views.py:1042
+#: ip/apps/ipam/views.py:1124
+#, python-format
+msgid "Address %(address)s is in the locked range"
+msgstr ""
+
+#: ip/apps/ipam/views.py:933
+#, python-format
+msgid "Address already present in VRF %(vrf)s"
+msgstr ""
+
+#: ip/apps/ipam/views.py:960
+#, python-format
+msgid "Address %(address)s has been created"
+msgstr ""
+
+#: ip/apps/ipam/views.py:1010
+msgid "No free addresses"
+msgstr ""
+
+#: ip/apps/ipam/views.py:1071
+#, python-format
+msgid "Address %(address)s changed"
+msgstr ""
+
+#: ip/apps/ipam/views.py:1134
+#, python-format
+msgid "Address %(address)s deleted"
+msgstr ""
+
+#: ip/apps/ipam/views.py:1218
+#, python-format
+msgid "Prefix %(old_prefix)s is rebased to %(new_prefix)s"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:25 ip/apps/reportexpanded/views.py:24
+#: ip/apps/reportfilter/views.py:26 ip/apps/reportfree/views.py:20
+#: ip/apps/reportsummary/views.py:23
+msgid "VRF"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:28 ip/apps/reportexpanded/views.py:27
+#: ip/apps/reportfilter/views.py:30 ip/apps/reportfree/views.py:24
+#: ip/apps/reportsummary/views.py:26
+msgid "Address Family"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:29 ip/apps/reportexpanded/views.py:28
+#: ip/apps/reportfilter/views.py:34 ip/apps/reportfree/views.py:25
+#: ip/apps/reportsummary/views.py:27
+msgid "IPv4"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:29 ip/apps/reportexpanded/views.py:28
+#: ip/apps/reportfilter/views.py:35 ip/apps/reportfree/views.py:25
+msgid "IPv6"
+msgstr ""
+
+#: dns/apps/reportmissedp2p/views.py:22 ip/apps/ipam/views.py:445
+#: ip/apps/reportallocated/views.py:30 ip/apps/reportexpanded/views.py:29
+#: ip/apps/reportfree/views.py:26 ip/apps/reportsummary/views.py:28
+msgid "Prefix"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:43 ip/apps/reportexpanded/views.py:42
+#: ip/apps/reportfree/views.py:41 ip/apps/reportsummary/views.py:41
+msgid "Prefix not found"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:47
+msgid "Allocated Blocks"
+msgstr ""
+
+#: ip/apps/ipam/views.py:467 ip/apps/ipam/views.py:660
+#: ip/apps/ipam/views.py:852 ip/apps/reportallocated/views.py:77
+#: ip/apps/reportexpanded/views.py:79 ip/apps/reportfilter/views.py:76
+msgid "Tags"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:86
+#, python-format
+msgid "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+msgstr ""
+
+#: ip/apps/reportexpanded/views.py:82
+#, python-format
+msgid "All allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+msgstr ""
+
+#: ip/apps/ipam/views.py:461 ip/apps/ipam/views.py:638
+#: ip/apps/reportfilter/views.py:37
+msgid "AS Number"
+msgstr ""
+
+#: ip/apps/ipam/views.py:463 ip/apps/ipam/views.py:656
+#: ip/apps/ipam/views.py:848 ip/apps/reportfilter/views.py:42
+msgid "Description"
+msgstr ""
+
+#: ip/apps/reportfree/views.py:31
+msgid "VRF Required"
+msgstr ""
+
+#: ip/apps/reportfree/views.py:45
+msgid "Free Blocks"
+msgstr ""
+
+#: ip/apps/reportfree/views.py:50
+#, python-format
+msgid "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+msgstr ""
+
+#: ip/apps/reportsummary/views.py:78
+#, python-format
+msgid "Summary for VRF %(vrf)s (IPv%(afi)s): %(prefix)s"
+msgstr ""
+
+#: ip/apps/reportsummary/views.py:84
+msgid "Size"
+msgstr ""
+
+#: ip/apps/reportsummary/views.py:86
+msgid "%"
+msgstr ""
+
+#: ip/apps/tools/views.py:40 ip/apps/tools/views.py:61
+#: ip/apps/tools/views.py:118
+msgid "Permission denined"
+msgstr ""
+
+#: ip/apps/tools/views.py:73
+msgid "NS"
+msgstr ""
+
+#: ip/apps/tools/views.py:73
+msgid "Name server IP address. NS must have zone transfer enabled for NOC host"
+msgstr ""
+
+#: ip/apps/tools/views.py:74
+msgid "Zone"
+msgstr ""
+
+#: ip/apps/tools/views.py:74
+msgid "DNS Zone name to transfer"
+msgstr ""
+
+#: ip/apps/tools/views.py:75
+msgid "Source Address"
+msgstr ""
+
+#: ip/apps/tools/views.py:76
+msgid "Source address to issue zone transfer"
+msgstr ""
+
+#: ip/apps/tools/views.py:130
+#, python-format
+msgid "%(count)s IP addresses uploaded via zone transfer"
+msgstr ""
+
+#: main/apps/checkpoint/views.py:20
+msgid "Checkpoints"
+msgstr ""
+
+#: main/apps/checkpoint/views.py:23 main/apps/checkpoint/views.py:26
+msgid "Comment"
+msgstr ""
+
+#: main/apps/checkpoint/views.py:27
+msgid "Private"
+msgstr ""
+
+#: main/apps/checkpoint/views.py:42
+msgid "Checkpoint has been set"
+msgstr ""
+
+#: main/apps/language/views.py:17
+msgid "Languages"
+msgstr ""
+
+#: main/apps/mimetype/views.py:17
+msgid "MIME Types"
+msgstr ""
+
+#: main/apps/user/views.py:23
+msgid "Username"
+msgstr ""
+
+#: main/apps/user/views.py:24
+msgid "Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"
+msgstr ""
+
+#: main/apps/user/views.py:25
+msgid "This value must contain only letters, digits and @/./+/-/_."
+msgstr ""
+
+#: main/apps/user/views.py:26
+msgid "Password"
+msgstr ""
+
+#: main/apps/user/views.py:27
+msgid ""
+"Raw passwords are not stored, so there is no way to see this user's "
+"password, but you can change the password using <a "
+"href=\"password/\">this form</a>."
+msgstr ""
+
+#: main/apps/user/views.py:58
+msgid "Personal info"
+msgstr ""
+
+#: main/apps/user/views.py:59
+msgid "User category"
+msgstr ""
+
+#: main/apps/user/views.py:60
+msgid "Groups"
+msgstr ""
+
+#: main/apps/group/views.py:50 main/apps/user/views.py:61
+msgid "Access"
+msgstr ""
+
+#: main/apps/user/views.py:62
+msgid "Important dates"
+msgstr ""
 

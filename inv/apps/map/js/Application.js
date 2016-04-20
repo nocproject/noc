@@ -19,7 +19,7 @@ Ext.define("NOC.inv.map.Application", {
         me.readOnly = !me.hasPermission("write");
 
         me.segmentCombo = Ext.create("NOC.inv.networksegment.LookupField", {
-            fieldLabel: "Segment",
+            fieldLabel: _("Segment"),
             labelWidth: 45,
             minWidth: 280,
             allowBlank: true,
@@ -33,17 +33,17 @@ Ext.define("NOC.inv.map.Application", {
 
         me.editButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.edit,
-            text: "Edit",
+            text: _("Edit"),
             enableToggle: true,
             disabled: true,
-            tooltip: "Edit map",
+            tooltip: _("Edit map"),
             scope: me,
             handler: me.onEdit
         });
 
         me.saveButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.save,
-            text: "Save",
+            text: _("Save"),
             disabled: true,
             scope: me,
             handler: me.onSave
@@ -51,7 +51,7 @@ Ext.define("NOC.inv.map.Application", {
 
         me.revertButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.undo,
-            text: "Revert",
+            text: _("Revert"),
             disabled: true,
             scope: me,
             handler: me.onRevert
@@ -59,7 +59,7 @@ Ext.define("NOC.inv.map.Application", {
 
         me.newLayoutButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.repeat,
-            text: "New layout",
+            text: _("New layout"),
             disabled: me.readOnly,
             scope: me,
             handler: me.onNewLayout
@@ -114,7 +114,7 @@ Ext.define("NOC.inv.map.Application", {
 
         me.viewMapButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.globe,
-            tooltip: "Show static map",
+            tooltip: _("Show static map"),
             enableToggle: true,
             toggleGroup: "overlay",
             pressed: true,
@@ -125,7 +125,7 @@ Ext.define("NOC.inv.map.Application", {
 
         me.viewLoadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.line_chart,
-            tooltip: "Show interface load",
+            tooltip: _("Show interface load"),
             enableToggle: true,
             toggleGroup: "overlay",
             scope: me,
@@ -255,8 +255,8 @@ Ext.define("NOC.inv.map.Application", {
             forceSpring = ev.shiftKey;
         console.log(arguments);
         Ext.Msg.show({
-            title: "Reset Layout",
-            message: "Would you like to reset current layout and generate new?",
+            title: _("Reset Layout"),
+            message: _("Would you like to reset current layout and generate new?"),
             icon: Ext.Msg.QUESTION,
             buttons: Ext.Msg.YESNO,
             fn: function(btn) {

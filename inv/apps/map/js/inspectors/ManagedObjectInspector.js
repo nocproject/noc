@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.map.inspectors.ManagedObjectInspector");
 
 Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     extend: "Ext.panel.Panel",
-    title: "Object Inspector",
+    title: _("Object Inspector"),
     autoScroll: true,
         bodyStyle: {
         background: "#c0c0c0"
@@ -39,7 +39,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
         me.segmentButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.location_arrow,
             scope: me,
-            tooltip: "Jump to Segment",
+            tooltip: _("Jump to Segment"),
             handler: me.onJumpSegment,
             disabled: true
         });
@@ -47,7 +47,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
         me.dashboardButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.line_chart,
             scope: me,
-            tooltip: "Show dashboard",
+            tooltip: _("Show dashboard"),
             handler: me.onDashboard,
             disabled: true
         });

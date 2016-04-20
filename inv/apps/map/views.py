@@ -29,14 +29,15 @@ from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
 from noc.core.influxdb.client import InfluxDBClient
 from noc.inv.caches.interface.tagstoid import interface_tags_to_id
+from noc.core.translation import ugettext as _
 
 
 class MapApplication(ExtApplication):
     """
     inv.net application
     """
-    title = "Network Map"
-    menu = "Network Map"
+    title = _("Network Map")
+    menu = _("Network Map")
     glyph = "globe"
 
     implied_permissions = {
