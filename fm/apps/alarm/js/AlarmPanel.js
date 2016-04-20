@@ -41,17 +41,17 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
-            title: "Overview",
+            title: _("Overview"),
             autoScroll: true
         });
 
         me.helpPanel = Ext.create("Ext.panel.Panel", {
-            title: "Help",
+            title: _("Help"),
             autoScroll: true
         });
 
         me.dataPanel = Ext.create("Ext.panel.Panel", {
-            title: "Data",
+            title: _("Data"),
             autoScroll: true
         });
 
@@ -66,7 +66,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         });
 
         me.messageField = Ext.create("Ext.form.TextField", {
-            fieldLabel: "New message",
+            fieldLabel: _("New message"),
             labelWidth: 75,
             anchor: "100%",
             listeners: {
@@ -78,31 +78,31 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         });
 
         me.logPanel = Ext.create("Ext.grid.Panel", {
-            title: "Log",
+            title: _("Log"),
             store: me.logStore,
             autoScroll: true,
             columns: [
                 {
                     dataIndex: "timestamp",
-                    text: "Time",
+                    text: _("Time"),
                     renderer: NOC.render.DateTime,
                     width: 120
                 },
                 {
                     dataIndex: "from_status",
-                    text: "From",
+                    text: _("From"),
                     renderer: NOC.render.Choices(me.app.STATUS_MAP),
                     width: 50
                 },
                 {
                     dataIndex: "to_status",
-                    text: "To",
+                    text: _("To"),
                     renderer: NOC.render.Choices(me.app.STATUS_MAP),
                     width: 50
                 },
                 {
                     dataIndex: "message",
-                    text: "Message",
+                    text: _("Message"),
                     flex: 1
                 }
             ],
@@ -117,7 +117,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         //
         me.eventsStore = Ext.create("NOC.fm.alarm.EventsStore");
         me.eventsPanel = Ext.create("Ext.grid.Panel", {
-            title: "Events",
+            title: _("Events"),
             store: me.eventsStore,
             autoScroll: true,
             columns: [
@@ -128,19 +128,19 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                 },
                 {
                     dataIndex: "timestamp",
-                    text: "Time",
+                    text: _("Time"),
                     renderer: NOC.render.DateTime,
                     width: 120
                 },
                 {
                     dataIndex: "event_class",
-                    text: "Class",
+                    text: _("Class"),
                     renderer: NOC.render.Lookup("event_class"),
                     width: 200
                 },
                 {
                     dataIndex: "subject",
-                    text: "Subject",
+                    text: _("Subject"),
                     flex: 1
                 }
             ]
@@ -156,7 +156,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             root: me.defaultRoot
         });
         me.alarmsPanel = Ext.create("Ext.tree.Panel", {
-            title: "Alarms",
+            title: _("Alarms"),
             store: me.alarmsStore,
             rootVisible: false,
             useArrows: true,
@@ -164,29 +164,29 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                 {
                     xtype: "treecolumn",
                     dataIndex: "id",
-                    text: "ID",
+                    text: _("ID"),
                     width: 200
                 },
                 {
                     dataIndex: "timestamp",
-                    text: "Time",
+                    text: _("Time"),
                     width: 120,
                     renderer: NOC.render.DateTime
                 },
                 {
                     dataIndex: "managed_object",
-                    text: "Object",
+                    text: _("Object"),
                     width: 200,
                     renderer: NOC.render.Lookup("managed_object")
                 },
                 {
                     dataIndex: "alarm_class",
-                    text: "Class",
+                    text: _("Class"),
                     renderer: NOC.render.Lookup("alarm_class")
                 },
                 {
                     dataIndex: "subject",
-                    text: "Subject",
+                    text: _("Subject"),
                     flex: 1
                 }
             ],
@@ -211,14 +211,14 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         });
 
         me.clearButton = Ext.create("Ext.Button", {
-            text: "Clear",
+            text: _("Clear"),
             glyph: NOC.glyph.eraser,
             scope: me,
             handler: me.onClear
         });
 
         me.watchButton = Ext.create("Ext.Button", {
-            text: "Watch",
+            text: _("Watch"),
             enableToggle: true,
             glyph: NOC.glyph.star,
             scope: me,
@@ -226,24 +226,31 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         });
 
         me.setRootButton = Ext.create("Ext.Button", {
-            text: "Set Root Cause",
+            text: _("Set Root Cause"),
             glyph: NOC.glyph.paperclip,
             scope: me,
             handler: me.onSetRoot
         });
 
         me.showMapButton = Ext.create("Ext.button.Button", {
-            text: "Show Map",
+            text: _("Show Map"),
             glyph: NOC.glyph.globe,
             scope: me,
             handler: me.onShowMap
         });
 
         me.showObjectButton = Ext.create("Ext.button.Button", {
-            text: "Show Object",
+            text: _("Show Object"),
             glyph: NOC.glyph.eye,
             scope: me,
             handler: me.onShowObject
+        });
+
+        me.showAlarmCardButton = Ext.create("Ext.button.Button", {
+            text: _("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onShowCard
         });
 
         Ext.apply(me, {
@@ -253,13 +260,13 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                     dock: "top",
                     items: [
                         {
-                            text: "Close",
+                            text: _("Close"),
                             glyph: NOC.glyph.arrow_left,
                             scope: me,
                             handler: me.onClose
                         },
                         {
-                            text: "Refresh",
+                            text: _("Refresh"),
                             glyph: NOC.glyph.refresh,
                             scope: me,
                             handler: me.onRefresh
@@ -269,6 +276,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                         me.watchButton,
                         me.setRootButton,
                         "-",
+                        me.showAlarmCardButton,
                         me.showMapButton,
                         me.showObjectButton,
                         "->",
@@ -297,7 +305,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                 me.updateData(data);
             },
             failure: function() {
-                NOC.error("Failed to get alarm");
+                NOC.error(_("Failed to get alarm"));
             }
         });
         me.app.setHistoryHash(alarmId);
@@ -419,7 +427,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                 });
             },
             failure: function() {
-                NOC.error("Failed to post message");
+                NOC.error(_("Failed to post message"));
             }
         });
     },
@@ -448,8 +456,8 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
     onClear: function() {
         var me = this;
         Ext.Msg.show({
-            title: "Clear alarm?",
-            msg: "Please confirm the alarm is closed and must be cleared?",
+            title: _("Clear alarm?"),
+            msg: _("Please confirm the alarm is closed and must be cleared?"),
             buttons: Ext.Msg.YESNO,
             icon: Ext.Msg.QUESTION,
             fn: function(btn) {
@@ -462,7 +470,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                             me.onRefresh()
                         },
                         failure: function() {
-                            NOC.error("Failed to clear alarm");
+                            NOC.error(_("Failed to clear alarm"));
                         }
                     });
                 }
@@ -482,7 +490,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                 me.setWatchers(watchers);
             },
             failure: function() {
-                NOC.error("Failed to set watcher");
+                NOC.error(_("Failed to set watcher"));
             }
         })
 
@@ -491,8 +499,8 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
     onSetRoot: function() {
         var me = this;
         Ext.Msg.prompt(
-            "Set root cause",
-            "Please enter root cause alarm id",
+            _("Set root cause"),
+            _("Please enter root cause alarm id"),
             function(btn, text) {
                 if(btn == "ok") {
                     // @todo: Check alarm id
@@ -506,7 +514,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
                             me.onRefresh();
                         },
                         failure: function() {
-                            NOC.error("Failed to set root cause");
+                            NOC.error(_("Failed to set root cause"));
                         }
                     });
                 }
@@ -523,10 +531,15 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
 
     onShowObject: function() {
         var me = this;
-        NOC.launch(
-            "sa.managedobject",
-            "history",
-            {args: [me.data.managed_object]}
+        window.open(
+            "/api/card/view/managedobject/" + me.currentRecord.get("managed_object") + "/"
+        );
+    },
+
+    onShowCard: function() {
+        var me = this;
+        window.open(
+            "/api/card/view/alarm/" + me.currentRecord.get("id") + "/"
         );
     }
 });

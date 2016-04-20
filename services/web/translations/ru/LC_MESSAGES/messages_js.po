@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-18 15:52+0300\n"
-"PO-Revision-Date: 2016-04-18 16:00+0300\n"
+"POT-Creation-Date: 2016-04-20 18:11+0300\n"
+"PO-Revision-Date: 2016-04-20 18:15+0300\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -21,13 +21,176 @@ msgstr ""
 "Generated-By: Babel 2.3.3\n"
 "X-Generator: Poedit 1.8.7\n"
 
-#: main/apps/desktop/js/ChangeCredentials.js:11
-msgid "Change Password"
-msgstr "Смена пароля"
+#: fm/apps/alarm/js/AlarmPanel.js:44
+msgid "Overview"
+msgstr "Обзор"
 
+#: fm/apps/alarm/js/AlarmPanel.js:49
+msgid "Help"
+msgstr "Помощь"
+
+#: fm/apps/alarm/js/AlarmPanel.js:54
+msgid "Data"
+msgstr "Данные"
+
+#: fm/apps/alarm/js/AlarmPanel.js:69
+msgid "New message"
+msgstr "Новое сообщение"
+
+#: fm/apps/alarm/js/AlarmPanel.js:81
+msgid "Log"
+msgstr "Журнал"
+
+#: fm/apps/alarm/js/AlarmPanel.js:87 fm/apps/alarm/js/AlarmPanel.js:131
+#: fm/apps/alarm/js/AlarmPanel.js:172 fm/apps/alarm/js/Application.js:188
+msgid "Time"
+msgstr "Время"
+
+#: fm/apps/alarm/js/AlarmPanel.js:93 fm/apps/alarm/js/Application.js:112
+msgid "From"
+msgstr "С"
+
+#: fm/apps/alarm/js/AlarmPanel.js:99 fm/apps/alarm/js/Application.js:123
+msgid "To"
+msgstr "По"
+
+#: fm/apps/alarm/js/AlarmPanel.js:105
+msgid "Message"
+msgstr "Сообщение"
+
+#: fm/apps/alarm/js/AlarmPanel.js:120 fm/apps/alarm/js/Application.js:230
+msgid "Events"
+msgstr "События"
+
+#: fm/apps/alarm/js/AlarmPanel.js:137 fm/apps/alarm/js/AlarmPanel.js:184
+#: fm/apps/alarm/js/Application.js:101 fm/apps/alarm/js/Application.js:212
+msgid "Class"
+msgstr "Класс"
+
+#: fm/apps/alarm/js/AlarmPanel.js:143 fm/apps/alarm/js/AlarmPanel.js:189
+#: fm/apps/alarm/js/Application.js:218
+msgid "Subject"
+msgstr "Тема"
+
+#: fm/apps/alarm/js/AlarmPanel.js:159
+msgid "Alarms"
+msgstr "Аварии"
+
+#: fm/apps/alarm/js/AlarmPanel.js:167
+msgid "ID"
+msgstr "ID"
+
+#: fm/apps/alarm/js/AlarmPanel.js:178 fm/apps/alarm/js/Application.js:79
+#: fm/apps/alarm/js/Application.js:200
+msgid "Object"
+msgstr "Объект"
+
+#: fm/apps/alarm/js/AlarmPanel.js:214
+msgid "Clear"
+msgstr "Очистить"
+
+#: fm/apps/alarm/js/AlarmPanel.js:221
+msgid "Watch"
+msgstr "Подписаться"
+
+#: fm/apps/alarm/js/AlarmPanel.js:229
+msgid "Set Root Cause"
+msgstr "Установить причину"
+
+#: fm/apps/alarm/js/AlarmPanel.js:236
+msgid "Show Map"
+msgstr "Карта"
+
+#: fm/apps/alarm/js/AlarmPanel.js:243
+msgid "Show Object"
+msgstr "Объект"
+
+#: fm/apps/alarm/js/AlarmPanel.js:250
+msgid "Card"
+msgstr "Карточка"
+
+#: fm/apps/alarm/js/AlarmPanel.js:263
 #: main/apps/desktop/js/ChangeCredentials.js:40
 msgid "Close"
 msgstr "Закрыть"
+
+#: fm/apps/alarm/js/AlarmPanel.js:269
+msgid "Refresh"
+msgstr "Обновить"
+
+#: fm/apps/alarm/js/AlarmPanel.js:308
+msgid "Failed to get alarm"
+msgstr "Не удалось получить данные"
+
+#: fm/apps/alarm/js/AlarmPanel.js:430
+msgid "Failed to post message"
+msgstr "Не удалось послать сообщение"
+
+#: fm/apps/alarm/js/AlarmPanel.js:459
+msgid "Clear alarm?"
+msgstr "Очистить аварию?"
+
+#: fm/apps/alarm/js/AlarmPanel.js:460
+msgid "Please confirm the alarm is closed and must be cleared?"
+msgstr ""
+"Пожалуйста, подтвердите, что проблема решена и авария должна быть "
+"закрыта"
+
+#: fm/apps/alarm/js/AlarmPanel.js:473
+msgid "Failed to clear alarm"
+msgstr "Не удалось получить аварию"
+
+#: fm/apps/alarm/js/AlarmPanel.js:493
+msgid "Failed to set watcher"
+msgstr "Не удалось подписаться"
+
+#: fm/apps/alarm/js/AlarmPanel.js:502
+msgid "Set root cause"
+msgstr "Установить причину"
+
+#: fm/apps/alarm/js/AlarmPanel.js:503
+msgid "Please enter root cause alarm id"
+msgstr "Пожалуйста, введите ID причины"
+
+#: fm/apps/alarm/js/AlarmPanel.js:517
+msgid "Failed to set root cause"
+msgstr "Не удалось установить причину"
+
+#: fm/apps/alarm/js/Application.js:68
+msgid "Adm. Domain"
+msgstr "Зона ответсвенности"
+
+#: fm/apps/alarm/js/Application.js:90
+msgid "Selector"
+msgstr "Селектор"
+
+#: fm/apps/alarm/js/Application.js:134
+msgid "Expand"
+msgstr "Раскрыть"
+
+#: fm/apps/alarm/js/Application.js:135
+msgid "Show/collapse children alarms"
+msgstr "Показать/свернуть область"
+
+#: fm/apps/alarm/js/Application.js:181
+msgid "Status"
+msgstr "Статус"
+
+#: fm/apps/alarm/js/Application.js:194
+msgid "Segment"
+msgstr "Сегмент"
+
+#: fm/apps/alarm/js/Application.js:206
+msgid "Severity"
+msgstr "Серьезность"
+
+#: fm/apps/alarm/js/Application.js:223
+msgid "Duration"
+msgstr "Длительность"
+
+#: main/apps/desktop/js/ChangeCredentials.js:11
+msgid "Change Password"
+msgstr "Смена пароля"
 
 #: main/apps/desktop/js/ChangeCredentials.js:46
 msgid "Reset"
