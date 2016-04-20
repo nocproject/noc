@@ -320,7 +320,7 @@ class CorrelatorService(Service):
             discriminator=discriminator,
             direct_services=SummaryItem.dict_to_items(summary["service"]),
             direct_subscribers=SummaryItem.dict_to_items(summary["subscriber"]),
-            total_objects=ObjectSummaryItem.dict_to_items({managed_object.object_profile.id: 1}),
+            total_objects=ObjectSummaryItem.dict_to_items(summary["object"]),
             total_services=SummaryItem.dict_to_items(summary["service"]),
             total_subscribers=SummaryItem.dict_to_items(summary["subscriber"]),
             log=[
