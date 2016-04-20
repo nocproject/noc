@@ -56,7 +56,8 @@ Ext.define("NOC.fm.alarm.plugins.Thresholds", {
                 {
                     dataIndex: "threshold",
                     text: _("Threshold"),
-                    flex: 1
+                    flex: 1,
+                    renderer: NOC.render.Size
                 }
             ]
         });
