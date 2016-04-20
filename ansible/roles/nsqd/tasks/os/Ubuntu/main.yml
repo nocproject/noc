@@ -1,0 +1,12 @@
+---
+- name: install nsqd.conf init file
+  template:
+     src: "os/Ubuntu/etc/init/nsqd.conf.j2"
+     dest: "/etc/init/nsqd.conf"
+  notify: restart nsqd
+
+- name: Install nsqd monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/nsqd.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/nsqd.conf"
+  notify: reload telegraf
