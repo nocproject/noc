@@ -13,6 +13,8 @@ import jinja2
 ## NOC modules
 from base import BaseCard
 from noc.maintainance.models.maintainance import Maintainance
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.servicesummary import ServiceSummary
 
 
 class MaintainanceCard(BaseCard):
@@ -21,6 +23,13 @@ class MaintainanceCard(BaseCard):
     default_title_template = "Maintainance: {{ object.subject }}"
 
     def get_data(self):
+        def update_dict(s, d):
+            for k in d:
+                if k in s:
+                    s[k] += d[k]
+                else:
+                    s[k] = d[k]
+
         stpl = self.object.type.card_template or self.default_title_template
         now = datetime.datetime.now()
         if self.object.start > now:
@@ -29,6 +38,25 @@ class MaintainanceCard(BaseCard):
             status = "complete"
         else:
             status = "progress"
+        # Calculate affected objects
+        affected = []
+        summary = {
+            "service": {},
+            "subscriber": {}
+        }
+        for ao in self.object.affected_objects:
+            mo = ManagedObject.get_by_id(ao.object)
+            ss = ServiceSummary.get_object_summary(mo)
+            affected += [{
+                "id": mo.id,
+                "name": mo.name,
+                "address": mo.address,
+                "platform": mo.platform,
+                "summary": ss
+            }]
+            update_dict(summary, ss)
+
+        #
         return {
             "title": jinja2.Template(stpl).render({"object": self.object}),
             "object": self.object,
@@ -37,5 +65,7 @@ class MaintainanceCard(BaseCard):
             "start": self.object.start,
             "stop": self.object.stop,
             "description": self.object.description,
-            "status": status
+            "status": status,
+            "affected": affected,
+            "summary": summary
         }

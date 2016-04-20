@@ -14,6 +14,10 @@
         <td>{{ start | timestamp }} - {{ stop | timestamp }}</td>
     </tr>
     <tr>
+        <th scope="row">{{ _("Services") }}</th>
+        <td>{{ summary | glyph_summary }}</td>
+    </tr>
+    <tr>
         <th scope="row">{{ _("Description") }}</th>
         <td>{{ description }}</td>
     </tr>
@@ -24,6 +28,26 @@
     <tr>
         <th scope="row">{{ _("Affected objects") }}</td>
         <td>
+            <table>
+                <thead>
+                    <th>{{ _("Object") }}</th>
+                    <th>{{ _("Model") }}</th>
+                    <th>{{ _("IP") }}</th>
+                    <th>{{ _("Services")</th>
+                </thead>
+                <tbody>
+                    {% for a in affected %}
+                    <tr>
+                        <td>
+                            <a href="/api/card/view/managedobject/{{ id }}/>{{ name }}</a>
+                        </td>
+                        <td>{{ address }}</td>
+                        <td>{{ platform }}</td>
+                        <td>{{ summary | glyph_summary }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </td>
     </tr>
 </tbody>
