@@ -3,6 +3,11 @@
 - name: "Loading system-dependend settings"
   include_vars: "os/{{ ansible_distribution }}.yml"
 
+- name: set proxy
+  set_fact:
+    http_proxy: "{{ proxy }}"
+  when: "proxy is defined"
+
 #- name: Display all variables/facts known for a host
 #  debug: var=hostvars[inventory_hostname]
 
