@@ -8,11 +8,13 @@
 
 ## Python modules
 import datetime
+import operator
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ObjectIdField,
                                 ListField)
 from mongoengine import signals
+import cachetools
 ## NOC modules
 from connectiontype import ConnectionType
 from objectmodel import ObjectModel
@@ -49,8 +51,15 @@ class Object(Document):
     comment = GridVCSField("object_comment")
     tags = ListField(StringField())
 
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
     def __unicode__(self):
         return unicode(self.name or self.id)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    def get_by_id(cls, id):
+        return Object.objects.filter(id=id).first()
 
     def get_data(self, interface, key):
         attr = ModelInterface.get_interface_attr(interface, key)
