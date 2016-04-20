@@ -99,6 +99,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Original-URI $request_uri;
         proxy_set_header Content-Length '0';
+        access_log  /var/log/nginx/auth.access.log;
     }
 
     # Login service api
