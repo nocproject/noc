@@ -13,10 +13,12 @@ import logging
 import os
 import re
 import itertools
-## Django modules
+import operator
+## Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, SET_NULL)
 from django.contrib.auth.models import User, Group
+import cachetools
 ## NOC modules
 from administrativedomain import AdministrativeDomain
 from authprofile import AuthProfile
@@ -308,6 +310,8 @@ class ManagedObject(Model):
             self._cache[name] = cw
             return cw
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __init__(self, *args, **kwargs):
         super(ManagedObject, self).__init__(*args, **kwargs)
         self.scripts = ManagedObject.ScriptsProxy(self)
@@ -315,6 +319,14 @@ class ManagedObject(Model):
 
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    def get_by_id(cls, id):
+        try:
+            return ManagedObject.objects.get(id=id)
+        except ManagedObject.DoesNotExist:
+            return None
 
     def get_absolute_url(self):
         return site.reverse("sa:managedobject:change", self.id)
