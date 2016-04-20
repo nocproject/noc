@@ -178,9 +178,9 @@ class BaseCard(object):
         path = []
         c = object.container
         while c:
-            if "address" in object.data:
-                if object.data["address"]["text"]:
-                    path += [object.data["address"]["text"]]
+            if "address" in c.data:
+                if c.data["address"]["text"]:
+                    path += [c.data["address"]["text"]]
                     break
             if c.name:
                 path += [c.name]
