@@ -30,20 +30,22 @@
         <td>
             <table>
                 <thead>
-                    <th>{{ _("Object") }}</th>
-                    <th>{{ _("Model") }}</th>
-                    <th>{{ _("IP") }}</th>
-                    <th>{{ _("Services")</th>
+                    <th class="col-xs-4">{{ _("Object") }}</th>
+                    <th class="col-xs-2">{{ _("Model") }}</th>
+                    <th class="col-xs-2">{{ _("IP") }}</th>
+                    <th class="col-xs-4">{{ _("Services") }}</th>
                 </thead>
                 <tbody>
                     {% for a in affected %}
                     <tr>
                         <td>
-                            <a href="/api/card/view/managedobject/{{ id }}/>{{ name }}</a>
+                            <a href="/api/card/view/managedobject/{{ a["id"] }}/">{{ a["name"] }}</a>
+                            <br/>
+                            <span class="small">{{ a["object"] | object_location }}</span>
                         </td>
-                        <td>{{ address }}</td>
-                        <td>{{ platform }}</td>
-                        <td>{{ summary | glyph_summary }}</td>
+                        <td>{{ a["address"] }}</td>
+                        <td>{{ a["platform"] }}</td>
+                        <td>{{ a["summary"] | glyph_summary }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
