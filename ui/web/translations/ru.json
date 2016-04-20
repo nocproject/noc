@@ -7,8 +7,8 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-04-18 16:00+0300",
-        "POT-Creation-Date": "2016-04-18 15:52+0300",
+        "PO-Revision-Date": "2016-04-20 18:15+0300",
+        "POT-Creation-Date": "2016-04-20 18:11+0300",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
@@ -18,9 +18,21 @@
         null,
         "О программе ..."
     ],
+    "Adm. Domain": [
+        null,
+        "Зона ответсвенности"
+    ],
+    "Alarms": [
+        null,
+        "Аварии"
+    ],
     "Anonymous": [
         null,
         "Анонимный"
+    ],
+    "Card": [
+        null,
+        "Карточка"
     ],
     "Change": [
         null,
@@ -34,6 +46,18 @@
         null,
         "Смена пароля ..."
     ],
+    "Class": [
+        null,
+        "Класс"
+    ],
+    "Clear": [
+        null,
+        "Очистить"
+    ],
+    "Clear alarm?": [
+        null,
+        "Очистить аварию?"
+    ],
     "Close": [
         null,
         "Закрыть"
@@ -46,6 +70,22 @@
         null,
         "Пароль изменен"
     ],
+    "Data": [
+        null,
+        "Данные"
+    ],
+    "Duration": [
+        null,
+        "Длительность"
+    ],
+    "Events": [
+        null,
+        "События"
+    ],
+    "Expand": [
+        null,
+        "Раскрыть"
+    ],
     "Expand panels": [
         null,
         "Развернуть панели"
@@ -54,24 +94,140 @@
         null,
         "Невозможно сменить пароль: "
     ],
+    "Failed to clear alarm": [
+        null,
+        "Не удалось получить аварию"
+    ],
+    "Failed to get alarm": [
+        null,
+        "Не удалось получить данные"
+    ],
+    "Failed to post message": [
+        null,
+        "Не удалось послать сообщение"
+    ],
+    "Failed to set root cause": [
+        null,
+        "Не удалось установить причину"
+    ],
+    "Failed to set watcher": [
+        null,
+        "Не удалось подписаться"
+    ],
+    "From": [
+        null,
+        "С"
+    ],
+    "Help": [
+        null,
+        "Помощь"
+    ],
+    "ID": [
+        null,
+        "ID"
+    ],
+    "Log": [
+        null,
+        "Журнал"
+    ],
     "Logout": [
         null,
         "Выход"
+    ],
+    "Message": [
+        null,
+        "Сообщение"
     ],
     "Navigation": [
         null,
         "Навигация"
     ],
+    "New message": [
+        null,
+        "Новое сообщение"
+    ],
+    "Object": [
+        null,
+        "Объект"
+    ],
+    "Overview": [
+        null,
+        "Обзор"
+    ],
+    "Please confirm the alarm is closed and must be cleared?": [
+        null,
+        "Пожалуйста, подтвердите, что проблема решена и авария должна быть закрыта"
+    ],
+    "Please enter root cause alarm id": [
+        null,
+        "Пожалуйста, введите ID причины"
+    ],
+    "Refresh": [
+        null,
+        "Обновить"
+    ],
     "Reset": [
         null,
         "Сброс"
+    ],
+    "Segment": [
+        null,
+        "Сегмент"
+    ],
+    "Selector": [
+        null,
+        "Селектор"
+    ],
+    "Set Root Cause": [
+        null,
+        "Установить причину"
+    ],
+    "Set root cause": [
+        null,
+        "Установить причину"
+    ],
+    "Severity": [
+        null,
+        "Серьезность"
+    ],
+    "Show Map": [
+        null,
+        "Карта"
+    ],
+    "Show Object": [
+        null,
+        "Объект"
+    ],
+    "Show/collapse children alarms": [
+        null,
+        "Показать/свернуть область"
+    ],
+    "Status": [
+        null,
+        "Статус"
+    ],
+    "Subject": [
+        null,
+        "Тема"
     ],
     "Switch to breadcrumb view": [
         null,
         "Компактный режим"
     ],
+    "Time": [
+        null,
+        "Время"
+    ],
+    "To": [
+        null,
+        "По"
+    ],
     "User profile ...": [
         null,
         "Профиль пользователя ..."
+    ],
+    "Watch": [
+        null,
+        "Подписаться"
     ]
 }

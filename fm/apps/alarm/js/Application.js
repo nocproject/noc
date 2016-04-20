@@ -65,7 +65,7 @@ Ext.define("NOC.fm.alarm.Application", {
         });
 
         me.admdomCombo = Ext.create("NOC.sa.administrativedomain.LookupField", {
-            fieldLabel: "Adm. Domain",
+            fieldLabel: _("Adm. Domain"),
             labelWidth: 40, 
             width: 200,
             listeners: {
@@ -76,7 +76,7 @@ Ext.define("NOC.fm.alarm.Application", {
         }); 
 
         me.objectCombo = Ext.create("NOC.sa.managedobject.LookupField", {
-            fieldLabel: "Object",
+            fieldLabel: _("Object"),
             labelWidth: 40,
             width: 200,
             listeners: {
@@ -87,7 +87,7 @@ Ext.define("NOC.fm.alarm.Application", {
         });
 
         me.selectorCombo = Ext.create("NOC.sa.managedobjectselector.LookupField", {
-            fieldLabel: "Selector",
+            fieldLabel: _("Selector"),
             labelWidth: 40, 
             width: 200,
             listeners: {
@@ -98,7 +98,7 @@ Ext.define("NOC.fm.alarm.Application", {
         }); 
 
         me.alarmClassCombo = Ext.create("NOC.fm.alarmclass.LookupField", {
-            fieldLabel: "Class",
+            fieldLabel: _("Class"),
             labelWidth: 40,
             width: 300,
             listeners: {
@@ -109,7 +109,7 @@ Ext.define("NOC.fm.alarm.Application", {
         });
 
         me.fromDateField = Ext.create("Ext.form.field.Date", {
-            fieldLabel: "From",
+            fieldLabel: _("From"),
             labelWidth: 35,
             format: "d.m.Y",
             width: 130,
@@ -120,7 +120,7 @@ Ext.define("NOC.fm.alarm.Application", {
         });
 
         me.toDateField = Ext.create("Ext.form.field.Date", {
-            fieldLabel: "To",
+            fieldLabel: _("To"),
             labelWidth: 25,
             format: "d.m.Y",
             width: 120,
@@ -131,8 +131,8 @@ Ext.define("NOC.fm.alarm.Application", {
         });
 
         me.expandButton = Ext.create("Ext.button.Button", {
-            text: "Expand",
-            tooltip: "Show/collapse children alarms",
+            text: _("Expand"),
+            tooltip: _("Show/collapse children alarms"),
             enableToggle: true,
             glyph: NOC.glyph.expand,
             scope: me,
@@ -178,56 +178,56 @@ Ext.define("NOC.fm.alarm.Application", {
                     width: 150
                 },
                 {
-                    text: "Status",
+                    text: _("Status"),
                     dataIndex: "status",
                     width: 50,
                     renderer: NOC.render.Choices(me.STATUS_MAP),
                     hidden: true
                 },
                 {
-                    text: "Time",
+                    text: _("Time"),
                     dataIndex: "timestamp",
                     width: 100,
                     renderer: NOC.render.DateTime
                 },
                 {
-                    text: "Segment",
+                    text: _("Segment"),
                     dataIndex: "segment",
                     width: 200,
                     renderer: NOC.render.Lookup("segment")
                 },
                 {
-                    text: "Object",
+                    text: _("Object"),
                     dataIndex: "managed_object",
                     width: 200,
                     renderer: NOC.render.Lookup("managed_object")
                 },
                 {
-                    text: "Severity",
+                    text: _("Severity"),
                     dataIndex: "severity",
                     width: 70,
                     renderer: NOC.render.Lookup("severity")
                 },
                 {
-                    text: "Class",
+                    text: _("Class"),
                     dataIndex: "alarm_class",
                     width: 300,
                     renderer: NOC.render.Lookup("alarm_class")
                 },
                 {
-                    text: "Subject",
+                    text: _("Subject"),
                     dataIndex: "subject",
                     flex: 1
                 },
                 {
-                    text: "Duration",
+                    text: _("Duration"),
                     dataIndex: "duration",
                     width: 70,
                     align: "right",
                     renderer: NOC.render.Duration
                 },
                 {
-                    text: "Events",
+                    text: _("Events"),
                     dataIndex: "events",
                     width: 30,
                     align: "right"

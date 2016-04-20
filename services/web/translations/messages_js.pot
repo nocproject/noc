@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-18 15:52+0300\n"
+"POT-Creation-Date: 2016-04-20 18:11+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,173 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.3\n"
 
-#: main/apps/desktop/js/ChangeCredentials.js:11
-msgid "Change Password"
+#: fm/apps/alarm/js/AlarmPanel.js:44
+msgid "Overview"
 msgstr ""
 
+#: fm/apps/alarm/js/AlarmPanel.js:49
+msgid "Help"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:54
+msgid "Data"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:69
+msgid "New message"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:81
+msgid "Log"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:87 fm/apps/alarm/js/AlarmPanel.js:131
+#: fm/apps/alarm/js/AlarmPanel.js:172 fm/apps/alarm/js/Application.js:188
+msgid "Time"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:93 fm/apps/alarm/js/Application.js:112
+msgid "From"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:99 fm/apps/alarm/js/Application.js:123
+msgid "To"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:105
+msgid "Message"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:120 fm/apps/alarm/js/Application.js:230
+msgid "Events"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:137 fm/apps/alarm/js/AlarmPanel.js:184
+#: fm/apps/alarm/js/Application.js:101 fm/apps/alarm/js/Application.js:212
+msgid "Class"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:143 fm/apps/alarm/js/AlarmPanel.js:189
+#: fm/apps/alarm/js/Application.js:218
+msgid "Subject"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:159
+msgid "Alarms"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:167
+msgid "ID"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:178 fm/apps/alarm/js/Application.js:79
+#: fm/apps/alarm/js/Application.js:200
+msgid "Object"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:214
+msgid "Clear"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:221
+msgid "Watch"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:229
+msgid "Set Root Cause"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:236
+msgid "Show Map"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:243
+msgid "Show Object"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:250
+msgid "Card"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:263
 #: main/apps/desktop/js/ChangeCredentials.js:40
 msgid "Close"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:269
+msgid "Refresh"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:308
+msgid "Failed to get alarm"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:430
+msgid "Failed to post message"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:459
+msgid "Clear alarm?"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:460
+msgid "Please confirm the alarm is closed and must be cleared?"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:473
+msgid "Failed to clear alarm"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:493
+msgid "Failed to set watcher"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:502
+msgid "Set root cause"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:503
+msgid "Please enter root cause alarm id"
+msgstr ""
+
+#: fm/apps/alarm/js/AlarmPanel.js:517
+msgid "Failed to set root cause"
+msgstr ""
+
+#: fm/apps/alarm/js/Application.js:68
+msgid "Adm. Domain"
+msgstr ""
+
+#: fm/apps/alarm/js/Application.js:90
+msgid "Selector"
+msgstr ""
+
+#: fm/apps/alarm/js/Application.js:134
+msgid "Expand"
+msgstr ""
+
+#: fm/apps/alarm/js/Application.js:135
+msgid "Show/collapse children alarms"
+msgstr ""
+
+#: fm/apps/alarm/js/Application.js:181
+msgid "Status"
+msgstr ""
+
+#: fm/apps/alarm/js/Application.js:194
+msgid "Segment"
+msgstr ""
+
+#: fm/apps/alarm/js/Application.js:206
+msgid "Severity"
+msgstr ""
+
+#: fm/apps/alarm/js/Application.js:223
+msgid "Duration"
+msgstr ""
+
+#: main/apps/desktop/js/ChangeCredentials.js:11
+msgid "Change Password"
 msgstr ""
 
 #: main/apps/desktop/js/ChangeCredentials.js:46
