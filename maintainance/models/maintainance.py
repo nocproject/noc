@@ -51,10 +51,44 @@ class Maintainance(Document):
         """
         Calculate and fill affected objects
         """
-        # @todo:
-        direct = set(o.object.id for o in self.direct_objects)
+        def get_downlinks(objects):
+            r = set()
+            # Get all additional objects which may be affected
+            for d in ObjectUplink._get_collection().find({
+                "uplinks": {
+                    "$in": list(objects)
+                }
+            }, {
+                "_id": 1
+            }):
+                if d["_id"] not in objects:
+                    r.add(d["_id"])
+            if not r:
+                return r
+            # Leave only objects with all uplinks affected
+            rr = set()
+            for d in ObjectUplink._get_collection().find({
+                "_id": {
+                    "$in": list(r)
+                }
+            }, {
+                "_id": 1,
+                "uplinks": 1
+            }):
+                if len([1 for u in d["uplinks"] if u in objects]) == len(d["uplinks"]):
+                    rr.add(d["_id"])
+            return rr
+
+        # Calculate affected objects
+        affected = set(o.object.id for o in self.direct_objects)
+        while True:
+            r = get_downlinks(affected)
+            if not r:
+                break
+            affected |= r
+
         # @todo: Calculate affected objects considering topology
-        affected = [{"object": o} for o in sorted(direct)]
+        affected = [{"object": o} for o in sorted(affected)]
         Maintainance._get_collection().update(
             {
                 "_id": self.id
