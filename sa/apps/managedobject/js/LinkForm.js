@@ -151,6 +151,7 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
                                 data = Ext.decode(response.responseText);
                             if(data.status) {
                                 me.close();
+                                me.app.onRefresh();
                             } else {
                                 NOC.error(data.message);
                             }
