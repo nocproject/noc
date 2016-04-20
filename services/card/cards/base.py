@@ -12,6 +12,8 @@ import datetime
 import operator
 ## Third-party modules
 from jinja2 import Template, Environment
+## NOC modules
+from noc.core.translation import ugettext as _
 
 
 class BaseCard(object):
@@ -73,7 +75,8 @@ class BaseCard(object):
                         "service_title": self.f_service_title,
                         "logical_status": self.f_logical_status,
                         "timestamp": self.f_timestamp,
-                        "glyph_summary": self.f_glyph_summary
+                        "glyph_summary": self.f_glyph_summary,
+                        "object_location": self.f_object_location
                     })
                     with open(tp) as f:
                         self.template_cache[name] = env.from_string(f.read())
@@ -164,4 +167,26 @@ class BaseCard(object):
         r = [x for x in r if x]
         return "&nbsp;".join(r)
 
-
+    @classmethod
+    def f_object_location(cls, object):
+        """
+        Returns managed object location
+        """
+        from noc.inv.models.object import Object
+        if not object.container:
+            return _("N/A")
+        path = []
+        c = object.container
+        while c:
+            if "address" in object.data:
+                if object.data["address"]["text"]:
+                    path += [object.data["address"]["text"]]
+                    break
+            if c.name:
+                path += [c.name]
+            c = c.container
+            if c:
+                c = Object.get_by_id(c)
+        if not path:
+            return _("N/A")
+        return ", ".join(reversed(path))
