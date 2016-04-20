@@ -846,6 +846,21 @@ class ManagedObject(Model):
         else:
             return get_solution("noc.cm.parsers.base.BaseParser")(self)
 
+    def get_interface(self, name):
+        from noc.inv.models.interface import Interface
+
+        name = self.profile.convert_interface_name(name)
+        try:
+            return Interface.objects.get(managed_object=self.id, name=name)
+        except Interface.DoesNotExist:
+            pass
+        for n in self.profile.get_interface_names(name):
+            try:
+                return Interface.objects.get(managed_object=self.id, name=n)
+            except Interface.DoesNotExist:
+                pass
+        return None
+
     def ensure_discovery_jobs(self):
         """
         Check and schedule discovery jobs
