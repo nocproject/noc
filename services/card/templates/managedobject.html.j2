@@ -10,12 +10,7 @@
 </tr>
 <tr>
     <th scope="row" class="col-sm-1">{{ _("Location") }}</th>
-    <td>
-        {% for p in container_path %}
-        {% if not loop.first %}&gt;{% endif %}
-        {{ p.name }}
-        {% endfor %}
-    </td>
+    <td>{{ object | object_location }}</td>
 </tr>
 <tr>
     <th scope="row">{{ _("Administrative Domain") }}</th>
