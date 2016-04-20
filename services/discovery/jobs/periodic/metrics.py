@@ -223,7 +223,7 @@ class MetricsCheck(DiscoveryCheck):
                 )
             if thresholds == DEFAULT_THRESHOLDS:
                 continue
-            v = self.check_thresholds(m, thresholds)
+            v, condition, threshold = self.check_thresholds(m, thresholds)
             self.logger.debug(
                 "Checking thresholds for %s@%s %s. measure=%s Result: %s",
                 m["name"], m["tags"].get("interface"), thresholds,
@@ -235,7 +235,9 @@ class MetricsCheck(DiscoveryCheck):
                     "name": m["name"],
                     "interface": m["tags"].get("interface"),
                     "value": m["value"],
-                    "level": self.SMAP[v]
+                    "level": self.SMAP[v],
+                    "condition": condition,
+                    "threshold": threshold
                 }]
         # Change status of existing alarm
         alarm = ActiveAlarm.objects.filter(
@@ -316,11 +318,11 @@ class MetricsCheck(DiscoveryCheck):
         value = v["abs_value"]
         low_error, low_warn, high_warn, high_error = thresholds
         if low_error is not None and value < low_error:
-            return cls.S_ERROR
+            return cls.S_ERROR, "<", low_error
         if low_warn is not None and value < low_warn:
-            return cls.S_WARN
+            return cls.S_WARN, "<", low_warn
         if high_error is not None and value > high_error:
-            return cls.S_ERROR
+            return cls.S_ERROR, ">", high_error
         if high_warn is not None and value > high_warn:
-            return cls.S_WARN
-        return cls.S_OK
+            return cls.S_WARN, ">", high_warn
+        return cls.S_OK, None, None
