@@ -36,7 +36,11 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 managed_object=self.object.id)
         )
         for i in result:
-            iface = interfaces.get(i["interface"])
+            iface = None
+            for iname in self.object.profile.get_interface_names(i["interface"]):
+                iface = interfaces.get(iname)
+                if iface:
+                    break
             if not iface:
                 continue
             kwargs = {
