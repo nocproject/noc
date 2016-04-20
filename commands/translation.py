@@ -11,6 +11,9 @@ import subprocess
 import argparse
 import os
 import glob
+import cStringIO
+## Third-party modules
+from babel.util import pathmatch
 ## NOC modules
 from noc.core.management.base import BaseCommand
 
@@ -26,7 +29,7 @@ class Command(BaseCommand):
             "messages_js": ["ui/login/"]
         },
         "web": {
-            "messages": ["*/apps/*/*.py"],
+            "messages": ["*/apps/**.py"],
             "messages_js": ["*/apps/*/js/**.js"]
         }
     }
@@ -78,6 +81,15 @@ class Command(BaseCommand):
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
+    def glob(self, expr):
+        if not hasattr(self, "_files"):
+            f = subprocess.Popen(
+                ["./bin/hg", "locate"],
+                stdout=subprocess.PIPE
+            ).stdout
+            self._files = f.read().splitlines()
+        return [p for p in self._files if pathmatch(expr, p)]
+
     def handle_extract(self, services=None, *args, **options):
         if not services:
             services = sorted(self.SERVICES)
@@ -90,7 +102,7 @@ class Command(BaseCommand):
             for domain in self.SERVICES[svc]:
                 src = []
                 for expr in self.SERVICES[svc][domain]:
-                    src += glob.glob(expr)
+                    src += self.glob(expr)
                 subprocess.check_call([
                     self.BABEL, "extract",
                     "-F", self.BABEL_CFG,
