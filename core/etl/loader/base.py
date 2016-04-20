@@ -16,6 +16,7 @@ import csv
 import time
 import shutil
 import functools
+import itertools
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.fileutils import safe_rewrite
@@ -300,7 +301,10 @@ class BaseLoader(object):
         self.c_change += 1
         v = self.clean(n)
         vv = {}
-        for fn, (ov, nv) in zip(self.fields[1:], zip(o[1:], n[1:])):
+        for fn, (ov, nv) in zip(
+                self.fields[1:],
+                itertools.izip_longest(o[1:], n[1:])
+        ):
             if ov != nv:
                 self.logger.debug("   %s: %s -> %s", fn, ov, nv)
                 vv[fn] = v[fn]
