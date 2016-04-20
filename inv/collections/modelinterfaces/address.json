@@ -1,0 +1,22 @@
+{
+    "name": "address",
+    "$collection": "inv.modelinterfaces",
+    "uuid": "286fbd4d-f84d-4f17-b061-c10f6dc31eec",
+    "description": "GIS Address",
+    "attrs": [
+        {
+            "name": "id",
+            "type": "int",
+            "description": "Address id",
+            "required": true,
+            "is_const": false
+        },
+        {
+            "name": "text",
+            "type": "str",
+            "description": "Address as a text",
+            "required": true,
+            "is_const": false
+        }
+    ]
+}
