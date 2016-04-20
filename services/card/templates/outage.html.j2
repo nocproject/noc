@@ -8,22 +8,20 @@
         </tr>
         <tr>
             <th class="col-sm-2">{{ _("Services") }}</th>
-            <th class="col-sm-4">{{ _("Object") }}</th>
-            <th class="col-sm-2">{{ _("Start") }}</th>
-            <th class="col-sm-2">{{ _("Duration") }}</th>
+            <th class="col-sm-6">{{ _("Object") }}</th>
+            <th class="col-sm-1">{{ _("Start") }}</th>
+            <th class="col-sm-1">{{ _("Duration") }}</th>
             <th class="col-sm-2">{{ _("TT") }}</th>
         <tr>
     </thead>
 {% for segment in segments recursive%}
     {% set level = loop.depth0 %}
     <tr>
-        <td class="col-sm-2">
-            {{ "&nbsp;&nbsp;&nbsp;&nbsp;" * level }}
+        <td class="col-sm-2" style="padding-left: {{ 20 * level }}px">
             <i class="fa fa-angle-right"></i>
             {{ segment["summary"] | glyph_summary | replace("badge", "label label-default") }}
         </td>
-        <td colspan="4" class="col-sm-12">
-            {{ "&nbsp;&nbsp;&nbsp;&nbsp;" * level }}
+        <td colspan="4" class="col-sm-12" style="padding-left: {{ 20 * level }}px">
             <i class="fa fa-angle-right"></i>
             {{ segment["segment"].name }}
         </td>
@@ -31,15 +29,15 @@
     {{ loop(segment["segments"]) }}
     {% for object in segment["objects"] %}
         <tr>
-            <td class="col-sm-2">
-                {{ "&nbsp;&nbsp;&nbsp;&nbsp;" * (level + 1)}}
+            <td class="col-sm-2" style="padding-left: {{ 20 * (level + 1) }}px">
                 {{ object["summary"] | glyph_summary }}
             </td>
-            <td class="col-sm-4">
-                {{ "&nbsp;&nbsp;&nbsp;&nbsp;" * (level + 1) }}
+            <td class="col-sm-4" style="padding-left: {{ 20 * (level + 1) }}px">
                 <a href="/api/card/view/alarm/{{ object["alarm"].id }}/">
                     {{ object["object"].name }}
                 </a>
+                <br/>
+                <span class="small">{{ object["object"] | object_location }}</span>
             </td>
             <td class="col-sm-2">
                 {{ object["timestamp"] | timestamp }}
