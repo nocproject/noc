@@ -840,4 +840,4 @@ class ManagedObjectApplication(ExtModelApplication):
         self.logger.info("Relinking")
         l.delete()
         iface1.link_ptp(iface2, method="macfix")
-        return  success_status("Relinked")
+        return success_status("Relinked")

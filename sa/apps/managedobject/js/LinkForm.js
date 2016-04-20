@@ -164,12 +164,14 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
     //
     onFix: function() {
         var me = this;
+        me.mask("Fixing ...");
         Ext.Ajax.request({
             url: "/sa/managedobject/link/fix/" + me.linkId + "/",
             method: "POST",
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
+                me.unmask();
                 if(data.status) {
                     NOC.info(data.message);
                     self.close();
@@ -180,6 +182,7 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
             },
             failure: function() {
                 NOC.error("Failed to fix");
+                me.unmask();
             }
         });
     },
