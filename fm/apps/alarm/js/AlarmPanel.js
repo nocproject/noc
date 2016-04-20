@@ -532,14 +532,14 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
     onShowObject: function() {
         var me = this;
         window.open(
-            "/api/card/view/managedobject/" + me.currentRecord.get("managed_object") + "/"
+            "/api/card/view/managedobject/" + me.data.managed_object + "/"
         );
     },
 
     onShowCard: function() {
         var me = this;
         window.open(
-            "/api/card/view/alarm/" + me.currentRecord.get("id") + "/"
+            "/api/card/view/alarm/" + me.data.id + "/"
         );
     }
 });

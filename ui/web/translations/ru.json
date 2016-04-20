@@ -7,12 +7,11 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-04-20 18:15+0300",
-        "POT-Creation-Date": "2016-04-20 18:11+0300",
-        "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
+        "PO-Revision-Date": "2016-04-20 18:27+0300",
+        "POT-Creation-Date": "2016-04-20 18:28+0300",
+        "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)",
         "Project-Id-Version": "The NOC Project VERSION",
-        "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
-        "X-Generator": "Poedit 1.8.7"
+        "Report-Msgid-Bugs-To": "EMAIL@ADDRESS"
     },
     "About NOC ...": [
         null,
@@ -78,6 +77,14 @@
         null,
         "Длительность"
     ],
+    "Edit": [
+        null,
+        "Редактировать"
+    ],
+    "Edit map": [
+        null,
+        "Редактировать карту"
+    ],
     "Events": [
         null,
         "События"
@@ -142,6 +149,10 @@
         null,
         "Навигация"
     ],
+    "New layout": [
+        null,
+        "Новая раскладка"
+    ],
     "New message": [
         null,
         "Новое сообщение"
@@ -170,6 +181,18 @@
         null,
         "Сброс"
     ],
+    "Reset Layout": [
+        null,
+        "Сбросить раскладку"
+    ],
+    "Revert": [
+        null,
+        "Отменить"
+    ],
+    "Save": [
+        null,
+        "Сохранить"
+    ],
     "Segment": [
         null,
         "Сегмент"
@@ -177,6 +200,10 @@
     "Selector": [
         null,
         "Селектор"
+    ],
+    "Set": [
+        null,
+        "Установить"
     ],
     "Set Root Cause": [
         null,
@@ -197,6 +224,14 @@
     "Show Object": [
         null,
         "Объект"
+    ],
+    "Show interface load": [
+        null,
+        "Загрузка интерфейсов"
+    ],
+    "Show static map": [
+        null,
+        "Статичная карта"
     ],
     "Show/collapse children alarms": [
         null,
@@ -229,5 +264,9 @@
     "Watch": [
         null,
         "Подписаться"
+    ],
+    "Would you like to reset current layout and generate new?": [
+        null,
+        "Сбросить раскладку карты и перестроить заново?"
     ]
 }

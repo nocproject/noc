@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-20 18:11+0300\n"
+"POT-Creation-Date: 2016-04-20 18:28+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,16 +171,56 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: fm/apps/alarm/js/Application.js:194
-msgid "Segment"
-msgstr ""
-
 #: fm/apps/alarm/js/Application.js:206
 msgid "Severity"
 msgstr ""
 
 #: fm/apps/alarm/js/Application.js:223
 msgid "Duration"
+msgstr ""
+
+#: fm/apps/alarm/js/Application.js:194 inv/apps/map/js/Application.js:22
+msgid "Segment"
+msgstr ""
+
+#: inv/apps/map/js/Application.js:36
+msgid "Edit"
+msgstr ""
+
+#: inv/apps/map/js/Application.js:39
+msgid "Edit map"
+msgstr ""
+
+#: inv/apps/map/js/Application.js:46
+msgid "Save"
+msgstr ""
+
+#: inv/apps/map/js/Application.js:54
+msgid "Revert"
+msgstr ""
+
+#: inv/apps/map/js/Application.js:62
+msgid "New layout"
+msgstr ""
+
+#: inv/apps/map/js/Application.js:117
+msgid "Show static map"
+msgstr ""
+
+#: inv/apps/map/js/Application.js:128
+msgid "Show interface load"
+msgstr ""
+
+#: inv/apps/map/js/Application.js:258
+msgid "Reset Layout"
+msgstr ""
+
+#: inv/apps/map/js/Application.js:259
+msgid "Would you like to reset current layout and generate new?"
+msgstr ""
+
+#: inv/apps/map/js/SelectIconForm.js:43
+msgid "Set"
 msgstr ""
 
 #: main/apps/desktop/js/ChangeCredentials.js:11

@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.map.inspectors.SegmentInspector");
 
 Ext.define("NOC.inv.map.inspectors.SegmentInspector", {
     extend: "Ext.panel.Panel",
-    title: "Segment Inspector",
+    title: _("Segment Inspector"),
     autoScroll: true,
     layout: "vbox",
     bodyStyle: {
