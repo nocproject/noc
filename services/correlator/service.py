@@ -305,6 +305,9 @@ class CorrelatorService(Service):
                 return
         # Calculate alarm coverage
         summary = ServiceSummary.get_object_summary(managed_object)
+        summary["object"] = {
+            managed_object.object_profile.id: 1
+        }
         #
         severity = max(ServiceSummary.get_severity(summary), 1)
         self.logger.debug("%s: Calculated alarm severity is: %s",
