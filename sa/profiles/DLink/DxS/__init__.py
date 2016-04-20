@@ -45,6 +45,8 @@ class Profile(BaseProfile):
         r = []
         if name.startswith("1/") or name.startswith("1:"):
             r += [name[2:]]
+        else:
+            r += ["1/%s" % name, "1:%s" % name]
         return r
 
     def root_interface(self, name):

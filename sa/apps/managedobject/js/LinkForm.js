@@ -123,7 +123,7 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
             scope: me,
             success: function() {
                 var me = this;
-                me.app.loadInterfaces();
+                me.app.onRefresh();
                 me.close();
             },
             failure: function() {
@@ -169,12 +169,12 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                if(data) {
-                    NOC.info("Fixed");
+                if(data.status) {
+                    NOC.info(data.message);
                     self.close();
                     me.app.onRefresh();
                 } else {
-                    NOC.info("Failed to fix");
+                    NOC.error(data.message);
                 }
             },
             failure: function() {
