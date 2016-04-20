@@ -214,9 +214,6 @@ class AlarmApplication(ExtApplication):
             d["is_subscribed"] = user in alarm.subscribers
         # Apply plugins
         plugins = []
-        dd = self.plugins["subscribers"].get_data(alarm, {})
-        plugins += dd.get("plugins", [])
-        d.update(dd)
         if alarm.alarm_class.plugins:
             for p in alarm.alarm_class.plugins:
                 if p.name in self.plugins:

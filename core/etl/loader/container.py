@@ -86,10 +86,12 @@ class ContainerLoader(BaseLoader):
             o.model = self.get_model(v["model"])
         if v.get("path"):
             o.container = self.get_container(v["path"]).id
-        if v.get("lon") and v.get("lat"):
+        if v.get("lon"):
             o.set_data("geopoint", "x", v["lon"])
+        if v.get("lat"):
             o.set_data("geopoint", "y", v["lat"])
-        if v.get("addr_id") and v.get("addr_text"):
+        if v.get("addr_id"):
             o.set_data("address", "id", v["addr_id"])
+        if v.get("addr_text"):
             o.set_data("address", "text", v["addr_text"])
         o.save()
