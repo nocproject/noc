@@ -327,10 +327,10 @@ class EventClass(Document):
             r += [",\n".join(l)]
             r += ["    ]"]
         #
-        if c.repeat_suppression:
             if not r[-1].endswith(","):
                 r[-1] += ","
-            r += ["    \"repeat_suppression\": ["]
+        r += ["    \"repeat_suppression\": ["]
+        if c.repeat_suppression:
             l = []
             for rs in c.repeat_suppression:
                 ll = ["        {"]
@@ -348,7 +348,7 @@ class EventClass(Document):
                 ll += ["        }"]
                 l += ["\n".join(ll)]
             r += [",\n".join(l)]
-            r += ["    ]"]
+        r += ["    ]"]
         # Plugins
         if self.plugins:
             if not r[-1].endswith(","):
