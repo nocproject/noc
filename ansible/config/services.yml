@@ -323,6 +323,11 @@ config:
       label: Postgresql data directory
       default: /var/lib/postgresql/9.4/main/
 
+    postgres_max_clients:
+      type: str
+      label: Postgresql max clients
+      default: 300
+
   web:
     language:
       label: Translation language
