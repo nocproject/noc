@@ -374,7 +374,10 @@ class Service(object):
             self.logger.info("Running HTTP APIs at http://%s:%s/",
                              addr, port)
             app = tornado.web.Application(handlers, **self.get_app_settings())
-            http_server = tornado.httpserver.HTTPServer(app)
+            http_server = tornado.httpserver.HTTPServer(
+                app,
+                xheaders=True
+            )
             http_server.listen(port, addr)
         self.ioloop.add_callback(self.on_activate)
 
