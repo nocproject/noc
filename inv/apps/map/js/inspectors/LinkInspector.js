@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.map.inspectors.LinkInspector");
 
 Ext.define("NOC.inv.map.inspectors.LinkInspector", {
     extend: "Ext.panel.Panel",
-    title: _("Link Inspector"),
+    title: __("Link Inspector"),
     autoScroll: true,
     bodyStyle: {
         background: "#c0c0c0"

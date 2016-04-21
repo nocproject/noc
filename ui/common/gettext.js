@@ -87,4 +87,5 @@ NOCGettext.prototype.compile_plurals = function () {
 nocgettext = new NOCGettext();
 nocgettext.initialize();
 _ = nocgettext.gettext.bind(nocgettext);
+__ = nocgettext.gettext.bind(nocgettext);
 ngettext = nocgettext.ngettext.bind(nocgettext);
