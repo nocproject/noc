@@ -34,7 +34,7 @@ class DiscoveryService(Service):
     @tornado.gen.coroutine
     def on_activate(self):
         # Send spooled messages every 250ms
-        self.logger.debug("Stating message sender task")
+        self.logger.info("Stating message sender task")
         self.send_callback = tornado.ioloop.PeriodicCallback(
             self.send_metrics,
             250,
@@ -42,6 +42,11 @@ class DiscoveryService(Service):
         )
         self.send_callback.start()
         if self.config.global_n_instances > 1:
+            self.logger.info(
+                "Enabling distributed mode: Slot %d of %d",
+                self.config.instance + self.config.global_offset,
+                self.config.global_n_instances
+            )
             ifilter = {
                 "key": {
                     "$mod": [
@@ -51,6 +56,9 @@ class DiscoveryService(Service):
                 }
             }
         else:
+            self.logger.info(
+                "Enabling standalone mode"
+            )
             ifilter = None
         self.scheduler = Scheduler(
             "discovery",
