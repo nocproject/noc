@@ -24,6 +24,7 @@ from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.lib.text import split_alnum, list_to_ranges
+from noc.maintainance.models.maintainance import Maintainance
 
 
 class ManagedObjectCard(BaseCard):
@@ -169,6 +170,21 @@ class ManagedObjectCard(BaseCard):
                 "subject": a.subject
             }]
         alarm_list = sorted(alarm_list, key=operator.itemgetter("timestamp"))
+        # Maintainance
+        maintainance = []
+        for m in Maintainance.objects.filter(
+            affected_objects__object=self.object.id,
+            is_completed=False,
+            start__lte=now + datetime.timedelta(hours=1)
+        ):
+            maintainance += [{
+                "maintainance": m,
+                "id": m.id,
+                "subject": m.subject,
+                "start": m.start,
+                "stop": m.stop,
+                "in_progress": m.start <= now
+            }]
         # Build result
         r = {
             "id": self.object.id,
@@ -197,7 +213,8 @@ class ManagedObjectCard(BaseCard):
             "tt": [],
             "links": links,
             "alarms": alarm_list,
-            "interfaces": interfaces
+            "interfaces": interfaces,
+            "maintainance": maintainance
         }
         return r
 

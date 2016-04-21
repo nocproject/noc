@@ -43,6 +43,31 @@
     </td>
 </tr>
 {% endif %}
+{% if maintainance %}
+<tr>
+    <th scope="row" class="col-sm-1">{{ _("Maintainance") }}</th>
+    <td>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-sm-6">{{ _("Subject") }}</th>
+                    <th class="col-sm-3">{{ _("Start") }}</th>
+                    <th class="col-sm-3">{{ _("Stop") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in maintainance %}
+                <tr class="{{ {True: "danger", False: "warning"}[m["in_progress"]] }}">
+                    <td><a href="/api/card/view/maintainance/{{ m["id"] }}/">{{ m["subject"] }}</a></td>
+                    <td>{{ m["start"] | timestamp }}</td>
+                    <td>{{ m["stop"] | timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </td>
+<tr>
+{% endif %}
 <tr>
     <th scope="row" class="col-sm-1">{{ _("Services") }}</th>
     <td>
