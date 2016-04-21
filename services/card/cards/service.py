@@ -14,6 +14,7 @@ from base import BaseCard
 from noc.sa.models.service import Service
 from noc.inv.models.interface import Interface
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.maintainance.models.maintainance import Maintainance
 
 
 class ServiceCard(BaseCard):
@@ -31,6 +32,7 @@ class ServiceCard(BaseCard):
         alarms = []
         errors = []
         warnings = []
+        maintainance = []
         if managed_object:
             alarms = list(ActiveAlarm.objects.filter(managed_object=managed_object.id))
             if managed_object.get_status():
@@ -44,7 +46,21 @@ class ServiceCard(BaseCard):
             interface.speed = max([interface.in_speed or 0, interface.out_speed or 0]) / 1000
             if not interface.full_duplex:
                 errors += ["Half-Duplex"]
-            # @todo: pending maintainance
+            # Maintainance
+            for m in Maintainance.objects.filter(
+                affected_objects__object=self.object.id,
+                is_completed=False,
+                start__lte=now + datetime.timedelta(hours=1)
+            ):
+                maintainance += [{
+                    "maintainance": m,
+                    "id": m.id,
+                    "subject": m.subject,
+                    "start": m.start,
+                    "stop": m.stop,
+                    "in_progress": m.start <= now
+                }]
+
         # Build warnings
         # Build result
         r = {
@@ -57,7 +73,8 @@ class ServiceCard(BaseCard):
             "managed_object_status": managed_obect_status,
             "alarms": alarms,
             "errors": errors,
-            "warnings": warnings
+            "warnings": warnings,
+            "maintainance": maintainance
         }
         return r
 
