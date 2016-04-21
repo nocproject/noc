@@ -48,7 +48,7 @@ class ServiceCard(BaseCard):
                 errors += ["Half-Duplex"]
             # Maintainance
             for m in Maintainance.objects.filter(
-                affected_objects__object=self.object.id,
+                affected_objects__object=managed_object.id,
                 is_completed=False,
                 start__lte=now + datetime.timedelta(hours=1)
             ):
