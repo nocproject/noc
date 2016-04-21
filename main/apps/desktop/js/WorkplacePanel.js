@@ -19,7 +19,7 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
 
         me.expandButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.expand,
-            tooltip: _("Collapse panels"),
+            tooltip: __("Collapse panels"),
             enableToggle: true,
             scope: me,
             handler: me.onExpand,
@@ -105,13 +105,13 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
     setExpanded: function() {
         var me = this;
         me.expandButton.setGlyph(NOC.glyph.compress);
-        me.expandButton.setTooltip(_("Expand panels"));
+        me.expandButton.setTooltip(__("Expand panels"));
     },
     //
     setCollapsed: function() {
         var me = this;
         me.expandButton.setGlyph(NOC.glyph.expand);
-        me.expandButton.setTooltip(_("Collapse panels"));
+        me.expandButton.setTooltip(__("Collapse panels"));
     }
 
 });

@@ -21,7 +21,7 @@ Ext.define("NOC.main.desktop.NavPanel", {
     singleExpand: true,
     lines: false,
     hideHeaders: true,
-    title: _("Navigation"),
+    title: __("Navigation"),
     glyph: NOC.glyph.globe,
     store: null,
     //hidden: true,
@@ -31,7 +31,7 @@ Ext.define("NOC.main.desktop.NavPanel", {
         Ext.apply(me, {
             tools: [{
                 type: "up",
-                tooltip: _("Switch to breadcrumb view"),
+                tooltip: __("Switch to breadcrumb view"),
                 listeners: {
                     scope: me,
                     click: function() {me.app.toggleNav();}
