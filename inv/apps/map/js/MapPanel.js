@@ -648,7 +648,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                 link.label(0, {attrs: {text: luStyle}});
                 link.label(0, {position: 0.5});
             } else if(!getStatus(ports[0], "oper_status") || !getStatus(ports[1], "oper_status")) {
-                // Administratively down
+                // Oper down
                 link.attr({
                     ".connection": me.operDownStyle
                 });
@@ -663,7 +663,7 @@ Ext.define("NOC.inv.map.MapPanel", {
 
                 luStyle.fill = luStyle.stroke;
                 luStyle.visibility = "visible";
-                luStyle.text = "\uf0e7";
+                luStyle.text = "\uf071";
                 luStyle["font-size"] = 10;
                 link.label(0, {attrs: {text: luStyle}});
                 link.label(0, {position: 0.5});
