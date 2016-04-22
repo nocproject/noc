@@ -450,7 +450,7 @@ class ClassifierService(Service):
         # Find rules lookup
         lookup = self.rules.get(event.managed_object.profile_name, {}).get(chain)
         if lookup:
-            for r in lookup.lookup_rules(event):
+            for r in lookup.lookup_rules(event, vars):
                 # Try to match rule
                 v = r.match(event, vars)
                 if v is not None:
@@ -730,6 +730,9 @@ class ClassifierService(Service):
         while True:
             n = 0
             try:
+                # Wait for consumer processes all tasks
+                yield self.ev_queue.join()
+                # Get new data
                 for e in NewEvent.objects.filter(**q).order_by("seq"):
                     yield self.ev_queue.put(e)
                     n += 1
