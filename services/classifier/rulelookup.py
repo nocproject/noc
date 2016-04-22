@@ -11,7 +11,7 @@ class RuleLookup(object):
     def __init__(self, rules):
         self.rules = rules
 
-    def lookup_rules(self, msg):
+    def lookup_rules(self, msg, vars):
         """
         Returns a list of events to lookup
         """

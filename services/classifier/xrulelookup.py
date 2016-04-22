@@ -8,8 +8,10 @@
 
 ## Python modules
 from collections import defaultdict
+import operator
 import re
 import logging
+import cachetools
 ## Third-party modules
 import esm
 from pyparsing import *
@@ -31,7 +33,9 @@ class XRuleLookup(RuleLookup):
         self.rule_cond = {}  # Rule -> {conditions}
         self.conditions = {}  # id -> (left_re, right_re)
         self.parser = parser
+        self.pattern_cache = {}
         self.initialize(rules)
+        del self.pattern_cache  # No longer needed
 
     def enter(self, index, regex, obj):
         def is_applicable(h):
@@ -41,7 +45,7 @@ class XRuleLookup(RuleLookup):
 
         hints = [
             h for h
-            in "".join(self.parser.parseString(regex))
+            in "".join(self.parse_string(regex))
                 .replace("\\", "")
                 .split(self.RE_SEP)
             if is_applicable(h)
@@ -84,15 +88,14 @@ class XRuleLookup(RuleLookup):
         for i in self.r_index.itervalues():
             i.fix()
 
-    def lookup_rules(self, event):
+    def lookup_rules(self, event, vars):
         """
         Perform event lookup and return first matched rules
         """
-        msg = event.raw_vars
         conds = set()
-        for k in msg:
+        for k in vars:
             for _, x in self.l_index.query(k):
-                conds.update(y for _, y in self.r_index[x].query(msg[k]))
+                conds.update(y for _, y in self.r_index[x].query(vars[k]))
         matched = set()
         for c in conds:
             for rule in self.cond_rules[c]:
@@ -100,6 +103,11 @@ class XRuleLookup(RuleLookup):
                 if rc <= conds:
                     matched.add(rule)
         return sorted(matched, key=lambda y: y.preference)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("pattern_cache"))
+    def parse_string(self, s):
+        return self.parser.parseString(s)
 
     @classmethod
     def get_parser(cls):
