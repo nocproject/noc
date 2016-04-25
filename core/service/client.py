@@ -100,9 +100,10 @@ class RPCClient(object):
                     # @todo: Retry on timeout
                     raise RPCException(str(e))
                 finally:
+                    code = c.getinfo(c.RESPONSE_CODE)
                     c.close()
                 return (
-                    c.getinfo(c.RESPONSE_CODE),
+                    code,
                     headers,
                     buff.getvalue()
                 )
@@ -146,6 +147,7 @@ class RPCClient(object):
                     elif code == 307:
                         url = headers.get("location")
                         l = url.split("://", 1)[1].split("/")[0]
+                        body = data
                         logger.debug("Redirecting to %s", url)
                     else:
                         raise RPCException("Invalid return code: %s" % code)
