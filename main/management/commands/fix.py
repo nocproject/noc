@@ -130,17 +130,12 @@ class Command(BaseCommand):
 
     def fix_wiping_mo(self):
         from noc.sa.models.managedobject import ManagedObject
-        from noc.lib.nosql import get_db
-        from noc.lib.scheduler.utils import submit_job
+        from noc.sa.wipe.managedobject import wipe
 
-        c = get_db().noc.schedules.main.jobs
         for mo in ManagedObject.objects.filter(name__startswith="wiping-"):
-            if not c.find({"object": mo.id, "jcls": "sa.wipe_managed_object"}).count():
-                self.info("Restarting wipe process: %s", mo)
-                submit_job("main.jobs", "sa.wipe_managed_object", mo.id)
+            wipe(mo)
 
     def fix_fm_outage_orphans(self):
-        from noc.sa.models.managedobject import ManagedObject
         from fm.models.outage import Outage
 
         self.info("Checking fm.Outages")
