@@ -155,6 +155,9 @@ class API(object):
             if getattr(getattr(cls, m), "api", False)
         ]
 
+    def redirect(self, url, method, params):
+        raise tornado.gen.Return(Redirect(url=url, method=method, params=params))
+
 
 def api(method):
     """
