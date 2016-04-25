@@ -30,12 +30,10 @@ class Command(BaseCommand):
             self.fix_inv_root()
             self.fix_inv_lost_and_found()
             self.fix_inv_orphans()
-            self.fix_metricsettings()
             self.fix_fm_outage_orphans()
             self.fix_wiping_mo()
             self.fix_suspended_discovery_jobs()
             self.fix_db_interfaces_capability()
-            self.fix_maptask()
         except:
             error_report()
             sys.exit(1)
@@ -76,42 +74,6 @@ class Command(BaseCommand):
                     }
                 }
             )
-
-    def fix_metricsettings(self):
-        def remove_ms(ms):
-            MetricSettings._get_collection().remove({"_id": ms.id})
-
-        from noc.pm.models.metricsettings import MetricSettings
-        self.info("Checking pm.MetricSettings")
-        for ms in MetricSettings.objects.all():
-            # Check referenced object is exists
-            if not ms.get_object():
-                self.info(
-                    "    ... Unable to dereference %s:%s. Removing",
-                    ms.model_id, ms.object_id
-                )
-                remove_ms(ms)
-                continue
-            # Check metric sets references
-            msl = []
-            for m in ms.metric_sets:
-                try:
-                    x = m.metric_set
-                    msl += [m]
-                except Exception, why:
-                    self.info("    ... Unable to dereference metric set. Pulling")
-            if len(msl) < len(ms.metric_sets):
-                ms.metric_sets = msl
-                ms.save()
-            # Remove empty metric sets
-            if not ms.metric_sets:
-                self.info(
-                    "    ... Empty metric sets for %s:%s. Removing",
-                    ms.model_id, ms.object_id
-                )
-                remove_ms(ms)
-                continue
-        self.info("... done")
 
     def fix_inv_root(self):
         from noc.inv.models.object import Object
@@ -190,7 +152,7 @@ class Command(BaseCommand):
         Initialize set of existing managed objects ids
         :return:
         """
-        from sa.models import ManagedObject
+        from noc.sa.models.managedobject import ManagedObject
 
         self.existing_mo = set(
             ManagedObject.objects.exclude(
@@ -272,11 +234,3 @@ class Command(BaseCommand):
                 o.update_caps({
                     "DB | Interfaces": caps[o.id]
                 })
-
-    def fix_maptask(self):
-        from django.db import connection
-        self.info("Optimizing sa_maptask")
-        cursor = connection.cursor()
-        cursor.execute("COMMIT")
-        cursor.execute("VACUUM FULL ANALYZE sa_maptask")
-        cursor.execute("REINDEX TABLE sa_maptask")
