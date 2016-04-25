@@ -39,18 +39,16 @@ class InvMonitorApplication(ExtApplication):
             }
             t0 = sc.find_one(late_q, limit=1, sort=[("ts", 1)])
             if t0 and t0["ts"] < now:
-                lag = str(
-                    now - t0["ts"]
-                )
+                lag = (now - t0["ts"]).total_seconds()
             else:
-                lag = "-"
+                lag = 0
             late_count = sc.find(late_q).count()
             #
-            r += [{
+            r = {
                 "pool": p.name,
                 "total_tasks": sc.count(),
                 "running_tasks": sc.find({Job.ATTR_STATUS: Job.S_RUN}).count(),
                 "late_tasks": late_count,
                 "lag": lag
-            }]
+            }
         return r
