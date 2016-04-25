@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## MaintainanceType
+## Maintainance
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python
+import datetime
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, BooleanField, ReferenceField, DateTimeField, ListField, EmbeddedDocumentField
@@ -26,7 +28,8 @@ class Maintainance(Document):
     meta = {
         "collection": "noc.maintainance",
         "indexes": [
-            "affected_objects.object"
+            "affected_objects.object",
+            ("start", "is_completed")
         ]
     }
 
@@ -99,3 +102,19 @@ class Maintainance(Document):
                 }
             }
         )
+
+    @classmethod
+    def currently_affected(cls):
+        """
+        Returns a list of currently affected object ids
+        """
+        affected = set()
+        now = datetime.datetime.now()
+        for d in cls._get_collection().find({
+            "start": {
+                "$lte": now
+            },
+            "is_completed": False
+        }):
+            affected.update([x["object"] for x in d["affected_objects"]])
+        return list(affected)
