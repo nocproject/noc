@@ -21,7 +21,7 @@ nsqlookupd_tcp_addresses = [
 {% for service in noc_config.services -%}
     {% if "nsqlookupd" in service -%}
         {% for host in noc_config.services[service] -%}
-     "{{host[:-5]}}:4160"
+     "{{host[:-5]}}:4160",
         {%- endfor %}
     {%- endif %}
 {%- endfor %}
