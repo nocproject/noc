@@ -1,0 +1,13 @@
+{
+    "name": "Alcatel | TIMOS | 7450 ESS-7",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "9bde19b2-e411-4a53-98bd-664f67eff399",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.835457.6.3",
+    "action": "match",
+    "profile": "Alcatel.TIMOS"
+}
