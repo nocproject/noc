@@ -37,7 +37,7 @@
             "name": "Te4_sfp",
             "protocols": ["TransEth100M", "TransEth1G", "TransEth10G"],
             "type__name": "Transceiver | SFP"
-        }
+        },
         {
             "description": "Chassis connection",
             "direction": "o",

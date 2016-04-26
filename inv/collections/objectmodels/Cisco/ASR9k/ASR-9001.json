@@ -105,7 +105,7 @@
             "protocols": ["TransEth1G", "TransEth10G"],
             "type__name": "Transceiver | SFP"
         },
-      {
+        {
             "description": "TeX/0 port",
             "direction": "i",
             "gender": "f",
