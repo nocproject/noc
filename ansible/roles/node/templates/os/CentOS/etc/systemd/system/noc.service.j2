@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=forking
 ExecStart={{ noc_root }}/bin/supervisord -c {{ noc_root }}/etc/supervisord.conf
-ExecReload={{ noc_root }}/bin/supervisorctl restart all
+ExecReload={{ noc_root }}/bin/supervisorctl serialrestart all
 KillMode=process
 ExecStop={{ noc_root }}/bin/supervisorctl shutdown
 
