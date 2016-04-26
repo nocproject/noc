@@ -1,0 +1,20 @@
+---
+- name: include vars file with RHEL registration
+  include_vars: "vars/local.yml"
+
+- name: Register to RHN
+  redhat_subscription:
+    state: present
+    username: "{{rhel_subscription_username}}"
+    password: "{{rhel_subscription_password}}"
+    autosubscribe: true
+  when: "rhel_subscription_username is defined"
+  environment:
+    http_proxy: "{{http_proxy}}"
+
+- name: Add Devel repos
+  command: "/sbin/subscription-manager repos --enable rhel-7-server-optional-rpms"
+  ignore_errors: yes
+  environment:
+    http_proxy: "{{http_proxy}}"
+  when: "rhel_subscription_username is defined"
