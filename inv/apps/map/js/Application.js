@@ -13,6 +13,19 @@ Ext.define("NOC.inv.map.Application", {
         "NOC.inv.map.MapPanel"
     ],
 
+
+    zoomLevels: [
+        [0.25, "25%"],
+        [0.5, "50%"],
+        [0.75, "75%"],
+        [1.0, "100%"],
+        [1.25, "125%"],
+        [1.5, "150%"],
+        [2.0, "200%"],
+        [3.0, "300%"],
+        [4.0, "400%"]
+    ],
+
     initComponent: function() {
         var me = this;
 
@@ -28,6 +41,18 @@ Ext.define("NOC.inv.map.Application", {
             listeners: {
                 scope: me,
                 select: me.onSelectSegment
+            }
+        });
+
+        me.zoomCombo = Ext.create("Ext.form.ComboBox", {
+            store: me.zoomLevels,
+            width: 60,
+            value: 1.0,
+            valueField: "zoom",
+            displayField: "label",
+            listeners: {
+                scope: me,
+                select: me.onZoom
             }
         });
 
@@ -141,6 +166,9 @@ Ext.define("NOC.inv.map.Application", {
                     dock: "top",
                     items: [
                         me.segmentCombo,
+                        "-",
+                        me.zoomCombo,
+                        "-",
                         me.editButton,
                         me.saveButton,
                         me.revertButton,
@@ -172,6 +200,8 @@ Ext.define("NOC.inv.map.Application", {
         me.revertButton.setDisabled(true);
         me.inspectSegment();
         me.viewMapButton.setPressed(true);
+        me.zoomCombo.setValue(1.0);
+        me.mapPanel.setZoom(1.0);
     },
 
     onMapReady: function() {
@@ -185,6 +215,11 @@ Ext.define("NOC.inv.map.Application", {
     onSelectSegment: function(combo, record, opts) {
         var me = this;
         me.loadSegment(record.get("id"));
+    },
+
+    onZoom: function(combo, record, opts) {
+        var me = this;
+        me.mapPanel.setZoom(record.get("field1"));
     },
 
     inspectSegment: function() {
