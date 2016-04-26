@@ -8,76 +8,167 @@
 
   roles:
     - role: pre
+      tags:
+        - always
 
     - role: node
+      tags:
+        - node
+        - noc
 
     - role: dev
       when: "{{ has_svc_dev | default(False) }} or {{ has_svc_notebook | default(False) }}"
+      tags:
+        - dev
 
     - role: mongod
       when: "{{ has_svc_mongod | default(False) }}"
+      tags:
+        - mongod
+        - external
 
     - role: postgres
       when: "{{ has_svc_postgres | default(False) }}"
+      tags:
+        - postgres
+        - external
 
     - role: influxdb
       when: "{{ has_svc_influxdb | default(False) }}"
+      tags:
+        - influxdb
+        - external
 
     - role: nginx
       when: "{{ has_svc_nginx | default(False) }}"
+      tags:
+        - nginx
+        - web
+        - external
 
     - role: grafana
       when: "{{ has_svc_grafana | default(False) }}"
+      tags:
+        - grafana
+        - external
 
     - role: nsqd
       when: "{{ has_svc_nsqd | default(False) }}"
+      tags:
+        - nsq
+        - nsqd
+        - external
 
     - role: nsqlookupd
       when: "{{ has_svc_nsqlookupd| default(False) }}"
+      tags:
+        - nsq
+        - nsqlookupd
+        - external
 
     - role: nsqadmin
       when: "{{ has_svc_nsqadmin | default(False) }}"
-
-    - role: migrate
-      when: "{{ has_svc_mongod_master | default(False) }}"
-
-    - role: login
-      when: "{{ has_svc_login | default(False) }}"
-
-    - role: web
-      when: "{{ has_svc_web | default(False) }}"
+      tags:
+        - nsq
+        - nsqadmin
+        - external
 
     - role: notebook
       when: "{{ has_svc_notebook | default(False) }}"
+      tags:
+        - notebook
+        - external
+
+    - role: migrate
+      when: "{{ has_svc_mongod_master | default(False) }}"
+      tags:
+        - migrate
+
+    - role: login
+      when: "{{ has_svc_login | default(False) }}"
+      tags:
+        - login
+        - node
+        - noc
+
+    - role: web
+      when: "{{ has_svc_web | default(False) }}"
+      tags:
+        - node
+        - web
+        - noc
 
     - role: omap
       when: "{{ has_svc_omap | default(False) }}"
+      tags:
+        - omap
+        - node
+        - noc
 
     - role: fmwriter
       when: "{{ has_svc_fmwriter | default(False) }}"
+      tags:
+        - fmwriter
+        - node
+        - noc
 
     - role: activator
       when: "{{ has_svc_activator | default(False) }}"
+      tags:
+        - activator
+        - node
+        - noc
 
     - role: classifier
       when: "{{ has_svc_classifier | default(False) }}"
+      tags:
+        - classifier
+        - node
+        - noc
 
     - role: correlator
       when: "{{ has_svc_correlator | default(False) }}"
+      tags:
+        - correlator
+        - node
+        - noc
 
     - role: syslogcollector
       when: "{{ has_svc_syslogcollector | default(False) }}"
+      tags:
+        - syslogcollector
+        - node
+        - noc
 
     - role: trapcollector
       when: "{{ has_svc_trapcollector | default(False) }}"
+      tags:
+        - trapcollector
+        - node
+        - noc
 
     - role: ping
       when: "{{ has_svc_ping | default(False) }}"
+      tags:
+        - ping
+        - node
+        - noc
 
     - role: sae
       when: "{{ has_svc_sae | default(False) }}"
+      tags:
+        - sae
+        - node
+        - noc
 
     - role: discovery
       when: "{{ has_svc_discovery | default(False) }}"
+      tags:
+        - discovery
+        - node
+        - noc
 
     - role: post
+      tags:
+        - always
+        - post
