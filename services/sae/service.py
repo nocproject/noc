@@ -19,6 +19,7 @@ from pgpool import PreparedConnectionPool
 
 class SAEService(Service):
     name = "sae"
+    process_name = "noc-%(name).10s-%(instance).2s"
     api = [SAEAPI]
 
     def __init__(self):
