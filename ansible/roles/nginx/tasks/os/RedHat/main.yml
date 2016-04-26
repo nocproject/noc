@@ -10,6 +10,7 @@
   template:
     src: "etc/telegraf/telegraf.d/nginx.conf.j2"
     dest: "/etc/telegraf/telegraf.d/nginx.conf"
+  notify: reload telegraf
 
 - name: Install Nginx
   yum:
