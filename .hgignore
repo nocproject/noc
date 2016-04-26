@@ -45,5 +45,4 @@ var/
 scripts/custom/*
 django/*
 ui/pkg/
-ansible/vars/local.yml
 etc/etl.yml
