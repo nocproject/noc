@@ -245,3 +245,5 @@
 
 - name: install nsq
   include: "nsq.yml"
+  tags:
+    - nsq

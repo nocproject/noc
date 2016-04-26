@@ -8,6 +8,9 @@
     http_proxy: "{{ proxy }}"
   when: "proxy is defined"
 
+- name: "Include OS-specific tasks"
+  include: "os/{{ ansible_distribution }}/main.yml"
+
 #- name: Display all variables/facts known for a host
 #  debug: var=hostvars[inventory_hostname]
 
