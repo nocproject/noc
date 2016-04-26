@@ -21,6 +21,8 @@ Cisco | 3800 | MOTHERBOARD,b7dbcd22-1fde-466c-b4ca-70355d4c2dac,Cisco/3800/MOTHE
 Cisco | 3800 | NM,ca192cf3-77ab-42c1-9c76-202fde475d64,Cisco/3800/NM.json,c271f09dd80fe9b69f92bb7d3ee772a68f18c3c35d5310af338e1bb51b030e24
 Cisco | 3800 | PSU,9f0d96b9-34f3-4f7f-a091-301659a174da,Cisco/3800/PSU.json,cad0b630cd9d4c9e8edb8c105cf538811f0bdc2bce2d51516fa3a78adc9e246d
 Cisco | 3800 | PVDM,6d329046-7649-47d3-b125-430946bb2678,Cisco/3800/PVDM.json,1145d0f43859249574ff800b20f10ce3166e4c37edc092fc424864c22601a5da
+Cisco | 3850 | NM,c0631b15-d44a-441d-8f7f-2b0655c22f71,Cisco/3850/NM.json,954feb48a910469adf97cdf9e4b124184e6e07d066e4aaa0336fb2eeaf6cfc9b
+Cisco | 3850 | PSU,9cb85833-42d2-44c4-bb55-567801922c15,Cisco/3850/PSU.json,bf4b9076f5795d428d88a7ccd4a77697d452f1fa8b8b4ec3e0cbb094b2048dd8
 Cisco | 6500 | CLK,dd7f8ef7-77fa-4145-b5c9-0b78b5dd5e1e,Cisco/6500/CLK.json,77f82808dcfb9bcdfda61bac871c1454a3a7362d33e9ad242fd2d27a104b824a
 Cisco | 6500 | DFC,5edcd942-237d-40d7-86d5-a317f11dc9b4,Cisco/6500/DFC.json,204287644a5d6d246bfe53609b3f6311c9dffef37354b384df03735db94e5d70
 Cisco | 6500 | FAN-E,9be51c4d-7ade-43bb-a8e6-c94e7046affa,Cisco/6500/FAN-E.json,77eb189843969e8c4bc58e911d96802a6e161fdd8f50a0657d62134e547c17c4
@@ -130,6 +132,11 @@ Huawei | Quidway S5300 | Fan,16bdd354-1a6e-496c-aaf4-82dc97f61b16,Huawei/Quidway
 Huawei | Quidway S5300 | PSU,02305433-2a8c-4812-80c1-bbec7db6f364,Huawei/Quidway_S5300/PSU.json,6854f6aab0a4fa6c760db13c1e9e929476a4ea9f7e620d914ab66de6ed09deb7
 Huawei | Quidway S5300 | Rear slot,96552572-4f2b-459a-8d92-f82ab9ff4933,Huawei/Quidway_S5300/Rear_slot.json,9cd125877d1d9fb7c3288b9be2169b9ed1313f8cb2750c02858a59fe0bb4118b
 Huawei | Quidway S5300 | Stack 12G,36197a0a-dbd7-4814-aee7-714df1e5888c,Huawei/Quidway_S5300/Stack_12G.json,e6320475a6db94587bd48a1391e05481c594b6d221d874d063ebfb7c8db9e937
+Huawei | Quidway S5700 | Extension slot,14ead783-9706-451a-92c2-47afa4b76f69,Huawei/Quidway_S5700/Extension_slot.json,5c2a0c185fe11c7a57f5ab6aac7160ebd146f8c16e8eff6579499452d3b42fcf
+Huawei | Quidway S5700 | Fan,be5fafce-cebd-4a60-9c11-be3288d511e5,Huawei/Quidway_S5700/Fan.json,ab2a5179afa12e4cc9abf08e65c78c5370af40b9944d595fc2589c084a404d1b
+Huawei | Quidway S5700 | PSU,0eb23eab-ad30-477b-8267-fc5e5baf0bff,Huawei/Quidway_S5700/PSU.json,ad23aa552e0d5841f141934bf72eafa9408f80794bbb6f6ac1f9c2553a671215
+Huawei | Quidway S5700 | Rear slot,6367cba3-1c65-45af-a5fd-34c108fb2b4b,Huawei/Quidway_S5700/Rear_slot.json,ac02a405564445eb6b4413eaa66ed1050a06cc7be59d98c50901c8e93f1a2881
+Huawei | Quidway S5700 | Stack 12G,257a0e01-02d8-4a74-bc76-e0be91318171,Huawei/Quidway_S5700/Stack_12G.json,bdea03a1c11e14d1643749891495c5906ffdaf6e35fdc6bbbe524fbe16c5b58a
 Inter-PoP Logical Links,c2a6a92e-9836-4803-a518-c0960babda8c,Inter-PoP_Logical_Links.json,2980074ee980020c0b4dd021d4a6e4e19260473cc882ce3b98a75f53ad108dfd
 Juniper | EX | 8200 FPC,fc9e0b87-5b70-4ad2-a797-2266b80f6049,Juniper/EX/8200_FPC.json,64ffdf99e99abeaeaa56feb68fa935cba615beef8b3590953261d6158cd5bb87
 Juniper | EX | 8200 PWR,38e6b715-f422-403a-acb8-d4183f46e8b8,Juniper/EX/8200_PWR.json,6a0aaacf112d3f986d424f51ad491f4e14bac234fa43d50be0b4683566c01230

@@ -233,16 +233,16 @@
         "asset": {
             "part_no": ["WS-C3850-24T"]
         },
+        "dimensions": {
+            "depth": 460,
+            "height": 44,
+            "width": 445
+        },
         "management": {
             "managed": true
         },
         "rackmount": {
             "units": 1.0
-        },
-        "dimensions": {
-            "depth": 460,
-            "height": 44,
-            "width": 445
         },
         "stack": {
             "stackable": true

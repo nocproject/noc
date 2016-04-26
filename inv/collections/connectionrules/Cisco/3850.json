@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 3850",
+    "$collection": "inv.connectionrules",
     "uuid": "c16465cd-1f4a-4a5e-adea-53a150e7afa9",
     "description": "Cisco WS3850 connection rules",
     "context": [
