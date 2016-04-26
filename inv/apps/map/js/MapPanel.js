@@ -759,5 +759,11 @@ Ext.define("NOC.inv.map.MapPanel", {
                 NOC.error("Failed to reset layout");
             }
         });
+    },
+
+    setZoom: function(zoom) {
+        var me = this;
+        me.paper.scale(zoom, zoom);
+        me.paper.fitToContent();
     }
 });
