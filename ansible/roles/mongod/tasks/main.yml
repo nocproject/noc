@@ -12,6 +12,8 @@
     src: mongod.conf.j2
     dest: "{{ noc_root }}/var/etc/mongo/mongod.conf"
   notify: restart mongod
+  tags:
+    - config
 
 - name: Setting mongod-arbiter config
   template:
@@ -19,6 +21,8 @@
     dest: "{{ noc_root }}/var/etc/mongo/mongod-arbiter.conf"
   notify: restart mongod-arbiter
   when: "{{ has_svc_mongod_arbiter | default(False) }}"
+  tags:
+    - config
 
 - name: Generating mongo key file
   copy:
@@ -38,6 +42,8 @@
     src: "etc/logrotate.d/mongod.conf.j2"
     dest: "/etc/logrotate.d/mongod.conf"
   when: "'Linux' in ansible_system"
+  tags:
+    - config
 
 - name: Enable MongoDB system service
   service:
@@ -59,6 +65,8 @@
     src: "etc/logrotate.d/mongod-arbiter.conf.j2"
     dest: "/etc/logrotate.d/mongod-arbiter.conf"
   when: "{{ has_svc_mongod_arbiter | default(False) }} and 'Linux' in ansible_system"
+  tags:
+    - config
 
 
 - name: Enable MongoDB arbiter system service

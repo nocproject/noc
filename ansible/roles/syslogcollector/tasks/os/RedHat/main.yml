@@ -2,4 +2,4 @@
   template:
     src: "etc/telegraf/telegraf.d/noc-syslogcollector.conf.j2"
     dest: "/etc/telegraf/telegraf.d/noc-syslogcollector.conf"
-   notify: reload telegraf
+  notify: reload telegraf

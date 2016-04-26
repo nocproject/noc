@@ -46,6 +46,8 @@
     src: "os/RedHat/etc/sysconfig/mongod.j2"
     dest: "/etc/sysconfig/mongod"
   notify: restart mongod
+  tags:
+    - config
 
 - include: "arbiter.yml"
   when: "{{ has_svc_mongo_arbiter | default(False) }}"

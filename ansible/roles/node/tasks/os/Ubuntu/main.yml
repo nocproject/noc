@@ -26,5 +26,7 @@
     src: "os/Ubuntu/etc/init.d/noc.j2"
     dest: "/etc/init.d/{{ noc_system_service }}"
     mode: "a+rx"
+  tags:
+    - config
 
 - include: "telegraf.yml"
