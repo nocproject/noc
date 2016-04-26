@@ -14,7 +14,9 @@
   notify: restart nginx
 
 - name: Setup nginx
-  template: src="etc/nginx/conf.d/noc.conf.j2" dest="{{ nginx_conf_path }}"
+  template:
+    src: "etc/nginx/conf.d/noc.conf.j2"
+    dest: "{{ nginx_conf_path }}"
   notify: restart nginx
 
 - name: Enable Nginx system service

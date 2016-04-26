@@ -169,7 +169,9 @@
   register: sitecustomizes
 
 - name: Install sitecustomize.py
-  template: src="lib/python/site-packages/sitecustomize.py.j2" dest="{{noc_root}}/lib/python/site-packages/sitecustomize.py"
+  template:
+    src: "lib/python/site-packages/sitecustomize.py.j2"
+    dest: "{{noc_root}}/lib/python/site-packages/sitecustomize.py"
   when: sitecustomizes.stat.exists == False
 
 - name: Update site.py
@@ -193,7 +195,9 @@
   failed_when: "'ERROR' in result.stdout"
 
 - name: Generate NOC config
-  template: src="etc/noc.yml.j2" dest="{{ noc_root }}/etc/noc.yml"
+  template:
+    src: "etc/noc.yml.j2"
+    dest: "{{ noc_root }}/etc/noc.yml"
 
 - name: Setup supervisor config
   template:
