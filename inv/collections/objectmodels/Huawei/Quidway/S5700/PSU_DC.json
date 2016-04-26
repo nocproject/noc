@@ -1,0 +1,39 @@
+{
+    "name": "Huawei | Quidway S5700 | PSU DC",
+    "$collection": "inv.objectmodels",
+    "uuid": "6244c026-146d-4c42-a914-8d2d384b8c88",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei Quidway S5700 DC Power Supply Unit",
+    "connections": [
+        {
+            "description": "PSU slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | Quidway S5700 | PSU"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "m",
+            "group": "dc_jack",
+            "name": "power +",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | M4 Pin"
+        },
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "m",
+            "group": "dc_jack",
+            "name": "power -",
+            "protocols": [">-48VDC"],
+            "type__name": "Power | M4 Pin"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["LS5M100PWD00"]
+        }
+    }
+}
