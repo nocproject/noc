@@ -105,6 +105,42 @@
             "protocols": ["TransEth1G", "TransEth10G"],
             "type__name": "Transceiver | SFP"
         },
+      {
+            "description": "TeX/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te0_sfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Cisco"
+        },
+        {
+            "description": "TeX/1 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te1_sfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Cisco"
+        },
+        {
+            "description": "TeX/2 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te2_sfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Cisco"
+        },
+        {
+            "description": "TeX/3 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "Te3_sfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+ | Cisco"
+        },
         {
             "description": "FAN slot",
             "direction": "i",
@@ -150,10 +186,13 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["ASR-9001"]
+            "part_no": ["ASR-9001", "ASR-9001-S"]
         },
         "management": {
             "managed": true
+        },
+        "power": {
+            "power": 425.0
         },
         "rackmount": {
             "units": 2.0
