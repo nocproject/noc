@@ -2,24 +2,40 @@
 - include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Creating postgres directories
-  file: path="{{item}}" state="directory" owner="{{postgres_user}}" mode=0700
+  file:
+    path: "{{item}}"
+    state: "directory"
+    owner: "{{postgres_user}}"
+    mode: 0700
   with_items:
     - "{{noc_root}}/var/etc/postgres"
 
 - name: Setting pg_hba.conf
-  lineinfile: dest="{{postgresql_hba_path}}" line="host    all             all             0.0.0.0/0            md5"
+  lineinfile:
+    dest: "{{postgresql_hba_path}}"
+    line: "host    all             all             0.0.0.0/0            md5"
   notify: restart postgres
   register: s1
+  tags:
+    - config
 
 - name: Including postgres.conf
-  lineinfile: dest="{{postgresql_conf_path}}" line="include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
+  lineinfile:
+    dest: "{{postgresql_conf_path}}"
+    line: "include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
   notify: restart postgres
   register: s2
+  tags:
+    - config
 
 - name: Setting config
-  template: src="postgres.conf.j2" dest="{{ noc_root }}/var/etc/postgres/postgres.conf"
+  template:
+    src: "postgres.conf.j2"
+    dest: "{{ noc_root }}/var/etc/postgres/postgres.conf"
   notify: restart postgres
   register: s3
+  tags:
+    - config
 
 - name: Apply PostgreSQL config
   service: name="{{postgres_system_service}}" state=restarted

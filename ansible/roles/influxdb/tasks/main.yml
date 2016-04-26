@@ -6,6 +6,8 @@
     src: etc/influxdb/influxdb.conf.j2
     dest: "{{ influxdb_conf }}"
   register: s1
+  tags:
+    - config
 
 - name: Enable InfluxDB system service
   service: name="{{influxdb_system_service}}" enabled=yes state=started

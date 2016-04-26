@@ -17,6 +17,8 @@
     src: grafana.ini
     dest: "{{ noc_root }}/var/etc/grafana/grafana.ini"
   notify: restart grafana
+  tags:
+    - config
 
 - name: Set up dynamic dashboars
   copy:

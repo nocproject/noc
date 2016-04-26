@@ -4,6 +4,8 @@
     src: "os/Ubuntu/etc/default/mongod-arbiter.j2"
     dest: "/etc/default/mongod-arbiter"
   notify: restart mongod-arbiter
+  tags:
+    - config
 
 - name: Check mongod-arbiter init file
   stat:

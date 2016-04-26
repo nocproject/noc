@@ -167,12 +167,16 @@
 - name: Check sitecustomize
   stat: path="{{noc_root}}/lib/python/site-packages/sitecustomize.py"
   register: sitecustomizes
+  tags:
+    - config
 
 - name: Install sitecustomize.py
   template:
     src: "lib/python/site-packages/sitecustomize.py.j2"
     dest: "{{noc_root}}/lib/python/site-packages/sitecustomize.py"
   when: sitecustomizes.stat.exists == False
+  tags:
+    - config
 
 - name: Update site.py
   replace: dest="{{noc_root}}/lib/python/site.py" regexp="encoding = \"ascii"\" replace="encoding = \"utf-8\""
@@ -198,6 +202,8 @@
   template:
     src: "etc/noc.yml.j2"
     dest: "{{ noc_root }}/etc/noc.yml"
+  tags:
+    - config
 
 - name: Setup supervisor config
   template:
@@ -207,6 +213,8 @@
     - etc/config/supervisor/supervisord.conf.j2
     - etc/config/supervisor/supervisorctl.conf.j2
     - etc/config/supervisor/unix_http_server.conf.j2
+  tags:
+    - config
 
 - name: Set up noc.conf
   ini_file: dest="{{noc_root}}/etc/noc.conf"
