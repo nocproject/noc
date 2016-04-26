@@ -39,6 +39,7 @@
   template:
     src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
     dest: "/etc/telegraf/telegraf.d/mongodb.conf"
+  notify: reload telegraf
 
 - name: Set mongod defaults
   template:

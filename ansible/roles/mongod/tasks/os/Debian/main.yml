@@ -35,11 +35,15 @@
   when: dht_status.changed
 
 - name: Set mongod defaults
-  template: src="os/Debian/etc/default/mongod.j2" dest="/etc/default/mongod"
+  template:
+    src: "os/Debian/etc/default/mongod.j2"
+    dest: "/etc/default/mongod"
   notify: restart mongod
 
 - name: Install mongodb monitoring
-  template: src="etc/telegraf/telegraf.d/mongodb.conf.j2" dest="/etc/telegraf/telegraf.d/mongodb.conf"
+  template:
+    src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/mongodb.conf"
 
 - name: Install MongoDB
   apt: name="mongodb-org" state=present update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"

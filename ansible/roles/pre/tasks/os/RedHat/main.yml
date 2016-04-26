@@ -8,7 +8,7 @@
     username: "{{rhel_subscription_username}}"
     password: "{{rhel_subscription_password}}"
     autosubscribe: true
-  when: "rhel_subscription_username is defined"
+  when: "rhel_subscription_username is defined and rhel_subscription_username !=''"
   environment:
     http_proxy: "{{http_proxy}}"
 
@@ -17,4 +17,4 @@
   ignore_errors: yes
   environment:
     http_proxy: "{{http_proxy}}"
-  when: "rhel_subscription_username is defined"
+  when: "rhel_subscription_username is defined and rhel_subscription_username !=''"
