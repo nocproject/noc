@@ -3,13 +3,15 @@
 ##----------------------------------------------------------------------
 ## Ping service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import functools
 import time
+import socket
+import struct
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -114,13 +116,20 @@ class PingService(Service):
         """
         Periodic task to request object mappings
         """
+        def is_my_task(d):
+            x = struct.unpack("!L", socket.inet_aton(d))
+            return x % self.config.global_n_instances == (self.config.instance + self.config.global_offset)
+
         self.logger.debug("Requesting object mappings")
         sm = yield self.omap.get_ping_mappings(
             self.config.pool
         )
         #
         xd = set(self.source_map)
-        nd = set(sm)
+        if self.config.global_n_instances > 1:
+            nd = set(x for x in sm if int(x.split(".")[-1]))
+        else:
+            nd = set(x for x in sm if is_my_task(x))
         # delete probes
         for d in xd - nd:
             self.delete_probe(d)
@@ -226,7 +235,9 @@ class PingService(Service):
         for s in self.resolve_service("influxdb"):
             client = tornado.httpclient.AsyncHTTPClient(
                 force_instance=True,
-                max_clients=1
+                max_clients=1,
+                connect_timeout=20.0,
+                request_timeout=60.0,
             )
             try:
                 response = yield client.fetch(
