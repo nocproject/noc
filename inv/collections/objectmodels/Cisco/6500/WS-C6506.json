@@ -105,13 +105,13 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C6506-E", "WS-C6506"]
+            "part_no": ["WS-C6506"]
         },
         "management": {
             "managed": true
         },
         "rackmount": {
-            "units": 9
+            "units": 11
         }
     }
 }
