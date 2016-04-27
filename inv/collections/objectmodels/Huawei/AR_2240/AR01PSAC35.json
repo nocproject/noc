@@ -1,0 +1,13 @@
+{
+    "name": "Huawei | AR 2240 | AR01PSAC35",
+    "$collection": "inv.objectmodels",
+    "uuid": "9d9a05fa-9417-4e51-8426-0327f4af725f",
+    "vendor__code": "HUAWEI",
+    "description": "AR Series, AR01PSAC35, 350W AC Power Module",
+    "connections": [],
+    "data": {
+        "asset": {
+            "part_no": ["02310CWN"]
+        }
+    }
+}
