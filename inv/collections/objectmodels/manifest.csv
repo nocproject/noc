@@ -53,6 +53,8 @@ Building,9e67029a-d694-41bb-b07c-b241a18c69b9,Building.json,a5d12f00ac0913ef5837
 Carelink | Transceiver | 1G | CL-SFP-WDM-10-31,9fc8baef-f958-4e44-93e7-d57f2971761c,Carelink/Transceiver/1G/CL-SFP-WDM-10-31.json,0a1a3dae22ef586460bb21240d008219cb1b93d106835d69237b18120d5b7bc8
 Carelink | Transceiver | 1G | CL-SFP-WDM-10-55,eafaf118-1378-4065-9e3b-d84966dbf713,Carelink/Transceiver/1G/CL-SFP-WDM-10-55.json,0930963418efd8b0c13cde01c65cb10fd14c1218d9186c0e02b6b4afb78a1c4f
 Cisco | 1800 | 1801,b4a53dff-ec0a-4c7e-a99c-ff35a5ffbd07,Cisco/1800/1801.json,17b5a235e232fd3e9392fea9a94a48748f36eef14287f35bd6720b78ff712770
+Cisco | 2900 | 2951 Chassis,00e64b98-c095-4bf1-b5aa-79948fa81980,Cisco/2900/2951_Chassis.json,c329135cf7b9078af20f94d1e49c71a03dd4ee1f8c873c6ad1e01d2ef11cb902
+Cisco | 2900 | 2951 Motherboard,8a27ede2-b967-421f-b0cf-a15c9e3ee4f4,Cisco/2900/2951_Motherboard.json,bd4bbb607fe11d2600dc0cf04c5d4eafa1ae8f279080443ff447202ddabe5074
 Cisco | 3800 | 3825 Chassis,daa957c9-0b3e-45c0-b0a0-6d54c3617400,Cisco/3800/3825_Chassis.json,9fe75eb7d1bd1e13a91c5e1075de8b195dbb20a34edb1c83ae85da4f94e0fbee
 Cisco | 3800 | 3825 Motherboard,51066215-8bb3-47a7-8945-c96a09244825,Cisco/3800/3825_Motherboard.json,3e3e9308693968fca756f8dea76a2183b35149a8ec27f7fa590f75a1be4041ba
 Cisco | 3800 | 3845 Chassis,68025509-80e4-4140-bfa0-6a01694f28d8,Cisco/3800/3845_Chassis.json,8ca537b614e3576d31e47f933dc23d799e853096f12e32888ad710a8c12656de
