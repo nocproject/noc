@@ -79,7 +79,7 @@ Cisco | SCE | SCE8000 OPB,2f8e75be-b431-466c-9d8d-db3d50306cd3,Cisco/SCE/SCE8000
 Cisco | SCE | SCE8000 SCM,590d68a8-70ae-4320-99a0-0189af2e2050,Cisco/SCE/SCE8000_SCM.json,9aaa30c9f67f4786a9aa2e0a67151d4504b3f268d0e4d469b83e37c7a83f74bb
 Cisco | SIP,c9f1ef78-12c6-4f9f-abf9-1de8d5d39d1b,Cisco/SIP.json,2b8a9f530356f68022dace8ac1730ff80aafcbe40eaa77c449b1c4edb02967dc
 Cisco | SPA,866b5026-45ab-4346-911f-1837b9157767,Cisco/SPA.json,c41be9f8773ea254c97ed9b782a9fcf98ca0167ec558f475c2340a88fafe5a51
-Conduits,376c9a7d-d810-42cc-9672-f6194efb4b1e,Conduits.json,4115add8fee885e07264b60bbbe296b3d062e6d701e912b4a9d261d2fb94a482
+Conduits,376c9a7d-d810-42cc-9672-f6194efb4b1e,Conduits.json,2a609968219c98462a3d6ced161631f88066e183f4415c33189c8090c4a092f5
 DLink | DES30 | Module,a15c4ef0-dd7c-43cb-9c6d-3556a2e8cbaa,DLink/DES30/Module.json,ad8d2607e3478815408340de13a9d6ee0e65f074be023054d076a00189c9e50a
 DLink | DES32-33 | Module,dac0eacf-c401-49ef-9d9c-156bf6d9e083,DLink/DES32-33/Module.json,0c69e1d5e9a10668809ae8a612777c38e66a9c6fe1e094c38abde0f7c1273b35
 DLink | DGS32-33 | Module,9a0a1d7f-5475-4c25-83df-aacf7d5fd169,DLink/DGS32-33/Module.json,3c17d0de2c46ebca4717e118c15611cae0a6899d52041c7d991147a4cdcf6fbe
@@ -127,6 +127,8 @@ Flash | miniSD,60dcf9c8-4e38-445e-a251-35342602fbba,Flash/miniSD.json,cc5d8c8d06
 Force10 | S | Module,0518bfbe-33e6-4e5f-9ae0-23179d41a07e,Force10/S/Module.json,946aa79414cdd689e783cf856dbc04bd88513c33dcd6a5cd5f2eed8612d355b3
 Force10 | S | Stacking 12G,640d8d49-1e6f-415d-bbb9-bd2dd3d43f12,Force10/S/Stacking_12G.json,84b7e7289f0901b9294006f54568e8b446fd49462355225eb904ec38a19f7d78
 Force10 | S | Stacking 24G,4feef3ae-a1c7-491b-9800-9b5de3b02b0b,Force10/S/Stacking_24G.json,9b199fc61feb79c94d864119f4474fc2bcdc0f89d41c5e1a962fefc3376d8c9f
+Huawei | AR 2240 | Fan,61640cc4-07c1-4c39-aeff-bbd01a1b91f1,Huawei/AR_2240/Fan.json,d897b8016c3fe9fceeda94c2d2c0bf901022850c873b786f5535c0dc1c776a11
+Huawei | AR 2240 | PSU,5582ad4c-3112-4976-bdc1-2c40ac9e2b80,Huawei/AR_2240/PSU.json,b85290138cb1bf44bf89c187796246f687c634b2f6f07c60f7d1a916a6b5b088
 Huawei | Quidway S5300 | Extension slot,442ee2b7-3385-4d10-891b-5339432c8fd7,Huawei/Quidway_S5300/Extension_slot.json,e31de8ec43d8175e7c74fb847b2dea083555fca902e8d031b2285588279cf88e
 Huawei | Quidway S5300 | Fan,16bdd354-1a6e-496c-aaf4-82dc97f61b16,Huawei/Quidway_S5300/Fan.json,7a2b331f0408feac9661f588a45f5316b2f10c978df79c0b27a0d5052163884b
 Huawei | Quidway S5300 | PSU,02305433-2a8c-4812-80c1-bbec7db6f364,Huawei/Quidway_S5300/PSU.json,6854f6aab0a4fa6c760db13c1e9e929476a4ea9f7e620d914ab66de6ed09deb7
