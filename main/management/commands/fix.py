@@ -34,6 +34,7 @@ class Command(BaseCommand):
             self.fix_wiping_mo()
             self.fix_suspended_discovery_jobs()
             self.fix_db_interfaces_capability()
+            self.fix_not_managed_alarms()
         except:
             error_report()
             sys.exit(1)
@@ -229,3 +230,20 @@ class Command(BaseCommand):
                 o.update_caps({
                     "DB | Interfaces": caps[o.id]
                 })
+
+    def fix_not_managed_alarms(self):
+        """
+        Close all active alarms belonging to non-managed objects
+        """
+        from noc.sa.models.managedobject import ManagedObject
+        from noc.fm.models.activealarm import ActiveAlarm
+        self.info("Fixing hanging alarms")
+        nmo = ManagedObject.objects.filter(
+            is_managed=False
+        ).values_list("id", flat=True)
+        for a in ActiveAlarm.objects.filter(
+            managed_object__in=nmo
+        ):
+            self.info("   Closing alarm %s (%s)",
+                      a.id, a.managed_object.name)
+            a.clear_alarm("Closed by fix (management is disabled)")

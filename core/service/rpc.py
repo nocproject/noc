@@ -98,6 +98,8 @@ class RPCProxy(object):
                     "http://%s/api/%s/" % (svc, self._api),
                     method="POST",
                     body=body,
+                    connect_timeout=20.0,
+                    request_timeout=3600.0,
                     headers={
                         "X-NOC-Calling-Service": self._service.name,
                         "Content-Type": "text/json"

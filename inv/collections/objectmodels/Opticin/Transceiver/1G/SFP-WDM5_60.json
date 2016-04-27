@@ -1,9 +1,9 @@
 {
-    "name": "Opticin | Transceiver | 1G | SFP-WDM5.80",
+    "name": "Opticin | Transceiver | 1G | SFP-WDM5.60",
     "$collection": "inv.objectmodels",
-    "uuid": "346da475-3d72-400f-98b0-dc443e5927d6",
+    "uuid": "943bb47d-d492-4116-8fea-f8d28d5302c8",
     "vendor__code": "OPTICIN",
-    "description": "Opticin SFP WDM transceiver, 1550 tx, 1490 rx, LC, CWDM-1550nm, 80km",
+    "description": "Opticin SFP WDM transceiver, 1550 tx, 1310 rx, SC, 60km",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -19,13 +19,13 @@
             "direction": "s",
             "gender": "f",
             "name": "rxtx",
-            "protocols": [">1000BASEZX-1490", "<1000BASEZX-1550"],
-            "type__name": "Optical | LC"
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
+            "type__name": "Optical | SC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["SFP-WDM5.80", "SFP-BiDi-DDM5.80"]
+            "part_no": ["SFP-WDM5.60"]
         }
     }
 }

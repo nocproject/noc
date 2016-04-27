@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | ASR9001 | ASR-9001-FAN",
+    "name": "Cisco | ASR9001 | ASR-9001-FAN-V2",
     "$collection": "inv.objectmodels",
-    "uuid": "3de22d30-cebb-47d0-a8da-b3c42207b28a",
+    "uuid": "8a7662c5-7701-42d6-860c-1e2fe9421f1a",
     "vendor__code": "CISCO",
-    "description": "ASR-9001 FAN tray",
+    "description": "ASR-9001 FAN tray Version 2",
     "cr_context": "FAN",
     "connections": [
         {
@@ -16,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["ASR-9001-FAN"]
+            "part_no": ["ASR-9001-FAN-V2"]
         }
     }
 }
