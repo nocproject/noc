@@ -53,7 +53,8 @@ class ObjectMap(Document):
         trap_sources = {}
         ping_sources = {}
         for mo in ManagedObject.objects.filter(
-            pool=pool
+            pool=pool,
+            is_managed=True
         ).exclude(
             trap_source_type="d", syslog_source_type="d"
         ).only("id", "name", "address",
@@ -86,7 +87,8 @@ class ObjectMap(Document):
         # Get ping settings
         for mo in ManagedObject.objects.filter(
             pool=pool,
-            object_profile__enable_ping=True
+            object_profile__enable_ping=True,
+            is_managed=True
         ).select_related(
             "object_profile"
         ).only(
