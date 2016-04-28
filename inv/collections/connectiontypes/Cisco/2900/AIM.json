@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | 2900 | AIM",
+    "$collection": "inv.connectiontypes",
+    "uuid": "c6acc2ac-4503-4b74-a67a-47df7a3c1f31",
+    "description": "Cisco 2900 AIM Container Slot",
+    "c_group": [],
+    "genders": "mf"
+}

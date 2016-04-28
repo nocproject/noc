@@ -1,0 +1,62 @@
+{
+    "name": "Cisco | 2900 | 2951 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "00e64b98-c095-4bf1-b5aa-79948fa81980",
+    "vendor__code": "CISCO",
+    "description": "Cisco 2900 Series Integrated Services Routers with 2 NME slots",
+    "connection_rule__name": "Cisco | 2900",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "2951 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 2900 | MOTHERBOARD"
+        },
+        {
+            "description": "NME 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm1",
+            "type__name": "Cisco | 2900 | NM"
+        },
+        {
+            "description": "NME 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm2",
+            "type__name": "Cisco | 2900 | NM"
+        },
+        {
+            "description": "Power Supply slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | 2900 | PSU"
+        },
+        {
+            "description": "Power Supply slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Cisco | 2900 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO2951/K9"]
+        },
+        "dimensions": {
+            "depth": 469.9,
+            "height": 88.9,
+            "width": 438.2
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2
+        }
+    }
+}

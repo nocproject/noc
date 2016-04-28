@@ -396,16 +396,16 @@
             "direction": "s",
             "gender": "f",
             "name": "Gi1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["1000BASESX"],
+            "type__name": "Optical | SC"
         },
         {
             "description": "Gi0/2",
             "direction": "s",
             "gender": "f",
             "name": "Gi2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "protocols": ["1000BASESX"],
+            "type__name": "Optical | SC"
         },
         {
             "description": "Console port",
