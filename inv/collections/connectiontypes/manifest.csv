@@ -13,6 +13,12 @@ Brocade | FastIron SuperX | SFM Connector,e25e43f7-64a0-4891-82cf-c6bd897d7a78,B
 Brocade | JetCore | Backplane Connector,714e6a57-8b15-45a0-acc0-fb005437dfa5,Brocade/JetCore/Backplane_Connector.json,00785fcb5c976c1947fa82e693b1394099540d6d74b6c8ecde05d7112f85981f
 Brocade | JetCore | PS Connector,11c0312e-7761-42c3-af60-af698a669a98,Brocade/JetCore/PS_Connector.json,18aa1d2600e3b070a950ef752b20ee4de8a4231a14059f49a73d738d9a698795
 Cables,233e6bb4-7404-4232-b2a5-6a0ac34e8890,Cables.json,755e08ebafce0706cf8ca9cb0a9f4c8d64bf11ed8a25646905875a532e0dea72
+Cisco | 2900 | AIM,c6acc2ac-4503-4b74-a67a-47df7a3c1f31,Cisco/2900/AIM.json,18594af5102948b1e1344fbbd774acf8f8427157902077708e032092eb808147
+Cisco | 2900 | DCS,4ac08d8d-9b44-4d78-871b-2594fd9b214c,Cisco/2900/DCS.json,52053c55795cd61e36a4ee9a45d48321f44b4d5fb3f189c2449eb8d5f767a217
+Cisco | 2900 | MOTHERBOARD,c3f99e66-580c-4a52-af36-66e2fee69fc8,Cisco/2900/MOTHERBOARD.json,1d305284f30da147860ff0158216213bf69795146b803848d42f80e8694b3801
+Cisco | 2900 | NM,b7140b2f-91de-4943-917e-5ff107a3dd0c,Cisco/2900/NM.json,d25d70926e0730b33379bce02f4099ced4565e5a50b0e54a21cba5bf23014b1f
+Cisco | 2900 | PSU,b5409fed-f481-44a1-b42d-9f4918104ee0,Cisco/2900/PSU.json,3b9dd2a8687698a4d2585c260f91aa94a73f87f1404cd54590aa8a28154f85bc
+Cisco | 2900 | PVDM,aa27763d-c198-4867-8c86-5312f7e7c585,Cisco/2900/PVDM.json,9ba9040914b75ed9f8b24bc4ce85358f9b7a22685847101f066b214d1fa67736
 Cisco | 3750X | NM,0cb9cc49-5e36-4a6e-ba3f-e49bb193bb57,Cisco/3750X/NM.json,3bf5a01d7cddb9f68f34556b3295313e869fb7426105ef5d4aed06127dffef39
 Cisco | 3750X | PSU,1e4b0486-a77a-416c-8033-dce665a8804e,Cisco/3750X/PSU.json,146c1252ba6e324d03564abf78f3b46b990c58128d00bc04df911c797cb98f29
 Cisco | 3800 | AIM,5087aa60-bbc4-4c85-b19e-6c79132dcfa8,Cisco/3800/AIM.json,8739f69107abf53892f79013b4958feb7f35174cba7a3476b6acf7774cee6882
@@ -108,6 +114,7 @@ Electrical | SCART,3ef85ada-9585-4404-8a13-07fbff59fd1b,Electrical/SCART.json,0c
 Electrical | SFF-8470,e18c7653-7402-4abf-9105-e371e269b71d,Electrical/SFF-8470.json,a62b7bfa27602503946d5a28201cdfac40b8a822d2671876e8c1a47e5fccdcc5
 Electrical | Telco-50,0c20d1e6-f29d-4f1a-8f47-bb504ca7833d,Electrical/Telco-50.json,54396cffbd4b0c247da66ac7166a2ca2f33b69921cbdc448c8da77dd692774ef
 Electrical | USB,5e1d3fcc-dac1-44b7-8d56-38cf4bc2fb73,Electrical/USB.json,2f4a27cc416e90094c39b0f0edf6fb6fb6966c84daeaf42197d63c341ac1ee93
+Electrical | USB-type-B,06b51247-ab62-4925-b093-c71fb5124d71,Electrical/USB-type-B.json,4009740fed37fc01a2b5a3cdb6b2c3d003e7ab181bc1ba741dafa6b39e789ce2
 Electrical | V35,b4bed690-60fe-403b-b358-0c8e09c5daa1,Electrical/V35.json,731af31b7a26b34c5645ccb4d20374e70b3829e4c80576db0a9a9af9b4d18efd
 Electrical | XLR,b1ba0dab-8bea-45f2-8325-ad3627b40aa6,Electrical/XLR.json,47263cb7304e9aa1deeae02b9ca3db5fe922a68750025d7b0fda616a75c0a298
 Electrical | micro-USB,12bd9834-e953-45b7-afa6-0c59be402efa,Electrical/micro-USB.json,0e0a3eb6d150d635c742e712308319af4d84de4782a0fe36bc39d5e7604f4916
@@ -127,6 +134,8 @@ Flash | miniSD,60dcf9c8-4e38-445e-a251-35342602fbba,Flash/miniSD.json,cc5d8c8d06
 Force10 | S | Module,0518bfbe-33e6-4e5f-9ae0-23179d41a07e,Force10/S/Module.json,946aa79414cdd689e783cf856dbc04bd88513c33dcd6a5cd5f2eed8612d355b3
 Force10 | S | Stacking 12G,640d8d49-1e6f-415d-bbb9-bd2dd3d43f12,Force10/S/Stacking_12G.json,84b7e7289f0901b9294006f54568e8b446fd49462355225eb904ec38a19f7d78
 Force10 | S | Stacking 24G,4feef3ae-a1c7-491b-9800-9b5de3b02b0b,Force10/S/Stacking_24G.json,9b199fc61feb79c94d864119f4474fc2bcdc0f89d41c5e1a962fefc3376d8c9f
+Huawei | AR 2240 | Fan,61640cc4-07c1-4c39-aeff-bbd01a1b91f1,Huawei/AR_2240/Fan.json,d897b8016c3fe9fceeda94c2d2c0bf901022850c873b786f5535c0dc1c776a11
+Huawei | AR 2240 | PSU,5582ad4c-3112-4976-bdc1-2c40ac9e2b80,Huawei/AR_2240/PSU.json,b85290138cb1bf44bf89c187796246f687c634b2f6f07c60f7d1a916a6b5b088
 Huawei | Quidway S5300 | Extension slot,442ee2b7-3385-4d10-891b-5339432c8fd7,Huawei/Quidway_S5300/Extension_slot.json,e31de8ec43d8175e7c74fb847b2dea083555fca902e8d031b2285588279cf88e
 Huawei | Quidway S5300 | Fan,16bdd354-1a6e-496c-aaf4-82dc97f61b16,Huawei/Quidway_S5300/Fan.json,7a2b331f0408feac9661f588a45f5316b2f10c978df79c0b27a0d5052163884b
 Huawei | Quidway S5300 | PSU,02305433-2a8c-4812-80c1-bbec7db6f364,Huawei/Quidway_S5300/PSU.json,6854f6aab0a4fa6c760db13c1e9e929476a4ea9f7e620d914ab66de6ed09deb7
