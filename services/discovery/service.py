@@ -85,9 +85,7 @@ class DiscoveryService(Service):
         for s in self.resolve_service("influxdb"):
             client = tornado.httpclient.AsyncHTTPClient(
                 force_instance=True,
-                max_clients=1,
-                connect_timeout=20.0,
-                request_timeout=60.0,
+                max_clients=1
             )
             try:
                 response = yield client.fetch(
