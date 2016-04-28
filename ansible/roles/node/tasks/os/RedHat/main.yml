@@ -55,6 +55,7 @@
     state: present
   with_items:
    - quilt
+   - jemalloc
   environment:
     http_proxy: "{{http_proxy}}"
 
