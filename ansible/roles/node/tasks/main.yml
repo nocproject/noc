@@ -29,6 +29,8 @@
     force: yes
     purge: yes
   when: "'prod' in noc_env_type and noc_env_type is defined"
+  tags:
+    - mercurial
 
 - name: Pull NOC
   hg:
@@ -36,6 +38,8 @@
     dest: "{{noc_root}}"
     revision: "{{noc_revision}}"
     update: yes
+  tags:
+    - mercurial
 
 - name: Initialize virtualenv
   pip:

@@ -8,8 +8,6 @@
 
   roles:
     - role: pre
-      tags:
-        - always
 
     - role: node
       tags:
