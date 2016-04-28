@@ -43,6 +43,7 @@ class Script(BaseScript):
 
     types = {
         "Aux": "physical",
+        "Cellular": "physical",
         "Eth-Trunk": "aggregated",
         "Ip-Trunk": "aggregated",
         "XGigabitEthernet": "physical",
