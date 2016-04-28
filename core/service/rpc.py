@@ -98,20 +98,18 @@ class RPCProxy(object):
                     "http://%s/api/%s/" % (svc, self._api),
                     method="POST",
                     body=body,
-                    connect_timeout=20.0,
-                    request_timeout=3600.0,
                     headers={
                         "X-NOC-Calling-Service": self._service.name,
                         "Content-Type": "text/json"
                     }
                 )
                 break
-            except tornado.httpclient.HTTPError, why:
-                if why.code == 599:
+            except tornado.httpclient.HTTPError as e:
+                if e.code == 599:
                     logger.debug("Timed out")
                     continue
                 raise RPCHTTPError("HTTP Error %s: %s" % (
-                    why.code, why.message))
+                    e.code, e.message))
             except socket.error as e:
                 if e.args[0] in RETRY_SOCKET_ERRORS:
                     logger.debug("Socket error: %s" % e)
