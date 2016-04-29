@@ -6,6 +6,8 @@
   changed_when: "'CHANGED' in result.stdout"
   args:
     chdir: "{{ noc_root }}"
+  tags:
+    - config
 
 - name: restart telegraf
   service:
@@ -15,14 +17,34 @@
   changed_when: False
   when: "'FreeBSD' not in ansible_distribution"
 
+- name: check if noc running
+  shell: "{{ noc_root }}/noc ctl status"
+  register: noc_ctl_status
+  tags:
+    - config
 
-- name: Start NOC node
+- name: Reread config
+  shell: "{{ noc_root }}/noc ctl reread"
+  when: "'RUNNING' in noc_ctl_status.stdout"
+  register: noc_ctl_reread=True
+  tags:
+    - config
+
+- name: Serial NOC restart
+  shell: "{{ noc_root }}/noc ctl serialrestart all"
+  register: "noc_ctl_reread is True"
+  tags:
+    - config
+
+- name: Restart NOC node
   service:
     name: "{{ noc_system_service }}"
     state: restarted
     sleep: 3
     enabled: yes
   changed_when: False
+  tags:
+    - restart
 
 - name: umount cache dir
   mount:
