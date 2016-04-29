@@ -31,7 +31,10 @@ class LoginService(UIService):
 
     # Fields excluded from logging
     HIDDEN_FIELDS = [
-        "password"
+        "password",
+        "new_password",
+        "old_password",
+        "retype_password"
     ]
 
     def authenticate(self, handler, credentials):

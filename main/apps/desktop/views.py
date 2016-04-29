@@ -292,7 +292,7 @@ class DesktopApplication(ExtApplication):
                 "status": False,
                 "error": str(e)
             })
-        if r["status"]:
+        if r:
             return self.render_json({
                 "status": True
             })
