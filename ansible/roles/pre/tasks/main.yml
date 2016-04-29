@@ -32,6 +32,7 @@
 - name: Check if vboxsf is supported
   shell: "cat /proc/filesystems"
   register: vboxsf_support
+  when: "'virtualbox' in ansible_virtualization_type and 'Linux' in ansible_system"
 
 - name: Mount cache dir
   mount:
