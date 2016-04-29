@@ -11,10 +11,11 @@
   when: "rhel_subscription_username is defined and rhel_subscription_username !=''"
   environment:
     http_proxy: "{{http_proxy}}"
+  register: register_done
 
 - name: Add Devel repos
   command: "/sbin/subscription-manager repos --enable rhel-7-server-optional-rpms"
   ignore_errors: yes
   environment:
     http_proxy: "{{http_proxy}}"
-  when: "rhel_subscription_username is defined and rhel_subscription_username !=''"
+  when: "register_done.changed==True"
