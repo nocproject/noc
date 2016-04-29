@@ -23,14 +23,6 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Outband Management",
-            "direction": "s",
-            "gender": "f",
-            "name": "MEthX/0/1",
-            "protocols": ["10BASET", "100BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "Ethernet X/0/1 interface",
             "direction": "i",
             "gender": "f",
