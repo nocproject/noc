@@ -25,6 +25,7 @@ from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
 from noc.support.cp import CPClient
 from noc.core.service.client import RPCClient, RPCError
+from noc.core.translation import ugettext as _
 
 
 class DesktopApplication(ExtApplication):
@@ -298,7 +299,7 @@ class DesktopApplication(ExtApplication):
         else:
             return self.render_json({
                 "status": False,
-                "error": r["message"]
+                "error": _("Failed to change credentials")
             })
 
     @view(method=["GET"], url=r"^theme/lookup/$",
