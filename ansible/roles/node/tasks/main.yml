@@ -127,7 +127,6 @@
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
 
-
 - name: Apply local patches
   command: "{{ noc_root }}/scripts/deploy/apply-patches"
   args:
@@ -221,9 +220,11 @@
     - config
 
 - name: Set up noc.conf
-  ini_file: dest="{{noc_root}}/etc/noc.conf"
-            section="{{item.section}}"
-            option="{{item.option}}" value="{{item.value}}"
+  ini_file:
+    dest: "{{noc_root}}/etc/noc.conf"
+    section: "{{item.section}}"
+    option: "{{item.option}}"
+    value: "{{item.value}}"
   with_items:
     - section: main
       option: secret_key
@@ -258,6 +259,8 @@
     - section: customization
       option: installation_name
       value: "{{ noc_installation_name }}"
+  tags:
+    - config
 
 - name: install nsq
   include: "nsq.yml"
