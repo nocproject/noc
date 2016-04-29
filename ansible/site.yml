@@ -168,5 +168,4 @@
 
     - role: post
       tags:
-        - always
         - post
