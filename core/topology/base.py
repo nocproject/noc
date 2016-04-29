@@ -6,10 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## NOC modules
+from collections import defaultdict
 ## Third-Party modules
 from networkx import nx
 ## NOC modules
 from noc.lib.stencil import stencil_registry
+from noc.lib.text import split_alnum
 
 
 class BaseTopology(object):
@@ -94,3 +97,22 @@ class BaseTopology(object):
 
     def get_shape_size(self, shape):
         return stencil_registry.get_size(shape)
+
+    def order_nodes(self, uplink, downlinks):
+        """
+        Sort downlinks basing on uplink's interface
+        :param uplink: managed object id
+        :param downlinks: ids of downlinks
+        :returns: sorted list of downlinks
+        """
+        id_to_name = {}
+        dl_map = {}  # downlink -> uplink port
+        for p in self.G.node[uplink]["ports"]:
+            id_to_name[p["id"]] = sorted(p["ports"], key=split_alnum)[0]
+        for dl in downlinks:
+            for p in  self.G.edge[uplink][dl]["ports"]:
+                if p in id_to_name:
+                    dl_map[dl] = id_to_name[p]
+                    break
+        return sorted(dl_map, key=lambda x: split_alnum(dl_map[x]))
+
