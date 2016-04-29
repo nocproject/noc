@@ -35,6 +35,8 @@ class InterfaceStatusCheck(DiscoveryCheck):
             for i in Interface.objects.filter(
                 managed_object=self.object.id)
         )
+        bulk = Interface._get_collection().initialize_unordered_bulk_op()
+        nb = 0
         for i in result:
             iface = None
             for iname in self.object.profile.get_interface_names(i["interface"]):
@@ -54,14 +56,18 @@ class InterfaceStatusCheck(DiscoveryCheck):
             changes = self.update_if_changed(
                 iface, kwargs,
                 ignore_empty=kwargs.keys(),
-                async=True
+                bulk=bulk
             )
             self.log_changes(
                 "Interface %s status has been changed" % i["interface"],
                 changes
             )
+            if changes:
+                nb += 1
             ostatus = i.get("oper_status")
             if iface.oper_status != ostatus and ostatus is not None:
                 self.logger.info("[%s] set oper status to %s",
                                  i["interface"], ostatus)
                 iface.set_oper_status(ostatus)
+        if nb:
+            bulk.execute()
