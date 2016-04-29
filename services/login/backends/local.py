@@ -30,3 +30,4 @@ class LocalBackend(BaseAuthBackend):
         if not user.check_password(old_password):
             raise self.LoginError(_("Invalid password"))
         user.set_password(new_password)
+        user.save()

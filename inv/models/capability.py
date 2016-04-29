@@ -9,6 +9,7 @@
 ## Python modules
 import os
 import operator
+from threading import RLock
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, ObjectIdField)
@@ -17,6 +18,8 @@ import cachetools
 from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+
+id_lock = RLock()
 
 
 @category
@@ -39,7 +42,7 @@ class Capability(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=id_lock)
     def get_by_id(cls, id):
         return Capability.objects.filter(id=id).first()
 
