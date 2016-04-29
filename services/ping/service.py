@@ -121,9 +121,13 @@ class PingService(Service):
             return x % self.config.global_n_instances == (self.config.instance + self.config.global_offset)
 
         self.logger.debug("Requesting object mappings")
-        sm = yield self.omap.get_ping_mappings(
-            self.config.pool
-        )
+        try:
+            sm = yield self.omap.get_ping_mappings(
+                self.config.pool
+            )
+        except self.omap.RPCError as e:
+            self.logger.error("Failed to get object mappings: %s", e)
+            return
         #
         xd = set(self.source_map)
         if self.config.global_n_instances > 1:
