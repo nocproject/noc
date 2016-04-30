@@ -2,19 +2,22 @@
 ##----------------------------------------------------------------------
 ## HP.Comware.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
-import noc.sa.script
-from noc.sa.interfaces import IGetVersion
+## Python modules
 import re
+## NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetversion import IGetVersion
 
-class Script(noc.sa.script.Script):
+
+class Script(BaseScript):
     name = "HP.Comware.get_version"
     cache = True
-    implements = [IGetVersion]
+    interface = IGetVersion
 
     rx_version_HP = re.compile(
         r"^Comware Software, Version (?P<version>.+)$", re.MULTILINE)
