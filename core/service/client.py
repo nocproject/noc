@@ -12,9 +12,9 @@ from collections import defaultdict
 import logging
 import time
 import random
-import socket
 import errno
 import cStringIO
+import random
 ## Third-party modules
 import tornado.httpclient
 import ujson
@@ -29,7 +29,7 @@ CONNECT_TIMEOUT = 20
 REQUEST_TIMEOUT = 3600
 #
 RETRY_TIMEOUT = 1.0
-RETRY_DELTA = 0.5
+RETRY_DELTA = 2.0
 #
 CALLING_SERVICE_HEADER = "X-NOC-Calling-Service"
 #
@@ -37,6 +37,10 @@ RETRIES = 5
 #
 RETRY_SOCKET_ERRORS = (errno.ECONNREFUSED, errno.EHOSTDOWN,
                        errno.EHOSTUNREACH, errno.ENETUNREACH)
+
+RETRY_CURL_ERRORS = set([
+    pycurl.E_COULDNT_CONNECT
+])
 
 
 class RPCError(Exception):
@@ -97,7 +101,10 @@ class RPCClient(object):
                 try:
                     c.perform()
                 except pycurl.error as e:
-                    # @todo: Retry on timeout
+                    errno, errstr = e
+                    if errno in RETRY_CURL_ERRORS:
+                        logger.debug("Got error %d. Retry", errno)
+                        return (None, None, None)
                     raise RPCException(str(e))
                 finally:
                     code = c.getinfo(c.RESPONSE_CODE)
@@ -134,7 +141,7 @@ class RPCClient(object):
             for l in random.sample(services, RETRIES):
                 # Sleep when trying same instance
                 if l == last:
-                    time.sleep(st)
+                    time.sleep(st + float(st) * (random.random() - 0.5) / 5)
                     st += RETRY_DELTA
                 #
                 last = l
@@ -144,6 +151,8 @@ class RPCClient(object):
                     code, headers, data = make_call(url, l, body)
                     if code == 200:
                         break
+                    elif code is None:
+                        break
                     elif code == 307:
                         url = headers.get("location")
                         l = url.split("://", 1)[1].split("/")[0]
@@ -151,6 +160,8 @@ class RPCClient(object):
                         logger.debug("Redirecting to %s", url)
                     else:
                         raise RPCException("Invalid return code: %s" % code)
+                if code is None:
+                    continue
                 if code != 200:
                     raise RPCException("Redirects limit exceeded")
                 try:
