@@ -11,6 +11,7 @@ import logging
 import time
 ## Third-party modules
 import tornado.gen
+from django.db.transaction import autocommit
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.debug import error_report
@@ -94,7 +95,14 @@ class Job(object):
         self.start_time = time.time()
         self.logger.info("[%s] Starting", self.name)
         # Run handler
-        if self.dereference():
+        try:
+            ds = self.dereference()
+        except Exception as e:
+            self.logger.error("Unknown error during dereference: %s", e)
+            status = self.E_EXCEPTION
+            ds = None
+
+        if ds:
             if self.can_run():
                 try:
                     data = self.attrs.get(self.ATTR_DATA) or {}
@@ -111,7 +119,7 @@ class Job(object):
             else:
                 self.logger.info("Deferred")
                 status = self.E_DEFERRED
-        else:
+        elif ds is not None:
             self.logger.info("Cannot dereference")
             status = self.E_DEREFERENCE
         self.duration = time.time() - self.start_time
@@ -145,7 +153,11 @@ class Job(object):
                 return False
             try:
                 # Resolve object
-                self.object = self.model.objects.get(**q)
+                if isinstance(self.model, dict):
+                    self.object = self.model.objects.get(**q)
+                else:
+                    with autocommit():
+                        self.object = self.model.objects.get(**q)
                 # Adjust logging
                 self.logger.set_prefix(
                     "%s][%s][%s" % (
