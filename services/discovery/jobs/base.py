@@ -24,6 +24,7 @@ from noc.lib.log import PrefixLoggerAdapter
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.lib.nosql import get_db
+from noc.core.service.rpc import RPCError
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -114,6 +115,8 @@ class DiscoveryCheck(object):
             # Run check
             try:
                 self.handler()
+            except RPCError as e:
+                self.logger.error("Terminated due RPC error: %s", e)
             except Exception:
                 error_report(logger=self.logger)
 
