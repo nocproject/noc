@@ -117,10 +117,10 @@ class PingService(Service):
         Periodic task to request object mappings
         """
         def is_my_task(d):
-            x = struct.unpack("!L", socket.inet_aton(d))
+            x = struct.unpack("!L", socket.inet_aton(d))[0]
             return x % self.config.global_n_instances == (self.config.instance + self.config.global_offset)
 
-        self.logger.debug("Requesting object mappings")
+        self.logger.info("Requesting object mappings")
         try:
             sm = yield self.omap.get_ping_mappings(
                 self.config.pool
@@ -131,9 +131,10 @@ class PingService(Service):
         #
         xd = set(self.source_map)
         if self.config.global_n_instances > 1:
-            nd = set(x for x in sm if int(x.split(".")[-1]))
-        else:
             nd = set(x for x in sm if is_my_task(x))
+        else:
+            nd = set(sm)
+        self.logger.info("Processing %d of %d tasks", len(nd), len(sm))
         # delete probes
         for d in xd - nd:
             self.delete_probe(d)
@@ -216,15 +217,15 @@ class PingService(Service):
                 }
             )
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
-        name = self.report_rtt[address]
-        if not name or rtt is None:
-            return
-        self.metrics += [
-            "Ping\\ |\\ RTT,object=%s value=%s %s" % (
-                name, rtt, int(time.time())
-            )
-        ]
-        self.send_metrics()
+        # Send RTT metrics
+        if rtt is not None:
+            name = self.report_rtt[address]
+            if name:
+                self.metrics += [
+                    "Ping\\ |\\ RTT,object=%s value=%s %s" % (
+                        name, rtt, int(time.time())
+                    )
+                ]
 
     @tornado.gen.coroutine
     def send_metrics(self):
