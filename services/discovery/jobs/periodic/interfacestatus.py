@@ -33,7 +33,9 @@ class InterfaceStatusCheck(DiscoveryCheck):
         interfaces = dict(
             (i.name, i)
             for i in Interface.objects.filter(
-                managed_object=self.object.id)
+                managed_object=self.object.id,
+                type="physical"
+            )
         )
         bulk = Interface._get_collection().initialize_unordered_bulk_op()
         nb = 0
