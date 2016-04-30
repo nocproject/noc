@@ -324,7 +324,7 @@ config:
       default: /var/lib/postgresql/9.4/main/
 
     postgres_max_clients:
-      type: str
+      type: int
       label: Postgresql max clients
       default: 300
 
