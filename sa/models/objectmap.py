@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Object Mappings
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,11 +11,11 @@ import datetime
 import logging
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import ReferenceField, DictField, DateTimeField
+from mongoengine.fields import ReferenceField, DictField
 ## NOC modules
 from noc.main.models.pool import Pool
-from noc.core.service.event import fire
 from noc.sa.models.objectstatus import ObjectStatus
+from noc.core.defer import call_later
 
 
 logger = logging.getLogger(__name__)
@@ -34,10 +34,6 @@ class ObjectMap(Document):
     trap_sources = DictField()
     #
     ping_sources = DictField()
-    #
-    updated = DateTimeField()
-
-    TTL = 600
 
     def __unicode__(self):
         return self.pool.name
@@ -126,17 +122,11 @@ class ObjectMap(Document):
     @classmethod
     def get_object_mappings(cls, pool):
         """
-        Returns object mappings for pool. Regenerate when necessary
+        Returns object mappings for pool
         """
-        om = cls._get_collection().find_one({
+        return cls._get_collection().find_one({
             "pool": pool.id
         })
-        if not om or om["updated"] < datetime.datetime.now() - datetime.timedelta(seconds=cls.TTL):
-            cls.rebuild_pool(pool)
-            om = cls._get_collection().find_one({
-                "pool": pool.id
-            })
-        return om
 
     @classmethod
     def get_syslog_sources(cls, pool):
@@ -171,11 +161,16 @@ class ObjectMap(Document):
         Invalidate pool mappings
         """
         logger.debug("Invalidating object mappings for %s", pool)
-        ObjectMap._get_collection().update({
-            "pool": pool.id
-        }, {
-            "$set": {
-                "updated": datetime.datetime.now() - datetime.timedelta(seconds=cls.TTL)
-            }
-        })
-        fire("objmapchange-%s" % pool)
+        call_later(
+            "noc.sa.models.objectmap.invalidate",
+            delay=10,
+            pool_name=pool.name
+        )
+
+
+def invalidate(pool_name):
+    try:
+        pool = Pool.objects.get(name=pool_name)
+    except Pool.DoesNotExist:
+        return
+    ObjectMap.rebuild_pool(pool)
