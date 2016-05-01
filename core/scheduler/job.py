@@ -11,7 +11,7 @@ import logging
 import time
 ## Third-party modules
 import tornado.gen
-from django.db.transaction import autocommit
+from django.db.transaction import autocommit, commit_on_success
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.debug import error_report
@@ -30,6 +30,8 @@ class Job(object):
     # Group name. Only one job from group can be started
     # if is not None
     group_name = None
+    # Set to True to run handler inside transactional block
+    use_transactions = False
 
     # Collection attributes
     ATTR_ID = "_id"
@@ -106,10 +108,17 @@ class Job(object):
             if self.can_run():
                 try:
                     data = self.attrs.get(self.ATTR_DATA) or {}
-                    result = self.handler(**data)
-                    if tornado.gen.is_future(result):
-                        # Wait for future
-                        result = yield result
+                    if self.use_transactions:
+                        with commit_on_success():
+                            result = self.handler(**data)
+                            if tornado.gen.is_future(result):
+                                # Wait for future
+                                result = yield result
+                    else:
+                        result = self.handler(**data)
+                        if tornado.gen.is_future(result):
+                            # Wait for future
+                            result = yield result
                     status = self.E_SUCCESS
                 except self.failed_exceptions, why:
                     status = self.E_FAILED
