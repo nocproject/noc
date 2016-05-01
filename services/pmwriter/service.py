@@ -22,20 +22,33 @@ import noc.core.service.httpclient
 class PMWriterService(Service):
     name = "pmwriter"
 
+    MAX_DELAY = 1.0
+
     def __init__(self):
         super(PMWriterService, self).__init__()
         self.queue = None
         self.influx = None
+        self.last_ts = None
+        self.last_metrics = 0
+        self.n_metrics = 0
+        self.buffer = []
+        self.speed = None
 
     @tornado.gen.coroutine
     def on_activate(self):
-        self.queue = tornado.queues.Queue(maxsize=self.config.batch_size)
+        self.last_ts = self.ioloop.time()
+        report_callback = tornado.ioloop.PeriodicCallback(
+            self.report, 10000, self.ioloop
+        )
+        report_callback.start()
+        self.queue = tornado.queues.Queue(maxsize=self.config.batch_size * 4)
         self.influx = self.resolve_service("influxdb", 1)[0]
         self.subscribe(
             "metrics",
             "pmwriter",
             self.on_metric,
-            max_in_flight=self.config.batch_size * 2
+            raw=True,
+            max_in_flight=4 * self.config.batch_size
         )
         self.ioloop.spawn_callback(self.send_metrics)
 
@@ -43,27 +56,23 @@ class PMWriterService(Service):
         """
         Called on new dispose message
         """
-        self.queue.put(metric)
+        self.buffer += [metric]
         return True
 
     @tornado.gen.coroutine
     def send_metrics(self):
         self.logger.info("Starting message sender")
         while True:
-            batch = []
-            # Wait for first metric
-            m = yield self.queue.get()
-            batch += [m]
-            # Populate batch up to recommented size
-            while len(batch) < self.config.batch_size:
-                try:
-                    m = yield self.queue.get_nowait()
-                    batch += [m]
-                except tornado.queues.QueueEmpty:
-                    break
+            bs = self.config.batch_size
+            if not self.buffer:
+                yield tornado.gen.sleep(self.MAX_DELAY)
+                continue
+            if len(self.buffer) < bs and self.speed:
+                yield tornado.gen.sleep((bs - len(self.buffer)) / self.speed)
+            batch, self.buffer = self.buffer[:bs], self.buffer[bs:]
             body = "\n".join(batch)
             while True:
-                t0 = time.time()
+                t0 = self.ioloop.time()
                 self.logger.debug("Sending %d metrics", len(batch))
                 client = tornado.httpclient.AsyncHTTPClient()
                 try:
@@ -76,8 +85,9 @@ class PMWriterService(Service):
                     # @todo: Check for 204
                     self.logger.info(
                         "%d metrics sent in %.2fms",
-                        len(batch), (time.time() - t0) * 1000
+                        len(batch), (self.ioloop.time() - t0) * 1000
                     )
+                    self.n_metrics += len(batch)
                     break
                 except tornado.httpclient.HTTPError as e:
                     self.logger.error("Failed to spool %d metrics: %s",
@@ -95,6 +105,16 @@ class PMWriterService(Service):
                 )
                 yield tornado.gen.sleep(timeout)
 
+    @tornado.gen.coroutine
+    def report(self):
+        t = self.ioloop.time()
+        if self.last_ts:
+            self.speed = float(self.n_metrics - self.last_metrics) / (t - self.last_ts)
+            self.logger.info(
+                "Feeding speed: %.2fmetrics/sec", self.speed
+            )
+        self.last_metrics = self.n_metrics
+        self.last_ts = t
 
 if __name__ == "__main__":
     PMWriterService().start()
