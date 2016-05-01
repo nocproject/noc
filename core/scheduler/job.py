@@ -11,7 +11,6 @@ import logging
 import time
 ## Third-party modules
 import tornado.gen
-from django.db.transaction import autocommit, commit_on_success
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.debug import error_report
@@ -108,17 +107,10 @@ class Job(object):
             if self.can_run():
                 try:
                     data = self.attrs.get(self.ATTR_DATA) or {}
-                    if self.use_transactions:
-                        with commit_on_success():
-                            result = self.handler(**data)
-                            if tornado.gen.is_future(result):
-                                # Wait for future
-                                result = yield result
-                    else:
-                        result = self.handler(**data)
-                        if tornado.gen.is_future(result):
-                            # Wait for future
-                            result = yield result
+                    result = self.handler(**data)
+                    if tornado.gen.is_future(result):
+                        # Wait for future
+                        result = yield result
                     status = self.E_SUCCESS
                 except self.failed_exceptions, why:
                     status = self.E_FAILED
@@ -162,11 +154,7 @@ class Job(object):
                 return False
             try:
                 # Resolve object
-                if isinstance(self.model, dict):
-                    self.object = self.model.objects.get(**q)
-                else:
-                    with autocommit():
-                        self.object = self.model.objects.get(**q)
+                self.object = self.model.objects.get(**q)
                 # Adjust logging
                 self.logger.set_prefix(
                     "%s][%s][%s" % (
