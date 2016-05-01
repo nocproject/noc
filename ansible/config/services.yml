@@ -55,6 +55,10 @@ services:
     description: FMWriter
     level: pool
 
+  pmwriter:
+    description: PMWriter
+    level: global
+
   omap:
     description: OMap
     level: global
@@ -144,6 +148,12 @@ config:
       label: TT escalation limin (tt/minute)
       type: int
       default: 10
+
+  pmwriter:
+    batch_size:
+      label: Write batch size (metrics)
+      type: int
+      default: 100
 
   classifier:
     lookup_solution:
