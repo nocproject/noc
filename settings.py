@@ -53,7 +53,6 @@ if sys.argv[0].endswith("/discovery/service.py"):
 else:
     DB_ENGINE = "django.db.backends.postgresql_psycopg2"
     DB_OPTIONS = {
-        "ssl_mode": "disable"
     }
 
 ## RDBMS settings
