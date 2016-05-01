@@ -71,14 +71,6 @@ class PingService(Service):
             self.ioloop
         )
         self.mappings_callback.start()
-        # Send spooled messages every 250ms
-        self.logger.debug("Stating metrics sender task")
-        self.metrics_callback = tornado.ioloop.PeriodicCallback(
-            self.send_metrics,
-            250,
-            self.ioloop
-        )
-        self.metrics_callback.start()
         # Get mappings for the first time
         self.ioloop.add_callback(self.get_object_mappings)
 
@@ -221,57 +213,11 @@ class PingService(Service):
         if rtt is not None:
             name = self.report_rtt[address]
             if name:
-                self.metrics += [
+                self.register_metrics([
                     "Ping\\ |\\ RTT,object=%s value=%s %s" % (
                         name, rtt, int(time.time())
                     )
-                ]
-
-    @tornado.gen.coroutine
-    def send_metrics(self):
-        """
-        Send collected metrics to InfluxDB
-        """
-        if not self.metrics:
-            return
-        msg = "\n".join(self.metrics)
-        self.metrics = []
-        # Send collected metrics
-        for s in self.resolve_service("influxdb"):
-            client = tornado.httpclient.AsyncHTTPClient(
-                force_instance=True,
-                max_clients=1
-            )
-            try:
-                response = yield client.fetch(
-                    # @todo: Configurable database name
-                    "http://%s/write?db=noc&precision=s" % s,
-                    method="POST",
-                    body=msg
-                )
-                # @todo: Check for 204
-                msg = ""
-            except tornado.httpclient.HTTPError as e:
-                self.logger.error(
-                    "Failed to spool collected metrics to %s: %s",
-                    s, str(e)
-                )
-            except Exception as e:
-                self.logger.error(
-                    "Failed to spool collected metrics to %s: %s",
-                    s, str(e)
-                )
-            finally:
-                client.close()
-                # Resolve CurlHTTPClient circular dependencies
-                client._force_timeout_callback = None
-                client._multi = None
-        if msg:
-            # Return metrics to queue
-            self.metrics = [msg] + self.metrics
-
-    def register_metrics(self, batch):
-        self.metrics += [batch]
+                ])
 
 if __name__ == "__main__":
     PingService().start()

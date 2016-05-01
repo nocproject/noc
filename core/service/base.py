@@ -448,7 +448,7 @@ class Service(object):
         for t in self.config.rpc_retry_timeout.split(","):
             yield float(t)
 
-    def subscribe(self, topic, channel, handler):
+    def subscribe(self, topic, channel, handler, **kwargs):
         """
         Subscribe message to channel
         """
@@ -468,7 +468,8 @@ class Service(object):
             message_handler=call_handler,
             topic=topic,
             channel=channel,
-            lookupd_http_addresses=self.config.get_service("nsqlookupd")
+            lookupd_http_addresses=self.config.get_service("nsqlookupd"),
+            **kwargs
         )
 
     def get_nsq_writer(self):
@@ -500,3 +501,11 @@ class Service(object):
             executor = ThreadPoolExecutor(self.config[xt])
             self.executors[name] = executor
         return executor
+
+    def register_metrics(self, metrics):
+        """
+        Register metrics to send
+        :param metric: List of strings
+        """
+        w = self.get_nsq_writer()
+        w.mpub("metrics", metrics)
