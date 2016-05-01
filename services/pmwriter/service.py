@@ -37,6 +37,7 @@ class PMWriterService(Service):
             self.on_metric,
             max_in_flight=self.config.batch_size * 2
         )
+        self.ioloop.spawn_callback(self.send_metrics)
 
     def on_metric(self, message, metric, *args, **kwargs):
         """
@@ -47,6 +48,7 @@ class PMWriterService(Service):
 
     @tornado.gen.coroutine
     def send_metrics(self):
+        self.logger.info("Starting message sender")
         while True:
             batch = []
             # Wait for first metric
