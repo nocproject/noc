@@ -27,6 +27,7 @@ from concurrent.futures import ThreadPoolExecutor
 import setproctitle
 import nsq
 import ujson
+import threading
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
 from .config import Config
@@ -89,6 +90,9 @@ class Service(object):
         self.pid = os.getpid()
         self.nsq_readers = {}  # handler -> Reader
         self.nsq_writer = None
+        self._metrics = []
+        self.metrics_lock = threading.Lock()
+        self.metrics_callback = None
 
     def create_parser(self):
         """
@@ -510,7 +514,21 @@ class Service(object):
         Register metrics to send
         :param metric: List of strings
         """
-        w = self.get_nsq_writer()
         if not isinstance(metrics, (set, list)):
             metrics = [metrics]
-        w.mpub("metrics", [str(x) for x in metrics])
+        with self.metrics_lock:
+            if not self.metrics_callback:
+                self.metrics_callback = tornado.ioloop.PeriodicCallback(
+                    self.send_metrics, 100, self.ioloop
+                )
+                self.metrics_callback.start()
+            self._metrics += [str(x) for x in metrics]
+
+    @tornado.gen.coroutine
+    def send_metrics(self):
+        if not self._metrics:
+            return
+        w = self.get_nsq_writer()
+        with self.metrics_lock:
+            w.pub("metrics", "\n".join(self._metrics))
+            self._metrics = []
