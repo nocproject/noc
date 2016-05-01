@@ -33,6 +33,8 @@ class DiscoveryService(Service):
 
     @tornado.gen.coroutine
     def on_activate(self):
+        #
+        self.setup_pg_connection_pool()
         # Send spooled messages every 250ms
         self.logger.info("Stating message sender task")
         self.send_callback = tornado.ioloop.PeriodicCallback(
@@ -70,6 +72,19 @@ class DiscoveryService(Service):
         )
         self.scheduler.service = self
         self.scheduler.run()
+
+    def setup_pg_connection_pool(self):
+        max_conns = self.config.max_threads + 5
+        min_conns = max_conns // 2
+        self.logger.info("Setting up postgresql connection pool: min=%d max=%d", min_conns, max_conns)
+        opts = {
+            "MIN_CONNS": min_conns,
+            "MAX_CONNS": max_conns
+        }
+        import settings
+        settings.DATABASES["default"]["OPTIONS"].update(opts)
+        from django.db import connections
+        connections.databases = settings.DATABASES
 
     @tornado.gen.coroutine
     def send_metrics(self):
