@@ -87,6 +87,13 @@ class PMWriterService(Service):
                         "Failed to spool %d metrics due to unknown error: %s",
                         len(batch), e
                     )
+                timeout = 1.0
+                self.logger.info(
+                    "InfluxDB is getting ill. "
+                    "Giving chance to recover. Waiting for %.2ms",
+                    timeout * 1000
+                )
+                yield tornado.gen.sleep(timeout)
 
 
 if __name__ == "__main__":
