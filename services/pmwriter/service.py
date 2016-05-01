@@ -52,11 +52,11 @@ class PMWriterService(Service):
         )
         self.ioloop.spawn_callback(self.send_metrics)
 
-    def on_metric(self, message, metric, *args, **kwargs):
+    def on_metric(self, message, metrics, *args, **kwargs):
         """
         Called on new dispose message
         """
-        self.buffer += [metric]
+        self.buffer += metrics.splitlines()
         return True
 
     @tornado.gen.coroutine
