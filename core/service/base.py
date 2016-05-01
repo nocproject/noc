@@ -448,11 +448,11 @@ class Service(object):
         for t in self.config.rpc_retry_timeout.split(","):
             yield float(t)
 
-    def subscribe(self, topic, channel, handler, **kwargs):
+    def subscribe(self, topic, channel, handler, raw=False, **kwargs):
         """
         Subscribe message to channel
         """
-        def call_handler(message):
+        def call_json_handler(message):
             try:
                 data = ujson.loads(message.body)
             except ValueError as e:
@@ -463,9 +463,12 @@ class Service(object):
             else:
                 return handler(message, data)
 
+        def call_raw_handler(message):
+            return handler(message, message.body)
+
         self.logger.debug("Subscribing to %s/%s", topic, channel)
         self.nsq_readers[handler] = nsq.Reader(
-            message_handler=call_handler,
+            message_handler=call_raw_handler if raw else call_json_handler,
             topic=topic,
             channel=channel,
             lookupd_http_addresses=self.config.get_service("nsqlookupd"),
