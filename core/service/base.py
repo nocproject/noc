@@ -508,4 +508,6 @@ class Service(object):
         :param metric: List of strings
         """
         w = self.get_nsq_writer()
-        w.mpub("metrics", metrics)
+        if not isinstance(metrics, (set, list)):
+            metrics = [metrics]
+        w.mpub("metrics", [str(x) for x in metrics])
