@@ -45,7 +45,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 iface = interfaces.get(iname)
                 if iface:
                     break
-            if not iface:
+            if not iface or not iface.profile.status_discovery:
                 continue
             kwargs = {
                 "admin_status": i.get("admin_status"),

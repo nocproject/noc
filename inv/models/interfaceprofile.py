@@ -60,6 +60,8 @@ class InterfaceProfile(Document):
     )
     # Collect mac addresses on interface
     mac_discovery = BooleanField(default=False)
+    # Collect and keep interface status
+    status_discovery = BooleanField(default=False)
     # Send up/down notifications
     status_change_notification = ForeignKeyField(NotificationGroup,
                                                  required=False)

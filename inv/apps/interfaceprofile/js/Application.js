@@ -154,6 +154,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         allowBlank: true
                     },
                     {
+                        name: "status_discovery",
+                        xtype: "checkbox",
+                        boxLabel: "Status Discovery",
+                        allowBlank: true
+                    },
+                    {
                         name: "status_change_notification",
                         xtype: "main.notificationgroup.LookupField",
                         fieldLabel: "Status Change Notification",
