@@ -2,13 +2,21 @@
 ##----------------------------------------------------------------------
 ## Interface Status check
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import threading
+import operator
+## Third-party modules
+import cachetools
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
+from noc.inv.models.interfaceprofile import InterfaceProfile
+
+ips_lock = threading.RLock()
 
 
 class InterfaceStatusCheck(DiscoveryCheck):
@@ -17,6 +25,13 @@ class InterfaceStatusCheck(DiscoveryCheck):
     """
     name = "interfacestatus"
     required_script = "get_interface_status_ex"
+
+    _ips_cache = cachetools.TTLCache(maxsize=10, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_ips_cache"), lock=ips_lock)
+    def get_profiles(cls, x):
+        return list(InterfaceProfile.objects.filter(status_discovery=True))
 
     def handler(self):
         has_interfaces = "DB | Interfaces" in self.object.get_caps()
@@ -29,14 +44,18 @@ class InterfaceStatusCheck(DiscoveryCheck):
         self.logger.info(
             "Checking interface statuses"
         )
-        result = self.object.scripts.get_interface_status_ex()
         interfaces = dict(
             (i.name, i)
             for i in Interface.objects.filter(
                 managed_object=self.object.id,
-                type="physical"
+                type="physical",
+                profile_in=self.get_profiles(None)
             )
         )
+        if not interfaces:
+            self.logger.info("No interfaces with status discovery enabled. Skipping")
+            return
+        result = self.object.scripts.get_interface_status_ex()
         bulk = Interface._get_collection().initialize_unordered_bulk_op()
         nb = 0
         for i in result:
@@ -45,7 +64,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
                 iface = interfaces.get(iname)
                 if iface:
                     break
-            if not iface or not iface.profile.status_discovery:
+            if not iface:
                 continue
             kwargs = {
                 "admin_status": i.get("admin_status"),
