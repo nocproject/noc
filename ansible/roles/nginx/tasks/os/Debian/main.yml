@@ -12,7 +12,10 @@
     http_proxy: "{{http_proxy}}"
 
 - name: Install nginx monitoring
-  template: src="etc/telegraf/telegraf.d/nginx.conf.j2" dest="/etc/telegraf/telegraf.d/nginx.conf"
+  template:
+    src: "etc/telegraf/telegraf.d/nginx.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/nginx.conf"
+  notify: reload telegraf
 
 - name: Install Nginx
   apt: name="nginx" update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"

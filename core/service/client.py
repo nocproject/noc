@@ -12,9 +12,9 @@ from collections import defaultdict
 import logging
 import time
 import random
-import socket
 import errno
 import cStringIO
+import random
 ## Third-party modules
 import tornado.httpclient
 import ujson
@@ -24,12 +24,12 @@ from noc.core.service.catalog import ServiceCatalog
 
 
 # Connection time
-CONNECT_TIMEOUT = 3
+CONNECT_TIMEOUT = 20
 # Total request time
 REQUEST_TIMEOUT = 3600
 #
 RETRY_TIMEOUT = 1.0
-RETRY_DELTA = 0.5
+RETRY_DELTA = 2.0
 #
 CALLING_SERVICE_HEADER = "X-NOC-Calling-Service"
 #
@@ -37,6 +37,10 @@ RETRIES = 5
 #
 RETRY_SOCKET_ERRORS = (errno.ECONNREFUSED, errno.EHOSTDOWN,
                        errno.EHOSTUNREACH, errno.ENETUNREACH)
+
+RETRY_CURL_ERRORS = set([
+    pycurl.E_COULDNT_CONNECT
+])
 
 
 class RPCError(Exception):
@@ -68,6 +72,49 @@ class RPCClient(object):
             self.method = method
 
         def __call__(self, *args):
+            def make_call(url, l, body):
+                """
+                Perform POST
+                :returns: code, headers, data
+                """
+                def process_headers(l):
+                    if ":" not in l:
+                        return
+                    name, value = l.split(":", 1)
+                    headers[name.strip().lower()] = value.strip()
+
+                logger.debug("Sending request to %s", l)
+                buff = cStringIO.StringIO()
+                headers = {}
+                c = pycurl.Curl()
+                c.setopt(c.URL, url)
+                c.setopt(c.POST, 1)
+                c.setopt(c.POSTFIELDS, body)
+                if headers:
+                    c.setopt(c.HTTPHEADER, headers)
+                c.setopt(c.WRITEDATA, buff)
+                c.setopt(c.NOPROXY, "*")
+                c.setopt(c.RESOLVE, ["%s:%s" % (l, l.split(":")[0])])
+                c.setopt(c.TIMEOUT, REQUEST_TIMEOUT)
+                c.setopt(c.CONNECTTIMEOUT, CONNECT_TIMEOUT)
+                c.setopt(c.HEADERFUNCTION, process_headers)
+                try:
+                    c.perform()
+                except pycurl.error as e:
+                    errno, errstr = e
+                    if errno in RETRY_CURL_ERRORS:
+                        logger.debug("Got error %d. Retry", errno)
+                        return (None, None, None)
+                    raise RPCException(str(e))
+                finally:
+                    code = c.getinfo(c.RESPONSE_CODE)
+                    c.close()
+                return (
+                    code,
+                    headers,
+                    buff.getvalue()
+                )
+
             t0 = time.time()
             service = self.client._service
             calling_service = self.client._calling_service
@@ -94,35 +141,33 @@ class RPCClient(object):
             for l in random.sample(services, RETRIES):
                 # Sleep when trying same instance
                 if l == last:
-                    time.sleep(st)
+                    time.sleep(st + float(st) * (random.random() - 0.5) / 5)
                     st += RETRY_DELTA
                 #
                 last = l
                 logger.debug("Sending request to %s", l)
                 url = "http://%s/api/%s/" % (l, self.client._api)
-                buff = cStringIO.StringIO()
-                c = pycurl.Curl()
-                c.setopt(c.URL, url)
-                c.setopt(c.POST, 1)
-                c.setopt(c.POSTFIELDS, body)
-                if headers:
-                    c.setopt(c.HTTPHEADER, headers)
-                c.setopt(c.WRITEDATA, buff)
-                c.setopt(c.NOPROXY, "*")
-                c.setopt(c.RESOLVE, ["%s:%s" % (l, l.split(":")[0])])
-                c.setopt(c.TIMEOUT, REQUEST_TIMEOUT)
-                c.setopt(c.CONNECTTIMEOUT, CONNECT_TIMEOUT)
+                for nt in range(3):  # Limit redirects
+                    code, headers, data = make_call(url, l, body)
+                    if code == 200:
+                        break
+                    elif code is None:
+                        break
+                    elif code == 307:
+                        url = headers.get("location")
+                        l = url.split("://", 1)[1].split("/")[0]
+                        body = data
+                        logger.debug("Redirecting to %s", url)
+                    else:
+                        raise RPCException("Invalid return code: %s" % code)
+                if code is None:
+                    continue
+                if code != 200:
+                    raise RPCException("Redirects limit exceeded")
                 try:
-                    c.perform()
-                except pycurl.error as e:
-                    # @todo: Retry on timeout
-                    raise RPCException(str(e))
-                finally:
-                    c.close()
-                try:
-                    data = ujson.loads(buff.getvalue())
-                except ValueError, why:
-                    raise RPCRemoteError("Failed to decode JSON: %s", why)
+                    data = ujson.loads(data)
+                except ValueError as e:
+                    raise RPCRemoteError("Failed to decode JSON: %s" % e)
                 if data.get("error"):
                     raise RPCRemoteError(data["error"])
                 t = time.time() - t0

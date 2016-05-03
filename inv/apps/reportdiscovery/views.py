@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## inv.reportdiscovery
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,22 +17,30 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.link import Link
-from noc.sa.models.maptask import MapTask
+from noc.core.translation import ugettext as _
 
 
 class ReportDiscoveryApplication(SimpleReport):
-    title = "Discovery Summary"
+    title = _("Discovery Summary")
 
     def get_data(self, **kwargs):
         data = []
         # Managed objects summary
         data += [SectionRow("Managed Objects")]
         d = []
+        j_box = 0
+        j_box_sec = 0.0
+        j_periodic = 0
+        j_periodic_sec = 0.0
         for p in ManagedObjectProfile.objects.all():
-            d += [[
-                p.name,
-                ManagedObject.objects.filter(object_profile=p).count()
-            ]]
+            o_count = ManagedObject.objects.filter(object_profile=p).count()
+            d += [[p.name, o_count]]
+            if p.enable_box_discovery:
+                j_box += o_count
+                j_box_sec += float(o_count) / p.box_discovery_interval
+            if p.enable_periodic_discovery:
+                j_periodic += o_count
+                j_periodic_sec += float(o_count) / p.periodic_discovery_interval
         data += sorted(d, key=lambda x: -x[1])
         # Interface summary
         d = []
@@ -55,55 +63,15 @@ class ReportDiscoveryApplication(SimpleReport):
             },
             {"$sort": {"count": -1}}
         ])
-        data += [(x["_id"], x["count"]) for x in r["result"]]
+        d = [(x["_id"], x["count"]) for x in r["result"]]
+        data += sorted(d, key=lambda x: -x[1])
         # Discovery jobs
-        data += [SectionRow("Discovery Jobs Statuses")]
-        r = DiscoveryJob._get_collection().aggregate([
-            {
-                "$group": {
-                    "_id": "$s",
-                    "count": {"$sum": 1}
-                }
-            }
-        ])
-        d = []
-        for x in r["result"]:
-            if x["_id"] == "W":
-                nl = DiscoveryJob.objects.filter(
-                    status="W",
-                    ts__lte=datetime.datetime.now()
-                ).count()
-                d += [
-                    ["Wait (Late)", nl],
-                    ["Wait", x["count"] - nl]
-                ]
-            else:
-                d += [[
-                    {
-                        "W": "Wait",
-                        "R": "Run",
-                        "S": "Stop",
-                        "D": "Disabled",
-                        "s": "Suspend"
-                    }.get(x["_id"], "-"),
-                    x["count"]
-                ]]
-        data += sorted(d, key=lambda x: -x[1])
-        # MapTask summary
-        data += [SectionRow("Map Tasks")]
-        d = [
-            (
-                {
-                    "W": "Wait",
-                    "R": "Running",
-                    "C": "Complete",
-                    "F": "Failed"
-                }.get(x["status"], "-"),
-                x["count"]
-             )
-            for x in MapTask.objects.values("status").annotate(count=Count("status"))]
-        data += sorted(d, key=lambda x: -x[1])
-
+        data += [SectionRow("Discovery jobs summary")]
+        data += [["Box", j_box]]
+        data += [["Periodic", j_periodic]]
+        data += [SectionRow("Jobs per second")]
+        data += [["Box", j_box_sec]]
+        data += [["Periodic", j_periodic_sec]]
         return self.from_dataset(
             title=self.title,
             columns=[

@@ -39,12 +39,15 @@
   template:
     src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
     dest: "/etc/telegraf/telegraf.d/mongodb.conf"
+  notify: reload telegraf
 
 - name: Set mongod defaults
   template:
     src: "os/RedHat/etc/sysconfig/mongod.j2"
     dest: "/etc/sysconfig/mongod"
   notify: restart mongod
+  tags:
+    - config
 
 - include: "arbiter.yml"
   when: "{{ has_svc_mongo_arbiter | default(False) }}"

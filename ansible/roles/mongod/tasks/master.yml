@@ -4,12 +4,16 @@
     src: rsinit.js.j2
     dest: "{{ noc_root }}/var/etc/mongo/rsinit.js"
   register: rs_conf_status
+  tags:
+    - config
 
 - name: Check replica set is initialized
   shell: "{{ mongo_path }} --host {{ noc_mongo_replicaset }}/{{ inventory_hostname }} --eval 1"
   register: rs_status
   changed_when: rs_status.rc != 0
   failed_when: False
+  tags:
+    - config
 
 - name: Initial replica set configuration
   shell: "{{ mongo_path }} {{ noc_root }}/var/etc/mongo/rsinit.js"
@@ -20,6 +24,8 @@
     src: admininit.js.j2
     dest: "{{ noc_root }}/var/etc/mongo/admininit.js"
   when: rs_status.rc != 0
+  tags:
+    - config
 
 - name: Create admin user
   shell: "{{ mongo_path }} admin {{ noc_root }}/var/etc/mongo/admininit.js"
@@ -30,6 +36,8 @@
     src: userinit.js.j2
     dest: "{{ noc_root }}/var/etc/mongo/userinit.js"
   register: user_status
+  tags:
+    - config
 
 - name: Create database user
   shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p {{ noc_mongo_admin_password }} {{ noc_mongo_db }} --authenticationDatabase admin {{ noc_root }}/var/etc/mongo/userinit.js"

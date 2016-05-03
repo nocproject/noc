@@ -29,6 +29,8 @@
   set_fact:
     postgresql_conf_path: "/var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf"
     postgresql_hba_path: "/var/lib/pgsql/{{ postgresql_version }}/data/pg_hba.conf"
+  tags:
+    - config
 
 - name: Install postgres monitoring
   template:

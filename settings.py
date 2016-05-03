@@ -42,20 +42,31 @@ MANAGERS = ADMINS
 
 SERVER_EMAIL = config.get("main", "server_email")
 
+## Auto-detect appropriative database engine settings
+if sys.argv[0].endswith("/discovery/service.py"):
+    DB_ENGINE = "dbpool.db.backends.postgresql_psycopg2"
+    DB_OPTIONS = {
+        "MAX_CONNS": 1,
+        "MIN_CONNS": 1
+    }
+    SOUTH_DATABASE_ADAPTER = "django.db.backends.postgresql_psycopg2"
+else:
+    DB_ENGINE = "django.db.backends.postgresql_psycopg2"
+    DB_OPTIONS = {
+    }
+
 ## RDBMS settings
-DATABASE_ENGINE = "django.db.backends.postgresql_psycopg2"
+DATABASE_ENGINE = DB_ENGINE
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "ENGINE": DB_ENGINE,
         "NAME": cfg.pg_db,
         "USER": cfg.pg_user,
         "PASSWORD": cfg.pg_password,
         "HOST": cfg.pg_connection_args["host"],
         "PORT": cfg.pg_connection_args["port"],
         "TEST_NAME": "test_" + cfg.pg_db,
-        "OPTIONS": {
-            "sslmode": "disable"
-        }
+        "OPTIONS": DB_OPTIONS
     }
 }
 DATABASE_SUPPORTS_TRANSACTIONS = True

@@ -8,13 +8,18 @@
 
 ## Python modules
 import os
+import operator
+from threading import RLock
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, ObjectIdField)
+import cachetools
 ## NOC modules
 from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+
+id_lock = RLock()
 
 
 @category
@@ -31,8 +36,15 @@ class Capability(Document):
     card_template = StringField(required=False)
     category = ObjectIdField()
 
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return Capability.objects.filter(id=id).first()
 
     @property
     def json_data(self):

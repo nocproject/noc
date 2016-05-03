@@ -17,6 +17,7 @@ from noc.lib.solutions import get_solution
 
 class LoginService(UIService):
     name = "login"
+    process_name = "noc-%(name).10s-%(instance).2s"
     api = [
         LoginAPI
     ]
@@ -30,7 +31,10 @@ class LoginService(UIService):
 
     # Fields excluded from logging
     HIDDEN_FIELDS = [
-        "password"
+        "password",
+        "new_password",
+        "old_password",
+        "retype_password"
     ]
 
     def authenticate(self, handler, credentials):
@@ -64,6 +68,35 @@ class LoginService(UIService):
             credentials.get("user"),
             expires_days=self.config.session_ttl
         )
+        return True
+
+    def change_credentials(self, handler, credentials):
+        """
+        Change credentials. Return true when credentials changed
+        """
+        method = self.config.method
+        try:
+            backend = get_solution(method)(self)
+        except Exception as e:
+            self.logger.error(
+                "Failed to initialize '%s' backend: %s",
+                method, e
+            )
+            return False
+        c = credentials.copy()
+        for f in self.HIDDEN_FIELDS:
+            if f in c:
+                c[f] = "***"
+        self.logger.info("Changing credentials %s using method %s",
+                         c, method)
+        try:
+            backend.change_credentials(**credentials)
+        except backend.LoginError as e:
+            self.logger.error(
+                "Failed to change credentials for %s: %s", c, e
+            )
+            return False
+        self.logger.info("Changed")
         return True
 
 if __name__ == "__main__":

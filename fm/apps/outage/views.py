@@ -15,4 +15,4 @@ class OutageApplication(ExtApplication):
     title = _("Outages")
     menu = _("Outages")
     glyph = "bolt"
-    link = "/api/card/view/outage/1/"
+    link = "/api/card/view/outage/1/?refresh=60"

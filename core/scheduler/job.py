@@ -29,6 +29,8 @@ class Job(object):
     # Group name. Only one job from group can be started
     # if is not None
     group_name = None
+    # Set to True to run handler inside transactional block
+    use_transactions = False
 
     # Collection attributes
     ATTR_ID = "_id"
@@ -94,7 +96,14 @@ class Job(object):
         self.start_time = time.time()
         self.logger.info("[%s] Starting", self.name)
         # Run handler
-        if self.dereference():
+        try:
+            ds = self.dereference()
+        except Exception as e:
+            self.logger.error("Unknown error during dereference: %s", e)
+            status = self.E_EXCEPTION
+            ds = None
+
+        if ds:
             if self.can_run():
                 try:
                     data = self.attrs.get(self.ATTR_DATA) or {}
@@ -111,7 +120,7 @@ class Job(object):
             else:
                 self.logger.info("Deferred")
                 status = self.E_DEFERRED
-        else:
+        elif ds is not None:
             self.logger.info("Cannot dereference")
             status = self.E_DEREFERENCE
         self.duration = time.time() - self.start_time

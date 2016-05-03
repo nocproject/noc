@@ -6,12 +6,17 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+from collections import namedtuple
 ## Third-party modules
 import tornado.web
 import tornado.gen
 import ujson
 ## NOC modules
 from noc.lib.debug import error_report
+
+
+Redirect = namedtuple("Redirect", ["location", "method", "params"])
 
 
 class APIRequestHandler(tornado.web.RequestHandler):
@@ -82,11 +87,22 @@ class APIRequestHandler(tornado.web.RequestHandler):
                 result = h(*params)
             if tornado.gen.is_future(result):
                 result = yield result
-            self.write(ujson.dumps({
-                "id": id,
-                "error": None,
-                "result": result
-            }))
+            if isinstance(result, Redirect):
+                # Redirect protocol extension
+                self.set_status(307, "Redirect")
+                self.set_header("Location", result.location)
+                self.write(ujson.dumps({
+                    "id": id,
+                    "method": result.method,
+                    "params": result.params
+                }))
+            else:
+                # Dump output
+                self.write(ujson.dumps({
+                    "id": id,
+                    "error": None,
+                    "result": result
+                }))
         except APIError, why:
             self.api_error(
                 "Failed: %s" % why,
@@ -138,6 +154,9 @@ class API(object):
             m for m in dir(cls)
             if getattr(getattr(cls, m), "api", False)
         ]
+
+    def redirect(self, location, method, params):
+        raise tornado.gen.Return(Redirect(location=location, method=method, params=params))
 
 
 def api(method):

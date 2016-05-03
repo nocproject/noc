@@ -6,6 +6,9 @@
   template:
     src: config/nsqlookupd.conf.j2
     dest: "{{noc_root}}/var/etc/nsq/nsqlookupd.conf"
+  notify: restart nsqlookupd
+  tags:
+    - config
 
 - name: Enable nsqlookupd system service
   service:

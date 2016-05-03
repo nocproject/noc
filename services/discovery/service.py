@@ -27,21 +27,19 @@ class DiscoveryService(Service):
     def __init__(self):
         super(DiscoveryService, self).__init__()
         self.scheduler = None
-        self.metrics = []
-        self.metrics_lock = threading.Lock()
         self.send_callback = None
 
     @tornado.gen.coroutine
     def on_activate(self):
-        # Send spooled messages every 250ms
-        self.logger.debug("Stating message sender task")
-        self.send_callback = tornado.ioloop.PeriodicCallback(
-            self.send_metrics,
-            250,
-            self.ioloop
-        )
-        self.send_callback.start()
+        #
+        self.setup_pg_connection_pool()
+        #
         if self.config.global_n_instances > 1:
+            self.logger.info(
+                "Enabling distributed mode: Slot %d of %d",
+                self.config.instance + self.config.global_offset,
+                self.config.global_n_instances
+            )
             ifilter = {
                 "key": {
                     "$mod": [
@@ -51,6 +49,9 @@ class DiscoveryService(Service):
                 }
             }
         else:
+            self.logger.info(
+                "Enabling standalone mode"
+            )
             ifilter = None
         self.scheduler = Scheduler(
             "discovery",
@@ -63,54 +64,18 @@ class DiscoveryService(Service):
         self.scheduler.service = self
         self.scheduler.run()
 
-    @tornado.gen.coroutine
-    def send_metrics(self):
-        """
-        Send collected metrics to InfluxDB
-        """
-        with self.metrics_lock:
-            if not self.metrics:
-                return
-            msg = "\n".join(self.metrics)
-            self.metrics = []
-        # Send collected metrics
-        for s in self.resolve_service("influxdb"):
-            client = tornado.httpclient.AsyncHTTPClient(
-                force_instance=True,
-                max_clients=1
-            )
-            try:
-                response = yield client.fetch(
-                    # @todo: Configurable database name
-                    "http://%s/write?db=noc&precision=s" % s,
-                    method="POST",
-                    body=msg
-                )
-                # @todo: Check for 204
-                msg = ""
-            except tornado.httpclient.HTTPError as e:
-                self.logger.error(
-                    "Failed to spool collected metrics to %s: %s",
-                    s, str(e)
-                )
-            except Exception as e:
-                self.logger.error(
-                    "Failed to spool collected metrics to %s: %s",
-                    s, str(e)
-                )
-            finally:
-                client.close()
-                # Resolve CurlHTTPClient circular dependencies
-                client._force_timeout_callback = None
-                client._multi = None
-        if msg:
-            # Return metrics to queue
-            with self.metrics_lock:
-                self.metrics = [msg] + self.metrics
-
-    def register_metrics(self, batch):
-        with self.metrics_lock:
-            self.metrics += [batch]
+    def setup_pg_connection_pool(self):
+        max_conns = self.config.max_threads + 5
+        min_conns = max_conns // 2
+        self.logger.info("Setting up postgresql connection pool: min=%d max=%d", min_conns, max_conns)
+        opts = {
+            "MIN_CONNS": min_conns,
+            "MAX_CONNS": max_conns
+        }
+        import settings
+        settings.DATABASES["default"]["OPTIONS"].update(opts)
+        from django.db import connections
+        connections.databases = settings.DATABASES
 
 
 if __name__ == "__main__":

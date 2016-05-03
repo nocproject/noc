@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["SFP-WDM4.80"]
+            "part_no": ["SFP-WDM4.80", "SFP-BiDi-DDM4.80"]
         }
     }
 }

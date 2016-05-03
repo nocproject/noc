@@ -6,8 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import time
 ## Third-party modules
 import tornado.gen
 from collections import namedtuple
@@ -64,7 +62,6 @@ class SAEAPI(API):
         :param args: Dict with input arguments
         :param timeout: Script timeout in seconds
         """
-        t = time.time()
         # Resolve object data
         data = yield self.service.get_executor("db").submit(
             self.get_object_data, object_id
@@ -79,31 +76,13 @@ class SAEAPI(API):
         script_name = "%s.%s" % (data.profile, script)
         if not loader.has_script(script_name):
             raise APIError("Invalid script")
-        # Pass call
-        status = "UNKNOWN"
-        try:
-            result = yield activator.script(
-                script_name, data.credentials, data.capabilities,
-                data.version, args, timeout
-            )
-            status = "OK"
-        except RPCError, why:
-            status = "FAIL"
-            raise APIError("RPC Error: %s" % why)
-        finally:
-
-            self.logger.info("Timing: %s", ",".join([
-                data.credentials["name"],
-                script_name,
-                data.credentials["address"],
-                (" ".join([
-                    data.version.get("vendor", ""),
-                    data.version.get("platform", "")
-                ])).strip() if data.version else "",
-                status,
-                "%.2fms" % ((time.time() - t) * 1000)
-            ]))
-        raise tornado.gen.Return(result)
+        #
+        self.redirect(
+            activator._get_url(),
+            "script",
+            [script_name, data.credentials, data.capabilities,
+             data.version, args, timeout]
+        )
 
     def get_object_data(self, object_id):
         """

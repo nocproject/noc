@@ -2,3 +2,9 @@
 directory = {{ noc_root }}
 logfile = {{ noc_root }}/var/log/supervisord.log
 pidfile = {{ noc_service_pidfile }}
+
+[inet_http_server]
+port = *:9009 ;
+
+[ctlplugin:serialrestart]
+supervisor.ctl_factory = supervisorserialrestart.controllerplugin:make_serialrestart_controllerplugin

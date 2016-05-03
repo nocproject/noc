@@ -6,6 +6,9 @@
   template:
     src: etc/config/nsqd.conf.j2
     dest: "{{noc_root}}/var/etc/nsq/nsqd.conf"
+  notify: restart nsqd
+  tags:
+    - config
 
 - name: Enable nsq system service
   service:

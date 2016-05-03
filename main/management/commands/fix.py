@@ -30,12 +30,11 @@ class Command(BaseCommand):
             self.fix_inv_root()
             self.fix_inv_lost_and_found()
             self.fix_inv_orphans()
-            self.fix_metricsettings()
             self.fix_fm_outage_orphans()
             self.fix_wiping_mo()
             self.fix_suspended_discovery_jobs()
             self.fix_db_interfaces_capability()
-            self.fix_maptask()
+            self.fix_not_managed_alarms()
         except:
             error_report()
             sys.exit(1)
@@ -76,42 +75,6 @@ class Command(BaseCommand):
                     }
                 }
             )
-
-    def fix_metricsettings(self):
-        def remove_ms(ms):
-            MetricSettings._get_collection().remove({"_id": ms.id})
-
-        from noc.pm.models.metricsettings import MetricSettings
-        self.info("Checking pm.MetricSettings")
-        for ms in MetricSettings.objects.all():
-            # Check referenced object is exists
-            if not ms.get_object():
-                self.info(
-                    "    ... Unable to dereference %s:%s. Removing",
-                    ms.model_id, ms.object_id
-                )
-                remove_ms(ms)
-                continue
-            # Check metric sets references
-            msl = []
-            for m in ms.metric_sets:
-                try:
-                    x = m.metric_set
-                    msl += [m]
-                except Exception, why:
-                    self.info("    ... Unable to dereference metric set. Pulling")
-            if len(msl) < len(ms.metric_sets):
-                ms.metric_sets = msl
-                ms.save()
-            # Remove empty metric sets
-            if not ms.metric_sets:
-                self.info(
-                    "    ... Empty metric sets for %s:%s. Removing",
-                    ms.model_id, ms.object_id
-                )
-                remove_ms(ms)
-                continue
-        self.info("... done")
 
     def fix_inv_root(self):
         from noc.inv.models.object import Object
@@ -168,17 +131,12 @@ class Command(BaseCommand):
 
     def fix_wiping_mo(self):
         from noc.sa.models.managedobject import ManagedObject
-        from noc.lib.nosql import get_db
-        from noc.lib.scheduler.utils import submit_job
+        from noc.sa.wipe.managedobject import wipe
 
-        c = get_db().noc.schedules.main.jobs
         for mo in ManagedObject.objects.filter(name__startswith="wiping-"):
-            if not c.find({"object": mo.id, "jcls": "sa.wipe_managed_object"}).count():
-                self.info("Restarting wipe process: %s", mo)
-                submit_job("main.jobs", "sa.wipe_managed_object", mo.id)
+            wipe(mo)
 
     def fix_fm_outage_orphans(self):
-        from noc.sa.models.managedobject import ManagedObject
         from fm.models.outage import Outage
 
         self.info("Checking fm.Outages")
@@ -190,7 +148,7 @@ class Command(BaseCommand):
         Initialize set of existing managed objects ids
         :return:
         """
-        from sa.models import ManagedObject
+        from noc.sa.models.managedobject import ManagedObject
 
         self.existing_mo = set(
             ManagedObject.objects.exclude(
@@ -273,10 +231,19 @@ class Command(BaseCommand):
                     "DB | Interfaces": caps[o.id]
                 })
 
-    def fix_maptask(self):
-        from django.db import connection
-        self.info("Optimizing sa_maptask")
-        cursor = connection.cursor()
-        cursor.execute("COMMIT")
-        cursor.execute("VACUUM FULL ANALYZE sa_maptask")
-        cursor.execute("REINDEX TABLE sa_maptask")
+    def fix_not_managed_alarms(self):
+        """
+        Close all active alarms belonging to non-managed objects
+        """
+        from noc.sa.models.managedobject import ManagedObject
+        from noc.fm.models.activealarm import ActiveAlarm
+        self.info("Fixing hanging alarms")
+        nmo = ManagedObject.objects.filter(
+            is_managed=False
+        ).values_list("id", flat=True)
+        for a in ActiveAlarm.objects.filter(
+            managed_object__in=nmo
+        ):
+            self.info("   Closing alarm %s (%s)",
+                      a.id, a.managed_object.name)
+            a.clear_alarm("Closed by fix (management is disabled)")

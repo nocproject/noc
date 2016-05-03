@@ -34,7 +34,7 @@ CP_NEW = "var/cp/crashinfo/new"
 CP_SET_UID = None
 
 if os.getuid() == 0:
-    CP_SET_UID = os.stat("local")[stat.ST_UID]
+    CP_SET_UID = os.stat("var/log")[stat.ST_UID]
 
 if not os.path.isdir(CP_NEW):
     try:
