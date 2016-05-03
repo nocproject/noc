@@ -34,6 +34,16 @@ class InterfaceStatusCheck(DiscoveryCheck):
         return list(InterfaceProfile.objects.filter(status_discovery=True))
 
     def handler(self):
+        def get_interface(name):
+            if_name = interfaces.get(name)
+            if if_name:
+                return if_name
+            for iname in self.object.profile.get_interface_names(i["interface"]):
+                if_name = interfaces.get(iname)
+                if if_name:
+                    return if_name
+            return None
+
         has_interfaces = "DB | Interfaces" in self.object.get_caps()
         if not has_interfaces:
             self.logger.info(
@@ -59,11 +69,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
         bulk = Interface._get_collection().initialize_unordered_bulk_op()
         nb = 0
         for i in result:
-            iface = None
-            for iname in self.object.profile.get_interface_names(i["interface"]):
-                iface = interfaces.get(iname)
-                if iface:
-                    break
+            iface = get_interface(i["interface"])
             if not iface:
                 continue
             kwargs = {
