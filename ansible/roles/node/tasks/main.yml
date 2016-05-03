@@ -47,7 +47,7 @@
     dest: "{{ noc_root }}/custom"
     revision: "{{ noc_custom_revision }}"
     update: yes
-  when: "noc_custom_repo is defined"
+  when: "noc_custom_enabled==True and noc_custom_repo is defined and noc_custom_revision is defined"
   tags:
     - mercurial
 
