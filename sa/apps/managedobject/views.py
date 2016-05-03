@@ -2,15 +2,14 @@
 ##----------------------------------------------------------------------
 ## sa.managedobject application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 from collections import defaultdict
-from ConfigParser import SafeConfigParser
-import os
-import datetime
+import gzip
+import cStringIO
 ## Django modules
 from django.http import HttpResponse
 ## Third-party modules
@@ -44,6 +43,7 @@ from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
 from noc.lib.nosql import get_db
 from noc.core.defer import call_later
+from noc.lib.validators import is_int
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -99,6 +99,10 @@ class ManagedObjectApplication(ExtModelApplication):
         qs = super(ManagedObjectApplication, self).queryset(request, query)
         if not request.user.is_superuser:
             qs = qs.filter(UserAccess.Q(request.user))
+        if query and query.startswith(".") and is_int(query[1:]):
+            v = int(query[1])
+            #if 0 <= v <= 255:
+            #    qs = qs.filter(address__endswith=query)
         qs = qs.exclude(name__startswith="wiping-")
         return qs
 
@@ -604,10 +608,12 @@ class ManagedObjectApplication(ExtModelApplication):
             return self.response_forbidden("Access denied")
         fs = gridfs.GridFS(get_db(), "noc.joblog")
         key = "discovery-%s-%s" % (job, o.id)
-        try:
-            f = fs.get(key)
+        d = get_db()["noc.joblog"].find_one({"_id": key})
+        if d:
+            f = gzip.GzipFile(mode="r",
+                              fileobj=cStringIO.StringIO(d["log"]))
             return self.render_plain_text(f.read())
-        except gridfs.errors.NoFile:
+        else:
             return self.render_plain_text("No data")
 
     @view(url="^(?P<id>\d+)/interactions/$", method=["GET"],
