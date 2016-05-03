@@ -611,7 +611,7 @@ class ManagedObjectApplication(ExtModelApplication):
         d = get_db()["noc.joblog"].find_one({"_id": key})
         if d:
             f = gzip.GzipFile(mode="r",
-                              fileobj=cStringIO.StringIO(d["log"]))
+                              fileobj=cStringIO.StringIO(str(d["log"])))
             return self.render_plain_text(f.read())
         else:
             return self.render_plain_text("No data")
