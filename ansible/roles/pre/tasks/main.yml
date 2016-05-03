@@ -2,11 +2,24 @@
 ---
 - name: "Loading system-dependend settings"
   include_vars: "os/{{ ansible_distribution }}.yml"
+  tags:
+    - config
+    - always
 
 - name: set proxy
   set_fact:
     http_proxy: "{{ proxy }}"
   when: "proxy is defined"
+  tags:
+    - config
+    - always
+
+
+- name: "Include OS-specific tasks"
+  include: "os/{{ ansible_distribution }}/main.yml"
+  tags:
+    - config
+    - always
 
 #- name: Display all variables/facts known for a host
 #  debug: var=hostvars[inventory_hostname]
@@ -19,6 +32,7 @@
 - name: Check if vboxsf is supported
   shell: "cat /proc/filesystems"
   register: vboxsf_support
+  when: "'virtualbox' in ansible_virtualization_type and 'Linux' in ansible_system"
 
 - name: Mount cache dir
   mount:

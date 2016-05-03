@@ -54,6 +54,14 @@ class RPCProxy(object):
                 self._methods[item] = mw
             return mw
 
+    def _get_url(self):
+        svc = random.choice(
+            self._service.config.get_service(
+                self._service_name
+            )
+        )
+        return "http://%s/api/%s/" % (svc, self._api)
+
     @tornado.gen.coroutine
     def _call(self, method, *args, **kwargs):
         tid = self._tid.next()
@@ -96,12 +104,12 @@ class RPCProxy(object):
                     }
                 )
                 break
-            except tornado.httpclient.HTTPError, why:
-                if why.code == 599:
+            except tornado.httpclient.HTTPError as e:
+                if e.code == 599:
                     logger.debug("Timed out")
                     continue
                 raise RPCHTTPError("HTTP Error %s: %s" % (
-                    why.code, why.message))
+                    e.code, e.message))
             except socket.error as e:
                 if e.args[0] in RETRY_SOCKET_ERRORS:
                     logger.debug("Socket error: %s" % e)

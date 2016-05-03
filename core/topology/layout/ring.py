@@ -37,6 +37,13 @@ class RingLayout(LayoutBase):
                 i = ring.index(u)
                 ring = ring[i:] + ring[:i]
                 break
+        # Set ring direction according to uplink's interfaces
+        if len(uplinks) == 1:
+            o = T.order_nodes(ring[0], [ring[1], ring[-1]])
+            if o[0] != ring[1]:
+                # Reverse ring
+                ring = [ring[0]] + list(reversed(ring[1:]))
+        #
         pos = {}
         # Ring length
         N = len(ring)

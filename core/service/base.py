@@ -27,6 +27,7 @@ from concurrent.futures import ThreadPoolExecutor
 import setproctitle
 import nsq
 import ujson
+import threading
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
 from .config import Config
@@ -89,6 +90,9 @@ class Service(object):
         self.pid = os.getpid()
         self.nsq_readers = {}  # handler -> Reader
         self.nsq_writer = None
+        self._metrics = []
+        self.metrics_lock = threading.Lock()
+        self.metrics_callback = None
 
     def create_parser(self):
         """
@@ -374,7 +378,10 @@ class Service(object):
             self.logger.info("Running HTTP APIs at http://%s:%s/",
                              addr, port)
             app = tornado.web.Application(handlers, **self.get_app_settings())
-            http_server = tornado.httpserver.HTTPServer(app)
+            http_server = tornado.httpserver.HTTPServer(
+                app,
+                xheaders=True
+            )
             http_server.listen(port, addr)
         self.ioloop.add_callback(self.on_activate)
 
@@ -445,11 +452,11 @@ class Service(object):
         for t in self.config.rpc_retry_timeout.split(","):
             yield float(t)
 
-    def subscribe(self, topic, channel, handler):
+    def subscribe(self, topic, channel, handler, raw=False, **kwargs):
         """
         Subscribe message to channel
         """
-        def call_handler(message):
+        def call_json_handler(message):
             try:
                 data = ujson.loads(message.body)
             except ValueError as e:
@@ -460,12 +467,16 @@ class Service(object):
             else:
                 return handler(message, data)
 
+        def call_raw_handler(message):
+            return handler(message, message.body)
+
         self.logger.debug("Subscribing to %s/%s", topic, channel)
         self.nsq_readers[handler] = nsq.Reader(
-            message_handler=call_handler,
+            message_handler=call_raw_handler if raw else call_json_handler,
             topic=topic,
             channel=channel,
-            lookupd_http_addresses=self.config.get_service("nsqlookupd")
+            lookupd_http_addresses=self.config.get_service("nsqlookupd"),
+            **kwargs
         )
 
     def get_nsq_writer(self):
@@ -497,3 +508,27 @@ class Service(object):
             executor = ThreadPoolExecutor(self.config[xt])
             self.executors[name] = executor
         return executor
+
+    def register_metrics(self, metrics):
+        """
+        Register metrics to send
+        :param metric: List of strings
+        """
+        if not isinstance(metrics, (set, list)):
+            metrics = [metrics]
+        with self.metrics_lock:
+            if not self.metrics_callback:
+                self.metrics_callback = tornado.ioloop.PeriodicCallback(
+                    self.send_metrics, 100, self.ioloop
+                )
+                self.metrics_callback.start()
+            self._metrics += [str(x) for x in metrics]
+
+    @tornado.gen.coroutine
+    def send_metrics(self):
+        if not self._metrics:
+            return
+        w = self.get_nsq_writer()
+        with self.metrics_lock:
+            w.pub("metrics", "\n".join(self._metrics))
+            self._metrics = []

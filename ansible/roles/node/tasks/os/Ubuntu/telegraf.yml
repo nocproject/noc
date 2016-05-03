@@ -32,6 +32,8 @@
     src: "etc/telegraf/telegraf.conf.j2"
     dest: "/etc/telegraf/telegraf.conf"
   notify: reload telegraf
+  tags:
+    - config
 
 - name: Enable telegraf system service
   service:

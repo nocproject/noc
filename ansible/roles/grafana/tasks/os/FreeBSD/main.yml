@@ -4,6 +4,8 @@
     src: grafana.ini
     dest: /usr/local/etc/grafana2.conf
   notify: restart grafana
+  tags:
+    - config
 
 # Do not work, becouse RC script can't handle "grafana2_conf" variable properly
 #- name: Setting Grafana conf file
