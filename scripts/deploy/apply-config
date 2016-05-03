@@ -27,6 +27,10 @@ ENV_MAP = {
     "listen": "NOC_LISTEN"
 }
 
+JEMALLOC_LOCATION = [
+    '/usr/lib/x86_64-linux-gnu/libjemalloc.so.1',
+    '/usr/lib64/libjemalloc.so.1',
+]
 
 def format_env(env):
     """
@@ -55,9 +59,12 @@ def build(node):
         "NOC_DC": jcfg["nodes"][node]["datacenter"],
         "NOC_NODE": node,
         "NOC_USER": jcfg["config"]["noc"]["user"],
-        "NOC_ROOT": os.getcwd(),
-        "LD_PRELOAD": "/usr/lib64/libjemalloc.so.1"  # @todo search if it exists or not
+        "NOC_ROOT": os.getcwd()
     }
+    #search for jemalloc
+    for path in JEMALLOC_LOCATION:
+        if os.path.exists(path):
+            ne['LD_PRELOAD'] = path
     # Build config
     out = ConfigParser.ConfigParser()
     for s in config.sections():
