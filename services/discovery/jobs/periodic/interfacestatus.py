@@ -48,7 +48,6 @@ class InterfaceStatusCheck(DiscoveryCheck):
             if not iface:
                 continue
             kwargs = {
-                "name": i["interface"],
                 "admin_status": i.get("admin_status"),
                 "full_duplex": i.get("full_duplex"),
                 "in_speed": i.get("in_speed"),
