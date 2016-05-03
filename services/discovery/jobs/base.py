@@ -160,8 +160,9 @@ class DiscoveryCheck(object):
                 op = {
                     "$set": dict(changes)
                 }
+                id_field = obj._fields[Interface._meta["id_field"]].db_field
                 bulk.find({
-                    obj._meta["id_field"]: obj.pk
+                    id_field: obj.pk
                 }).update(op)
             else:
                 kwargs = {}
