@@ -49,7 +49,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
             for i in Interface.objects.filter(
                 managed_object=self.object.id,
                 type="physical",
-                profile_in=self.get_profiles(None)
+                profile__in=self.get_profiles(None)
             )
         )
         if not interfaces:
