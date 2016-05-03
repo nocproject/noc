@@ -29,7 +29,7 @@ class InterfaceStatusCheck(DiscoveryCheck):
     _ips_cache = cachetools.TTLCache(maxsize=10, ttl=60)
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_ips_cache"), lock=ips_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_ips_cache"), lock=lambda _: ips_lock)
     def get_profiles(cls, x):
         return list(InterfaceProfile.objects.filter(status_discovery=True))
 
