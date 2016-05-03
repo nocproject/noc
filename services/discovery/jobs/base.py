@@ -12,6 +12,7 @@ from collections import defaultdict
 import cStringIO
 import contextlib
 import time
+import gzip
 ## Third-party modules
 import gridfs
 ## NOC modules
@@ -33,7 +34,8 @@ class MODiscoveryJob(PeriodicJob):
 
     def __init__(self, *args, **kwargs):
         super(MODiscoveryJob, self).__init__(*args, **kwargs)
-        self.out_log = cStringIO.StringIO()
+        self.out_buffer = cStringIO.StringIO()
+        self.out_log = gzip.GzipFile(mode="w", fileobj=self.out_buffer)
         self.logger = PrefixLoggerAdapter(
             self.logger,
             "",
@@ -47,13 +49,19 @@ class MODiscoveryJob(PeriodicJob):
                 "%s = %.2fms" % (n, t * 1000) for n, t in self.check_timings
             ))
         super(MODiscoveryJob, self).schedule_next(status)
+        # Write job log
+        self.out_log.close()
         key = "discovery-%s-%s" % (
             self.attrs[self.ATTR_CLASS],
             self.attrs[self.ATTR_KEY]
         )
-        fs = gridfs.GridFS(get_db(), "noc.joblog")
-        fs.delete(key)
-        fs.put(self.out_log.getvalue(), _id=key)
+        get_db()["noc.joblog"].update({
+            "_id": key
+        }, {
+            "$set": {
+                "log": self.out_buffer.getvalue()
+            }
+        }, upsert=True)
 
     def can_run(self):
         return self.object.is_managed
