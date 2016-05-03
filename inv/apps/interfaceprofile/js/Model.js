@@ -38,6 +38,11 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             defaultValue: false
         },
         {
+            name: "status_discovery",
+            type: "bool",
+            defaultValue: false
+        },
+        {
             name: "weight",
             type: "int"
         },
