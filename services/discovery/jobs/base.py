@@ -14,7 +14,7 @@ import contextlib
 import time
 import gzip
 ## Third-party modules
-import gridfs
+import bson
 ## NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.sa.models.managedobject import ManagedObject
@@ -59,7 +59,7 @@ class MODiscoveryJob(PeriodicJob):
             "_id": key
         }, {
             "$set": {
-                "log": self.out_buffer.getvalue()
+                "log": bson.Binary(self.out_buffer.getvalue())
             }
         }, upsert=True)
 
