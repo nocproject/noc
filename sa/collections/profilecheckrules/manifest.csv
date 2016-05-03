@@ -1,6 +1,10 @@
 name,uuid,path,hash
 Alcatel | AOS | OS6850-U24X,ced06725-07ed-479c-ac5f-7728bc13705d,Alcatel/AOS/OS6850-U24X.json,2d8fda5cc7dc0694897381384cd77b80f1d50592f32c21a3cfa0e3d3e0c5ad15
 Alcatel | AOS | OS6850E-U24X,f6c53090-29aa-4a5f-8eaa-74cb472e2c19,Alcatel/AOS/OS6850E-U24X.json,1dfb2f0491497bad0dcca857f0a7162e33c9dcbee6f77c261816b8d30ea7a3f7
+Alcatel | TIMOS | 7450 ESS-7,9bde19b2-e411-4a53-98bd-664f67eff399,Alcatel/TIMOS/7450_ESS-7.json,63a09879b3cbf144ac9f4b52fda945ff873df898ba612008c85de9c55ea639c7
+Alcatel | TIMOS | 7750 SR-7,24479dea-09ab-4e04-ab23-fd64e3ea1ed9,Alcatel/TIMOS/7750_SR-7.json,018251b3cad1652f528889bde67f16e45b840e78c9edef30a19265b8a9668a26
+DLink | DxS | DES-3200-28 sysObjectID,ffcb7aa3-5c89-44c8-9d6a-3ecf91b7c98b,DLink/DxS/DES-3200-28_sysObjectID.json,9ad39578dd4217c158216af9d79c47b44bd7f16f790fd17d96a32bbfc76fd977
+DLink | DxS | DES-3526 sysObjectID,0f03e8af-f5a2-4239-9a53-48de0cc5cdfd,DLink/DxS/DES-3526_sysObjectID.json,c4a6f3b1277b59f578f2c3acfdf017d5c57a24c47e10f50a33643817d8cda45d
 EdgeCore | ES | ECS3510-52T sysObjectID,83f80dc7-bab0-460a-8c68-d25e6d47446b,EdgeCore/ES/ECS3510-52T_sysObjectID.json,10a9b5eae55c38b329705ad782f705e8f109796bfec329058cda9cef049b5495
 EdgeCore | ES | ES3528M sysObjectID,29781a21-4110-489a-a40d-0dee6770b586,EdgeCore/ES/ES3528M_sysObjectID.json,eaddbf8577cc9543ca830783f75f71f8e7159d152dc240d6a00cea19d7eaa06b
 EdgeCore | ES | ES3528MV2 sysObjectID,26bb8ba4-df36-4ec5-a96e-9fe45b706620,EdgeCore/ES/ES3528MV2_sysObjectID.json,88f542ccbce76c7bc6d8b4f65474979a6e639f7dc11e5744ed109c74b87f6ffd
@@ -20,6 +24,8 @@ Qtech | QSW | QSW-3400-28T-AC sysObjectID 2,e235620e-4aa7-4de8-9970-c918cdcd71d6
 Qtech | QSW | QSW-3470-28T-AC sysObjectID,29922293-6432-4646-aebe-6d1d174e833d,Qtech/QSW/QSW-3470-28T-AC_sysObjectID.json,a3d79716478f89ebfd96c71e12b574cb6bd92a2c28fcd06cd7e6a0b01208a21c
 Raisecom | ROS | ISCOM2128EA-MA-AC sysObjectID,12df24c0-833a-4da3-bddd-b8c2aa0fc49e,Raisecom/ROS/ISCOM2128EA-MA-AC_sysObjectID.json,8f7f4b3b7cfb29a5d23d218f60f97128abbacb08beeadd23b9060291ed6e167b
 Siklu | EH | EH-1200L.v700 sysObjectID,c1051bf9-0f3a-4fc3-9746-d8441e6c2c5d,Siklu/EH/EH-1200L_v700_sysObjectID.json,48979e16266493f8abd1c39688d37d27cdb5682e0043687f7e3f746902cee10a
+TFortis | PSW | HTTP2 | PSW-2G6F+,b917c9f0-71b8-4566-ac6e-69e6bf1ec1f5,TFortis/PSW/HTTP2/PSW-2G6F+.json,20e9765a378ccab4a445d27a16b927b71ac715f38446f05d21d76f57da03332c
+TFortis | PSW | PSW-2G6F+,52ed73ac-c51d-453c-9837-ff6dbaf4c35e,TFortis/PSW/PSW-2G6F+.json,73ee5d36c667308a7acb53e9f80160b914f6f5bd1e6d340b2edcf344356a6445
 Vyatta | Vyatta | sysDescr,dc19fd75-8113-41b4-b859-48fcdbabb96a,Vyatta/Vyatta/sysDescr.json,24cdc43edceda2d2fa386b89a9ad099e9f811ed9904851f97339d7f73b06f5da
 Vyatta | Vyatta | sysObjectID,50af788f-ec33-4697-a65d-409a3921a172,Vyatta/Vyatta/sysObjectID.json,f5d1129dd38076d80c6dba086d556c22e7a3f9b4d4342fea45f96469a0fea001
 Zyxel | ZyNOS | ES-2024A sysObjectID,c3c53a53-270d-4cdf-b711-b8d77d5c65b6,Zyxel/ZyNOS/ES-2024A_sysObjectID.json,557d755bbf37e83dfb07662ba9a352e41bf87104d29bcd08faf57124b0dbbb7f

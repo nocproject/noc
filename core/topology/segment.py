@@ -234,6 +234,7 @@ class SegmentTopology(BaseTopology):
             pos.update(dpos)
         else:
             pos = dpos
+        pos = dict((o, pos[o]) for o in pos if o in self.G.node)
         width, height, pos = self.normalize_pos(pos)
         # Place isolated nodes
         isolated = sorted((o for o in self.get_isolated()),

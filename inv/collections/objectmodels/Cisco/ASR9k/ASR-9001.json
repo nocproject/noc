@@ -8,6 +8,14 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "description": "RSP Card host",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "RSP0",
+            "type__name": "Cisco | ASR9k | RSP"
+        },
+        {
             "description": "1PPS mini-coax timing connector",
             "direction": "s",
             "gender": "f",
@@ -150,10 +158,13 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["ASR-9001"]
+            "part_no": ["ASR-9001", "ASR-9001-S"]
         },
         "management": {
             "managed": true
+        },
+        "power": {
+            "power": 425.0
         },
         "rackmount": {
             "units": 2.0

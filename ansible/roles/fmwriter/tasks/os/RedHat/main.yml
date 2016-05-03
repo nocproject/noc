@@ -1,3 +1,5 @@
 - name: Install fmwriter monitoring
-  template: src="etc/telegraf/telegraf.d/noc-fmwriter.conf.j2" dest="/etc/telegraf/telegraf.d/noc-fmwriter.conf"
-
+  template:
+    src: "etc/telegraf/telegraf.d/noc-fmwriter.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/noc-fmwriter.conf"
+  notify: reload telegraf

@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Qtech.QSW.ping
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,34 +17,20 @@ class Script(BaseScript):
     name = "Qtech.QSW2800.ping"
     interface = IPing
 
-    rx_result = re.compile(
-        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) (packets received|received), \d+% packet loss$",
-        re.MULTILINE)
     rx_stat = re.compile(
-        r"^round-trip \(ms\)\s+min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+)$",
+        r"Success rate is \d+ percent \((?P<success>\d+)/(?P<count>\d+)\), round-trip min/avg/max = (?P<min>.+)/(?P<avg>.+)/(?P<max>.+) ms",
         re.MULTILINE)
 
     def execute(self, address, count=None, source_address=None,
-        size=None, df=None):
+                size=None, df=None):
         cmd = "ping"
-        if count:
-            cmd += " -c %d" % int(count)
-        if size:
-            cmd += " -s %d" % int(size)
-
-
         cmd += " %s" % address
         ping = self.cli(cmd)
-        result = self.rx_result.search(ping)
-        r = {
+        result = self.rx_stat.search(ping)
+        return {
             "success": result.group("success"),
             "count": result.group("count"),
-            }
-        stat = self.rx_stat.search(ping)
-        if stat:
-            r.update({
-                    "min": stat.group("min"),
-                    "avg": stat.group("avg"),
-                    "max": stat.group("max"),
-                    })
-        return r
+            "min": result.group("min"),
+            "avg": result.group("avg"),
+            "max": result.group("max"),
+        }

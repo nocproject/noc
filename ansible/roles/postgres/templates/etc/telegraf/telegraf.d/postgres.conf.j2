@@ -16,7 +16,3 @@
   ## A list of databases to pull metrics about. If not specified, metrics for all
   ## databases are gathered.
   databases = ["{{noc_pg_db}}"]
-
-[[inputs.procstat]]
-pid_file = "/var/run/postgresql/9.4-main.pid"
-prefix = "postgres"

@@ -14,6 +14,16 @@ error_exit ( ) {
 }
 
 CMD=$1
+if [ -f "./custom/commands/$CMD.sh" ]; then
+    shift
+    exec /bin/sh ./custom/commands/$CMD.sh "$@"
+fi
+
+if [ -f "./custom/commands/$CMD.py" ]; then
+    shift
+    exec ./bin/python ./custom/commands/$CMD.py "$@"
+fi
+
 if [ -f "./commands/$CMD.sh" ]; then
     shift
     exec /bin/sh ./commands/$CMD.sh "$@"
@@ -25,16 +35,9 @@ if [ -f "./commands/$CMD.py" ]; then
 fi
 
 case "$1" in
-    "get-uuid")
-        exec ./scripts/get-uuid.py
-        ;;
     "paste")
         shift
         exec ./scripts/paste.py "$@"
-        ;;
-    "runserver")
-        shift
-        exec ./scripts/noc-web.py
         ;;
     *)
         exec ./bin/python manage.py "$@"

@@ -32,7 +32,6 @@ class ObjectCapabilities(Document):
     }
     object = ForeignKeyField(ManagedObject)
     caps = ListField(EmbeddedDocumentField(CapsItem))
-    _capability_name = {}
 
     def __unicode__(self):
         return "%s caps" % self.object.name
@@ -57,20 +56,7 @@ class ObjectCapabilities(Document):
                 v = lv if lv else c.get("discovered_value")
                 if v is not None:
                     # Resolve capability name
-                    cn = cls._capability_name.get(c["capability"])
-                    if not cn:
-                        cc = Capability._get_collection().find_one({
-                            "_id": c["capability"]
-                        }, {
-                            "_id": 0,
-                            "name": 1
-                        })
-                        if cc:
-                            cn = cc["name"]
-                        else:
-                            cn = None
-                        cls._capability_name[c["capability"]] = cn
-                    # Store name
-                    if cn:
-                        caps[cn] = v
+                    cc = Capability.get_by_id(c["capability"])
+                    if cc:
+                        caps[cc.name] = v
         return caps

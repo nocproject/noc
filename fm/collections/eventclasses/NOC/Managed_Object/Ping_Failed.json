@@ -24,5 +24,7 @@
             "action": "raise",
             "alarm_class__name": "NOC | Managed Object | Ping Failed"
         }
+    ],
+    "repeat_suppression": [
     ]
 }

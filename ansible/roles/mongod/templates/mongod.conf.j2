@@ -6,6 +6,9 @@ storage:
   journal:
     enabled: true
   engine: {{ noc_mongo_storageengine }}
+  wiredTiger:
+    engineConfig:
+      directoryForIndexes: true
 
 systemLog:
   verbosity: 0

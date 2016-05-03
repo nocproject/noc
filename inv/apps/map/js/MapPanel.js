@@ -147,6 +147,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         });
         // Subscribe to events
         me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
+        me.paper.on("cell:pointerdblclick", Ext.bind(me.onCellDoubleClick, me));
         me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
         me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight));
         me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight));
@@ -368,6 +369,15 @@ Ext.define("NOC.inv.map.MapPanel", {
             case "link":
                 me.app.inspectLink(data.id);
                 break;
+        }
+    },
+    onCellDoubleClick: function(view, evt, x, y) {
+        var me = this,
+            data = view.model.get("data");
+        if(data.type === "managedobject") {
+            window.open(
+                "/api/card/view/managedobject/" + data.id + "/"
+            );
         }
     },
     onBlankSelected: function() {
@@ -648,7 +658,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                 link.label(0, {attrs: {text: luStyle}});
                 link.label(0, {position: 0.5});
             } else if(!getStatus(ports[0], "oper_status") || !getStatus(ports[1], "oper_status")) {
-                // Administratively down
+                // Oper down
                 link.attr({
                     ".connection": me.operDownStyle
                 });
@@ -663,7 +673,7 @@ Ext.define("NOC.inv.map.MapPanel", {
 
                 luStyle.fill = luStyle.stroke;
                 luStyle.visibility = "visible";
-                luStyle.text = "\uf0e7";
+                luStyle.text = "\uf071";
                 luStyle["font-size"] = 10;
                 link.label(0, {attrs: {text: luStyle}});
                 link.label(0, {position: 0.5});
@@ -749,5 +759,11 @@ Ext.define("NOC.inv.map.MapPanel", {
                 NOC.error("Failed to reset layout");
             }
         });
+    },
+
+    setZoom: function(zoom) {
+        var me = this;
+        me.paper.scale(zoom, zoom);
+        me.paper.fitToContent();
     }
 });

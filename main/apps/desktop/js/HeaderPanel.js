@@ -32,27 +32,27 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
             headerHeight = padding + magic + Math.max(NOC.settings.logo_height, textHeight);
         // User menu
         me.userMenuButton = Ext.create("Ext.button.Button", {
-            text: _("Anonymous"),
+            text: __("Anonymous"),
             scale: "small",
             glyph: NOC.glyph.user,
             hidden: true,
             menu: [
                 {
-                    text: _("About NOC ..."),
+                    text: __("About NOC ..."),
                     glyph: NOC.glyph.question_circle,
                     scope: me.app,
                     handler: me.app.onAbout
                 },
                 "-",
                 {
-                    text: _("User profile ..."),
+                    text: __("User profile ..."),
                     glyph: NOC.glyph.cog,
                     scope: me.app,
                     handler: me.app.onUserProfile
                 },
                 {
                     itemId: "header_menu_change_password",
-                    text: _("Change password ..."),
+                    text: __("Change password ..."),
                     disabled: true, // Changed on login
                     glyph: NOC.glyph.lock,
                     scope: me.app,
@@ -60,7 +60,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 },
                 "-",
                 {
-                    text: _("Logout"),
+                    text: __("Logout"),
                     glyph: NOC.glyph.power_off,
                     scope: me.app,
                     handler: me.app.onLogout

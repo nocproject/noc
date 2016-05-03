@@ -14,3 +14,4 @@
   template:
     src: "etc/telegraf/telegraf.d/noc-activator.conf.j2"
     dest: "/etc/telegraf/telegraf.d/noc-activator.conf"
+  notify: reload telegraf

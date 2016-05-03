@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.desktop.ChangeCredentials");
 
 Ext.define("NOC.main.desktop.ChangeCredentials", {
     extend: "Ext.Window",
-    title: _("Change Password"),
+    title: __("Change Password"),
     layout: "fit",
     autoShow: true,
     draggable: false,
@@ -37,19 +37,19 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
             buttonAlign: "center",
             buttons: [
                 {
-                    text: _("Close"),
+                    text: __("Close"),
                     glyph: NOC.glyph.times,
                     scope: me,
                     handler: me.onClose
                 },
                 {
-                    text: _("Reset"),
+                    text: __("Reset"),
                     glyph: NOC.glyph.undo,
                     scope: me,
                     handler: me.onReset
                 },
                 {
-                    text: _("Change"),
+                    text: __("Change"),
                     glyph: NOC.glyph.save,
                     disabled: true,
                     formBind: true,
@@ -100,15 +100,15 @@ Ext.define("NOC.main.desktop.ChangeCredentials", {
             success: function(response) {
                 var status = Ext.decode(response.responseText);
                 if(status.status) {
-                    NOC.info(_("Credentials has been changed"));
+                    NOC.info(__("Credentials has been changed"));
                     me.close();
                 } else {
-                    NOC.error(_("Failed to change credentials: ") + status.error);
+                    NOC.error(__("Failed to change credentials: ") + status.error);
                 }
             },
             failure: function(response) {
                 var status = Ext.decode(response.responseText);
-                NOC.error(_("Failed to change credentials: ") + status.error);
+                NOC.error(__("Failed to change credentials: ") + status.error);
             }
         });
     },

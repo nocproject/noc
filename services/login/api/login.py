@@ -32,11 +32,10 @@ class LoginAPI(API):
         """
         Change credentials
         """
-        status, message = self.service.change_credentials(
+        if self.service.change_credentials(
             self.handler,
             credentials
-        )
-        return {
-            "status": status,
-            "message": message
-        }
+        ):
+            return True
+        else:
+            return False

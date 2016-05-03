@@ -6,12 +6,17 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import datetime
+## Third-party modules
+import six
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
 from noc.inv.models.extnrilink import ExtNRILink
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.service import Service
+from noc.inv.models.link import Link
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.etl.portmapper.loader import loader as portmapper_loader
 
@@ -32,6 +37,8 @@ class NRICheck(DiscoveryCheck):
                 "Skipping interface status check"
             )
             return
+        #
+        self.interface_ops = {}  # id -> update op
         # Get NRI portmapper
         src_tags = [t[4:] for t in self.object.tags
                     if t.startswith("src:")]
@@ -51,29 +58,61 @@ class NRICheck(DiscoveryCheck):
                              src_tags[0])
             return
         self.portmapper = pm(self.object)
+        # Load interfaces
+        self.interfaces = {}
+        for d in Interface._get_collection().find({
+            "managed_object": self.object.id,
+            "type": "physical"
+        }, {
+            "_id": 1,
+            "name": 1,
+            "nri_name": 1,
+            "service": 1
+        }):
+            self.interfaces[d["_id"]] = d
         # Process tasks
         self.process_interfaces()
         self.process_links()
         self.process_services()
+        # Apply batch job
+        if self.interface_ops:
+            self.logger.info("Applying %d batch writes", len(self.interface_ops))
+            bulk = Interface._get_collection().initialize_unordered_bulk_op()
+            for i in self.interface_ops:
+                bulk.find({"_id": i}).update(self.interface_ops[i])
+            bulk.execute()
+            ServiceSummary.refresh_object(self.object)
+
+    def interface_bulk_op(self, iface_id, op):
+        def merge_dicts(d1, d2):
+            for k in set(d1) | set(d2):
+                if k in d1 and k in d2:
+                    if isinstance(d1[k], dict) and isinstance(d2[k], dict):
+                        yield k, dict(merge_dicts(d1[k], d2[k]))
+                    else:
+                        yield k, d2[k]
+                elif k in d1:
+                    yield k, d1[k]
+                else:
+                    yield k, d2[k]
+
+        iop = self.interface_ops.get(iface_id, {})
+        self.interface_ops[iface_id] = dict(merge_dicts(iop, op))
+        if "$set" in op:
+            for o in op["$set"]:
+                self.interfaces[iface_id][o] = op["$set"][o]
+        if "$unset" in op:
+            for o in op["$unset"]:
+                del self.interfaces[iface_id][o]
 
     def process_interfaces(self):
         """
         Fill Interface.nri_name
         """
         self.logger.info("Setting NRI names (%s)", self.nri)
-        bulk = Interface._get_collection().initialize_unordered_bulk_op()
-        n = 0
-        for i in Interface._get_collection().find({
-                "managed_object": self.object.id,
-                "type": "physical",
-                "nri_name": {
-                    "$exists": False
-                }
-            },
-            {
-                "_id": 1,
-                "name": 1
-            }):
+        for i in six.itervalues(self.interfaces):
+            if i.get("nri_name"):
+                continue
             nri_name = self.portmapper.to_remote(i["name"])
             if not nri_name:
                 self.logger.info(
@@ -82,13 +121,54 @@ class NRICheck(DiscoveryCheck):
                 )
                 continue
             self.logger.info("Mapping %s to %s", i["name"], nri_name)
-            bulk.find({"_id": i["_id"]}).update({"$set": {"nri_name": nri_name}})
-            n += 1
-        if n:
-            bulk.execute()
+            self.interface_bulk_op(i["_id"], {"$set": {"nri_name": nri_name}})
 
     def process_links(self):
-        pass
+        now = datetime.datetime.now()
+        nc = ExtNRILink._get_collection()
+        links = {}  # nri_name -> {dst_mo, dst_interface}
+        for d in nc.find({"src_mo": self.object.id}):
+            if d["src_mo"] == d["dst_mo"]:
+                continue
+            links[d["src_interface"]] = (d["dst_mo"], d["dst_interface"])
+        for d in nc.find({"dst_mo": self.object.id}):
+            if d["src_mo"] == d["dst_mo"]:
+                continue
+            links[d["dst_interface"]] = (d["src_mo"], d["src_interface"])
+        if not links:
+            return  # Nothing to link
+        # Build nri_name -> name interface map
+        nri_map = {}
+        for i in six.itervalues(self.interfaces):
+            n = i.get("nri_name")
+            if n and n in links:
+                nri_map[n] = i
+        linked = set()
+        for d in Link._get_collection().find({
+            "interfaces": {
+                "$in": [i["_id"] for i in six.itervalues(nri_map)]
+            }
+        }):
+            linked.update(d["interfaces"])
+        # Process still unlinked interfaces
+        for n in nri_map:
+            if nri_map[n]["_id"] in linked:
+                continue  # Already linked
+            rmo, rnn = links[n]
+            ri = Interface._get_collection().find_one({
+                "managed_object": rmo,
+                "nri_name": rnn
+            }, {
+                "_id": 1
+            })
+            if ri:
+                self.logger.info("Linking %s", n)
+                Link._get_collection().insert({
+                    "interfaces": [nri_map[n]["_id"], ri["_id"]],
+                    "discovery_method": "nri",
+                    "first_discovery": now,
+                    "last_seen": now
+                })
 
     def process_services(self):
         """
@@ -112,20 +192,10 @@ class NRICheck(DiscoveryCheck):
              for s in slist
         )
         nmap = {}
-        bulk = Interface._get_collection().initialize_unordered_bulk_op()
         n = 0
-        for i in Interface._get_collection().find({
-            "managed_object": self.object.id,
-            "type": "physical",
-            "nri_name": {
-                "$exists": True
-            }
-        }, {
-            "_id": 1,
-            "name": 1,
-            "nri_name": 1,
-            "service": 1
-        }):
+        for i in six.itervalues(self.interfaces):
+            if not i.get("nri_name"):
+                continue
             if i["nri_name"] in smap:
                 svc = smap[i["nri_name"]]
                 if svc != i.get("service"):
@@ -139,9 +209,7 @@ class NRICheck(DiscoveryCheck):
                     p = prof_map.get(svc)
                     if p and p.interface_profile:
                         op["profile"] = p.interface_profile.id
-                    bulk.find({"_id": i["_id"]}).update({
-                        "$set": op
-                    })
+                    self.interface_bulk_op(i["_id"], {"$set": op})
                     n += 1
                 del smap[i["nri_name"]]
             elif i.get("service"):
@@ -156,10 +224,7 @@ class NRICheck(DiscoveryCheck):
                 if p:
                     op["profile"] = ""
 
-                bulk.find({"_id": i["_id"]}).update({
-                    "$unset": op
-                })
-                n += 1
+                self.interface_bulk_op(i["_id"], {"$unset": op})
             nmap[i["nri_name"]] = i
         for n in smap:
             svc = smap[n]
@@ -181,10 +246,4 @@ class NRICheck(DiscoveryCheck):
             p = prof_map.get(svc)
             if p:
                 op["profile"] = p.id
-            bulk.find({"_id": i["_id"]}).update({
-                "$set": op
-            })
-            n += 1
-        if n:
-            bulk.execute()
-            ServiceSummary.refresh_object(self.object)
+            self.interface_bulk_op(i["_id"], {"$set": op})

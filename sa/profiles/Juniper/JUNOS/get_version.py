@@ -13,7 +13,7 @@ rx_ver = re.compile(
     r"Model:\s+(?P<platform>\S+).+JUNOS .*? \[(?P<version>[^\]]+)\]",
     re.MULTILINE | re.DOTALL)
 rx_snmp_ver = re.compile(
-    r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?JUNOS\s+(?P<version>\S+)")
+    r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?JUNOS\s+(?P<version>\S+[0-9])")
 
 
 class Script(BaseScript):

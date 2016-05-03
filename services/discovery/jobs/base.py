@@ -24,6 +24,7 @@ from noc.lib.log import PrefixLoggerAdapter
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.lib.nosql import get_db
+from noc.core.service.rpc import RPCError
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -114,13 +115,16 @@ class DiscoveryCheck(object):
             # Run check
             try:
                 self.handler()
+            except RPCError as e:
+                self.logger.error("Terminated due RPC error: %s", e)
             except Exception:
                 error_report(logger=self.logger)
 
     def handler(self):
         pass
 
-    def update_if_changed(self, obj, values, ignore_empty=None, async=False):
+    def update_if_changed(self, obj, values, ignore_empty=None,
+                          async=False, bulk=None):
         """
         Update fields if changed.
         :param obj: Document instance
@@ -128,6 +132,8 @@ class DiscoveryCheck(object):
         :param values: New values
         :type values: dict
         :param ignore_empty: List of fields which may be ignored if empty
+        :param async: set write concern to 0
+        :param bulk: Execute as the bulk op instead
         :returns: List of changed (key, value)
         :rtype: list
         """
@@ -142,10 +148,18 @@ class DiscoveryCheck(object):
                     setattr(obj, k, v)
                     changes += [(k, v)]
         if changes:
-            kwargs = {}
-            if async:
-                kwargs["write_concern"] = {"w": 0}
-            obj.save(**kwargs)
+            if bulk:
+                op = {
+                    "$set": dict(changes)
+                }
+                bulk.find({
+                    obj._meta["id_field"]: obj.pk
+                }).update(op)
+            else:
+                kwargs = {}
+                if async:
+                    kwargs["write_concern"] = {"w": 0}
+                obj.save(**kwargs)
         return changes
 
     def log_changes(self, msg, changes):

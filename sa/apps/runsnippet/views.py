@@ -146,9 +146,7 @@ class RunSnippetApplication(Application):
         vars = snippet.vars
         has_vars = any([v for v in vars if vars[v]["type"] not in (
             "internal", "hidden")])
-        map_task = self.get_map_script(snippet)
-        objects = list(snippet.selector.objects_for_user(request.user,
-                                                         [map_task]))
+        objects = list(snippet.selector.objects_for_user(request.user))
         form = None
         if request.POST:
             objects = ManagedObject.objects.filter(id__in=[

@@ -106,9 +106,9 @@ class Script(BaseScript):
                 "priority": sv["PRIORITY"],
                 "designated_bridge_id": desg_id,
                 "designated_bridge_priority": desg_priority,
-                "designated_port_id": sv["DESG_PORT"],
+                "designated_port_id": sv.get("DESG_PORT", None),
                 "edge": sv["EDGE_PORT"] == "enabled",
-                "point_to_point": sv["LINK_TYPE"] == "point-to-point"
+                "point_to_point": sv.get("LINK_TYPE", None) == "point-to-point"
             }
             instance["interfaces"] += [iface]
         return {

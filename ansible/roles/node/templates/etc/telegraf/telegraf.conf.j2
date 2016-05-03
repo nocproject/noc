@@ -59,7 +59,9 @@ dc = "{{noc_dc}}" # will tag all metrics with dc=us-east-1
   # Multiple urls can be specified but it is assumed that they are part of the same
   # cluster, this means that only ONE of the urls will be written to each interval.
   # urls = ["udp://localhost:8089"] # UDP endpoint example
-  {% if "influxdb" in noc_config.services %}
+  {% if noc_metrics_collector %}
+  urls = ["http://{{ noc_metrics_collector }}"] # required
+  {% elif "influxdb" in noc_config.services %}
   urls = ["http://{{ noc_config.services.influxdb.0 }}"] # required
   {% else %}
   urls = []

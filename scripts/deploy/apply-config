@@ -55,7 +55,8 @@ def build(node):
         "NOC_DC": jcfg["nodes"][node]["datacenter"],
         "NOC_NODE": node,
         "NOC_USER": jcfg["config"]["noc"]["user"],
-        "NOC_ROOT": os.getcwd()
+        "NOC_ROOT": os.getcwd(),
+        "LD_PRELOAD": "/usr/lib64/libjemalloc.so.1"  # @todo search if it exists or not
     }
     # Build config
     out = ConfigParser.ConfigParser()
