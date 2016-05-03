@@ -13,6 +13,7 @@
     - python-virtualenv
     - mercurial
     - sudo
+    - libjemalloc1
     - quilt
     - gcc
     - libpq-dev
