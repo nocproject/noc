@@ -78,7 +78,10 @@ class PMWriterService(Service):
                 try:
                     response = client.fetch(
                         # Configurable database name
-                        "http://%s/write?db=noc&precision=s" % self.influx,
+                        "http://%s/write?db=%s&precision=s" % (
+                            self.influx,
+                            self.config.influx_db
+                        ),
                         method="POST",
                         body=body
                     )
