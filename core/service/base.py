@@ -488,15 +488,33 @@ class Service(object):
         """
         Publish message to topic
         """
+        def finish_pub(conn, data):
+            if isinstance(data, nsq.Error):
+                self.logger.info(
+                    "Failed to publish to topic '%s': %s. Retry",
+                    topic, data
+                )
+                self.get_nsq_writer().pub(topic, msg)
+
         w = self.get_nsq_writer()
-        w.pub(topic, ujson.dumps(data))
+        msg = ujson.dumps(data)
+        w.pub(topic, msg, callback=finish_pub)
 
     def mpub(self, topic, messages):
         """
         Publish multiple messages to topic
         """
+        def finish_pub(conn, data):
+            if isinstance(data, nsq.Error):
+                self.logger.info(
+                    "Failed to publish to topic '%s': %s. Retry",
+                    topic, data
+                )
+                self.get_nsq_writer().mpub(topic, msg)
+
         w = self.get_nsq_writer()
-        w.mpub(topic, [ujson.dumps(m) for m in messages])
+        msg = [ujson.dumps(m) for m in messages]
+        w.mpub(topic, msg, callback=finish_pub)
 
     def get_executor(self, name):
         """
