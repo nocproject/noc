@@ -123,7 +123,7 @@ class SNMP(object):
 
     def getnext(self, oid, community_suffix=None,
                 filter=None, cached=False,
-                only_first=False, bulk=None):
+                only_first=False, bulk=None, max_repetitions=None):
         @tornado.gen.coroutine
         def run():
             try:
@@ -132,13 +132,14 @@ class SNMP(object):
                     oid=oid,
                     community=str(self.script.credentials["snmp_ro"]),
                     bulk=self.script.has_snmp_bulk if bulk is None else bulk,
+                    max_repetitions=max_repetitions,
                     filter=filter,
                     only_first=only_first,
                     tos=self.script.tos,
                     ioloop=self.get_ioloop()
                 )
-            except SNMPError, why:
-                if why.code == TIMED_OUT:
+            except SNMPError as e:
+                if e.code == TIMED_OUT:
                     raise self.TimeOutError()
                 else:
                     raise
