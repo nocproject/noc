@@ -498,7 +498,7 @@ class CorrelatorService(Service):
                 elif r.action == "raise" and r.combo_condition == "none":
                     self.raise_alarm(r, e)
                 elif r.action == "clear" and r.combo_condition == "none":
-                    self.clear_alarm(r, e)
+                    self.get_executor("max").submit(self.clear_alarm, (r, e))
                 if r.action in ("raise", "clear"):
                     # Write discriminator if can trigger delayed event
                     if r.unique and r.event_class.id in self.back_rules:

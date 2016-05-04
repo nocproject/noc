@@ -149,6 +149,11 @@ config:
       type: int
       default: 10
 
+    max_threads:
+      label: Correlator threads
+      type: int
+      default: 10
+
   pmwriter:
     batch_size:
       label: Write batch size (metrics)
