@@ -22,7 +22,7 @@ class Script(BaseScript):
         if "::" in oid:
             oid = mib[oid]
         r = {}
-        for oid, v in self.snmp.getnext(oid):
+        for oid, v in self.snmp.getnext(oid, max_repetitions=40):
             ifindex = int(oid.split(".")[-1])
             r[ifindex] = v
         return r
