@@ -85,7 +85,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                 // Bold NOC|
                 {
                     xtype: "container",
-                    html: "&nbsp;NOC| ",
+                    html: "&nbsp;" + NOC.settings.brand + "|&nbsp;",
                     style: {
                         fontSize: "18px",
                         fontWeight: "bold"

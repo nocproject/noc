@@ -2,11 +2,11 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="robots" content="NONE,NOARCHIVE" />
-        <meta name="Copyright" content="2007-2014, nocproject.org" />
+        <meta name="Copyright" content="2007-2016, nocproject.org" />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title id="title">NOC|{{ setup.installation_name }}</title>
+        <title id="title">{{ setup.brand }}|{{ setup.installation_name }}</title>
         <!-- favicon -->
         {% if setup.favicon_mime %}<link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />{% endif %}
         <!-- CSS -->
@@ -56,6 +56,7 @@
             Ext.namespace("NOC");
             NOC.settings = {
                 systemId: {% if setup.system_uuid %}"{{ setup.system_uuid }}"{% else %}null{% endif %},
+                brand: "{{ setup.brand }}",
                 installation_name: "{{setup.installation_name}}",
                 theme: "{{theme}}",
                 preview_theme: "{{setup.preview_theme}}",
@@ -124,7 +125,7 @@
         }
     </style>
     <div id="noc-loading-mask"></div>
-    <div id="noc-loading">Loading NOC. Please wait ...</div>
+    <div id="noc-loading">Loading {{ setup.brand }}. Please wait ...</div>
     <form id="history-form" class="x-hide-display">
         <input type="hidden" id="x-history-field" />
         <iframe id="x-history-frame" style="display:none"></iframe>

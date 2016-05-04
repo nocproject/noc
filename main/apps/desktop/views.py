@@ -2,24 +2,20 @@
 ##----------------------------------------------------------------------
 ## main.desktop application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 import datetime
-import warnings
+import os
 ## Django modules
-from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY
 from django.http import HttpResponse
 ## NOC modules
 from noc.settings import config
 from noc.lib.app import ExtApplication, ModelApplication, view, PermitLogged
 from noc.lib.version import get_version
-from noc.lib.middleware import set_user
-from noc.settings import LANGUAGE_CODE
 from noc.main.models import Group
-from noc.main.models.permission import Permission
 from noc.main.models.usersession import UserSession
 from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
@@ -124,6 +120,11 @@ class DesktopApplication(ExtApplication):
         else:
             favicon_mime = None
 
+        brand = "NOC"
+        if os.path.exists("custom/BRAND"):
+            with open("custom/BRAND") as f:
+                brand = f.read().strip()
+
         setup = {
             "system_uuid": cp.system_uuid,
             "installation_name": config.get("customization",
@@ -131,6 +132,7 @@ class DesktopApplication(ExtApplication):
             "logo_url": config.get("customization", "logo_url"),
             "logo_width": config.get("customization", "logo_width"),
             "logo_height": config.get("customization", "logo_height"),
+            "brand": brand,
             "branding_color": config.get("customization", "branding_color"),
             "branding_background_color": config.get("customization", "branding_background_color"),
             "favicon_url": favicon_url,
