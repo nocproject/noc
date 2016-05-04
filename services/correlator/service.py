@@ -63,7 +63,8 @@ class CorrelatorService(Service):
         self.subscribe(
             "correlator.dispose",
             "dispose",
-            self.on_dispose_event
+            self.on_dispose_event,
+            max_in_flight=4 * self.config.max_threads
         )
         self.scheduler.run()
 
