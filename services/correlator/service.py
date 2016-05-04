@@ -12,6 +12,7 @@ import sys
 import datetime
 import re
 from collections import defaultdict
+import Queue
 ## NOC modules
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
@@ -46,8 +47,10 @@ class CorrelatorService(Service):
         self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
         self.handlers = {}  # alamr class id -> [<handler>]
         self.scheduler = None
+        self.correlate_queue = Queue.Queue()
 
     def on_activate(self):
+        self.get_executor("max").submit(self.correlator_worker)
         self.scheduler = Scheduler(
             self.name,
             reset_running=True,
@@ -341,6 +344,18 @@ class CorrelatorService(Service):
         self.logger.debug("%s: Event %s (%s) raises alarm %s (%s): %r",
                       r.u_name, str(e.id), e.event_class.name,
                       str(a.id), r.alarm_class.name, a.vars)
+        self.correlate_queue.put((r, a))
+
+    def correlator_worker(self):
+        self.logger.info("Starting correlator worker thread")
+        while True:
+            r, a = self.correlate_queue.get()
+            try:
+                self.correlate(r, a)
+            except Exception:
+                error_report()
+
+    def correlate(self, r, a):
         # RCA
         if a.alarm_class.id in self.rca_forward:
             # Check alarm is a consequence of existing one
@@ -466,19 +481,19 @@ class CorrelatorService(Service):
         """
         Called on new dispose message
         """
-        self.logger.debug("Dispose event %s", event_id)
-        try:
-            event = ActiveEvent.objects.get(id=event_id)
-        except ActiveEvent.DoesNotExist:
-            self.logger.info("Event not found, skipping")
-            return True
-        self.dispose_event(event)
+        self.get_executor("max").submit(self.dispose_event, event_id)
         return True
 
-    def dispose_event(self, e):
+    def dispose_event(self, event_id):
         """
         Dispose event according to disposition rule
         """
+        self.logger.info("Disposing event %s", event_id)
+        try:
+            e = ActiveEvent.objects.get(id=event_id)
+        except ActiveEvent.DoesNotExist:
+            self.logger.info("Event not found, skipping")
+            return True
         drc = self.rules.get(e.event_class.id)
         if not drc:
             return
@@ -498,7 +513,7 @@ class CorrelatorService(Service):
                 elif r.action == "raise" and r.combo_condition == "none":
                     self.raise_alarm(r, e)
                 elif r.action == "clear" and r.combo_condition == "none":
-                    self.get_executor("max").submit(self.clear_alarm, (r, e))
+                    self.clear_alarm(r, e)
                 if r.action in ("raise", "clear"):
                     # Write discriminator if can trigger delayed event
                     if r.unique and r.event_class.id in self.back_rules:
