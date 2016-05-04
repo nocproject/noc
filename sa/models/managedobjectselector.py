@@ -2,14 +2,17 @@
 ##----------------------------------------------------------------------
 ## ManagedObjectSelector
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
+## Python modules
+import operator
+## Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
+import cachetools
 ## Third-party modules
 import six
 ## NOC modules
@@ -81,8 +84,18 @@ class ManagedObjectSelector(models.Model):
             verbose_name=_("Sources"), symmetrical=False,
             null=True, blank=True, related_name="sources_set")
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    def get_by_id(cls, id):
+        try:
+            return ManagedObjectSelector.objects.get(id=id)
+        except ManagedObjectSelector.DoesNotExist:
+            return None
 
     def on_save(self):
         # Rebuild selector cache

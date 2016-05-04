@@ -213,7 +213,7 @@ class InterfaceClassificationRule(Document):
             "        if s in gsc:",
             "            selector = gsc[s]",
             "        else:",
-            "            selector = ManagedObjectSelector.objects.get(id=s)",
+            "            selector = ManagedObjectSelector.get_by_id(s)",
             "            gsc[s] = selector",
             "        r = o in selector",
             "        s_cache[s] = r",
