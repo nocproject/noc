@@ -168,8 +168,10 @@ def snmp_getnext(address, oid, port=161,
     while True:
         # Get PDU
         if bulk:
-            pdu = getbulk_pdu(community, oid,
-                              max_repetitions=max_repetitions)
+            pdu = getbulk_pdu(
+                community, oid,
+                max_repetitions=max_repetitions or BULK_MAX_REPETITIONS
+            )
         else:
             pdu = getnext_pdu(community, oid)
         # Send request and wait for response
