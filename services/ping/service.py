@@ -20,7 +20,6 @@ import tornado.httpclient
 from noc.core.service.base import Service
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
-import noc.core.service.httpclient
 
 
 class PingService(Service):
@@ -91,17 +90,7 @@ class PingService(Service):
         """
         if self.messages:
             messages, self.messages = self.messages, []
-            try:
-                yield self.fmwriter.events(messages, _notify=True)
-            except self.fmwriter.RPCError as e:
-                self.logger.error("Failed to send metrics: %s", e)
-                n = len(messages) - self.config.buffer_size
-                if n > 0:
-                    self.logger.info(
-                        "Buffer overrun. Discarding %d messages", n
-                    )
-                    messages = messages[n:]
-                self.messages = messages + self.messages
+            self.pub("events", messages)
 
     @tornado.gen.coroutine
     def get_object_mappings(self):

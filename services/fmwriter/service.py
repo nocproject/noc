@@ -3,7 +3,7 @@
 ##----------------------------------------------------------------------
 ## Node Manager service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -12,9 +12,11 @@ import os
 import itertools
 import struct
 import time
+import datetime
 # Third-party modules
 from bson import Binary
 import tornado.ioloop
+import tornado.gen
 ## NOC modules
 from noc.core.service.base import Service
 from noc.sa.interfaces.base import StringParameter
@@ -48,6 +50,27 @@ class FMWriterService(Service):
         self.event_batch = None
         self.batched_events = 0
         self.write_batch_callback = None
+
+    @tornado.gen.coroutine
+    def on_activate(self):
+        report_callback = tornado.ioloop.PeriodicCallback(
+            self.report, 10000, self.ioloop
+        )
+        report_callback.start()
+        self.subscribe(
+            "events",
+            "fmwriter",
+            self.on_events
+        )
+        self.ioloop.spawn_callback(self.send_metrics)
+
+    def on_events(self, message, data):
+        for e in data:
+            self.spool_event(
+                datetime.datetime.fromtimestamp(e["ts"]),
+                e["object"],
+                e["data"]
+            )
 
     def spool_event(self, timestamp, managed_object, data):
         # Normalize data
