@@ -137,7 +137,10 @@ class Scheduler(object):
         Create all nesessary indexes
         """
         self.logger.debug("Check indexes")
-        self.get_collection().ensure_index([("ts", 1)])
+        self.get_collection().ensure_index(
+            [("ts", 1)],
+            partialFilterExpression={"s": "W"}
+        )
         self.get_collection().ensure_index([("jcls", 1), ("key", 1)])
         self.logger.debug("Indexes are ready")
 
