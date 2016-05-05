@@ -8,7 +8,7 @@
 
 ## Python modules
 from collections import defaultdict
-import gzip
+import zlib
 import cStringIO
 ## Django modules
 from django.http import HttpResponse
@@ -609,10 +609,10 @@ class ManagedObjectApplication(ExtModelApplication):
         fs = gridfs.GridFS(get_db(), "noc.joblog")
         key = "discovery-%s-%s" % (job, o.id)
         d = get_db()["noc.joblog"].find_one({"_id": key})
-        if d:
-            f = gzip.GzipFile(mode="r",
-                              fileobj=cStringIO.StringIO(str(d["log"])))
-            return self.render_plain_text(f.read())
+        if d and d["log"]:
+            return self.render_plain_text(
+                zlib.decompress(str(d["log"]))
+            )
         else:
             return self.render_plain_text("No data")
 
