@@ -3,7 +3,7 @@
 ##----------------------------------------------------------------------
 ## Basic MO discovery job
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ from collections import defaultdict
 import cStringIO
 import contextlib
 import time
-import gzip
+import zlib
 ## Third-party modules
 import bson
 ## NOC modules
@@ -35,11 +35,10 @@ class MODiscoveryJob(PeriodicJob):
     def __init__(self, *args, **kwargs):
         super(MODiscoveryJob, self).__init__(*args, **kwargs)
         self.out_buffer = cStringIO.StringIO()
-        self.out_log = gzip.GzipFile(mode="w", fileobj=self.out_buffer)
         self.logger = PrefixLoggerAdapter(
             self.logger,
             "",
-            target=self.out_log
+            target=self.out_buffer
         )
         self.check_timings = []
 
@@ -50,7 +49,6 @@ class MODiscoveryJob(PeriodicJob):
             ))
         super(MODiscoveryJob, self).schedule_next(status)
         # Write job log
-        self.out_log.close()
         key = "discovery-%s-%s" % (
             self.attrs[self.ATTR_CLASS],
             self.attrs[self.ATTR_KEY]
@@ -59,7 +57,7 @@ class MODiscoveryJob(PeriodicJob):
             "_id": key
         }, {
             "$set": {
-                "log": bson.Binary(self.out_buffer.getvalue())
+                "log": bson.Binary(zlib.compress(self.out_buffer.getvalue()))
             }
         }, upsert=True)
 
