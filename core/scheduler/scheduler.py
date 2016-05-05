@@ -80,6 +80,7 @@ class Scheduler(object):
         self.filter = filter
         self.to_shutdown = False
         self.min_sleep = float(check_time) / self.UPDATES_PER_CHECK / 1000.0
+        self.jobs_burst = []
 
     def run(self):
         """
@@ -207,49 +208,53 @@ class Scheduler(object):
         executor = self.get_executor()
         collection = self.get_collection()
         n = 0
-        if self.submit_threshold >= executor._work_queue.qsize():
-            jobs = list(self.iter_pending_jobs(self.max_chunk))
-            while jobs:
-                may_submit = max(
-                    self.submit_threshold - executor._work_queue.qsize(),
-                    0
+        if self.submit_threshold <= executor._work_queue.qsize():
+            raise tornado.gen.Return(n)
+        jobs = self.jobs_burst
+        if len(jobs) <= self.max_chunk // 2:
+            jobs += list(self.iter_pending_jobs(self.max_chunk))
+        while jobs:
+            may_submit = max(
+                self.submit_threshold - executor._work_queue.qsize(),
+                0
+            )
+            if not may_submit:
+                self.logger.info("All workers are busy. Sending %d jobs to burst", len(jobs))
+                self.jobs_burst = jobs
+                break
+            now = datetime.datetime.now()
+            rl = min(
+                sum(1 for j in jobs if j.attrs[Job.ATTR_TS] <= now),
+                may_submit
+            )
+            rjobs, jobs = jobs[:rl], jobs[rl:]
+            if rjobs:
+                jids = [j.attrs[Job.ATTR_ID] for j in rjobs]
+                self.logger.debug(
+                    "update({_id: {$in: %s}}, {$set: {%s: '%s'}})",
+                    jids, Job.ATTR_STATUS, Job.S_RUN
                 )
-                if not may_submit:
-                    self.logger.info("All workers are busy. Waiting")
-                    break
+                collection.update({
+                    "_id": {
+                        "$in": jids
+                    }
+                }, {
+                    "$set": {
+                        Job.ATTR_STATUS: Job.S_RUN
+                    }
+                }, multi=True, safe=True)
+                for job in rjobs:
+                    executor.submit(job.run)
+                    n += 1
+            if jobs:
+                # Wait for next job within check_interval
+                njts = jobs[0].attrs[Job.ATTR_TS]
                 now = datetime.datetime.now()
-                rl = min(
-                    sum(1 for j in jobs if j.attrs[Job.ATTR_TS] <= now),
-                    may_submit
-                )
-                rjobs, jobs = jobs[:rl], jobs[rl:]
-                if rjobs:
-                    jids = [j.attrs[Job.ATTR_ID] for j in rjobs]
-                    self.logger.debug(
-                        "update({_id: {$in: %s}}, {$set: {%s: '%s'}})",
-                        jids, Job.ATTR_STATUS, Job.S_RUN
-                    )
-                    collection.update({
-                        "_id": {
-                            "$in": jids
-                        }
-                    }, {
-                        "$set": {
-                            Job.ATTR_STATUS: Job.S_RUN
-                        }
-                    }, multi=True, safe=True)
-                    for job in rjobs:
-                        executor.submit(job.run)
-                        n += 1
-                if jobs:
-                    # Wait for next job within check_interval
-                    njts = jobs[0].attrs[Job.ATTR_TS]
-                    now = datetime.datetime.now()
-                    if njts > now:
-                        dt = njts - now
-                        dt = (dt.microseconds + dt.seconds * 1000000.0) / 1000000.0
-                        dt = max(dt, self.min_sleep)
-                        yield tornado.gen.sleep(dt)
+                if njts > now:
+                    dt = njts - now
+                    dt = (dt.microseconds + dt.seconds * 1000000.0) / 1000000.0
+                    dt = max(dt, self.min_sleep)
+                    yield tornado.gen.sleep(dt)
         raise tornado.gen.Return(n)
 
     def remove_job(self, jcls, key=None):
