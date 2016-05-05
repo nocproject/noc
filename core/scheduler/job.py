@@ -9,12 +9,14 @@
 ## Python modules
 import logging
 import time
+import datetime
 ## Third-party modules
 import tornado.gen
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.debug import error_report
 from noc.lib.nosql import get_db
+from noc.lib.dateutils import total_seconds
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +96,13 @@ class Job(object):
     @tornado.gen.coroutine
     def run(self):
         self.start_time = time.time()
-        self.logger.info("[%s] Starting", self.name)
+        self.logger.info(
+            "[%s] Starting (Lag %.2fms)",
+            self.name,
+            total_seconds(
+                datetime.datetime.now() - self.attrs[self.ATTR_TS]
+            ) * 1000.0
+        )
         # Run handler
         try:
             ds = self.dereference()
