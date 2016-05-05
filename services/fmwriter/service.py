@@ -71,6 +71,7 @@ class FMWriterService(Service):
                 e["object"],
                 e["data"]
             )
+        return True
 
     def spool_event(self, timestamp, managed_object, data):
         # Normalize data
