@@ -53,10 +53,12 @@ class FMWriterService(Service):
 
     @tornado.gen.coroutine
     def on_activate(self):
-        report_callback = tornado.ioloop.PeriodicCallback(
-            self.report, 10000, self.ioloop
+        self.write_batch_callback = tornado.ioloop.PeriodicCallback(
+            self.write_batch,
+            1000,
+            self.ioloop
         )
-        report_callback.start()
+        self.write_batch_callback.start()
         self.subscribe(
             "events",
             "fmwriter",
@@ -106,15 +108,6 @@ class FMWriterService(Service):
             # Destroy batch
             self.event_batch = None
             self.batched_events = 0
-
-    def on_activate(self):
-        self.write_batch_callback = tornado.ioloop.PeriodicCallback(
-            self.write_batch,
-            1000,
-            self.ioloop
-        )
-        self.write_batch_callback.start()
-
 
 if __name__ == "__main__":
     FMWriterService().start()
