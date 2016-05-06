@@ -433,9 +433,12 @@ class ManagedObject(Model):
             "password" in self.changed_fields or
             "super_password" in self.changed_fields or
             "snmp_ro" in self.changed_fields or
-            "snmp_rw" in self.changed_fields
+            "snmp_rw" in self.changed_fields or
+            "profile_name" in self.changed_fields
         ):
             CredentialsCache.invalidate(self)
+            if "profile_name" in self.changed_fields:
+                self.reset_platform()
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache
@@ -572,6 +575,14 @@ class ManagedObject(Model):
             v = ManagedObjectAttribute(managed_object=self,
                                        key=name, value=value)
         v.save()
+
+    def reset_platform(self):
+        """
+        Reset platform and version information
+        """
+        self.managedobjectattribute_set.filter(
+            key=["vendor", "platform", "version"]
+        ).delete()
 
     @property
     def platform(self):
