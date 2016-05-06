@@ -44,6 +44,7 @@ from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete
 from noc.inv.models.object import Object
+from credcache import CredentialsCache
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
@@ -415,7 +416,7 @@ class ManagedObject(Model):
             )
         # Rebuild object maps
         if (
-            not self.initial_data["id"] is None or
+            self.initial_data["id"] is None or
             "trap_source_type" in self.changed_fields or
             "trap_source_ip" in self.changed_fields or
             "syslog_source_type" in self.changed_fields or
@@ -424,6 +425,17 @@ class ManagedObject(Model):
             "pool" in self.changed_fields
         ):
             ObjectMap.invalidate(self.pool)
+        # Invalidate credentials cache
+        if (
+            self.initial_data["id"] is None or
+            "auth_profile" in self.changed_fields or
+            "user" in self.changed_fields or
+            "password" in self.changed_fields or
+            "super_password" in self.changed_fields or
+            "snmp_ro" in self.changed_fields or
+            "snmp_rw" in self.changed_fields
+        ):
+            CredentialsCache.invalidate(self)
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache
@@ -907,6 +919,7 @@ class ManagedObject(Model):
             )
 
 
+@on_save
 class ManagedObjectAttribute(Model):
 
     class Meta:
@@ -925,6 +938,9 @@ class ManagedObjectAttribute(Model):
 
     def __unicode__(self):
         return u"%s: %s" % (self.managed_object, self.key)
+
+    def on_save(self):
+        CredentialsCache.invalidate(self.managed_object)
 
 ## Avoid circular references
 from useraccess import UserAccess

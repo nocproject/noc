@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## AuthProfile
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,8 +10,11 @@
 from django.db import models
 from django.db.models.signals import post_save
 ## NOC modules
+from noc.core.model.decorator import on_save
+from credcache import CredentialsCache
 
 
+@on_save
 class AuthProfile(models.Model):
     class Meta:
         verbose_name = "Auth Profile"
@@ -41,3 +44,8 @@ class AuthProfile(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def on_save(self):
+        CredentialsCache.invalidate(
+            self.managedobject_set.values_list("id", flat=True)
+        )
