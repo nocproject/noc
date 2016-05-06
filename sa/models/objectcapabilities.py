@@ -14,6 +14,8 @@ from mongoengine.fields import (ListField, StringField, ReferenceField,
 from noc.inv.models.capability import Capability
 from managedobject import ManagedObject
 from noc.lib.nosql import ForeignKeyField
+from noc.sa.models.credcache import CredentialsCache
+from noc.core.model.decorator import on_save
 
 
 class CapsItem(EmbeddedDocument):
@@ -25,6 +27,7 @@ class CapsItem(EmbeddedDocument):
         return self.capability.name
 
 
+@on_save
 class ObjectCapabilities(Document):
     meta = {
         "collection": "noc.sa.objectcapabilities",
@@ -35,6 +38,9 @@ class ObjectCapabilities(Document):
 
     def __unicode__(self):
         return "%s caps" % self.object.name
+
+    def on_save(self):
+        CredentialsCache.invalidate(self.object)
 
     @classmethod
     def get_capabilities(cls, object):

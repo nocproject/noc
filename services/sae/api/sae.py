@@ -12,8 +12,8 @@ from collections import namedtuple
 ## NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
-from noc.core.service.rpc import RPCError
 from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.sa.models.credcache import CredentialsCache
 
 
 class SAEAPI(API):
@@ -85,6 +85,13 @@ class SAEAPI(API):
         )
 
     def get_object_data(self, object_id):
+        d = CredentialsCache.get(object_id)
+        if not d:
+            d = self.resolve_data(object_id)
+            CredentialsCache.set(object_id, d)
+        return d
+
+    def resolve_data(self, object_id):
         """
         Worker to resolve
         """
