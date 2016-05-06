@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ASN.1 BER utitities
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -313,23 +313,18 @@ class BEREncoder(object):
     MZERO = float("-0")
 
     def encode_tlv(self, tag, primitive, data):
-        r = []
         # Encode tag
         t = tag
         t |= 0 if primitive else 0x20
-        r += [chr(t)]
         # Encode length
         l = len(data)
         if l < 0x80:
             # Short form
-            r += [chr(l)]
+            return "%s%s%s" % (chr(t), chr(l), data)
         else:
             # Prepare length's representation
             ll = struct.pack("!Q", l).lstrip("\x00")
-            r += [chr(0x80 | len(ll)), ll]
-        # Put rest of data
-        r += [data]
-        return "".join(r)
+            return "%s%s%s%s" % (chr(t), chr(0x80 | len(ll)), ll, data)
 
     def encode_octet_string(self, data):
         """
@@ -372,29 +367,25 @@ class BEREncoder(object):
         >>> BEREncoder().encode_int(-129)
         '\\x02\\x02\\xff\\x7f'
         """
-        def int_to_list(s):
-            if not s:
-                return [0]
-            r = []
-            while s:
-                r += [s & 0xFF]
-                s >>= 8
-            r.reverse()
-            return r
-
-        if data >= 0:
-            r = int_to_list(data)
-            if r[0] & 0x80:
-                r.insert(0, 0)
+        if data == 0:
+            return "\x02\x01\x00"
+        elif data > 0:
+            r = struct.pack("!Q", data).lstrip("\x00")
+            if r[0] >= "\x80":
+                r = "\x00" + r
         elif data < 0:
             data = -data
-            l = len(int_to_list(data))
+            r = struct.pack("!Q", data).lstrip("\x00")
+            l = len(r)
             comp = 1 << (l * 8 - 1)
             if comp < data:
                 comp <<= 8
-            r = int_to_list(comp - data)
-            r[0] |= 0x80
-        return self.encode_tlv(2, True, "".join(chr(x) for x in r))
+            r = struct.pack("!Q", comp - data).lstrip("\x00")
+            if r:
+                r = chr(ord(r[0]) | 0x80) + r[1:]
+            else:
+                r = "\x80" + "\x00" * (l - 1)
+        return self.encode_tlv(2, True, r)
 
     def encode_real(self, data):
         """
@@ -449,8 +440,8 @@ class BEREncoder(object):
         d = [int(x) for x in data.split(".")]
         r = [chr(d[0] * 40 + d[1])]
         for v in d[2:]:
-            if not v:
-                r += ["\x00"]
+            if v < 0x7f:
+                r += [chr(v)]
             else:
                 rr = []
                 while v:
