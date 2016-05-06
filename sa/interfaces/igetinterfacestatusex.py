@@ -18,8 +18,8 @@ class IGetInterfaceStatusEx(Interface):
     """
     returns = ListOfParameter(element=DictParameter(attrs={
         "interface": InterfaceNameParameter(),
-        "admin_status": BooleanParameter(),
-        "oper_status": BooleanParameter(),
+        "admin_status": BooleanParameter(default=False),
+        "oper_status": BooleanParameter(default=False),
         "full_duplex": BooleanParameter(default=True),
         "last_change": IntParameter(required=False),
         # Input speed, kbit/s
