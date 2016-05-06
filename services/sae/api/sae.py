@@ -22,12 +22,6 @@ class SAEAPI(API):
     """
     name = "sae"
 
-    ObjectData = namedtuple(
-        "ObjectData",
-        ["profile", "pool_id",
-         "credentials", "capabilities", "version"]
-    )
-
     PREPARE_SQL = """
       PREPARE sae_mo AS
             SELECT
@@ -67,21 +61,21 @@ class SAEAPI(API):
             self.get_object_data, object_id
         )
         # Find pool name
-        pool = self.service.get_pool_name(data.pool_id)
+        pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
             raise APIError("Pool not found")
         # Pass call to activator
         activator = self.service.get_activator(pool)
         # Check script is exists
-        script_name = "%s.%s" % (data.profile, script)
+        script_name = "%s.%s" % (data["profile"], script)
         if not loader.has_script(script_name):
             raise APIError("Invalid script")
         #
         self.redirect(
             activator._get_url(),
             "script",
-            [script_name, data.credentials, data.capabilities,
-             data.version, args, timeout]
+            [script_name, data["credentials"], data["capabilities"],
+             data["version"], args, timeout]
         )
 
     def get_object_data(self, object_id):
@@ -156,7 +150,7 @@ class SAEAPI(API):
             version = None
         # Build capabilities
         capabilities = ObjectCapabilities.get_capabilities(object_id)
-        return self.ObjectData(
+        return dict(
             profile=profile_name,
             pool_id=pool_id,
             credentials=credentials,
