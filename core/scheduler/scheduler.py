@@ -210,7 +210,7 @@ class Scheduler(object):
         n = 0
         if self.submit_threshold <= executor._work_queue.qsize():
             raise tornado.gen.Return(n)
-        jobs = self.jobs_burst
+        jobs, self.jobs_burst = self.jobs_burst, []
         burst_ids = set(j.attrs[Job.ATTR_ID] for j in jobs)
         if len(jobs) <= self.max_chunk // 2:
             jobs += [
