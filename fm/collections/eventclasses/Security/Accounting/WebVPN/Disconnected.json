@@ -32,19 +32,19 @@
         {
             "name": "duration",
             "description": "Duration",
-            "type": "str",
+            "type": "int",
             "required": false
         },
         {
             "name": "bytes_xmt",
             "description": "Bytes xmt",
-            "type": "str",
+            "type": "int",
             "required": false
         },
         {
             "name": "bytes_rcv",
             "description": "Bytes rcv",
-            "type": "str",
+            "type": "int",
             "required": false
         },
         {

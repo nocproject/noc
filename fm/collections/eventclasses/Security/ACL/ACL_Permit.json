@@ -62,7 +62,7 @@
         {
             "name": "count",
             "description": "Packets count",
-            "type": "str",
+            "type": "int",
             "required": false
         },
         {
