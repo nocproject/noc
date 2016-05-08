@@ -218,12 +218,14 @@ Phone | SCCP | Register Alarm,0739ec2b-ac9d-4bd4-9565-0bdae96b062c,Phone/SCCP/Re
 Phone | SCCP | Register New,fc9a4f06-5d8d-412b-b182-cbc060a14138,Phone/SCCP/Register_New.json,ef0b4ea79909a45d511a309c31a6604172cb6525c30ebfa815a3fcbb2f781825
 Phone | SCCP | Unregister Abnormal,09d3e124-2042-4f91-96ca-4ca676caffb3,Phone/SCCP/Unregister_Abnormal.json,240527b58d06f7ad6722507b03ab9bfb8d6db2a0d16051823471afb38813a865
 Phone | SCCP | Unregister Normal,21f27e43-8267-4c4a-b6c1-d16108bdac31,Phone/SCCP/Unregister_Normal.json,b378b1d5943ab7b04d650b1687ac92ff15932d1609b2b06508b26fd644558c8b
-Security | ACL | ACL Deny,ec6f4a1c-6efa-496b-93a7-e591496053e6,Security/ACL/ACL_Deny.json,d9e3206afed882434f4940d22d128b5bd7915f45695ee72f11c11d28d211bd64
-Security | ACL | ACL Permit,025058a2-881d-4a53-b572-f07dd37c0772,Security/ACL/ACL_Permit.json,203fba812bdc61f10f8120880ab8ab27476eea3ceffbfdb4156e2981a383d962
+Security | ACL | ACL Deny,ec6f4a1c-6efa-496b-93a7-e591496053e6,Security/ACL/ACL_Deny.json,3cf61bc7c4ad3f4df99a63338a178fccacb8f62f03c737aa96f3e2eace88994a
+Security | ACL | ACL Permit,025058a2-881d-4a53-b572-f07dd37c0772,Security/ACL/ACL_Permit.json,3ba1b7ed47eae1d4dc574aa95df4fe11e1859d3315616367c6e4587a48cc0511
 Security | Access | Case Close,12adb4ea-83b3-4233-91ff-1695c0bc6390,Security/Access/Case_Close.json,49b2993b17791528b7d30f39c60b9e8a3647daf23e394c7787e36c08d99a9464
 Security | Access | Case Open,e1f7d295-8b53-4643-81cd-1f1380029db1,Security/Access/Case_Open.json,ce4451d2bd5acaba9487fb480bec810b591c9755153e6d2f65007400c64dd997
 Security | Access | Door Close,16615d0e-17f1-43aa-a896-353b4436588c,Security/Access/Door_Close.json,7549aabb0fae0d4116bc7dadf5a8ec2f24095d8a27c4a80bc65be5e61f565a9e
 Security | Access | Door Open,015a0c87-c4ac-4db0-9842-27293161725a,Security/Access/Door_Open.json,5f2f462b0e7d999341144165498ad6ac49d0599fa6721d24b668279edafa40e1
+Security | Accounting | WebVPN | Assigned,bb39b653-3d6f-4264-bf97-ddb68ceb24b3,Security/Accounting/WebVPN/Assigned.json,01d14f9053d8aaaa1bb5b99919a0bf6045aee5045498ab9dcd0a39a40454cddf
+Security | Accounting | WebVPN | Disconnected,8a1f5545-bd93-4e47-a742-0f090a3e4db4,Security/Accounting/WebVPN/Disconnected.json,34b257b5e0fce751e742f6d488930097d615633b47ed4958c2500f7083781ff1
 Security | Attack | Attack,dcb43df5-cca3-4945-b3f1-b7d4140fdb4e,Security/Attack/Attack.json,f47cba2c41e58d1e10287942f1f5502772b387cdf2dd77c19d44527b9e56c31b
 Security | Attack | Blat Attack,d0dc220c-6d55-4189-a42a-ba5a1f4b8947,Security/Attack/Blat_Attack.json,33268f0454a8a0ae65bbde4634cf8398d5913ed93510ef3bf239bfcd8a1b05ca
 Security | Attack | IP Spoofing,5228f878-37ba-46ea-bebf-97bcf5bbd16a,Security/Attack/IP_Spoofing.json,d52cff63e9929775e3f1417bed209c15acc45fa071d54878bc73c1639bb4aa9b
@@ -244,6 +246,7 @@ Security | Authentication | Privilege Level Change Fail,5d099c4d-42bc-47ab-b91a-
 Security | Authentication | Privilege Level Changed,601bc6a1-e7a4-4652-998e-a42a214967d8,Security/Authentication/Privilege_Level_Changed.json,ae7017394d0c19a1fe80982957ede22a3aea3e4b6f96e0754d90d86c08883fc6
 Security | Authentication | RADIUS server failed,4c8ae9b3-472f-4aa4-9fe0-201fdff4a523,Security/Authentication/RADIUS_server_failed.json,e53e2b087059104ed66b491a69c99358c666fdb5b5027caae8261d7d963381f7
 Security | Authentication | RADIUS server recovered,d39a3fb7-68d0-4e6a-bda6-4efacddf6f89,Security/Authentication/RADIUS_server_recovered.json,cd0aa166ac379d95796478e13f40364ae9d96bf8edbf87403872dbc83293de32
+Security | Authentication | Rejected,a304ed29-81d2-486b-8a88-cb45c1fd634c,Security/Authentication/Rejected.json,7af12674bdc007d76701e31e526bc1158b3b5f1c2e7c501864e56075e1f1946b
 Security | Authentication | SNMP Authentication Failure,91094f01-18a3-4fdf-849b-26de6e751b61,Security/Authentication/SNMP_Authentication_Failure.json,a51ff70836b29331a6c0042f18a1d025fac9a4dd97cb8f4d5af739a5cd176ab3
 Security | Authentication | TACACS+ server failed,d4500ab1-1b8c-46b8-b0c5-4348465569f0,Security/Authentication/TACACS+_server_failed.json,0f3d5f55569d12c72c78638051c228f9c2cea4ff461c0faea1d31f4faa4eae24
 Security | Authentication | TACACS+ server recovered,46e7f27a-caea-41db-87b3-fc2e7ac766db,Security/Authentication/TACACS+_server_recovered.json,64dae32e299187f6023a5a5c659214804f1948e53ab00b0d498cb53b79c9c764
