@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -44,7 +44,14 @@ class Script(BaseScript):
     rx_ver_snmp4 = re.compile(
         r"Huawei Versatile Routing Platform Software.*?"
         r"Version (?P<version>\S+) .*?"
-        r"(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?\S+)\d",
+        r"\s*(?:Quidway|Huawei) (?P<platform>(?:NetEngine\s+|MultiserviceEngine\s+)?\S+)[^\n]\d",
+        re.MULTILINE | re.DOTALL | re.IGNORECASE
+    )
+
+    rx_ver_snmp5 = re.compile(
+        r"Huawei Versatile Routing Platform.*?"
+        r"Version (?P<version>\S+) .*?"
+        r"\s*(?:Quidway|Huawei) (?P<platform>[A-Z0-9]+)\s",
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
 
@@ -68,12 +75,13 @@ class Script(BaseScript):
             self.rx_ver_snmp,
             self.rx_ver_snmp2,
             self.rx_ver_snmp3,
-            self.rx_ver_snmp4
+            self.rx_ver_snmp4,
+            self.rx_ver_snmp5
         ], v)
         match = rx.search(v)
         platform = match.group("platform")
         # Convert NetEngine to NE
-        if platform.lower().startswith("netengine "):
+        if platform.lower().startswith("netengine"):
             n, p = platform.split(" ", 1)
             platform = "NE%s" % p.strip().upper()
         elif platform.lower().startswith("multiserviceengine"):
