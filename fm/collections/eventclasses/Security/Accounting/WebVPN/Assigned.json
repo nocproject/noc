@@ -1,0 +1,48 @@
+{
+    "name": "Security | Accounting | WebVPN | Assigned",
+    "$collection": "fm.eventclasses",
+    "uuid": "bb39b653-3d6f-4264-bf97-ddb68ceb24b3",
+    "description": "User assigned to session",
+    "action": "L",
+    "vars": [
+        {
+            "name": "group",
+            "description": "Group WebVPN",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "user",
+            "description": "User",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "src_ip",
+            "description": "User outside IP",
+            "type": "ip_address",
+            "required": false
+        },
+        {
+            "name": "dst_ip",
+            "description": "User inside IP",
+            "type": "ipv4_address",
+            "required": false
+        },
+        {
+            "name": "dst_ipv6",
+            "description": "User inside ipv6",
+            "type": "ipv6_address",
+            "required": false
+        }
+    ],
+    "deduplication_window": 3,
+    "ttl": 86400,
+    "subject_template": "{{group}} {{user}} {{src_ip}} -> {{dst_ip}} {% if dst_ipv6 %} IPv6 address {{dst_ipv6}}{% endif %}",
+    "body_template": "{{group}} {{user}} {{src_ip}} -> {{dst_ip}} {% if dst_ipv6 %} IPv6 address {{dst_ipv6}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "repeat_suppression": [
+    ]
+}

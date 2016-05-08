@@ -64,11 +64,21 @@
             "description": "Packets count",
             "type": "int",
             "required": false
+        },
+        {
+            "name": "flags",
+            "description": "Flags",
+            "type": "str",
+            "required": false
         }
     ],
-    "subject_template": "ACL Deny {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}",
-    "body_template": "ACL Deny {{name}}: {{proto}} {{src_ip}}:{{src_port}} ({{src_interface}}, {{src_mac}}) -> {{dst_ip}}:{{dst_port}}. Count {{count}}",
+    "deduplication_window": 3,
+    "ttl": 86400,
+    "subject_template": "ACL Deny {{name}}: {{proto}} {{src_ip}}:{{src_port}} {{src_interface}} {{src_mac}} -> {{dst_ip}}:{{dst_port}} {% if flags %} flags {{flags}}{% endif %}{% if Count %} Count {{count}}{% endif %}",
+    "body_template": "ACL Deny {{name}}: {{proto}} {{src_ip}}:{{src_port}} {{src_interface}} {{src_mac}} -> {{dst_ip}}:{{dst_port}} {% if flags %} flags {{flags}}{% endif %}{% if Count %} Count {{count}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
-    "recommended_actions": ""
+    "recommended_actions": "",
+    "repeat_suppression": [
+    ]
 }
