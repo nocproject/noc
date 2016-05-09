@@ -333,3 +333,9 @@ config:
       label: Translation language
       type: str
       default: en
+
+  nginx:
+    logging:
+      label: Use JSON logging
+      type: bool
+      default: false
