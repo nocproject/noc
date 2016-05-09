@@ -22,6 +22,7 @@ from noc.core.model.decorator import on_save, on_init
 from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
+from objectmap import ObjectMap
 
 
 @on_init
@@ -164,6 +165,13 @@ class ManagedObjectProfile(models.Model):
         except ManagedObjectProfile.DoesNotExist:
             return None
 
+    def iter_pools(self):
+        """
+        Iterate all pool instances covered by profile
+        """
+        for mo in self.managedobject_set.order_by("pool").distinct("pool"):
+            yield mo.pool
+
     def get_fqdn(self, object):
         if self.fqdn_template:
             # Render template
@@ -189,6 +197,14 @@ class ManagedObjectProfile(models.Model):
                 box_changed=box_changed,
                 periodic_changed=periodic_changed
             )
+
+        if (
+            self.initial_data["report_ping_rtt"] != self.report_ping_rtt or
+            self.initial_data["enable_ping"] != self.enable_ping or
+            self.initial_data["ping_interval"] != self.ping_interval
+        ):
+            for pool in self.iter_pools():
+                ObjectMap.invalidate(pool)
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
