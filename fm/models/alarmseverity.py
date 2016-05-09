@@ -34,6 +34,8 @@ class AlarmSeverity(Document):
     style = ForeignKeyField(Style)
     # Minimal alarm weight to reach severity
     min_weight = IntField(required=False)
+    sound = StringField(default="alarm")
+    volume = IntField(default=100)
 
     def __unicode__(self):
         return self.name

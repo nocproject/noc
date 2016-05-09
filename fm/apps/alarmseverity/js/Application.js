@@ -10,36 +10,37 @@ Ext.define("NOC.fm.alarmseverity.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.fm.alarmseverity.Model",
-        "NOC.main.style.LookupField"
+        "NOC.main.style.LookupField",
+        "NOC.main.ref.sound.LookupField"
     ],
     model: "NOC.fm.alarmseverity.Model",
     rowClassField: "row_class",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Builtin",
+            text: __("Builtin"),
             dataIndex: "is_builtin",
             renderer: NOC.render.Bool,
             sortable: false,
             width: 50
         },
         {
-            text: "Severity",
+            text: __("Severity"),
             dataIndex: "severity",
             width: 50,
             align: "right"
         },
         {
-            text: "Min. Weight",
+            text: __("Min. Weight"),
             dataIndex: "min_weight",
             width: 50,
             align: "right"
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }
@@ -48,37 +49,51 @@ Ext.define("NOC.fm.alarmseverity.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "uuid",
             xtype: "displayfield",
-            fieldLabel: "UUID"
+            fieldLabel: __("UUID")
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "severity",
             xtype: "numberfield",
-            fieldLabel: "Severity",
+            fieldLabel: __("Severity"),
             allowBlank: false
         },
         {
             name: "min_weight",
             xtype: "numberfield",
-            fieldLabel: "Min. Weight",
+            fieldLabel: __("Min. Weight"),
             allowBlank: false
         },
         {
             name: "style",
             xtype: "main.style.LookupField",
-            fieldLabel: "Style",
+            fieldLabel: __("Style"),
             allowBlank: false
+        },
+        {
+            name: "sound",
+            xtype: "main.ref.sound.LookupField",
+            fieldLabel: __("Sound"),
+            allowBlank: false
+        },
+        {
+            name: "volume",
+            xtype: "numberfield",
+            fieldLabel: __("Volume"),
+            minValue: 0,
+            maxValue: 100,
+            allowBlank: true
         }
     ],
 
@@ -95,22 +110,39 @@ Ext.define("NOC.fm.alarmseverity.Application", {
         Ext.apply(me, {
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
+                },
+                {
+                    text: __("Test Sound"),
+                    glyph: NOC.glyph.volume,
+                    tooltip: __("Test Sound"),
+                    scope: me,
+                    handler: me.onTestSound
                 }
             ]
         });
         me.callParent();
     },
     //
-        //
     onJSON: function() {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
+    },
+    //
+    onTestSound: function() {
+        var me = this,
+            snd;
+        if(!me.currentRecord.get("sound")) {
+            return;
+        }
+        snd = new Audio(me.currentRecord.get("sound"));
+        snd.volume = (me.currentRecord.get("volume") || 100) / 100;
+        snd.play();
     }
 });

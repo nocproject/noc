@@ -36,6 +36,7 @@ class RefAppplication(ExtApplication):
     query_param = "__query"
 
     FA_CSS_PATH = "ui/pkg/fontawesome/css/font-awesome.min.css"
+    NOC_SOUND_PATH = "ui/pkg/nocsound"
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
@@ -164,6 +165,20 @@ class RefAppplication(ExtApplication):
                     r += [{
                         "id": "fa fa-%s" % glyph,
                         "label": glyph
+                    }]
+        return r
+
+    def build_sound(self):
+        r = [{
+            "id": "",
+            "label": "---"
+        }]
+        if os.path.isdir(self.NOC_SOUND_PATH):
+            for f in sorted(os.listdir(self.NOC_SOUND_PATH)):
+                if f.endswith(".mp3"):
+                    r += [{
+                        "id": f[:-4],
+                        "label": f[:-4]
                     }]
         return r
 
