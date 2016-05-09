@@ -49,3 +49,4 @@ class Reboot(Document):
             "ts": ts,
             "last": last
         })
+        managed_object.run_discovery(delta=300)
