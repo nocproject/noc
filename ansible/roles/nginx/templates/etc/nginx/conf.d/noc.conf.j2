@@ -48,12 +48,8 @@ upstream grafana {
 }
 {% endif %}
 
-log_format timed_combined '$remote_addr - $remote_user [$time_local] '
-    '"$request" $status $body_bytes_sent '
-    '"$http_referer" "$http_user_agent" '
-    '$request_time $upstream_response_time $pipe';
-
-log_format json '{ "@timestamp": "$time_iso8601", '
+{% if noc_config["config"].get("nginx-global-%s" % ansible_hostname, {}).get("logging") %}
+log_format noc_format '{ "@timestamp": "$time_iso8601", '
                          '"@fields": { '
                          '"remote_addr": "$remote_addr", '
                          '"remote_user": "$remote_user", '
@@ -66,6 +62,13 @@ log_format json '{ "@timestamp": "$time_iso8601", '
                          '"request_time": "$request_time", '
                          '"upstream_response_time": "$upstream_response_time", '
                          '"http_user_agent": "$http_user_agent" } }';
+{% else %}
+log_format noc_format '$remote_addr - $remote_user [$time_local] '
+    '"$request" $status $body_bytes_sent '
+    '"$http_referer" "$http_user_agent" '
+    '$request_time $upstream_response_time $pipe';
+
+{% endif %}
 
 server {
     listen 80;
@@ -86,7 +89,7 @@ server {
     ssl_stapling on;
     ssl_stapling_verify on;
 
-    access_log  {{ nginx_log_dir }}/noc.access.log timed_combined;
+    access_log  {{ nginx_log_dir }}/noc.access.log noc_format;
     error_log  {{ nginx_log_dir }}/noc.error.log;
 
     # Proxy authentication settings
@@ -120,7 +123,7 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Original-URI $request_uri;
         proxy_set_header Content-Length '0';
-        access_log  /var/log/nginx/auth.access.log;
+        access_log  {{ nginx_log_dir }}/auth.access.log noc_format;
     }
 
     # Login service api
@@ -136,7 +139,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Original-URI $request_uri;
-        access_log  /var/log/nginx/login.access.log;
+        access_log  {{ nginx_log_dir }}/login.access.log noc_format;
     }
 {% endif %}
 
@@ -158,6 +161,7 @@ server {
         proxy_set_header Remote-User $user;
         auth_request_set $groups $upstream_http_remote_groups;
         proxy_set_header Remote-Groups $groups;
+        access_log  {{ nginx_log_dir }}/card.access.log noc_format;
     }
 {% endif %}
 
@@ -213,7 +217,7 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_read_timeout 86400;
-        access_log  {{ nginx_log_dir }}/notebook.access.log;
+        access_log  {{ nginx_log_dir }}/notebook.access.log noc_format;
     }
 
     location /notebook {
@@ -225,7 +229,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        access_log  {{ nginx_log_dir }}/notebook.access.log;
+        access_log  {{ nginx_log_dir }}/notebook.access.log noc_format;
     }
 {% endif %}
 
@@ -243,7 +247,7 @@ server {
         proxy_set_header Remote-User $user;
         auth_request_set $groups $upstream_http_remote_groups;
         proxy_set_header Remote-Groups $groups;
-        access_log  {{ nginx_log_dir }}/grafana.access.log;
+        access_log  {{ nginx_log_dir }}/grafana.access.log noc_format;
     }
 {% endif %}
 
