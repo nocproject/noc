@@ -68,6 +68,13 @@ log_format json '{ "@timestamp": "$time_iso8601", '
                          '"http_user_agent": "$http_user_agent" } }';
 
 server {
+    listen 80;
+    server_name {{ noc_web_host }};
+    location / {
+        return 301 https://{{ noc_web_host }}$request_uri;
+    }
+}
+server {
     listen 443;
     server_name {{ noc_web_host }};
     ssl on;
