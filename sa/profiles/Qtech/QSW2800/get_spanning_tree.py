@@ -36,6 +36,16 @@ class Script(BaseScript):
                         r"Revision\s+(?P<rev>\d+)")
 
     def execute(self):
+        def q_port(s):
+            if "." in s:
+                x, y = [int(k) for k in s.split(".")]
+                return "%d.%d" % (x, y)
+            else:
+                return s
+
+        def port_priority(s):
+            return int(s.split(".")[0])
+
         # defaults
         r = {
             "mode": "None",
@@ -90,9 +100,9 @@ class Script(BaseScript):
                 # get interfaces
                 match = self.rx_interface.match(l)
                 if match:
-                    port = match.group("port").split(".")
+                    port = q_port(match.group("port"))
                     dsg_bridge = match.group("dsg_bridge").split(".")
-                    dsg_port = match.group("dsg_port").split(".")
+                    dsg_port = q_port(match.group("dsg_port"))
                     iface = match.group("ifname")
                     # get interface details
                     if_details = self.cli("show spanning-tree interface %s detail" % iface)
@@ -108,8 +118,8 @@ class Script(BaseScript):
                         p2p = False
                     ifaces += [{
                         "interface": iface,
-                        "port_id": int(port[1]),
-                        "priority": port[0],
+                        "port_id": port,
+                        "priority": port_priority(port),
                         "state": {
                             "FWD": "forwarding",
                             "LRN": "learning",
@@ -121,7 +131,7 @@ class Script(BaseScript):
                         }[match.group("role")],
                         "designated_bridge_id": dsg_bridge[1],
                         "designated_bridge_priority": dsg_bridge[0],
-                        "designated_port_id": int(dsg_port[1]),
+                        "designated_port_id": dsg_port,
                         "point_to_point": p2p,
                         "edge": edge
                     }]
