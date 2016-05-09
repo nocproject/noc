@@ -116,7 +116,12 @@ class ActiveAlarm(nosql.Document):
                      from_status=self.status, to_status=self.status,
                      message=message)]
         if to_save:
-            self.save()
+            if self.id:
+                self.save(save_condition={
+                    "_id": self.id
+                })
+            else:
+                self.save()
 
     def contribute_event(self, e, open=False, close=False):
         # Set opening event when necessary
@@ -369,7 +374,8 @@ class ActiveAlarm(nosql.Document):
         self.save(save_condition={
             "managed_object": {
                 "$exists": True
-            }
+            },
+            "_id": self.id
         })
 
 ## Avoid circular references
