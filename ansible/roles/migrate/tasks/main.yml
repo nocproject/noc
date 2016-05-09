@@ -25,6 +25,8 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  tags:
+    - coll_sync
 
 - name: Synchronize permissions
   command: ./noc sync-perm
