@@ -26,6 +26,5 @@
             "key_re": "^CISCO-CONFIG-MAN-MIB::ccmHistoryEventConfigSource\\.\\d+$",
             "value_re": "^running$"
         }
-
     ]
 }
