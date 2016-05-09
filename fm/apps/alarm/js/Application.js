@@ -409,6 +409,7 @@ Ext.define("NOC.fm.alarm.Application", {
                         if (!me.sounds[data.sound]) {
                             me.sounds[data.sound] = new Audio(data.sound);
                         }
+                        me.sounds[data.sound].volume = data.volume || 1.0;
                         me.sounds[data.sound].play();
                     }
                 }
