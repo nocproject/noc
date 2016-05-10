@@ -47,8 +47,7 @@ class PMWriterService(Service):
             "metrics",
             "pmwriter",
             self.on_metric,
-            raw=True,
-            max_in_flight=4 * self.config.batch_size
+            raw=True
         )
         self.ioloop.spawn_callback(self.send_metrics)
 
@@ -76,7 +75,7 @@ class PMWriterService(Service):
                 self.logger.debug("Sending %d metrics", len(batch))
                 client = tornado.httpclient.AsyncHTTPClient()
                 try:
-                    response = client.fetch(
+                    response = yield client.fetch(
                         # Configurable database name
                         "http://%s/write?db=%s&precision=s" % (
                             self.influx,
@@ -103,7 +102,7 @@ class PMWriterService(Service):
                 timeout = 1.0
                 self.logger.info(
                     "InfluxDB is getting ill. "
-                    "Giving chance to recover. Waiting for %.2ms",
+                    "Giving chance to recover. Waiting for %.2fms",
                     timeout * 1000
                 )
                 yield tornado.gen.sleep(timeout)
