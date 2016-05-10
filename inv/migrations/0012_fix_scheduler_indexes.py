@@ -19,7 +19,7 @@ class Migration(object):
         db = get_db()
         for c in db.collection_names():
             if c.startswith("noc.schedules."):
-                db[c].drop_index("ts_1")
+                db[c].drop_indexes()
 
     def backwards(self):
         pass
