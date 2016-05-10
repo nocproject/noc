@@ -64,13 +64,14 @@ class BERDecoder(object):
 
     def parse_tlv(self, msg):
         tag_class, tag, is_primitive, is_implicit, msg = self.parse_type(msg)
-        if is_implicit:
-            decoder = lambda s, msg: s.parse_implicit(msg, tag)
-        else:
-            decoder = self.DECODERS[tag_class][is_primitive].get(tag)
         length, msg = self.parse_length(msg)
-        value = msg[:length]
-        if decoder is None:
+        value, rest = msg[:length], msg[length:]
+        if is_implicit:
+            return self.parse_implicit(value, tag), rest
+        try:
+            decoder = self.DECODERS[tag_class][is_primitive][tag]
+            return decoder(self, value), rest
+        except KeyError:
             pt = "primitive" if is_primitive else "constructed"
             if is_implicit:
                 pt = "implicit " + pt
@@ -79,8 +80,6 @@ class BERDecoder(object):
             raise DecodeError(
                 "Cannot find BER decoder for %s class %d (%X)" % (
                     pt, tag, tag))
-        value = decoder(self, value)
-        return value, msg[length:]
 
     def parse_eoc(self, msg):
         return None
@@ -187,22 +186,14 @@ class BERDecoder(object):
         >>> BERDecoder().parse_p_oid("+\\x06\\x01\\x02\\x01\\x01\\x05\\x00")
         "1.3.6.1.2.1.1.5.0"
         """
-        def parse_octet(msg):
-            n = 0
-            r = 0
-            for c in msg:
-                v = ord(c)
-                r = (r << 7) + (v & 0x7f)
-                n += 1
-                if v <= 127:
-                    break
-            return r, msg[n:]
-
-        r = [c for c in divmod(ord(msg[0]), 40)]
-        msg = msg[1:]
-        while msg:
-            v, msg = parse_octet(msg)
-            r += [v]
+        r = list(divmod(ord(msg[0]), 40))
+        b = 0
+        for c in msg[1:]:
+            v = ord(c)
+            b = (b << 7) + (v & 0x7f)
+            if v <= 127:
+                r += [b]
+                b = 0
         return ".".join("%d" % c for c in r)
 
     def parse_sequence(self, msg):
