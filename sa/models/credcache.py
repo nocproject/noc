@@ -80,4 +80,4 @@ class CredentialsCache(Document):
             q = {
                 "_id": q(object)
             }
-        CredentialsCache._get_collection().delete_one(q)
+        CredentialsCache._get_collection().remove(q)
