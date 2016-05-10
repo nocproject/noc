@@ -27,6 +27,7 @@
 
 .noc-label-required {
     font-weight: bold !important;
+    color: #c0392b;
 }
 
 .noc-const {
@@ -80,4 +81,12 @@
     margin: 0px 1px 0px 0px;
     background-color: #DEE7F8;
     cursor: default;
+}
+
+.x-panel-body-default {
+    background-color: #ecf0f1 !important;
+}
+
+.x-grid-row {
+    background-color: #ecf0f1 !important;
 }
