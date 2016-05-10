@@ -89,6 +89,13 @@ class BERDecoder(object):
             return False
         return bool(ord(msg[0]))
 
+    INT_MASK = {
+        1: "!b",
+        2: "!h",
+        4: "!i",
+        8: "!q"
+    }
+
     def parse_int(self, msg):
         """
         >>> BERDecoder().parse_int('')
@@ -113,6 +120,11 @@ class BERDecoder(object):
         """
         if not msg:
             return 0
+        # Try to speedup
+        mask = self.INT_MASK.get(len(msg))
+        if mask:
+            return struct.unpack(mask, msg)[0]
+        # Decode as is
         v = 0
         for c in msg:
             v = (v << 8) + ord(c)
