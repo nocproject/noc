@@ -270,10 +270,6 @@ class Service(object):
         self.load_config()
         # Setup title
         self.set_proc_title()
-        # Setup manhole
-        if os.environ.get("NOC_MANHOLE"):
-            import manhole
-            manhole.install()
         # Setup signal handlers
         self.setup_signal_handlers()
         # Starting IOLoop

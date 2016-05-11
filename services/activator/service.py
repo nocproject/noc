@@ -9,13 +9,17 @@
 
 ## NOC modules
 from noc.core.service.base import Service
+from noc.core.service.ctl import CtlAPI
 from api.activator import ActivatorAPI
 
 
 class ActivatorService(Service):
     name = "activator"
     pooled = True
-    api = [ActivatorAPI]
+    api = [
+        CtlAPI,
+        ActivatorAPI
+    ]
     process_name = "noc-%(name).10s-%(instance).2s-%(pool).3s"
 
     def __init__(self):
