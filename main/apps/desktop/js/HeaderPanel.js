@@ -14,7 +14,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
     },
     border: false,
     bodyStyle: {
-        "background-color": NOC.settings.branding_background_color,
+        "background-color": NOC.settings.branding_background_color + " !important",
         "color": NOC.settings.branding_color
     },
     collapsible: true,
