@@ -35,7 +35,7 @@ class Script(BaseScript):
     rx_bootprom1 = re.compile(
         r"^\s+BootRom Version (?P<bootprom>\d\S+)$", re.MULTILINE)
     rx_hardware1 = re.compile(
-        r"^\s+HardWare Version (?P<hardware>\d\S+)$", re.MULTILINE)
+         r"^\s+HardWare Version (?P<hardware>.*?\S+)$", re.MULTILINE)
     rx_serial1 = re.compile(
         r"^\s+(?:Device serial number\s|Serial No\.:)(?P<serial>\d\S+)$",
         re.MULTILINE)
