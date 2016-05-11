@@ -8,6 +8,8 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - name: Install LDAP python packages
   pip:
@@ -19,3 +21,5 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements

@@ -94,12 +94,16 @@
 - name: Calculate md5 of node requirements
   stat: path="{{noc_root}}/requirements/node.txt"
   register: node_stat
+  tags:
+    - requirements
 
 - name: Check requirement files for changes
   command: test "{{ lookup('env', 'NOC_NODE_MD5') }}" = {{ node_stat.stat.md5 }}
   changed_when: "node_check.rc != 0"
   failed_when: node_check.stderr
   register: node_check
+  tags:
+    - requirements
 
 - name: Install node python packages(should be loooong running task at first time)
   pip:
@@ -112,6 +116,8 @@
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
   when: node_check.changed
+  tags:
+    - requirements
 
 - name: Install python 2.6 compatibility packages
   pip:
@@ -123,6 +129,8 @@
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
   when: "ansible_python_version.startswith('2.6')"
+  tags:
+    - requirements
 
 - name: Install assets
   command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
@@ -134,6 +142,8 @@
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - name: Apply local patches
   command: "{{ noc_root }}/scripts/deploy/apply-patches"
