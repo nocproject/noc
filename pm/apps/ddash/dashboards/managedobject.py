@@ -341,9 +341,23 @@ class ManagedObjectDashboard(BaseDashboard):
                 "type": "graph",
                 "x-axis": True,
                 "y-axis": True,
-                "y_formats": [
-                    "s",
-                    "short"
+                "yaxes": [
+                    {
+                        "format": "percent",
+                        "label": None,
+                        "logBase": 1,
+                        "max": None,
+                        "min": None,
+                        "show": True
+                    },
+                    {
+                        "format": "short",
+                        "label": None,
+                        "logBase": 1,
+                        "max": None,
+                        "min": None,
+                        "show": True
+                    }
                 ]
             }]
         # Create charts for object metrics
@@ -427,9 +441,23 @@ class ManagedObjectDashboard(BaseDashboard):
                 "type": "graph",
                 "x-axis": True,
                 "y-axis": True,
-                "y_formats": [
-                    "bps",
-                    "short"
+                "yaxes": [
+                    {
+                        "format": "percent",
+                        "label": None,
+                        "logBase": 1,
+                        "max": None,
+                        "min": None,
+                        "show": True
+                    },
+                    {
+                        "format": "short",
+                        "label": None,
+                        "logBase": 1,
+                        "max": None,
+                        "min": None,
+                        "show": True
+                    }
                 ]
             }]
         if not r["rows"][-1]["panels"]:
