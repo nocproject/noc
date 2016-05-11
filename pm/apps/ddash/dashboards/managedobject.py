@@ -235,7 +235,7 @@ class ManagedObjectDashboard(BaseDashboard):
                     "x-axis": True,
                     "y-axis": True,
                     "y_formats": [
-                        "bps",
+                        "bits",
                         "short"
                     ]
                 }]
