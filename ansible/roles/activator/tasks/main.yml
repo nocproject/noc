@@ -9,6 +9,8 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - name: Create ssh keys directories
   file:
@@ -18,6 +20,9 @@
     group: "{{ noc_group }}"
     mode: 0550
   with_items: "{{ noc_all_pools }}"
+  tags:
+    - config
+
 
 - name: Install ssh keys
   copy:
@@ -28,3 +33,5 @@
     mode: 0440
   with_fileglob:
     - "{{ tower_ssh_keys }}/*/id_*"
+  tags:
+    - config
