@@ -28,15 +28,17 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 mac = self.snmp.get("1.3.6.1.4.1.27514.1.2.1.1.1.1.0", cached=True)
-                return {
-                    "first_chassis_mac": mac,
-                    "last_chassis_mac": mac
-                }
+                if mac:
+                    return {
+                        "first_chassis_mac": mac,
+                        "last_chassis_mac": mac
+                    }
             except self.snmp.TimeOutError:
                 pass
 
         # Fallback to CLI
-        match = rx_mac.search(self.cli("show version", cached=True))
+        v = self.cli("show version", cached=True)
+        match = rx_mac.search(v)
         if not match:
             v = self.cli("show mac-address-table static")
             match = rx_mac1.search(v)
