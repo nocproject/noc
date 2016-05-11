@@ -229,14 +229,31 @@ class ManagedObjectDashboard(BaseDashboard):
                     "title": i_title,
                     "tooltip": {
                         "shared": True,
-                        "value_type": "cumulative"
+                        "value_type": "cumulative",
+                        "msResolution": False
                     },
                     "type": "graph",
-                    "x-axis": True,
+                    "xaxis": {
+                        "show": True
+                    },
                     "y-axis": True,
-                    "y_formats": [
-                        "bits",
-                        "short"
+                    "yaxes": [
+                        {
+                            "format": "Bps",
+                            "label": None,
+                            "logBase": 1,
+                            "max": None,
+                            "min": None,
+                            "show": None
+                        },
+                        {
+                            "format": "short",
+                            "label": None,
+                            "logBase": 1,
+                            "max": None,
+                            "min": None,
+                            "show": None
+                        }
                     ]
                 }]
         r["rows"] += [{
