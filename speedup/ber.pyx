@@ -35,10 +35,8 @@ def parse_p_oid(bytes msg):
     for i in range(1, len(msg)):
         v = ptr[0]
         ptr += 1
-        b += v & 0x7f
-        if v <= 127:
+        b = (b << 7) + (v & 0x7f)
+        if not (v & 0x80):
             optr += snprintf(optr, 1024 - (optr - out), ".%d", b)
             b = 0
-        else:
-            b <<= 7
     return out
