@@ -105,7 +105,7 @@
   tags:
     - requirements
 
-- name: Install node python packages(should be loooong running task at first time)
+- name: Install node python packages(should take a while for a first time)
   pip:
     chdir: "{{noc_root}}"
     requirements: "requirements/node.txt"
@@ -213,6 +213,14 @@
 
 - name: Cleanup hanging .pyc files
   command: ./scripts/deploy/cleanup-pyc
+  args:
+    chdir: "{{noc_root}}"
+  register: result
+  changed_when: "'CHANGED' in result.stdout"
+  failed_when: "'ERROR' in result.stdout"
+
+- name: Compiling binary modules
+  command: ./scripts/deploy/cythonize
   args:
     chdir: "{{noc_root}}"
   register: result
