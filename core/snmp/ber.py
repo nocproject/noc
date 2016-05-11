@@ -10,7 +10,7 @@
 import math
 import struct
 ## NOC modules
-from noc.speedup.ber import parse_p_oid
+from noc.speedup.ber import parse_tlv_header, parse_p_oid
 
 
 class DecodeError(Exception):
@@ -18,56 +18,9 @@ class DecodeError(Exception):
 
 
 class BERDecoder(object):
-    def parse_type(self, msg):
-        """
-        :param msg:
-        :return:  tag number, primitive flag, implicit flag, rest
-        """
-        v = ord(msg[0])
-        # 0xc0 == 11000000
-        tag_class = v & 0xc0
-        # 0x20 == 00100000
-        is_primitive = not bool(v & 0x20)
-        # 0x1f == 00011111
-        tag_id = v & 0x1f
-        if tag_id == 0x1f:
-            # high-tag number form
-            tag_id = 0
-            i = 1
-            while True:
-                c = ord(msg[i])
-                i += 1
-                tag_id = tag_id * 128 + c & 0x7f
-                if not (c & 0x80):
-                    break
-            return tag_class, tag_id, is_primitive, False, msg[i:]
-        elif v & 0x80:
-            # Implicit types
-            if is_primitive and msg[1:] == "\x00":
-                return 0, 5, is_primitive, False, msg[1:]
-            else:
-                return 0, tag_id, is_primitive, True, msg[1:]
-        else:
-            # low tag number form
-            return tag_class, tag_id, is_primitive, False, msg[1:]
-
-    def parse_length(self, msg):
-        v = ord(msg[0])
-        if v & 0x80:
-            # Long form
-            l = v & 0x7f
-            v = 0
-            for c in msg[1:1 + l]:
-                v = (v << 8) + ord(c)
-            return v, msg[1 + l:]
-        else:
-            # Short form
-            return v, msg[1:]
-
     def parse_tlv(self, msg):
-        tag_class, tag, is_primitive, is_implicit, msg = self.parse_type(msg)
-        length, msg = self.parse_length(msg)
-        value, rest = msg[:length], msg[length:]
+        tag_class, tag, is_primitive, is_implicit, offset, length = parse_tlv_header(msg)
+        value, rest = msg[offset:offset + length], msg[offset + length:]
         if is_implicit:
             return self.parse_implicit(value, tag), rest
         try:
