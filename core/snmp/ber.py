@@ -9,6 +9,8 @@
 ## Python modules
 import math
 import struct
+## NOC modules
+from noc.speedup.ber import parse_p_oid
 
 
 class DecodeError(Exception):
@@ -198,15 +200,7 @@ class BERDecoder(object):
         >>> BERDecoder().parse_p_oid("+\\x06\\x01\\x02\\x01\\x01\\x05\\x00")
         "1.3.6.1.2.1.1.5.0"
         """
-        r = list(divmod(ord(msg[0]), 40))
-        b = 0
-        for c in msg[1:]:
-            v = ord(c)
-            b = (b << 7) + (v & 0x7f)
-            if v <= 127:
-                r += [b]
-                b = 0
-        return ".".join("%d" % c for c in r)
+        return parse_p_oid(msg)
 
     def parse_sequence(self, msg):
         r = []
