@@ -44,6 +44,7 @@ def parse_tlv_header(bytes msg):
                 break
     elif v & 0x80:
         # Implicit types
+        tag_class = 0
         if is_primitive and ptr[1] == 0:
             tag_id = 5
         else:
