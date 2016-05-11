@@ -34,19 +34,6 @@
   set_fact: nsq_version_is_ok=True
   when: "nsq_version in nsq_installed_version and nsq_installed_version is defined"
 
-- name: download nsq daemon
-  get_url:
-    url: https://s3.amazonaws.com/bitly-downloads/nsq/nsq-{{nsq_version}}.linux-amd64.go1.6.tar.gz
-    dest: /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.tar.gz
-    validate_certs: no
+- name: "Include OS-specific tasks"
+  include: "os/{{ ansible_distribution }}/main.yml"
   when: nsqd_binary.stat.isfile is not defined and nsq_version_is_ok is not defined
-  environment:
-    https_proxy: "{{http_proxy}}"
-
-
-- name: install nsq
-  command: /bin/tar --strip-components=1 -xf /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.tar.gz -C {{ noc_root }}
-  args:
-    creates: "{{ noc_root }}/bin/nsqd"
-  when: nsqd_binary.stat.isfile is not defined and nsq_version_is_ok is not defined
-
