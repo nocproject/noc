@@ -4,3 +4,5 @@ mongo_fork: "true"
 mongo_user: mongod
 pycurl_ssl_library: nss
 postgres_system_service: postgresql-{{ postgresql_version }}
+
+grafana_version: "2.6.0"
