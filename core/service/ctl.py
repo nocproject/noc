@@ -58,7 +58,16 @@ class CtlAPI(API):
         import yappi
         i = yappi.get_func_stats()
         out = cStringIO.StringIO()
-        i.print_all(out=out)
+        i.print_all(
+            out=out,
+            columns={
+                0: ("name", 80),
+                1: ("ncall", 10),
+                2: ("tsub", 8),
+                3: ("ttot", 8),
+                4: ("tavg", 8)
+            }
+        )
         return out.getvalue()
 
     @api
