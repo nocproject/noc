@@ -32,6 +32,12 @@ class Command(BaseCommand):
             help="Pretty-print output"
         )
         parser.add_argument(
+            "--hint",
+            action="append",
+            dest="hints",
+            help="<ip>:<port> of RPC service"
+        )
+        parser.add_argument(
             "rpc",
             nargs=1,
             help="RPC name in form <api>[-<pool>].<method>"
@@ -42,11 +48,15 @@ class Command(BaseCommand):
             help="Arguments passed to RPC calls"
         )
 
-    def handle(self, config, rpc, arguments, pretty,
+    def handle(self, config, rpc, arguments, pretty, hints,
                *args, **options):
         service, method = rpc[0].split(".", 1)
         try:
-            client = RPCClient(service, calling_service="cli")
+            client = RPCClient(
+                service,
+                calling_service="cli",
+                hints=hints
+            )
             method = getattr(client, method)
             result = method(*arguments)
         except RPCError, why:
