@@ -24,6 +24,7 @@ from noc.sa.models.selectorcache import SelectorCache
 from noc.main.models import User
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
+from noc.maintainance.models.maintainance import Maintainance
 
 
 class AlarmApplication(ExtApplication):
@@ -86,6 +87,8 @@ class AlarmApplication(ExtApplication):
             qp = p.split("__")[0]
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].clean(q[p])
+        # Exclude maintainance
+        q["managed_object__nin"] = Maintainance.currently_affected()
         if "administrative_domain" in q:
             a = AdministrativeDomain.objects.get(id = q["administrative_domain"])
             q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
@@ -334,17 +337,34 @@ class AlarmApplication(ExtApplication):
         delta = request.GET.get("delta")
         n = 0
         sound = None
+        volume = 0
         if delta:
             dt = datetime.timedelta(seconds=int(delta))
             t0 = datetime.datetime.now() - dt
-            n = ActiveAlarm._get_collection().find({
-                "timestamp": {
-                    "$gt": t0
+            r = ActiveAlarm._get_collection().aggregate([
+                {
+                    "$match": {
+                        "timestamp": {
+                            "$gt": t0
+                        }
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": "$item",
+                        "severity": {
+                            "$max": "$severity"
+                        }
+                    }
                 }
-            }).count()
-            if n > 0:
-                sound = "/ui/pkg/nocsound/alarm.mp3"
+            ])
+            if r["ok"] and r["result"]:
+                s = AlarmSeverity.get_severity(r["result"][0]["severity"])
+                if s and s.sound and s.volume:
+                    sound = "/ui/pkg/nocsound/%s.mp3" % s.sound
+                    volume = float(s.volume) / 100.0
         return {
             "new_alarms": n,
-            "sound": sound
+            "sound": sound,
+            "volume": volume
         }
