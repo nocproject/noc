@@ -6,7 +6,7 @@
 //----------------------------------------------------------------------
 
 // NOC namespace
-Ext.namespace("NOC", "NOC.render");
+Ext.namespace("NOC", "NOC.render", "NOC.msg");
 
 //
 // Custom column renderers
@@ -251,6 +251,14 @@ Ext.apply(NOC.render, {
     JSON: function(v) {
         return Ext.encode(v);
     }
+});
+
+//
+Ext.apply(NOC.msg, {
+    started: function(message) {},
+    complete: function(message) {},
+    failed: function(message) {},
+    info: function(message) {}
 });
 
 //
