@@ -343,7 +343,7 @@ class ManagedObjectDashboard(BaseDashboard):
                 "y-axis": True,
                 "yaxes": [
                     {
-                        "format": "percent",
+                        "format": "s",
                         "label": None,
                         "logBase": 1,
                         "max": None,
