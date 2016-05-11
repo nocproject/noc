@@ -581,7 +581,7 @@ class ManagedObject(Model):
         Reset platform and version information
         """
         self.managedobjectattribute_set.filter(
-            key=["vendor", "platform", "version"]
+            key__in=["vendor", "platform", "version"]
         ).delete()
 
     @property
