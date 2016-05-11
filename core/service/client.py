@@ -132,7 +132,10 @@ class RPCClient(object):
                                         calling_service)]
             body = ujson.dumps(req)
             # Build service candidates
-            services = catalog.get_service(service).listen
+            if self.client._hints:
+                services = self.client._hints
+            else:
+                services = catalog.get_service(service).listen
             if len(services) < RETRIES:
                 services *= RETRIES
             # Call
@@ -177,10 +180,11 @@ class RPCClient(object):
                 "No active service %s found" % service
             )
 
-    def __init__(self, service, calling_service=None):
+    def __init__(self, service, calling_service=None, hints=None):
         self._service = service
         self._api = service.split("-")[0]
         self._calling_service = calling_service
+        self._hints = hints
 
     def __getattr__(self, item):
         if item.startswith("_"):
