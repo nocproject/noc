@@ -141,6 +141,7 @@ class RPCClient(object):
             # Call
             last = None
             st = RETRY_TIMEOUT
+            orig_body = None
             for l in random.sample(services, RETRIES):
                 # Sleep when trying same instance
                 if l == last:
@@ -159,11 +160,15 @@ class RPCClient(object):
                     elif code == 307:
                         url = headers.get("location")
                         l = url.split("://", 1)[1].split("/")[0]
+                        orig_body = body
                         body = data
                         logger.debug("Redirecting to %s", url)
                     else:
                         raise RPCException("Invalid return code: %s" % code)
                 if code is None:
+                    if orig_body:
+                        body = orig_body
+                        orig_body = None
                     continue
                 if code != 200:
                     raise RPCException("Redirects limit exceeded")
