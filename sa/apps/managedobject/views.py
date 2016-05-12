@@ -9,9 +9,10 @@
 ## Python modules
 from collections import defaultdict
 import zlib
-import cStringIO
+import re
 ## Django modules
 from django.http import HttpResponse
+from django.db.models import Q
 ## Third-party modules
 import gridfs
 ## NOC modules
@@ -95,14 +96,24 @@ class ManagedObjectApplication(ExtModelApplication):
             r["id__in"] = ManagedObject.objects.filter(s.Q)
         return r
 
+    def get_Q(self, request, query):
+        q = super(ManagedObjectApplication, self).get_Q(request, query)
+        query = query.strip()
+        if query:
+            if set("+*[]()") & set(query):
+                # Maybe regular expression
+                try:
+                    re.compile(query)
+                    q |= Q(name__regex=query)
+                except re.error:
+                    pass
+        print "@@", q
+        return q
+
     def queryset(self, request, query=None):
         qs = super(ManagedObjectApplication, self).queryset(request, query)
         if not request.user.is_superuser:
             qs = qs.filter(UserAccess.Q(request.user))
-        if query and query.startswith(".") and is_int(query[1:]):
-            v = int(query[1])
-            #if 0 <= v <= 255:
-            #    qs = qs.filter(address__endswith=query)
         qs = qs.exclude(name__startswith="wiping-")
         return qs
 
