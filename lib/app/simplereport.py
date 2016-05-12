@@ -479,6 +479,12 @@ class TableSection(ReportSection):
         t_id = "reporttable-%d" % id(self)
         s = [
             "<script type='text/javascript' src='/static/js/jquery.table2CSV.js'></script>",
+            "<form action='/main/desktop/dlproxy/' method='POST'>",
+            "<input type='hidden' name='content_type' value='text/csv; charset=utf8'>",
+            "<input type='hidden' name='filename' value='report.csv'>",
+            "<input type='hidden' name='data' id='csv_data'>",
+            "<input type='submit' value='CSV' onclick='getCSVData(\"%s\");'>" % t_id,
+            "</form>",
             "<table  id='%s' class='report-table' summary='%s'>" % (t_id, self.quote(self.name))
         ]
         # Render header
@@ -534,16 +540,9 @@ class TableSection(ReportSection):
             s += ["</tr>"]
         s += ["</tbody>"]
         s += ["</table>"]
-        s += ["<form action='/main/desktop/dlproxy/' method='POST'>"]
-        s += ["<input type='hidden' name='content_type' value='text/csv; charset=utf8'>"]
-        s += ["<input type='hidden' name='filename' value='report.csv'>"]
-        s += ["<input type='hidden' name='data' id='csv_data'>"]
-        s += ["<input type='submit' value='CSV' onclick='getCSVData(\"%s\");'>" % t_id]
-        s += ["</form>"]
         s += ["<script>"]
         s += ["function getCSVData(t) {"]
-        s += ["var v = $('#' + t).table2CSV({delivery: 'value', separator: ';'});"]
-        s += ["$('#csv_data').val(v);"]
+        s += ["$('#' + t).table2CSVExport({delivery: 'download', filename: $('.h2')[0] + '.csv', separator: ','});"]
         s += ["}"]
         s += ["</script>"]
         return "\n".join(s)
