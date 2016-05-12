@@ -52,6 +52,10 @@ Ext.define("NOC.maintainance.maintainance.Model", {
             type: "auto"
         },
         {
+            name: "direct_segments",
+            type: "auto"
+        },
+        {
             name: "subject",
             type: "string"
         }

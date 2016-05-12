@@ -10,10 +10,14 @@
 import datetime
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import StringField, BooleanField, ReferenceField, DateTimeField, ListField, EmbeddedDocumentField
+from mongoengine.fields import (
+    StringField, BooleanField, ReferenceField, DateTimeField,
+    ListField, EmbeddedDocumentField
+)
 ## NOC modules
 from maintainancetype import MaintainanceType
 from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.networksegment import NetworkSegment
 from noc.lib.nosql import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.inv.models.objectuplink import ObjectUplink
@@ -21,6 +25,10 @@ from noc.inv.models.objectuplink import ObjectUplink
 
 class MaintainanceObject(EmbeddedDocument):
     object = ForeignKeyField(ManagedObject)
+
+
+class MaintainanceSegment(EmbeddedDocument):
+    segment = ReferenceField(NetworkSegment)
 
 
 @on_save
@@ -41,8 +49,10 @@ class Maintainance(Document):
     is_completed = BooleanField(default=False)
     contacts = StringField()
     suppress_alarms = BooleanField()
-    # Objects declared to be affected my maintainance
+    # Objects declared to be affected by maintainance
     direct_objects = ListField(EmbeddedDocumentField(MaintainanceObject))
+    # Segments declared to be affected by maintainance
+    direct_segments = ListField(EmbeddedDocumentField(MaintainanceSegment))
     # All objects affected by maintainance
     affected_objects = ListField(EmbeddedDocumentField(MaintainanceObject))
     # @todo: Attachments
@@ -82,8 +92,22 @@ class Maintainance(Document):
                     rr.add(d["_id"])
             return rr
 
+        def get_segment_objects(segment):
+            # Get objects belonging to segment
+            so = set(
+                ManagedObject.objects.filter(
+                    segment=segment
+                ).values_list("id", flat=True)
+            )
+            # Get objects from underlying segments
+            for ns in NetworkSegment.objects.filter(parent=segment):
+                so |= get_segment_objects(ns)
+            return so
+
         # Calculate affected objects
         affected = set(o.object.id for o in self.direct_objects)
+        for o in self.direct_segments:
+            affected |= get_segment_objects(o.segment)
         while True:
             r = get_downlinks(affected)
             if not r:
