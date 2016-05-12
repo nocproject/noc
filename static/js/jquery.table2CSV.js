@@ -123,11 +123,10 @@ jQuery.fn.TableCSVExport = function (options) {
         }
     }
 
+    var mydata = '\ufeff' + csvData.join('\n');
     if ((options.delivery == 'popup') || (options.delivery == 'download')) {
-        var mydata = csvData.join('\n');
         return popup(mydata);
     } else {
-        var mydata = csvData.join('\n');
         return mydata;
     }
 
@@ -155,7 +154,7 @@ jQuery.fn.TableCSVExport = function (options) {
     }
     function popup(data) {
         if (options.delivery == 'download') {
-	        var blob = new Blob(['\ufeff' + data], { type: 'text/csv;charset=utf-8;' });
+	        var blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
 	        if (navigator.msSaveBlob) { // IE 10+
 		        navigator.msSaveBlob(blob, options.filename);
 	        } else {
