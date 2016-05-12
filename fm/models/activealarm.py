@@ -117,9 +117,7 @@ class ActiveAlarm(nosql.Document):
                      message=message)]
         if to_save:
             if self.id:
-                self.save(save_condition={
-                    "_id": self.id
-                })
+                self.save(save_condition={"id": self.id})
             else:
                 self.save()
 
@@ -375,7 +373,7 @@ class ActiveAlarm(nosql.Document):
             "managed_object": {
                 "$exists": True
             },
-            "_id": self.id
+            "id": self.id
         })
 
 ## Avoid circular references
