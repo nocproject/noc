@@ -483,7 +483,7 @@ class TableSection(ReportSection):
             "<input type='hidden' name='content_type' value='text/csv; charset=utf8'>",
             "<input type='hidden' name='filename' value='report.csv'>",
             "<input type='hidden' name='data' id='csv_data'>",
-            "<input type='submit' value='CSV' onclick='getCSVData(\"%s\");'>" % t_id,
+            "<input type='submit' value='CSV' onclick='getCSVData(\"#%s\");'>" % t_id,
             "</form>",
             "<table  id='%s' class='report-table' summary='%s'>" % (t_id, self.quote(self.name))
         ]
@@ -542,7 +542,7 @@ class TableSection(ReportSection):
         s += ["</table>"]
         s += ["<script>"]
         s += ["function getCSVData(t) {"]
-        s += ["$('#' + t).table2CSVExport({delivery: 'download', filename: $('.h2')[0] + '.csv', separator: ','});"]
+        s += ["  $(t).table2CSVExport({delivery: 'download', filename: $('.h2')[0] + '.csv', separator: ','});"]
         s += ["}"]
         s += ["</script>"]
         return "\n".join(s)
