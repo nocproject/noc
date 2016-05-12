@@ -209,8 +209,8 @@ class ServiceSummary(Document):
                 del summary[s["interface"]]
             else:
                 bulk.find({
-                    "_id": s["id"]
-                }).remove_one()
+                    "_id": s["_id"]
+                }).remove()
                 n += 1
 
         # add new
