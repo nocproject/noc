@@ -11,7 +11,8 @@ Ext.define("NOC.maintainance.maintainance.Application", {
     requires: [
         "NOC.maintainance.maintainance.Model",
         "NOC.maintainance.maintainancetype.LookupField",
-        "NOC.sa.managedobject.LookupField"
+        "NOC.sa.managedobject.LookupField",
+        "NOC.inv.networksegment.LookupField"
     ],
     model: "NOC.maintainance.maintainance.Model",
     initComponent: function() {
@@ -149,6 +150,20 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                             editor: "sa.managedobject.LookupField",
                             flex: 1,
                             renderer: NOC.render.Lookup("object")
+                        }
+                    ]
+                },
+                {
+                    name: "direct_segments",
+                    xtype: "gridfield",
+                    fieldLabel: "Segments",
+                    columns: [
+                        {
+                            text: "Segment",
+                            dataIndex: "segment",
+                            editor: "inv.networksegment.LookupField",
+                            flex: 1,
+                            renderer: NOC.render.Lookup("segment")
                         }
                     ]
                 }
