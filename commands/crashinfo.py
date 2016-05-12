@@ -28,14 +28,14 @@ class Command(BaseCommand):
         # view command
         view_parser = subparsers.add_parser("view")
         view_parser.add_argument(
-            "uuids",
+            "view_uuids",
             nargs=argparse.REMAINDER,
             help="Crashinfo UUIDs"
         )
         # clear command
         clear_command = subparsers.add_parser("clear")
         view_parser.add_argument(
-            "uuids",
+            "clear_uuids",
             nargs=argparse.REMAINDER,
             help="Crashinfo UUIDs"
         )
@@ -67,8 +67,8 @@ class Command(BaseCommand):
         for l in sorted(fl, key=operator.itemgetter("time"), reverse=True):
             self.stdout.write(fs % (l["uuid"], l["time"].isoformat(), l["service"]))
 
-    def handle_view(self, uuids, *args, **options):
-        for u in uuids:
+    def handle_view(self, view_uuids, *args, **options):
+        for u in view_uuids:
             path = os.path.join(self.PREFIX, "%s.json" % u)
             if not os.path.exists(path):
                 self.stderr.write("Crashinfo not found: %s\n" % u)
@@ -78,8 +78,8 @@ class Command(BaseCommand):
             self.stdout.write(data["traceback"])
             self.stdout.write("\n\n")
 
-    def handle_clear(self, uuids, *args, **options):
-        for u in uuids:
+    def handle_clear(self, clear_uuids, *args, **options):
+        for u in clear_uuids:
             path = os.path.join(self.PREFIX, "%s.json" % u)
             if not os.path.exists(path):
                 self.stderr.write("Crashinfo not found: %s\n" % u)
