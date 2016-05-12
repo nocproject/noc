@@ -29,6 +29,7 @@ from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
 from noc.core.influxdb.client import InfluxDBClient
 from noc.inv.caches.interface.tagstoid import interface_tags_to_id
+from noc.core.config.base import config
 from noc.core.translation import ugettext as _
 
 
@@ -353,7 +354,11 @@ class MapApplication(ExtApplication):
         query = ";".join(query)
         client = tornado.httpclient.HTTPClient()
         response = client.fetch(
-            "http://127.0.0.1:8086/query?db=noc&q=%s" % urllib.quote(query)
+            "http://%s/query?db=%s&q=%s" % (
+                config.get_service("influxdb", limit=1),
+                config.influx_db,
+                urllib.quote(query)
+            )
         )
         data = json.loads(response.body)
         r = {}
