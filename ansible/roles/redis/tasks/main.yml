@@ -1,0 +1,27 @@
+---
+- name: "Include OS-specific tasks"
+  include: "os/{{ ansible_distribution }}/main.yml"
+
+- name: Crreate config dir
+  file:
+    path: "{{item.name}}"
+    state: "directory"
+    owner: "{{item.owner}}"
+  with_items:
+    - name: "{{ redis_conf_path }}"
+      owner: root
+
+- name: Ensure Redis is configured.
+  template:
+    src: redis.conf.j2
+    dest: "{{ redis_conf_path }}/redis.conf"
+    mode: 0644
+  notify: restart redis
+  tags:
+    - config
+
+- name: Ensure redis is running and enabled on boot.
+  service:
+    name: "{{ redis_daemon }}"
+    state: started
+    enabled: yes
