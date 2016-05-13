@@ -355,7 +355,7 @@ class MapApplication(ExtApplication):
         client = tornado.httpclient.HTTPClient()
         response = client.fetch(
             "http://%s/query?db=%s&q=%s" % (
-                config.get_service("influxdb", limit=1),
+                config.get_service("influxdb", limit=1)[0],
                 config.influx_db,
                 urllib.quote(query)
             )
