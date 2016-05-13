@@ -1,4 +1,23 @@
 {% extends "template.html" %}
+{% block extrastyle %}
+<script>
+function gettext(x) {
+    return x;
+}
+function get_format(fmt) {
+    switch(fmt) {
+        case 'FIRST_DAY_OF_WEEK':
+            return 'M';
+        case 'DATE_INPUT_FORMATS':
+            return ['%d.%m.%Y'];
+    }
+}
+django = {
+    jQuery: $
+};
+</script>
+<script type="text/javascript" src="/media/admin/js/core.js"></script>
+{% endblock %}
 {% block content %}
 <h1>{{app.title}}</h1>
 <form action="" method="POST">
