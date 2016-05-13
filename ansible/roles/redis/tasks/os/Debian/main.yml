@@ -1,7 +1,7 @@
 ---
 - name: Ensure redis is installed.
-  yum:
-    name: redis
+  apt:
+    name: redis-server
     state: installed
   environment:
     http_proxy: "{{http_proxy}}"
