@@ -28,7 +28,7 @@
 - name: check if version is ok
   command: "{{ noc_root }}/bin/nsqd --version"
   register: nsq_installed_version
-  when: nsqd_binary.stat.isfile is defined
+  when: nsqd_binary.stat.isfile is defined and nsqd_binary.stat.isfile
 
 - name: check version
   set_fact: nsq_version_is_ok=True
