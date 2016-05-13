@@ -21,6 +21,8 @@
   set_fact:
     postgresql_conf_path: "/etc/postgresql/{{pg_cluster_version}}/{{pg_cluster_name}}/postgresql.conf"
     postgresql_hba_path: "/etc/postgresql/{{pg_cluster_version}}/{{pg_cluster_name}}/pg_hba.conf"
+  tags:
+    - config
 
 - name: Install postgres monitoring
   template:
