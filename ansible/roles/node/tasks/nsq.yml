@@ -28,12 +28,12 @@
 - name: check if version is ok
   command: "{{ noc_root }}/bin/nsqd --version"
   register: nsq_installed_version
-  when: nsqd_binary.stat.isfile is defined and nsqd_binary.stat.isfile
+  when: nsqd_binary.stat.exists
 
 - name: check version
   set_fact: nsq_version_is_ok=True
   when: "nsq_version in nsq_installed_version and nsq_installed_version is defined"
 
 - name: "Include OS-specific tasks"
-  include: "os/{{ ansible_distribution }}/main.yml"
-  when: nsqd_binary.stat.isfile is not defined and nsq_version_is_ok is not defined
+  include: "os/{{ ansible_distribution }}/nsq.yml"
+  when: nsqd_binary.stat.exists==False or nsq_version_is_ok is not defined
