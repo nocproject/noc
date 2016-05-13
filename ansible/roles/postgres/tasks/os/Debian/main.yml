@@ -16,6 +16,8 @@
   set_fact:
     pg_cluster_version: "{{ pgcluster.stdout.split()[0].strip() }}"
     pg_cluster_name: "{{ pgcluster.stdout.split()[1].strip() }}"
+  tags:
+    - config
 
 - name: Set config paths
   set_fact:
