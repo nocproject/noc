@@ -29,6 +29,8 @@
     force: yes
     purge: yes
   when: "'prod' in noc_env_type and noc_env_type is defined"
+  environment:
+    LC_ALL: C
   tags:
     - mercurial
 
@@ -38,6 +40,8 @@
     dest: "{{noc_root}}"
     revision: "{{noc_revision}}"
     update: yes
+  environment:
+    LC_ALL: C
   tags:
     - mercurial
 
@@ -48,6 +52,8 @@
     revision: "{{ noc_custom_revision }}"
     update: yes
   when: "noc_custom_enabled==True and noc_custom_repo is defined and noc_custom_revision is defined"
+  environment:
+    LC_ALL: C
   tags:
     - mercurial
 
