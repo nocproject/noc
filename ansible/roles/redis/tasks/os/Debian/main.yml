@@ -8,11 +8,24 @@
   tags:
     - redis
 
+- name: Crreate systemd dir
+  file:
+    path: "{{item.name}}"
+    state: "directory"
+    owner: "{{item.owner}}"
+  with_items:
+    - name: "/etc/systemd/system/redis.service.d"
+      owner: root
+  tags:
+    - redis
+
 - name: Override systemd defaults for redis
   template:
     src: "etc/systemd/system/redis.service.d/override.conf"
     dest: "/etc/systemd/system/redis.service.d/override.conf"
   notify: systemd daemon-reload
+  tags:
+    - redis
 
 - name: enable overcommit in sysctl
   sysctl:
@@ -21,6 +34,8 @@
     state: present
     reload: yes
     ignoreerrors: yes
+  tags:
+    - redis
 
 - name: Install discovery monitoring
   template:
