@@ -11,6 +11,7 @@ import datetime
 ## Django modules
 from django import forms
 from django.db import connection
+from django.contrib.admin.widgets import AdminDateWidget
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.fm.models.reboot import Reboot
@@ -25,11 +26,11 @@ class ReportForm(forms.Form):
         (30, _("1 month"))
     ])
     from_date = forms.CharField(
-        widget=forms.widgets.DateInput,
+        widget=AdminDateWidget,
         required=False
     )
     to_date = forms.CharField(
-        widget=forms.widgets.DateInput,
+        widget=AdminDateWidget,
         required=False
     )
 
