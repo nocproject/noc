@@ -77,6 +77,12 @@
         - notebook
         - external
 
+    - role: redis
+      when: "{{ has_svc_redis | default(False) }}"
+      tags:
+        - redis
+        - external
+
     - role: migrate
       when: "{{ has_svc_mongod_master | default(False) }}"
       tags:

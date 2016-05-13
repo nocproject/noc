@@ -346,7 +346,7 @@ config:
       default: false
 
   redis:
-    timeout:
+    redis_timeout:
       type: int
       label: Timeout
       default: 300
@@ -356,3 +356,7 @@ config:
       label: Redis db directory
       default: /var/lib/redis
 
+    redis_max_memory:
+      type: int
+      label: Redis Max memory in bytes
+      default: 0
