@@ -121,6 +121,11 @@ services:
     description: SMTP mail sender
     level: global
 
+  redis:
+    description: Caching layer
+    level: global
+    port: 6379
+
 config:
   noc:
     installation_name:
@@ -339,3 +344,15 @@ config:
       label: Use JSON logging
       type: bool
       default: false
+
+  redis:
+    timeout:
+      type: int
+      label: Timeout
+      default: 300
+
+    redis_db_dir:
+      type: str
+      label: Redis db directory
+      default: /var/lib/redis
+
