@@ -41,6 +41,16 @@ Ext.define("NOC.fm.alarm.Application", {
             numFromEdge: bs,
             trailingBufferZone: bs
         });
+        me.autoreloadButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.refresh,
+            enableToggle: true,
+            pressed: true,
+            tooltip: __("Toggle autoreload"),
+            listeners: {
+                scope: me,
+                toggle: me.onAutoReloadToggle
+            }
+        });
         me.typeCombo = Ext.create("Ext.form.ComboBox", {
             fieldLabel: "State",
             labelWidth: 30,
@@ -160,6 +170,7 @@ Ext.define("NOC.fm.alarm.Application", {
                         overflowHandler: "Menu"
                     },
                     items: [
+                        me.autoreloadButton,
                         me.typeCombo,
                         me.selectorCombo,
                         me.admdomCombo,
@@ -335,7 +346,7 @@ Ext.define("NOC.fm.alarm.Application", {
     isPollLocked: function() {
         var me = this,
             ls;
-        ls = me.gridPanel.getView().getScrollable().getPosition().y !== 0;
+        ls = me.autoreloadButton.pressed && (me.gridPanel.getView().getScrollable().getPosition().y !== 0);
         return ls;
     },
     //
@@ -416,5 +427,12 @@ Ext.define("NOC.fm.alarm.Application", {
             });
         }
         me.lastCheckTS = ts;
+    },
+    //
+    onAutoReloadToggle: function() {
+        var me = this;
+        if(me.autoreloadButton.pressed) {
+            me.store.load();
+        }
     }
 });
