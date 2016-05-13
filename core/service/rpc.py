@@ -55,11 +55,12 @@ class RPCProxy(object):
             return mw
 
     def _get_url(self):
-        svc = random.choice(
-            self._service.config.get_service(
-                self._service_name
-            )
+        s = self._service.config.get_service(
+            self._service_name
         )
+        if not s:
+            raise ValueError("No active services '%s' configured" % self._service_name)
+        svc = random.choice(s)
         return "http://%s/api/%s/" % (svc, self._api)
 
     @tornado.gen.coroutine

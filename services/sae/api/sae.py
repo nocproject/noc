@@ -71,8 +71,12 @@ class SAEAPI(API):
         if not loader.has_script(script_name):
             raise APIError("Invalid script")
         #
+        try:
+            url = activator._get_url()
+        except ValueError:
+            raise APIError("No activators configured for pool '%s'" % pool)
         self.redirect(
-            activator._get_url(),
+            url,
             "script",
             [script_name, data["credentials"], data["capabilities"],
              data["version"], args, timeout]
