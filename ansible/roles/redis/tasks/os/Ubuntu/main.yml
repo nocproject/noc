@@ -1,0 +1,23 @@
+---
+- name: Ensure redis is installed.
+  yum:
+    name: redis
+    state: installed
+  environment:
+    http_proxy: "{{http_proxy}}"
+  tags:
+    - redis
+
+- name: enable overcommit in sysctl
+  sysctl:
+    name: vm.overcommit_memory
+    value: 1
+    state: present
+    reload: yes
+    ignoreerrors: yes
+
+- name: Install discovery monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/redis.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/redis.conf"
+  notify: reload telegraf
