@@ -127,15 +127,20 @@ class NRICheck(DiscoveryCheck):
         now = datetime.datetime.now()
         nc = ExtNRILink._get_collection()
         links = {}  # nri_name -> {dst_mo, dst_interface}
-        for d in nc.find({"src_mo": self.object.id}):
+        for d in nc.find({
+            "$or": [
+                {"src_mo": self.object.id},
+                {"dst_mo": self.object.id}
+            ]
+        }):
             if d["src_mo"] == d["dst_mo"]:
                 continue
-            links[d["src_interface"]] = (d["dst_mo"], d["dst_interface"])
-        for d in nc.find({"dst_mo": self.object.id}):
-            if d["src_mo"] == d["dst_mo"]:
-                continue
-            links[d["dst_interface"]] = (d["src_mo"], d["src_interface"])
+            if d["src_mo"] == self.object.id:
+                links[d["src_interface"]] = (d["dst_mo"], d["dst_interface"])
+            else:
+                links[d["dst_interface"]] = (d["src_mo"], d["src_interface"])
         if not links:
+            self.logger.info("Nothing to link")
             return  # Nothing to link
         # Build nri_name -> name interface map
         nri_map = {}
@@ -143,16 +148,24 @@ class NRICheck(DiscoveryCheck):
             n = i.get("nri_name")
             if n and n in links:
                 nri_map[n] = i
-        linked = set()
+        linked = {}
         for d in Link._get_collection().find({
             "interfaces": {
                 "$in": [i["_id"] for i in six.itervalues(nri_map)]
             }
         }):
-            linked.update(d["interfaces"])
+            for i in d["interfaces"]:
+                linked[i] = d.get("discovery_method")
         # Process still unlinked interfaces
         for n in nri_map:
+            if_name = nri_map[n]["name"]
             if nri_map[n]["_id"] in linked:
+                self.logger.info(
+                    "%s (%s) is already linked via %d. Skipping",
+                    if_name,
+                    n,
+                    linked[nri_map[n]["_id"]]
+                )
                 continue  # Already linked
             rmo, rnn = links[n]
             ri = Interface._get_collection().find_one({
@@ -162,7 +175,16 @@ class NRICheck(DiscoveryCheck):
                 "_id": 1
             })
             if ri:
-                self.logger.info("Linking %s", n)
+                xl = Link._get_collection().find_on({
+                    "interfaces": ri["_id"]
+                })
+                if xl:
+                    self.logger.info(
+                        "Cannot link %s (%s). Remote interface is already linked via %s. Skipping",
+                        if_name, n, xl.get("discovery_method")
+                    )
+                    continue
+                self.logger.info("Linking %s(%s)", if_name, n)
                 Link._get_collection().insert({
                     "interfaces": [nri_map[n]["_id"], ri["_id"]],
                     "discovery_method": "nri",
