@@ -428,6 +428,9 @@ class ManagedObject(Model):
         # Invalidate credentials cache
         if (
             self.initial_data["id"] is None or
+            "scheme" in self.changed_fields or
+            "address" in self.changed_fields or
+            "port" in self.changed_fields or
             "auth_profile" in self.changed_fields or
             "user" in self.changed_fields or
             "password" in self.changed_fields or
