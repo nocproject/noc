@@ -202,10 +202,10 @@ class MetricsCheck(DiscoveryCheck):
                 ]
         # Send metrics
         if batch:
-            self.logger.debug("Spooling %d metrics", len(batch))
+            self.logger.info("Spooling %d metrics", len(batch))
             self.job.scheduler.service.register_metrics(batch)
         else:
-            self.logger.debug("No metrics to spool")
+            self.logger.info("No metrics to spool")
             return
         # Calculate max triggered threshold level
         oot = []
