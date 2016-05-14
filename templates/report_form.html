@@ -1,5 +1,8 @@
 {% extends "template.html" %}
 {% block extrastyle %}
+<link rel="stylesheet" type="text/css" href="/media/admin/css/base.css" />
+<link rel="stylesheet" type="text/css" href="/media/admin/css/forms.css" />
+    <link rel="stylesheet" type="text/css" href="/media/admin/css/widgets.css" />
 <script>
 function gettext(x) {
     return x;
@@ -7,7 +10,7 @@ function gettext(x) {
 function get_format(fmt) {
     switch(fmt) {
         case 'FIRST_DAY_OF_WEEK':
-            return 'M';
+            return '1';
         case 'DATE_INPUT_FORMATS':
             return ['%d.%m.%Y'];
     }
