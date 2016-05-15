@@ -9,6 +9,7 @@
 ## Python modules
 import os
 import operator
+from threading import RLock
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField,
@@ -19,6 +20,8 @@ from noc.inv.models.capability import Capability
 from noc.main.models.doccategory import category
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
+
+id_lock = RLock()
 
 
 @category
@@ -79,6 +82,6 @@ class MetricType(Document):
         return os.path.join(*p) + ".json"
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return MetricType.objects.filter(id=id).first()
