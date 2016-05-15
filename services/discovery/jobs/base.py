@@ -478,7 +478,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         if not ri:
             self.logger.info(
                 "Not linking: %s:%s -- %s:%s. "
-                "Interface %s is not discovered",
+                "Interface %s:%s is not discovered",
                 local_object.name, local_interface,
                 remote_object.name, remote_interface,
                 remote_object.name, remote_interface
@@ -567,7 +567,15 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 local_object.name, local_interface,
                 remote_object.name, remote_interface
             )
-            li.link_ptp(ri, method=self.name)
+            try:
+                li.link_ptp(ri, method=self.name)
+            except ValueError as e:
+                self.logger.info(
+                    "Cannot link %s:%s -- %s:%s: %s",
+                    local_object.name, local_interface,
+                    remote_object.name, remote_interface,
+                    e
+                )
             return
         #
         if lpolicy == "C" and rpolicy == "C":

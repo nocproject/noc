@@ -175,7 +175,7 @@ class NRICheck(DiscoveryCheck):
                 "_id": 1
             })
             if ri:
-                xl = Link._get_collection().find_on({
+                xl = Link._get_collection().find_one({
                     "interfaces": ri["_id"]
                 })
                 if xl:
