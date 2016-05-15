@@ -104,15 +104,17 @@ class Job(object):
             ) * 1000.0
         )
         # Run handler
+        status = self.E_EXCEPTION
         try:
             ds = self.dereference()
+            can_run = self.can_run()
         except Exception as e:
             self.logger.error("Unknown error during dereference: %s", e)
-            status = self.E_EXCEPTION
             ds = None
+            can_run = False
 
         if ds:
-            if self.can_run():
+            if can_run:
                 try:
                     data = self.attrs.get(self.ATTR_DATA) or {}
                     result = self.handler(**data)
@@ -120,7 +122,7 @@ class Job(object):
                         # Wait for future
                         result = yield result
                     status = self.E_SUCCESS
-                except self.failed_exceptions, why:
+                except self.failed_exceptions:
                     status = self.E_FAILED
                 except Exception:
                     error_report()
