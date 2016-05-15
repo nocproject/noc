@@ -12,6 +12,7 @@ import os
 import stat
 import datetime
 import argparse
+import stat
 ## Third-party modules
 import ujson
 ## NOC modules
@@ -44,14 +45,19 @@ class Command(BaseCommand):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_list(self):
+        # Get last update timestamp
+        if os.path.exists(".hg/dirstate"):
+            uts = os.stat(".hg/dirstate")[stat.ST_MTIME]
+        else:
+            uts = 0
+        # Build list
         fl = []
         for fn in os.listdir(self.PREFIX):
             if not fn.endswith(".json"):
                 continue
             path = os.path.join(self.PREFIX, fn)
-            t = datetime.datetime.fromtimestamp(
-                os.stat(path)[stat.ST_MTIME]
-            )
+            ts = os.stat(path)[stat.ST_MTIME]
+            t = datetime.datetime.fromtimestamp(ts)
             with open(path) as f:
                 data = ujson.load(f)
             service = data["process"]
@@ -60,12 +66,13 @@ class Command(BaseCommand):
             fl += [{
                 "uuid": fn[:-5],
                 "time": t,
+                "status": "*" if uts and ts > uts else " ",
                 "service": service
             }]
-        fs = "%36s  %19s  %s\n"
-        self.stdout.write(fs % ("UUID", "Time", "Service"))
+        fs = "%s %36s  %19s  %s\n"
+        self.stdout.write(fs % ("N", "UUID", "Time", "Service"))
         for l in sorted(fl, key=operator.itemgetter("time"), reverse=True):
-            self.stdout.write(fs % (l["uuid"], l["time"].isoformat(), l["service"]))
+            self.stdout.write(fs % (l["status"], l["uuid"], l["time"].isoformat(), l["service"]))
 
     def handle_view(self, view_uuids, *args, **options):
         for u in view_uuids:
