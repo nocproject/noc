@@ -68,6 +68,12 @@
   tags:
     - config
 
+- name: Install shell.js
+  template:
+    src: shell.js.j2
+    dest: "{{ noc_root }}/var/etc/mongo/shell.js"
+  tags:
+    - config
 
 - name: Enable MongoDB arbiter system service
   service:
