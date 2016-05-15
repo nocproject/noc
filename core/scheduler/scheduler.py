@@ -127,11 +127,14 @@ class Scheduler(object):
                 Job.ATTR_STATUS: Job.S_WAIT
             }
         }, multi=True, safe=True)
-        nm = r.get("nModified", 0)
-        if nm:
-            self.logger.debug("Resetted: %d", nm)
+        if r["ok"]:
+            nm = r.get("nModified", 0)
+            if nm:
+                self.logger.info("Reset: %d", nm)
+            else:
+                self.logger.info("Nothing to reset")
         else:
-            self.logger.debug("Nothing to reset")
+            self.logger.info("Failed to reset running jobs")
 
     def ensure_indexes(self):
         """
@@ -367,5 +370,5 @@ class Scheduler(object):
             }
             self.logger.debug("update(%s, %s)", q, op)
             r = self.get_collection().update(q, op)
-            if r["ok"] != 1 or r["nModified"] != 1:
+            if not r["ok"] or r["nModified"] != 1:
                 self.logger.error("Failed to set next run for job %s", jid)
