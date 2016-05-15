@@ -241,7 +241,7 @@ class Scheduler(object):
                     "update({_id: {$in: %s}}, {$set: {%s: '%s'}})",
                     jids, Job.ATTR_STATUS, Job.S_RUN
                 )
-                collection.update({
+                r = collection.update({
                     "_id": {
                         "$in": jids
                     }
@@ -250,6 +250,13 @@ class Scheduler(object):
                         Job.ATTR_STATUS: Job.S_RUN
                     }
                 }, multi=True, safe=True)
+                if not r["ok"]:
+                    self.logger.error("Failed to update running status")
+                if r["nModified"] != len(jids):
+                    self.logger.error(
+                        "Failed to update all running statuses: %d of %d",
+                        r["nModified"], len(jids)
+                    )
                 for job in rjobs:
                     executor.submit(job.run)
                     n += 1
