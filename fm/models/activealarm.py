@@ -109,7 +109,10 @@ class ActiveAlarm(nosql.Document):
                 self.severity = severity.severity
                 self.log_message(
                     "%s has changed severity to %s" % (user, severity.name))
-        self.save()
+        if self.id:
+            self.save(save_condition={"id": self.id})
+        else:
+            self.save()
 
     def log_message(self, message, to_save=True):
         self.log += [AlarmLog(timestamp=datetime.datetime.now(),
@@ -333,7 +336,9 @@ class ActiveAlarm(nosql.Document):
             self.total_subscribers = sub_list
             if ns != self.severity:
                 self.change_severity(severity=ns)
-            self.save()
+            self.save(save_condition={
+                "id": self.id
+            })
 
     def set_root(self, root_alarm):
         """
@@ -375,6 +380,34 @@ class ActiveAlarm(nosql.Document):
             },
             "id": self.id
         })
+
+    def iter_consequences(self):
+        """
+        Generator yielding all consequences alarm
+        """
+        for a in ActiveAlarm.objects.filter(root=self.id):
+            yield a
+            for ca in a.iter_consequences():
+                yield ca
+
+    def iter_affected(self):
+        """
+        Generator yielding all affected managed objects
+        """
+        seen = set([self.managed_object])
+        yield self.managed_object
+        for a in self.iter_consequences():
+            if a.managed_object not in seen:
+                seen.add(a.managed_object)
+                yield a.managed_object
+
+    def iter_escalated(self):
+        """
+        Generator yielding all escalated consequences
+        """
+        for a in self.iter_consequences():
+            if a.escalation_tt:
+                yield a
 
 ## Avoid circular references
 from archivedalarm import ArchivedAlarm
