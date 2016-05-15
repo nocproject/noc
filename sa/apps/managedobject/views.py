@@ -107,7 +107,6 @@ class ManagedObjectApplication(ExtModelApplication):
                     q |= Q(name__regex=query)
                 except re.error:
                     pass
-        print "@@", q
         return q
 
     def queryset(self, request, query=None):
