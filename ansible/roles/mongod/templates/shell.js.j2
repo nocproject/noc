@@ -1,0 +1,2 @@
+db = connect("{{ noc_config["config"].get("mongod-global-%s" % ansible_hostname, {}).get("listen") }}/{{noc_mongo_db}}")
+db.auth("{{noc_mongo_user}}", "{{noc_mongo_admin_password}}")
