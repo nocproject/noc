@@ -366,4 +366,6 @@ class Scheduler(object):
                 Job.ATTR_ID: jid
             }
             self.logger.debug("update(%s, %s)", q, op)
-            self.get_collection().update(q, op)
+            r = self.get_collection().update(q, op)
+            if r["ok"] != 1 or r["nModified"] != 1:
+                self.logger.error("Failed to set next run for job %s", jid)
