@@ -122,6 +122,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
             a.notification_group.notify(subject, body)
         # Escalate to TT
         if a.create_tt:
+            tt_id = None
             if alarm.escalation_tt:
                 log(
                     "Already escalated with TT #%s",
@@ -183,6 +184,23 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                 else:
                     log("Cannot find TT system for %s",
                         alarm.managed_object.name)
+            if tt_id and cons_escalated:
+                # Notify consequences
+                for a in cons_escalated:
+                    c_tt_name, c_tt_id = a.escalation_tt
+                    cts = tt_system_cache[c_tt_name]
+                    if cts:
+                        tts = cts.get_system()
+                        try:
+                            log("Appending comment to TT %s", tt_id)
+                            tts.add_comment(
+                                c_tt_id,
+                                body="Covered by TT %s" % tt_id,
+                                login="correlator"
+                            )
+                        except tts.TTError as e:
+                            log("Failed to add comment to %s: %s",
+                                a.escalation_tt, e)
         #
         if a.stop_processing:
             logger.debug("Stopping processing")
