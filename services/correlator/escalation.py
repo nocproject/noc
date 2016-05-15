@@ -10,6 +10,7 @@
 import logging
 import cachetools
 import datetime
+import operator
 ## NOC modules
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.ttsystem import TTSystem
@@ -43,12 +44,6 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                 "summary": k.summary
             }]
         return sorted(r, key=lambda x: -x["summary"])
-
-    def iter_affected_objects(alarm):
-        yield alarm.managed_object
-        for a in ActiveAlarm.objects.filter(root=alarm.id):
-            for o in iter_affected_objects(a):
-                yield o
 
     logger.info("[%s] Performing escalations", alarm_id)
     alarm = get_alarm(alarm_id)
@@ -103,9 +98,16 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                 ae, tt_escalation_limit
             )
             return
+        # Check whether consequences has escalations
+        cons_escalated = sorted(alarm.iter_escalated(),
+                                key=operator.attrgetter("timestamp"))
+        affected_objects = sorted(alarm.iter_affected(),
+                                  key=operator.attrgetter("name"))
         #
         ctx = {
             "alarm": alarm,
+            "affected_objects": affected_objects,
+            "cons_escalated": cons_escalated,
             "total_objects": summary_to_list(alarm.total_objects, ManagedObjectProfile),
             "total_subscribers": summary_to_list(alarm.total_subscribers, SubscriberProfile),
             "total_services": summary_to_list(alarm.total_services, ServiceProfile)
@@ -156,7 +158,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                                     # Add objects
                                     objects = dict(
                                         (o.id, o.name)
-                                        for o in iter_affected_objects(alarm)
+                                        for o in alarm.iter_affected()
                                     )
                                     for d in ExtNRITTMap._get_collection().find({
                                         "managed_object": {
