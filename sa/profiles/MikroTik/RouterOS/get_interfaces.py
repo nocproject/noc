@@ -258,28 +258,32 @@ class Script(BaseScript):
                 else:
                     i["subinterfaces"][0]["enabled_protocols"] += ["OSPF"]
         # PIMm IGMP
-        for n, f, r in self.cli_detail("/routing pim interface print detail"):
-            self.si = {}
-            proto = r["protocols"].upper().split(",")
-            if r["interface"] in ifaces:
-                i = ifaces[r["interface"]]
-                if not i["subinterfaces"]:
-                    self.si = {
-                        "name": r["interface"],
-                        "enabled_afi": [],
-                        # XXX Workaround
-                        "admin_status": i["admin_status"],
-                        "oper_status": i["oper_status"],
-                        "enabled_protocols": [proto]
-                    }
-                    i["subinterfaces"] += [self.si]
-                else:
-                    i["subinterfaces"][0]["enabled_protocols"] += [proto]
-            for i in ifaces:
-                for si in ifaces[i].get("subinterfaces", []):
-                    if si["name"] == r["interface"]:
-                        for p in proto:
-                            if not p in si["enabled_protocols"]:
-                                si["enabled_protocols"] += [p]
+        try:
+            cli_result = self.cli_detail("/routing pim interface print detail")
+            for n, f, r in cli_result:
+                self.si = {}
+                proto = r["protocols"].upper().split(",")
+                if r["interface"] in ifaces:
+                    i = ifaces[r["interface"]]
+                    if not i["subinterfaces"]:
+                        self.si = {
+                            "name": r["interface"],
+                            "enabled_afi": [],
+                            # XXX Workaround
+                            "admin_status": i["admin_status"],
+                            "oper_status": i["oper_status"],
+                            "enabled_protocols": [proto]
+                        }
+                        i["subinterfaces"] += [self.si]
+                    else:
+                        i["subinterfaces"][0]["enabled_protocols"] += [proto]
+                for i in ifaces:
+                    for si in ifaces[i].get("subinterfaces", []):
+                        if si["name"] == r["interface"]:
+                            for p in proto:
+                                if not p in si["enabled_protocols"]:
+                                    si["enabled_protocols"] += [p]
+        except self.CLISyntaxError:
+            pass
 
         return [{"interfaces": ifaces.values()}]
