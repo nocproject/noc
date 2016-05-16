@@ -34,6 +34,7 @@ class Script(BaseScript):
         "sstp-in": "tunnel",
         "gre-tunnel": "tunnel",
         "ipip-tunnel": "tunnel",
+        "ipip": "tunnel",
         "eoip": "tunnel",
         "bond": "aggregated"
     }
