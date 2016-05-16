@@ -24,25 +24,29 @@ class Script(BaseScript):
         r"PID:\s+(?P<pid>\S+)?\s*,\s+VID:\s+(?P<vid>[\S ]+)?\n,\s+"
         r"SN: (?P<serial>\S+)?", re.MULTILINE | re.DOTALL)
 
-    def get_type(self, name, pid=None, descr=None):
+    def get_type(self, name, pid, descr):
         """
         Get type, number and part_no
         """
         if pid is None:
             pid = ""
-        if name.startswith("Chassic"):
+        if name.startswith("Chassis"):
             return "CHASSIC", None, pid
-        if name.startswith("Slot "):
+        elif name.startswith("Slot "):
             if "Supervisor" in descr:
-                return "SUP", name[6:], pid
+                return "SUP", name[5:], pid
             elif "Services Module" in descr:
-                return "SERV", name[6:], pid
+                return "SERV", name[5:], pid
             elif "Power Supply" in descr:
-                return "PSU", name[6:], pid
+                return "PSU", name[5:], pid
             elif "Fan Module" in descr:
-                return "FAN", name[6:], pid
+                if pid == "" and descr.startswith("MDS 9"):
+                    s = descr.split( )
+                    pid = ("%s-%s-%s" % (s[0], s[1], s[2])).upper()
+                return "FAN", name[5:], pid
             else:
                 return None, None, None
+        return None, None, None
 
     def execute(self):
         objects = []
@@ -50,9 +54,6 @@ class Script(BaseScript):
             v = self.cli("show inventory")
             for match in self.rx_item.finditer(v):
                 vendor, serial = "", ""
-                n =  match.group("name")
-                p =  match.group("pid")
-                d =  match.group("descr")
                 type, number, part_no = self.get_type(
                     match.group("name"), match.group("pid"),
                     match.group("descr")
@@ -71,6 +72,5 @@ class Script(BaseScript):
                 }]
         except self.CLISyntaxError:
             raise self.NotSupportedError()
-        print "%s" % objects
         return objects
 
