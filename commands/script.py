@@ -216,6 +216,7 @@ class JSONObject(object):
             "telnet": 1,
             "ssh": 2
         }.get(data.get("scheme", "telnet"), 1)
+        self.profile_name = data.get("profile")
         self.address = data["address"]
         self.port = data.get("port")
         self.creds = data.get("credentials", {})
