@@ -228,20 +228,23 @@ Ext.define("NOC.fm.alarm.Application", {
                 {
                     text: __("Subject"),
                     dataIndex: "subject",
-                    flex: 1
+                    flex: 1,
+                    sortable: false
                 },
                 {
                     text: __("Duration"),
                     dataIndex: "duration",
                     width: 70,
                     align: "right",
-                    renderer: NOC.render.Duration
+                    renderer: NOC.render.Duration,
+                    sortable: false
                 },
                 {
                     text: __("Events"),
                     dataIndex: "events",
                     width: 30,
-                    align: "right"
+                    align: "right",
+                    sortable: false
                 }
             ],
             selModel: Ext.create("Ext.selection.CheckboxModel"),
