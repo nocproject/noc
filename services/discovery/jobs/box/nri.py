@@ -161,7 +161,7 @@ class NRICheck(DiscoveryCheck):
             if_name = nri_map[n]["name"]
             if nri_map[n]["_id"] in linked:
                 self.logger.info(
-                    "%s (%s) is already linked via %d. Skipping",
+                    "%s (%s) is already linked via %s. Skipping",
                     if_name,
                     n,
                     linked[nri_map[n]["_id"]]
