@@ -101,7 +101,7 @@ class Script(BaseScript):
             iface = {
                 "interface": sn,
                 "port_id": "%s.%s" % (sv["PRIORITY"], sn.rsplit("/")[-1]),
-                "role": self.ROLE_MAP[sv["ROLE"]],
+                "role": self.ROLE_MAP[sv.get("ROLE", "disabled")],
                 "state": self.STATE_MAP[sv["STATE"]],
                 "priority": sv["PRIORITY"],
                 "designated_bridge_id": desg_id,
