@@ -421,7 +421,10 @@ class CorrelatorService(Service):
                     r.u_name, str(e.id), e.event_class.name,
                     str(a.id), a.alarm_class.name))
                 a.contribute_event(e, close=True)
-                a.clear_alarm("Cleared by disposition rule '%s'" % r.u_name)
+                a.clear_alarm(
+                    "Cleared by disposition rule '%s'" % r.u_name,
+                    ts=e.timestamp
+                )
 
     def get_delayed_event(self, r, e):
         """

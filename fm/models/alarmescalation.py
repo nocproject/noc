@@ -43,6 +43,7 @@ class EscalationItem(EmbeddedDocument):
     notification_group = ForeignKeyField(NotificationGroup)
     template = ForeignKeyField(Template)
     create_tt = BooleanField(default=False)
+    wait_tt = BooleanField(default=False)
     # Stop or continue to next rule
     stop_processing = BooleanField(default=False)
 

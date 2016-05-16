@@ -20,6 +20,7 @@ from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from ttsystem import TTSystem
+from noc.core.defer import call_later
 
 
 class ActiveAlarm(nosql.Document):
@@ -66,6 +67,9 @@ class ActiveAlarm(nosql.Document):
     # <external system name>:<external tt id>
     escalation_ts = nosql.DateTimeField(required=False)
     escalation_tt = nosql.StringField(required=False)
+    # Do not clear alarm until *wait_tt* is closed
+    wait_tt = nosql.StringField()
+    wait_ts = nosql.DateTimeField()
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
     direct_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
@@ -143,8 +147,25 @@ class ActiveAlarm(nosql.Document):
             e.expires = None
             e.save()
 
-    def clear_alarm(self, message):
-        ts = datetime.datetime.now()
+    def clear_alarm(self, message, ts=None, force=False):
+        """
+        Clear alarm
+        :param message: Log clearing message
+        :param ts: Clearing timestamp
+        :param force: Clear ever if wait_tt seg
+        """
+        ts = ts or datetime.datetime.now()
+        if self.wait_tt and not force:
+            # Wait for escalated tt to close
+            if not self.wait_ts:
+                self.wait_ts = ts
+                self.log_message("Waiting for TT to close")
+                call_later(
+                    "noc.services.correlator.wait_tt.wait_tt",
+                    scheduler="correlator",
+                    alarm_id=self.id
+                )
+            return
         log = self.log + [AlarmLog(timestamp=ts, from_status="A",
                                    to_status="C", message=message)]
         a = ArchivedAlarm(
