@@ -11,7 +11,8 @@ import os
 import argparse
 import pprint
 import re
-import json
+## Third-party modules
+import ujson
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_int
@@ -117,6 +118,8 @@ class Command(BaseCommand):
         from noc.sa.models.managedobject import ManagedObject
         from django.db.models import Q
 
+        if object_name.endswith(".json") and os.path.isfile(object_name):
+            return JSONObject(object_name)
         q = Q(name=object_name)
         if is_int(object_name):
             q = Q(id=int(object_name)) | q
@@ -170,7 +173,7 @@ class Command(BaseCommand):
 
         def parse_json(j):
             try:
-                return json.loads(j)
+                return ujson.loads(j)
             except ValueError, why:
                 self.die("Failed to parse JSON: %s" % why)
 
@@ -203,6 +206,30 @@ class ServiceStub(object):
 
     def __init__(self, pool):
         self.config = self.ServiceConfig(pool=pool)
+
+
+class JSONObject(object):
+    def __init__(self, path):
+        with open(path) as f:
+            data = ujson.load(f)
+        self.scheme = {
+            "telnet": 1,
+            "ssh": 2
+        }.get(data.get("scheme", "telnet"), 1)
+        self.address = data["address"]
+        self.port = data.get("port")
+        self.creds = data.get("credentials", {})
+        self.caps = data.get("caps")
+
+    @property
+    def credentials(self):
+        c = object()
+        for k in ("user", "password", "super_password", "remote_path", "snmp_ro"):
+            setattr(c, k, self.creds.get(k))
+        return c
+
+    def get_caps(self):
+        return self.caps
 
 
 if __name__ == "__main__":
