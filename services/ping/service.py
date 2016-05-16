@@ -176,7 +176,8 @@ class PingService(Service):
         t0 = time.time()
         rtt = yield self.ping.ping_check_rtt(
             address,
-            count=self.config.max_packets
+            count=self.config.max_packets,
+            timeout=self.config.timeout
         )
         s = rtt is not None
         smd = self.source_map.get(address)
