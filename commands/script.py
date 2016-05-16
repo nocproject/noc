@@ -224,10 +224,11 @@ class JSONObject(object):
 
     @property
     def credentials(self):
-        c = object()
-        for k in ("user", "password", "super_password", "remote_path", "snmp_ro"):
-            setattr(c, k, self.creds.get(k))
-        return c
+        from noc.sa.models.managedobject import Credentials
+        return Credentials(**dict(
+            (k, self.creds.get(k))
+            for k in ("user", "password", "super_password", "snmp_ro", "snmp_rw")
+        ))
 
     def get_caps(self):
         return self.caps
