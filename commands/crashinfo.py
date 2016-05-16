@@ -67,12 +67,13 @@ class Command(BaseCommand):
                 "uuid": fn[:-5],
                 "time": t,
                 "status": "*" if uts and ts > uts else " ",
-                "service": service
+                "service": service,
+                "exception": str(data["traceback"].splitlines()[5])
             }]
-        fs = "%s %36s  %19s  %s\n"
-        self.stdout.write(fs % ("N", "UUID", "Time", "Service"))
+        fs = "%s %36s  %19s  %29s %s\n"
+        self.stdout.write(fs % ("N", "UUID", "Time", "Service", "Exception"))
         for l in sorted(fl, key=operator.itemgetter("time"), reverse=True):
-            self.stdout.write(fs % (l["status"], l["uuid"], l["time"].isoformat(), l["service"]))
+            self.stdout.write(fs % (l["status"], l["uuid"], l["time"].isoformat(), l["service"], l["exception"]))
 
     def handle_view(self, view_uuids, *args, **options):
         for u in view_uuids:
