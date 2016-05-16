@@ -24,7 +24,7 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 su = self.snmp.get(mib["SNMPv2-MIB::sysUpTime", 0])
-                if su:
+                if su is not None:
                     return float(su) / 100.0
             except self.snmp.TimeOutError:
                 pass
