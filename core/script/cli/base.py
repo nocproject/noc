@@ -94,7 +94,7 @@ class CLI(object):
             self.iostream = self.create_iostream()
             address = (
                 self.script.credentials.get("address"),
-                self.script.credentials.get("port", self.default_port)
+                self.script.credentials.get("cli_port", self.default_port)
             )
             self.logger.debug("Connecting %s", address)
             try:
