@@ -36,6 +36,7 @@ from .doc import DocRequestHandler
 from .mon import MonRequestHandler
 from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
+from .ctl import CtlAPI
 
 
 class Service(object):
@@ -347,38 +348,40 @@ class Service(object):
         handlers = [
             (r"^/mon/$", MonRequestHandler, {"service": self})
         ]
+        api = [CtlAPI]
         if self.api:
-            addr, port = self.get_service_address()
-            sdl = {}  # api -> [methods]
-            # Collect and register exposed API
-            for a in self.api:
-                url = "^/api/%s/$" % a.name
-                self.logger.info(
-                    "Supported API: %s at http://%s:%s/api/%s/",
-                    a.name, addr, port, a.name
-                )
-                handlers += [(
-                    url,
-                    APIRequestHandler,
-                    {"service": self, "api_class": a}
-                )]
-                # Populate sdl
-                sdl[a.name] = a.get_methods()
+            api += self.api
+        addr, port = self.get_service_address()
+        sdl = {}  # api -> [methods]
+        # Collect and register exposed API
+        for a in self.api:
+            url = "^/api/%s/$" % a.name
+            self.logger.info(
+                "Supported API: %s at http://%s:%s/api/%s/",
+                a.name, addr, port, a.name
+            )
+            handlers += [(
+                url,
+                APIRequestHandler,
+                {"service": self, "api_class": a}
+            )]
+            # Populate sdl
+            sdl[a.name] = a.get_methods()
+        if self.api:
             handlers += [
                 ("^/doc/$", DocRequestHandler, {"service": self}),
                 ("^/sdl.js", SDLRequestHandler, {"sdl": sdl})
             ]
         handlers += self.get_handlers()
-        if handlers:
-            addr, port = self.get_service_address()
-            self.logger.info("Running HTTP APIs at http://%s:%s/",
-                             addr, port)
-            app = tornado.web.Application(handlers, **self.get_app_settings())
-            http_server = tornado.httpserver.HTTPServer(
-                app,
-                xheaders=True
-            )
-            http_server.listen(port, addr)
+        addr, port = self.get_service_address()
+        self.logger.info("Running HTTP APIs at http://%s:%s/",
+                         addr, port)
+        app = tornado.web.Application(handlers, **self.get_app_settings())
+        http_server = tornado.httpserver.HTTPServer(
+            app,
+            xheaders=True
+        )
+        http_server.listen(port, addr)
         self.ioloop.add_callback(self.on_activate)
 
     @tornado.gen.coroutine
