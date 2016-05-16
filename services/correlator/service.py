@@ -275,10 +275,10 @@ class CorrelatorService(Service):
     def raise_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
-            self.logger.debug("Empty managed object, ignoring")
+            self.logger.info("Empty managed object, ignoring")
             return
         if e.managed_object.id != managed_object.id:
-            self.logger.debug("Changing managed object to %s",
+            self.logger.info("Changing managed object to %s",
                           managed_object.name)
         discriminator, vars = r.get_vars(e)
         if r.unique:
@@ -296,13 +296,13 @@ class CorrelatorService(Service):
                 ).first()
                 if a:
                     # Reopen alarm
-                    self.logger.debug("%s: Event %s(%s) reopens alarm %s(%s)" % (
+                    self.logger.info("%s: Event %s(%s) reopens alarm %s(%s)" % (
                         r.u_name, str(e.id), e.event_class.name,
                         str(a.id), a.alarm_class.name))
                     a = a.reopen("Reopened by disposition rule '%s'" % r.u_name)
             if a:
                 # Active alarm found, refresh
-                self.logger.debug("%s: Contributing event %s(%s) to active alarm %s(%s)" % (
+                self.logger.info("%s: Contributing event %s(%s) to active alarm %s(%s)" % (
                     r.u_name, str(e.id), e.event_class.name,
                     str(a.id), a.alarm_class.name))
                 a.contribute_event(e)
@@ -342,7 +342,7 @@ class CorrelatorService(Service):
         )
         a.save()
         a.contribute_event(e, open=True)
-        self.logger.debug("%s: Event %s (%s) raises alarm %s (%s): %r",
+        self.logger.info("%s: Event %s (%s) raises alarm %s (%s): %r",
                       r.u_name, str(e.id), e.event_class.name,
                       str(a.id), r.alarm_class.name, a.vars)
         self.correlate_queue.put((r, a))
@@ -417,7 +417,7 @@ class CorrelatorService(Service):
                 managed_object=managed_object.id,
                 discriminator=discriminator).first()
             if a:
-                self.logger.debug("%s: Event %s(%s) clears alarm %s(%s)" % (
+                self.logger.info("%s: Event %s(%s) clears alarm %s(%s)" % (
                     r.u_name, str(e.id), e.event_class.name,
                     str(a.id), a.alarm_class.name))
                 a.contribute_event(e, close=True)
