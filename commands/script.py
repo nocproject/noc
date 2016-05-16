@@ -208,6 +208,11 @@ class ServiceStub(object):
         self.config = self.ServiceConfig(pool=pool)
 
 
+class PoolStub(object):
+    def __init__(self, name):
+        self.name = name
+
+
 class JSONObject(object):
     def __init__(self, path):
         with open(path) as f:
@@ -221,6 +226,7 @@ class JSONObject(object):
         self.port = data.get("port")
         self.creds = data.get("credentials", {})
         self.caps = data.get("caps")
+        self.pool = PoolStub("default")
 
     @property
     def credentials(self):
