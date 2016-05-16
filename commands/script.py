@@ -226,6 +226,7 @@ class JSONObject(object):
         self.port = data.get("port")
         self.creds = data.get("credentials", {})
         self.caps = data.get("caps")
+        self.remote_path = None
         self.pool = PoolStub("default")
 
     @property
