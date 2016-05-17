@@ -71,15 +71,16 @@
     display: inline-block;
     position: relative;
     zoom:1; /* IE */
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    o-border-radius: 5px;
-    khtml-border-radius: 5px;
-    border: 1px solid #CAD8F3;
-    padding: 0px 2px 0px 2px !important;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    border-radius: 7px;
+    o-border-radius: 7px;
+    khtml-border-radius: 7px;
+    padding: 0px 4px 0px 4px !important;
     margin: 0px 1px 0px 0px;
-    background-color: #DEE7F8;
+    background-color: #7f8c8d;
+    color: #ffffff;
+    border: 1px solid;
     cursor: default;
 }
 
