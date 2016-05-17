@@ -691,7 +691,9 @@ class ClassifierService(Service):
 
     def on_event(self, message, data):
         event_id = bson.ObjectId()
-        self.logger.debug("[%s] Receiving new event: %s", event_id, data)
+        lag = (time.time() - data["ts"]) * 1000
+        self.logger.debug("[%s] Receiving new event: %s (Lag: %.2ms)",
+                          event_id, data, lag)
         mo = ManagedObject.get_by_id(data["object"])
         if not mo:
             self.logger.info("[%s] Unknown managed object id %s. Skipping",
