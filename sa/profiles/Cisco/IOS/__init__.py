@@ -57,7 +57,7 @@ class Profile(BaseProfile):
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
-        if isinstance(interface, str):
+        if isinstance(interface, basestring):
             il = interface.lower()
         else:
             il = interface.name.lower()
