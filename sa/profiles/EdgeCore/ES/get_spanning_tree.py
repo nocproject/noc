@@ -45,7 +45,7 @@ class Script(BaseScript):
         "root": "root",
         "alternate": "alternate",
         "designate": "designated"
-        # "backup",
+        "backup",
         # "master", "nonstp", "unknown"
     }
 
@@ -97,17 +97,20 @@ class Script(BaseScript):
             "interfaces": []
         }
         for sn, sv in g:
-            desg_priority, desg_id = sv["DESG_BRIDGE"].split(".")
+            if sv.get("DESG_BRIDGE"):
+                desg_priority, desg_id = sv.get("DESG_BRIDGE").split(".")
+            else:
+                desg_priority, desg_id = None, None
             iface = {
                 "interface": sn,
-                "port_id": "%s.%s" % (sv["PRIORITY"], sn.rsplit("/")[-1]),
+                "port_id": "%s.%s" % (sv.get("PRIORITY"), sn.rsplit("/")[-1]),
                 "role": self.ROLE_MAP[sv.get("ROLE", "disabled")],
-                "state": self.STATE_MAP[sv["STATE"]],
-                "priority": sv["PRIORITY"],
+                "state": self.STATE_MAP[sv.get("STATE", )],
+                "priority": sv.get("PRIORITY", 128),
                 "designated_bridge_id": desg_id,
                 "designated_bridge_priority": desg_priority,
                 "designated_port_id": sv.get("DESG_PORT", None),
-                "edge": sv["EDGE_PORT"] == "enabled",
+                "edge": sv.get("EDGE_PORT", "disabled") == "enabled",
                 "point_to_point": sv.get("LINK_TYPE", None) == "point-to-point"
             }
             instance["interfaces"] += [iface]
