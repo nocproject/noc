@@ -689,23 +689,24 @@ class ClassifierService(Service):
             q["vars__%s" % v] = vars[v]
         return ActiveEvent.objects.filter(**q).first()
 
-    def on_event(self, message, data):
+    def on_event(self, message, ts=None, object=None, data=None,
+                 *args, **kwargs):
         event_id = bson.ObjectId()
-        lag = (time.time() - data["ts"]) * 1000
+        lag = (time.time() - ts) * 1000
         self.logger.debug("[%s] Receiving new event: %s (Lag: %.2ms)",
                           event_id, data, lag)
-        mo = ManagedObject.get_by_id(data["object"])
+        mo = ManagedObject.get_by_id(object)
         if not mo:
             self.logger.info("[%s] Unknown managed object id %s. Skipping",
-                             event_id, data["object"])
+                             event_id, object)
             return True
         self.logger.info("[%s] Managed object %s (%s, %s)",
                          event_id, mo.name, mo.address, mo.platform)
         ne = NewEvent(
             id=event_id,
-            timestamp=datetime.datetime.fromtimestamp(data["ts"]),
+            timestamp=datetime.datetime.fromtimestamp(ts),
             managed_object=mo,
-            raw_vars=data["data"]
+            raw_vars=data
         )
         try:
             s = self.classify_event(ne)
