@@ -35,7 +35,6 @@ class XRuleLookup(RuleLookup):
         self.parser = parser
         self.pattern_cache = {}
         self.initialize(rules)
-        del self.pattern_cache  # No longer needed
 
     def enter(self, index, regex, obj):
         def is_applicable(h):
