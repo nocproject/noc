@@ -18,6 +18,7 @@ from noc.maintainance.models.maintainance import Maintainance
 
 
 class ServiceCard(BaseCard):
+    name = "service"
     default_template_name = "service"
     model = Service
 

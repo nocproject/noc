@@ -16,6 +16,7 @@ from noc.sa.models.servicesummary import SummaryItem
 
 
 class TotalOutageCard(BaseCard):
+    name = "totaloutage"
     default_template_name = "totaloutage"
 
     def get_data(self):
