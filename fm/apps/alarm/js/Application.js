@@ -155,6 +155,24 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         });
 
+        me.ttConfirmButton = Ext.create("Ext.button.Segmented", {
+            items: [
+                {
+                    text: __("Wait TT"),
+                    tooltip: __("Show only waiting confirmantion"),
+                },
+                {
+                    text: __("All"),
+                    pressed: true,
+                    tooltip: __("Show all alarms"),
+                }
+            ],
+            listeners: {
+                scope: me,
+                toggle: me.onChangeFilter
+            }
+        });
+
         me.gridPanel = Ext.create("Ext.grid.Panel", {
             store: me.store,
             border: false,
@@ -185,6 +203,7 @@ Ext.define("NOC.fm.alarm.Application", {
                         me.autoreloadButton,
                         me.typeButton,
                         me.expandButton,
+                        me.ttConfirmButton,
                         me.selectorCombo,
                         me.admdomCombo,
                         me.objectCombo,
@@ -367,6 +386,9 @@ Ext.define("NOC.fm.alarm.Application", {
         // Expand
         if(me.expandButton.items.first().pressed) {
             q.collapse = 1;
+        }
+        if(me.ttConfirmButton.items.first().pressed) {
+            q.wait_tt = 1;
         }
         // Selector
         setIf("managedobjectselector", me.selectorCombo.getValue());
