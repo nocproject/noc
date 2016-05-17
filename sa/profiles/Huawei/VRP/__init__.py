@@ -71,7 +71,8 @@ class Profile(BaseProfile):
         v = mac.replace(":", "").lower()
         return "%s-%s-%s" % (v[:4], v[4:8], v[8:])
 
+    spaces_rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
+
     def clean_spaces(self, config):
-        rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
-        config = rx.sub("", config)
+        config = self.spaces_rx.sub("", config)
         return config

@@ -43,7 +43,8 @@ class Profile(BaseProfile):
 
     convert_mac = BaseProfile.convert_mac_to_huawei
 
+    spaces_rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
+
     def clean_spaces(self, config):
-        rx = re.compile("^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
-        config = rx.sub("", config)
+        config = self.spaces_rx.sub("", config)
         return config
