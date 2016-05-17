@@ -493,7 +493,11 @@ class Service(object):
                     "Failed to publish to topic '%s': %s. Retry",
                     topic, data
                 )
-                self.get_nsq_writer().pub(topic, msg)
+                self.get_nsq_writer().pub(
+                    topic,
+                    msg,
+                    callback=finish_pub
+                )
 
         w = self.get_nsq_writer()
         msg = ujson.dumps(data)
@@ -509,7 +513,11 @@ class Service(object):
                     "Failed to publish to topic '%s': %s. Retry",
                     topic, data
                 )
-                self.get_nsq_writer().mpub(topic, msg)
+                self.get_nsq_writer().mpub(
+                    topic,
+                    msg,
+                    callback=finish_pub
+                )
 
         w = self.get_nsq_writer()
         msg = [ujson.dumps(m) for m in messages]
