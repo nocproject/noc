@@ -51,10 +51,6 @@ services:
     description: Correlator
     level: global
 
-  fmwriter:
-    description: FMWriter
-    level: pool
-
   pmwriter:
     description: PMWriter
     level: global

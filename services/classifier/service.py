@@ -3,7 +3,7 @@
 ##----------------------------------------------------------------------
 ## Classifier service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -18,8 +18,8 @@ import re
 ## Third-party modules
 from cachetools import TTLCache, cachedmethod
 import tornado.gen
-import tornado.queues
-import pymongo.errors
+import tornado.ioloop
+import bson
 ## NOC modules
 from noc.core.service.base import Service
 from noc.fm.models.newevent import NewEvent
@@ -39,13 +39,11 @@ from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
                                     IPv6PrefixParameter, PrefixParameter,
                                     MACAddressParameter, InterfaceTypeError)
 from noc.lib.nosql import ObjectId
-from noc.lib.dateutils import total_seconds
 from trigger import Trigger
 from exception import InvalidPatternException, EventProcessingFailed
 from cloningrule import CloningRule
 from rule import Rule
 from noc.lib.solutions import get_event_class_handlers, get_solution
-from noc.core.scheduler.job import Job
 
 ##
 ## Exceptions
@@ -104,7 +102,8 @@ class ClassifierService(Service):
         # Lookup solution setup
         self.lookup_cls = None
         #
-        self.ev_queue = tornado.queues.Queue(maxsize=1)
+        self.last_ts = None
+        self.last_stats = defaultdict(int)
 
     def on_activate(self):
         """
@@ -119,7 +118,15 @@ class ClassifierService(Service):
         self.load_suppression()
         self.load_link_action()
         self.load_handlers()
-        self.ioloop.add_callback(self.start_processing)
+        self.subscribe(
+            "events",
+            "fmwriter",
+            self.on_event
+        )
+        report_callback = tornado.ioloop.PeriodicCallback(
+            self.report, 1000, self.ioloop
+        )
+        report_callback.start()
 
     def load_rules(self):
         """
@@ -401,31 +408,6 @@ class ClassifierService(Service):
             e.mark_as_new("Reclassification has been requested by noc-classifer")
             self.logger.debug("Failed event %s has been recovered", e.id)
 
-    def mark_as_failed(self, event, traceback=None):
-        """
-        Write error log and mark event as failed
-        """
-        # Check object still exists
-        try:
-            event.managed_object
-        except ManagedObject.DoesNotExist:
-            self.logger.error("Deleting orphaned event %s", str(event.id))
-            event.delete()
-            return
-        if traceback:
-            self.logger.error("Failed to process event %s: %s",
-                              str(event.id), traceback)
-        else:
-            self.logger.error("Failed to process event %s", str(event.id))
-            # Prepare traceback
-            t, v, tb = sys.exc_info()
-            now = datetime.datetime.now()
-            r = ["UNHANDLED EXCEPTION (%s)" % str(now)]
-            r += [str(t), str(v)]
-            r += [format_frames(get_traceback_frames(tb))]
-            traceback = "\n".join(r)
-        event.mark_as_failed(version=self.version, traceback=traceback)
-
     def find_matching_rule(self, event, vars):
         """
         Find first matching classification rule
@@ -549,8 +531,7 @@ class ClassifierService(Service):
                 cb = self.get_msg_codebook(msg)
                 for pcb in self.unclassified_codebook[o_id]:
                     if self.is_codebook_match(cb, pcb):
-                        # Signature is already seen, supress
-                        event.delete()
+                        # Signature is already seen, suppress
                         return CR_UDUPLICATED
         # Find matched event class
         c_vars = event.raw_vars.copy()
@@ -563,7 +544,7 @@ class ClassifierService(Service):
             os._exit(1)
         if rule.to_drop:
             # Silently drop event if declared by action
-            event.delete()
+            self.logger.info("[%s] Dropped by action", event.id)
             return CR_DELETED
         if rule.is_unknown_syslog:
             # Append codebook
@@ -584,27 +565,28 @@ class ClassifierService(Service):
             if_name = event.managed_object.profile.convert_interface_name(vars["interface"])
             iface = self.get_interface(event.managed_object.id, if_name)
             if iface:
-                self.logger.debug("Found interface %s:%s",
+                self.logger.debug("[%s] Found interface %s:%s",
+                                  event.id,
                                   event.managed_object.name, iface.name)
                 action = iface.profile.link_events
             else:
-                self.logger.debug("Interface not found %s:%s",
+                self.logger.debug("[%s] Interface not found %s:%s",
+                                  event.id,
                                   event.managed_object.name, if_name)
                 action = self.default_link_action
             if action == "I":
                 # Ignore
                 if iface:
-                    self.logger.info("Event %s has been marked as ignored by interface profile '%s' (%s)", event.id, iface.profile.name, iface.name)
+                    self.logger.info("[%s] Marked as ignored by interface profile '%s' (%s)", event.id, iface.profile.name, iface.name)
                 else:
-                    self.logger.info("Event %s has been marked as ignored by default interface profile", event.id)
-                event.delete()
+                    self.logger.info("[%s] Marked as ignored by default interface profile", event.id)
                 return CR_DELETED
             elif action == "L":
                 # Do not dispose
                 if iface:
-                    self.logger.info("Event %s has been marked as not disposable by interface profile '%s' (%s)", event.id, iface.profile.name, iface.name)
+                    self.logger.info("[%s] Marked as not disposable by interface profile '%s' (%s)", event.id, iface.profile.name, iface.name)
                 else:
-                    self.logger.info("Event %s has been marked as not disposable by default interface", event.id)
+                    self.logger.info("[%s] Marked as not disposable by default interface", event.id)
                 disposable = False
         # Deduplication
         if event_class.deduplication_window:
@@ -616,19 +598,17 @@ class ClassifierService(Service):
                 de.log_message(
                     "Duplicated event %s has been discarded" % event.id
                 )
-                event.delete()
                 return CR_DUPLICATED
         # Suppress repeats
         if event_class.id in self.suppression:
             suppress, name, nearest = self.to_suppress(event, event_class,
                                                        vars)
             if suppress:
-                self.logger.debug("[%s] Event %s was suppressed by rule %s",
-                    event.managed_object.name, event.id, name)
+                self.logger.debug("[%s] Suppressed by rule %s",
+                    event.id, name)
                 # Update suppressing event
                 nearest.log_suppression(event.timestamp)
                 # Delete suppressed event
-                event.delete()
                 return CR_SUPPRESSED
         # Activate event
         message = "Classified as '%s' by rule '%s'" % (event_class.name,
@@ -650,7 +630,6 @@ class ClassifierService(Service):
             expires=event.timestamp + datetime.timedelta(seconds=event_class.ttl)
         )
         a_event.save()
-        event.delete()
         event = a_event
         # Call handlers
         if event_class.id in self.handlers:
@@ -662,8 +641,8 @@ class ClassifierService(Service):
                     error_report()
                 if event.to_drop:
                     self.logger.debug(
-                        "[%s] Event dropped by handler",
-                        event.managed_object.name
+                        "[%s] Dropped by handler",
+                        event.id,
                     )
                     event.id = event_id  # Restore event id
                     event.delete()
@@ -679,8 +658,7 @@ class ClassifierService(Service):
                 if event.to_drop:
                     # Delete event and stop processing
                     self.logger.debug(
-                        "[%s] Drop event %s (Requested by trigger %s)",
-                        event.managed_object.name,
+                        "[%s] Dropped by trigger %s",
                         event_id, t.name
                     )
                     event.id = event_id  # Restore event id
@@ -689,11 +667,6 @@ class ClassifierService(Service):
         # Finally dispose event to further processing by correlator
         if disposable and rule.to_dispose:
             self.pub("correlator.dispose", {"event_id": str(event.id)})
-            # Job.submit(
-            #     "correlator",
-            #     "noc.services.correlator.jobs.dispose.DisposeJob",
-            #     key=str(event.id)
-            # )
             return CR_DISPOSED
         elif rule.is_unknown:
             return CR_UNKNOWN
@@ -716,90 +689,55 @@ class ClassifierService(Service):
             q["vars__%s" % v] = vars[v]
         return ActiveEvent.objects.filter(**q).first()
 
+    def on_event(self, message, data):
+        event_id = bson.ObjectId()
+        self.logger.debug("[%s] Receiving new event: %s", event_id, data)
+        mo = ManagedObject.get_by_id(data["object"])
+        if not mo:
+            self.logger.info("[%s] Unknown managed object id %s. Skipping",
+                             event_id, data["object"])
+            return True
+        self.logger.info("[%s] Managed object %s (%s, %s)",
+                         event_id, mo.name, mo.address, mo.platform)
+        ne = NewEvent(
+            id=event_id,
+            timestamp=datetime.datetime.fromtimestamp(data["ts"]),
+            managed_object=mo,
+            raw_vars=data["data"]
+        )
+        try:
+            s = self.classify_event(ne)
+            self.stats[s] += 1
+        except Exception as e:
+            self.logger.error("[%s] Failed to process event: %s",
+                              event_id, e)
+            self.stats[CR_FAILED] += 1
+            return False
+        self.logger.info("[%s] Event processed successfully")
+        return True
+
     @tornado.gen.coroutine
-    def event_producer(self):
-        """
-        Producer generating unclassified events
-        """
-        q = NewEvent.seq_range(self.config.pool)
-        if self.config.global_n_instances > 1:
-            q["managed_object__mod"] = [
-                self.config.global_n_instances,
-                self.config.instance + self.config.global_offset
-            ]
-        while True:
-            n = 0
-            try:
-                # Wait for consumer processes all tasks
-                yield self.ev_queue.join()
-                # Get new data
-                for e in NewEvent.objects.filter(**q).order_by("seq"):
-                    yield self.ev_queue.put(e)
-                    n += 1
-                if not n:
-                    # No data, sleep a while
-                    yield self.ev_queue.put(None)  # Report end of data
-                    yield tornado.gen.sleep(0.25)
-            except pymongo.errors.CursorNotFound:
-                self.logger.info(
-                    "Server cursor timed out. Continuing with new cursor"
+    def report(self):
+        t = self.ioloop.time()
+        if self.last_ts:
+            total = float(sum(v for v in self.stats.values()))
+            dt = (t - self.last_ts)
+            speed = total / dt
+            if total:
+                r = ", ".join(
+                    "%s: %d" % (t, self.stats[i])
+                    for i, t in enumerate(CR)
                 )
-
-    @tornado.gen.coroutine
-    def event_consumer(self):
-        st = {
-            CR_FAILED: 0, CR_DELETED: 0, CR_SUPPRESSED: 0,
-            CR_UNKNOWN: 0, CR_CLASSIFIED: 0, CR_DISPOSED: 0,
-            CR_DUPLICATED: 0, CR_UDUPLICATED: 0
-        }
-        REPORT_INTERVAL = 1000  # Performance report interval
-        while True:
-            sn = st.copy()
-            t0 = time.time()
-            lts = None
-            for n in range(REPORT_INTERVAL):
-                try:
-                    e = yield self.ev_queue.get()
-                    if not e:
-                        break  # No data, report
-                    lts = e.timestamp
-                    s = self.classify_event(e)
-                except EventProcessingFailed, why:
-                    self.mark_as_failed(e, why[0])
-                    s = CR_FAILED
-                except:
-                    self.mark_as_failed(e)
-                    s = CR_FAILED
-                finally:
-                    self.ev_queue.task_done()
-                sn[s] += 1
-            if n:
-                # Write performance report
-                tt = time.time()
-                dt = tt - t0
-                if dt:
-                    perf = n / dt
-                else:
-                    perf = 0
-                s = [
-                    "elapsed: %ss" % ("%10.4f" % dt).strip(),
-                    "speed: %sev/s" % ("%10.1f" % perf).strip(),
-                    "events: %d" % n,
-                    "lag: %fs" % total_seconds(
-                        datetime.datetime.now() - lts
+                self.logger.info(
+                    "REPORT: %d events in %.2fms. %.2fev/s (%s)" % (
+                        total,
+                        dt * 1000,
+                        speed,
+                        r
                     )
-                ]
-                s += ["%s: %d" % (CR[i], sn[i]) for i in range(len(CR))]
-                s = ", ".join(s)
-                self.logger.info("REPORT: %s", s)
-
-    @tornado.gen.coroutine
-    def start_processing(self):
-        self.logger.info("Starting processing")
-        self.event_consumer()
-        yield self.event_producer()
-        yield self.ev_queue.join()
-        self.logger.info("Stop processing")
+                )
+        self.stats = defaultdict(int)
+        self.last_ts = t
 
     rx_non_alpha = re.compile(r"[^a-z]+")
     rx_spaces = re.compile(r"\s+")

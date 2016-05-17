@@ -86,11 +86,11 @@ class PingService(Service):
     @tornado.gen.coroutine
     def send_messages(self):
         """
-        Periodic task to send collected messages to fmwriter
+        Periodic task to send collected messages to classifier
         """
         if self.messages:
             messages, self.messages = self.messages, []
-            self.pub("events", messages)
+            self.mpub("events", messages)
 
     @tornado.gen.coroutine
     def get_object_mappings(self):

@@ -123,7 +123,7 @@ class SyslogCollectorService(Service):
         """
         if self.messages:
             messages, self.messages = self.messages, []
-            self.pub("events", messages)
+            self.mpub("events", messages)
 
     @tornado.gen.coroutine
     def get_object_mappings(self):
