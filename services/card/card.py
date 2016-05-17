@@ -38,7 +38,7 @@ class CardRequestHandler(UIHandler):
                 self.CARD_TEMPLATE = Template(f.read())
         if not self.CARDS:
             self.CARDS = {}
-            for r in ["custom/card/cards", "services/card/cards"]:
+            for r in ["custom/services/card/cards", "services/card/cards"]:
                 if not os.path.isdir(r):
                     continue
                 for f in os.listdir(r):
