@@ -47,15 +47,18 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "card",
-            type: "string"
+            type: "string",
+            defaultValue: "managedobject"
         },
         {
             name: "card_title_template",
-            type: "string"
+            type: "string",
+            defaultValue: "{{ object.object_profile.name }}: {{ object.name }}"
         },
         {
             name: "fqdn_template",
-            type: "string"
+            type: "string",
+            defaultValue: "{{ object.address }}.example.com"
         },
         {
             name: "sync_ipam",
@@ -79,7 +82,8 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "weight",
-            type: "int"
+            type: "int",
+            defaultValue: 0
         },
         {
             name: "enable_box_discovery",
