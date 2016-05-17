@@ -101,7 +101,11 @@ class AlarmApplication(ExtApplication):
             else:
                 q["managed_object__in"] = s
             q.pop("managedobjectselector")
-
+        #
+        if "wait_tt" in q:
+            q["wait_tt__exists"] = True
+            q["wait_ts__exists"] = False
+            del q["wait_tt"]
         #
         if "collapse" in q:
             c = q["collapse"]
