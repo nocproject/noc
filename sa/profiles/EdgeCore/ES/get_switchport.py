@@ -57,6 +57,8 @@ class Script(BaseScript):
             cmd = self.cli("show interface switchport")
             for block in cmd.rstrip("\n\n").split("\n\n"):
                 matchint = self.rx_interface_3526.search(block)
+                if not matchint:
+                    continue
                 name = matchint.group("interface")
                 swport = {
                     "interface": name,
