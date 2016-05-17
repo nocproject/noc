@@ -36,6 +36,7 @@ class Script(BaseScript):
         "ipip-tunnel": "tunnel",
         "ipip": "tunnel",
         "eoip": "tunnel",
+        "eoip-tunnel": "tunnel",
         "bond": "aggregated"
     }
 
@@ -242,22 +243,26 @@ class Script(BaseScript):
                         if s in ifaces:
                             ifaces[s]["aggregated_interface"] = r["name"]
         # OSPF
-        for n, f, r in self.cli_detail("/routing ospf interface print detail"):
-            self.si = {}
-            if r["interface"] in ifaces:
-                i = ifaces[r["interface"]]
-                if not i["subinterfaces"]:
-                    self.si = {
-                        "name": r["interface"],
-                        "enabled_afi": [],
-                        # XXX Workaround
-                        "admin_status": i["admin_status"],
-                        "oper_status": i["oper_status"],
-                        "enabled_protocols": ["OSPF"]
-                    }
-                    i["subinterfaces"] += [self.si]
-                else:
-                    i["subinterfaces"][0]["enabled_protocols"] += ["OSPF"]
+        try:
+            ospf_result = self.cli_detail("/routing ospf interface print detail")
+            for n, f, r in ospf_result:
+                self.si = {}
+                if r["interface"] in ifaces:
+                    i = ifaces[r["interface"]]
+                    if not i["subinterfaces"]:
+                        self.si = {
+                            "name": r["interface"],
+                            "enabled_afi": [],
+                            # XXX Workaround
+                            "admin_status": i["admin_status"],
+                            "oper_status": i["oper_status"],
+                            "enabled_protocols": ["OSPF"]
+                        }
+                        i["subinterfaces"] += [self.si]
+                    else:
+                        i["subinterfaces"][0]["enabled_protocols"] += ["OSPF"]
+        except self.CLISyntaxError:
+            pass
         # PIMm IGMP
         try:
             cli_result = self.cli_detail("/routing pim interface print detail")
