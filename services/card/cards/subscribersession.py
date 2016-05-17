@@ -15,6 +15,7 @@ from noc.inv.models.macvendor import MACVendor
 
 
 class SubscriberSessionCard(BaseCard):
+    name = "subscribersession"
     default_template_name = "subscribersession"
     model = Interface
 

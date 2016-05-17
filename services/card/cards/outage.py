@@ -17,6 +17,7 @@ import cachetools
 
 
 class OutageCard(BaseCard):
+    name = "outage"
     default_template_name = "outage"
 
     def get_data(self):

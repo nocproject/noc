@@ -18,6 +18,7 @@ from noc.sa.models.servicesummary import ServiceSummary
 
 
 class MaintainanceCard(BaseCard):
+    name = "maintainance"
     default_template_name = "maintainance"
     model = Maintainance
     default_title_template = "Maintainance: {{ object.subject }}"

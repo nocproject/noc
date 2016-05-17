@@ -28,6 +28,7 @@ from noc.maintainance.models.maintainance import Maintainance
 
 
 class ManagedObjectCard(BaseCard):
+    name = "managedobject"
     default_template_name = "managedobject"
     model = ManagedObject
 

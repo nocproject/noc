@@ -22,6 +22,7 @@ from noc.fm.models.alarmseverity import AlarmSeverity
 
 
 class AlarmCard(BaseCard):
+    name = "alarm"
     default_template_name = "alarm"
 
     def dereference(self, id):

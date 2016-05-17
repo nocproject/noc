@@ -19,6 +19,7 @@ from noc.sa.models.servicesummary import SummaryItem
 
 
 class TTCard(BaseCard):
+    name = "tt"
     default_template_name = "tt"
 
     tts_cache = cachetools.TTLCache(

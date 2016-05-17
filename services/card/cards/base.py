@@ -17,6 +17,7 @@ from noc.core.translation import ugettext as _
 
 
 class BaseCard(object):
+    name = None
     default_template_name = "default"
     template_cache = {}  # name -> Template instance
     TEMPLATE_PATH = [
