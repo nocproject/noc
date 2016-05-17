@@ -556,9 +556,13 @@ class ClassifierService(Service):
             cbs = [cb] + self.unclassified_codebook[o_id]
             cbs = cbs[:self.unclassified_codebook_depth]
             self.unclassified_codebook[o_id] = cbs
+        self.logger.debug("[%s] Matching rule: %s", event.id, rule.name)
         event_class = rule.event_class
         # Calculate rule variables
         vars = self.eval_rule_variables(event, event_class, vars)
+        #
+        self.logger.info("[%s] Event class: %s (%s)",
+                         event.id, event_class.name, vars)
         # Additionally check link events
         disposable = True
         if event_class.link_event and "interface" in vars:
