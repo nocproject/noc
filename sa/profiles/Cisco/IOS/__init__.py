@@ -3,7 +3,7 @@
 ## Vendor: Cisco
 ## OS:     IOS
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -57,9 +57,12 @@ class Profile(BaseProfile):
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
-        if interface.startswith("NDE_"):
+        if isinstance(interface, str):
+            il = interface.lower()
+        else:
+            il = interface.name.lower()
+        if il.startswith("NDE_"):
             return interface
-        il = interface.lower()
         if il.startswith("dot11radio"):
             return "Dot11Radio" + interface[10:]
         if il.startswith("bdi"):
