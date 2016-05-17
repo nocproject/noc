@@ -25,6 +25,7 @@ from noc.main.models import User
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
 from noc.maintainance.models.maintainance import Maintainance
+from noc.sa.models.servicesummary import SummaryItem
 
 
 class AlarmApplication(ExtApplication):
@@ -130,7 +131,14 @@ class AlarmApplication(ExtApplication):
             "duration": o.duration,
             "row_class": s.style.css_class_name,
             "segment__label": o.managed_object.segment.name,
-            "segment": str(o.managed_object.segment.id)
+            "segment": str(o.managed_object.segment.id),
+            "escalation_tt": o.escalation_tt,
+            "platform": o.managed_object.platform,
+            "address": o.managed_object.address,
+            "summary": self.f_glyph_summary({
+                "subscriber": SummaryItem.items_to_dict(o.total_subscribers),
+                "service": SummaryItem.items_to_dict(o.total_services)
+            })
         }
         if fields:
             d = dict((k, d[k]) for k in fields)
@@ -368,3 +376,39 @@ class AlarmApplication(ExtApplication):
             "sound": sound,
             "volume": volume
         }
+
+    @classmethod
+    def f_glyph_summary(cls, s, collapse=False):
+        def get_summary(d, profile):
+            v = []
+            if hasattr(profile, "show_in_summary"):
+                show_in_summary = lambda p: p.show_in_summary
+            else:
+                show_in_summary = lambda p: True
+            for p, c in sorted(d.items(), key=lambda x: -x[1]):
+                pv = profile.get_by_id(p)
+                if pv and show_in_summary(pv):
+                    if collapse and c < 2:
+                        badge = ""
+                    else:
+                        badge = " <span class=\"badge\">%s</span>" % c
+                    v += [
+                        "<i class=\"%s\" title=\"%s\"></i>%s" % (
+                            pv.glyph,
+                            pv.name,
+                            badge
+                        )
+                    ]
+            return " ".join(v)
+
+        if not isinstance(s, dict):
+            return ""
+        r = []
+        if "subscriber" in s:
+            from noc.crm.models.subscriberprofile import SubscriberProfile
+            r += [get_summary(s["subscriber"], SubscriberProfile)]
+        if "service" in s:
+            from noc.sa.models.serviceprofile import ServiceProfile
+            r += [get_summary(s["service"], ServiceProfile)]
+        r = [x for x in r if x]
+        return "&nbsp;".join(r)
