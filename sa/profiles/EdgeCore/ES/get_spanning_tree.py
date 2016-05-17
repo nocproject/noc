@@ -105,7 +105,7 @@ class Script(BaseScript):
                 "interface": sn,
                 "port_id": "%s.%s" % (sv.get("PRIORITY"), sn.rsplit("/")[-1]),
                 "role": self.ROLE_MAP[sv.get("ROLE", "disabled")],
-                "state": self.STATE_MAP[sv.get("STATE", )],
+                "state": self.STATE_MAP[sv.get("STATE", "forwarding")],
                 "priority": sv.get("PRIORITY", 128),
                 "designated_bridge_id": desg_id,
                 "designated_bridge_priority": desg_priority,
