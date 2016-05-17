@@ -109,13 +109,6 @@
         - node
         - noc
 
-    - role: fmwriter
-      when: "{{ has_svc_fmwriter | default(False) }}"
-      tags:
-        - fmwriter
-        - node
-        - noc
-
     - role: activator
       when: "{{ has_svc_activator | default(False) }}"
       tags:
