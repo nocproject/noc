@@ -44,8 +44,8 @@ class Script(BaseScript):
         "disabled": "disabled",
         "root": "root",
         "alternate": "alternate",
-        "designate": "designated"
-        "backup",
+        "designate": "designated",
+        "backup": "unknown",
         # "master", "nonstp", "unknown"
     }
 
