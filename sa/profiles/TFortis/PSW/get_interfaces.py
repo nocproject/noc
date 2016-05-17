@@ -56,7 +56,7 @@ class Script(BaseScript):
             name = match.group("name")
             r['admin_status'] = "enable" in match.group('admin_status').lower()
             r['oper_status'] = "up" in match.group('oper_status').lower()
-            r['enabled_protocols'] = "POE" if match.group("poe") else ""
+            r['enabled_protocols'] = ""
                        
         return name, r
 
@@ -103,8 +103,6 @@ class Script(BaseScript):
                     "untagged_vlan": untag,
                 } ]
             }
-            if cfg["enabled_protocols"]:
-               i["enabled_protocols"]=["POE"]
             ifaces += [i]
         # @todo: show vlan
         return [{"interfaces": ifaces}]
