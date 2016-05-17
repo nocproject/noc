@@ -9,6 +9,7 @@
 
 ## Python modules
 import re
+import six
 ## NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -57,7 +58,7 @@ class Profile(BaseProfile):
                 self.convert_interface_name_cisco(l.strip()),
                 int(r.strip())
             )
-        if isinstance(interface, basestring):
+        if isinstance(interface, six.string_types):
             il = interface.lower()
         else:
             il = interface.name.lower()
