@@ -169,7 +169,7 @@ config:
     lookup_solution:
       label: Lookup solution
       type: str
-      default: noc.services.classifier.rulelookup.RuleLookup
+      default: noc.services.classifier.xrulelookup.XRuleLookup
 
     default_interface_profile:
       label: Default interface profile
