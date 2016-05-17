@@ -391,7 +391,7 @@ class AlarmApplication(ExtApplication):
                     if collapse and c < 2:
                         badge = ""
                     else:
-                        badge = " <span class=\"badge\">%s</span>" % c
+                        badge = " <span class=\"x-display-tag\">%s</span>" % c
                     v += [
                         "<i class=\"%s\" title=\"%s\"></i>%s" % (
                             pv.glyph,

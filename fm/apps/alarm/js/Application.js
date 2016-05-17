@@ -78,17 +78,18 @@ Ext.define("NOC.fm.alarm.Application", {
 
         me.admdomCombo = Ext.create("NOC.sa.administrativedomain.LookupField", {
             fieldLabel: __("Adm. Domain"),
-            width: 200,
+            width: 198,
             listeners: {
                 scope: me, 
                 select: me.onChangeFilter,
                 clear: me.onChangeFilter
-            }   
+            },
+            uiStyle: null
         }); 
 
         me.objectCombo = Ext.create("NOC.sa.managedobject.LookupField", {
             fieldLabel: __("Object"),
-            width: 200,
+            width: 198,
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
@@ -98,7 +99,7 @@ Ext.define("NOC.fm.alarm.Application", {
 
         me.selectorCombo = Ext.create("NOC.sa.managedobjectselector.LookupField", {
             fieldLabel: __("Selector"),
-            width: 200,
+            width: 198,
             listeners: {
                 scope: me, 
                 select: me.onChangeFilter,
@@ -108,7 +109,7 @@ Ext.define("NOC.fm.alarm.Application", {
 
         me.alarmClassCombo = Ext.create("NOC.fm.alarmclass.LookupField", {
             fieldLabel: __("Class"),
-            width: 300,
+            width: 198,
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
@@ -141,11 +142,11 @@ Ext.define("NOC.fm.alarm.Application", {
                 {
                     text: __("Root only"),
                     pressed: true,
-                    tooltip: __("Show only root causes")
+                    tooltip: __("Show only root causes"),
                 },
                 {
                     text: __("All"),
-                    tooltip: __("Show all alarms")
+                    tooltip: __("Show all alarms"),
                 }
             ],
             listeners: {
@@ -312,7 +313,8 @@ Ext.define("NOC.fm.alarm.Application", {
             },
             viewConfig: {
                 enableTextSelection: true,
-                getRowClass: Ext.bind(me.getRowClass, me)
+                getRowClass: Ext.bind(me.getRowClass, me),
+                loadMask: false
                 /* listeners: {
                     scope: me,
                     cellclick: me.onCellClick
@@ -407,8 +409,8 @@ Ext.define("NOC.fm.alarm.Application", {
     isPollLocked: function() {
         var me = this,
             ls;
-        ls = me.autoreloadButton.pressed && (me.gridPanel.getView().getScrollable().getPosition().y !== 0);
-        return ls;
+        ls = me.autoreloadButton.pressed && (me.gridPanel.getView().getScrollable().getPosition().y === 0);
+        return !ls;
     },
     //
     pollingTask: function () {
