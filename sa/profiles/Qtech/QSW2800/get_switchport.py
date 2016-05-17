@@ -93,6 +93,8 @@ class Script(BaseScript):
             # tags
             if match.group("tags"):
                 ma_group = match.group("tags").replace(";", ",")
+                if "showOneSwitchPort" in ma_group:
+                    break
                 for tag in self.expand_rangelist(ma_group):
                     if tag in vlans and tag != pvid:
                         swp["tagged"] += [tag]
