@@ -495,8 +495,7 @@ class Service(object):
                 )
                 self.get_nsq_writer().pub(
                     topic,
-                    msg,
-                    callback=finish_pub
+                    msg
                 )
 
         w = self.get_nsq_writer()
@@ -515,8 +514,7 @@ class Service(object):
                 )
                 self.get_nsq_writer().mpub(
                     topic,
-                    msg,
-                    callback=finish_pub
+                    msg
                 )
 
         w = self.get_nsq_writer()
