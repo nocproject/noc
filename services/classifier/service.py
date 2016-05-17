@@ -716,7 +716,7 @@ class ClassifierService(Service):
                               event_id, e)
             self.stats[CR_FAILED] += 1
             return False
-        self.logger.info("[%s] Event processed successfully")
+        self.logger.info("[%s] Event processed successfully", event_id)
         return True
 
     @tornado.gen.coroutine
