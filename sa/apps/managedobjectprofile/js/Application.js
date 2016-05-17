@@ -169,7 +169,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "card_title_template",
                                     xtype: "textfield",
                                     fieldLabel: "Card Title Template",
-                                    allowBlank: true,
+                                    allowBlank: false,
                                     uiStyle: "extra"
                                 }
                             ]
