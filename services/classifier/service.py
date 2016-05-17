@@ -693,7 +693,7 @@ class ClassifierService(Service):
                  *args, **kwargs):
         event_id = bson.ObjectId()
         lag = (time.time() - ts) * 1000
-        self.logger.debug("[%s] Receiving new event: %s (Lag: %.2ms)",
+        self.logger.debug("[%s] Receiving new event: %s (Lag: %.2fms)",
                           event_id, data, lag)
         mo = ManagedObject.get_by_id(object)
         if not mo:
