@@ -23,6 +23,7 @@ class DiscoveryService(Service):
     leader_group_name = "discovery-%(pool)s"
     pooled = True
     process_name = "noc-%(name).10s-%(instance).2s-%(pool).3s"
+    require_nsq_writer = True
 
     def __init__(self):
         super(DiscoveryService, self).__init__()

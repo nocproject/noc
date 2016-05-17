@@ -60,6 +60,8 @@ class Service(object):
     # to allow only one instance of services per node or datacenter
     pooled = False
 
+    ## Run NSQ writer on service startup
+    require_nsq_writer = False
     ## List of API instances
     api = []
     ## Initialize gettext and process *language* configuration
@@ -382,6 +384,8 @@ class Service(object):
             xheaders=True
         )
         http_server.listen(port, addr)
+        if self.require_nsq_writer:
+            self.get_nsq_writer()
         self.ioloop.add_callback(self.on_activate)
 
     @tornado.gen.coroutine
@@ -480,6 +484,7 @@ class Service(object):
 
     def get_nsq_writer(self):
         if not self.nsq_writer:
+            self.logger.info("Opening NSQ Writer")
             self.nsq_writer = nsq.Writer(["127.0.0.1:4150"])
         return self.nsq_writer
 
