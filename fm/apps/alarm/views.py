@@ -399,7 +399,7 @@ class AlarmApplication(ExtApplication):
                             badge
                         )
                     ]
-            return " ".join(v)
+            return "<span class='x-summary'>%s</span>" % " ".join(v)
 
         if not isinstance(s, dict):
             return ""
