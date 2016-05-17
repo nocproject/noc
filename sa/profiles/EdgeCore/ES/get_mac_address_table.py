@@ -47,6 +47,7 @@ class Script(BaseScript):
         "dynamic": "D",
         "static": "S",
         "learn": "D",
+        "security": "D",
         "cpu": "S"
     }
 
