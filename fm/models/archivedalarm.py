@@ -172,6 +172,27 @@ class ArchivedAlarm(nosql.Document):
             })
         return a
 
+    def iter_consequences(self):
+        """
+        Generator yielding all consequences alarm
+        """
+        for a in ArchivedAlarm.objects.filter(root=self.id):
+            yield a
+            for ca in a.iter_consequences():
+                yield ca
+
+    def iter_affected(self):
+        """
+        Generator yielding all affected managed objects
+        """
+        seen = set([self.managed_object])
+        yield self.managed_object
+        for a in self.iter_consequences():
+            if a.managed_object not in seen:
+                seen.add(a.managed_object)
+                yield a.managed_object
+
+
 ## Avoid circular references
 from activealarm import ActiveAlarm
 
