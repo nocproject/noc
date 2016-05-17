@@ -103,7 +103,7 @@ class ClassifierService(Service):
         self.lookup_cls = None
         #
         self.last_ts = None
-        self.last_stats = defaultdict(int)
+        self.stats = defaultdict(int)
 
     def on_activate(self):
         """
