@@ -291,7 +291,7 @@ Ext.define("NOC.fm.alarm.Application", {
                     width: 150,
                     sortable: false,
                     renderer: function(v, _, record) {
-                        var tt = record.get("tt");
+                        var tt = record.get("escalation_tt");
                         return record.get("summary") +
                                 "<br/>" +
                             (tt ? "<a href='/api/card/view/tt/" + tt + "/'>" + tt + "</a>" : "");
@@ -314,11 +314,13 @@ Ext.define("NOC.fm.alarm.Application", {
             viewConfig: {
                 enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me),
-                loadMask: false
-                /* listeners: {
+                loadMask: false,
+                listeners: {
                     scope: me,
-                    cellclick: me.onCellClick
-                }*/
+                    refresh: function() {
+                        me.gridPanel.doLayout();
+                    }
+                }
             }
         });
         //
