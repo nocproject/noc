@@ -97,7 +97,7 @@ class Script(BaseScript):
                 or r["type"].startswith("gre-"):
                     self.si = {
                         "name": r["name"],
-                        "mtu": r["actual-mtu"],
+                        "mtu": r["actual-mtu"] if r.has_key("actual-mtu") else r["mtu"],
                         "admin_status": "X" not in f,
                         "oper_status": "R" in f,
                         "enabled_afi": ["IPv4"],
@@ -209,7 +209,7 @@ class Script(BaseScript):
                         "admin_status": i["admin_status"],
                         "oper_status": i["oper_status"],
                         "mac": r["mac-address"],
-                        "mtu": r["actual-mtu"],
+                        "mtu": r["actual-mtu"] if r.has_key("actual-mtu") else r["mtu"],
                         "enabled_protocols": []
                     }
                     i["subinterfaces"] += [self.si]
