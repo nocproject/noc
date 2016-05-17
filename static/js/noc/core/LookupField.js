@@ -68,7 +68,6 @@ Ext.define("NOC.core.LookupField", {
         if (typeof v === "undefined" || v === null || v === "") {
             me.clearValue();
             me.fireEvent("clear");
-            return false;
         }
     },
 
