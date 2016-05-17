@@ -13,6 +13,7 @@ import stat
 import datetime
 import argparse
 import stat
+import re
 ## Third-party modules
 import ujson
 ## NOC modules
@@ -21,6 +22,8 @@ from noc.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     PREFIX = "var/cp/crashinfo/new"
+
+    rx_xtype = re.compile(r"^<(?:type|class) '(?P<xtype>[^']+)'>\s+")
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
@@ -63,14 +66,18 @@ class Command(BaseCommand):
             service = data["process"]
             if service.startswith("services/") and service.endswith("/service.py"):
                 service = service[9:-11]
+            x = str(data["traceback"].splitlines()[5])
+            if x.startswith("EXCEPTION: "):
+                x = x[11:]
+            x = self.rx_xtype.sub(lambda match: "%s: " % match.group("xtype"), x)
             fl += [{
                 "uuid": fn[:-5],
                 "time": t,
                 "status": "*" if uts and ts > uts else " ",
                 "service": service,
-                "exception": str(data["traceback"].splitlines()[5])
+                "exception": x
             }]
-        fs = "%s %36s  %19s  %29s %s\n"
+        fs = "%s %36s  %19s  %-29s %-s\n"
         self.stdout.write(fs % ("N", "UUID", "Time", "Service", "Exception"))
         for l in sorted(fl, key=operator.itemgetter("time"), reverse=True):
             self.stdout.write(fs % (l["status"], l["uuid"], l["time"].isoformat(), l["service"], l["exception"]))
