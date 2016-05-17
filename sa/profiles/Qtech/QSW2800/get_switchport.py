@@ -92,8 +92,8 @@ class Script(BaseScript):
                         break
             # tags
             if match.group("tags"):
-                for tag in self.expand_rangelist(
-                        match.group("tags").replace(";", ",")):
+                ma_group = match.group("tags").replace(";", ",")
+                for tag in self.expand_rangelist(ma_group):
                     if tag in vlans and tag != pvid:
                         swp["tagged"] += [tag]
             # 802.1q and QinQ
