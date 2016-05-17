@@ -26,7 +26,6 @@ class XRuleLookup(RuleLookup):
     RE_SEP = "\x00RE@SEP\x00"
 
     def __init__(self, rules):
-        super(XRuleLookup, self).__init__(rules)
         self.l_index = None
         self.r_index = {}
         self.cond_rules = defaultdict(set)  # Condition -> [Rules]
@@ -35,6 +34,8 @@ class XRuleLookup(RuleLookup):
         self.parser = parser
         self.pattern_cache = {}
         self.initialize(rules)
+        super(XRuleLookup, self).__init__(rules)
+        del self.pattern_cache
 
     def enter(self, index, regex, obj):
         def is_applicable(h):
