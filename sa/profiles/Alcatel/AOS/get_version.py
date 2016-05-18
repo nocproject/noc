@@ -22,6 +22,8 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
     rx_ver = re.compile(r"System.*?Description:\s+(?P<version>.+?)\s.*$",
         re.MULTILINE | re.DOTALL)
+    rx_ser = re.compile(r"Serial Number:\s+(?P<serial>.+?),$",
+        re.MULTILINE | re.DOTALL)
     rx_ver1 = re.compile(
         r"System.*?Description:\s+Alcatel-Lucent\s+\S+\s+(?P<version>\S+)\s.*$",
         re.MULTILINE | re.DOTALL)
@@ -29,6 +31,7 @@ class Script(BaseScript):
     def execute(self):
         v = self.cli("show ni")
         match_sys = self.rx_sys.search(v)
+        match_serial = self.rx_ser.search(v)
         v = self.cli("show system")
         match_ver = self.rx_ver.search(v)
         if match_ver.group("version") == "Alcatel-Lucent":
@@ -36,5 +39,8 @@ class Script(BaseScript):
         return {
             "vendor": "Alcatel",
             "platform": match_sys.group("platform"),
-            "version": match_ver.group("version")
+            "version": match_ver.group("version"),
+            "attributes": {
+            "Serial Number": match_serial.group("serial")
+            }
         }
