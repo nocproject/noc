@@ -301,8 +301,10 @@ class CLI(object):
 
     def on_unprivileged_prompt(self, data, match):
         self.logger.debug("State: <UNPRIVILEGED_PROMPT>")
-        self.send(self.profile.command_super) +
+        self.send(
+            self.profile.command_super +
             (self.profile.command_submit or "\n")
+        )
         self.expect({
             "username": self.on_super_username,
             "password": self.on_super_password,
