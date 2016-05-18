@@ -112,7 +112,7 @@ class ActivatorAPI(API):
             )
             result = response.body
         except (tornado.httpclient.HTTPError, socket.error) as e:
-            self.logger.debug("HTTP GET %s failed: %s", e)
+            self.logger.debug("HTTP GET %s failed: %s", url, e)
         finally:
             client.close()
         raise tornado.gen.Return(result)
