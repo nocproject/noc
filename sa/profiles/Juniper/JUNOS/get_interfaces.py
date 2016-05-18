@@ -23,10 +23,11 @@ class Script(BaseScript):
     """
     name = "Juniper.JUNOS.get_interfaces"
     interface = IGetInterfaces
+    TIMEOUT = 240
 
     rx_phy_split = re.compile(r"^Physical interface:\s+", re.MULTILINE)
     rx_phy_name = re.compile(
-        r"^(?P<ifname>\S+)( \(\S+, \S+\))?, (?P<admin>Enabled|Disabled|"
+        r"^(?P<ifname>\S+)( \(\S+, \S+\))?\s*, (?P<admin>Enabled|Disabled|"
         r"Administratively down), Physical link is (?P<oper>Up|Down)",
         re.MULTILINE | re.IGNORECASE)
     rx_phy_description = re.compile(
