@@ -73,7 +73,7 @@ class Script(BaseScript):
                     r += [swport]
                     continue
                 match = self.rx_interface_swport_3526.search(block)
-                if match.group("mode").lower() in ["hybrid", "trunk"]:
+                if match and match.group("mode").lower() in ["hybrid", "trunk"]:
                     swport["802.1Q Enabled"] = "True"
                 # QinQ
                 mqinq = self.rx_interface_qinq_3526.search(block)
