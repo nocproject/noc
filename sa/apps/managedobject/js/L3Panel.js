@@ -58,7 +58,8 @@ Ext.define("NOC.sa.managedobject.L3Panel", {
                         },
                         {
                             text: "MAC",
-                            dataIndex: "mac"
+                            dataIndex: "mac",
+                            width: 120
                         },
                         {
                             text: "Description",

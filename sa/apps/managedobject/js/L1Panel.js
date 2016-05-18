@@ -56,7 +56,8 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                         },
                         {
                             text: "MAC",
-                            dataIndex: "mac"
+                            dataIndex: "mac",
+                            width: 120
                         },
                         {
                             text: "LAG",
