@@ -56,7 +56,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     renderer: function(value, meta, record) {
                         var v = NOC.render.Bool(value);
                         if(value) {
-                            v += " " + record.get("ping_interval");
+                            v += " " + NOC.render.Duration(record.get("ping_interval"));
                             if(record.get("report_ping_rtt")) {
                                 v += "+RTT"
                             }
@@ -73,20 +73,33 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     align: "center"
                 },
                 {
-                    text: "Box",
+                    text: "Box discovery",
                     dataIndex: "enable_box_discovery",
-                    width: 60,
-                    renderer: NOC.render.Bool,
-                    align: "center"
-                },
-                {
-                    text: "Periodic",
-                    dataIndex: "enable_periodic_discovery",
-                    width: 60,
+                    width: 100,
                     renderer: function(value, meta, record) {
                         var v = NOC.render.Bool(value);
                         if(value) {
-                            v += " " + record.get("periodic_discovery_interval");
+                            v += " " + NOC.render.Duration(record.get("box_discovery_interval"));
+                        }
+                        return v
+                    },
+                    align: "center"
+                },
+                {
+                    text: "Failed interval",
+                    dataIndex: "box_discovery_failed_interval",
+                    width: 100,
+                    renderer: NOC.render.Duration,
+                    align: "center"
+                },
+                {
+                    text: "Periodic discovery",
+                    dataIndex: "enable_periodic_discovery",
+                    width: 100,
+                    renderer: function(value, meta, record) {
+                        var v = NOC.render.Bool(value);
+                        if(value) {
+                            v += " " + NOC.render.Duration(record.get("periodic_discovery_interval"));
                         }
                         return v
                     },
@@ -114,7 +127,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     anchor: "-0, -50",
                     defaults: {
                         autoScroll: true,
-                        layout: "anchor"
+                        layout: "anchor",
+                        padding: 10
                     },
                     items: [
                         {
@@ -169,7 +183,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     name: "card_title_template",
                                     xtype: "textfield",
                                     fieldLabel: "Card Title Template",
-                                    allowBlank: true,
+                                    allowBlank: false,
                                     uiStyle: "extra"
                                 }
                             ]
@@ -200,12 +214,44 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     xtype: "checkboxfield",
                                     boxLabel: "Enable",
                                     allowBlank: false
+
                                 },
                                 {
-                                    name: "ping_interval",
-                                    xtype: "numberfield",
-                                    fieldLabel: "Interval",
-                                    uiStyle: "small"
+                                    xtype: "fieldset",
+                                    title: "Ping discovery intervals",
+                                    layout: "vbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "ping_interval",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: "Interval, sec",
+                                                    uiStyle: "small",
+                                                    listeners: {
+                                                        scope: me,
+                                                        change: function(_item, newValue, oldValue, eOpts) {
+                                                            me.form.findField("ping_calculated").setValue(newValue);
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    name: 'ping_calculated',
+                                                    xtype: 'displayfield',
+                                                    renderer: NOC.render.Duration
+                                                }
+                                            ]
+                                        },
+                                    ]
                                 },
                                 {
                                     name: "report_ping_rtt",
@@ -236,65 +282,121 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     boxLabel: "Enable"
                                 },
                                 {
-                                    xtype: "container",
-                                    layout: "hbox",
+                                    xtype: "fieldset",
+                                    title: "Box discovery intervals",
+                                    layout: "vbox",
                                     defaults: {
-                                        padding: "0 8 0 0"
+                                        labelAlign: "top",
+                                        padding: 4
                                     },
                                     items: [
                                         {
-                                            name: "box_discovery_interval",
-                                            xtype: "numberfield",
-                                            fieldLabel: "Interval",
-                                            allowBlank: false,
-                                            uiStyle: "small",
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "box_discovery_interval",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: "Interval, sec",
+                                                    labelWidth: 150,
+                                                    allowBlank: false,
+                                                    uiStyle: "medium",
+                                                    listeners: {
+                                                        scope: me,
+                                                        change: function(_item, newValue, oldValue, eOpts) {
+                                                            me.form.findField("box_discovery_interval_calculated").setValue(newValue);
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    name: 'box_discovery_interval_calculated',
+                                                    xtype: 'displayfield',
+                                                    renderer: NOC.render.Duration
+                                                }
+                                            ]
                                         },
                                         {
-                                            name: "box_discovery_failed_interval",
-                                            xtype: "numberfield",
-                                            fieldLabel: "Failed Interval",
-                                            allowBlank: false,
-                                            uiStyle: "small"
-                                        }
-                                    ]
-                                },
-                                {
-                                    xtype: "container",
-                                    layout: "hbox",
-                                    defaults: {
-                                        padding: "4 8 0 0"
-                                    },
-                                    items: [
-                                        {
-                                            name: "box_discovery_on_system_start",
-                                            xtype: "checkbox",
-                                            boxLabel: "Check on system start after "
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "box_discovery_failed_interval",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: "Failed Interval, sec",
+                                                    labelWidth: 150,
+                                                    allowBlank: false,
+                                                    uiStyle: "medium",
+                                                    listeners: {
+                                                        scope: me,
+                                                        change: function(_item, newValue, oldValue, eOpts) {
+                                                            me.form.findField("box_discovery_failed_interval_calculated").setValue(newValue);
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    name: 'box_discovery_failed_interval_calculated',
+                                                    xtype: 'displayfield',
+                                                    renderer: NOC.render.Duration
+                                                }
+                                            ]
                                         },
                                         {
-                                            name: "box_discovery_system_start_delay",
-                                            xtype: "numberfield",
-                                            allowBlank: false,
-                                            uiStyle: "small"
-                                        }
-                                    ]
-                                },
-                                {
-                                    xtype: "container",
-                                    layout: "hbox",
-                                    defaults: {
-                                        padding: "4 8 0 0"
-                                    },
-                                    items: [
-                                        {
-                                            name: "box_discovery_on_config_changed",
-                                            xtype: "checkbox",
-                                            boxLabel: "Check on config change after "
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "4 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "box_discovery_on_system_start",
+                                                    xtype: "checkbox",
+                                                    boxLabel: "Check on system start after "
+                                                },
+                                                {
+                                                    name: "box_discovery_system_start_delay",
+                                                    xtype: "numberfield",
+                                                    allowBlank: false,
+                                                    labelWidth: 10,
+                                                    uiStyle: "small"
+                                                },
+                                                {
+                                                    name: "_box_discovery_system_start_delay",
+                                                    xtype: 'displayfield',
+                                                    value: "sec"
+                                                }
+                                            ]
                                         },
                                         {
-                                            name: "box_discovery_config_changed_delay",
-                                            xtype: "numberfield",
-                                            allowBlank: false,
-                                            uiStyle: "small"
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "4 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "box_discovery_on_config_changed",
+                                                    xtype: "checkbox",
+                                                    boxLabel: "Check on config change after "
+                                                },
+                                                {
+                                                    name: "box_discovery_config_changed_delay",
+                                                    xtype: "numberfield",
+                                                    allowBlank: false,
+                                                    labelWidth: 10,
+                                                    uiStyle: "small"
+                                                },
+                                                {
+                                                    name: "_box_discovery_config_changed_delay",
+                                                    xtype: 'displayfield',
+                                                    value: "sec"
+                                                }
+                                            ]
                                         }
                                     ]
                                 },
@@ -411,11 +513,42 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     boxLabel: "Enable"
                                 },
                                 {
-                                    name: "periodic_discovery_interval",
-                                    xtype: "numberfield",
-                                    fieldLabel: "Interval",
-                                    allowBlank: false,
-                                    uiStyle: "small"
+                                    xtype: "fieldset",
+                                    title: "Periodic discovery intervals",
+                                    layout: "vbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "periodic_discovery_interval",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: "Interval, sec",
+                                                    allowBlank: false,
+                                                    uiStyle: "small",
+                                                    listeners: {
+                                                        scope: me,
+                                                        change: function(_item, newValue, oldValue, eOpts) {
+                                                            me.form.findField("periodic_discovery_interval_calculated").setValue(newValue);
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    name: 'periodic_discovery_interval_calculated',
+                                                    xtype: 'displayfield',
+                                                    renderer: NOC.render.Duration
+                                                }
+                                            ]
+                                        },
+                                    ]
                                 },
                                 {
                                     xtype: "container",
