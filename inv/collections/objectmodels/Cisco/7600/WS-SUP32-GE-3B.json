@@ -9,7 +9,7 @@
     "connections": [
         {
             "description": "GigabitEthernet X/9 RJ45 port",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "Gi9",
             "protocols": ["Eth1G"],
