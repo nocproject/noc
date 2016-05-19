@@ -16,7 +16,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C6000-CL"]
+            "part_no": ["WS-C6000-CL", "WS-C6513-CL"]
         }
     }
 }
