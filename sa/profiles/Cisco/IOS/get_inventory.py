@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOS.get_inventory
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -225,7 +225,8 @@ class Script(BaseScript):
                 name.startswith("GigabitEthernet") or
                 name.startswith("TenGigabitEthernet") or
                 pid.startswith("X2-") or
-                pid.startswith("XENPAK")):
+                pid.startswith("XENPAK") or
+                pid.startswith("Xenpak")):
             # Transceivers
             # Get number
             if name.startswith("Transceiver "):
