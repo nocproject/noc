@@ -137,6 +137,7 @@ Ext.define("NOC.main.desktop.Application", {
             // Open tab
             me.workplacePanel.setActiveTab(me.launchedTabs[node]);
         } else {
+            NOC.msg.started(__("Starting {0}"), title);
             // Launch new tab
             var tab = me.workplacePanel.launchTab(panel_class, title, params, node);
             if (node) {

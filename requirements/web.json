@@ -32,6 +32,10 @@
     {
       "name": "nocsound",
       "version": "1.0.0"
+    },
+    {
+      "name": "jsmessage",
+      "version": "2013.03"
     }
   ]
 }
