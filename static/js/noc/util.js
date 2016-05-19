@@ -255,10 +255,34 @@ Ext.apply(NOC.render, {
 
 //
 Ext.apply(NOC.msg, {
-    started: function(message) {},
-    complete: function(message) {},
-    failed: function(message) {},
-    info: function(message) {}
+    started: function(message) {
+        dhtmlx.message({
+            text: Ext.String.format.apply(this, arguments),
+            type: "started",
+            expire: 2000
+        });
+    },
+    complete: function(message) {
+        dhtmlx.message({
+            text: Ext.String.format.apply(this, arguments),
+            type: "complete",
+            expire: 2000
+        });
+    },
+    failed: function(message) {
+        dhtmlx.message({
+            text: Ext.String.format.apply(this, arguments),
+            type: "failed",
+            expire: 10000
+        });
+    },
+    info: function(message) {
+        dhtmlx.message({
+            text: Ext.String.format.apply(this, arguments),
+            type: "info",
+            expire: 10000
+        });
+    }
 });
 
 //
@@ -279,21 +303,11 @@ NOC.mrt = function(options) {
 };
 //
 NOC.error = function(msg) {
-    Ext.MessageBox.show({
-        title: "Error!",
-        msg: Ext.String.format.apply(this, arguments),
-        buttons: Ext.MessageBox.OK,
-        icon: Ext.MessageBox.ERROR
-    });
+    NOC.msg.failed.apply(this, arguments);
 };
 //
 NOC.info = function(msg) {
-    Ext.MessageBox.show({
-        title: "Info",
-        msg: Ext.String.format.apply(this, arguments),
-        buttons: Ext.MessageBox.OK,
-        icon: Ext.MessageBox.INFO
-    });
+    NOC.msg.info.apply(this, arguments);
 };
 //
 NOC.hasPermission = function(perm) {
