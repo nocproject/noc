@@ -24,7 +24,7 @@
         },
         {
             "description": "Ethernet X/0/1 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/1",
             "protocols": ["10BASET", "100BASETX"],
@@ -32,7 +32,7 @@
         },
         {
             "description": "Ethernet X/0/2 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/2",
             "protocols": ["10BASET", "100BASETX"],
@@ -40,7 +40,7 @@
         },
         {
             "description": "Ethernet X/0/3 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/3",
             "protocols": ["10BASET", "100BASETX"],
@@ -48,7 +48,7 @@
         },
         {
             "description": "Ethernet X/0/4 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/4",
             "protocols": ["10BASET", "100BASETX"],
@@ -56,7 +56,7 @@
         },
         {
             "description": "Ethernet X/0/5 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/5",
             "protocols": ["10BASET", "100BASETX"],
@@ -64,7 +64,7 @@
         },
         {
             "description": "Ethernet X/0/6 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/6",
             "protocols": ["10BASET", "100BASETX"],
@@ -72,7 +72,7 @@
         },
         {
             "description": "Ethernet X/0/7 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/7",
             "protocols": ["10BASET", "100BASETX"],
@@ -80,7 +80,7 @@
         },
         {
             "description": "Ethernet X/0/8 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/8",
             "protocols": ["10BASET", "100BASETX"],
@@ -88,7 +88,7 @@
         },
         {
             "description": "Ethernet X/0/9 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/9",
             "protocols": ["10BASET", "100BASETX"],
@@ -96,7 +96,7 @@
         },
         {
             "description": "Ethernet X/0/10 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/10",
             "protocols": ["10BASET", "100BASETX"],
@@ -104,7 +104,7 @@
         },
         {
             "description": "Ethernet X/0/11 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/11",
             "protocols": ["10BASET", "100BASETX"],
@@ -112,7 +112,7 @@
         },
         {
             "description": "Ethernet X/0/12 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/12",
             "protocols": ["10BASET", "100BASETX"],
@@ -120,7 +120,7 @@
         },
         {
             "description": "Ethernet X/0/13 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/13",
             "protocols": ["10BASET", "100BASETX"],
@@ -128,7 +128,7 @@
         },
         {
             "description": "Ethernet X/0/14 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/14",
             "protocols": ["10BASET", "100BASETX"],
@@ -136,7 +136,7 @@
         },
         {
             "description": "Ethernet X/0/15 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/15",
             "protocols": ["10BASET", "100BASETX"],
@@ -144,7 +144,7 @@
         },
         {
             "description": "Ethernet X/0/16 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/16",
             "protocols": ["10BASET", "100BASETX"],
@@ -152,7 +152,7 @@
         },
         {
             "description": "Ethernet X/0/17 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/17",
             "protocols": ["10BASET", "100BASETX"],
@@ -160,7 +160,7 @@
         },
         {
             "description": "Ethernet X/0/18 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/18",
             "protocols": ["10BASET", "100BASETX"],
@@ -168,7 +168,7 @@
         },
         {
             "description": "Ethernet X/0/19 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/19",
             "protocols": ["10BASET", "100BASETX"],
@@ -176,7 +176,7 @@
         },
         {
             "description": "Ethernet X/0/20 interface",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "name": "EthernetX/0/20",
             "protocols": ["10BASET", "100BASETX"],
