@@ -25,7 +25,7 @@
     "data": {
         "asset": {
             "order_part_no": ["PWR-MX960-4100-AC-R", "PWR-MX960-4100-AC-BB"],
-            "part_no": ["740-029344"]
+            "part_no": ["740-029344", "740-027760"]
         }
     }
 }
