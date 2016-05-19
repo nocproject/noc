@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | ASR1000 | ESP40",
+    "$collection": "inv.objectmodels",
+    "uuid": "cd1d64b7-32a0-40a2-8fe8-22c5a3402a52",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR 1000 Embedded Services Processor 40Gbps",
+    "cr_context": "ESP",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR1000 | ESP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ASR1000-ESP40"]
+        }
+    }
+}

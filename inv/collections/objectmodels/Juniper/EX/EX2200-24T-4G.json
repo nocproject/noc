@@ -281,6 +281,7 @@
     "data": {
         "asset": {
             "order_part_no": ["EX2200-24T-4G"]
+            "part_no": ["740-023938"]
         },
         "dimensions": {
             "depth": 254.3,
