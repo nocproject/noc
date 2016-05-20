@@ -82,6 +82,12 @@ class Script(BaseScript):
                     tagged = range(1, 4095)
                 elif vlans.upper() == "NONE":
                     tagged = []
+                #
+                # Cisco hides info like this
+                # 3460,3463-3467,3469-3507,3512,3514,3516-3519,3528,(more)
+                #
+                elif "more" in vlans:
+                    tagged = self.expand_rangelist(vlans[:-7])
                 else:
                     tagged = self.expand_rangelist(vlans)
                 if untagged in tagged:
