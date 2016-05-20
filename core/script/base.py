@@ -22,6 +22,7 @@ from context import (ConfigurationContextManager, CacheContextManager,
                      IgnoredExceptionsContextManager)
 from noc.core.profile.loader import loader as profile_loader
 from noc.lib.solutions import get_solution
+from noc.lib.mac import MAC
 
 
 class BaseScript(object):
@@ -386,6 +387,24 @@ class BaseScript(object):
             else:
                 r.add(x)
         return sorted(r)
+
+    def macs_to_ranges(self, macs):
+        """
+        Converts list of macs to rangea
+        :param macs: Iterable yielding mac addresses
+        :returns: [(from, to), ..]
+        """
+        r = []
+        for m in sorted(MAC(x) for x in macs):
+            if r:
+                if r[-1][1].shift(1) == m:
+                    # Expand last range
+                    r[-1][1] = m
+                else:
+                    r += [[m, m]]
+            else:
+                r += [[m, m]]
+        return [(str(x[0]), str(x[1])) for x in r]
 
     def hexstring_to_mac(self, s):
         """Convert a 6-octet string to MAC address"""
