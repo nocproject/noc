@@ -14,6 +14,15 @@ from noc.main.models.pool import Pool
 
 CONFIG = "etc/noc.yml"
 
+def update_if_changed(pool, values):
+    changed = False
+    for k in values:
+        if getattr(pool, k) != values[k] and values[k] is not None:
+            setattr(pool, k, values[k])
+            changed = True
+    if changed:
+        pool.save()
+
 
 def main():
     with open(CONFIG) as f:
@@ -22,10 +31,10 @@ def main():
     for p in data["pools"]:
         try:
             pool = Pool.objects.get(name=p)
-            if pool.description != data["pools"][p]["description"]:
-                pool.description = data["pools"][p]["description"]
-                pool.save()
-                changed = True
+            changed |= update_if_changed(pool, {
+                "description": data["pools"][p]["description"],
+                "discovery_reschedule_limit": data["pools"][p].get("box_reschedule_limit")
+            })
         except Pool.DoesNotExist:
             Pool(
                 name=p,
