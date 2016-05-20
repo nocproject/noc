@@ -37,6 +37,10 @@ services:
     level: system
     port: 443
     require_cert: true
+    required_assets:
+      - web
+      - card
+      - login
 
   grafana:
     description: Graphana server
