@@ -39,7 +39,8 @@ RETRY_SOCKET_ERRORS = (errno.ECONNREFUSED, errno.EHOSTDOWN,
                        errno.EHOSTUNREACH, errno.ENETUNREACH)
 
 RETRY_CURL_ERRORS = set([
-    pycurl.E_COULDNT_CONNECT
+    pycurl.E_COULDNT_CONNECT,
+    pycurl.E_OPERATION_TIMEDOUT
 ])
 
 
@@ -83,7 +84,7 @@ class RPCClient(object):
                     name, value = l.split(":", 1)
                     headers[name.strip().lower()] = value.strip()
 
-                logger.debug("Sending request to %s", l)
+                logger.debug("[%s] Sending request", l)
                 buff = cStringIO.StringIO()
                 headers = {}
                 c = pycurl.Curl()
@@ -98,13 +99,17 @@ class RPCClient(object):
                 c.setopt(c.TIMEOUT, REQUEST_TIMEOUT)
                 c.setopt(c.CONNECTTIMEOUT, CONNECT_TIMEOUT)
                 c.setopt(c.HEADERFUNCTION, process_headers)
+                c.setopt(c.TCP_KEEPALIVE, 1)
+                c.setopt(c.TCP_KEEPIDLE, 60)
+                c.setopt(c.TCP_KEEPINTVL, 60)
                 try:
                     c.perform()
                 except pycurl.error as e:
                     errno, errstr = e
                     if errno in RETRY_CURL_ERRORS:
-                        logger.debug("Got error %d. Retry", errno)
+                        logger.debug("[%s] Got error %d (%s). Retry", l, errno, errstr)
                         return (None, None, None)
+                    logger.debug("[%s] Got error %d (%s). Giving up", l, errno, errstr)
                     raise RPCException(str(e))
                 finally:
                     code = c.getinfo(c.RESPONSE_CODE)
@@ -149,7 +154,6 @@ class RPCClient(object):
                     st += RETRY_DELTA
                 #
                 last = l
-                logger.debug("Sending request to %s", l)
                 url = "http://%s/api/%s/" % (l, self.client._api)
                 for nt in range(3):  # Limit redirects
                     code, headers, data = make_call(url, l, body)
@@ -159,10 +163,11 @@ class RPCClient(object):
                         break
                     elif code == 307:
                         url = headers.get("location")
+                        ol = l
                         l = url.split("://", 1)[1].split("/")[0]
                         orig_body = body
                         body = data
-                        logger.debug("Redirecting to %s", url)
+                        logger.debug("[%s] Redirecting to %s", ol, url)
                     else:
                         raise RPCException("Invalid return code: %s" % code)
                 if code is None:
