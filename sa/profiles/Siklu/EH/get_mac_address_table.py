@@ -20,7 +20,7 @@ class Script(BaseScript):
         r = []
         for l in v.splitlines():
             parts = l.split()
-            if parts[0] == "s1" and parts[-1] == "learned":
+            if parts and parts[0] == "s1" and parts[-1] == "learned":
                 r += [{
                     "vlan_id": 1,
                     "mac": parts[2],
