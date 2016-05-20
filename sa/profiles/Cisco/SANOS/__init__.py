@@ -31,3 +31,13 @@ class Profile(BaseProfile):
     can_strip_hostname_to = 20
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
+
+    def convert_interface_name(self, interface):
+        il = interface.lower()
+        if il.startswith("iscsi"):
+            return "iscsi %s" % interface[5:].strip()
+        if il.startswith("sup-fc"):
+            return il.strip()
+        if il.startswith("mgmt"):
+            return il.strip()
+        return self.convert_interface_name_cisco(interface)
