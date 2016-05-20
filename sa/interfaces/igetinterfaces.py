@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## IGetInterfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from base import *
@@ -232,7 +232,7 @@ class IGetInterfaces(Interface):
                 # Enabled address families
                 "enabled_afi": ListOfParameter(
                     element=StringParameter(choices=[
-                        "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE", "ATM"
+                        "IPv4", "IPv6", "ISO", "MPLS", "BRIDGE", "ATM", "iSCSI"
                     ]), required=False  # #todo: make required
                 ),
                 "ipv4_addresses": ListOfParameter(element=IPv4PrefixParameter(), required=False),  # enabled_afi = [... IPv4 ...]
