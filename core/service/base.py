@@ -356,7 +356,7 @@ class Service(object):
         addr, port = self.get_service_address()
         sdl = {}  # api -> [methods]
         # Collect and register exposed API
-        for a in self.api:
+        for a in api:
             url = "^/api/%s/$" % a.name
             self.logger.info(
                 "Supported API: %s at http://%s:%s/api/%s/",
