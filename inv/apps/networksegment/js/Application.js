@@ -94,6 +94,13 @@ Ext.define("NOC.inv.networksegment.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "sibling",
+                    xtype: "inv.networksegment.LookupField",
+                    fieldLabel: "Sibling",
+                    uiStyle: "large",
+                    allowBlank: true
+                },
+                {
                     name: "settings",
                     xtype: "dictfield",
                     fieldLabel: "Settings"
