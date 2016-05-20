@@ -126,7 +126,9 @@ class Interface(Document):
         Check interface is linked
         :returns: True if interface is linked, False otherwise
         """
-        return bool(Link.objects.filter(interfaces=self.id).limit(1).count())
+        return bool(Link._get_collection().find_one({
+            "interfaces": self.id
+        }))
 
     def unlink(self):
         """
