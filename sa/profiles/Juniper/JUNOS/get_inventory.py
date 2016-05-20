@@ -50,6 +50,8 @@ class Script(BaseScript):
 
     IGNORED = {
         "RE": set([
+            "750-026468",  # EX2200-24T-4G
+            "750-026331",  # EX2200-48P-4G, POE
             "750-033065",  # EX4200-24T, 8 POE
             "750-021258",  # EX4200-24F
             "750-034594",  # RE-SRX210HE
