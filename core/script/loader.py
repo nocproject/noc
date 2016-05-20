@@ -45,7 +45,11 @@ class ScriptLoader(object):
                 if not self.is_valid_name(name):
                     logger.error("Invalid script name")
                     return None
-                vendor, system, sn = name.split(".")
+                try:
+                    vendor, system, sn = name.split(".")
+                except Exception, why:
+                    logger.error("Error in script name \"%s\": %s", name, why)
+                    return None
                 if os.path.exists(
                         os.path.join(
                             "sa", "profiles", vendor, system,
