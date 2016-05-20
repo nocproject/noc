@@ -150,8 +150,8 @@ class CLI(object):
             # Clean input
             self.buffer += self.cleaned_input(r)
             # Try to find matched pattern
+            offset = max(0, len(self.buffer) - self.MATCH_TAIL)
             for rx, handler in self.pattern_table.iteritems():
-                offset = max(0, len(self.buffer) - self.MATCH_TAIL)
                 match = rx.search(self.buffer, offset)
                 if match:
                     self.logger.debug("Match: %s", rx.pattern)
@@ -437,6 +437,7 @@ class CLI(object):
         self.patterns["prompt"] = re.compile(
             pattern, re.DOTALL | re.MULTILINE
         )
+        self.pattern_table[self.patterns["prompt"]] = self.on_prompt
 
     def pop_prompt_pattern(self):
         """
@@ -444,9 +445,8 @@ class CLI(object):
         """
         self.logger.debug("Restore prompt pattern")
         pattern = self.prompt_stack.pop(-1)
-        self.patterns["prompt"] = re.compile(
-            pattern, re.DOTALL | re.MULTILINE
-        )
+        self.patterns["prompt"] = pattern
+        self.pattern_table[self.patterns["prompt"]] = self.on_prompt
 
     def get_motd(self):
         """
