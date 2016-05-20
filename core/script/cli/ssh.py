@@ -86,7 +86,11 @@ class SSHIOStream(IOStream):
                     self.logger.debug("Cannot close channel clearly: %s", e)
                 self.channel = None
             self.logger.debug("Closing ssh session")
-            self.session.close()
+            try:
+                self.session.close()
+            except _libssh2.Error as e:
+                self.logger.debug("Cannot close session clearly: %s", e)
+            self.session = None
         super(SSHIOStream, self).close(exc_info=exc_info)
 
     def auth_publickey(self):
