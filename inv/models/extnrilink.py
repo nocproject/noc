@@ -38,6 +38,7 @@ class ExtNRILink(Document):
     # NRI link comparison errors
     error = StringField(required=False)
 
+    @classmethod
     def get_connected(self, mo):
         """
         Return managed objects connected to mo
