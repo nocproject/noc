@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Network Segment
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -26,7 +26,11 @@ class NetworkSegment(Document):
     settings = DictField(default=lambda: {}.copy())
     tags = ListField(StringField())
     # Selectors for fake segments
+    # Transition only, should not be used
     selector = ForeignKeyField(ManagedObjectSelector)
+    # Sibling segment, if part of larger structure with
+    # horizontal links
+    sibling = ReferenceField("self")
 
     def __unicode__(self):
         return self.name
@@ -79,4 +83,17 @@ class NetworkSegment(Document):
         if self.selector:
             return self.selector.managed_objects
         else:
-            return ManagedObject.objects.filter(segment=str(self.id))
+            siblings = self.get_siblings()
+            if len(siblings) == 1:
+                q = {"segment": str(siblings.pop().id)}
+            else:
+                q = {"segment__in": [str(s.id) for s in siblings]}
+            return ManagedObject.objects.filter(**q)
+
+    def get_siblings(self, seen=None):
+        seen = seen or set()
+        ss = set([self])
+        seen = seen | ss
+        if self.sibling and self.sibling not in seen:
+            ss |= self.sibling.get_siblings(seen)
+        return ss
