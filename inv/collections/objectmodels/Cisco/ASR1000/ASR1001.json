@@ -100,6 +100,13 @@
             "gender": "f",
             "name": "psu1",
             "type__name": "Cisco | ASR1000 | ASR1001 PSU"
+        },
+        {
+            "description": "Route Processor slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "r0",
+            "type__name": "Cisco | ASR1000 | RP"
         }
     ],
     "data": {
