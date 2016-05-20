@@ -8,6 +8,20 @@
     "cr_context": "CHASSIS",
     "connections": [
         {
+            "description": "PSU slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu0",
+            "type__name": "Cisco | ASR1000 | ASR1001 PSU"
+        },
+        {
+            "description": "PSU slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | ASR1000 | ASR1001 PSU"
+        },
+        {
             "description": "Gi0/0/0",
             "direction": "i",
             "gender": "f",
@@ -40,66 +54,11 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "Gi0/0/4",
+            "description": "SPA Interface Processor slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "Gi4_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Gi0/0/5",
-            "direction": "i",
-            "gender": "f",
-            "name": "Gi5_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Gi0/0/6",
-            "direction": "i",
-            "gender": "f",
-            "name": "Gi6_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Gi0/0/7",
-            "direction": "i",
-            "gender": "f",
-            "name": "Gi7_sfp",
-            "protocols": ["TransEth100M", "TransEth1G"],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "description": "Te1/0/0",
-            "direction": "i",
-            "gender": "f",
-            "name": "Te0_sfp",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "description": "Te1/0/1",
-            "direction": "i",
-            "gender": "f",
-            "name": "Te1_sfp",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "description": "PSU slot 0",
-            "direction": "i",
-            "gender": "f",
-            "name": "psu0",
-            "type__name": "Cisco | ASR1000 | ASR1001 PSU"
-        },
-        {
-            "description": "PSU slot 1",
-            "direction": "i",
-            "gender": "f",
-            "name": "psu1",
-            "type__name": "Cisco | ASR1000 | ASR1001 PSU"
+            "name": "sip1",
+            "type__name": "Cisco | ASR1000 | SIP"
         },
         {
             "description": "Route Processor slot",
