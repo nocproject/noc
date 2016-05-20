@@ -8,6 +8,7 @@
 
 ## Third-party modules
 from mongoengine.document import Document
+from mongoengine.queryset import Q
 from mongoengine.fields import IntField, ObjectIdField, StringField
 
 
@@ -36,3 +37,21 @@ class ExtNRILink(Document):
     warn = StringField(required=False)
     # NRI link comparison errors
     error = StringField(required=False)
+
+    def get_connected(self, mo):
+        """
+        Return managed objects connected to mo
+        """
+        from noc.sa.models.managedobject import ManagedObject
+        if hasattr(mo, "id"):
+            mo = mo.id
+        r = set()
+        for n in ExtNRILink.objects.filter(Q(src_mo=mo) | Q(dst_mo=mo)):
+            if n.src_mo == mo:
+                rmo = n.dst_mo
+            else:
+                rmo = n.src_mo
+            m = ManagedObject.get_by_id(rmo)
+            if m:
+                r.add(m)
+        return r
