@@ -610,7 +610,7 @@ class ManagedObject(Model):
         return ObjectStatus.get_status(self)
 
     def set_status(self, status, ts=None):
-        ObjectStatus.set_status(self, status, ts=None)
+        ObjectStatus.set_status(self, status, ts=ts)
 
     def get_inventory(self):
         """
@@ -634,7 +634,7 @@ class ManagedObject(Model):
             self.BOX_DISCOVERY_JOB,
             key=self.id,
             pool=self.pool.name,
-            delta=delta
+            delta=delta or self.pool.get_delta()
         )
 
     def event(self, event_id, data=None, delay=None, tag=None):
@@ -908,7 +908,8 @@ class ManagedObject(Model):
                 "discovery",
                 self.BOX_DISCOVERY_JOB,
                 key=self.id,
-                pool=self.pool.name
+                pool=self.pool.name,
+                delta=self.pool.get_delta()
             )
         else:
             Job.remove(
@@ -922,7 +923,8 @@ class ManagedObject(Model):
                 "discovery",
                 self.PERIODIC_DISCOVERY_JOB,
                 key=self.id,
-                pool=self.pool.name
+                pool=self.pool.name,
+                delta=self.pool.get_delta()
             )
         else:
             Job.remove(
