@@ -61,20 +61,27 @@ class SSHIOStream(IOStream):
             self.channel.pty("xterm")
             self.channel.shell()
             self.channel.setblocking(0)
-        except _libssh2.Error, why:
-            raise self.cli.CLIError("SSH Error: %s" % why)
+        except _libssh2.Error as e:
+            raise self.cli.CLIError("SSH Error: %s" % e)
 
     def read_from_fd(self):
         try:
-            return self.channel.read(self.read_chunk_size)
-        except _libssh2.Error, why:
-            raise self.cli.CLIError("SSH Error: %s" % why)
+            r = self.channel.read(self.read_chunk_size)
+            if isinstance(r, (int, long)):
+                if r == -37:  # LIBSSH2_ERROR_EAGAIN
+                    return None
+                else:
+                    raise self.cli.CLIError("SSH Error code %s" % r)
+            else:
+                return r
+        except _libssh2.Error as e:
+            raise self.cli.CLIError("SSH Error: %s" % e)
 
     def write_to_fd(self, data):
         try:
             return self.channel.write(data)
-        except _libssh2.Error, why:
-            raise self.cli.CLIError("SSH Error: %s" % why)
+        except _libssh2.Error as e:
+            raise self.cli.CLIError("SSH Error: %s" % e)
 
     def close(self, exc_info=False):
         if not self.closed():
