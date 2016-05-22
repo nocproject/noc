@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ManagedObject
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ import os
 import re
 import itertools
 import operator
+from threading import RLock
 ## Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, SET_NULL)
@@ -54,6 +55,7 @@ Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
 Version = namedtuple("Version", ["profile", "vendor", "platform", "version"])
 
+id_lock = RLock()
 
 logger = logging.getLogger(__name__)
 
@@ -322,7 +324,7 @@ class ManagedObject(Model):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         try:
             return ManagedObject.objects.get(id=id)
