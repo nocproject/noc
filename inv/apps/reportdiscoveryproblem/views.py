@@ -21,7 +21,6 @@ class ReportDiscoveryProblemApplication(SimpleReport):
 
     def get_data(self, **kwargs):
         problems = {}  # id -> problem
-        print "@@@ Get all mo"
         # Get all managed objects
         mos = dict(
             (mo.id, mo)
@@ -31,9 +30,8 @@ class ReportDiscoveryProblemApplication(SimpleReport):
         # Get all managed objects with Generic.Host profiles
         for mo in mos:
             if mos[mo].profile_name == "Generic.Host":
-                problems[mo.id] = _("Profile check failed")
+                problems[mo] = _("Profile check failed")
         # Get all managed objects without interfaces
-        print "@@@ Get all interfaces"
         if_mo = dict(
             (x["_id"], x["managed_object"])
             for x in Interface._get_collection().find(
@@ -42,17 +40,15 @@ class ReportDiscoveryProblemApplication(SimpleReport):
             )
         )
         for mo in mos_set - set(problems) - set(if_mo.itervalues()):
-            problems[mo.id] = _("No interfaces")
+            problems[mo] = _("No interfaces")
         # Get all managed objects without links
-        print "@@@ Get all links"
         linked_mos = set()
         for d in Link._get_collection().find({}):
             for i in d["interfaces"]:
                 linked_mos.add(if_mo.get(i))
         for mo in mos_set - set(problems) - linked_mos:
-            problems[mo.id] = _("No links")
+            problems[mo] = _("No links")
         #
-        print "@@@ build result"
         data = []
         for mo_id in problems:
             if mo_id not in mos:
