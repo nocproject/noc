@@ -13,6 +13,7 @@ from noc.lib.app.simplereport import SimpleReport
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
+from noc.inv.models.objectuplink import ObjectUplink
 from noc.core.translation import ugettext as _
 
 
@@ -48,6 +49,14 @@ class ReportDiscoveryProblemApplication(SimpleReport):
                 linked_mos.add(if_mo.get(i))
         for mo in mos_set - set(problems) - linked_mos:
             problems[mo] = _("No links")
+        # Get all managed objects without uplinks
+        uplinks = {}
+        for d in ObjectUplink._get_collection().find():
+            nu = len(d.get("uplinks", []))
+            if nu:
+                uplinks[d["_id"]] = nu
+        for mo in mos_set - set(problems) - set(uplinks):
+            problems[mo] = _("No uplinks")
         #
         data = []
         for mo_id in problems:
@@ -73,5 +82,6 @@ class ReportDiscoveryProblemApplication(SimpleReport):
                 "Segment",
                 "Problem"
             ],
-            data=data
+            data=data,
+            enumerate=True
         )
