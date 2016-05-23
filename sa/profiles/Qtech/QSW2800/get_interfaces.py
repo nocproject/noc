@@ -70,7 +70,7 @@ class Script(BaseScript):
                 # detect interface type
                 if ifname.startswith("Eth"):
                     iface["type"] = "physical"
-                elif ifname.startswith("Po"):
+                elif ifname.startswith("Po") or ifname.startswith("Vsf"):
                     iface["type"] = "aggregated"
                 elif ifname.startswith("Vlan"):
                     iface["type"] = "SVI"
