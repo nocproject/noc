@@ -3,17 +3,16 @@
 ## Vendor: HP
 ## OS:     Comware
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
 """
 import re
-import noc.sa.profiles
-from noc.sa.protocols.sae_pb2 import TELNET, SSH
+from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "HP.Comware"
     supported_schemes = [TELNET]
     pattern_more = [(r"^.+---- More ----$", " ")]
