@@ -176,7 +176,7 @@ class BaseScript(object):
         if self.cache and self.parent:
             try:
                 result = self.get_cache(self.name, self.args)
-                self.logger.debug("Cache hit")
+                self.logger.info("Using cached result")
                 cache_hit = True
             except KeyError:
                 pass
@@ -184,6 +184,9 @@ class BaseScript(object):
         if not cache_hit:
             try:
                 result = self.execute(**self.args)
+                if self.cache and self.parent and result:
+                    self.logger.info("Caching result")
+                    self.set_cache(self.name, self.args, result)
             finally:
                 if not self.parent:
                     # Close SNMP socket when necessary
