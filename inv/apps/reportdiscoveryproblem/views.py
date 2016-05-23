@@ -33,7 +33,7 @@ class ReportDiscoveryProblemApplication(SimpleReport):
                 problems[mo] = _("Profile check failed")
         # Get all managed objects without interfaces
         if_mo = dict(
-            (x["_id"], x["managed_object"])
+            (x["_id"], x.get("managed_object"))
             for x in Interface._get_collection().find(
                 {},
                 {"_id": 1, "managed_object": 1}
