@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Huawei.VRP.get_switchport
+## H3C.VRP.get_switchport
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
@@ -16,23 +16,34 @@ from noc.sa.interfaces.igetswitchport import IGetSwitchport
 class Script(BaseScript):
     name = "H3C.VRP.get_switchport"
     interface = IGetSwitchport
-    rx_line = re.compile(
-        r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)", re.MULTILINE)
-    rx_descr = re.compile(
-        r"^(?P<interface>\S+)\s+(?P<description>.+)", re.MULTILINE)
+
+    rx_vlan_comment = re.compile(r"\([^)]+\)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
+        rx_line = re.compile(
+            r"(?P<interface>\S+)\s+(?P<mode>access|trunk|hybrid|trunking)\s+(?P<pvid>\d+)\s+(?P<vlans>(?:\d|\-|\s|\n)+)", re.MULTILINE)
+        rx_descr = re.compile(
+            r"^(?P<interface>\S+)\s+(?P<description>.+)", re.MULTILINE)
+
         # Get descriptions
         descriptions = {}
-        v = self.cli("display interface description")
-        for match in self.rx_descr.finditer(v):
-            interface = match.group("interface")
+        try:
+            v = self.cli("display interface description")
+        except self.CLISyntaxError:
+            rx_descr = re.compile(
+                r"^(?P<interface>(?:Eth|GE|TENGE)\d+/\d+/\d+)\s+"
+                r"(?P<status>(?:UP|(?:ADM\s)?DOWN))\s+(?P<speed>.+?)\s+"
+                r"(?P<duplex>.+?)\s+(?P<mode>access|trunk|hybrid|trunking)\s+"
+                r"(?P<pvid>\d+)(\s*(?P<description>\S*?))$" , re.MULTILINE)
+            v = self.cli("display brief interface")
+
+        for match in rx_descr.finditer(v):
+            interface = self.profile.convert_interface_name(match.group("interface"))
             description = match.group("description").strip()
             if description.startswith("HUAWEI"):
                 description = ""
             if match.group("interface") != "Interface":
                 descriptions[interface] = description
-
         # Get interafces status
         interface_status = {}
         for s in self.scripts.get_interface_status():
@@ -49,16 +60,30 @@ class Script(BaseScript):
         r = []
         if self.match_version(version__startswith="5.3"):
             v = self.cli("display port allow-vlan")
+        elif self.match_version(version__startswith="3.10"):
+            rx_line = re.compile(
+               r"""
+               (?P<interface>\S+)\scurrent\sstate
+               .*?
+               PVID:\s(?P<pvid>\d+)
+               .*?
+               Port\slink-type:\s(?P<mode>access|trunk|hybrid|trunking)
+               .*?
+               (?:Tagged\s+VLAN\sID|VLAN\spermitted)?:\s(?P<vlans>.*?)\n
+               """,
+               re.MULTILINE | re.DOTALL | re.VERBOSE)
+            v = self.cli("display interface")
         else:
             v = self.cli("display port vlan")
 
-        for match in self.rx_line.finditer(v):
+        for match in rx_line.finditer(v):
             port = {}
             tagged = []
             trunk = match.group("mode") in ("trunk", "hybrid", "trunking")
             if trunk:
                 vlans = match.group("vlans").strip()
-                if vlans != "-":
+                if vlans not in ["-", "none"]:
+                    vlans = self.rx_vlan_comment.sub("", vlans)
                     vlans = vlans.replace(" ", ",")
                     tagged = self.expand_rangelist(vlans)
                     # For VRP version 5.3
