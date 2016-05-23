@@ -69,7 +69,7 @@ class Command(BaseCommand):
             x = str(data["traceback"].splitlines()[5])
             if x.startswith("EXCEPTION: "):
                 x = x[11:]
-            x = self.rx_xtype.sub(lambda match: "%s: " % match.group("xtype"), x)
+            x = self.rx_xtype.sub(lambda match: "%s: " % match.group("xtype"), x)[:100]
             fl += [{
                 "uuid": fn[:-5],
                 "time": t,
