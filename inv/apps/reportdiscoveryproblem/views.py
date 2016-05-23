@@ -62,7 +62,7 @@ class ReportDiscoveryProblemApplication(SimpleReport):
                 mo.segment.name if mo.segment else "",
                 problems[mo_id]
             ]]
-        data = data.sorted(data)
+        data = sorted(data)
         return self.from_dataset(
             title=self.title,
             columns=[
