@@ -14,7 +14,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "HP.Comware"
-    supported_schemes = [TELNET]
     pattern_more = [(r"^.+---- More ----$", " ")]
     command_more = " "
     pattern_prompt = r"^[<\[]\S+[>\]]"
