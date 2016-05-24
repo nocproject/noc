@@ -38,6 +38,7 @@ class SegmentTopology(BaseTopology):
     def __init__(self, segment, node_hints=None, link_hints=None,
                  force_spring=False):
         self.segment = segment
+        self.segment_siblings = self.segment.get_siblings()
         self._uplinks_cache = {}
         self._rings_cache = {}
         self._isolated_cache = {}
@@ -49,7 +50,7 @@ class SegmentTopology(BaseTopology):
         super(SegmentTopology, self).__init__(node_hints, link_hints)
 
     def get_role(self, mo):
-        if mo.segment.id == self.segment.id:
+        if mo.segment in self.segment_siblings:
             return "segment"
         elif mo.segment.id == self.parent_segment.id:
             return "uplink"
