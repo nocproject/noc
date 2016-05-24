@@ -60,7 +60,6 @@ class MapApplication(ExtApplication):
             del x["mo"]
             x["id"] = str(x["id"])
             x["external"] = x.get("role") != "segment"
-            print x
             return x
 
         # Find segment
