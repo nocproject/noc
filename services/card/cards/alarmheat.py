@@ -15,10 +15,11 @@ import cachetools
 from base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.inv.models.object import Object
-from noc.sa.models.servicesummary import ServiceSummary , SummaryItem
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 
 
 class AlarmHeatCard(BaseCard):
+    name = "alarmheat"
     card_css = [
         "/ui/pkg/leaflet/leaflet.css",
         "/ui/card/css/alarmheat.css"
