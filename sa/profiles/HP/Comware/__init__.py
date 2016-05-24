@@ -14,12 +14,14 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "HP.Comware"
-    pattern_more = [(r"^.+---- More ----$", " ")]
     command_more = " "
-    pattern_prompt = r"^[<\[]\S+[>\]]"
     command_exit = "quit"
+    pattern_more = [(r"^.+---- More ----$", " ")]
+    pattern_prompt = r"^[<\[]\S+[>\]]"
+    pattern_syntax_error = \
+        r"% (?:Unrecognized command|Too many parameters|Incomplete command)" \
+        r" found at"
     rogue_chars = [
         re.compile(r"                "),
         "\r"
     ]
-

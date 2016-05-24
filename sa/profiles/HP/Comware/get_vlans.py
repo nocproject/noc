@@ -20,7 +20,9 @@ class Script(BaseScript):
         vlans = self.expand_interface_range(vlans.replace("(default)", ""))
         r = []
         for v in vlans:
+            if int(v) == 1:
+                continue
             r += [{
-                "vlan_id": v,
+                "vlan_id": int(v),
             }]
         return r
