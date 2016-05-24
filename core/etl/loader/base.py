@@ -308,7 +308,10 @@ class BaseLoader(object):
             if ov != nv:
                 self.logger.debug("   %s: %s -> %s", fn, ov, nv)
                 vv[fn] = v[fn]
-        self.change_object(self.mappings[n[0]], vv)
+        if n[0] in self.mappings:
+            self.change_object(self.mappings[n[0]], vv)
+        else:
+            self.logger.error("Cannot map id '%s'. Skipping.", n[0])
 
     def on_delete(self, row):
         """
