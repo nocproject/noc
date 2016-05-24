@@ -64,7 +64,7 @@ class Script(BaseScript):
                 "802.1s": "MSTP"
             }[match.group("mode")]
         # get instances
-        cmd = self.cli("show spanning-tree mst")
+        cmd = self.cli("show spanning-tree mst 0")
         for inst in cmd.split("\n#"):
             if "does not exist!" in inst:
                 continue
