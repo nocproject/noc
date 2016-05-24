@@ -330,7 +330,7 @@ class CLI(object):
     def on_super_username(self, data, match):
         self.logger.debug("State: SUPER_USERNAME")
         self.send(
-            self.script.credentials.get("user", "") +
+            (self.script.credentials.get("user", "") or "") +
             (self.profile.username_submit or "\n")
         )
         self.expect({
@@ -343,7 +343,7 @@ class CLI(object):
 
     def on_super_password(self, data, match):
         self.send(
-            self.script.credentials.get("super_password", "") +
+            (self.script.credentials.get("super_password", "") or "") +
             (self.profile.username_submit or "\n")
         )
         self.expect({
