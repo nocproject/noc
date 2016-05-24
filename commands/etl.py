@@ -62,7 +62,7 @@ class Command(BaseCommand):
         config = self.get_config()
         for system in config:
             system_config = system.get("config", {})
-            for x_config in system.get("data", []):
+            for x_config in reversed(system.get("data", [])):
                 config = system_config.copy()
                 config.update(x_config.get("config", {}))
                 if extractors and x_config["type"] not in extractors:
