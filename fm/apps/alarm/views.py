@@ -26,6 +26,7 @@ from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
 from noc.maintainance.models.maintainance import Maintainance
 from noc.sa.models.servicesummary import SummaryItem
+from noc.inv.models.networksegment import NetworkSegment
 
 
 class AlarmApplication(ExtApplication):
@@ -91,11 +92,15 @@ class AlarmApplication(ExtApplication):
         # Exclude maintainance
         q["managed_object__nin"] = Maintainance.currently_affected()
         if "administrative_domain" in q:
-            a = AdministrativeDomain.objects.get(id = q["administrative_domain"])
+            a = AdministrativeDomain.objects.get(id=q["administrative_domain"])
             q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
             q.pop("administrative_domain")
+        if "segment" in q:
+            ns = NetworkSegment.objects.get(id=q["segment"])
+            q["managed_object__in"] = ns.managed_objects.values_list("id", flat=True)
+            q.pop("segment")
         if "managedobjectselector" in q:
-            s = SelectorCache.objects.filter(selector = q["managedobjectselector"]).values_list("object")
+            s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list("object")
             if "managed_object__in" in q:
                  q["managed_object__in"] = list(set(q["managed_object__in"]).intersection(s))
             else:

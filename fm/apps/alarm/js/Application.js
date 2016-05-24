@@ -107,6 +107,16 @@ Ext.define("NOC.fm.alarm.Application", {
             }   
         }); 
 
+        me.segmentCombo = Ext.create("NOC.inv.networksegment.LookupField", {
+            fieldLabel: __("Segment"),
+            width: 198,
+            listeners: {
+                scope: me,
+                select: me.onChangeFilter,
+                clear: me.onChangeFilter
+            }
+        });
+
         me.alarmClassCombo = Ext.create("NOC.fm.alarmclass.LookupField", {
             fieldLabel: __("Class"),
             width: 198,
@@ -173,6 +183,42 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         });
 
+        me.gridMenu = Ext.create("Ext.menu.Menu", {
+            items: [
+                {
+                    text: __("Refresh"),
+                    glyph: NOC.glyph.refresh,
+                    scope: me,
+                    handler: me.onContextMenuRefresh
+                },
+                {
+                    text: __("Filter"),
+                    glyph: NOC.glyph.filter,
+                    menu: [
+                        {
+                            text: __("Object"),
+                            scope: me,
+                            itemId: "filterByObject",
+                            handler: me.onContextMenuFilter
+                        },
+                        {
+                            text: __("Segment"),
+                            scope: me,
+                            itemId: "filterBySegment",
+                            handler: me.onContextMenuFilter
+                        },
+                        {
+                            text: __("Class"),
+                            scope: me,
+                            itemId: "filterByClass",
+                            handler: me.onContextMenuFilter
+                        }
+                    ]
+                }
+            ]
+        });
+        me.currentAlarm = null;
+
         me.gridPanel = Ext.create("Ext.grid.Panel", {
             store: me.store,
             border: false,
@@ -204,9 +250,10 @@ Ext.define("NOC.fm.alarm.Application", {
                         me.typeButton,
                         me.expandButton,
                         me.ttConfirmButton,
-                        me.selectorCombo,
-                        me.admdomCombo,
                         me.objectCombo,
+                        me.segmentCombo,
+                        me.admdomCombo,
+                        me.selectorCombo,
                         me.alarmClassCombo,
                         {
                             xtype: "fieldset",
@@ -338,7 +385,8 @@ Ext.define("NOC.fm.alarm.Application", {
                     scope: me,
                     refresh: function() {
                         me.gridPanel.doLayout();
-                    }
+                    },
+                    itemcontextmenu: me.onGridContextMenu
                 }
             }
         });
@@ -394,6 +442,8 @@ Ext.define("NOC.fm.alarm.Application", {
         setIf("managedobjectselector", me.selectorCombo.getValue());
         // Adm Domain
         setIf("administrative_domain", me.admdomCombo.getValue());
+        // Segment
+        setIf("segment", me.segmentCombo.getValue());
         // Object
         setIf("managed_object", me.objectCombo.getValue());
         // Class
@@ -433,7 +483,7 @@ Ext.define("NOC.fm.alarm.Application", {
     isPollLocked: function() {
         var me = this,
             ls;
-        ls = me.autoreloadButton.pressed && (me.gridPanel.getView().getScrollable().getPosition().y === 0);
+        ls = me.autoreloadButton.pressed && (me.gridPanel.getView().getScrollable().getPosition().y === 0) && !me.gridMenu.isVisible();
         return !ls;
     },
     //
@@ -542,5 +592,42 @@ Ext.define("NOC.fm.alarm.Application", {
     onLoad: function() {
         var me = this;
         me.filterPanel.setTitle(__("Total: ") + me.store.getTotalCount());
+    },
+    //
+    onGridContextMenu: function(view, record, node, index, event) {
+        var me = this;
+        event.stopEvent();
+        me.currentAlarm = record;
+        me.gridMenu.showAt(event.getXY());
+        return false;
+    },
+    //
+    onContextMenuRefresh: function() {
+        var me = this;
+        me.onChangeFilter();
+    },
+    //
+    onContextMenuFilter: function(item, event) {
+        var me = this;
+        switch(item.itemId) {
+            case "filterByObject":
+                me.objectCombo.setValue(
+                    me.currentAlarm.get("managed_object"),
+                    true
+                );
+                break;
+            case "filterBySegment":
+                me.segmentCombo.setValue(
+                    me.currentAlarm.get("segment"),
+                    true
+                );
+                break;
+            case "filterByClass":
+                me.alarmClassCombo.setValue(
+                    me.currentAlarm.get("alarm_class"),
+                    true
+                );
+                break;
+        }
     }
 });
