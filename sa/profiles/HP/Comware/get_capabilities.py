@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+# Python modules
+import re
 ## NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -19,5 +21,18 @@ class Script(BaseScript):
         """
         Check box has STP enabled
         """
-        r = self.cli("display stp global | include Enabled")
-        return "?STP" in r
+        try:
+            r = self.cli("display stp global | include Enabled")
+            return "?STP" in r
+        except self.CLISyntaxError:
+            r = self.cli("display stp | include Enabled")
+            return "?STP" in r
+
+    @false_on_cli_error
+    def has_lldp(self):
+        """
+        Check box has lldp enabled
+        """
+        rx_lldp = re.compile(r"Global status of LLDP: Enable")
+        cmd = self.cli("display lldp status | include Global")
+        return rx_lldp.search(cmd) is not None

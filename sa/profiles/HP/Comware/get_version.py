@@ -23,6 +23,9 @@ class Script(BaseScript):
         r"^Comware Software, Version (?P<version>.+)$", re.MULTILINE)
     rx_platform_HP = re.compile(
         r"^HP (?P<platform>.*?) Switch", re.MULTILINE)
+    rx_devinfo = re.compile(
+        r"^Slot 1:\nDEVICE_NAME\s+:\s+(?P<platform>\S+)\s+.+?\n"
+        r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\n")
 
     def execute(self):
         platform = "Comware"
@@ -35,6 +38,14 @@ class Script(BaseScript):
         match = self.rx_platform_HP.search(v)
         if match:
             platform = match.group("platform")
+        if platform == "Comware":
+            try:
+                v = self.cli("display device manuinfo")
+                match = self.rx_devinfo.search(v)
+                if match:
+                    platform = match.group("platform")
+            except:
+                pass
 
         return {
             "vendor": "HP",
