@@ -21,3 +21,12 @@ class Script(BaseScript):
         """
         cmd = self.cli("show lldp")
         return "LLDP has been enabled globally" in cmd
+
+    @false_on_cli_error
+    def has_stp(self):
+        """
+        Check box has STP enabled
+        """
+        # Spanning Tree Enabled/Disabled : Enabled
+        cmd = self.cli("show spanning-tree")
+        return "Global MSTP is disabled" not in cmd
