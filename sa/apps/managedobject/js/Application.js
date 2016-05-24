@@ -309,6 +309,28 @@ Ext.define("NOC.sa.managedobject.Application", {
                     ]
                 },
                 {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    border: false,
+                    padding: 0,
+                    items: [
+                        {
+                            name: "platform",
+                            xtype: "displayfield",
+                            fieldLabel: __("Platform"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "version",
+                            xtype: "displayfield",
+                            fieldLabel: __("Version"),
+                            labelWidth: 55,
+                            padding: "0px 0px 0px 4px",
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: "Description",

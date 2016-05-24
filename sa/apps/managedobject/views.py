@@ -75,6 +75,9 @@ class ManagedObjectApplication(ExtModelApplication):
     def field_platform(self, o):
         return o.platform
 
+    def field_version(self, o):
+        return o.get_attr("version")
+
     def field_row_class(self, o):
         return o.object_profile.style.css_class_name if o.object_profile.style else ""
 

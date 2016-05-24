@@ -214,6 +214,11 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "version",
+            type: "string",
+            persist: false
+        },
+        {
             name: "interface_count",
             type: "integer",
             persist: false
