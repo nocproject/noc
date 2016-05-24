@@ -326,8 +326,11 @@ class BaseLoader(object):
         for r_id, msg in reversed(self.pending_deletes):
             self.logger.debug("Delete: %s", msg)
             self.c_delete += 1
-            obj = self.model.objects.get(pk=self.mappings[r_id])
-            obj.delete()
+            try:
+                obj = self.model.objects.get(pk=self.mappings[r_id])
+                obj.delete()
+            except self.model.DoesNotExist:
+                pass  # Already deleted
         self.pending_deletes = []
 
     def save_state(self):
