@@ -23,7 +23,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
         me.lookButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.pencil,
             scope: me,
-            tooltip: "Edit",
+            tooltip: __("Edit"),
             handler: me.onLook,
             disabled: true
         });
@@ -31,7 +31,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
         me.cardButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.eye,
             scope: me,
-            tooltip: "View card",
+            tooltip: __("View card"),
             handler: me.onMOCard,
             disabled: true
         });
