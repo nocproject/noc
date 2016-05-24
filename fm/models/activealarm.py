@@ -140,7 +140,7 @@ class ActiveAlarm(nosql.Document):
             self.timestamp = e.timestamp
         else:
             self.last_update = max(self.last_update, e.timestamp)
-        self.save()
+        self.save(save_condition={"id": self.id})
         # Update event's list of alarms
         if self.id not in e.alarms:
             e.alarms.append(self.id)
