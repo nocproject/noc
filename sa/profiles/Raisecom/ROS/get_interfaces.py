@@ -85,6 +85,8 @@ class Script(BaseScript):
                 "name": str(name),
                 "enabled_afi": ["BRIDGE"],
                 "description": port["description"],
+                "admin_status": port["admin_status"],
+                "oper_status": port["oper_status"],
                 "tagged_vlans": [],
                 "untagged_vlan": [int(vlan['untagged_vlan']) for vlan in vlans if int(vlan['name']) == name][0]
             }]
