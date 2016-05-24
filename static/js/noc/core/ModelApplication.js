@@ -645,6 +645,7 @@ Ext.define("NOC.core.ModelApplication", {
                     me.reloadStore();
                     me.saveInlines(data[me.idField], me.inlineStores);
                     me.unmask();
+                    NOC.msg.complete(__("Saved"));
             },
             failure: function(response) {
                 var message = "Error saving record";
@@ -1214,7 +1215,7 @@ Ext.define("NOC.core.ModelApplication", {
     onLoad: function() {
         var me = this,
             total = me.store.getTotalCount();
-        me.totalField.setValue("Total: " + total);
+        me.totalField.setValue(__("Total: ") + total);
         if(me.rendered) {
             me.refreshButton.setDisabled(false);
         }
