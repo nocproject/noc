@@ -106,7 +106,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         elif port_subtype == self.PORT_SUBTYPE_LOCAL:
             rp = self.get_interface_by_local(port, remote_object)
         elif port_subtype == self.PORT_SUBTYPE_UNSPECIFIED:
-            return self.get_interface_by_unspecified(port, remote_object)
+            rp = None  # Process below
         else:
             self.logger.debug(
                 "Cannot find remote port %r. "
