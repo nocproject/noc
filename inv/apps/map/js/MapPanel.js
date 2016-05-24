@@ -109,6 +109,31 @@ Ext.define("NOC.inv.map.MapPanel", {
                 }
             ]
         });
+        //
+        me.nodeMenu = Ext.create("Ext.menu.Menu", {
+            items: [
+                {
+                    text: __("View Card"),
+                    glyph: NOC.glyph.eye,
+                    scope: me,
+                    handler: me.onNodeMenuViewCard
+                },
+                {
+                    text: __("Edit"),
+                    glyph: NOC.glyph.pencil,
+                    scope: me,
+                    handler: me.onNodeMenuEdit
+                },
+                {
+                    text: __("Show dashboard"),
+                    glyph: NOC.glyph.line_chart,
+                    scope: me,
+                    handler: me.onNodeMenuDashboard
+                }
+            ]
+        });
+        me.nodeMenuObject = null;
+        //
         me.callParent();
     },
 
@@ -151,6 +176,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
         me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight));
         me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight));
+        me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
         //me.createContextMenus();
         me.fireEvent("mapready");
     },
@@ -354,6 +380,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             me.currentHighlight.unhighlight();
             me.currentHighlight = null;
         }
+        me.nodeMenu.hide();
     },
     //
     onCellSelected: function(view, evt, x, y) {
@@ -370,6 +397,13 @@ Ext.define("NOC.inv.map.MapPanel", {
                 me.app.inspectLink(data.id);
                 break;
         }
+    },
+    onContextMenu: function(view, evt, x, y) {
+        var me = this;
+        console.log("Context menu:", arguments, me, view.model.get("id"));
+        evt.preventDefault();
+        me.nodeMenuObject = view.model.get("id").split(":")[1];
+        me.nodeMenu.showAt(evt.clientX, evt.clientY);
     },
     onCellDoubleClick: function(view, evt, x, y) {
         var me = this,
@@ -765,5 +799,24 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this;
         me.paper.scale(zoom, zoom);
         me.paper.fitToContent();
+    },
+
+    onNodeMenuViewCard: function() {
+        var me = this;
+        window.open(
+            "/api/card/view/managedobject/" + me.nodeMenuObject + "/"
+        );
+    },
+
+    onNodeMenuEdit: function() {
+        var me = this;
+        NOC.launch("sa.managedobject", "history", {args: [me.nodeMenuObject]});
+    },
+
+    onNodeMenuDashboard: function() {
+        var me = this;
+        window.open(
+            "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.nodeMenuObject
+        );
     }
 });
