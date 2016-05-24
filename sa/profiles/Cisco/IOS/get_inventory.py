@@ -285,7 +285,7 @@ class Script(BaseScript):
                     # 2-port 100BASE-TX Fast Ethernet port adapter
                     pid = "CISCO7100-MB"
                 if pid == "ASR1001":
-                    return "R", name[7:], "ASR1001-RP"
+                    return "RP", name[7:], "ASR1001-RP"
                 return "MOTHERBOARD", name[7:], pid
         elif ((pid.startswith("WS-X64") or pid.startswith("WS-X67")
               or pid.startswith("WS-X65")) and "port" in descr):
