@@ -17,7 +17,7 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 class NetworkSegment(Document):
     meta = {
         "collection": "noc.networksegments",
-        "indexes": ["parent"]
+        "indexes": ["parent", "sibling"]
     }
 
     name = StringField(unique=True)
@@ -93,7 +93,10 @@ class NetworkSegment(Document):
     def get_siblings(self, seen=None):
         seen = seen or set()
         ss = set([self])
-        seen = seen | ss
+        seen |= ss
         if self.sibling and self.sibling not in seen:
             ss |= self.sibling.get_siblings(seen)
+        seen |= ss
+        for s in NetworkSegment.objects.filter(sibling=self):
+            ss |= s.get_siblings(seen)
         return ss
