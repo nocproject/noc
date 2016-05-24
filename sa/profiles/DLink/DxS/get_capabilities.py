@@ -16,11 +16,22 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 class Script(BaseScript):
     name = "DLink.DxS.get_capabilities"
 
+    rx_lldp = re.compile(r"LLDP Status\s+: Enabled?")
+    rx_stp = re.compile(r"STP Status\s+: Enabled?")
+
     @false_on_cli_error
     def has_lldp(self):
         """
         Check box has lldp enabled
         """
-        rx_lldp = re.compile(r"LLDP Status\s+: Enabled?")
         cmd = self.cli("show lldp")
-        return rx_lldp.search(cmd) is not None
+        return self.rx_lldp.search(cmd) is not None
+
+    @false_on_cli_error
+    def has_stp(self):
+        """
+        Check box has STP enabled
+        """
+        # Spanning Tree Enabled/Disabled : Enabled
+        cmd = self.cli("show stp")
+        return self.rx_stp.search(cmd) is not None
