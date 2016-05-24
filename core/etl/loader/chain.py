@@ -46,4 +46,7 @@ class LoaderChain(object):
         Returns cached object reference
         """
         model, key = r
-        return model.objects.get(id=key)
+        try:
+            return model.objects.get(id=key)
+        except model.DoesNotExist:
+            return None
