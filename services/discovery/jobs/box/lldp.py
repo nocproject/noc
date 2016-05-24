@@ -191,9 +191,12 @@ class LLDPCheck(TopologyDiscoveryCheck):
         """
         self.logger.debug("Remote port unspecified: %s", port)
         # Try to find interface with given name.
-        iface = self.get_interface_by_name(port, object)
-        if iface:
-            return iface
+        try:
+            iface = self.get_interface_by_name(port, object)
+            if iface:
+                return iface
+        except ValueError:
+            pass
         # Try to find interface with given MAC address. TODO: clean MAC.
         iface = self.get_interface_by_mac(port, object)
         if iface:
