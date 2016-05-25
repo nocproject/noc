@@ -544,7 +544,11 @@ class ClassifierService(Service):
             os._exit(1)
         if rule.to_drop:
             # Silently drop event if declared by action
-            self.logger.info("[%s] Dropped by action", event.id)
+            self.logger.info(
+                "[%s|%s|%s] Dropped by action",
+                event.id, event.managed_object.name,
+                event.managed_object.address
+            )
             return CR_DELETED
         if rule.is_unknown_syslog:
             # Append codebook
@@ -556,49 +560,79 @@ class ClassifierService(Service):
             cbs = [cb] + self.unclassified_codebook[o_id]
             cbs = cbs[:self.unclassified_codebook_depth]
             self.unclassified_codebook[o_id] = cbs
-        self.logger.debug("[%s] Matching rule: %s", event.id, rule.name)
+        self.logger.debug(
+            "[%s|%s|%s] Matching rule: %s",
+            event.id, event.managed_object.name,
+            event.managed_object.address, rule.name
+        )
         event_class = rule.event_class
         # Calculate rule variables
         vars = self.eval_rule_variables(event, event_class, vars)
         #
-        self.logger.info("[%s] Event class: %s (%s)",
-                         event.id, event_class.name, vars)
+        self.logger.info(
+            "[%s|%s|%s] Event class: %s (%s)",
+            event.id, event.managed_object.name,
+            event.managed_object.address, event_class.name, vars
+        )
         # Additionally check link events
         disposable = True
         if event_class.link_event and "interface" in vars:
             if_name = event.managed_object.profile.convert_interface_name(vars["interface"])
             iface = self.get_interface(event.managed_object.id, if_name)
             if iface:
-                self.logger.debug("[%s] Found interface %s:%s",
-                                  event.id,
-                                  event.managed_object.name, iface.name)
+                self.logger.info(
+                    "[%s|%s|%s] Found interface %s",
+                    event.id, event.managed_object.name,
+                    event.managed_object.address,
+                    iface.name
+                )
                 action = iface.profile.link_events
             else:
-                self.logger.debug("[%s] Interface not found %s:%s",
-                                  event.id,
-                                  event.managed_object.name, if_name)
+                self.logger.info(
+                    "[%s|%s|%s] Interface not found:%s",
+                    event.id, event.managed_object.name,
+                    event.managed_object.address, if_name
+                )
                 action = self.default_link_action
             if action == "I":
                 # Ignore
                 if iface:
-                    self.logger.info("[%s] Marked as ignored by interface profile '%s' (%s)", event.id, iface.profile.name, iface.name)
+                    self.logger.info(
+                        "[%s|%s|%s] Marked as ignored by interface profile '%s' (%s)",
+                        event.id, event.managed_object.name,
+                        event.managed_object.address,
+                        iface.profile.name, iface.name)
                 else:
-                    self.logger.info("[%s] Marked as ignored by default interface profile", event.id)
+                    self.logger.info(
+                        "[%s|%s|%s] Marked as ignored by default interface profile",
+                        event.id, event.managed_object.name,
+                        event.managed_object.address
+                    )
                 return CR_DELETED
             elif action == "L":
                 # Do not dispose
                 if iface:
-                    self.logger.info("[%s] Marked as not disposable by interface profile '%s' (%s)", event.id, iface.profile.name, iface.name)
+                    self.logger.info(
+                        "[%s|%s|%s] Marked as not disposable by interface profile '%s' (%s)",
+                        event.id, event.managed_object.name,
+                        event.managed_object.address,
+                        iface.profile.name, iface.name
+                    )
                 else:
-                    self.logger.info("[%s] Marked as not disposable by default interface", event.id)
+                    self.logger.info(
+                        "[%s|%s|%s] Marked as not disposable by default interface",
+                        event.id, event.managed_object.name,
+                        event.managed_object.address
+                    )
                 disposable = False
         # Deduplication
         if event_class.deduplication_window:
             de = self.find_duplicated_event(event, event_class, vars)
             if de:
-                self.logger.debug(
-                    "[%s] Event %s duplicates event %s. Discarding",
-                    event.managed_object.name, event.id, de.id)
+                self.logger.info(
+                    "[%s|%s|%s] Duplicates event %s. Discarding",
+                    event.id, event.managed_object.name,
+                    event.managed_object.address, de.id)
                 de.log_message(
                     "Duplicated event %s has been discarded" % event.id
                 )
@@ -608,8 +642,10 @@ class ClassifierService(Service):
             suppress, name, nearest = self.to_suppress(event, event_class,
                                                        vars)
             if suppress:
-                self.logger.debug("[%s] Suppressed by rule %s",
-                    event.id, name)
+                self.logger.info(
+                    "[%s|%s|%s] Suppressed by rule %s",
+                    event.id, event.managed_object.name,
+                    event.managed_object.address, name)
                 # Update suppressing event
                 nearest.log_suppression(event.timestamp)
                 # Delete suppressed event
@@ -644,9 +680,10 @@ class ClassifierService(Service):
                 except:
                     error_report()
                 if event.to_drop:
-                    self.logger.debug(
-                        "[%s] Dropped by handler",
-                        event.id,
+                    self.logger.info(
+                        "[%s|%s|%s] Dropped by handler",
+                        event.id, event.managed_object.name,
+                        event.managed_object.address
                     )
                     event.id = event_id  # Restore event id
                     event.delete()
@@ -661,15 +698,21 @@ class ClassifierService(Service):
                     error_report()
                 if event.to_drop:
                     # Delete event and stop processing
-                    self.logger.debug(
-                        "[%s] Dropped by trigger %s",
-                        event_id, t.name
+                    self.logger.info(
+                        "[%s|%s|%s] Dropped by trigger %s",
+                        event_id, event.managed_object.name,
+                        event.managed_object.address, t.name
                     )
                     event.id = event_id  # Restore event id
                     event.delete()
                     return CR_DELETED
         # Finally dispose event to further processing by correlator
         if disposable and rule.to_dispose:
+            self.logger.info(
+                "[%s|%s|%s] Disposing",
+                event.id, event.managed_object.name,
+                event.managed_object.address
+            )
             self.pub("correlator.dispose", {"event_id": str(event.id)})
             return CR_DISPOSED
         elif rule.is_unknown:
@@ -704,8 +747,8 @@ class ClassifierService(Service):
             self.logger.info("[%s] Unknown managed object id %s. Skipping",
                              event_id, object)
             return True
-        self.logger.info("[%s] Managed object %s (%s, %s)",
-                         event_id, mo.name, mo.address, mo.platform)
+        self.logger.info("[%s|%s|%s] Managed object found",
+                         event_id, mo.name, mo.address)
         ne = NewEvent(
             id=event_id,
             timestamp=datetime.datetime.fromtimestamp(ts),
@@ -716,11 +759,15 @@ class ClassifierService(Service):
             s = self.classify_event(ne)
             self.stats[s] += 1
         except Exception as e:
-            self.logger.error("[%s] Failed to process event: %s",
-                              event_id, e)
+            self.logger.error(
+                "[%s|%s|%s] Failed to process event: %s",
+                event_id, mo.name, mo.address, e)
             self.stats[CR_FAILED] += 1
             return False
-        self.logger.info("[%s] Event processed successfully", event_id)
+        self.logger.info(
+            "[%s|%s|%s] Event processed successfully",
+            event_id, mo.name, mo.address
+        )
         return True
 
     @tornado.gen.coroutine
