@@ -17,7 +17,7 @@ class Script(BaseScript):
 
     def execute(self):
         vlans = self.strip_first_lines(self.cli("display vlan"), 2)
-        vlans = self.expand_interface_range(vlans.replace("(default)", ""))
+        vlans = self.expand_rangelist(vlans.replace("(default)", ""))
         r = []
         for v in vlans:
             if int(v) == 1:
