@@ -83,11 +83,11 @@ class Script(BaseScript):
                 tagged = match.group("tagged")
                 if match.group("tagged") and match.group("tagged") != "none":
                     sub["tagged_vlan"] = \
-                    self.expand_interface_range(match.group("tagged"))
+                    self.expand_rangelist(match.group("tagged"))
             if port_type == "trunk":
                 if match.group("passing") and match.group("passing") != "none":
                     sub["tagged_vlan"] = \
-                    self.expand_interface_range(match.group("passing"))
+                    self.expand_rangelist(match.group("passing"))
             iface["subinterfaces"] += [sub]
             interfaces += [iface]
         v = self.cli("display interface Vlan-interface")
