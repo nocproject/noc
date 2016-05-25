@@ -47,7 +47,10 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        s = self.cli("show bfd neighbors details")
+        try:
+            s = self.cli("show bfd neighbors details")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
         s = self.rx_nl.sub("\n", s)
         for ss in self.rx_session_sep.split(s)[1:]:
             match = self.re_search(self.rx_session, ss)
