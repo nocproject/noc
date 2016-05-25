@@ -296,15 +296,21 @@ class CorrelatorService(Service):
                 ).first()
                 if a:
                     # Reopen alarm
-                    self.logger.info("%s: Event %s(%s) reopens alarm %s(%s)" % (
-                        r.u_name, str(e.id), e.event_class.name,
-                        str(a.id), a.alarm_class.name))
+                    self.logger.info(
+                        "[%s|%s|%s] %s reopens alarm %s(%s)",
+                        e.id, managed_object.name, managed_object.address,
+                        e.event_class.name,
+                        a.alarm_class.name, a.id
+                    )
                     a = a.reopen("Reopened by disposition rule '%s'" % r.u_name)
             if a:
                 # Active alarm found, refresh
-                self.logger.info("%s: Contributing event %s(%s) to active alarm %s(%s)" % (
-                    r.u_name, str(e.id), e.event_class.name,
-                    str(a.id), a.alarm_class.name))
+                self.logger.info(
+                    "[%s|%s|%s] Contributing event %s to active alarm %s(%s)",
+                    e.id, managed_object.name, managed_object.address,
+                    e.event_class.name,
+                    a.alarm_class.name, a.id
+                )
                 a.contribute_event(e)
                 return
         # Calculate alarm coverage
@@ -342,9 +348,12 @@ class CorrelatorService(Service):
         )
         a.save()
         a.contribute_event(e, open=True)
-        self.logger.info("%s: Event %s (%s) raises alarm %s (%s): %r",
-                      r.u_name, str(e.id), e.event_class.name,
-                      str(a.id), r.alarm_class.name, a.vars)
+        self.logger.info(
+            "[%s|%s|%s] %s raises alarm %s(%s): %r",
+            e.id, managed_object.name, managed_object.address,
+            e.event_class.name,
+            a.alarm_class.name, a.id, a.vars
+        )
         self.correlate_queue.put((r, a))
 
     def correlator_worker(self):
@@ -417,9 +426,12 @@ class CorrelatorService(Service):
                 managed_object=managed_object.id,
                 discriminator=discriminator).first()
             if a:
-                self.logger.info("%s: Event %s(%s) clears alarm %s(%s)" % (
-                    r.u_name, str(e.id), e.event_class.name,
-                    str(a.id), a.alarm_class.name))
+                self.logger.info(
+                    "[%s|%s|%s] %s clears alarm %s(%s)",
+                    e.id, managed_object.name, managed_object.address,
+                    e.event_class.name,
+                    a.alarm_class.name, a.id
+                )
                 a.contribute_event(e, close=True)
                 a.clear_alarm(
                     "Cleared by disposition rule '%s'" % r.u_name,
@@ -492,12 +504,12 @@ class CorrelatorService(Service):
         """
         Dispose event according to disposition rule
         """
-        self.logger.info("Disposing event %s", event_id)
+        self.logger.info("[%s] Disposing", event_id)
         try:
             e = ActiveEvent.objects.get(id=event_id)
         except ActiveEvent.DoesNotExist:
-            self.logger.info("Event not found, skipping")
-            return True
+            self.logger.info("[%s] Event not found, skipping", event_id)
+            return
         drc = self.rules.get(e.event_class.id)
         if not drc:
             return
