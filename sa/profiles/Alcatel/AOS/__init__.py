@@ -19,8 +19,9 @@ class Profile(BaseProfile):
     command_save_config = "write memory\r\ncopy working certified"
 
     def convert_interface_name(self, s):
-        if s.startswith("Alcatel "):
+        if s.startswith("Alcatel ") or s.startswith("Alcatel-Lucent "):
             # Alcatel 1/2 6.3.1.871.R01
+            # Alcatel-Lucent 1/13
             return s.split()[1]
         elif s.startswith("Dynamic Aggregate Number "):
             # Dynamic Aggregate Number 1 ref 40000001 size 4
