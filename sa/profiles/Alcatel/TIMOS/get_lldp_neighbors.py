@@ -48,6 +48,8 @@ class Script(BaseScript):
         elif port_type == '5' and "\n " not in port:
             remote_port = remote_port.replace(":", "").replace("\n", "")
             remote_port = remote_port.decode("hex")
+        elif port_type == '7':
+            return port.replace("\n", "")
         return remote_port
 
     def get_port_info(self, port):
@@ -74,6 +76,8 @@ class Script(BaseScript):
             pri["remote_capabilities"] = self.fixcaps(pri["remote_capabilities"])
             pri["remote_port"] = self.fixport(pri["remote_port"],
                                               pri["remote_port_subtype"])
+            if 'n/a' in pri['remote_system_name']:
+                del pri['remote_system_name']
             return pri
 
     def execute(self):
