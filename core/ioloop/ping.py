@@ -41,6 +41,10 @@ class PingSocket(object):
     """
     ECHO_TYPE = None
     HEADER_SIZE = None
+    # Recommended send buffer size, 1M by default
+    SNDBUF = 1048576
+    # Recommended receive buffer size, 1M by default
+    RCVBUF = 1048576
 
     def __init__(self, io_loop=None, tos=None):
         self.io_loop = io_loop or IOLoop.current()
@@ -67,6 +71,30 @@ class PingSocket(object):
 
     def create_socket(self):
         raise NotImplementedError
+
+    def adjust_buffers(self):
+        """
+        Set send and receive buffers
+        """
+        def set_buffer_size(sock, direction, start_size):
+            s = start_size
+            while s:
+                try:
+                    sock.setsockopt(socket.SOL_SOCKET, direction, s)
+                    return sock.getsockopt(socket.SOL_SOCKET, direction)
+                except socket.error:
+                    s >>= 2
+
+        send_size = set_buffer_size(
+            self.socket, socket.SO_SNDBUF, self.SNDBUF
+        )
+        recv_size = set_buffer_size(
+            self.socket, socket.SO_RCVBUF, self.RCVBUF
+        )
+        logger.info(
+            "Adjust ping socket buffers: send=%s, recv=%s",
+            send_size, recv_size
+        )
 
     def ping(self, address, timeout, size, request_id, seq):
         """
@@ -207,6 +235,7 @@ class Ping4Socket(PingSocket):
             self.socket.setsockopt(
                 socket.IPPROTO_IP, socket.IP_TOS, self.tos
             )
+        self.adjust_buffers()
 
     def parse_reply(self, msg, addr):
         """
@@ -253,6 +282,7 @@ class Ping6Socket(PingSocket):
             self.socket.setsockopt(
                 socket.IPPROTO_IP, socket.IP_TOS, self.tos
             )
+        self.adjust_buffers()
 
     def parse_reply(self, msg, addr):
         """
