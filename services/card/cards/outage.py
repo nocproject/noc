@@ -12,7 +12,7 @@ import operator
 ## NOC modules
 from base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.sa.models.servicesummary import SummaryItem
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 import cachetools
 
 
@@ -43,7 +43,7 @@ class OutageCard(BaseCard):
             # Flatten objects
             segment["objects"] = sorted(
                 segment["objects"].values(),
-                key=lambda x: -x["duration"]
+                key=lambda x: -x["weight"]
             )
             # Calculate children's coverage
             for s in segment["segments"].values():
@@ -52,7 +52,7 @@ class OutageCard(BaseCard):
                 update_dict(subscribers, s["subscribers"])
             segment["segments"] = sorted(
                 segment["segments"].values(),
-                key=lambda x: x["segment"].name
+                key=lambda x: -x["weight"]
             )
             segment["services"] = services
             segment["subscribers"] = subscribers
@@ -60,6 +60,9 @@ class OutageCard(BaseCard):
                 "service": services,
                 "subscriber": subscribers
             }
+            segment["weight"] = ServiceSummary.get_weight(
+                segment["summary"]
+            )
 
         def update_dict(d1, d2):
             for k in d2:
@@ -109,6 +112,9 @@ class OutageCard(BaseCard):
                     "service": services
                 }
             }
+            ct["objects"][alarm.id]["weight"] = ServiceSummary.get_weight(
+                ct["objects"][alarm.id]["summary"]
+            )
         # Calculate segment summaries
         update_summary(tree)
         # Calculate total summaries
