@@ -8,15 +8,18 @@
 
 ## Python modules
 import operator
+from threading import RLock
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField, IntField,
                                 BooleanField)
+import cachetools
+## NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.core.model.decorator import on_save
 from noc.core.defer import call_later
 
-import cachetools
+id_lock = RLock()
 
 
 @on_save
@@ -43,7 +46,7 @@ class ServiceProfile(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return ServiceProfile.objects.filter(id=id).first()
 
