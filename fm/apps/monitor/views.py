@@ -77,3 +77,54 @@ class FMMonitorApplication(ExtApplication):
                 "value": v
             } for g, k, v in r
         ]
+
+
+    @view(url="^data2/", method=["GET"], access="read", api=True)
+    def api_data2(self, request):
+        db = get_db()
+        r = {}
+        now = datetime.datetime.now()
+        # Classifier section
+        new_events = db.noc.events.new.count()
+        failed_events = db.noc.events.failed.count()
+        first_new_event = db.noc.events.new.find_one(sort=[("timestamp", 1)])
+        if first_new_event:
+            classification_lag = humanize_timedelta(now - first_new_event["timestamp"])
+        else:
+            classification_lag = "-"
+        r["classifier"] += {
+            "new_events": new_events,
+            "failed_events": failed_events,
+            "lag": classification_lag
+        }
+        # Correlator section
+        sc = db.noc.schedules.fm.correlator
+        dispose = sc.find({"jcls": "dispose"}).count()
+        if dispose:
+            f = sc.find_one({"jcls": "dispose"}, sort=[("ts", 1)])
+            dispose_lag = humanize_timedelta(now - f["ts"])
+        else:
+            dispose_lag = "-"
+        c_jobs = sc.find({"jcls": {"$ne": "dispose"}}).count()
+        r["correlator"] += {
+            "dispose": dispose,
+            "dispose_lag": dispose_lag,
+            "jobs": c_jobs
+        }
+        # Stats
+        active_events = db.noc.events.active.count()
+        archived_events = db.noc.events.archive.count()
+        active_alarms = db.noc.alarms.active.count()
+        archived_alarms = db.noc.alarms.archived.count()
+        r["events"] += {
+            "new_events": new_events,
+            "active_events": active_events,
+            "archived_events": archived_events,
+            "failed_events": failed_events,
+        }
+        r["alarms"] += {
+            "active_alarms": active_alarms,
+            "archived_alarms": archived_alarms
+        }
+        # Feed result
+        return r
