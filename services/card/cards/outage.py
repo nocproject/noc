@@ -19,6 +19,9 @@ import cachetools
 class OutageCard(BaseCard):
     name = "outage"
     default_template_name = "outage"
+    card_css = [
+        "/ui/card/css/outage.css"
+    ]
 
     def get_data(self):
         def get_segment_path(segment):

@@ -1,0 +1,32 @@
+.outage-header {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 4px;
+}
+
+.outage-row {
+    border-top: 1px solid #ddd;
+}
+
+.outage-segment {
+    display: inline-block;
+    vertical-align: top;
+    width: 200px;
+}
+
+.outage-segment-detail {
+    display: inline-block;
+    clear: right;
+}
+
+.outage-object {
+    width: 200px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.outage-object-detail {
+    width: 200px;
+    display: inline-block;
+    clear: right;
+    vertical-align: top;
+}
