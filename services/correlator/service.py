@@ -13,6 +13,8 @@ import datetime
 import re
 from collections import defaultdict
 import Queue
+## Third-party modules
+import tornado.gen
 ## NOC modules
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
@@ -64,9 +66,13 @@ class CorrelatorService(Service):
             "correlator.dispose",
             "dispose",
             self.on_dispose_event,
-            max_in_flight=4 * self.config.max_threads
+            max_in_flight=self.config.max_threads
         )
         self.scheduler.run()
+
+    @tornado.gen.coroutine
+    def on_deactivate(self):
+        pass
 
     def load_config(self):
         """
@@ -497,8 +503,12 @@ class CorrelatorService(Service):
         """
         Called on new dispose message
         """
-        self.get_executor("max").submit(self.dispose_event, event_id)
-        return True
+        message.enable_async()
+        self.get_executor("max").submit(self.dispose_worker, message, event_id)
+
+    def dispose_worker(self, message, event_id):
+        self.dispose_event(event_id)
+        self.ioloop.add_callback(message.finish)
 
     def dispose_event(self, event_id):
         """
