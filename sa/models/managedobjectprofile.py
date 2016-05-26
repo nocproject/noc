@@ -8,6 +8,7 @@
 
 ## Python modules
 import operator
+from threading import RLock
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -23,6 +24,8 @@ from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
 from objectmap import ObjectMap
+
+id_lock = RLock()
 
 
 @on_init
@@ -158,7 +161,7 @@ class ManagedObjectProfile(models.Model):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         try:
             return ManagedObjectProfile.objects.get(id=id)
