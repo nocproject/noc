@@ -41,10 +41,10 @@ class PingSocket(object):
     """
     ECHO_TYPE = None
     HEADER_SIZE = None
-    # Recommended send buffer size, 1M by default
-    SNDBUF = 1048576
-    # Recommended receive buffer size, 1M by default
-    RCVBUF = 1048576
+    # Recommended send buffer size, 4M by default
+    SNDBUF = 4 * 1048576
+    # Recommended receive buffer size, 4M by default
+    RCVBUF = 4 * 1048576
 
     def __init__(self, io_loop=None, tos=None):
         self.io_loop = io_loop or IOLoop.current()
@@ -204,6 +204,7 @@ class PingSocket(object):
             except socket.error as e:
                 c = errno_from_exception(e)
                 if c in _ERRNO_WOULDBLOCK:
+                    logger.info("[%s] Out of buffer space, waiting", a)
                     new_buffer += [(a, m)]
                 else:
                     logger.error("[%s] Failed to send request: %s",
