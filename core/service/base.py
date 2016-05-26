@@ -79,6 +79,8 @@ class Service(object):
         "debug": logging.DEBUG
     }
 
+    NSQ_PUB_RETRY_DELAY = 0.1
+
     def __init__(self):
         sys.excepthook = excepthook
         # Monkeypatch error reporting
@@ -390,6 +392,8 @@ class Service(object):
 
     @tornado.gen.coroutine
     def deactivate(self):
+        self.logger.info("Deactivating")
+        yield self.on_deactivate()
         # Finally stop ioloop
         self.logger.info("Stopping IOLoop")
         self.ioloop.stop()
@@ -399,6 +403,10 @@ class Service(object):
         Called when service activated
         """
         pass
+
+    @tornado.gen.coroutine
+    def on_deactivate(self):
+        yield
 
     def open_rpc(self, name, pool=None):
         """
@@ -495,12 +503,15 @@ class Service(object):
         def finish_pub(conn, data):
             if isinstance(data, nsq.Error):
                 self.logger.info(
-                    "Failed to publish to topic '%s': %s. Retry",
+                    "Failed to pub to topic '%s': %s. Retry",
                     topic, data
                 )
-                self.get_nsq_writer().pub(
+                w.io_loop.call_later(
+                    self.NSQ_PUB_RETRY_DELAY,
+                    w.pub,
                     topic,
-                    msg
+                    msg,
+                    callback=finish_pub
                 )
 
         w = self.get_nsq_writer()
@@ -514,12 +525,15 @@ class Service(object):
         def finish_pub(conn, data):
             if isinstance(data, nsq.Error):
                 self.logger.info(
-                    "Failed to publish to topic '%s': %s. Retry",
+                    "Failed to mpub to topic '%s': %s. Retry",
                     topic, data
                 )
-                self.get_nsq_writer().mpub(
+                w.io_loop.call_later(
+                    self.NSQ_PUB_RETRY_DELAY,
+                    w.mpub,
                     topic,
-                    msg
+                    msg,
+                    callback=finish_pub
                 )
 
         w = self.get_nsq_writer()
