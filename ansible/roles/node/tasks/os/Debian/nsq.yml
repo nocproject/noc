@@ -7,7 +7,7 @@
   environment:
     https_proxy: "{{http_proxy}}"
 
-
+# waits for https://github.com/ansible/ansible-modules-core/pull/2491
 - name: install nsq
   command: /bin/tar --strip-components=1 -xf /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.tar.gz -C {{ noc_root }}
   args:
