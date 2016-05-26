@@ -86,6 +86,7 @@ server {
     ssl_certificate_key {{ nginx_ssl_key_path }};
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
     add_header X-Content-Type-Options nosniff;
+    add_header X-Backend-Server $upstream_addr;
     ssl_stapling on;
     ssl_stapling_verify on;
 
