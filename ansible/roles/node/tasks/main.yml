@@ -10,7 +10,7 @@
   lineinfile: dest=/etc/hosts
               line="{{ hostvars[item].ansible_ssh_host }} {{ item }}"
               regexp=".*{{ item }}"
-  with_items: groups["nodes"]
+  with_items: "{{ groups['nodes'] }}"
 
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
