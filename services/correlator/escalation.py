@@ -188,7 +188,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                 # Notify consequences
                 for a in cons_escalated:
                     c_tt_name, c_tt_id = a.escalation_tt.split(":")
-                    cts = tt_system_cache[c_tt_name]
+                    tts_id = tt_system_id_cache[c_tt_name]
+                    cts = tt_system_cache[tts_id]
                     if cts:
                         tts = cts.get_system()
                         try:
@@ -201,17 +202,20 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                         except tts.TTError as e:
                             log("Failed to add comment to %s: %s",
                                 a.escalation_tt, e)
+                    else:
+                        log("Failed to add comment to %s: Invalid TT system",
+                            a.escalation_tt)
         #
         if a.stop_processing:
             logger.debug("Stopping processing")
             break
 
 
-def get_item(model, id):
+def get_item(model, **kwargs):
     if not id:
         return None
     try:
-        return model.objects.get(id=id)
+        return model.objects.get(**kwargs)
     except model.DoesNotExist:
         return None
 
@@ -219,9 +223,13 @@ TTL = 60
 CACHE_SIZE = 256
 
 escalation_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(AlarmEscalation, x)
+    CACHE_SIZE, TTL, missing=lambda x: get_item(AlarmEscalation, id=x)
 )
 
 tt_system_cache = cachetools.TTLCache(
-    CACHE_SIZE, TTL, missing=lambda x: get_item(TTSystem, x)
+    CACHE_SIZE, TTL, missing=lambda x: get_item(TTSystem, id=x)
+)
+
+tt_system_id_cache = cachetools.TTLCache(
+    CACHE_SIZE, TTL, missing=lambda x: get_item(TTSystem, name=x)
 )
