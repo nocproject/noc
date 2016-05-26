@@ -406,7 +406,7 @@ class Service(object):
 
     @tornado.gen.coroutine
     def on_deactivate(self):
-        yield
+        pass
 
     def open_rpc(self, name, pool=None):
         """
