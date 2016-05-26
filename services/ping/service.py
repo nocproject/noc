@@ -12,6 +12,7 @@ import functools
 import time
 import socket
 import struct
+import os
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -47,6 +48,11 @@ class PingService(Service):
 
     @tornado.gen.coroutine
     def on_activate(self):
+        self.logger.info("Setting nice level to -20")
+        try:
+            os.nice(-20)
+        except OSError as e:
+            self.logger.info("Cannot set nice level to -20: %s", e)
         # Open ping sockets
         self.ping = Ping(self.ioloop, tos=self.config.tos)
         # Register RPC aliases
