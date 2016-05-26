@@ -97,7 +97,7 @@ class FMMonitorApplication(ExtApplication):
             classification_lag = humanize_timedelta(now - first_new_event["timestamp"])
         else:
             classification_lag = "-"
-        r["classifier"] += {
+        r["classifier"] = {
             "new_events": new_events,
             "failed_events": failed_events,
             "lag": classification_lag
@@ -111,7 +111,7 @@ class FMMonitorApplication(ExtApplication):
         else:
             dispose_lag = "-"
         c_jobs = sc.find({"jcls": {"$ne": "dispose"}}).count()
-        r["correlator"] += {
+        r["correlator"] = {
             "dispose": dispose,
             "dispose_lag": dispose_lag,
             "jobs": c_jobs
@@ -121,13 +121,13 @@ class FMMonitorApplication(ExtApplication):
         archived_events = db.noc.events.archive.count()
         active_alarms = db.noc.alarms.active.count()
         archived_alarms = db.noc.alarms.archived.count()
-        r["events"] += {
+        r["events"] = {
             "new_events": new_events,
             "active_events": active_events,
             "archived_events": archived_events,
             "failed_events": failed_events,
         }
-        r["alarms"] += {
+        r["alarms"] = {
             "active_alarms": active_alarms,
             "archived_alarms": archived_alarms
         }
