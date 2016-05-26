@@ -82,7 +82,12 @@ class FMMonitorApplication(ExtApplication):
     @view(url="^data2/", method=["GET"], access="read", api=True)
     def api_data2(self, request):
         db = get_db()
-        r = {}
+        r = {
+            "classifier": {},
+            "correlator": {},
+            "events": {},
+            "alarms": {}
+        }
         now = datetime.datetime.now()
         # Classifier section
         new_events = db.noc.events.new.count()
