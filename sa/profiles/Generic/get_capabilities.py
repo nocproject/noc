@@ -123,6 +123,7 @@ class Script(BaseScript):
             caps["Network | CDP"] = True
         if self.has_oam():
             caps["Network | OAM"] = True
+        self.execute_platform(caps)
         return caps
 
 
