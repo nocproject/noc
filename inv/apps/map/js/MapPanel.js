@@ -264,7 +264,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             },
             attrs: {
                 text: {
-                    text: data.name
+                    text: data.name.split("#")[0]
                 },
                 image: {
                     width: data.shape_width,
