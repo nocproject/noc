@@ -14,6 +14,7 @@ from noc.inv.models.extnrittmap import ExtNRITTMap
 class TTMapLoader(BaseLoader):
     name = "ttmap"
     model = ExtNRITTMap
+    discard_deferred = True
     fields = [
         "id",
         "managed_object",
