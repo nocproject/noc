@@ -67,7 +67,7 @@ class TreeLayout(LayoutBase):
         n = T.G.node[node]
         downlinks = n["tree_downlinks"]
         x = x0 + n["tree_width"] // 2
-        if downlinks and len(downlinks) % 2 == 0 and x > total_w // 2:
+        if downlinks and n["tree_width"] % 2 == 0 and x > total_w // 2:
             x -= 1
         pos = {
             node: np.array([
