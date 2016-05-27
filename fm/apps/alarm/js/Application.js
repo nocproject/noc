@@ -384,10 +384,10 @@ Ext.define("NOC.fm.alarm.Application", {
                 loadMask: false,
                 listeners: {
                     scope: me,
-                    refresh: function() {
-                        me.gridPanel.doLayout();
-                    },
-                    itemcontextmenu: me.onGridContextMenu
+                    itemcontextmenu: me.onGridContextMenu,
+                    beforerefresh: function(cmp){
+                        me.gridPanel.plugins[0].bodyTop = 0;
+                    }
                 }
             }
         });
