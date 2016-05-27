@@ -41,5 +41,12 @@ Ext.define("NOC.inv.unknownmodel.Application", {
         }
     ],
     fields: [
+    ],
+    actions: [
+        {
+            title: __("Remove"),
+            action: "remove",
+            glyph: NOC.glyph.remove
+        }
     ]
 });
