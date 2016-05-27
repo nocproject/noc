@@ -62,12 +62,11 @@ Ext.define("NOC.fm.alarm.Application", {
                     text: __("Active"),
                     pressed: true,
                     tooltip: __("Show active alarms"),
-                    flex: 1
+                    width: 99
                 },
                 {
                     text: __("Archive"),
-                    tooltip: __("Show archived alarms"),
-                    flex: 1
+                    tooltip: __("Show archived alarms")
                 }
             ],
             listeners: {
@@ -153,10 +152,11 @@ Ext.define("NOC.fm.alarm.Application", {
                     text: __("Root only"),
                     pressed: true,
                     tooltip: __("Show only root causes"),
+                    width: 99
                 },
                 {
                     text: __("All"),
-                    tooltip: __("Show all alarms"),
+                    tooltip: __("Show all alarms")
                 }
             ],
             listeners: {
@@ -170,6 +170,7 @@ Ext.define("NOC.fm.alarm.Application", {
                 {
                     text: __("Wait TT"),
                     tooltip: __("Show only waiting confirmantion"),
+                    width: 99
                 },
                 {
                     text: __("All"),
