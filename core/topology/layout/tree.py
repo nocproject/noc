@@ -24,11 +24,26 @@ class TreeLayout(LayoutBase):
 
     def get_layout(self):
         T = self.topology
-        uplinks = T.get_uplinks()
-        w = sum(self.get_width(n) for n in uplinks)
+        top = T.get_uplinks()
+        if not top:
+            # No uplinks, detect roots of trees
+            top = []
+            # For all connected clusters
+            for cc in nx.connected_components(T.G):
+                # Detect fattest node
+                top += [
+                    sorted(
+                        cc,
+                        key=lambda x: T.G.node[x]["level"],
+                        reverse=True
+                    )[0]
+                ]
+        # Calculate tree width
+        w = sum(self.get_width(n) for n in top)
+        # Assign positions
         x0 = 0
         pos = {}
-        for u in uplinks:
+        for u in top:
             pos.update(self.get_pos(u, x0, w))
             x0 += T.G.node[u]["tree_width"]
         return pos
