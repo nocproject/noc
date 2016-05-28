@@ -49,6 +49,9 @@ class Script(BaseScript):
             "P": "aggregated",
             "V": "SVI"
         }
+        if self.capabilities.get("Cisco | ASA | Security | Context | Mode"):
+            if self.capabilities["Cisco | ASA | Security | Context | Mode"] == "multiple":
+                self.cli("changeto system")
         v = self.cli("show interface")
         for s in v.split("\nInterface "):
             match = self.rx_int.search(s)
