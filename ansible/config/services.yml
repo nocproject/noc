@@ -86,6 +86,7 @@ services:
     level: global
     required_assets:
       - card
+      - web
 
   sae:
     description: Service activation engine
