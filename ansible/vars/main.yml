@@ -5,7 +5,7 @@
 # packages
 postgresql_version: "9.4"
 mongo_version: "3.2"
-grafana_version: "3.0.1"
+grafana_version: "3.0.4"
 nsq_version: "0.3.7"
 
 http_proxy:  "" # just default. please set actual variable via tower on DC tab
