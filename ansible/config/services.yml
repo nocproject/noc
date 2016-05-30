@@ -351,6 +351,11 @@ config:
       type: bool
       default: false
 
+    http_redirect:
+      label: Redirect http to https
+      type: bool
+      default: true
+
   redis:
     redis_timeout:
       type: int
