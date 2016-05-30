@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -24,25 +24,39 @@ class Script(BaseScript):
                 self.cli("changeto system")
                 v = self.cli("show context")
                 contexts = []
-                header = []
-                head = True
+                headline = []
+                firsthead = True
+                nextinterface = False
                 for l in v.splitlines():
                     l = l.strip()
                     if l == '':
                         continue
-                    if head:
-                        header = l.split()
-                        header[0] = header[0] + header.pop(1)
-                        head = False
+                    if firsthead:
+                        headline = l.split()
+                        headline[0] = headline[0] + headline.pop(1)
+                        firsthead = False
                         continue
                     row = l.split()
                     if row[0] == "Total":
+                        """Skip last row (number of context)"""
                         continue
-                    contexts.append(dict(zip(header, row)))
+                    if nextinterface:
+                        """If Interfaces located in one row it insert add row"""
+                        contexts[-1]["Interfaces"] = contexts[-1]["Interfaces"] + row[0]
+                        if row[0][-1] == ",":
+                            nextinterface = True
+                            continue
+                        nextinterface = False
+                        continue
+                    contexts.append(dict(zip(headline, row)))
+                    if contexts[-1]["Interfaces"][-1] == ",":
+                        """If last symbol Interfaces is comma - next row
+                        consist only Interfaces"""
+                        nextinterface = True
 
                 complete_config = self.get_config("system:running-config")
                 for c in contexts:
-                    # config = self.get_config("system:running-config")
+                    """Get configs for context"""
                     config = self.get_config(c["URL"])
                     complete_config += "!{0}{1}{2}\n{3}\n".format("=" * 40, c["ContextName"], "=" * 40, config)
                 return complete_config

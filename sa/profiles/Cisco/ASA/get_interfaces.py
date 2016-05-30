@@ -62,7 +62,10 @@ class Script(BaseScript):
                 a_stat = match.group("admin_status").lower() == "up"
                 o_stat = match.group("oper_status").lower() == "up"
                 alias = match.group("alias")
-                mac = self.re_search(self.rx_mac, s).group("mac")
+                match_mac = self.rx_mac.search(s)
+                if match_mac:
+                    """Hack for PortChannel sub int (it no mac in show interfaces)"""
+                    mac = match_mac.group("mac")
                 sub = {
                     "name": ifname,
                     "admin_status": a_stat,
