@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOSXR.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"^Cisco IOS XR Software, Version\s+(?P<version>\S+)\[\S+\].+"
-        r"cisco\s+(?P<platform>\S+)(?: Series)? \([^)]+\) processor with \d+",
+        r"cisco\s+(?P<platform>[ \S]+)(?: Series)? \([^)]+\) processor with \d+",
         re.MULTILINE | re.DOTALL
     )
     rx_snmp_ver = re.compile(r"Cisco IOS XR Software \(Cisco (?P<platform>\S+)\s+\w+\).+\s+Version\s+(?P<version>\S+)\[\S+\]")

@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOSXR.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -46,6 +46,9 @@ class Script(BaseScript):
 
     rx_bundle_member = re.compile(r"^(?P<name>\S+)\s+(?:Full|Half)-duplex\s+.+$",
         re.IGNORECASE)
+
+    rx_ifindex = re.compile(r"^ifName : (?P<name>\S+)\s+ifIndex : (?P<ifindex>\d+)")
+
 
     def execute(self):
         ifaces = {}
@@ -204,11 +207,19 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 # IF-MIB::ifDescr
-                t = self.snmp.get_table("1.3.6.1.2.1.2.2.1.2", bulk=True)
+                t = self.snmp.get_table("1.3.6.1.2.1.2.2.1.2")
                 for i in t:
                     if t[i].startswith("ControlEthernet"):
                         continue
                     m[self.profile.convert_interface_name(t[i])] = i
             except self.snmp.TimeOutError:
                 pass
+        else:
+            s = self.cli("show snmp interface")
+            for l in s.splitlines():
+                match = self.rx_ifindex.match(l)
+                if match:
+                    if match.group("name").startswith("ControlEthernet"):
+                        continue
+                    m[self.profile.convert_interface_name(match.group("name"))] = match.group("ifindex")
         return m
