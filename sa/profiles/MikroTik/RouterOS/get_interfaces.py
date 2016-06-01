@@ -56,10 +56,8 @@ class Script(BaseScript):
                 tun["remote_address"] = ipif["network"]
                 return
         iftype = tun_type.lower()
-        if iftype == "ipip":
-            iftype = "ip"
-        for n1, f1, r1 in self.cli_detail(
-            "/interface %s print detail without-paging" % iftype, cached=True):
+        ifname = self.cli_detail("/interface %s print detail without-paging" % iftype, cached=True)
+        for n1, f1, r1 in ifname:
             if self.si["name"] == r1["name"]:
                 tun["local_address"] = r1["local-address"]
                 tun["remote_address"] = r1["remote-address"]
