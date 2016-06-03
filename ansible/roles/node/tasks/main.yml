@@ -8,7 +8,7 @@
 
 - name: Setup /etc/hosts
   lineinfile: dest=/etc/hosts
-              line="{{ hostvars[item].ansible_ssh_host }} {{ item }}"
+              line="{{ hostvars[item].ansible_host }} {{ item }}"
               regexp=".*{{ item }}"
   with_items: "{{ groups['nodes'] }}"
 

@@ -8,7 +8,7 @@ prefix = "syslogcollector"
 {% for service in noc_config.services -%}
     {% if "syslogcollector" in service -%}
         {% for host in noc_config.services[service] -%}
-            {% if ansible_ssh_host in host -%}
+            {% if ansible_host in host -%}
 "http://{{host}}/mon/",
             {%- endif %}
         {%- endfor %}
