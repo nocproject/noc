@@ -371,3 +371,9 @@ config:
       type: int
       label: Redis Max memory in bytes
       default: 0
+
+  nsqd:
+    max_messages_in_memory:
+      type: int
+      label: Keep max messanges in memory
+      default: 10000
