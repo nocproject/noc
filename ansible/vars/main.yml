@@ -49,6 +49,8 @@ postgresql_hba_path: /var/lib/pgsql/data/pg_hba.conf
 apt_cache_valid_time: 86400
 pycurl_ssl_library: openssl
 
+redis_user: redis
+redis_group: redis
 redis_daemon: redis-server
 redis_conf_path: "{{noc_root}}/var/etc/redis"
 
