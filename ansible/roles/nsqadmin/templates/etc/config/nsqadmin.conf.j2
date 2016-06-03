@@ -28,7 +28,7 @@ nsqlookupd_http_addresses = [
 {% for service in noc_config.services -%}
     {% if service == "nsqlookupd" -%}
         {% for host in noc_config.services[service] -%}
-            {% if ansible_ssh_host in host -%}
+            {% if ansible_host in host -%}
      "{{host}}"
             {%- endif %}
         {%- endfor %}
