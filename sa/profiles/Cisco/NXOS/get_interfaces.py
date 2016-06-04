@@ -10,10 +10,11 @@
 # Python modules
 import re
 from collections import defaultdict
+from StringIO import StringIO
+import xml.etree.ElementTree as ElementTree
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces, InterfaceTypeError
-from noc.sa.profiles.Cisco.IOS import uBR
 
 
 class Script(BaseScript):
@@ -29,7 +30,7 @@ class Script(BaseScript):
     name = "Cisco.NXOS.get_interfaces"
     interface = IGetInterfaces
 
-    rx_int_split = re.compile(r"\n\n", re.MULTILINE)
+    rx_int_split = re.compile(r"^\S", re.MULTILINE)
     rx_int_name = re.compile(r"^(?P<interface>.+?)\s+is\s+(?P<oper_status>up|down)(?:\s\((?P<reason>\S+?)\))?",
                              re.MULTILINE | re.IGNORECASE)
     rx_int_description = re.compile(r"\s+(?:\s+Description:\s(?P<desc>[^\n]+)\n)",
@@ -56,33 +57,14 @@ class Script(BaseScript):
                            r"IP subnet: (?P<ipsubnet>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})\s+secondary",
                            re.MULTILINE | re.IGNORECASE)
     rx_ipv6 = re.compile(
-        r"(?P<address>\S+), subnet is (?P<net>\S+)/(?P<mask>\d+)",
+        r"\s+IPv6 address:\s+(?P<address>\S+)"
+        r"\s+IPv6 subnet:\s+(?P<net>\S+)/(?P<mask>\d+)",
         re.MULTILINE | re.IGNORECASE)
 
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
     rx_cisco_interface_name = re.compile(
         r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$",
         re.IGNORECASE)
-    rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
-    rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
-        re.MULTILINE | re.DOTALL)
-
-    def get_lldp_interfaces(self):
-        """
-        Returns a set of normalized LLDP interface names
-        :return:
-        """
-        try:
-            v = self.cli("show lldp interface")
-        except self.CLISyntaxError:
-            return set()
-        ports = set()
-        for s in v.strip().split("\n\n"):
-            match = self.rx_lldp.search(s)
-            if match:
-                if match.group("rx_state").lower() == "enabled":
-                    ports.add(self.profile.convert_interface_name(match.group("iface")))
-        return ports
 
     def get_ospfint(self):
         try:
@@ -98,17 +80,34 @@ class Script(BaseScript):
 
     def get_ifindex(self):
         try:
-            c = self.cli("show interface snmp-ifindex")
+            c = self.cli("show interface snmp-ifindex | xml | no-more")
+            nsmap = {}
+            r = {}
+            for event, elem in ElementTree.iterparse(StringIO(c), events=("end", 'start-ns')):
+                if event == 'start-ns':
+                    ns, url = elem
+                    nsmap[ns] = url
+                if event == 'end':
+                    if elem.tag == self.fixtag('', 'interface', nsmap):
+                        full_ifname = elem.text.strip()
+                    elif elem.tag == self.fixtag('', 'ifindex-dec', nsmap):
+                        r[full_ifname] = int(elem.text.strip())
         except self.CLISyntaxError:
-            return {}
-        r = {}
-        for l in c.splitlines():
-            if l == '' or '-' in l or 'Port' in l:
-                continue
-            match = l.strip().split()
-            if match:
-                r[match[0]] = int(match[1])
+            try:
+                c = self.cli("show interface snmp-ifindex")
+                r = {}
+                for l in c.splitlines():
+                    if l == '' or '-' in l or 'Port' in l:
+                        continue
+                    match = l.strip().split()
+                    if match:
+                        r[match[0]] = int(match[1])
+            except self.CLISyntaxError:
+                return {}
         return r
+
+    def fixtag(self, ns, tag, nsmap):
+        return '{' + nsmap[ns] + '}' + tag
 
     def execute(self):
         # Get port-to-vlan mappings
@@ -137,7 +136,7 @@ class Script(BaseScript):
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
         c_iface = None
-        for l in self.cli("show ip interface").splitlines():
+        for l in self.cli("show ip interface vrf all").splitlines():
             match = self.rx_sh_ip_int.search(l)
             if match:
                 c_iface = self.profile.convert_interface_name(
@@ -152,11 +151,12 @@ class Script(BaseScript):
                     continue
             ip = match.group("ip") + "/" + match.group("ipsubnet").split("/")[1]
             ipv4_interfaces[c_iface] += [ip]
-        # Get IPv6 interfaces (may be might not work
+
+        # Get IPv6 interfaces (may be might not work)
         ipv6_interfaces = defaultdict(list)  # interface -> [ipv6 addresses]
         c_iface = None
         try:
-            v = self.cli("show ipv6 interface")
+            v = self.cli("show ipv6 interface vrf all")
         except self.CLISyntaxError:
             v = ""
         for l in v.splitlines():
@@ -183,110 +183,267 @@ class Script(BaseScript):
         # Get interfaces SNMP ifIndex
         ifindex = self.get_ifindex()
 
-        v = self.cli("show interface")
-        for I in self.rx_int_split.split(v):
-            if len(I) == 0:
-                continue
-            match = self.re_search(self.rx_int_name, I)
-            full_ifname = match.group("interface")
-            ifname = self.profile.convert_interface_name(full_ifname)
-            if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "fc"]:
-                continue
-            if ":" in ifname:
-                inm = ifname.split(":")[0]
-                # Create root interface if not exists yet
-                if inm != interfaces[-1]["name"]:
-                    iface = {
-                        "name": inm,
-                        "admin_status": True,
-                        "oper_status": True,
-                        "type": "physical",
-                        "enabled_protocols": []
-                    }
-            o_stat = match.group("oper_status").lower() == "up"
-            a_stat = False
-            if match.group("reason"):
-                a_stat = match.group("reason").lower() != "Administratively down"
-            match = self.rx_int_mac.search(I)
-            hw = match.group("hardw")
-            sub = {
-                "name": ifname,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "enabled_afi": [],
-                "enabled_protocols": []
-            }
-            # Get description
-            match = self.rx_int_description.search(I)
-            if match:
-                sub["description"] = match.group("desc")
-            # Get MAC
-            matchmac = self.rx_mac.search(hw)
-            if matchmac:
-                sub["mac"] = matchmac.group("mac")
-            if ifname in switchports and ifname not in portchannel_members:
-                sub["enabled_afi"] += ["BRIDGE"]
-                u, t = switchports[ifname]
-                if u:
-                    sub["untagged_vlan"] = u
-                if t:
-                    sub["tagged_vlans"] = t
+        try:
+            v = self.cli("show interface | xml | no-more")
+            nsmap = {}
+            results = []
+            row = []
+            for event, elem in ElementTree.iterparse(StringIO(v), events=("end", 'start-ns')):
+                if event == 'start-ns':
+                    ns, url = elem
+                    nsmap[ns] = url
+                if event == 'end':
+                    if elem.tag == self.fixtag('', 'interface', nsmap):
+                        full_ifname = elem.text.strip()
+                        if full_ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "fc"]:
+                            continue
+                        results += [row]
+                        row = {
+                            "name": full_ifname,
+                            "enabled_afi": [],
+                            "enabled_protocols": []
+                        }
+                    if full_ifname.startswith("Vlan"):
+                        if elem.tag == self.fixtag('', 'svi_line_proto', nsmap):
+                            row["oper_status"] = elem.text.strip()
+                        elif elem.tag == self.fixtag('', 'svi_admin_state', nsmap):
+                            row["admin_status"] = elem.text
+                        elif elem.tag == self.fixtag('', 'svi_desc', nsmap):
+                            row["description"] = elem.text
+                        elif elem.tag == self.fixtag('', 'svi_mac', nsmap):
+                            row["mac"] = elem.text.strip()
+                        elif elem.tag == self.fixtag('', 'svi_ip_addr', nsmap):
+                            row["ip_addr"] = elem.text
+                        continue
+                    if elem.tag == self.fixtag('', 'state', nsmap):
+                        row["oper_status"] = elem.text.strip()
+                    elif elem.tag == self.fixtag('', 'state_rsn_desc', nsmap):
+                        row["reason"] = elem.text
+                    elif elem.tag == self.fixtag('', 'desc', nsmap):
+                        row["description"] = elem.text
+                    elif elem.tag == self.fixtag('', 'eth_hw_addr', nsmap):
+                        row["mac"] = elem.text.strip()
+                    elif elem.tag == self.fixtag('', 'eth_encap_vlan', nsmap):
+                        row["vlan_ids"] = elem.text
+                    elif elem.tag == self.fixtag('', 'eth_ip_addr', nsmap):
+                        row["ip_addr"] = elem.text
 
-            # Static vlans
-            matchvlan = self.rx_int_vlan.search(I)
-            if matchvlan:
-                encaps = matchvlan.group("encaps")
-                if encaps == "802.1Q":
-                    sub["vlan_ids"] = matchvlan.group("vlanid")
-
-            # IPv4/Ipv6
-            matchip = self.rx_int_ip.search(I)
-            if matchip:
-                if ifname in ipv4_interfaces:
-                    sub["enabled_afi"] += ["IPv4"]
-                    sub["ipv4_addresses"] = ipv4_interfaces[ifname]
-                if ifname in ipv6_interfaces:
-                    sub["enabled_afi"] += ["IPv6"]
-                    sub["ipv6_addresses"] = ipv6_interfaces[ifname]
-            # Ifindex
-            if full_ifname in ifindex:
-                sub["snmp_ifindex"] = ifindex[full_ifname]
-
-            if "." not in ifname and ":" not in ifname:
-                iftype = self.profile.get_interface_type(ifname)
-                if not iftype:
-                    self.logger.info(
-                        "Ignoring unknown interface type: '%s", iftype
-                    )
+            for I in results:
+                if len(I) == 0:
                     continue
-                iface = {
+                full_ifname = I["name"]
+                ifname = self.profile.convert_interface_name(full_ifname)
+                if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "fc"]:
+                    continue
+                if ":" in ifname:
+                    inm = ifname.split(":")[0]
+                    # Create root interface if not exists yet
+                    if inm != interfaces[-1]["name"]:
+                        iface = {
+                            "name": inm,
+                            "admin_status": True,
+                            "oper_status": True,
+                            "type": "physical",
+                            "enabled_protocols": []
+                        }
+                o_stat = I["oper_status"].lower() == "up"
+                a_stat = False
+                if "reason" in I:
+                    a_stat = I["reason"].lower() != "administratively down"
+                sub = {
                     "name": ifname,
                     "admin_status": a_stat,
                     "oper_status": o_stat,
-                    "type": iftype,
-                    "enabled_protocols": [],
-                    "subinterfaces": [sub]
+                    "enabled_afi": [],
+                    "enabled_protocols": []
                 }
-                match = self.rx_int_description.search(I)
-                if match:
-                    iface["description"] = match.group("desc")
-                if "mac" in sub:
-                    iface["mac"] = sub["mac"]
-                # Portchannel member
-                if ifname in portchannel_members:
-                    ai, is_lacp = portchannel_members[ifname]
-                    iface["aggregated_interface"] = ai
-                    iface["enabled_protocols"] += ["LACP"]
+                # Get description
+                if "description" in I:
+                    sub["description"] = I["description"]
+                # Get MAC
+                if "mac" in I:
+                    sub["mac"] = I["mac"]
+
+                if ifname in switchports and ifname not in portchannel_members:
+                    sub["enabled_afi"] += ["BRIDGE"]
+                    u, t = switchports[ifname]
+                    if u:
+                        sub["untagged_vlan"] = u
+                    if t:
+                        sub["tagged_vlans"] = t
+
+                # Static vlans
+                if "vlan_ids" in I:
+                    sub["vlan_ids"] = I["vlan_ids"]
+
+                # IPv4/Ipv6
+                if "ip_addr" in I:
+                    if ifname in ipv4_interfaces:
+                        sub["enabled_afi"] += ["IPv4"]
+                        sub["ipv4_addresses"] = ipv4_interfaces[ifname]
+                    if ifname in ipv6_interfaces:
+                        sub["enabled_afi"] += ["IPv6"]
+                        sub["ipv6_addresses"] = ipv6_interfaces[ifname]
                 # Ifindex
                 if full_ifname in ifindex:
-                    iface["snmp_ifindex"] = ifindex[full_ifname]
-                interfaces += [iface]
-            else:
-                # Append additional subinterface
+                    sub["snmp_ifindex"] = ifindex[full_ifname]
+
+                if "." not in ifname and ":" not in ifname:
+                    iftype = self.profile.get_interface_type(ifname)
+                    if not iftype:
+                        self.logger.info(
+                            "Ignoring unknown interface type: '%s", iftype
+                        )
+                        continue
+                    iface = {
+                        "name": ifname,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        "type": iftype,
+                        "enabled_protocols": [],
+                        "subinterfaces": [sub]
+                    }
+
+                    if "description" in I:
+                        iface["description"] = I["description"]
+                    if "mac" in sub:
+                        iface["mac"] = sub["mac"]
+                    # Portchannel member
+                    if ifname in portchannel_members:
+                        ai, is_lacp = portchannel_members[ifname]
+                        iface["aggregated_interface"] = ai
+                        iface["enabled_protocols"] += ["LACP"]
+                    # Ifindex
+                    if full_ifname in ifindex:
+                        iface["snmp_ifindex"] = ifindex[full_ifname]
+                    interfaces += [iface]
+                else:
+                    # Append additional subinterface
+                    try:
+                        interfaces[-1]["subinterfaces"] += [sub]
+                    except KeyError:
+                        interfaces[-1]["subinterfaces"] = [sub]
+
+        except self.CLISyntaxError:
+            v = self.cli("show interface")
+
+            for I in self.rx_int_split.split(v):
+                if len(I) == 0:
+                    continue
                 try:
-                    interfaces[-1]["subinterfaces"] += [sub]
-                except KeyError:
-                    interfaces[-1]["subinterfaces"] = [sub]
+                    match = self.re_search(self.rx_int_name, I)
+                except self.UnexpectedResultError:
+                    match = None
+                if not match:
+                    continue
+                full_ifname = match.group("interface")
+                if full_ifname.startswith("th"):
+                    full_ifname = 'E' + full_ifname
+                elif full_ifname.startswith("lan"):
+                    full_ifname = 'V' + full_ifname
+                elif full_ifname.startswith("gmt"):
+                    full_ifname = 'm' + full_ifname
+                elif full_ifname.startswith("ort"):
+                    full_ifname = 'p' + full_ifname
+                ifname = self.profile.convert_interface_name(full_ifname)
+                if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "fc"]:
+                    continue
+                if ":" in ifname:
+                    inm = ifname.split(":")[0]
+                    # Create root interface if not exists yet
+                    if inm != interfaces[-1]["name"]:
+                        iface = {
+                            "name": inm,
+                            "admin_status": True,
+                            "oper_status": True,
+                            "type": "physical",
+                            "enabled_protocols": []
+                        }
+                o_stat = match.group("oper_status").lower() == "up"
+                a_stat = False
+                if match.group("reason"):
+                    a_stat = match.group("reason").lower() != "Administratively down"
+                match = self.rx_int_mac.search(I)
+                hw = match.group("hardw")
+                sub = {
+                    "name": ifname,
+                    "admin_status": a_stat,
+                    "oper_status": o_stat,
+                    "enabled_afi": [],
+                    "enabled_protocols": []
+                }
+                # Get description
+                match = self.rx_int_description.search(I)
+                if match:
+                    sub["description"] = match.group("desc")
+                # Get MAC
+                matchmac = self.rx_mac.search(hw)
+                if matchmac:
+                    sub["mac"] = matchmac.group("mac")
+                if ifname in switchports and ifname not in portchannel_members:
+                    sub["enabled_afi"] += ["BRIDGE"]
+                    u, t = switchports[ifname]
+                    if u:
+                        sub["untagged_vlan"] = u
+                    if t:
+                        sub["tagged_vlans"] = t
+
+                # Static vlans
+                matchvlan = self.rx_int_vlan.search(I)
+                if matchvlan:
+                    encaps = matchvlan.group("encaps")
+                    if encaps == "802.1Q":
+                        sub["vlan_ids"] = matchvlan.group("vlanid")
+
+                # IPv4/Ipv6
+                matchip = self.rx_int_ip.search(I)
+                if matchip:
+                    if ifname in ipv4_interfaces:
+                        sub["enabled_afi"] += ["IPv4"]
+                        sub["ipv4_addresses"] = ipv4_interfaces[ifname]
+                    if ifname in ipv6_interfaces:
+                        sub["enabled_afi"] += ["IPv6"]
+                        sub["ipv6_addresses"] = ipv6_interfaces[ifname]
+                # Ifindex
+                if full_ifname in ifindex:
+                    sub["snmp_ifindex"] = ifindex[full_ifname]
+
+                if "." not in ifname and ":" not in ifname:
+                    iftype = self.profile.get_interface_type(ifname)
+                    if not iftype:
+                        self.logger.info(
+                            "Ignoring unknown interface type: '%s", iftype
+                        )
+                        continue
+                    iface = {
+                        "name": ifname,
+                        "admin_status": a_stat,
+                        "oper_status": o_stat,
+                        "type": iftype,
+                        "enabled_protocols": [],
+                        "subinterfaces": [sub]
+                    }
+                    match = self.rx_int_description.search(I)
+                    if match:
+                        iface["description"] = match.group("desc")
+                    if "mac" in sub:
+                        iface["mac"] = sub["mac"]
+                    # Portchannel member
+                    if ifname in portchannel_members:
+                        ai, is_lacp = portchannel_members[ifname]
+                        iface["aggregated_interface"] = ai
+                        iface["enabled_protocols"] += ["LACP"]
+                    # Ifindex
+                    if full_ifname in ifindex:
+                        iface["snmp_ifindex"] = ifindex[full_ifname]
+                    interfaces += [iface]
+                else:
+                    # Append additional subinterface
+                    try:
+                        interfaces[-1]["subinterfaces"] += [sub]
+                    except KeyError:
+                        interfaces[-1]["subinterfaces"] = [sub]
+
         # Process VRFs
         vrfs = {
             "default": {
