@@ -1,1 +1,11 @@
 ---
+- name: Install Redis
+  pkgng: name="redis" state=present
+
+- name: Create Redis directories
+  file: path={{item}} state=directory owner={{redis_user}} group={{redis_group}} mode=0755
+  with_items:
+    - /var/run/redis
+    - /var/log/redis
+  tags:
+    - redis
