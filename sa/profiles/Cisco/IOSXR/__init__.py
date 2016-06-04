@@ -41,7 +41,7 @@ class Profile(BaseProfile):
         if not match:
             raise InterfaceTypeError("Invalid interface '%s'" % s)
         t = match.group(1)[:2]
-        if t.lower() == "Bu":
+        if t.lower() == "bu":
             t = "BE"
         return "%s%s" % (t, match.group(2))
 
