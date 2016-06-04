@@ -22,17 +22,19 @@
   register: noc_ctl_status
   tags:
     - config
+    - soft_restart
 
 - name: Reread config
   shell: "{{ noc_root }}/noc ctl reread"
   when: "'RUNNING' in noc_ctl_status.stdout"
-  register: noc_ctl_reread=True
+  register: noc_ctl_reread
   tags:
     - config
+    - soft_restart
 
 - name: Serial NOC restart
   shell: "{{ noc_root }}/noc ctl serialrestart all"
-  register: "noc_ctl_reread is True"
+  when: "noc_ctl_reread"
   tags:
     - soft_restart
 
