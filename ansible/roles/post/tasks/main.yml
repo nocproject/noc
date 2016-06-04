@@ -34,7 +34,7 @@
   shell: "{{ noc_root }}/noc ctl serialrestart all"
   register: "noc_ctl_reread is True"
   tags:
-    - config
+    - soft_restart
 
 - name: Restart NOC node
   service:

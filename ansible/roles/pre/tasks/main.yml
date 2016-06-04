@@ -28,6 +28,8 @@
   service: name="{{ noc_system_service }}" state=stopped
   failed_when: False
   changed_when: False
+  tags:
+    - restart
 
 - name: Check if vboxsf is supported
   shell: "cat /proc/filesystems"
