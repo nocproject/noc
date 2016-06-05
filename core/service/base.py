@@ -16,6 +16,7 @@ import uuid
 import random
 from collections import defaultdict
 import argparse
+import functools
 ## Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -508,10 +509,9 @@ class Service(object):
                 )
                 w.io_loop.call_later(
                     self.NSQ_PUB_RETRY_DELAY,
-                    w.pub,
-                    topic,
-                    msg,
-                    callback=finish_pub
+                    functools.partial(
+                        w.pub, topic, msg, callback=finish_pub
+                    )
                 )
 
         w = self.get_nsq_writer()
@@ -530,10 +530,9 @@ class Service(object):
                 )
                 w.io_loop.call_later(
                     self.NSQ_PUB_RETRY_DELAY,
-                    w.mpub,
-                    topic,
-                    msg,
-                    callback=finish_pub
+                    functools.partial(
+                        w.mpub, topic, msg, callback=finish_pub
+                    )
                 )
 
         w = self.get_nsq_writer()
