@@ -403,7 +403,7 @@ class Service(object):
         """
         Called when service activated
         """
-        pass
+        raise tornado.gen.Return()
 
     @tornado.gen.coroutine
     def on_deactivate(self):
