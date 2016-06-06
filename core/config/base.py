@@ -121,7 +121,8 @@ class BaseConfig(object):
             self._mongo_connection_args = {
                 "db": self.mongo_db,
                 "username": self.mongo_user,
-                "password": self.mongo_password
+                "password": self.mongo_password,
+                "socketKeepAlive": True
             }
             has_credentials = self.mongo_user or self.mongo_password
             if has_credentials:
