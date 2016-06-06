@@ -8,7 +8,7 @@
   tags:
     - redis
 
-- name: Crreate systemd dir
+- name: Create systemd dir
   file:
     path: "{{item.name}}"
     state: "directory"

@@ -2,7 +2,7 @@
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
 
-- name: Crreate config dir
+- name: Create config dir
   file:
     path: "{{item.name}}"
     state: "directory"
