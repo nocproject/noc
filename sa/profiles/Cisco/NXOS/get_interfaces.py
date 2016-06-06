@@ -127,11 +127,14 @@ class Script(BaseScript):
 
         # Get portchannels
         portchannel_members = {}
+        portchannel_dict = {}
         for pc in self.scripts.get_portchannel():
             i = pc["interface"]
             t = pc["type"] == "L"
+            portchannel_dict = {i: []}
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
+                portchannel_dict[i] += [m]
 
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
@@ -469,6 +472,12 @@ class Script(BaseScript):
                     vrfs[v["name"]]["rd"] = rd
                 for i in v["interfaces"]:
                     imap[i] = v["name"]
+                    if v["name"] == "default":
+                        continue
+                    if i in portchannel_dict:
+                        for i2 in portchannel_dict[i]:
+                            imap[i2] = v["name"]
+
         for i in interfaces:
             subs = i["subinterfaces"]
             for vrf in set(imap.get(si["name"], "default") for si in subs):
