@@ -41,7 +41,8 @@ class Script(BaseScript):
         r"^\s*Root Port\s+: (?P<root_port>\d+)\s*\n", re.MULTILINE)
     rx_ins1 = re.compile(
         r"^\s*Designated Root Bridge\s+(?P<root_id>\S+)\s+Priority\s+(?P<root_priority>\d+)\s*\n"
-        r"^\s*Port (?P<root_port>\d+)\s+,  path cost (?P<ext_root_cost>\d+)\s*\n"
+        r"(^\s*.*\n)?"
+        r"^\s*Port (?P<root_port>\d+)\s+,\s+path cost (?P<ext_root_cost>\d+)\s*\n"
         r"^\s*Regional Root Bridge\s+(?P<rbridge_id>\S+)\s+Priority\s+(?P<rbridge_priority>\d+)\s*\n"
         r"^\s*Path cost (?P<int_root_cost>\d+)\s*\n"
         r"^\s*Designated Bridge\s+(?P<bridge_id>\S+)\s+Priority\s+(?P<bridge_priority>\d+)\s*\n",
