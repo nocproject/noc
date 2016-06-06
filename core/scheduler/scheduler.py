@@ -199,9 +199,11 @@ class Scheduler(object):
                     self.remove_job_by_id(job[Job.ATTR_ID])
         except pymongo.errors.CursorNotFound:
             self.logger.info("Server cursor timed out. Waiting for next cycle")
-        except pymongo.errors.OperationFailure, why:
-            self.logger.error("Operation failure: %s", why)
+        except pymongo.errors.OperationFailure as e:
+            self.logger.error("Operation failure: %s", e)
             self.logger.error("Trying to recover")
+        except pymongo.errors.AutoReconnect:
+            self.logger.error("Auto-reconnect detected. Waiting for next cycle")
 
     @tornado.gen.coroutine
     def run_pending(self):
