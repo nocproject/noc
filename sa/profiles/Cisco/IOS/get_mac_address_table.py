@@ -29,6 +29,8 @@ class Script(BaseScript):
             return True
         if i.startswith("flood to vlan"):
             return True
+        if i.startswith("VPLS"):
+            return True
         return False
 
     def execute(self, interface=None, vlan=None, mac=None):
