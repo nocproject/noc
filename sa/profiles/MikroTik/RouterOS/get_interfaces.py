@@ -42,7 +42,7 @@ class Script(BaseScript):
 
     ignored_types = set([
         "mesh", "traffic-eng", "vpls", "vrrp", "wds", "lte",
-        "cap", "vrrp"
+        "cap", "vrrp", "vif"
     ])
     si = {}
 
