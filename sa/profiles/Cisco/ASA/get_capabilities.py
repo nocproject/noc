@@ -25,5 +25,4 @@ class Script(BaseScript):
             match = self.re_search(self.sec_mode, v)
             sec_mode = match.group("mode")
             self.logger.debug('Mode {0}'.format(sec_mode))
-
             caps["Cisco | ASA | Security | Context | Mode"] = sec_mode
