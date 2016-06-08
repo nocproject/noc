@@ -24,22 +24,19 @@ class Script(BaseScript):
                 self.cli("changeto system")
                 v = self.cli("show context")
                 contexts = []
-                headline = []
-                firsthead = True
                 nextinterface = False
-                for l in v.splitlines():
+                r = v.splitlines()
+                headline = r.pop(0).split()
+                headline[0] = headline[0] + headline.pop(1)
+                for l in r:
+                    """Get context list from table"""
                     l = l.strip()
                     if l == '':
-                        continue
-                    if firsthead:
-                        headline = l.split()
-                        headline[0] = headline[0] + headline.pop(1)
-                        firsthead = False
                         continue
                     row = l.split()
                     if row[0] == "Total":
                         """Skip last row (number of context)"""
-                        continue
+                        break
                     if nextinterface:
                         """If Interfaces located in one row it insert add row"""
                         contexts[-1]["Interfaces"] = contexts[-1]["Interfaces"] + row[0]
@@ -60,7 +57,6 @@ class Script(BaseScript):
                     config = self.get_config(c["URL"])
                     complete_config += "!{0}{1}{2}\n{3}\n".format("=" * 40, c["ContextName"], "=" * 40, config)
                 return complete_config
-        else:
-            config = self.cli("more system:running-config")
-            config = self.strip_first_lines(config, 3)
-            return self.cleaned_config(config)
+        config = self.cli("more system:running-config")
+        config = self.strip_first_lines(config, 3)
+        return self.cleaned_config(config)
