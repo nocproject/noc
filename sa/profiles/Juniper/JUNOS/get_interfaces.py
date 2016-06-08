@@ -73,6 +73,7 @@ class Script(BaseScript):
         for I in self.rx_phy_split.split(v)[1:]:
             L = self.rx_log_split.split(I)
             phy = L.pop(0)
+            phy = phy.replace(" )", "")
             match = self.re_search(self.rx_phy_name, phy)
             name = match.group("ifname")
             # Skip internal interfaces
