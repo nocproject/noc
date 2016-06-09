@@ -13,6 +13,7 @@ from collections import defaultdict
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import ranges_to_list
+from noc.lib.ip import IPv4
 
 
 class Script(BaseScript):
@@ -33,8 +34,13 @@ class Script(BaseScript):
         Operational\sTrunk\sAllowed\sVLANs:\s*(?P<op_trunk_allowed_vlan>.*)\n
         Administrative\sTrunk\sUntagged\sVLANs:\s*(?P<adm_trunk_untagged_vlan>.*)\n
         Operational\sTrunk\sUntagged\sVLANs:\s*(?P<op_trunk_untagged_vlan>.*)
-        """, re.VERBOSE
-                          )
+        """, re.VERBOSE)
+    rx_iface = re.compile(
+        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+"
+        r"(?P<vid>\d+)\s+(?P<oper_status>\S+)\s*\n", re.MULTILINE)
+    rx_lldp = re.compile(
+        "LLDP enable status:\s+enable.+\n"
+        "LLDP enable ports:\s+(?P<ports>\S+)\n", re.MULTILINE)
 
     def parse_vlans(self, section):
         r = {}
@@ -44,15 +50,22 @@ class Script(BaseScript):
         return r
 
     def execute(self):
+        lldp_ifaces = []
+        match = re.search(self.rx_lldp, self.cli("show lldp local config"))
+        if match:
+            lldp_ifaces = self.expand_rangelist(match.group("ports"))
         ifaces = []
         v = self.cli("show interface port description")
         for line in v.splitlines()[2:-1]:
             i = {
                 "name": int(line[:8]),
-                "description": str(line[8:]),
                 "type": "physical",
                 "subinterfaces": []
             }
+            if str(line[8:]) != "-":
+                i["description"] = str(line[8:])
+            if i["name"] in lldp_ifaces:
+                i["enabled_protocols"] = ["LLDP"]
             ifaces.append(i)
 
         statuses = []
@@ -84,16 +97,61 @@ class Script(BaseScript):
             port["subinterfaces"] = [{
                 "name": str(name),
                 "enabled_afi": ["BRIDGE"],
-                "description": port["description"],
                 "admin_status": port["admin_status"],
                 "oper_status": port["oper_status"],
                 "tagged_vlans": [],
                 "untagged_vlan": [int(vlan['untagged_vlan']) for vlan in vlans if int(vlan['name']) == name][0]
             }]
+            if "description" in port:
+                port["subinterfaces"][0]["description"] = port["description"]
             tvl = [vlan['op_trunk_allowed_vlan'] for vlan in vlans if int(vlan['name']) == name][0]
-            if 'n/a' not in tvl:
-                port["subinterfaces"][0]['tagged_vlans'] = ranges_to_list(tvl)
+            #if 'n/a' not in tvl:
+            #    port["subinterfaces"][0]['tagged_vlans'] = ranges_to_list(tvl)
 
+        if_descr = []
+        v = self.cli("show interface ip description")
+        for line in v.splitlines()[2:-1]:
+            i = {
+                "name": int(line[:9]),
+                "description": str(line[9:])
+            }
+            if_descr.append(i)
+        v = self.profile.get_version(self)
+        mac = v["mac"]
+        """
+        XXX: This is a dirty hack !!!
+        I do not know, how get ip interface MAC address
+        """
+        v = self.cli("show interface ip 0")
+        for match in self.rx_iface.finditer(v):
+            ifname = match.group("iface")
+            i = {
+                "name": "ip%s" % ifname,
+                "type": "SVI",
+                "oper_status": match.group("oper_status") == "active",
+                "admin_status": match.group("oper_status") == "active",
+                "mac": mac,
+                "enabled_protocols": [],
+                "subinterfaces": [{
+                    "name": "ip%s" % ifname,
+                    "oper_status": match.group("oper_status") == "active",
+                    "admin_status": match.group("oper_status") == "active",
+                    "mac": mac,
+                    "vlan_ids": [int(match.group('vid'))],
+                    "enabled_afi": ['IPv4']
+                }]
+            }
+            addr = match.group("ip")
+            mask = match.group("mask")
+            ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
+            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            for q in if_descr:
+                if str(q["name"]).strip() == ifname:
+                    i['description'] = q['description']
+                    i['subinterfaces'][0]["description"] = q['description']
+            l3 += [i]
+            # parse only "0" interface
+            break
 
         return [{"interfaces": l3}]
 
