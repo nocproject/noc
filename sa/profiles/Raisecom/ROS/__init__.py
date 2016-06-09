@@ -36,3 +36,11 @@ class Profile(BaseProfile):
     def get_version(self, script):
         c = script.cli("show version", cached=True)
         return self.rx_ver.search(c).groupdict()
+
+    def get_interface_names(self, name):
+        r = []
+        if name.startswith("port "):
+            r += [name[5:]]
+        else:
+            r += ["port %s" % name]
+        return r
