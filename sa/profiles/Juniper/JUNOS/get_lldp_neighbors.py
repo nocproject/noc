@@ -155,6 +155,9 @@ class Script(BaseScript):
                         n["remote_port"] = str(remote_port)
             i["neighbors"] += [n]
             r += [i]
+        for q in r:
+            if q['local_interface'].endswith(".0"):
+                q['local_interface'] = q['local_interface'][:-2]
         return r
 
     ##
