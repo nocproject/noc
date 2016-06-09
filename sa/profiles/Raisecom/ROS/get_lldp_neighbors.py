@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## HP.1905.get_lldp_neighbors
+## Raisecom.ROS.get_lldp_neighbors
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
-    name = "HP.1905.get_lldp_neighbors"
+    name = "Raisecom.ROS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
     rx_lldp = re.compile(
