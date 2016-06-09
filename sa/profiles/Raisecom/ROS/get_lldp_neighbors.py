@@ -44,7 +44,8 @@ class Script(BaseScript):
                 cap |= {
                     "Other": 1,
                     "Repeater/Hub": 2,
-                    "Bridge/Switch": 4
+                    "Bridge/Switch": 4,
+                    "Router": 16
                 }[c]
             n = {
                 "remote_chassis_id_subtype": {
