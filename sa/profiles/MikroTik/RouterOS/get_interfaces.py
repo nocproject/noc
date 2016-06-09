@@ -121,7 +121,7 @@ class Script(BaseScript):
                 i = ifaces[r["interface"]]
                 self.si = {
                     "name": r["name"],
-                    "mac": r["mac-address"],
+                    "mac": r.get("mac-address") or r.get("mac"),
                     "mtu": r["mtu"],
                     "admin_status": "X" not in f,
                     "oper_status": "R" in f,
