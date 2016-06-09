@@ -105,8 +105,8 @@ class Script(BaseScript):
             if "description" in port:
                 port["subinterfaces"][0]["description"] = port["description"]
             tvl = [vlan['op_trunk_allowed_vlan'] for vlan in vlans if int(vlan['name']) == name][0]
-            #if 'n/a' not in tvl:
-            #    port["subinterfaces"][0]['tagged_vlans'] = ranges_to_list(tvl)
+            if 'n/a' not in tvl:
+                port["subinterfaces"][0]['tagged_vlans'] = ranges_to_list(tvl)
 
         if_descr = []
         v = self.cli("show interface ip description")
