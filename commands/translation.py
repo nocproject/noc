@@ -21,12 +21,12 @@ from noc.core.management.base import BaseCommand
 class Command(BaseCommand):
     SERVICES = {
         "card": {
-            "messages": ["services/card/"],
-            "messages_js": ["ui/card/"]
+            "messages": ["services/card/**.py"],
+            "messages_js": ["ui/card/**.js"]
         },
         "login": {
-            "messages": ["services/login"],
-            "messages_js": ["ui/login/"]
+            "messages": ["services/login/**.py"],
+            "messages_js": ["ui/login/**.js"]
         },
         "web": {
             "messages": ["*/apps/**.py"],
