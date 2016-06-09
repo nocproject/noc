@@ -22,7 +22,7 @@ class Script(BaseScript):
     def execute(self):
         v = self.profile.get_hardware(self)
         return {
-            "vendor": "MSAN",
+            "vendor": "Iskratel",
             "platform": v["platform"],
             "version": v["api_ver"],
             "attributes": {

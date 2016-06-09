@@ -15,18 +15,12 @@ from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 class Script(BaseScript):
     name = "Raisecom.ROS.get_chassis_id"
-    cache = True
     interface = IGetChassisID
-
-    rx_id = re.compile(r"System\s+MacAddress\s+is\s*:\s*(?P<id>\S+)",
-                       re.IGNORECASE | re.MULTILINE)
+    cache = True
 
     def execute(self):
-        result = []
-        v = self.cli("show version")
-        match = self.re_search(self.rx_id, v)
-        mac = match.group("id")
-        return [{
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
-        }]
+        v = self.profile.get_version(self)
+        return {
+            "first_chassis_mac": v["mac"],
+            "last_chassis_mac": v["mac"]
+        }
