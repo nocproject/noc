@@ -1,5 +1,13 @@
 # Pre-deployment tasks
 ---
+
+- name: Display all variables/facts known for a host
+  debug:
+    var: hostvars[inventory_hostname]
+    verbosity: 8
+  tags:
+    - always
+
 - name: notify alerta of deployment
   uri:
     url: "{{alerta_url}}?api-key={{alerta_token}}"
