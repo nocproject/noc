@@ -34,7 +34,9 @@ class SSHIOStream(IOStream):
         SSH session startup
         """
         user = self.script.credentials["user"]
-        self.logger.debug("Startup ssh session")
+        if user is None:
+            user = ""
+        self.logger.debug("Startup ssh session for user '%s'", user)
         try:
             self.session.startup(self.socket)
             host_hash = self.session.hostkey_hash(2)  # SHA1
@@ -117,9 +119,12 @@ class SSHIOStream(IOStream):
         )
         self.logger.debug("public_key=%s private_key=%s",
                           pub_path, priv_path)
+        user = self.script.credentials["user"]
+        if user is None:
+            user = ""
         try:
             self.session.userauth_publickey_fromfile(
-                self.script.credentials["user"],
+                user,
                 publickey=pub_path,
                 privatekey=priv_path,
                 passphrase=""
