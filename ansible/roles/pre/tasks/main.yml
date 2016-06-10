@@ -1,5 +1,17 @@
 # Pre-deployment tasks
 ---
+- name: notify alerta of deployment
+  uri:
+    url: "{{alerta_url}}?api-key={{alerta_token}}"
+    method: POST
+    body: "{{ alerta_deploy_start | to_json }}"
+    body_format: json
+    status_code: 201
+  when: "alerta_url is defined and alerta_token is defined and 'prod' in noc_env_type"
+  register: alerta_notified
+  tags:
+    - always
+
 - name: "Loading system-dependend settings"
   include_vars: "os/{{ ansible_distribution }}.yml"
   tags:
@@ -14,15 +26,12 @@
     - config
     - always
 
-
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
   tags:
     - config
     - always
 
-#- name: Display all variables/facts known for a host
-#  debug: var=hostvars[inventory_hostname]
 
 - name: Stop NOC node
   service: name="{{ noc_system_service }}" state=stopped

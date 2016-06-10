@@ -69,3 +69,20 @@ redis_maxmemory_samples: 5
 redis_appendonly: "no"
 redis_appendfsync: "everysec"
 
+alerta_deploy_start:
+    resource: tower
+    event: Deploy
+    environment: Production
+    service:
+      - NOC
+    status: open
+    severity: informational
+    text: "Deployment on {{noc_env}} started with tags: {{ ansible_tags }}"
+
+alerta_deploy_finish:
+    resource: tower
+    event: Deploy
+    environment: Production
+    service:
+      - NOC
+    status: closed
