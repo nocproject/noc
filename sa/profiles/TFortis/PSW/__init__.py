@@ -16,6 +16,7 @@ class Profile(BaseProfile):
     pattern_username = "User Name>"
     pattern_password = "User Password>"
     pattern_prompt = r"^TFortis .+#"
+    command_exit = "exit"
 
     def convert_interface_name(self, s):
         return s
