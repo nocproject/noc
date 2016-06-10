@@ -48,7 +48,7 @@ class SSHIOStream(IOStream):
             # Try to authenticate
             authenticated = False
             for method in auth_methods:
-                ah = getattr(self, "auth_%s" % method, None)
+                ah = getattr(self, "auth_%s" % method.replace("-", ""), None)
                 if ah:
                     authenticated |= ah()
                     if authenticated:
@@ -135,16 +135,41 @@ class SSHIOStream(IOStream):
             self.logger.debug("Failed: %s (Code: %s)", msg, code)
             return False
 
+    def auth_keyboardinteractive(self):
+        """
+        Keyboard-interactive authentication. Send username and password
+        """
+        self.logger.debug("Trying keyboard-interactive")
+        user = self.script.credentials["user"]
+        if user is None:
+            user = ""
+        password = self.script.credentials["password"]
+        if password is None:
+            password = ""
+        try:
+            self.session.userauth_keyboardinteractive(user, password)
+            self.logger.debug("Success")
+            return True
+        except _libssh2.Error:
+            code, msg = self.session.last_error()
+
+            self.logger.debug("Failed: %s (Code: %s)", msg, code)
+            return False
+
+
     def auth_password(self):
         """
         Password authentication. Send username and password
         """
         self.logger.debug("Trying password authentication")
+        user = self.script.credentials["user"]
+        if user is None:
+            user = ""
+        password = self.script.credentials["password"]
+        if password is None:
+            password = ""
         try:
-            self.session.userauth_password(
-                self.script.credentials["user"],
-                self.script.credentials["password"]
-            )
+            self.session.userauth_password(user, password)
             self.logger.debug("Success")
             return True
         except _libssh2.Error:
