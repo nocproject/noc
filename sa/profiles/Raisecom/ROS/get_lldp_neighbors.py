@@ -45,7 +45,8 @@ class Script(BaseScript):
                     "Other": 1,
                     "Repeater/Hub": 2,
                     "Bridge/Switch": 4,
-                    "Router": 16
+                    "Router": 16,
+                    "Station": 128
                 }[c]
             n = {
                 "remote_chassis_id_subtype": {
