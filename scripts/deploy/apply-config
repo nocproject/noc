@@ -136,6 +136,10 @@ def build(node):
             for o in config.options(s):
                 v = config.get(s, o)
                 # Apply environment variables
+                if jcfg["config"]["noc"].get("alerta_url"):
+                    url = jcfg["config"]["noc"]["alerta_url"] + "/api/"
+                    se["ALERTA_ENDPOINT"] = url
+                    se["ALERTA_API_KEY"] = jcfg["config"]["noc"]["alerta_token"]
                 for e in se:
                     v = v.replace("%%(ENV_%s)s" % e, se[e])
                 #
