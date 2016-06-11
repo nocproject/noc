@@ -72,7 +72,7 @@ redis_appendfsync: "everysec"
 # Alerta http://docs.alerta.io/en/latest/api/reference.html
 
 # seconds
-alerta_blackout_duration: 120
+alerta_blackout_duration: 180
 
 alerta_deploy_start:
     resource: tower
