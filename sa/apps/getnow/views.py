@@ -9,6 +9,7 @@
 #  # NOC modules
 from noc.lib.app import view, ExtApplication
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.lib.dateutils import humanize_distance
 from noc.sa.interfaces.base import ModelParameter
 from noc.core.scheduler.job import Job
@@ -37,6 +38,8 @@ class GetNowApplication(ExtApplication):
         """
         get_request_data = request.GET
         qs = ManagedObject.objects.filter(is_managed=True).exclude(name="SAE")
+        mop = ManagedObjectProfile.objects.filter(enable_box_discovery_config=True)
+        qs = qs.filter(object_profile__in=mop)
         if 'managed_object' in get_request_data:
             qs = qs.filter(id=int(get_request_data['managed_object']))
         if 'profile_name' in get_request_data:
