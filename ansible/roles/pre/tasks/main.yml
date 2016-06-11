@@ -15,6 +15,7 @@
     body: "{{ alerta_deploy_start | to_json }}"
     body_format: json
     status_code: 201
+    validate_certs: no
   when: "alerta_url is defined and alerta_token is defined and 'prod' in noc_env_type"
   register: alerta_notified
   tags:
