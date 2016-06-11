@@ -10,7 +10,7 @@
 
 - name: notify alerta of deployment
   uri:
-    url: "{{alerta_url}}?api-key={{alerta_token}}"
+    url: "{{alerta_url}}/api/alert?api-key={{alerta_token}}"
     method: POST
     body: "{{ alerta_deploy_start | to_json }}"
     body_format: json
