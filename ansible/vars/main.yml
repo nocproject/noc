@@ -69,6 +69,11 @@ redis_maxmemory_samples: 5
 redis_appendonly: "no"
 redis_appendfsync: "everysec"
 
+# Alerta http://docs.alerta.io/en/latest/api/reference.html
+
+# seconds
+alerta_blackout_duration: 120
+
 alerta_deploy_start:
     resource: tower
     event: Deploy
@@ -86,3 +91,9 @@ alerta_deploy_finish:
     service:
       - NOC
     status: closed
+
+alerta_blackout:
+    environment: Production
+    service:
+      - supervisord
+    duration: "{{alerta_blackout_duration}}"
