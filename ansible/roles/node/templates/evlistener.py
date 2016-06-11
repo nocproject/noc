@@ -42,6 +42,7 @@ def main():
         if event.startswith('TICK'):
             supervisorAlert = Heartbeat(
                 origin='supervisord',
+                timeout=124,
                 tags=[headers['ver'], event]
             )
         else:
