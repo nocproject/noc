@@ -24,6 +24,18 @@
     - config
     - soft_restart
 
+- name: Create alerta blackout
+  uri:
+    url: "{{alerta_url}}/api/blackout?api-key={{alerta_token}}"
+    method: POST
+    body: "{{ alerta_deploy_finish | to_json }}"
+    body_format: json
+    status_code: 201
+  when: "alerta_notified"
+  tags:
+    - always
+
+
 - name: Reread config
   shell: "{{ noc_root }}/noc ctl reread"
   when: "'RUNNING' in noc_ctl_status.stdout"
