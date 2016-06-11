@@ -11,7 +11,6 @@ from noc.lib.app import view, ExtApplication
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.dateutils import humanize_distance
 from noc.sa.interfaces.base import ModelParameter
-from noc.inv.models.discovery import Discovery
 from noc.core.scheduler.job import Job
 
 class GetNowApplication(ExtApplication):
@@ -37,10 +36,8 @@ class GetNowApplication(ExtApplication):
         Filter records for lookup
         """
         get_request_data = request.GET
-        # qs = Discovery.objects.filter(job_class='config_discovery').order_by('status')
         qs = ManagedObject.objects.filter(is_managed=True).exclude(name="SAE")
         if 'managed_object' in get_request_data:
-            # qs = qs.filter(managed_object=int(get_request_data['managed_object']))
             qs = qs.filter(id=int(get_request_data['managed_object']))
         if 'profile_name' in get_request_data:
             ids = ManagedObject.objects.filter(
@@ -68,15 +65,13 @@ class GetNowApplication(ExtApplication):
                 q[p] = self.clean_fields[qp].form_clean(q[p])
         return q
 
-    def instance_to_dict(self, o, fields=None):
+    def instance_to_dict(self, mo, fields=None):
         job = Job.get_job_data("discovery",
                                jcls="noc.services.discovery.jobs.box.job.BoxDiscoveryJob",
-                               key=o.id,
-                               pool=o.pool.name
+                               key=mo.id,
+                               pool=mo.pool.name
                                )
         last_success = humanize_distance(job["last"]) if "last" in job else '--'
-        # mo = ManagedObject.objects.get(id = o.managed_object.id)
-        mo = o
         last_update = mo.config.get_revisions(reverse=True)
         if last_update:
             last_update = humanize_distance(last_update[0].ts)
