@@ -11,7 +11,7 @@ from noc.lib.app import view, ExtApplication
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.dateutils import humanize_distance
 from noc.sa.interfaces.base import ModelParameter
-
+from noc.inv.models.discovery import Discovery
 
 class GetNowApplication(ExtApplication):
     """
@@ -36,16 +36,16 @@ class GetNowApplication(ExtApplication):
         Filter records for lookup
         """
         get_request_data = request.GET
-        qs = DiscoveryJob.objects.filter(jcls='config_discovery').order_by('status')
+        qs = Discovery.objects.filter(job_class='config_discovery').order_by('status')
         if 'managed_object' in get_request_data:
-            qs = qs.filter(object=int(get_request_data['managed_object']))
+            qs = qs.filter(managed_object=int(get_request_data['managed_object']))
         if 'profile_name' in get_request_data:
             ids = ManagedObject.objects.filter(
                 profile_name=get_request_data['profile_name']).values_list('id', flat=True)
-            qs = qs.filter(object__in=ids)
+            qs = qs.filter(managed_object__in=ids)
         if 'administrative_domain' in get_request_data:
             ids = ManagedObject.objects.filter(administrative_domain=get_request_data['administrative_domain'])
-            qs = qs.filter(object__in=ids)
+            qs = qs.filter(managed_object__in=ids)
         return qs
 
     def cleaned_query(self, q):
@@ -67,7 +67,7 @@ class GetNowApplication(ExtApplication):
 
     def instance_to_dict(self, o, fields=None):
         last_success = humanize_distance(o.ts) if o.ts else '--'
-        mo = ManagedObject.objects.get(id = o.object)
+        mo = ManagedObject.objects.get(id = o.managed_object.id)
         last_update = mo.config.get_revisions(reverse=True)
         if last_update:
             last_update = humanize_distance(last_update[0].ts)
