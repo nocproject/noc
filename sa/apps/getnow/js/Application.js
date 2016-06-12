@@ -347,7 +347,7 @@ Ext.define("NOC.sa.getnow.Application", {
             method: "POST",
             scope: me,
             jsonData: {
-                "names": ['config_discovery']
+                "names": ['box']
             },
             failure: function () {
                 NOC.error("Failed to run tasks");
