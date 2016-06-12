@@ -31,7 +31,7 @@
     body: "{{ alerta_blackout | to_json }}"
     body_format: json
     status_code: 201
-  when: "alerta_notified"
+  when: "alerta_notified is defined"
   run_once: true
   tags:
     - always
