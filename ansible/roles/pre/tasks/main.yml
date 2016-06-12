@@ -18,6 +18,7 @@
     validate_certs: no
   when: "alerta_url and alerta_url is defined and alerta_token is defined and 'prod' in noc_env_type"
   register: alerta_notified
+  changed_when: "alerta_notified.status == 201"
   tags:
     - always
 
