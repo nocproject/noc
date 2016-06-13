@@ -72,13 +72,13 @@
   when: "'virtualbox' in ansible_virtualization_type and 'vboxsf' in vboxsf_support.stdout"
   ignore_errors: yes
 
-- name: notify alerta of deployment
+- name: notify alerta of deployment end
   uri:
     url: "{{alerta_url}}/api/alert?api-key={{alerta_token}}"
     method: POST
     body: "{{ alerta_deploy_finish | to_json }}"
     body_format: json
     status_code: 201, 202
-  when: "alerta_notified"
+  when: "alerta_notified.changed"
   tags:
     - always

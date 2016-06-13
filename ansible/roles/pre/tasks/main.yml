@@ -8,7 +8,7 @@
   tags:
     - always
 
-- name: notify alerta of deployment
+- name: notify alerta of deployment start
   uri:
     url: "{{alerta_url}}/api/alert?api-key={{alerta_token}}"
     method: POST
