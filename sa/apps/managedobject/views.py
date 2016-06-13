@@ -44,7 +44,10 @@ from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
 from noc.lib.nosql import get_db
 from noc.core.defer import call_later
-from noc.lib.validators import is_int
+from noc.lib.validators import is_ipv4, is_ipv4_prefix
+from noc.lib.ip import IP
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.inv.models.discoveryid import DiscoveryID
 
 
 class ManagedObjectApplication(ExtModelApplication):
@@ -55,7 +58,7 @@ class ManagedObjectApplication(ExtModelApplication):
     menu = "Managed Objects"
     model = ManagedObject
     query_condition = "icontains"
-    query_fields = ["name", "description", "address"]
+    query_fields = ["name", "description"]
     # Inlines
     attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config")
@@ -82,7 +85,10 @@ class ManagedObjectApplication(ExtModelApplication):
         return o.object_profile.style.css_class_name if o.object_profile.style else ""
 
     def field_interface_count(self, o):
-        return Interface.objects.filter(managed_object=o.id, type="physical").count()
+        return Interface.objects.filter(
+            managed_object=o.id,
+            type="physical"
+        ).count()
 
     def field_link_count(self, o):
         return Link.object_links_count(o)
@@ -106,9 +112,27 @@ class ManagedObjectApplication(ExtModelApplication):
             if set("+*[]()") & set(query):
                 # Maybe regular expression
                 try:
+                    # Check syntax
+                    # @todo: PostgreSQL syntax differs from python one
                     re.compile(query)
                     q |= Q(name__regex=query)
                 except re.error:
+                    pass
+            elif is_ipv4(query):
+                # Exact match on IP address
+                q |= Q(address=query)
+            elif is_ipv4_prefix(query):
+                # Match by prefix
+                p = IP.prefix(query)
+                if p.mask >= 20:
+                    q |= Q(address__gte=p.first.address, address__lte=p.last.address)
+            else:
+                try:
+                    mac = MACAddressParameter().clean(query)
+                    mo = DiscoveryID.find_object(mac)
+                    if mo:
+                        q |= Q(pk=mo.pk)
+                except ValueError:
                     pass
         return q
 
