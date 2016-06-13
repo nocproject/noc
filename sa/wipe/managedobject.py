@@ -42,8 +42,6 @@ def wipe(o):
             o = ManagedObject.objects.get(id=o)
         except ManagedObject.DoesNotExist:
             return True
-    if o.profile_name.startswith("NOC."):
-        return True
     log = PrefixLoggerAdapter(logger, str(o.id))
     # Wiping discovery tasks
     log.debug("Wiping discovery tasks")
