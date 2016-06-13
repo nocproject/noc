@@ -14,21 +14,17 @@ from django.db.models.fields import (
     CharField, BooleanField, IntegerField, FloatField,
     DateField, DateTimeField, related)
 from django.db.models import Q
-from django.contrib.contenttypes.models import ContentType
 from django.db.utils import IntegrityError
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.sa.interfaces.base import (
     BooleanParameter, IntParameter,
-    FloatParameter, ModelParameter,
-    StringParameter, TagsParameter,
+    FloatParameter, TagsParameter,
     NoneParameter, StringListParameter,
     DictParameter, ListOfParameter,
     ModelParameter, InterfaceTypeError)
 from interfaces import DateParameter, DateTimeParameter
 from noc.lib.validators import is_int
-from noc.lib.db import QTags
-from noc.main.models.slowop import SlowOp
 
 
 class ExtModelApplication(ExtApplication):
