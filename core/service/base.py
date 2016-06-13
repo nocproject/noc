@@ -399,6 +399,7 @@ class Service(object):
         self.logger.info("Stopping IOLoop")
         self.ioloop.stop()
 
+    @tornado.gen.coroutine
     def on_activate(self):
         """
         Called when service activated
@@ -407,7 +408,7 @@ class Service(object):
 
     @tornado.gen.coroutine
     def on_deactivate(self):
-        pass
+        raise tornado.gen.Return()
 
     def open_rpc(self, name, pool=None):
         """
