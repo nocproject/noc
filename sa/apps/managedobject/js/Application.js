@@ -200,16 +200,16 @@ Ext.define("NOC.sa.managedobject.Application", {
                     width: 130
                 },
                 {
-                    text: "Segment",
-                    dataIndex: "segment",
-                    width: 150,
-                    renderer: NOC.render.Lookup("segment")
-                },
-                {
                     text: "Managed",
                     dataIndex: "is_managed",
                     width: 30,
                     renderer: NOC.render.Bool
+                },
+                {
+                    text: "Segment",
+                    dataIndex: "segment",
+                    width: 150,
+                    renderer: NOC.render.Lookup("segment")
                 },
                 {
                     text: "Platform",
