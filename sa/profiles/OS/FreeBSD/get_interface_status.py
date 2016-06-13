@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## OS.FreeBSD.get_interface_status
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -16,7 +16,8 @@ class Script(BaseScript):
     name = "OS.FreeBSD.get_interface_status"
     interface = IGetInterfaceStatus
     rx_if_name = re.compile(
-        r"^(?P<ifname>\S+): flags=\d+<\S+> metric \d+ mtu \d+$")
+        r"^(?P<ifname>\S+): flags=[0-9a-f]+<\S+> metric \d+ mtu \d+$")
+
     rx_if_status = re.compile(
         r"^\tstatus: "
         r"(?P<status>active|no carrier|inserted|no ring|associated|running)$")
