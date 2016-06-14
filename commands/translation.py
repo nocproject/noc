@@ -21,7 +21,10 @@ from noc.core.management.base import BaseCommand
 class Command(BaseCommand):
     SERVICES = {
         "card": {
-            "messages": ["services/card/**.py"],
+            "messages": [
+                "services/card/**.py",
+                "services/card/**.html.j2"
+            ],
             "messages_js": ["ui/card/**.js"]
         },
         "login": {
@@ -139,7 +142,8 @@ class Command(BaseCommand):
                             "-i", pot,
                             "--domain=%s" % domain,
                             "-d", t_dir,
-                            "-l", lang
+                            "-l", lang,
+                            "--previous"
                         ])
 
     def handle_compile(self, services=None, *args, **options):
