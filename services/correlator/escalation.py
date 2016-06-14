@@ -37,7 +37,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
         r = []
         for k in summary:
             p = model.get_by_id(k.profile)
-            if not p:
+            if not p or getattr(p, "show_in_summary", True) == False:
                 continue
             r += [{
                 "profile": p.name,
