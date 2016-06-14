@@ -4,6 +4,10 @@
     permanent: true
     state: enabled
   with_dict: "{{ noc_config.nodes }}"
+  tags:
+    - config
 
 - name: Reload firewalld service
   command: firewall-cmd --reload
+  tags:
+    - config
