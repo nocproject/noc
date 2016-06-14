@@ -361,7 +361,7 @@ Ext.define("NOC.fm.alarm.Application", {
                         var tt = record.get("escalation_tt");
                         return record.get("summary") +
                                 "<br/>" +
-                            (tt ? "<a href='/api/card/view/tt/" + tt + "/'>" + tt + "</a>" : "");
+                            (tt ? "<a href='/api/card/view/tt/" + tt + "/' target='_blank'>" + tt + "</a>" : "");
 
                     }
                 },
