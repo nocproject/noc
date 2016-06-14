@@ -667,15 +667,21 @@ class BaseScript(object):
 
     def has_snmp(self):
         """
-        Check wherher equipment has SNMP enabled
+        Check whether equipment has SNMP enabled
         """
         return bool(self.credentials.get("snmp_ro"))
 
     def has_snmp_bulk(self):
         """
-        Check wherher equipment supports SNMP BULK
+        Check whether equipment supports SNMP BULK
         """
         return "SNMP | Bulk" in self.capabilities
+
+    def has_capability(self, capability):
+        """
+        Shech whether equipment supports capability
+        """
+        return bool(self.capabilities.get(capability))
 
     def ignored_exceptions(self, iterable):
         """
