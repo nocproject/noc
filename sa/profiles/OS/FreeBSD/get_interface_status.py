@@ -22,7 +22,7 @@ class Script(BaseScript):
         r"^\tstatus: "
         r"(?P<status>active|no carrier|inserted|no ring|associated|running)$")
 
-    def execute(self):
+    def execute(self, interface=None):
         r = []
         for s in self.cli("ifconfig -v", cached=True).splitlines():
             match = self.rx_if_name.search(s)
@@ -31,9 +31,12 @@ class Script(BaseScript):
                 continue
             match = self.rx_if_status.search(s)
             if match:
-                r += [{
+                iface = {
                     "interface": if_name,
                     "status": not match.group("status").startswith("no ")
-                }]
+                }
+                if (interface is not None) and (interface == if_name):
+                    return [iface]
+                r += [iface]
                 continue
         return r
