@@ -274,7 +274,14 @@ class BaseLoader(object):
         """
         Change object with attributes
         """
-        o = self.model.objects.get(pk=object_id)
+        try:
+            o = self.model.objects.get(pk=object_id)
+        except self.model.DoesNotExist:
+            self.logger.error(
+                "Cannot change %s:%s: Does not exists",
+                self.name, object_id
+            )
+            return None
         for k, nv in v.iteritems():
             setattr(o, k, nv)
         o.save()
