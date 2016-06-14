@@ -71,35 +71,20 @@ class DesktopApplication(ExtApplication):
             self.error("Group '%s' is not found" % name)
             return None
 
-    def get_theme(self, request):
+    def get_language(self, request):
         """
         Get theme for request
         """
         user = request.user
-        theme = self.default_theme
-        if user.is_authenticated():
+        language = self.site.service.config.language
+        if user.is_authenticated:
             try:
                 profile = user.get_profile()
-                if profile.theme:
-                    theme = profile.theme
+                if profile.preferred_language:
+                    language = profile.preferred_language
             except:
                 pass
-        return theme
-
-    def get_preview_theme(self, request):
-        """
-        Get theme for request
-        """
-        user = request.user
-        preview_theme = "default"
-        if user.is_authenticated():
-            try:
-                profile = user.get_profile()
-                if profile.preview_theme:
-                    preview_theme = profile.preview_theme
-            except:
-                pass
-        return preview_theme
+        return language
 
     @view(method=["GET"], url="^$", url_name="desktop", access=True)
     def view_desktop(self, request):
@@ -143,18 +128,14 @@ class DesktopApplication(ExtApplication):
             "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
             "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap"),
             "trace_extjs_events": config.getboolean("main", "trace_extjs_events"),
-            "preview_theme": self.get_preview_theme(request)
+            "preview_theme": "midnight"
 
         }
-        theme = self.get_theme(request)
         return self.render(
             request, "desktop.html",
-            language=self.site.service.config.language,
+            language=self.get_language(request),
             apps=apps,
-            setup=setup,
-            theme=theme,
-            theme_css=self.themes[theme]["css"],
-            theme_js=self.themes[theme]["js"]
+            setup=setup
         )
 
     ##
@@ -206,7 +187,6 @@ class DesktopApplication(ExtApplication):
             "username": user.username,
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "theme": self.get_theme(request),
             "can_change_credentials": True,
             "idle_timeout": self.idle_timeout,
             "navigation": {

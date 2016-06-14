@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## main.userprofile application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -15,13 +15,14 @@ from noc.settings import LANGUAGES
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.main.models.userprofilecontact import UserProfileContact
+from noc.core.translation import ugettext as _
 
 
 class UserProfileApplication(ExtApplication):
     """
     main.userprofile application
     """
-    title = "User Profile"
+    title = _("User Profile")
     implied_permissions = {
         "launch": ["main:timepattern:lookup"]
     }
@@ -32,8 +33,6 @@ class UserProfileApplication(ExtApplication):
         try:
             profile = user.get_profile()
             language = profile.preferred_language
-            theme = profile.theme
-            preview_theme = profile.preview_theme
             contacts = [
                 {
                     "time_pattern": c.time_pattern.id,
@@ -45,8 +44,6 @@ class UserProfileApplication(ExtApplication):
             ]
         except UserProfile.DoesNotExist:
             language = None
-            theme = None
-            preview_theme = None
             contacts = []
         return {
             "username": user.username,
@@ -55,34 +52,31 @@ class UserProfileApplication(ExtApplication):
             )).strip(),
             "email": user.email,
             "preferred_language": language or "en",
-            "theme": theme or "gray",
-            "preview_theme": preview_theme or "midnight",
             "contacts": contacts
         }
 
     @view(url="^$", method=["POST"], access=PermitLogged(), api=True,
           validate={
-              "preferred_language": StringParameter(choices=[x[0] for x in LANGUAGES]),
-              "theme": StringParameter(),
-              "preview_theme": StringParameter(),
+              "preferred_language": StringParameter(
+                  choices=[x[0] for x in LANGUAGES]
+              ),
               "contacts": ListOfParameter(
                   element=DictParameter(attrs={
                       "time_pattern": ModelParameter(TimePattern),
-                      "notification_method": StringParameter(choices=[x[0] for x in USER_NOTIFICATION_METHOD_CHOICES]),
+                      "notification_method": StringParameter(
+                          choices=[x[0] for x in USER_NOTIFICATION_METHOD_CHOICES]
+                      ),
                       "params": StringParameter()
                   })
               )
           })
-    def api_save(self, request, preferred_language, theme,
-                 preview_theme, contacts):
+    def api_save(self, request, preferred_language, contacts):
         user = request.user
         try:
             profile = user.get_profile()
         except UserProfile.DoesNotExist:
             profile = UserProfile(user=user)
         profile.preferred_language = preferred_language
-        profile.theme = theme
-        profile.preview_theme = preview_theme
         profile.save()
         # Setup contacts
         for c in profile.userprofilecontact_set.all():

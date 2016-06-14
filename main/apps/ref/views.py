@@ -113,41 +113,6 @@ class RefAppplication(ExtApplication):
             for l in settings.LANGUAGES
         )
 
-    def build_theme(self):
-        """
-        UI Themes
-        :return:
-        """
-        conf = settings.config
-        themes = [t[:-5] for t in conf.options("themes")
-                  if (t.endswith(".name") and
-                      conf.getboolean("themes", "%s.enabled" % t[:-5]))]
-        return sorted([
-            {
-                "id": t,
-                "label": conf.get("themes", "%s.name" % t)
-            } for t in themes],
-            key=lambda x: x["label"].lower()
-        )
-
-    def build_cmtheme(self):
-        """
-        CodeMirror themes
-        """
-        r = [{
-            "id": "default",
-            "label": "default"
-        }]
-        if os.path.isdir("ui/pkg/codemirror/theme"):
-            for f in os.listdir("ui/pkg/codemirror/theme"):
-                if f.endswith(".css"):
-                    t = f[:-4]
-                    r += [{
-                        "id": t,
-                        "label": t
-                    }]
-        return r
-
     rx_fa_glyph = re.compile(
         r"\.fa-([^:]+):before\{content:",
         re.MULTILINE | re.DOTALL

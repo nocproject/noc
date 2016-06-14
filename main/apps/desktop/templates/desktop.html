@@ -10,7 +10,7 @@
         <!-- favicon -->
         {% if setup.favicon_mime %}<link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />{% endif %}
         <!-- CSS -->
-        <link rel="stylesheet" type="text/css" id="theme" href="{{theme_css}}" />
+        <link rel="stylesheet" type="text/css" id="theme" href="/static/pkg/extjs/packages/ext-theme-gray/build/resources/ext-theme-gray-all.css" />
         <link rel="stylesheet" type="text/css" href="/static/pkg/famfamfam-silk/icons.css" />
         <link rel="stylesheet" type="text/css" href="/static/pkg/silk-companion1/icons.css" />
         <link rel="stylesheet" type="text/css" href="/static/css/noc-extjs.css" />
@@ -25,13 +25,12 @@
         <!-- l10n -->
         <link rel="gettext" href="/ui/web/translations/{{ language }}.json" lang="{{ language }}">
         <!-- JS -->
-        <script type="text/javascript" src="/static/pkg/handlebars/handlebars{% if setup.debug_js %}-debug{% endif %}.js"></script>
+        <script type="text/javascript" src="/static/pkg/handlebars/handlebars.js"></script>
         <script type="text/javascript" src="/static/pkg/stacktrace/stacktrace.js"></script>
         <script type="text/javascript" src="/static/js/logging.js"></script>
         <script type="text/javascript" src="/static/js/noc/jsloader.js"></script>
-        <script type="text/javascript" src="/static/pkg/extjs/ext-all{% if setup.debug_js %}-debug{% endif %}.js"></script>
-        <!-- <script type="text/javascript" src="/static/pkg/extjs/packages/ext-charts/build/ext-charts.js"></script> -->
-        <script type="text/javascript" src="{{theme_js}}"></script>
+        <script type="text/javascript" src="/static/pkg/extjs/ext-all.js"></script>
+        <script type="text/javascript" src="/static/pkg/extjs/packages/ext-theme-gray/build/ext-theme-gray.js"></script>
         <script type="text/javascript" src="/ui/pkg/jsmessage/message.js"></script>
         <script type="text/javascript" src="/ui/pkg/jquery/jquery.min.js"></script>
         <script type="text/javascript" src="/ui/pkg/codemirror/lib/codemirror.js"></script>
@@ -60,8 +59,8 @@
                 systemId: {% if setup.system_uuid %}"{{ setup.system_uuid }}"{% else %}null{% endif %},
                 brand: "{{ setup.brand }}",
                 installation_name: "{{setup.installation_name}}",
-                theme: "{{theme}}",
-                preview_theme: "{{setup.preview_theme}}",
+                preview_theme: "{{ setup.preview_theme }}",
+                language: "{{ language }}",
                 logo_url: "{{setup.logo_url}}",
                 logo_width: {{setup.logo_width}},
                 logo_height: {{setup.logo_height}},
@@ -83,7 +82,6 @@
                 paths: {
                     {% for m, a in apps %}"NOC.{{m}}.{{a}}.templates": "/{{m}}/{{a}}/templates",{% endfor %}
                     {% for m, a in apps %}"NOC.{{m}}.{{a}}": "/{{m}}/{{a}}/js",{% endfor %}
-                    "NOC.metricconfig": "/pm/metricconfig/config",
                     "NOC.models": "/static/js/noc/models",
                     "NOC.widgets": "/static/js/noc/widgets",
                     "NOC.core": "/static/js/noc/core",
