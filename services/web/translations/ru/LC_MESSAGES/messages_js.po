@@ -8,325 +8,245 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-20 19:36+0300\n"
+"POT-Creation-Date: 2016-06-14 13:17+0300\n"
 "PO-Revision-Date: 2016-04-20 19:39+0300\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 "
-"&& (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.3\n"
-"X-Generator: Poedit 1.8.7\n"
-
-#: fm/apps/alarm/js/AlarmPanel.js:44
-msgid "Overview"
-msgstr "Обзор"
-
-#: fm/apps/alarm/js/AlarmPanel.js:49
-msgid "Help"
-msgstr "Помощь"
-
-#: fm/apps/alarm/js/AlarmPanel.js:54
-msgid "Data"
-msgstr "Данные"
-
-#: fm/apps/alarm/js/AlarmPanel.js:69
-msgid "New message"
-msgstr "Новое сообщение"
-
-#: fm/apps/alarm/js/AlarmPanel.js:81
-msgid "Log"
-msgstr "Журнал"
-
-#: fm/apps/alarm/js/AlarmPanel.js:87 fm/apps/alarm/js/AlarmPanel.js:131
-#: fm/apps/alarm/js/AlarmPanel.js:172 fm/apps/alarm/js/Application.js:188
-msgid "Time"
-msgstr "Время"
-
-#: fm/apps/alarm/js/AlarmPanel.js:93 fm/apps/alarm/js/Application.js:112
-msgid "From"
-msgstr "С"
-
-#: fm/apps/alarm/js/AlarmPanel.js:99 fm/apps/alarm/js/Application.js:123
-msgid "To"
-msgstr "По"
-
-#: fm/apps/alarm/js/AlarmPanel.js:105
-msgid "Message"
-msgstr "Сообщение"
-
-#: fm/apps/alarm/js/AlarmPanel.js:120 fm/apps/alarm/js/Application.js:230
-msgid "Events"
-msgstr "События"
-
-#: fm/apps/alarm/js/AlarmPanel.js:137 fm/apps/alarm/js/AlarmPanel.js:184
-#: fm/apps/alarm/js/Application.js:101 fm/apps/alarm/js/Application.js:212
-msgid "Class"
-msgstr "Класс"
-
-#: fm/apps/alarm/js/AlarmPanel.js:143 fm/apps/alarm/js/AlarmPanel.js:189
-#: fm/apps/alarm/js/Application.js:218
-msgid "Subject"
-msgstr "Тема"
-
-#: fm/apps/alarm/js/AlarmPanel.js:159
-msgid "Alarms"
-msgstr "Аварии"
-
-#: fm/apps/alarm/js/AlarmPanel.js:167
-msgid "ID"
-msgstr "ID"
-
-#: fm/apps/alarm/js/AlarmPanel.js:178 fm/apps/alarm/js/Application.js:79
-#: fm/apps/alarm/js/Application.js:200
-msgid "Object"
-msgstr "Объект"
-
-#: fm/apps/alarm/js/AlarmPanel.js:214
-msgid "Clear"
-msgstr "Очистить"
-
-#: fm/apps/alarm/js/AlarmPanel.js:221
-msgid "Watch"
-msgstr "Подписаться"
-
-#: fm/apps/alarm/js/AlarmPanel.js:229
-msgid "Set Root Cause"
-msgstr "Установить причину"
-
-#: fm/apps/alarm/js/AlarmPanel.js:236
-msgid "Show Map"
-msgstr "Карта"
-
-#: fm/apps/alarm/js/AlarmPanel.js:243
-msgid "Show Object"
-msgstr "Объект"
-
-#: fm/apps/alarm/js/AlarmPanel.js:250
-msgid "Card"
-msgstr "Карточка"
-
-#: fm/apps/alarm/js/AlarmPanel.js:263 main/apps/desktop/js/ChangeCredentials.js:40
-msgid "Close"
-msgstr "Закрыть"
-
-#: fm/apps/alarm/js/AlarmPanel.js:269
-msgid "Refresh"
-msgstr "Обновить"
-
-#: fm/apps/alarm/js/AlarmPanel.js:308
-msgid "Failed to get alarm"
-msgstr "Не удалось получить данные"
-
-#: fm/apps/alarm/js/AlarmPanel.js:430
-msgid "Failed to post message"
-msgstr "Не удалось послать сообщение"
-
-#: fm/apps/alarm/js/AlarmPanel.js:459
-msgid "Clear alarm?"
-msgstr "Очистить аварию?"
-
-#: fm/apps/alarm/js/AlarmPanel.js:460
-msgid "Please confirm the alarm is closed and must be cleared?"
-msgstr "Пожалуйста, подтвердите, что проблема решена и авария должна быть закрыта"
-
-#: fm/apps/alarm/js/AlarmPanel.js:473
-msgid "Failed to clear alarm"
-msgstr "Не удалось получить аварию"
-
-#: fm/apps/alarm/js/AlarmPanel.js:493
-msgid "Failed to set watcher"
-msgstr "Не удалось подписаться"
-
-#: fm/apps/alarm/js/AlarmPanel.js:502
-msgid "Set root cause"
-msgstr "Установить причину"
-
-#: fm/apps/alarm/js/AlarmPanel.js:503
-msgid "Please enter root cause alarm id"
-msgstr "Пожалуйста, введите ID причины"
-
-#: fm/apps/alarm/js/AlarmPanel.js:517
-msgid "Failed to set root cause"
-msgstr "Не удалось установить причину"
-
-#: fm/apps/alarm/js/Application.js:68
-msgid "Adm. Domain"
-msgstr "Зона ответсвенности"
-
-#: fm/apps/alarm/js/Application.js:90
-msgid "Selector"
-msgstr "Селектор"
-
-#: fm/apps/alarm/js/Application.js:134
-msgid "Expand"
-msgstr "Раскрыть"
-
-#: fm/apps/alarm/js/Application.js:135
-msgid "Show/collapse children alarms"
-msgstr "Показать/свернуть область"
-
-#: fm/apps/alarm/js/Application.js:181
-msgid "Status"
-msgstr "Статус"
-
-#: fm/apps/alarm/js/Application.js:206
-msgid "Severity"
-msgstr "Серьезность"
-
-#: fm/apps/alarm/js/Application.js:223
-msgid "Duration"
-msgstr "Длительность"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:11
-msgid "Thresholds"
-msgstr "Пороги"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:32
-msgid "Metric"
-msgstr "Метрика"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:37
-msgid "Interface"
-msgstr "Интерфейс"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:42
-msgid "Level"
-msgstr "Уровень"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:47
-msgid "Value"
-msgstr "Значение"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:53
-msgid "Condition"
-msgstr "Условие"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:58
-msgid "Threshold"
-msgstr "Порог"
-
-#: fm/apps/alarm/js/Application.js:194 inv/apps/map/js/Application.js:22
-msgid "Segment"
-msgstr "Сегмент"
-
-#: inv/apps/map/js/Application.js:36
-msgid "Edit"
-msgstr "Редактировать"
-
-#: inv/apps/map/js/Application.js:39
-msgid "Edit map"
-msgstr "Редактировать карту"
-
-#: inv/apps/map/js/Application.js:46
-msgid "Save"
-msgstr "Сохранить"
-
-#: inv/apps/map/js/Application.js:54
-msgid "Revert"
-msgstr "Отменить"
-
-#: inv/apps/map/js/Application.js:62
-msgid "New layout"
-msgstr "Новая раскладка"
-
-#: inv/apps/map/js/Application.js:117
-msgid "Show static map"
-msgstr "Статичная карта"
-
-#: inv/apps/map/js/Application.js:128
-msgid "Show interface load"
-msgstr "Загрузка интерфейсов"
-
-#: inv/apps/map/js/Application.js:258
-msgid "Reset Layout"
-msgstr "Сбросить раскладку"
-
-#: inv/apps/map/js/Application.js:259
-msgid "Would you like to reset current layout and generate new?"
-msgstr "Сбросить раскладку карты и перестроить заново?"
-
-#: inv/apps/map/js/SelectIconForm.js:43
-msgid "Set"
-msgstr "Установить"
-
-#: inv/apps/map/js/inspectors/LinkInspector.js:11
-msgid "Link Inspector"
-msgstr "Свойства линка"
-
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:11
-msgid "Object Inspector"
-msgstr "Свойства объекта"
-
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:42
-msgid "Jump to Segment"
-msgstr "Перейти в сегмент"
-
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:50
-msgid "Show dashboard"
-msgstr "Показать графики"
-
-#: inv/apps/map/js/inspectors/SegmentInspector.js:11
-msgid "Segment Inspector"
-msgstr "Свойства сегмента"
-
-#: main/apps/desktop/js/ChangeCredentials.js:11
-msgid "Change Password"
-msgstr "Смена пароля"
-
-#: main/apps/desktop/js/ChangeCredentials.js:46
-msgid "Reset"
-msgstr "Сброс"
-
-#: main/apps/desktop/js/ChangeCredentials.js:52
-msgid "Change"
-msgstr "Сменить"
-
-#: main/apps/desktop/js/ChangeCredentials.js:103
-msgid "Credentials has been changed"
-msgstr "Пароль изменен"
-
-#: main/apps/desktop/js/ChangeCredentials.js:106
-#: main/apps/desktop/js/ChangeCredentials.js:111
-msgid "Failed to change credentials: "
-msgstr "Невозможно сменить пароль: "
-
-#: main/apps/desktop/js/HeaderPanel.js:35
-msgid "Anonymous"
-msgstr "Анонимный"
-
-#: main/apps/desktop/js/HeaderPanel.js:41
-msgid "About NOC ..."
-msgstr "О программе ..."
-
-#: main/apps/desktop/js/HeaderPanel.js:48
-msgid "User profile ..."
-msgstr "Профиль пользователя ..."
-
-#: main/apps/desktop/js/HeaderPanel.js:55
-msgid "Change password ..."
-msgstr "Смена пароля ..."
-
-#: main/apps/desktop/js/HeaderPanel.js:63
-msgid "Logout"
-msgstr "Выход"
-
-#: main/apps/desktop/js/NavPanel.js:24
-msgid "Navigation"
-msgstr "Навигация"
-
-#: main/apps/desktop/js/NavPanel.js:34
-msgid "Switch to breadcrumb view"
-msgstr "Компактный режим"
-
-#: main/apps/desktop/js/WorkplacePanel.js:22
-#: main/apps/desktop/js/WorkplacePanel.js:114
-msgid "Collapse panels"
-msgstr "Свернуть панели"
-
-#: main/apps/desktop/js/WorkplacePanel.js:108
-msgid "Expand panels"
-msgstr "Развернуть панели"
+"Generated-By: Babel 2.3.4\n"
+
+#~ msgid "Overview"
+#~ msgstr "Обзор"
+
+#~ msgid "Help"
+#~ msgstr "Помощь"
+
+#~ msgid "Data"
+#~ msgstr "Данные"
+
+#~ msgid "New message"
+#~ msgstr "Новое сообщение"
+
+#~ msgid "Log"
+#~ msgstr "Журнал"
+
+#~ msgid "Time"
+#~ msgstr "Время"
+
+#~ msgid "From"
+#~ msgstr "С"
+
+#~ msgid "To"
+#~ msgstr "По"
+
+#~ msgid "Message"
+#~ msgstr "Сообщение"
+
+#~ msgid "Events"
+#~ msgstr "События"
+
+#~ msgid "Class"
+#~ msgstr "Класс"
+
+#~ msgid "Subject"
+#~ msgstr "Тема"
+
+#~ msgid "Alarms"
+#~ msgstr "Аварии"
+
+#~ msgid "ID"
+#~ msgstr "ID"
+
+#~ msgid "Object"
+#~ msgstr "Объект"
+
+#~ msgid "Clear"
+#~ msgstr "Очистить"
+
+#~ msgid "Watch"
+#~ msgstr "Подписаться"
+
+#~ msgid "Set Root Cause"
+#~ msgstr "Установить причину"
+
+#~ msgid "Show Map"
+#~ msgstr "Карта"
+
+#~ msgid "Show Object"
+#~ msgstr "Объект"
+
+#~ msgid "Card"
+#~ msgstr "Карточка"
+
+#~ msgid "Close"
+#~ msgstr "Закрыть"
+
+#~ msgid "Refresh"
+#~ msgstr "Обновить"
+
+#~ msgid "Failed to get alarm"
+#~ msgstr "Не удалось получить данные"
+
+#~ msgid "Failed to post message"
+#~ msgstr "Не удалось послать сообщение"
+
+#~ msgid "Clear alarm?"
+#~ msgstr "Очистить аварию?"
+
+#~ msgid "Please confirm the alarm is closed and must be cleared?"
+#~ msgstr ""
+#~ "Пожалуйста, подтвердите, что проблема решена"
+#~ " и авария должна быть закрыта"
+
+#~ msgid "Failed to clear alarm"
+#~ msgstr "Не удалось получить аварию"
+
+#~ msgid "Failed to set watcher"
+#~ msgstr "Не удалось подписаться"
+
+#~ msgid "Set root cause"
+#~ msgstr "Установить причину"
+
+#~ msgid "Please enter root cause alarm id"
+#~ msgstr "Пожалуйста, введите ID причины"
+
+#~ msgid "Failed to set root cause"
+#~ msgstr "Не удалось установить причину"
+
+#~ msgid "Adm. Domain"
+#~ msgstr "Зона ответсвенности"
+
+#~ msgid "Selector"
+#~ msgstr "Селектор"
+
+#~ msgid "Expand"
+#~ msgstr "Раскрыть"
+
+#~ msgid "Show/collapse children alarms"
+#~ msgstr "Показать/свернуть область"
+
+#~ msgid "Status"
+#~ msgstr "Статус"
+
+#~ msgid "Severity"
+#~ msgstr "Серьезность"
+
+#~ msgid "Duration"
+#~ msgstr "Длительность"
+
+#~ msgid "Thresholds"
+#~ msgstr "Пороги"
+
+#~ msgid "Metric"
+#~ msgstr "Метрика"
+
+#~ msgid "Interface"
+#~ msgstr "Интерфейс"
+
+#~ msgid "Level"
+#~ msgstr "Уровень"
+
+#~ msgid "Value"
+#~ msgstr "Значение"
+
+#~ msgid "Condition"
+#~ msgstr "Условие"
+
+#~ msgid "Threshold"
+#~ msgstr "Порог"
+
+#~ msgid "Segment"
+#~ msgstr "Сегмент"
+
+#~ msgid "Edit"
+#~ msgstr "Редактировать"
+
+#~ msgid "Edit map"
+#~ msgstr "Редактировать карту"
+
+#~ msgid "Save"
+#~ msgstr "Сохранить"
+
+#~ msgid "Revert"
+#~ msgstr "Отменить"
+
+#~ msgid "New layout"
+#~ msgstr "Новая раскладка"
+
+#~ msgid "Show static map"
+#~ msgstr "Статичная карта"
+
+#~ msgid "Show interface load"
+#~ msgstr "Загрузка интерфейсов"
+
+#~ msgid "Reset Layout"
+#~ msgstr "Сбросить раскладку"
+
+#~ msgid "Would you like to reset current layout and generate new?"
+#~ msgstr "Сбросить раскладку карты и перестроить заново?"
+
+#~ msgid "Set"
+#~ msgstr "Установить"
+
+#~ msgid "Link Inspector"
+#~ msgstr "Свойства линка"
+
+#~ msgid "Object Inspector"
+#~ msgstr "Свойства объекта"
+
+#~ msgid "Jump to Segment"
+#~ msgstr "Перейти в сегмент"
+
+#~ msgid "Show dashboard"
+#~ msgstr "Показать графики"
+
+#~ msgid "Segment Inspector"
+#~ msgstr "Свойства сегмента"
+
+#~ msgid "Change Password"
+#~ msgstr "Смена пароля"
+
+#~ msgid "Reset"
+#~ msgstr "Сброс"
+
+#~ msgid "Change"
+#~ msgstr "Сменить"
+
+#~ msgid "Credentials has been changed"
+#~ msgstr "Пароль изменен"
+
+#~ msgid "Failed to change credentials: "
+#~ msgstr "Невозможно сменить пароль: "
+
+#~ msgid "Anonymous"
+#~ msgstr "Анонимный"
+
+#~ msgid "About NOC ..."
+#~ msgstr "О программе ..."
+
+#~ msgid "User profile ..."
+#~ msgstr "Профиль пользователя ..."
+
+#~ msgid "Change password ..."
+#~ msgstr "Смена пароля ..."
+
+#~ msgid "Logout"
+#~ msgstr "Выход"
+
+#~ msgid "Navigation"
+#~ msgstr "Навигация"
+
+#~ msgid "Switch to breadcrumb view"
+#~ msgstr "Компактный режим"
+
+#~ msgid "Collapse panels"
+#~ msgstr "Свернуть панели"
+
+#~ msgid "Expand panels"
+#~ msgstr "Развернуть панели"
+
