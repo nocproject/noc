@@ -9,14 +9,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-20 18:29+0300\n"
+"POT-Creation-Date: 2016-06-14 13:17+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.3\n"
+"Generated-By: Babel 2.3.4\n"
 
 #: dns/apps/reportmissedp2p/views.py:18
 msgid "Missed Link Addresses"
@@ -34,27 +34,31 @@ msgstr ""
 msgid "Outages"
 msgstr ""
 
-#: fm/apps/reportreboots/views.py:22
-msgid "Range"
+#: fm/apps/reportalarmdetail/views.py:21 fm/apps/reportalarmdetail/views.py:22
+msgid "Alarm Detail"
 msgstr ""
 
 #: fm/apps/reportreboots/views.py:23
-msgid "1 day"
+msgid "Range"
 msgstr ""
 
 #: fm/apps/reportreboots/views.py:24
-msgid "1 week"
+msgid "1 day"
 msgstr ""
 
 #: fm/apps/reportreboots/views.py:25
+msgid "1 week"
+msgstr ""
+
+#: fm/apps/reportreboots/views.py:26
 msgid "1 month"
 msgstr ""
 
-#: fm/apps/reportreboots/views.py:38 fm/apps/reportreboots/views.py:93
+#: fm/apps/reportreboots/views.py:39 fm/apps/reportreboots/views.py:94
 msgid "Reboots"
 msgstr ""
 
-#: fm/apps/reportreboots/views.py:92
+#: fm/apps/reportreboots/views.py:93
 msgid "Managed Object"
 msgstr ""
 
@@ -62,8 +66,36 @@ msgstr ""
 msgid "Total Outages"
 msgstr ""
 
-#: inv/apps/map/views.py:39 inv/apps/map/views.py:40
+#: inv/apps/map/views.py:40 inv/apps/map/views.py:41
 msgid "Network Map"
+msgstr ""
+
+#: inv/apps/reportdiscovery/views.py:24
+msgid "Discovery Summary"
+msgstr ""
+
+#: inv/apps/reportdiscoveryproblem/views.py:21
+msgid "Discovery Problems"
+msgstr ""
+
+#: inv/apps/reportdiscoveryproblem/views.py:34
+msgid "Profile check failed"
+msgstr ""
+
+#: inv/apps/reportdiscoveryproblem/views.py:44
+msgid "No interfaces"
+msgstr ""
+
+#: inv/apps/reportdiscoveryproblem/views.py:51
+msgid "No links"
+msgstr ""
+
+#: inv/apps/reportdiscoveryproblem/views.py:59
+msgid "No uplinks"
+msgstr ""
+
+#: inv/apps/unknownmodel/views.py:38
+msgid "Cleaned"
 msgstr ""
 
 #: ip/apps/ipam/views.py:404
@@ -381,6 +413,43 @@ msgstr ""
 msgid "%(count)s IP addresses uploaded via zone transfer"
 msgstr ""
 
+#: main/apps/calculator/calculators/cir2cbr.py:22
+msgid "CIR(bps). K, M and G suffixes can be used"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:24
+msgid ""
+"Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 "
+"is default)"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:27
+msgid "Cisco IOS policer"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:28
+msgid "Cisco IOS rate-limit"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:29
+msgid "Juniper JUNOS policer"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:50
+msgid "Integer is required"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:58
+msgid "CIR/CAR(bps) to Burst-rate"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:59
+msgid ""
+"Recommended way for policy-map values calculating is: normal-burst-bytes"
+"=bits-per-second*Tc/8.Recommended way for rate-limit values calculating "
+"is: burst-normal=bits-per-second*Tc/8, burst-max=2*burst-normal"
+msgstr ""
+
 #: main/apps/checkpoint/views.py:20
 msgid "Checkpoints"
 msgstr ""
@@ -395,6 +464,10 @@ msgstr ""
 
 #: main/apps/checkpoint/views.py:42
 msgid "Checkpoint has been set"
+msgstr ""
+
+#: main/apps/desktop/views.py:284
+msgid "Failed to change credentials"
 msgstr ""
 
 #: main/apps/language/views.py:17
@@ -446,5 +519,9 @@ msgstr ""
 
 #: main/apps/user/views.py:62
 msgid "Important dates"
+msgstr ""
+
+#: main/apps/userprofile/views.py:25
+msgid "User Profile"
 msgstr ""
 

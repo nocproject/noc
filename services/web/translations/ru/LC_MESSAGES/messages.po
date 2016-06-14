@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-21 02:26+0300\n"
-"PO-Revision-Date: 2016-04-21 09:59+0300\n"
+"POT-Creation-Date: 2016-06-14 13:17+0300\n"
+"PO-Revision-Date: 2016-06-14 13:19+0300\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.3\n"
-"X-Generator: Poedit 1.8.7\n"
+"Generated-By: Babel 2.3.4\n"
+"X-Generator: Poedit 1.8.8\n"
 
 #: dns/apps/reportmissedp2p/views.py:18
 msgid "Missed Link Addresses"
@@ -37,27 +37,31 @@ msgstr "Тепловая карта"
 msgid "Outages"
 msgstr "Оперативная обстановка"
 
-#: fm/apps/reportreboots/views.py:22
+#: fm/apps/reportalarmdetail/views.py:21 fm/apps/reportalarmdetail/views.py:22
+msgid "Alarm Detail"
+msgstr ""
+
+#: fm/apps/reportreboots/views.py:23
 msgid "Range"
 msgstr "Диапазон"
 
-#: fm/apps/reportreboots/views.py:23
+#: fm/apps/reportreboots/views.py:24
 msgid "1 day"
 msgstr "1 день"
 
-#: fm/apps/reportreboots/views.py:24
+#: fm/apps/reportreboots/views.py:25
 msgid "1 week"
 msgstr "1 неделя"
 
-#: fm/apps/reportreboots/views.py:25
+#: fm/apps/reportreboots/views.py:26
 msgid "1 month"
 msgstr "1 месяц"
 
-#: fm/apps/reportreboots/views.py:38 fm/apps/reportreboots/views.py:93
+#: fm/apps/reportreboots/views.py:39 fm/apps/reportreboots/views.py:94
 msgid "Reboots"
 msgstr "Перезагрузки"
 
-#: fm/apps/reportreboots/views.py:92
+#: fm/apps/reportreboots/views.py:93
 msgid "Managed Object"
 msgstr "Объекты управления"
 
@@ -65,13 +69,41 @@ msgstr "Объекты управления"
 msgid "Total Outages"
 msgstr "Общая сводка"
 
-#: inv/apps/map/views.py:39 inv/apps/map/views.py:40
+#: inv/apps/map/views.py:40 inv/apps/map/views.py:41
 msgid "Network Map"
 msgstr "Карта сети"
 
+#: inv/apps/reportdiscovery/views.py:24
+msgid "Discovery Summary"
+msgstr ""
+
+#: inv/apps/reportdiscoveryproblem/views.py:21
+msgid "Discovery Problems"
+msgstr ""
+
+#: inv/apps/reportdiscoveryproblem/views.py:34
+msgid "Profile check failed"
+msgstr ""
+
+#: inv/apps/reportdiscoveryproblem/views.py:44
+msgid "No interfaces"
+msgstr "Нет интерфейсов"
+
+#: inv/apps/reportdiscoveryproblem/views.py:51
+msgid "No links"
+msgstr "Нет линков"
+
+#: inv/apps/reportdiscoveryproblem/views.py:59
+msgid "No uplinks"
+msgstr "Нет портов"
+
+#: inv/apps/unknownmodel/views.py:38
+msgid "Cleaned"
+msgstr ""
+
 #: ip/apps/ipam/views.py:404
 msgid "Invalid address"
-msgstr ""
+msgstr "Неверный адрес"
 
 #: ip/apps/ipam/views.py:409
 #, python-format
@@ -436,6 +468,10 @@ msgstr ""
 msgid "Checkpoint has been set"
 msgstr ""
 
+#: main/apps/desktop/views.py:284
+msgid "Failed to change credentials"
+msgstr ""
+
 #: main/apps/language/views.py:17
 msgid "Languages"
 msgstr "Языки"
@@ -469,7 +505,7 @@ msgstr ""
 
 #: main/apps/user/views.py:58
 msgid "Personal info"
-msgstr ""
+msgstr "Личные данные"
 
 #: main/apps/user/views.py:59
 msgid "User category"
@@ -486,3 +522,7 @@ msgstr "Доступ"
 #: main/apps/user/views.py:62
 msgid "Important dates"
 msgstr ""
+
+#: main/apps/userprofile/views.py:25
+msgid "User Profile"
+msgstr "Профиль пользователя"
