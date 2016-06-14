@@ -4,3 +4,4 @@ mongo_fork: "true"
 mongo_user: mongod
 postgres_system_service: postgresql-{{ postgresql_version }}
 pycurl_ssl_library: nss
+redis_daemon: redis
