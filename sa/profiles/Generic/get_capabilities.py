@@ -95,6 +95,12 @@ class Script(BaseScript):
         """
         return False
 
+    def has_udld(self):
+        """
+        Returns True when UDLD is enabled
+        """
+        return False
+
     def execute_platform(self, caps):
         """
         Method to be overriden in subclasses.
@@ -123,6 +129,8 @@ class Script(BaseScript):
             caps["Network | CDP"] = True
         if self.has_oam():
             caps["Network | OAM"] = True
+        if self.has_udld():
+            caps["Network | UDLD"] = True
         self.execute_platform(caps)
         return caps
 
