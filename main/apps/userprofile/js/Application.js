@@ -126,7 +126,9 @@ Ext.define("NOC.main.userprofile.Application", {
             items: [
                 {
                     xtype: "form",
-                    padding: 4,
+                    defaults: {
+                        padding: "0 0 0 4px"
+                    },
                     items: [
                         me.usernameField,
                         me.nameField,
@@ -135,6 +137,10 @@ Ext.define("NOC.main.userprofile.Application", {
                         {
                             xtype: "fieldset",
                             title: __("Notification Contacts"),
+                            defaults: {
+                                padding: 4
+                            },
+                            border: false,
                             items: [
                                 me.contactsGrid
                             ]
