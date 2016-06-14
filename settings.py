@@ -191,6 +191,7 @@ _ = lambda s: s
 LANGUAGES = [
     ("en", _("English")),
     ("ru", _("Russian")),
+    ("pt_BR", _("Portuguese (BRAZIL)"))
 ]
 
 LOCALE_PATHS = ["locale"]

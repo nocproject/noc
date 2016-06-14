@@ -16,6 +16,7 @@ import cStringIO
 from babel.util import pathmatch
 ## NOC modules
 from noc.core.management.base import BaseCommand
+from noc.settings import LANGUAGES
 
 
 class Command(BaseCommand):
@@ -37,7 +38,7 @@ class Command(BaseCommand):
         }
     }
 
-    TRANSLATIONS = ["ru"]
+    TRANSLATIONS = [x[0] for x in LANGUAGES if x[0] != "en"]
 
     BABEL_CFG = "etc/babel.cfg"
     BABEL = "./bin/pybabel"
