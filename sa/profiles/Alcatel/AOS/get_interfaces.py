@@ -42,6 +42,7 @@ def ranges_to_list_str(s):
 class Script(BaseScript):
     name = "Alcatel.AOS.get_interfaces"
     interface = IGetInterfaces
+    TIMEOUT = 300
 
     rx_line = re.compile(r"\w*Slot/Port", re.MULTILINE)
     rx_name = re.compile(r"\s+(?P<name>.\S+)\s+:", re.MULTILINE)
@@ -165,32 +166,34 @@ class Script(BaseScript):
                 isis += [match.group("ipif")]
 
         lldp = []
-        try:
-            c = self.cli("show lldp local-system")
-        except self.CLISyntaxError:
-            c = ""
-        lldp_enable = self.rx_lldp_gs.search(c) is not None
-        if lldp_enable:
+        if self.has_capability("Network | LLDP"):
             try:
-                c = self.cli("show lldp config")
+                c = self.cli("show lldp local-system")
             except self.CLISyntaxError:
                 c = ""
-            for match in self.rx_lldp.finditer(c):
-                lldp += [match.group("port")]
+            lldp_enable = self.rx_lldp_gs.search(c) is not None
+            if lldp_enable:
+                try:
+                    c = self.cli("show lldp config")
+                except self.CLISyntaxError:
+                    c = ""
+                for match in self.rx_lldp.finditer(c):
+                    lldp += [match.group("port")]
 
         udld = []
-        try:
-            c = self.cli("show udld configuration")
-        except self.CLISyntaxError:
-            c = ""
-        udld_enable = self.rx_udld_gs.search(c) is not None
-        if udld_enable:
+        if self.has_capability("Network | UDLD"):
             try:
-                c = self.cli("show udld status port")
+                c = self.cli("show udld configuration")
             except self.CLISyntaxError:
                 c = ""
-            for match in self.rx_udld.finditer(c):
-                udld += [match.group("port")]
+            udld_enable = self.rx_udld_gs.search(c) is not None
+            if udld_enable:
+                try:
+                    c = self.cli("show udld status port")
+                except self.CLISyntaxError:
+                    c = ""
+                for match in self.rx_udld.finditer(c):
+                    udld += [match.group("port")]
 
         r = []
         try:
