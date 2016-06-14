@@ -1,3 +1,12 @@
+- name: set proxy for yum
+  lineinfile:
+    dest: /etc/yum.conf
+    regexp: "^proxy=.*"
+    line: "proxy=http://{{http_proxy}}"
+  when: "http_proxy is defined and http_proxy"
+  tags:
+    - config
+
 - name: Disable selinux
   selinux:
     policy: targeted
