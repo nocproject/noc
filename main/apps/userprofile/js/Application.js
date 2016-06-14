@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.userprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2016 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.userprofile.Application");
@@ -18,29 +18,19 @@ Ext.define("NOC.main.userprofile.Application", {
         var me = this,
             lw = 60;
         me.usernameField = Ext.create("Ext.form.field.Display", {
-            fieldLabel: "Login",
+            fieldLabel: __("Login"),
             labelWidth: lw
         });
         me.nameField = Ext.create("Ext.form.field.Display", {
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             labelWidth: lw
         });
         me.emailField = Ext.create("Ext.form.field.Display", {
-            fieldLabel: "Mail",
+            fieldLabel: __("Mail"),
             labelWidth: lw
         });
         me.languageField = Ext.create("NOC.main.ref.ulanguage.LookupField", {
-            fieldLabel: "Language",
-            labelWidth: lw,
-            allowBlank: false
-        });
-        me.themeField = Ext.create("NOC.main.ref.theme.LookupField", {
-            fieldLabel: "Theme",
-            labelWidth: lw,
-            allowBlank: false
-        });
-        me.previewThemeField = Ext.create("NOC.main.ref.cmtheme.LookupField", {
-            fieldLabel: "Preview Theme",
+            fieldLabel: __("Language"),
             labelWidth: lw,
             allowBlank: false
         });
@@ -58,20 +48,20 @@ Ext.define("NOC.main.userprofile.Application", {
             store: me.contactsStore,
             columns: [
                 {
-                    text: "Time Pattern",
+                    text: __("Time Pattern"),
                     dataIndex: "time_pattern",
                     width: 100,
                     renderer: NOC.render.Lookup("time_pattern"),
                     editor: "main.timepattern.LookupField"
                 },
                 {
-                    text: "Method",
+                    text: __("Method"),
                     dataIndex: "notification_method",
                     width: 100,
                     editor: "main.ref.unotificationmethod.LookupField"
                 },
                 {
-                    text: "Params",
+                    text: __("Params"),
                     dataIndex: "params",
                     flex: 1,
                     editor: "textfield"
@@ -88,7 +78,7 @@ Ext.define("NOC.main.userprofile.Application", {
                     dock: "top",
                     items: [
                         {
-                            text: "Add",
+                            text: __("Add"),
                             glyph: NOC.glyph.plus,
                             handler: function() {
                                 var grid = this.up("panel"),
@@ -99,7 +89,7 @@ Ext.define("NOC.main.userprofile.Application", {
                             }
                         },
                         {
-                            text: "Delete",
+                            text: __("Delete"),
                             glyph: NOC.glyph.times,
                             handler: function() {
                                 var grid = this.up("panel"),
@@ -142,12 +132,12 @@ Ext.define("NOC.main.userprofile.Application", {
                         me.nameField,
                         me.emailField,
                         me.languageField,
-                        me.themeField,
-                        me.previewThemeField,
                         {
                             xtype: "fieldset",
-                            title: "Notification Contacts",
-                            items: [me.contactsGrid]
+                            title: __("Notification Contacts"),
+                            items: [
+                                me.contactsGrid
+                            ]
                         }
                     ],
                     dockedItems: [
@@ -157,11 +147,9 @@ Ext.define("NOC.main.userprofile.Application", {
                             items: [
                                 {
                                     glyph: NOC.glyph.save,
-                                    text: "Save",
+                                    text: __("Save"),
                                     scope: me,
-                                    handler: me.onSave,
-                                    disabled: true,
-                                    formBind: true
+                                    handler: me.onSave
                                 }
                             ]
                         }
@@ -184,7 +172,7 @@ Ext.define("NOC.main.userprofile.Application", {
                 me.setData(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to load data")
+                NOC.msg.failed(__("Failed to load data"))
             }
         });
     },
@@ -196,19 +184,13 @@ Ext.define("NOC.main.userprofile.Application", {
         me.nameField.setValue(data.name);
         me.emailField.setValue(data.email);
         me.languageField.setValue(data.preferred_language);
-        me.themeField.setValue(data.theme);
-        me.previewThemeField.setValue(data.preview_theme);
         me.contactsStore.loadData(data.contacts);
     },
     //
     onSave: function() {
         var me = this,
-            theme = me.themeField.getValue(),
-            previewTheme = me.previewThemeField.getValue(),
             data = {
                 preferred_language: me.languageField.getValue(),
-                theme: theme,
-                preview_theme: previewTheme,
                 contacts: me.contactsStore.data.items.map(function(x) {
                     return x.data
                 })
@@ -218,13 +200,13 @@ Ext.define("NOC.main.userprofile.Application", {
             method: "POST",
             jsonData: data,
             success: function(response) {
-                NOC.info("Profile saved");
-                if(me.profileData.theme !== theme || me.profileData.preview_theme !== previewTheme) {
-                    NOC.app.app.restartApplication("Applying theme changes");
+                NOC.msg.complete(__("Profile saved"));
+                if(me.profileData.preferred_language !== data.preferred_language) {
+                    NOC.app.app.restartApplication(__("Changing language"));
                 }
             },
             failure: function() {
-                NOC.error("Failed to save")
+                NOC.msg.failed(__("Failed to save"))
             }
         });
     }

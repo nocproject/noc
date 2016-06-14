@@ -282,11 +282,6 @@ Ext.define("NOC.main.desktop.Application", {
             success: function(response) {
                 var settings = Ext.decode(response.responseText),
                     displayName = [];
-                // Check theme
-                if(settings.theme != NOC.settings.theme) {
-                    // User has non-default theme
-                    me.restartApplication("Applying theme changes");
-                }
                 // Save settings
                 NOC.username = settings.username;
                 // Build display name
