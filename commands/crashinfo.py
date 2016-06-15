@@ -37,8 +37,8 @@ class Command(BaseCommand):
             help="Crashinfo UUIDs"
         )
         # clear command
-        clear_command = subparsers.add_parser("clear")
-        view_parser.add_argument(
+        clear_parser = subparsers.add_parser("clear")
+        clear_parser.add_argument(
             "clear_uuids",
             nargs=argparse.REMAINDER,
             help="Crashinfo UUIDs"
