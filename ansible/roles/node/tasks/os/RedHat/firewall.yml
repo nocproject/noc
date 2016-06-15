@@ -6,8 +6,10 @@
   with_dict: "{{ noc_config.nodes }}"
   tags:
     - config
+  ignore_errors: yes
 
 - name: Reload firewalld service
   command: firewall-cmd --reload
   tags:
     - config
+  ignore_errors: yes

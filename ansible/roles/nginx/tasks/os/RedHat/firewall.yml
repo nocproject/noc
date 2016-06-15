@@ -1,8 +1,14 @@
-- name: Add firewall permissions for nodes
+- name: Add firewall permissions for nodes to https
   firewalld:
     service: https
     permanent: true
     state: enabled
+  ignore_errors: yes
+  tags:
+    - config
 
 - name: Reload firewalld service
   command: firewall-cmd --reload
+  ignore_errors: yes
+  tags:
+    - config
