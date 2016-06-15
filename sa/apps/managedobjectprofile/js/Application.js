@@ -303,7 +303,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     fieldLabel: __("Interval, sec"),
                                                     labelWidth: 150,
                                                     allowBlank: false,
-                                                    uiStyle: "medium",
+                                                    uiStyle: "small",
                                                     listeners: {
                                                         scope: me,
                                                         change: function(_item, newValue, oldValue, eOpts) {
@@ -331,7 +331,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     fieldLabel: __("Failed Interval, sec"),
                                                     labelWidth: 150,
                                                     allowBlank: false,
-                                                    uiStyle: "medium",
+                                                    uiStyle: "small",
                                                     listeners: {
                                                         scope: me,
                                                         change: function(_item, newValue, oldValue, eOpts) {
@@ -508,6 +508,27 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "checkboxfield",
                                             boxLabel: __("UDLD")
                                         }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Clear links"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: "4 8 0 0"
+                                    },
+                                    items: [
+                                        {
+                                            name: "clear_links_on_platform_change",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("On platform change")
+                                        }
+                                        /* Not implemented yet
+                                        {
+                                            name: "clear_links_on_serial_change",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("On serial change")
+                                        } */
                                     ]
                                 }
                             ]

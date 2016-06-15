@@ -256,6 +256,22 @@ class DiscoveryCheck(object):
             self.profile_cache[name] = p
         return self.profile_cache[name]
 
+    def clear_links(self):
+        """
+        Clear all object's links
+        """
+        self.logger.info("Cleaning links")
+        for i in Interface.objects.filter(
+            type__in=["physical", "aggregated"]
+        ):
+            l = i.link
+            if l:
+                self.logger.info("Unlinking: %s", l)
+                try:
+                    i.unlink()
+                except ValueError as e:
+                    self.logger.info("Failed to unlink: %s", e)
+
 
 class TopologyDiscoveryCheck(DiscoveryCheck):
     def __init__(self, *args, **kwargs):
