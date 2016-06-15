@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -60,7 +60,7 @@ class Script(BaseScript):
                 "type": {
                     "dynamic":"D",
                     "static":"S",
-                    "self":"S",
+                    "self":"C",
                     "permanent":"S",
                     "deleteontimeout":"D",
                     "del_on_timeout":"D",
