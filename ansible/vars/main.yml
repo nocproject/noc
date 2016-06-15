@@ -40,6 +40,11 @@ nginx_system_service: nginx
 nginx_user: nginx
 noc_service_pidfile: /var/run/noc.pid
 noc_system_service: noc
+
+#Memtune
+kernel_shmall: "{{ ansible_memtotal_mb * 128 }}"
+kernel_shmmax: "{{ kernel_shmall|int() * 4096 }}"
+
 postgres_path: /usr/bin/postgres
 postgres_system_service: postgresql
 postgres_user: postgres
