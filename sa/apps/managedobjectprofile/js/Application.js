@@ -31,7 +31,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         );
 
         me.validationSettingsButton = Ext.create("Ext.button.Button", {
-            text: "Validation",
+            text: __("Validation"),
             glyph: NOC.glyph.file,
             scope: me,
             handler: me.onValidationSettings
@@ -40,17 +40,17 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name"
                 },
                 {
-                    text: "Level",
+                    text: __("Level"),
                     dataIndex: "level",
                     width: 60,
                     align: "right"
                 },
                 {
-                    text: "Ping",
+                    text: __("Ping"),
                     dataIndex: "enable_ping",
                     width: 100,
                     renderer: function(value, meta, record) {
@@ -66,14 +66,14 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     align: "center"
                 },
                 {
-                    text: "Sync IPAM",
+                    text: __("Sync IPAM"),
                     dataIndex: "sync_ipam",
                     width: 60,
                     renderer: NOC.render.Bool,
                     align: "center"
                 },
                 {
-                    text: "Box discovery",
+                    text: __("Box discovery"),
                     dataIndex: "enable_box_discovery",
                     width: 100,
                     renderer: function(value, meta, record) {
@@ -86,14 +86,14 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     align: "center"
                 },
                 {
-                    text: "Failed interval",
+                    text: __("Failed interval"),
                     dataIndex: "box_discovery_failed_interval",
                     width: 100,
                     renderer: NOC.render.Duration,
                     align: "center"
                 },
                 {
-                    text: "Periodic discovery",
+                    text: __("Periodic discovery"),
                     dataIndex: "enable_periodic_discovery",
                     width: 100,
                     renderer: function(value, meta, record) {
@@ -106,7 +106,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     align: "center"
                 },
                 {
-                    text: "Objects",
+                    text: __("Objects"),
                     dataIndex: "mo_count",
                     width: 60,
                     align: "right",
@@ -117,7 +117,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
@@ -137,33 +137,33 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "description",
                                     xtype: "textarea",
-                                    fieldLabel: "Description",
+                                    fieldLabel: __("Description"),
                                     allowBlank: true,
                                     uiStyle: "extra"
                                 },
                                 {
                                     name: "level",
                                     xtype: "numberfield",
-                                    fieldLabel: "Level",
+                                    fieldLabel: __("Level"),
                                     allowBlank: false,
                                     uiStyle: "small"
                                 },
                                 {
                                     name: "style",
                                     xtype: "main.style.LookupField",
-                                    fieldLabel: "Style",
+                                    fieldLabel: __("Style"),
                                     allowBlank: true
                                 },
                                 {
                                     name: "shape",
                                     xtype: "main.ref.stencil.LookupField",
-                                    fieldLabel: "Shape",
+                                    fieldLabel: __("Shape"),
                                     allowBlank: true
                                 },
                                 {
                                     name: "name_template",
                                     xtype: "textfield",
-                                    fieldLabel: "Name template",
+                                    fieldLabel: __("Name template"),
                                     allowBlank: true,
                                     uiStyle: "large"
                                 }
@@ -175,14 +175,14 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "card",
                                     xtype: "textfield",
-                                    fieldLabel: "Card",
+                                    fieldLabel: __("Card"),
                                     allowBlank: true,
                                     uiStyle: "extra"
                                 },
                                 {
                                     name: "card_title_template",
                                     xtype: "textfield",
-                                    fieldLabel: "Card Title Template",
+                                    fieldLabel: __("Card Title Template"),
                                     allowBlank: false,
                                     uiStyle: "extra"
                                 }
@@ -194,13 +194,13 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "sync_ipam",
                                     xtype: "checkboxfield",
-                                    boxLabel: "Enable IPAM synchronization",
+                                    boxLabel: __("Enable IPAM synchronization"),
                                     allowBlank: false
                                 },
                                 {
                                     name: "fqdn_template",
                                     xtype: "textarea",
-                                    fieldLabel: "FQDN template",
+                                    fieldLabel: __("FQDN template"),
                                     allowBlank: true,
                                     uiStyle: "extra"
                                 }
@@ -212,7 +212,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "enable_ping",
                                     xtype: "checkboxfield",
-                                    boxLabel: "Enable",
+                                    boxLabel: __("Enable"),
                                     allowBlank: false
 
                                 },
@@ -235,7 +235,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "ping_interval",
                                                     xtype: "numberfield",
-                                                    fieldLabel: "Interval, sec",
+                                                    fieldLabel: __("Interval, sec"),
                                                     uiStyle: "small",
                                                     listeners: {
                                                         scope: me,
@@ -256,7 +256,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "report_ping_rtt",
                                     xtype: "checkboxfield",
-                                    boxLabel: "Report ping RTT",
+                                    boxLabel: __("Report ping RTT"),
                                     allowBlank: false
                                 }
                             ]
@@ -267,7 +267,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "weight",
                                     xtype: "numberfield",
-                                    fieldLabel: "Alarm Weight",
+                                    fieldLabel: __("Alarm Weight"),
                                     allowBlank: false,
                                     uiStyle: "small"
                                 }
@@ -279,7 +279,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "enable_box_discovery",
                                     xtype: "checkbox",
-                                    boxLabel: "Enable"
+                                    boxLabel: __("Enable")
                                 },
                                 {
                                     xtype: "fieldset",
@@ -300,7 +300,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "box_discovery_interval",
                                                     xtype: "numberfield",
-                                                    fieldLabel: "Interval, sec",
+                                                    fieldLabel: __("Interval, sec"),
                                                     labelWidth: 150,
                                                     allowBlank: false,
                                                     uiStyle: "medium",
@@ -328,7 +328,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "box_discovery_failed_interval",
                                                     xtype: "numberfield",
-                                                    fieldLabel: "Failed Interval, sec",
+                                                    fieldLabel: __("Failed Interval, sec"),
                                                     labelWidth: 150,
                                                     allowBlank: false,
                                                     uiStyle: "medium",
@@ -356,7 +356,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "box_discovery_on_system_start",
                                                     xtype: "checkbox",
-                                                    boxLabel: "Check on system start after "
+                                                    boxLabel: __("Check on system start after ")
                                                 },
                                                 {
                                                     name: "box_discovery_system_start_delay",
@@ -382,7 +382,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "box_discovery_on_config_changed",
                                                     xtype: "checkbox",
-                                                    boxLabel: "Check on config change after "
+                                                    boxLabel: __("Check on config change after ")
                                                 },
                                                 {
                                                     name: "box_discovery_config_changed_delay",
@@ -401,11 +401,9 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     ]
                                 },
                                 {
-                                    xtype: "container",
-                                    layout: {
-                                        type: "table",
-                                        columns: 4
-                                    },
+                                    xtype: "fieldset",
+                                    title: __("Box"),
+                                    layout: "hbox",
                                     defaults: {
                                         padding: "4 8 0 0"
                                     },
@@ -413,92 +411,102 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_box_discovery_profile",
                                             xtype: "checkboxfield",
-                                            boxLabel: "Profile"
+                                            boxLabel: __("Profile")
                                         },
                                         {
                                             name: "enable_box_discovery_version",
                                             xtype: "checkboxfield",
-                                            boxLabel: "Version"
+                                            boxLabel: __("Version")
                                         },
                                         {
                                             name: "enable_box_discovery_caps",
                                             xtype: "checkboxfield",
-                                            boxLabel: "Caps"
+                                            boxLabel: __("Caps")
                                         },
                                         {
                                             name: "enable_box_discovery_interface",
                                             xtype: "checkboxfield",
-                                            boxLabel: "Interface"
+                                            boxLabel: __("Interface")
                                         },
                                         {
                                             name: "enable_box_discovery_prefix",
                                             xtype: "checkboxfield",
-                                            boxLabel: "Prefix"
+                                            boxLabel: __("Prefix")
                                         },
                                         {
                                             name: "enable_box_discovery_id",
                                             xtype: "checkboxfield",
-                                            boxLabel: "ID"
+                                            boxLabel: __("ID")
                                         },
                                         {
                                             name: "enable_box_discovery_config",
                                             xtype: "checkboxfield",
-                                            boxLabel: "Config"
+                                            boxLabel: __("Config")
                                         },
                                         {
                                             name: "enable_box_discovery_asset",
                                             xtype: "checkboxfield",
-                                            boxLabel: "Asset"
+                                            boxLabel: __("Asset")
                                         },
                                         {
                                             name: "enable_box_discovery_vlan",
                                             xtype: "checkboxfield",
-                                            boxLabel: "VLAN"
-                                        },
+                                            boxLabel: __("VLAN")
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Topology"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: "4 8 0 0"
+                                    },
+                                    items: [
                                         {
                                             name: "enable_box_discovery_nri",
                                             xtype: "checkboxfield",
-                                            boxLabel: "NRI"
+                                            boxLabel: __("NRI")
                                         },
                                         {
                                             name: "enable_box_discovery_bfd",
                                             xtype: "checkboxfield",
-                                            boxLabel: "BFD"
+                                            boxLabel: __("BFD")
                                         },
                                         {
                                             name: "enable_box_discovery_cdp",
                                             xtype: "checkboxfield",
-                                            boxLabel: "CDP"
+                                            boxLabel: __("CDP")
                                         },
                                         {
                                             name: "enable_box_discovery_fdp",
                                             xtype: "checkboxfield",
-                                            boxLabel: "FDP"
+                                            boxLabel: __("FDP")
                                         },
                                         {
                                             name: "enable_box_discovery_lldp",
                                             xtype: "checkboxfield",
-                                            boxLabel: "LLDP"
+                                            boxLabel: __("LLDP")
                                         },
                                         {
                                             name: "enable_box_discovery_oam",
                                             xtype: "checkboxfield",
-                                            boxLabel: "OAM"
+                                            boxLabel: __("OAM")
                                         },
                                         {
                                             name: "enable_box_discovery_rep",
                                             xtype: "checkboxfield",
-                                            boxLabel: "REP"
+                                            boxLabel: __("REP")
                                         },
                                         {
                                             name: "enable_box_discovery_stp",
                                             xtype: "checkboxfield",
-                                            boxLabel: "STP"
+                                            boxLabel: __("STP")
                                         },
                                         {
                                             name: "enable_box_discovery_udld",
                                             xtype: "checkboxfield",
-                                            boxLabel: "UDLD"
+                                            boxLabel: __("UDLD")
                                         }
                                     ]
                                 }
@@ -510,7 +518,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "enable_periodic_discovery",
                                     xtype: "checkbox",
-                                    boxLabel: "Enable"
+                                    boxLabel: __("Enable")
                                 },
                                 {
                                     xtype: "fieldset",
@@ -531,7 +539,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                 {
                                                     name: "periodic_discovery_interval",
                                                     xtype: "numberfield",
-                                                    fieldLabel: "Interval, sec",
+                                                    fieldLabel: __("Interval, sec"),
                                                     allowBlank: false,
                                                     uiStyle: "small",
                                                     listeners: {
@@ -563,22 +571,22 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         {
                                             name: "enable_periodic_discovery_uptime",
                                             xtype: "checkboxfield",
-                                            boxLabel: "Uptime"
+                                            boxLabel: __("Uptime")
                                         },
                                         {
                                             name: "enable_periodic_discovery_interface_status",
                                             xtype: "checkboxfield",
-                                            boxLabel: "Interface status"
+                                            boxLabel: __("Interface status")
                                         },
                                         {
                                             name: "enable_periodic_discovery_mac",
                                             xtype: "checkboxfield",
-                                            boxLabel: "MAC"
+                                            boxLabel: __("MAC")
                                         },
                                         {
                                             name: "enable_periodic_discovery_metrics",
                                             xtype: "checkboxfield",
-                                            boxLabel: "Metrics"
+                                            boxLabel: __("Metrics")
                                         }
                                     ]
                                 }
@@ -590,7 +598,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     name: "metrics",
                                     xtype: "gridfield",
-                                    fieldLabel: "Metrics",
+                                    fieldLabel: __("Metrics"),
                                     columns: [
                                         {
                                             text: "Metric Type",
