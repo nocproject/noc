@@ -40,14 +40,14 @@ class ReportDiscoveryProblemApplication(SimpleReport):
                 {"_id": 1, "managed_object": 1}
             )
         )
-        for mo in mos_set - set(problems) - set(if_mo.itervalues()):
+        for mo in (mos_set - set(problems) - set(if_mo.itervalues())):
             problems[mo] = _("No interfaces")
         # Get all managed objects without links
         linked_mos = set()
         for d in Link._get_collection().find({}):
             for i in d["interfaces"]:
                 linked_mos.add(if_mo.get(i))
-        for mo in mos_set - set(problems) - linked_mos:
+        for mo in (mos_set - set(problems) - linked_mos):
             problems[mo] = _("No links")
         # Get all managed objects without uplinks
         uplinks = {}
@@ -55,7 +55,7 @@ class ReportDiscoveryProblemApplication(SimpleReport):
             nu = len(d.get("uplinks", []))
             if nu:
                 uplinks[d["_id"]] = nu
-        for mo in mos_set - set(problems) - set(uplinks):
+        for mo in (mos_set - set(problems) - set(uplinks)):
             problems[mo] = _("No uplinks")
         #
         data = []
