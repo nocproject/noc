@@ -8,18 +8,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-14 13:17+0300\n"
-"PO-Revision-Date: 2016-06-14 13:19+0300\n"
+"POT-Creation-Date: 2016-06-15 12:38+0300\n"
+"PO-Revision-Date: 2016-06-15 12:37+0300\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
-"X-Generator: Poedit 1.8.8\n"
 
 #: dns/apps/reportmissedp2p/views.py:18
 msgid "Missed Link Addresses"
@@ -39,7 +38,7 @@ msgstr "Оперативная обстановка"
 
 #: fm/apps/reportalarmdetail/views.py:21 fm/apps/reportalarmdetail/views.py:22
 msgid "Alarm Detail"
-msgstr ""
+msgstr "Детали аварии"
 
 #: fm/apps/reportreboots/views.py:23
 msgid "Range"
@@ -83,7 +82,7 @@ msgstr ""
 
 #: inv/apps/reportdiscoveryproblem/views.py:34
 msgid "Profile check failed"
-msgstr ""
+msgstr "Не определился профиль"
 
 #: inv/apps/reportdiscoveryproblem/views.py:44
 msgid "No interfaces"
@@ -95,7 +94,7 @@ msgstr "Нет линков"
 
 #: inv/apps/reportdiscoveryproblem/views.py:59
 msgid "No uplinks"
-msgstr "Нет портов"
+msgstr "Нет аплинков"
 
 #: inv/apps/unknownmodel/views.py:38
 msgid "Cleaned"
@@ -201,7 +200,8 @@ msgstr ""
 
 #: ip/apps/ipam/views.py:654
 msgid ""
-"VC Related with prefix. Adjust VC Bind Filters if you cannot see required VC"
+"VC Related with prefix. Adjust VC Bind Filters if you cannot see required"
+" VC"
 msgstr ""
 
 #: ip/apps/ipam/views.py:729
@@ -421,8 +421,8 @@ msgstr ""
 
 #: main/apps/calculator/calculators/cir2cbr.py:24
 msgid ""
-"Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 is "
-"default)"
+"Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 "
+"is default)"
 msgstr ""
 
 #: main/apps/calculator/calculators/cir2cbr.py:27
@@ -447,8 +447,8 @@ msgstr ""
 
 #: main/apps/calculator/calculators/cir2cbr.py:59
 msgid ""
-"Recommended way for policy-map values calculating is: normal-burst-"
-"bytes=bits-per-second*Tc/8.Recommended way for rate-limit values calculating "
+"Recommended way for policy-map values calculating is: normal-burst-bytes"
+"=bits-per-second*Tc/8.Recommended way for rate-limit values calculating "
 "is: burst-normal=bits-per-second*Tc/8, burst-max=2*burst-normal"
 msgstr ""
 
@@ -470,7 +470,7 @@ msgstr ""
 
 #: main/apps/desktop/views.py:284
 msgid "Failed to change credentials"
-msgstr ""
+msgstr "Не удалось сменить пароль"
 
 #: main/apps/language/views.py:17
 msgid "Languages"
@@ -499,8 +499,8 @@ msgstr "Пароль"
 #: main/apps/user/views.py:27
 msgid ""
 "Raw passwords are not stored, so there is no way to see this user's "
-"password, but you can change the password using <a href=\"password/\">this "
-"form</a>."
+"password, but you can change the password using <a "
+"href=\"password/\">this form</a>."
 msgstr ""
 
 #: main/apps/user/views.py:58
@@ -521,8 +521,9 @@ msgstr "Доступ"
 
 #: main/apps/user/views.py:62
 msgid "Important dates"
-msgstr ""
+msgstr "Важные даты"
 
 #: main/apps/userprofile/views.py:25
 msgid "User Profile"
 msgstr "Профиль пользователя"
+
