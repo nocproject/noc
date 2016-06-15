@@ -241,6 +241,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "clear_links_on_platform_change",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "clear_links_on_serial_change",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

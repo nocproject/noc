@@ -19,6 +19,7 @@ class VersionCheck(DiscoveryCheck):
 
     def handler(self):
         self.logger.info("Checking version")
+        old_platform = self.object.platform
         result = self.object.scripts.get_version()
         r = {}
         for k in result:
@@ -34,3 +35,12 @@ class VersionCheck(DiscoveryCheck):
             if ov != v:
                 self.object.set_attr(k, v)
                 self.logger.info("%s: %s -> %s", k, ov, v)
+        new_platform = self.object.platform
+        if old_platform != new_platform:
+            self.logger.info(
+                "Platform changed: %s -> %s",
+                old_platform, new_platform
+            )
+            if self.object.object_profile.clear_links_on_platform_change:
+                self.clear_links()
+
