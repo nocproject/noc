@@ -318,6 +318,18 @@
   tags:
     - config
 
+- name: Tune sysctl.conf for node
+  sysctl:
+    name: "{{item.name}}"
+    value: "{{item.value}}"
+    state: present
+    reload: yes
+  with_items:
+    - { name: 'net.ipv4.ip_local_port_range', value: '20024 65000'}
+  tags:
+    - config
+  when: "'Linux' in ansible_system"
+
 - name: install nsq
   include: "nsq.yml"
   tags:
