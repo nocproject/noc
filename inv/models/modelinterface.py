@@ -2,12 +2,14 @@
 ##----------------------------------------------------------------------
 ## ModelInterface model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import os
+from threading import RLock
+import operator
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, ListField,
@@ -21,7 +23,7 @@ from noc.sa.interfaces.base import (StringParameter, BooleanParameter,
                                     FloatParameter, IntParameter,
                                     StringListParameter)
 
-attr_cache = cachetools.TTLCache(1000, 10)
+id_lock = RLock()
 
 
 T_MAP = {
@@ -100,6 +102,8 @@ class ModelInterface(Document):
     attrs = ListField(EmbeddedDocumentField(ModelInterfaceAttr))
     uuid = UUIDField(binary=True)
 
+    _id_cache = cachetools.TTLCache(1000, 10)
+
     def __unicode__(self):
         return self.name
 
@@ -162,7 +166,7 @@ class ModelInterface(Document):
         return d
 
     @classmethod
-    @cachetools.cached(attr_cache)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_interface_attr(cls, interface, key):
         mi = ModelInterface.objects.filter(name=interface).first()
         if not mi:
