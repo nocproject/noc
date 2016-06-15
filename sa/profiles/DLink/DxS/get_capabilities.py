@@ -18,6 +18,7 @@ class Script(BaseScript):
 
     rx_lldp = re.compile(r"LLDP Status\s+: Enabled?")
     rx_stp = re.compile(r"STP Status\s+: Enabled?")
+    rx_oam = re.compile(r"^\s*OAM\s+: Enabled", re.MULTILINE)
 
     @false_on_cli_error
     def has_lldp(self):
@@ -35,3 +36,11 @@ class Script(BaseScript):
         # Spanning Tree Enabled/Disabled : Enabled
         cmd = self.cli("show stp")
         return self.rx_stp.search(cmd) is not None
+
+    @false_on_cli_error
+    def has_oam(self):
+        """
+        Check box has OAM supported
+        """
+        cmd = self.cli("show ethernet_oam ports status")
+        return self.rx_oam.search(cmd) is not None
