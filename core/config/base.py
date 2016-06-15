@@ -137,7 +137,7 @@ class BaseConfig(object):
             if has_credentials:
                 url += ["%s:%s@" % (urllib.quote(self.mongo_user),
                                     urllib.quote(self.mongo_password))]
-            url += hosts
+            url += [",".join(hosts)]
             url += ["/%s" % self.mongo_db]
             self._mongo_connection_args["host"] = "".join(url)
         return self._mongo_connection_args
