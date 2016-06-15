@@ -58,7 +58,7 @@ def main():
                 severity = 'normal'
 
             supervisorAlert = Alert(
-                resource=body['processname'],
+                resource="%s: %s" % (headers['server'], body['processname']),
                 environment='Production',
                 service=['supervisord'],
                 event=event,
