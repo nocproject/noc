@@ -22,17 +22,21 @@ class Script(BaseScript):
         r"^(\s*VLAN)?\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>\S+)"
         r"\s+\S+\s+\S+\s+(?P<interfaces>\S+)", re.MULTILINE)
 
-    def execute(self):
+    def execute(self, interface=None, vlan=None, mac=None):
         v = self.cli("show mac-address-table")
         r = []
         for match in self.rx_line.finditer(v):
             mac = match.group("mac")
             if mac == "*":
                 continue
+            iface = match.group("interfaces")
+            if iface.startswith("0/"):
+                # LAG 0/1 -> Ag 1
+                iface = "Ag %s" % iface[2:]
             r += [{
                 "vlan_id": match.group("vlan_id"),
                 "mac": mac,
-                "interfaces": [match.group("interfaces")],
+                "interfaces": [iface],
                 "type": {
                     "learned": "D",
                     "permanent": "S"
