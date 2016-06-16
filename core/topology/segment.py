@@ -53,7 +53,7 @@ class SegmentTopology(BaseTopology):
     def get_role(self, mo):
         if mo.segment in self.segment_siblings:
             return "segment"
-        elif mo.segment.id == self.parent_segment.id:
+        elif self.parent_segment and mo.segment.id == self.parent_segment.id:
             return "uplink"
         else:
             return "downlink"
