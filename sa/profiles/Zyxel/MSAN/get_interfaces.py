@@ -27,11 +27,23 @@ class Script(BaseScript):
     rx_ipif = re.compile(
         r"^\s*(?P<ifname>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
         r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s+(?P<vid>\d+|\-)\s*$", re.MULTILINE)
+    rx_vlan = re.compile(
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<ports>\S+)/(?P<mode>\S+)\s+\S+\s*"
+        r"(?P<name>.*)$", re.MULTILINE)
 
     def execute(self):
         interfaces = []
+        vlans = []
+        for match in self.rx_vlan.finditer(self.cli("vlan show")):
+            vlans += [{
+                "vid": int(match.group("vlan_id")),
+                "ports": match.group("ports"),
+                "mode": match.group("mode")
+            }]
         c = self.cli("switch port show")
         for match in self.rx_enet.finditer(c):
+            untagged = 0
+            tagged = []
             admin_status = match.group("admin_status") == "V"
             ifname = match.group("ifname")
             if ifname.startswith("enet"):
@@ -42,6 +54,14 @@ class Script(BaseScript):
                 else:
                     raise self.NotSupportedError()
                     oper_status = admin_status
+                port_num = int(ifname[4:].strip()) - 1
+                for v in vlans:
+                    if v["ports"][port_num] == "F" \
+                    and v["mode"][port_num] == "U":
+                            untagged = v["vid"]
+                    if v["ports"][port_num] == "F" \
+                    and v["mode"][port_num] == "T":
+                        tagged += [v["vid"]]
             else:
                 oper_status = admin_status
             iface = {
@@ -56,6 +76,10 @@ class Script(BaseScript):
                     "enabled_afi": ["BRIDGE"]
                 }]
             }
+            if untagged:
+                iface["subinterfaces"][0]["untagged_vlan"] = untagged
+            if tagged:
+                iface["subinterfaces"][0]["tagged_vlans"] = tagged
             interfaces += [iface]
         c = self.cli("ip show")
         for match in self.rx_ipif.finditer(c):
