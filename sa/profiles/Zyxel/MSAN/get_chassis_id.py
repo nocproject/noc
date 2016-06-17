@@ -18,22 +18,31 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac1 = re.compile(
-        r"^\s*\S+ mac\s+: (?P<mac>\S+)\s*\n", re.MULTILINE)
+        r"^\s*\S+ mac\s*: (?P<mac>\S+)\s*\n", re.MULTILINE)
     rx_mac2 = re.compile(
-        r"^\s*mac address\s+: (?P<mac>\S+)\s*\n", re.MULTILINE)
+        r"^\s*mac address\s*: (?P<mac>\S+)\s*\n", re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
         r = []
         for i in range(1, 19):
-            v = self.cli("lcman show %s" % i)
-            for match in self.rx_mac1.finditer(v):
-                r += [{
-                    "first_chassis_mac": match.group("mac"),
-                    "last_chassis_mac": match.group("mac")
-                }]
-            for match in self.rx_mac2.finditer(v):
-                r += [{
-                    "first_chassis_mac": match.group("mac"),
-                    "last_chassis_mac": match.group("mac")
-                }]
+            try:
+                v = self.cli("lcman show %s" % i)
+                for match in self.rx_mac1.finditer(v):
+                    r += [{
+                        "first_chassis_mac": match.group("mac"),
+                        "last_chassis_mac": match.group("mac")
+                    }]
+                for match in self.rx_mac2.finditer(v):
+                    r += [{
+                        "first_chassis_mac": match.group("mac"),
+                        "last_chassis_mac": match.group("mac")
+                    }]
+            except self.CLISyntaxError:
+                break
+        if not r:
+            match = self.rx_mac2.search(self.cli("sys info show"))
+            return [{
+                "first_chassis_mac": match.group("mac"),
+                "last_chassis_mac": match.group("mac")
+            }]
         return r

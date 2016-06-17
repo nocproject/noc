@@ -17,18 +17,31 @@ class Script(BaseScript):
     name = "Zyxel.MSAN.get_vlans"
     interface = IGetVlans
 
-    rx_vlan = re.compile(
+    rx_vlan1 = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+\S+\s+\S+\s*(?P<name>.*)$", re.MULTILINE)
+    rx_vlan2 = re.compile(
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<name>.+)\s*$", re.MULTILINE)
 
     def execute(self):
         r = []
-        for match in self.rx_vlan.finditer(self.cli("vlan show")):
-            vid = int(match.group("vlan_id"))
-            if vid == 1:
-                continue
-            name = match.group("name")
-            if name != "":
-                r += [{"vlan_id": vid, "name": name}]
-            else:
-                r += [{"vlan_id": vid}]
+        try:
+            for match in self.rx_vlan1.finditer(self.cli("vlan show")):
+                vid = int(match.group("vlan_id"))
+                if vid == 1:
+                    continue
+                name = match.group("name")
+                if name != "":
+                    r += [{"vlan_id": vid, "name": name}]
+                else:
+                    r += [{"vlan_id": vid}]
+        except self.CLISyntaxError:
+            for match in self.rx_vlan2.finditer(self.cli("switch vlan show *")):
+                vid = int(match.group("vlan_id"))
+                if vid == 1:
+                    continue
+                name = match.group("name")
+                if name != "-":
+                    r += [{"vlan_id": vid, "name": name}]
+                else:
+                    r += [{"vlan_id": vid}]
         return r

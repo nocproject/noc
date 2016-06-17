@@ -15,7 +15,7 @@ import re
 class Script(BaseScript):
     name = "Zyxel.MSAN.DxS.ping"
     interface = IPing
-    rx_result = re.compile(r"^\s*request timed out", re.MULTILINE)
+    rx_result = re.compile(r"^\s*reply from", re.MULTILINE)
 
     def execute(self, address, count=None, source_address=None, size=None,
     df=None):
@@ -26,9 +26,9 @@ class Script(BaseScript):
             count = 3
         match = self.rx_result.search(self.cli(cmd))
         if match:
-            success = 0
-        else:
             success = count
+        else:
+            success = 0
         return {
             "success": int(success),
             "count": int(count)
