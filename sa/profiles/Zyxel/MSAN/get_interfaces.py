@@ -24,9 +24,12 @@ class Script(BaseScript):
     rx_enet_o = re.compile(
         r"^\s*(switch )?port (?:enet|sub|up)\d+:\n\s*link status: (?P<oper_status>\S+|down)",
         re.MULTILINE)
-    rx_sub_pvc = re.compile(
+    rx_sub_pvc1 = re.compile(
         r"^\s*(?P<sub>\d+\-\d+)-(?P<vpi>\d+)/(?P<vci>\d+)\s+\S+\s+\S+\s+"
         r"(?P<pvid>\d+)\s+", re.MULTILINE)
+    rx_sub_pvc2 = re.compile(
+        r"^\s*(?P<sub>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+(?P<pvid>\S+)\s+",
+        re.MULTILINE)
     rx_sub_o = re.compile(
         r"^\s*(?P<sub>\d+\s*\-\s*\d+)\s+(?P<admin_status>V|\-)",
         re.MULTILINE)
@@ -54,7 +57,7 @@ class Script(BaseScript):
         interfaces = []
         iface_mac = []
         vlans = []
-        try:
+        if slots > 1:
             for match in self.rx_vlan1.finditer(self.cli("vlan show")):
                 vlans += [{
                     "vid": int(match.group("vlan_id")),
@@ -97,7 +100,34 @@ class Script(BaseScript):
                     iface["subinterfaces"][0]["tagged_vlans"] = tagged
                 interfaces += [iface]
                 port_num += 1
-        except self.CLISyntaxError:
+            for i in range(1, slots):
+                v = self.cli("port show %s" % i)
+                for match in self.rx_sub_o.finditer(v):
+                    admin_status = match.group("admin_status") == "V"
+                    iface = {
+                        "name": match.group("sub").replace(" ", ""),
+                        "admin_status": admin_status,
+                        "type": "physical",
+                        "subinterfaces": []
+                    }
+                    interfaces += [iface]
+                v = self.cli("port show %s pvc" % i)
+                for match in self.rx_sub_pvc1.finditer(v):
+                    ifname = match.group("sub")
+                    for iface in interfaces:
+                        if iface["name"] == ifname:
+                            iface["subinterfaces"] += [{
+                                "name": ifname,
+                                "admin_status": iface["admin_status"],
+                                "enabled_afi": ["BRIDGE", "ATM"],
+                                "vlan_ids": int(match.group("pvid")),
+                                "vpi": int(match.group("vpi")),
+                                "vci": int(match.group("vci"))
+                            }]
+                v = self.cli("lcman show %s" % i)
+                for match in self.rx_ipif_mac.finditer(v):
+                    iface_mac += [match.groupdict()]
+        else:
             for match in self.rx_vlan2.finditer(self.cli("switch vlan show *")):
                 vlans += [{
                     "vid": int(match.group("vlan_id")),
@@ -119,45 +149,34 @@ class Script(BaseScript):
                 iface = {
                     "name": ifname,
                     "type": "physical",
-                    "subinterfaces": [{
+                    "subinterfaces": []
+                }
+                if ifname.startswith("enet"):
+                    iface["subinterfaces"] += [{
                         "name": ifname,
                         "enabled_afi": ["BRIDGE"]
                     }]
-                }
-                if untagged:
-                    iface["subinterfaces"][0]["untagged_vlan"] = untagged
-                if tagged:
-                    iface["subinterfaces"][0]["tagged_vlans"] = tagged
+                    if untagged:
+                        iface["subinterfaces"][0]["untagged_vlan"] = untagged
+                    if tagged:
+                        iface["subinterfaces"][0]["tagged_vlans"] = tagged
                 interfaces += [iface]
                 port_num += 1
-        if slots > 0:
-            for i in range(1, slots):
-                v = self.cli("port show %s" % i)
-                for match in self.rx_sub_o.finditer(v):
-                    admin_status = match.group("admin_status") == "V"
-                    iface = {
-                        "name": match.group("sub").replace(" ", ""),
-                        "admin_status": admin_status,
-                        "type": "physical",
-                        "subinterfaces": []
-                    }
-                    interfaces += [iface]
-                v = self.cli("port show %s pvc" % i)
-                for match in self.rx_sub_pvc.finditer(v):
-                    ifname = match.group("sub")
-                    for iface in interfaces:
-                        if iface["name"] == ifname:
-                            iface["subinterfaces"] += [{
-                                "name": ifname,
-                                "admin_status": iface["admin_status"],
-                                "enabled_afi": ["BRIDGE", "ATM"],
-                                "vlan_ids": int(match.group("pvid")),
-                                "vpi": int(match.group("vpi")),
-                                "vci": int(match.group("vci"))
-                            }]
-                v = self.cli("lcman show %s" % i)
-                for match in self.rx_ipif_mac.finditer(v):
-                    iface_mac += [match.groupdict()]
+            for match in self.rx_sub_pvc2.finditer(self.cli("adsl pvc show")):
+                ifname = match.group("sub")
+                for i in interfaces:
+                    if ifname == i["name"]:
+                        sub = {
+                            "name": ifname,
+                            "enabled_afi": ["BRIDGE", "ATM"],
+                            "vpi": int(match.group("vpi")),
+                            "vci": int(match.group("vci"))
+                        }
+                        if match.group("pvid") != "*":
+                            sub["vlan_ids"] = int(match.group("pvid"))
+                        i["subinterfaces"] += [sub]
+            match = self.rx_mac.search(self.cli("sys info show"))
+            iface_mac += [{"ifname": "Ethernet", "mac": match.group("mac")}]
         c = self.cli("ip show")
         for match in self.rx_ipif.finditer(c):
             ifname = match.group("ifname")
@@ -187,9 +206,5 @@ class Script(BaseScript):
                 if ifname == m["ifname"]:
                     iface["mac"] = m["mac"]
                     iface["subinterfaces"][0]["mac"] = m["mac"]
-            if not iface_mac:
-                match = self.rx_mac.search(self.cli("sys info show"))
-                iface["mac"] = match.group("mac")
-                iface["subinterfaces"][0]["mac"] = match.group("mac")
             interfaces += [iface]
         return [{"interfaces": interfaces}]
