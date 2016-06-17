@@ -33,10 +33,18 @@ class Profile(BaseProfile):
             return 1
 
     def get_platform(self, script, slot_no, hw):
-        if (hw == "MSC1000G") and (slot_no == 5):
-            return "IES-5005"
-        if (hw == "MSC1024G") and (slot_no == 17):
-            return "IES-6000"
+        if slot_no == 5:
+            if hw in ["MSC1000G"]:
+                return "IES-5005"
+        if slot_no == 6:
+            if hw in ["MSC1024GB", "MSC1224GB"]:
+                return "IES-5106M"
+        if slot_no == 12:
+            if hw in ["MSC1024GB", "MSC1224GB"]:
+                return "IES-5112M"
+        if slot_no == 17:
+            if hw in ["MSC1024GB", "MSC1224GB", "MSC1024G", "MSC1224G"]:
+                return "IES-6000"
         if (hw == "IES1248-51") and (slot_no == 1):
             return "IES-1248"
         return ""
