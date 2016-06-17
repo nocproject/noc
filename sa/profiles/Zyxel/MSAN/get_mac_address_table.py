@@ -29,7 +29,10 @@ class Script(BaseScript):
             cmd += " %s" % interface
         if vlan is not None:
             cmd += " vid %s" % vlan
-        macs = self.cli(cmd)
+        try:
+            macs = self.cli(cmd)
+        except self.CLISyntaxError:
+            return []
         r = []
         for match in self.rx_line.finditer(macs):
             mac_address = match.group("mac")

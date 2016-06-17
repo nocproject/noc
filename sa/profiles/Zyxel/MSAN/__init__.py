@@ -26,12 +26,17 @@ class Profile(BaseProfile):
     rx_slots = re.compile("slot number should between 1 to (?P<slot>\d+)")
 
     def get_slots_n(self, script):
-        match = self.rx_slots.search(script.cli("lcman show 100", cached=True))
-        return int(match.group("slot"))
+        try:
+            match = self.rx_slots.search(script.cli("lcman show 100", cached=True))
+            return int(match.group("slot"))
+        except script.CLISyntaxError:
+            return 1
 
     def get_platform(self, script, slot_no, hw):
         if (hw == "MSC1000G") and (slot_no == 5):
             return "IES-5005"
         if (hw == "MSC1024G") and (slot_no == 17):
             return "IES-6000"
+        if (hw == "IES1248-51") and (slot_no == 1):
+            return "IES-1248"
         return ""

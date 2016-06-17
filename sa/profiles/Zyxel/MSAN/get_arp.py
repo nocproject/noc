@@ -17,12 +17,19 @@ class Script(BaseScript):
     name = "Zyxel.MSAN.get_arp"
     interface = IGetARP
 
-    rx_arp = re.compile(
+    rx_arp1 = re.compile(
         r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+\d+\s+(?P<mac>\S+)\s+"
-        r"(?P<interface>\S+).*$", re.MULTILINE)
+        r"(?P<interface>\S+).*\n", re.MULTILINE)
+    rx_arp2 = re.compile(
+        r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s*\n",
+        re.MULTILINE)
 
     def execute(self):
         r = []
-        for match in self.rx_arp.finditer(self.cli("show arp")):
-            r.append(match.groupdict())
+        v = self.cli("ip arp show")
+        for match in self.rx_arp1.finditer(v):
+            r += [match.groupdict()]
+        if not r:
+            for match in self.rx_arp2.finditer(v):
+                r += [match.groupdict()]
         return r

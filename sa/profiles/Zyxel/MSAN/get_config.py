@@ -16,5 +16,8 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self):
-        config = self.cli("show config-0")
+        try:
+            config = self.cli("show config-0")
+        except self.CLISyntaxError:
+            config = self.cli("config show all nopause")
         return self.cleaned_config(config)

@@ -19,16 +19,27 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
-    rx_ver = re.compile(
+    rx_ver1 = re.compile(
         r"^\s*product model\s*:\s+(?P<platform>\S+)\s*\n"
         r"^\s*system up time\s*:\s+(?P<uptime>\S+)\s*\n"
         r"^\s*f/w version\s*:\s+(?P<version>\S+) \| \S+\s*\n"
         r"^\s*bootbase version\s*:\s+(?P<bootprom>\S+) \| \S+\s*\n",
         re.MULTILINE)
+    rx_ver2 = re.compile(
+        r"^\s*Model: (?P<platform>\S+)\s*\n"
+        r"^\s*ZyNOS version: (?P<version>\S+) \| \S+\s*\n"
+        r".+?\n"
+        r"^\s*Bootbase version: (?P<bootprom>\S+) \| \S+\s*\n"
+        r".+?\n"
+        r"^\s*Serial number: (?P<serial>\S+)\s*\n",
+        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         slots = self.profile.get_slots_n(self)
-        match = self.rx_ver.search(self.cli("sys version"))
+        try:
+            match = self.rx_ver1.search(self.cli("sys version"))
+        except self.CLISyntaxError:
+            match = self.rx_ver2.search(self.cli("sys info show"))
         platform = self.profile.get_platform(self, slots, match.group("platform"))
         return {
             "vendor": "ZyXEL",

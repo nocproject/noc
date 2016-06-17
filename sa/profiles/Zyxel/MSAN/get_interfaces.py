@@ -32,87 +32,93 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_ipif = re.compile(
         r"^\s*(?P<ifname>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
-        r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s+(?P<vid>\d+|\-)\s*$", re.MULTILINE)
+        r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s*(?P<vid>\d+|\-)?\s*$", re.MULTILINE)
     rx_ipif_mac = re.compile(
         r"^\s*(?P<ifname>\S+) mac\s+: (?P<mac>\S+)\s*\n", re.MULTILINE)
     rx_vlan = re.compile(
         r"^\s*(?P<vlan_id>\d+)\s+(?P<ports>\S+)/(?P<mode>\S+)\s+\S+\s*"
         r"(?P<name>.*)$", re.MULTILINE)
+    rx_mac = re.compile(
+        r"^\s*mac address\s*: (?P<mac>\S+)\s*\n", re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
         slots = self.profile.get_slots_n(self)
         interfaces = []
         iface_mac = []
         vlans = []
-        for match in self.rx_vlan.finditer(self.cli("vlan show")):
-            vlans += [{
-                "vid": int(match.group("vlan_id")),
-                "ports": match.group("ports"),
-                "mode": match.group("mode")
-            }]
-        port_num = 0
-        for match in self.rx_enet.finditer(self.cli("switch port show")):
-            untagged = 0
-            tagged = []
-            admin_status = match.group("admin_status") == "V"
-            ifname = match.group("ifname")
-            match1 = self.rx_enet_o.search(self.cli("show enet %s" % ifname))
-            if match1:
-                oper_status = match1.group("oper_status") != "down"
-            else:
-                raise self.NotSupportedError()
-            for v in vlans:
-                if v["ports"][port_num] == "F" \
-                and v["mode"][port_num] == "U":
-                    untagged = v["vid"]
-                if v["ports"][port_num] == "F" \
-                and v["mode"][port_num] == "T":
-                    tagged += [v["vid"]]
-            iface = {
-                "name": ifname,
-                "type": "physical",
-                "admin_status": admin_status,
-                "oper_status": oper_status,
-                "subinterfaces": [{
+        try:
+            for match in self.rx_vlan.finditer(self.cli("vlan show")):
+                vlans += [{
+                    "vid": int(match.group("vlan_id")),
+                    "ports": match.group("ports"),
+                    "mode": match.group("mode")
+                }]
+            port_num = 0
+            for match in self.rx_enet.finditer(self.cli("switch port show")):
+                untagged = 0
+                tagged = []
+                admin_status = match.group("admin_status") == "V"
+                ifname = match.group("ifname")
+                match1 = self.rx_enet_o.search(self.cli("show enet %s" % ifname))
+                if match1:
+                    oper_status = match1.group("oper_status") != "down"
+                else:
+                    raise self.NotSupportedError()
+                for v in vlans:
+                    if v["ports"][port_num] == "F" \
+                    and v["mode"][port_num] == "U":
+                        untagged = v["vid"]
+                    if v["ports"][port_num] == "F" \
+                    and v["mode"][port_num] == "T":
+                        tagged += [v["vid"]]
+                iface = {
                     "name": ifname,
+                    "type": "physical",
                     "admin_status": admin_status,
                     "oper_status": oper_status,
-                    "enabled_afi": ["BRIDGE"]
-                }]
-            }
-            if untagged:
-                iface["subinterfaces"][0]["untagged_vlan"] = untagged
-            if tagged:
-                iface["subinterfaces"][0]["tagged_vlans"] = tagged
-            interfaces += [iface]
-            port_num += 1
-        for i in range(1, slots):
-            v = self.cli("port show %s" % i)
-            for match in self.rx_sub_o.finditer(v):
-                admin_status = match.group("admin_status") == "V"
-                iface = {
-                    "name": match.group("sub").replace(" ", ""),
-                    "admin_status": admin_status,
-                    "type": "physical",
-                    "subinterfaces": []
+                    "subinterfaces": [{
+                        "name": ifname,
+                        "admin_status": admin_status,
+                        "oper_status": oper_status,
+                        "enabled_afi": ["BRIDGE"]
+                    }]
                 }
+                if untagged:
+                    iface["subinterfaces"][0]["untagged_vlan"] = untagged
+                if tagged:
+                    iface["subinterfaces"][0]["tagged_vlans"] = tagged
                 interfaces += [iface]
-            v = self.cli("port show %s pvc" % i)
-            for match in self.rx_sub_pvc.finditer(v):
-                ifname = match.group("sub")
-                for iface in interfaces:
-                    if iface["name"] == ifname:
-                        iface["subinterfaces"] += [{
-                            "name": ifname,
-                            "admin_status": iface["admin_status"],
-                            "enabled_afi": ["BRIDGE", "ATM"],
-                            "vlan_ids": int(match.group("pvid")),
-                            "vpi": int(match.group("vpi")),
-                            "vci": int(match.group("vci"))
-                        }]
-            v = self.cli("lcman show %s" % i)
-            for match in self.rx_ipif_mac.finditer(v):
-                iface_mac += [match.groupdict()]
+                port_num += 1
+        except self.CLISyntaxError:
+            pass
+        if slots > 0:
+            for i in range(1, slots):
+                v = self.cli("port show %s" % i)
+                for match in self.rx_sub_o.finditer(v):
+                    admin_status = match.group("admin_status") == "V"
+                    iface = {
+                        "name": match.group("sub").replace(" ", ""),
+                        "admin_status": admin_status,
+                        "type": "physical",
+                        "subinterfaces": []
+                    }
+                    interfaces += [iface]
+                v = self.cli("port show %s pvc" % i)
+                for match in self.rx_sub_pvc.finditer(v):
+                    ifname = match.group("sub")
+                    for iface in interfaces:
+                        if iface["name"] == ifname:
+                            iface["subinterfaces"] += [{
+                                "name": ifname,
+                                "admin_status": iface["admin_status"],
+                                "enabled_afi": ["BRIDGE", "ATM"],
+                                "vlan_ids": int(match.group("pvid")),
+                                "vpi": int(match.group("vpi")),
+                                "vci": int(match.group("vci"))
+                            }]
+                v = self.cli("lcman show %s" % i)
+                for match in self.rx_ipif_mac.finditer(v):
+                    iface_mac += [match.groupdict()]
         c = self.cli("ip show")
         for match in self.rx_ipif.finditer(c):
             ifname = match.group("ifname")
@@ -132,11 +138,15 @@ class Script(BaseScript):
                     "ipv4_addresses": [ip_address],
                 }]
             }
-            if match.group("vid") != "-":
+            if (match.group("vid") is not None) and (match.group("vid") != "-"):
                 iface["subinterfaces"][0]["vlan_ids"] = [int(match.group('vid'))]
             for m in iface_mac:
                 if ifname == m["ifname"]:
                     iface["mac"] = m["mac"]
                     iface["subinterfaces"][0]["mac"] = m["mac"]
+            if not iface_mac:
+                match = self.rx_mac.search(self.cli("sys info show"))
+                iface["mac"] = match.group("mac")
+                iface["subinterfaces"][0]["mac"] = match.group("mac")
             interfaces += [iface]
         return [{"interfaces": interfaces}]
