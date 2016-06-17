@@ -4,6 +4,7 @@
 
 import sys
 import json
+import platform
 
 from alerta.api import ApiClient
 from alerta.alert import Alert
@@ -52,13 +53,11 @@ def main():
                 severity = 'warning'
             elif event.endswith('EXITED'):
                 severity = 'minor'
-            elif event.endswith('STOPPED'):
-                severity = 'minor'
             else:
                 severity = 'normal'
 
             supervisorAlert = Alert(
-                resource="%s: %s" % (headers['server'], body['processname']),
+                resource='%s:%s' % (platform.uname()[1], body['processname']),
                 environment='Production',
                 service=['supervisord'],
                 event=event,
