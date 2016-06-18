@@ -60,12 +60,14 @@ log_format noc_format '{ "@timestamp": "$time_iso8601", '
                          '"request_method": "$request_method", '
                          '"http_referrer": "$http_referer", '
                          '"request_time": "$request_time", '
+                         '"upstream_addr": "$upstream_addr",'
                          '"upstream_response_time": "$upstream_response_time", '
                          '"http_user_agent": "$http_user_agent" } }';
 {% else %}
 log_format noc_format '$remote_addr - $remote_user [$time_local] '
     '"$request" $status $body_bytes_sent '
     '"$http_referer" "$http_user_agent" '
+    '$upstream_addr '
     '$request_time $upstream_response_time $pipe';
 
 {% endif %}
