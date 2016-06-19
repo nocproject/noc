@@ -37,10 +37,16 @@ class Script(BaseScript):
             cmd += " df-bit"
         pr = self.cli(cmd)
         match = self.rx_result.search(pr)
-        return {
-            "success": match.group("success"),
-            "count": match.group("count"),
-            "min": match.group("min"),
-            "avg": match.group("avg"),
-            "max": match.group("max")
-        }
+        if match:
+            return {
+                "success": match.group("success"),
+                "count": match.group("count"),
+                "min": match.group("min"),
+                "avg": match.group("avg"),
+                "max": match.group("max")
+            }
+        else:
+            return {
+                "success": 0,
+                "count": count or 5
+            }
