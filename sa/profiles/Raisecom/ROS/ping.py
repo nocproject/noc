@@ -40,6 +40,11 @@ class Script(BaseScript):
                 "avg": 0,
                 "max": 0
             }
+        elif "no answer from" in pr:
+            return {
+                "success": 0,
+                "count": 1
+            }
         match = self.rx_result.search(pr)
         return {
             "success": match.group("success"),
