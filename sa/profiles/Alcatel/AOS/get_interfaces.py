@@ -179,6 +179,8 @@ class Script(BaseScript):
                     c = ""
                 for match in self.rx_lldp.finditer(c):
                     lldp += [match.group("port")]
+        else:
+            lldp_enable = False
 
         udld = []
         if self.has_capability("Network | UDLD"):
@@ -194,6 +196,8 @@ class Script(BaseScript):
                     c = ""
                 for match in self.rx_udld.finditer(c):
                     udld += [match.group("port")]
+        else:
+            udld_enable = False
 
         r = []
         try:
@@ -279,9 +283,9 @@ class Script(BaseScript):
                     n["subinterfaces"][0]["tagged_vlans"] = switchports[iface][1]
                 if switchports[iface][0]:
                     n["subinterfaces"][0]["untagged_vlan"] = switchports[iface][0]
-                if lldp_enable  and iface in lldp:
+                if lldp_enable and iface in lldp:
                     enabled_protocols += ["LLDP"]
-                if udld_enable  and iface in udld:
+                if udld_enable and iface in udld:
                     enabled_protocols += ["UDLD"]
                 n["enabled_protocols"] = enabled_protocols
                 n["type"] = "physical"
