@@ -143,9 +143,39 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def read_until_prompt(self):
+        connect_retries = 3
+        connect_timeout = 3
         while True:
-            r = yield self.iostream.read_bytes(self.BUFFER_SIZE,
-                                               partial=True)
+            try:
+                r = yield self.iostream.read_bytes(self.BUFFER_SIZE,
+                                                   partial=True)
+            except tornado.iostream.StreamClosedError:
+                # Check if remote end closes connection just
+                # after connection established
+                if not self.is_started and connect_retries:
+                    self.logger.info(
+                        "Connection reset. %d retries left. Waiting %d seconds",
+                        connect_retries, connect_timeout
+                    )
+                    while connect_retries:
+                        yield tornado.gen.sleep(connect_timeout)
+                        connect_retries -= 1
+                        self.iostream = self.create_iostream()
+                        address = (
+                            self.script.credentials.get("address"),
+                            self.script.credentials.get("cli_port", self.default_port)
+                        )
+                        self.logger.debug("Connecting %s", address)
+                        try:
+                            yield self.iostream.connect()
+                            yield self.iostream.startup()
+                            break
+                        except tornado.iostream.StreamClosedError:
+                            if not connect_retries:
+                                raise tornado.iostream.StreamClosedError()
+                    continue
+                else:
+                    raise tornado.iostream.StreamClosedError()
             self.logger.debug("Received: %r", r)
             # Clean input
             self.buffer += self.cleaned_input(r)
