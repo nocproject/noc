@@ -167,7 +167,7 @@ class CLI(object):
                         )
                         self.logger.debug("Connecting %s", address)
                         try:
-                            yield self.iostream.connect()
+                            yield self.iostream.connect(address)
                             yield self.iostream.startup()
                             break
                         except tornado.iostream.StreamClosedError:
