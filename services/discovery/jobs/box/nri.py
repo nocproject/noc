@@ -133,7 +133,7 @@ class NRICheck(DiscoveryCheck):
                 {"dst_mo": self.object.id}
             ]
         }):
-            if d["src_mo"] == d["dst_mo"]:
+            if d["src_mo"] == d["dst_mo"] or d.get("ignore"):
                 continue
             if d["src_mo"] == self.object.id:
                 links[d["src_interface"]] = (d["dst_mo"], d["dst_interface"])
@@ -161,7 +161,7 @@ class NRICheck(DiscoveryCheck):
             if_name = nri_map[n]["name"]
             if nri_map[n]["_id"] in linked:
                 self.logger.info(
-                    "%s (%s) is already linked via %s. Skipping",
+                    "[%s|%s] Already linked via %s. Skipping",
                     if_name,
                     n,
                     linked[nri_map[n]["_id"]]
@@ -180,17 +180,24 @@ class NRICheck(DiscoveryCheck):
                 })
                 if xl:
                     self.logger.info(
-                        "Cannot link %s (%s). Remote interface is already linked via %s. Skipping",
+                        "[%s|%s] Remote interface is already linked via %s. Skipping",
                         if_name, n, xl.get("discovery_method")
                     )
                     continue
-                self.logger.info("Linking %s(%s)", if_name, n)
+                self.logger.info("[%s|%s] Linking", if_name, n)
                 Link._get_collection().insert({
                     "interfaces": [nri_map[n]["_id"], ri["_id"]],
                     "discovery_method": "nri",
                     "first_discovery": now,
                     "last_seen": now
                 })
+                # @todo: update_pop_links
+                # @todo: update_uplinks
+            else:
+                self.logger.info(
+                    "[%s|%s] Cannot find remote interface %s:%s. Skipping",
+                    if_name, n, rmo, rnn
+                )
 
     def process_services(self):
         """

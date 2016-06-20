@@ -9,7 +9,7 @@
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.queryset import Q
-from mongoengine.fields import IntField, ObjectIdField, StringField
+from mongoengine.fields import IntField, ObjectIdField, StringField, BooleanField
 
 
 class ExtNRILink(Document):
@@ -37,6 +37,8 @@ class ExtNRILink(Document):
     warn = StringField(required=False)
     # NRI link comparison errors
     error = StringField(required=False)
+    # Do not try to create NRI link
+    ignore = BooleanField(default=False)
 
     @classmethod
     def get_connected(self, mo):
