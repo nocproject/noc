@@ -130,7 +130,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             raise SyntaxError("Invalid VLAN")
         r = [
             "def %s(iface):" % f_name,
-            "    return bool(iface.subinterface_set.filter(enabled_afi='BRIDGE', untagged_vlan=%d).count())" % vlan
+            "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', untagged_vlan=%d).count())" % vlan
         ]
         return "\n".join(r)
 
@@ -138,7 +138,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         r = [
             "vcf_%s = VCFilter.objects.get(id=%s)" % (f_name, self.vc_filter.id),
             "def %s(iface):" % f_name,
-            "    for si in iface.subinterface_set.filter(enabled_afi='BRIDGE'):",
+            "    for si in iface.parent.subinterface_set.filter(enabled_afi='BRIDGE'):",
             "        if si.untagged_vlan and vcf_%s.check(si.untagged_vlan):" % f_name,
             "            return True",
             "    return False"
@@ -152,7 +152,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             raise SyntaxError("Invalid VLAN")
         r = [
             "def %s(iface):" % f_name,
-            "    return bool(iface.subinterface_set.filter(enabled_afi='BRIDGE', tagged_vlans=%d).count())" % vlan
+            "    return bool(iface.parent.subinterface_set.filter(enabled_afi='BRIDGE', tagged_vlans=%d).count())" % vlan
         ]
         return "\n".join(r)
 
@@ -160,7 +160,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
         r = [
             "vcf_%s = VCFilter.objects.get(id=%s)" % (f_name, self.vc_filter.id),
             "def %s(iface):" % f_name,
-            "    for si in iface.subinterface_set.filter(enabled_afi='BRIDGE'):",
+            "    for si in iface.parent.subinterface_set.filter(enabled_afi='BRIDGE'):",
             "        if si.tagged_vlans:",
             "            if any(vlan for vlan in si.tagged_vlans if vcf_%s.check(vlan)):" % f_name,
             "                return True",
