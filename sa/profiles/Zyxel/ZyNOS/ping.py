@@ -21,7 +21,7 @@ class Script(BaseScript):
                             "\d+\s+(?P<avg>\d+)\s+\d+\s+(?P<max>\d+)\s+" \
                             "(?P<min>\d+)", re.MULTILINE)
 
-    def execute(self, address, size=None):
+    def execute(self, address, size=None, *args, **kwargs):
         cmd = "ping %s" % address
         if size:
             cmd += " size %d" % size
