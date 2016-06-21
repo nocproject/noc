@@ -99,6 +99,8 @@ class Script(BaseScript):
                         if t:
                             sub["tagged_vlans"] = t
                         sub["enabled_afi"] += ["BRIDGE"]
+                else:
+                    sub = {}
             # get snmp ifindex
             match = self.rx_ifindex.search(l)
             if match:
@@ -126,7 +128,9 @@ class Script(BaseScript):
             if match:
                 iface["mac"] = match.group("mac")
                 sub["mac"] = iface["mac"]
-                iface["subinterfaces"] += [sub]
+                if iface.get("aggregated_interface"):
+                    iface["subinterfaces"] = []
+                else:
+                    iface["subinterfaces"] += [sub]
                 r += [iface]
-
         return [{"interfaces": r}]
