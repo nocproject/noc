@@ -313,6 +313,17 @@ class Interface(Document):
                     )
                 )
 
+    @property
+    def parent(self):
+        """
+        Returns aggregated interface for LAG or
+        self for non-aggregated interface
+        """
+        if self.aggregated_interface:
+            return self.aggregated_interface
+        else:
+            return self
+
 ## Avoid circular references
 from link import Link
 from macdb import MACDB
