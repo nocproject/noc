@@ -25,7 +25,7 @@ class Script(BaseScript):
                         r"(?P<root>\d*\.?\S+\s?\S*)")
     rx_bridge = re.compile(r"Self Bridge Id\s+:\s+(?P<priority>\d+)\."
                         r"(?P<id>\S+)")
-    rx_interface = re.compile(r"^\s+(?P<ifname>\S+)\s+(?P<port>\d+\.\d+)\s+"
+    rx_interface = re.compile(r"^\s*(?P<ifname>\S+)\s+(?P<port>\d+\.\d+)\s+"
                         r"(?:\d+\s+)?\d+\s+(?P<state>\S+)\s+(?P<role>\S+)\s+"
                         r"(?P<dsg_bridge>\d+\.\S+)\s+(?P<dsg_port>\d+\.\d+)")
     rx_edge = re.compile(r"^Edge port\s+: (?P<edge>\S+)$",
@@ -65,7 +65,7 @@ class Script(BaseScript):
             }[match.group("mode")]
         # get instances
         cmd = self.cli("show spanning-tree mst 0")
-        for inst in cmd.split("\n#")[1:]:
+        for inst in cmd.split("#\n")[1:]:
             if "does not exist!" in inst:
                 continue
             for l in inst.splitlines():
