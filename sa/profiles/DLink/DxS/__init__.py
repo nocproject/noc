@@ -56,6 +56,7 @@ class Profile(BaseProfile):
         """
         "D-Link DES-3200-10 R4.37.B008 Port 1 " -> "1"
         "PORT 7 ON UNIT 1" -> "7"
+        Slot0/1 -> 1 # DES-1210-28/ME
         """
         su = s.upper().strip()
         if " PORT " in su:
@@ -68,6 +69,8 @@ class Profile(BaseProfile):
                     return "%s:%s" % (r, l)
             else:
                 return su
+        elif s.startswith("Slot0/"):
+            return s[6:]
         else:
             return s
 
