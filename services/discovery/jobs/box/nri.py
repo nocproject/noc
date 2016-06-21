@@ -111,17 +111,15 @@ class NRICheck(DiscoveryCheck):
         """
         self.logger.info("Setting NRI names (%s)", self.nri)
         for i in six.itervalues(self.interfaces):
-            if i.get("nri_name"):
-                continue
             nri_name = self.portmapper.to_remote(i["name"])
             if not nri_name:
                 self.logger.info(
                     "Cannot map interface name '%s' to NRI '%s' (%s)",
                     i["name"], self.nri, self.object.platform
                 )
-                continue
-            self.logger.info("Mapping %s to %s", i["name"], nri_name)
-            self.interface_bulk_op(i["_id"], {"$set": {"nri_name": nri_name}})
+            elif i.get("nri_name") != nri_name:
+                self.logger.info("Mapping %s to %s", i["name"], nri_name)
+                self.interface_bulk_op(i["_id"], {"$set": {"nri_name": nri_name}})
 
     def process_links(self):
         now = datetime.datetime.now()
