@@ -2,16 +2,16 @@
 ##----------------------------------------------------------------------
 ## H3C.VRP.get_chassis_id
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
 ## Python modules
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.lib.mac import MAC
 
 
 class Script(BaseScript):
@@ -40,19 +40,23 @@ class Script(BaseScript):
 
     @BaseScript.match()
     def execute_new(self):
+        shift = 0
+        if self.match_version(platform__contains="S3600"):
+            # S3600 platform has additional MAC address for L3
+            shift = 1
         v = self.cli("display stp")
         match = self.rx_mac.search(v)
         if match is not None:
             mac = match.group("id")
-            return {
-                "first_chassis_mac": mac,
-                "last_chassis_mac": mac
-            }
         else:
             v = self.cli("display device manuinfo")
             match = self.rx_mac1.search(v)
             mac = match.group("id")
-            return {
-                "first_chassis_mac": mac,
-                "last_chassis_mac": mac
-            }
+        if shift:
+            last_mac = str(MAC(mac).shift(shift))
+        else:
+            last_mac = mac
+        return {
+            "first_chassis_mac": mac,
+            "last_chassis_mac": last_mac
+        }
