@@ -4,7 +4,7 @@
 ## OS:     VRP3
 ## Compatible: 3.1
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -24,6 +24,8 @@ class Profile(BaseProfile):
         (r"\[to\]\:", "\n")
     ]
     pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
+    pattern_syntax_error = r"Invalid parameter|Incorrect command"
     command_more = " "
     config_volatile = ["^%.*?$"]
     command_disable_pager="length 0"
@@ -31,4 +33,3 @@ class Profile(BaseProfile):
     command_enter_config = "configure terminal"
     command_leave_config = "exit"
     command_save_config = "save\ny\n"
-    pattern_prompt = r"^(?P<hostname>\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
