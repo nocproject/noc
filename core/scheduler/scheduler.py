@@ -332,7 +332,7 @@ class Scheduler(object):
         self.get_collection().update(q, op, upsert=True)
 
     def set_next_run(self, jid, status=None, ts=None, delta=None,
-                     duration=None):
+                     duration=None, context=None, context_version=None):
         """
         Reschedule job and set next run time
         :param jid: Job id
@@ -340,6 +340,8 @@ class Scheduler(object):
         :param ts: Set next run time (datetime)
         :param delta: Set next run time after delta seconds
         :param duration: Set last run duration (in seconds)
+        :param context_version: Job context format vresion
+        :param context: Stored job context
         """
         # Build increase/set operations
         now = datetime.datetime.now()
@@ -366,6 +368,9 @@ class Scheduler(object):
                 set_op[Job.ATTR_FAULTS] = 0
             elif status == Job.E_EXCEPTION:
                 inc_op[Job.ATTR_FAULTS] = 1
+        if context_version is not None:
+            set_op[Job.ATTR_CONTEXT_VERSION] = context_version
+            set_op[Job.ATTR_CONTEXT] = context
 
         op = {}
         if set_op:

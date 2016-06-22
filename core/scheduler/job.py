@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Scheduler Job Class
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,8 +10,10 @@
 import logging
 import time
 import datetime
+import cPickle
 ## Third-party modules
 import tornado.gen
+import bson
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.debug import error_report
@@ -33,6 +35,11 @@ class Job(object):
     group_name = None
     # Set to True to run handler inside transactional block
     use_transactions = False
+    # Context format version
+    # None - do not store context
+    # Set to version number otherwise
+    # Bump to next numher on incompatible context changes
+    context_version = None
 
     # Collection attributes
     ATTR_ID = "_id"
@@ -49,6 +56,8 @@ class Job(object):
     ATTR_RUNS = "runs"  # Number of runs
     ATTR_FAULTS = "f"  # Amount of sequental faults
     ATTR_OFFSET = "o"  # Random offset [0 .. 1]
+    ATTR_CONTEXT = "ctx"  # Pickled job context
+    ATTR_CONTEXT_VERSION = "ctx"  # Stored context format version
 
     # Job states
     S_WAIT = "W"  # Waiting to run
@@ -92,6 +101,24 @@ class Job(object):
             scheduler.logger,
             self.get_display_key()
         )
+        # Deserialize context
+        ctx = self.attrs.get(self.ATTR_CONTEXT)
+        if ctx:
+            ctv = self.attrs.get(self.ATTR_CONTEXT_VERSION,
+                                 self.context_version)
+            if ctv == self.context_version:
+                self.logger.debug("Restoring context")
+                try:
+                    self.context = cPickle.loads(str(ctx))
+                except cPickle.UnpicklingError as e:
+                    self.logger.error("Cannot unpickle context: %s", e)
+                    self.context = {}
+            else:
+                self.logger.debug(
+                    "Resetting context due to incompatible version"
+                )
+        else:
+            self.context = {}
 
     @tornado.gen.coroutine
     def run(self):
@@ -256,3 +283,18 @@ class Job(object):
             Job.ATTR_CLASS: jcls,
             Job.ATTR_KEY: key
         })
+
+    def context_dumps(self):
+        """
+        Serialize context
+        """
+        if not self.context:
+            return None
+        try:
+            return bson.Binary(cPickle.dumps(
+                self.context,
+                cPickle.HIGHEST_PROTOCOL
+            ))
+        except cPickle.PickleError as e:
+            self.logger.error("Failed to serialize context: %s", e)
+            return None
