@@ -473,7 +473,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
 
     def confirm_link(self, local_object, local_interface,
                      remote_object, remote_interface):
-        self.logger.debug(
+        self.logger.info(
             "Confirm link: %s:%s -- %s:%s",
             local_object, local_interface,
             remote_object, remote_interface
@@ -501,17 +501,52 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_object.name, remote_interface
             )
             return
+        # Check LAGs
+        if li.type == "aggregated" and ri.type != "aggregated":
+            self.logger.error(
+                "Cannot connect aggregated interface %s:%s to non-aggregated %s:%s",
+                local_object.name, local_interface,
+                remote_object.name, remote_interface
+            )
+            return
+        if ri.type == "aggregated" and li.type != "aggregated":
+            self.logger.error(
+                "Cannot connect aggregated interface %s:%s to non-aggregated %s:%s",
+                remote_object.name, remote_interface,
+                local_object.name, local_interface
+            )
+            return
+        if ri.type == "aggregated" and li.type == "aggregated":
+            lic = li.lag_members.count()
+            ric = ri.lag_members.count()
+            if lic != ric:
+                self.logger.error(
+                    "Cannot connect. LAG size mismatch: %s vs %s",
+                    lic, ric
+                )
+                return
         # Get existing links
         llink = li.link
         rlink = ri.link
         # Check link is already exists
         if llink and rlink and llink.id == rlink.id:
-            self.logger.debug(
-                "Already linked: %s:%s -- %s:%s",
+            self.logger.info(
+                "Already linked: %s:%s -- %s:%s via %s",
                 local_object.name, local_interface,
-                remote_object.name, remote_interface
+                remote_object.name, remote_interface,
+                llink.discovery_method
             )
-            llink.touch(self.name)
+            if (
+                llink.discovery_method != self.name and
+                (llink.discovery_method is None or
+                     self.is_preferable_over(llink.discovery_method))
+            ):
+                # Change disovery method
+                self.logger.info("Remarking discovery method as %s", self.name)
+                llink.touch(self.name)
+            else:
+                # Change last seen
+                llink.touch()
             return
         # Check method preferences
         if llink and not self.is_preferable_over(llink.discovery_method):
@@ -616,14 +651,31 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     )
                     return
                 else:
-                    ri.unlink()
+                    self.logger.info("Unlinking %s", ri)
+                    try:
+                        ri.unlink()
+                    except ValueError as e:
+                        self.logger.error(
+                            "Failed to unlink %s: %s",
+                            ri, e
+                        )
+                        return
             if llink:
                 # Attach to existing cloud
                 llink.interfaces = llink.interfaces + [ri]
                 llink.save()
             else:
                 # Create p2p link
-                li.link_ptp(ri, method=self.name)
+                try:
+                    li.link_ptp(ri, method=self.name)
+                except ValueError as e:
+                    self.logger.info(
+                        "Cannot link %s:%s -- %s:%s: %s",
+                        local_object.name, local_interface,
+                        remote_object.name, remote_interface,
+                        e
+                    )
+                return
         if rpolicy == "C":
             if llink:
                 if lpolicy == "O":
@@ -636,6 +688,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     )
                     return
                 else:
+                    self.logger.info("Unlinking %s", li)
                     li.unlink()
             if rlink:
                 # Attach to existing cloud
@@ -643,7 +696,16 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 rlink.save()
             else:
                 # Create p2p link
-                ri.link_ptp(li, method=self.name)
+                try:
+                    ri.link_ptp(li, method=self.name)
+                except ValueError as e:
+                    self.logger.info(
+                        "Cannot link %s:%s -- %s:%s: %s",
+                        local_object.name, local_interface,
+                        remote_object.name, remote_interface,
+                        e
+                    )
+                return
         #
         self.logger.info(
             "Not linking: %s:%s -- %s:%s. "
