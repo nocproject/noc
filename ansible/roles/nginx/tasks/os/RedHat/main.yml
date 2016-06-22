@@ -12,6 +12,16 @@
     dest: "/etc/telegraf/telegraf.d/nginx.conf"
   notify: reload telegraf
 
+- name: Install service monitoring
+  template:
+    src: "{{item}}"
+    dest: "/{{item[:-3]}}"
+    force: no
+  with_items:
+    - "etc/telegraf/telegraf.d/discovery.conf.j2"
+    - "etc/telegraf/telegraf.d/fm-monitor.conf.j2"
+  notify: reload telegraf
+
 - name: Install Nginx
   yum:
     name: nginx
