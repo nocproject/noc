@@ -18,6 +18,8 @@ from metrics import MetricsCheck
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
     name = "periodic"
+    # Store context
+    context_version = 1
 
     def handler(self, **kwargs):
         self.reboot_detected = False
@@ -29,6 +31,10 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             MACCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_metrics:
             MetricsCheck(self).run()
+
+    def init_context(self):
+        if "counters" not in self.context:
+            self.context["counters"] = {}
 
     def can_run(self):
         return (

@@ -60,9 +60,6 @@ class MetricsCheck(DiscoveryCheck):
     interface_profile_metrics_cache = cachetools.TTLCache(
         1000, 60, missing=get_interface_profile_metrics
     )
-    # Last counter values
-    counter_values = {}
-    counter_lock = threading.Lock()
 
     S_OK = 0
     S_WARN = 1
@@ -153,53 +150,53 @@ class MetricsCheck(DiscoveryCheck):
             return
         # Build output batch
         batch = []
-        with self.counter_lock:
-            for m in result:
-                key = "%s,%s" % (q(m["name"]), q_tags(m["tags"]))
-                m["key"] = key
-                if m["type"] == "counter":
-                    # Resolve counter
-                    if self.job.reboot_detected:
-                        # Drop previous counters on reboot
-                        r = None
-                        self.logger.info(
-                            "[%s] Resetting counters due to device reboot",
-                            key
-                        )
-                    else:
-                        # Get previous value
-                        r = self.counter_values.get(key)
-                    # Store value
-                    self.counter_values[key] = (m["ts"], m["value"])
-                    if r:
-                        self.logger.debug(
-                            "[%s] Old value: %s@%s, new value: %s@%s.",
-                            key, r[1], r[0], m["value"], m["ts"]
-                        )
-                        # Calculate counter
-                        m["value"] = self.convert_counter(
-                            m["ts"], m["value"],
-                            r[0], r[1]
-                        )
-                    else:
-                        self.logger.debug(
-                            "[%s] COUNTER value is not found. "
-                            "Storing and waiting for a new result",
-                            key
-                        )
-                        continue  # Skip the step
-                m["abs_value"] = m["value"] * m["scale"]
-                self.logger.debug(
-                    "[%s] Measured value: %s. Scale: %s. Resuling value: %s",
-                    key, m["value"], m["scale"], m["abs_value"]
-                )
-                batch += [
-                    "%s value=%s %s" % (
-                        key,
-                        m["abs_value"],
-                        m["ts"] // 1000000000
+        counters = self.job.context["counters"]
+        for m in result:
+            key = "%s,%s" % (q(m["name"]), q_tags(m["tags"]))
+            m["key"] = key
+            if m["type"] == "counter":
+                # Resolve counter
+                if self.job.reboot_detected:
+                    # Drop previous counters on reboot
+                    r = None
+                    self.logger.info(
+                        "[%s] Resetting counters due to device reboot",
+                        key
                     )
-                ]
+                else:
+                    # Get previous value
+                    r = counters.get(key)
+                # Store value
+                counters[key] = (m["ts"], m["value"])
+                if r:
+                    self.logger.debug(
+                        "[%s] Old value: %s@%s, new value: %s@%s.",
+                        key, r[1], r[0], m["value"], m["ts"]
+                    )
+                    # Calculate counter
+                    m["value"] = self.convert_counter(
+                        m["ts"], m["value"],
+                        r[0], r[1]
+                    )
+                else:
+                    self.logger.debug(
+                        "[%s] COUNTER value is not found. "
+                        "Storing and waiting for a new result",
+                        key
+                    )
+                    continue  # Skip the step
+            m["abs_value"] = m["value"] * m["scale"]
+            self.logger.debug(
+                "[%s] Measured value: %s. Scale: %s. Resuling value: %s",
+                key, m["value"], m["scale"], m["abs_value"]
+            )
+            batch += [
+                "%s value=%s %s" % (
+                    key,
+                    m["abs_value"],
+                    m["ts"] // 1000000000
+                )
+            ]
         # Send metrics
         if batch:
             self.logger.info("Spooling %d metrics", len(batch))
