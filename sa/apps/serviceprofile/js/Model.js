@@ -32,6 +32,10 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "string"
         },
         {
+            name: "code",
+            type: "string"
+        },
+        {
             name: "interface_profile",
             type: "string"
         },

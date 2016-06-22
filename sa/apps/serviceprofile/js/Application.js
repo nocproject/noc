@@ -22,7 +22,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Glyph",
+                    text: __("Icon"),
                     data_index: "glyph",
                     width: 25,
                     renderer: function(v) {
@@ -35,18 +35,23 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     }
                 },
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Summary",
+                    text: __("Code"),
+                    dataIndex: "code",
+                    width: 100
+                },
+                {
+                    text: __("Summary"),
                     dataIndex: "show_in_summary",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -55,47 +60,54 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "medium"
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true,
                     uiStyle: "extra"
                 },
                 {
+                    name: "code",
+                    xtype: "textfield",
+                    fieldLabel: __("Code"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
                     name: "card_title_template",
                     xtype: "textfield",
-                    fieldLabel: "Title Template",
+                    fieldLabel: __("Title Template"),
                     uiStyle: "extra",
                     allowBlank: true
                 },
                 {
                     name: "glyph",
                     xtype: "main.ref.glyph.LookupField",
-                    fieldLabel: "Icon",
+                    fieldLabel: __("Icon"),
                     allowBlank: true,
                     uiStyle: "large"
                 },
                 {
                     name: "show_in_summary",
                     xtype: "checkbox",
-                    boxLabel: "Show in summary",
+                    boxLabel: __("Show in summary"),
                     allowBlank: true
                 },
                 {
                     name: "interface_profile",
                     xtype: "inv.interfaceprofile.LookupField",
-                    fieldLabel: "Interface Profile",
+                    fieldLabel: __("Interface Profile"),
                     allowBlank: true
                 },
                 {
                     name: "weight",
                     xtype: "numberfield",
-                    fieldLabel: "Alarm weight",
+                    fieldLabel: __("Alarm weight"),
                     allowBlank: true,
                     uiStyle: "small"
                 }
