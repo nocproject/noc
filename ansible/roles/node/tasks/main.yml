@@ -51,6 +51,8 @@
     dest: "{{ noc_root }}/custom"
     revision: "{{ noc_custom_revision }}"
     update: yes
+    force: yes
+    purge: yes
   when: "noc_custom_enabled==True and noc_custom_repo is defined and noc_custom_revision is defined"
   environment:
     LC_ALL: C
