@@ -100,3 +100,11 @@ class NetworkSegment(Document):
         for s in NetworkSegment.objects.filter(sibling=self):
             ss |= s.get_siblings(seen)
         return ss
+
+    def run_discovery(self):
+        """
+        Run discovery on whole segment
+        """
+        for o in self.managed_objects:
+            if o.is_managed:
+                o.run_discovery()
