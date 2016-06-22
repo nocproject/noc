@@ -31,6 +31,8 @@ class ServiceProfile(Document):
     description = StringField()
     # Jinja2 service label template
     card_title_template = StringField()
+    # Short service code for reporting
+    code = StringField()
     # FontAwesome glyph
     glyph = StringField()
     #
