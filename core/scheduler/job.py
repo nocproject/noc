@@ -38,7 +38,7 @@ class Job(object):
     # Context format version
     # None - do not store context
     # Set to version number otherwise
-    # Bump to next numher on incompatible context changes
+    # Bump to next number on incompatible context changes
     context_version = None
 
     # Collection attributes
@@ -119,6 +119,14 @@ class Job(object):
                 )
         else:
             self.context = {}
+        if self.context_version:
+            self.init_context()
+
+    def init_context(self):
+        """
+        Perform context initialization
+        """
+        pass
 
     @tornado.gen.coroutine
     def run(self):
