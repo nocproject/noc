@@ -11,6 +11,7 @@ import logging
 import time
 import datetime
 import cPickle
+import zlib
 ## Third-party modules
 import tornado.gen
 import bson
@@ -110,9 +111,11 @@ class Job(object):
             if ctv == self.context_version:
                 self.logger.debug("Restoring context")
                 try:
-                    self.context = cPickle.loads(str(ctx))
+                    self.context = cPickle.loads(zlib.decompress(str(ctx)))
                 except cPickle.UnpicklingError as e:
                     self.logger.error("Cannot unpickle context: %s", e)
+                except zlib.error:
+                    self.logger.error("Cannot unpack context")
             else:
                 self.logger.debug(
                     "Resetting context due to incompatible version"
@@ -297,10 +300,14 @@ class Job(object):
         if not self.context:
             return None
         try:
-            return bson.Binary(cPickle.dumps(
-                self.context,
-                cPickle.HIGHEST_PROTOCOL
-            ))
+            return bson.Binary(
+                zlib.compress(
+                    cPickle.dumps(
+                        self.context,
+                        cPickle.HIGHEST_PROTOCOL
+                    )
+                )
+            )
         except cPickle.PickleError as e:
             self.logger.error("Failed to serialize context: %s", e)
             return None
