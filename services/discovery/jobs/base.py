@@ -567,6 +567,10 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 rlink.discovery_method, self.name
             )
             return
+        self.logger.info(
+            "Interface linking policy: %s/%s",
+            li.profile.discovery_policy, ri.profile.discovery_policy
+        )
         # Get interface discovery policies
         # Possible values are:
         # * I - Ignore links, all discovered links rejected
