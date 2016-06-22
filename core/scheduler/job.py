@@ -57,7 +57,7 @@ class Job(object):
     ATTR_FAULTS = "f"  # Amount of sequental faults
     ATTR_OFFSET = "o"  # Random offset [0 .. 1]
     ATTR_CONTEXT = "ctx"  # Pickled job context
-    ATTR_CONTEXT_VERSION = "ctx"  # Stored context format version
+    ATTR_CONTEXT_VERSION = "ctv"  # Stored context format version
 
     # Job states
     S_WAIT = "W"  # Waiting to run
