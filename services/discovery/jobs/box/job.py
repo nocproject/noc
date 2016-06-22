@@ -90,10 +90,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             return True
         try:
             i1 = self.TOPOLOGY_NAMES.index(m1)
-        except ValueError:
-            return False
-        try:
             i2 = self.TOPOLOGY_NAMES.index(m2)
         except ValueError:
-            return True
+            return False
         return i1 <= i2
