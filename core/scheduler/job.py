@@ -103,6 +103,7 @@ class Job(object):
         )
         # Deserialize context
         ctx = self.attrs.get(self.ATTR_CONTEXT)
+        self.context = {}
         if ctx:
             ctv = self.attrs.get(self.ATTR_CONTEXT_VERSION,
                                  self.context_version)
@@ -112,13 +113,10 @@ class Job(object):
                     self.context = cPickle.loads(str(ctx))
                 except cPickle.UnpicklingError as e:
                     self.logger.error("Cannot unpickle context: %s", e)
-                    self.context = {}
             else:
                 self.logger.debug(
                     "Resetting context due to incompatible version"
                 )
-        else:
-            self.context = {}
         if self.context_version:
             self.init_context()
 
