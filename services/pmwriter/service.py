@@ -42,14 +42,34 @@ class PMWriterService(Service):
         )
         report_callback.start()
         self.queue = tornado.queues.Queue(maxsize=self.config.batch_size * 4)
-        self.influx = self.resolve_service("influxdb", 1)[0]
+        self.influx, channel = self.get_topic()
+        self.logger.info("Listening metrics/%s. Writing to %s",
+                         channel, self.influx)
         self.subscribe(
             "metrics",
-            "pmwriter",
+            channel,
             self.on_metric,
             raw=True
         )
         self.ioloop.spawn_callback(self.send_metrics)
+
+    def get_topic(self):
+        """
+        Returns influx service, channel name
+        """
+        # Influx affinity
+        node_addr = self.config.listen.split(":")[0]
+        influx = None
+        channel = "pmwriter-%s" % node_addr
+        for s in self.config.get_service("influxdb"):
+            if s.split(":")[0] == node_addr:
+                influx = s
+                break
+        if not influx:
+            # Fallback to default
+            influx = self.resolve_service("influxdb", 1)[0]
+            channel = "pmwriter"
+        return influx, channel
 
     def on_metric(self, message, metrics, *args, **kwargs):
         """
