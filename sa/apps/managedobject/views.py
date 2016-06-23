@@ -160,7 +160,7 @@ class ManagedObjectApplication(ExtModelApplication):
                     r += [i]
                 for li, ri in zip(l, r):
                     result += [{
-                        "id": str(link.id),
+                        "link_id": str(link.id),
                         "local_interface": str(li.id),
                         "local_interface__label": li.name,
                         "remote_object": ri.managed_object.id,
