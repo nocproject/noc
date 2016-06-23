@@ -49,7 +49,8 @@ class Interface(Document):
             ("managed_object", "name"),
             "mac",
             ("managed_object", "ifindex"),
-            "service"
+            "service",
+            "aggregated_interface"
         ]
     }
     managed_object = ForeignKeyField(ManagedObject)
