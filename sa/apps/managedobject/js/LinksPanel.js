@@ -54,6 +54,11 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
                 {
                     text: __("Method"),
                     dataIndex: "discovery_method"
+                },
+                {
+                    text: __("Remote platform"),
+                    dataIndex: __("Remote Platform"),
+                    flex: 1
                 }
             ],
             dockedItems: [
