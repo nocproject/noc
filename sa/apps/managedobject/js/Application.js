@@ -946,6 +946,9 @@ Ext.define("NOC.sa.managedobject.Application", {
                 case "interfaces":
                     me.onInterfaces();
                     break;
+                case "links":
+                    me.onLinks();
+                    break;
             }
         });
     }
