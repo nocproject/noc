@@ -772,12 +772,21 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         rlink = ri.link
         # Check link is already exists
         if llink and rlink and llink.id == rlink.id:
-            self.logger.info(
-                "Unlinking: %s:%s -- %s:%s. ",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface
-            )
-            llink.delete()
+            if llink.discovery_method == self.name:
+                self.logger.info(
+                    "Unlinking: %s:%s -- %s:%s. ",
+                    local_object.name, local_interface,
+                    remote_object.name, remote_interface
+                )
+                llink.delete()
+            else:
+                self.logger.info(
+                    "Cannot unlink: %s:%s -- %s:%s. "
+                    "Created by other discovery method (%s)",
+                    local_object.name, local_interface,
+                    remote_object.name, remote_interface,
+                    llink.discovery_method
+                )
         else:
             self.logger.info(
                 "Cannot unlink: %s:%s -- %s:%s. "
