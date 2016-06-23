@@ -9,6 +9,7 @@ console.debug("Defining NOC.sa.managedobject.LinksPanel");
 Ext.define("NOC.sa.managedobject.LinksPanel", {
     extend: "NOC.core.ApplicationPanel",
     autoScroll: true,
+    historyHashPrefix: "links",
 
     initComponent: function() {
         var me = this;
@@ -30,7 +31,7 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
             autoScroll: true,
             columns: [
                 {
-                    text: __("Local"),
+                    text: __("Local Interface"),
                     dataIndex: "local_interface",
                     renderer: NOC.render.Lookup("local_interface")
                 },
@@ -44,7 +45,7 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
                     renderer: NOC.render.LookupTooltip("remote_object", "{remote_platform}")
                 },
                 {
-                    text: __("Remote"),
+                    text: __("Remote Interface"),
                     dataIndex: "remote_interface",
                     renderer: NOC.render.Lookup("remote_interface")
                 },
@@ -58,7 +59,7 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
                 },
                 {
                     text: __("Remote Platform"),
-                    dataIndex: __("Remote Platform"),
+                    dataIndex: "remote_platform"
                 },
                 {
                     text: __("First Discovered"),
