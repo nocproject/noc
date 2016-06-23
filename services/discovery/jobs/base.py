@@ -99,6 +99,7 @@ class DiscoveryCheck(object):
     def run(self):
         if not self.is_enabled():
             self.logger.info("Check is disabled. Skipping")
+            return
         with self.job.check_timer(self.name):
             # Check required scripts
             if (self.required_script and
