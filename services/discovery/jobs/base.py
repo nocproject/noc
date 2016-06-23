@@ -299,7 +299,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             # Resolve remote object
             remote_object = self.get_neighbor(ro)
             if not remote_object:
-                self.logger.debug(
+                self.logger.info(
                     "Remote object '%s' is not found. Skipping",
                     ro
                 )
@@ -310,7 +310,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 ri
             )
             if not remote_interface:
-                self.logger.debug(
+                self.logger.info(
                     "Cannot resolve remote interface %s:%r. Skipping",
                     remote_object.name, ri
                 )
@@ -319,7 +319,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             if remote_object.id == self.object.id:
                 loops[li] = remote_interface
                 if (remote_interface in loops and loops[remote_interface] == li):
-                    self.logger.debug(
+                    self.logger.info(
                         "Loop link detected: %s:%s - %s:%s",
                         self.object.name, li,
                         self.object.name, remote_interface)
@@ -329,7 +329,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     )
                 continue
             # Submitting candidates
-            self.logger.debug(
+            self.logger.info(
                 "Link candidate: %s:%s - %s:%s",
                 self.object.name, li,
                 remote_object.name, remote_interface
@@ -340,7 +340,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         for remote_object in candidates:
             if (self.required_script and
                     self.required_script not in remote_object.scripts):
-                self.logger.debug(
+                self.logger.info(
                     "Remote object '%s' does not support %s script. "
                     "Cannot confirm links",
                     remote_object.name, self.required_script
@@ -739,7 +739,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
 
     def reject_link(self, local_object, local_interface,
                     remote_object, remote_interface):
-        self.logger.debug(
+        self.logger.info(
             "Reject link: %s:%s -- %s:%s",
             local_object, local_interface,
             remote_object, remote_interface
@@ -748,7 +748,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         li = self.get_interface_by_name(mo=local_object,
                                         name=local_interface)
         if not li:
-            self.logger.debug(
+            self.logger.info(
                 "Cannot unlink: %s:%s -- %s:%s. "
                 "Interface %s:%s is not discovered",
                 local_object.name, local_interface,
@@ -759,7 +759,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         ri = self.get_interface_by_name(mo=remote_object,
                                         name=remote_interface)
         if not ri:
-            self.logger.debug(
+            self.logger.info(
                 "Cannot unlink: %s:%s -- %s:%s. "
                 "Interface %s is not discovered",
                 local_object.name, local_interface,
@@ -772,14 +772,14 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         rlink = ri.link
         # Check link is already exists
         if llink and rlink and llink.id == rlink.id:
-            self.logger.debug(
+            self.logger.info(
                 "Unlinking: %s:%s -- %s:%s. ",
                 local_object.name, local_interface,
                 remote_object.name, remote_interface
             )
             llink.delete()
         else:
-            self.logger.debug(
+            self.logger.info(
                 "Cannot unlink: %s:%s -- %s:%s. "
                 "Not linked yet",
                 local_object.name, local_interface,
