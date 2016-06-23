@@ -58,10 +58,6 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
                     dataIndex: "discovery_method"
                 },
                 {
-                    text: __("Remote Platform"),
-                    dataIndex: "remote_platform"
-                },
-                {
                     text: __("First Discovered"),
                     dataIndex: "first_discovered"
                 },
@@ -102,6 +98,7 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
+                console.log("Links data", data);
                 me.grid.setTitle(record.get("name") + " links");
                 me.store.loadData(data);
             },
