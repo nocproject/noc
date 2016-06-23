@@ -8,7 +8,6 @@ console.debug("Defining NOC.sa.managedobject.LinksPanel");
 
 Ext.define("NOC.sa.managedobject.LinksPanel", {
     extend: "NOC.core.ApplicationPanel",
-    autoScroll: true,
     historyHashPrefix: "links",
 
     initComponent: function() {
