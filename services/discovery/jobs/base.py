@@ -92,7 +92,13 @@ class DiscoveryCheck(object):
         self.sub_cache = {}
         self.profile_cache = {}
 
+    def is_enabled(self):
+        checks = self.job.attrs.get("_checks", set())
+        return not checks or self.name in checks
+
     def run(self):
+        if not self.is_enabled():
+            self.logger.info("Check is disabled. Skipping")
         with self.job.check_timer(self.name):
             # Check required scripts
             if (self.required_script and
