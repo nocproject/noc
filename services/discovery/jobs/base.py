@@ -549,24 +549,36 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 llink.touch()
             return
         # Check method preferences
-        if llink and not self.is_preferable_over(llink.discovery_method):
-            self.logger.info(
-                "Not linking: %s:%s -- %s:%s. "
-                "'%s' method is preferable over '%s'",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface,
-                llink.discovery_method, self.name
-            )
-            return
-        if rlink and not self.is_preferable_over(rlink.discovery_method):
-            self.logger.info(
-                "Not linking: %s:%s -- %s:%s. "
-                "'%s' method is preferable over '%s'",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface,
-                rlink.discovery_method, self.name
-            )
-            return
+        if llink:
+            if self.is_preferable_over(llink.discovery_method):
+                self.logger.info(
+                    "Relinking %s: %s method is preferable over %s",
+                    llink, self.name, llink.discovery_method
+                )
+            else:
+                self.logger.info(
+                    "Not linking: %s:%s -- %s:%s. "
+                    "'%s' method is preferable over '%s'",
+                    local_object.name, local_interface,
+                    remote_object.name, remote_interface,
+                    llink.discovery_method, self.name
+                )
+                return
+        if rlink:
+            if self.is_preferable_over(rlink.discovery_method):
+                self.logger.info(
+                    "Relinking %s: %s method is preferable over %s",
+                    rlink, self.name, rlink.discovery_method
+                )
+            else:
+                self.logger.info(
+                    "Not linking: %s:%s -- %s:%s. "
+                    "'%s' method is preferable over '%s'",
+                    local_object.name, local_interface,
+                    remote_object.name, remote_interface,
+                    rlink.discovery_method, self.name
+                )
+                return
         self.logger.info(
             "Interface linking policy: %s/%s",
             li.profile.discovery_policy, ri.profile.discovery_policy
