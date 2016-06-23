@@ -118,7 +118,15 @@ class Interface(Document):
         Return Link instance or None
         :return:
         """
-        return Link.objects.filter(interfaces=self.id).first()
+        if self.type == "aggregated":
+            q = {
+                "interfaces__in": [self.id] + [i.id for i in self.lag_members]
+            }
+        else:
+            q = {
+                "interfaces": self.id
+            }
+        return Link.objects.filter(**q).first()
 
     @property
     def is_linked(self):
@@ -126,9 +134,15 @@ class Interface(Document):
         Check interface is linked
         :returns: True if interface is linked, False otherwise
         """
-        return bool(Link._get_collection().find_one({
-            "interfaces": self.id
-        }))
+        if self.type == "aggregated":
+            q = {
+                "interfaces": {
+                    "$in": [self.id] + [i.id for i in self.lag_members]
+                }
+            }
+        else:
+            q = {"interfaces": self.id}
+        return bool(Link._get_collection().find_one(q))
 
     def unlink(self):
         """
