@@ -170,7 +170,9 @@ class ManagedObjectApplication(ExtModelApplication):
                         "remote_interface__label": ri.name,
                         "discovery_method": link.discovery_method,
                         "local_description": li.description,
-                        "remote_description": ri.description
+                        "remote_description": ri.description,
+                        "first_discovered": link.first_discovered.isoformat() if link.first_discovered else None,
+                        "last_seen": link.last_seen.isoformat() if link.last_seen else None
                     }]
         return result
 
