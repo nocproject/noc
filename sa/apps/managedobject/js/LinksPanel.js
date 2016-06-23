@@ -15,7 +15,7 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
         me.currentLink = null;
 
         me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.onRefresh
@@ -29,36 +29,31 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
             autoScroll: true,
             columns: [
                 {
-                    text: "Local",
+                    text: __("Local"),
                     dataIndex: "local_interface",
                     renderer: NOC.render.Lookup("local_interface")
                 },
                 {
-                    text: "Local Description",
+                    text: __("Local Description"),
                     dataIndex: "local_description"
                 },
                 {
-                    text: "Neighbor",
+                    text: __("Neighbor"),
                     dataIndex: "remote_object",
                     renderer: NOC.render.LookupTooltip("remote_object", "{remote_platform}")
                 },
                 {
-                    text: "Remote",
+                    text: __("Remote"),
                     dataIndex: "remote_interface",
                     renderer: NOC.render.Lookup("remote_interface")
                 },
                 {
-                    text: "Remote Description",
+                    text: __("Remote Description"),
                     dataIndex: "remote_description"
                 },
                 {
-                    text: "Method",
+                    text: __("Method"),
                     dataIndex: "discovery_method"
-                },
-                {
-                    text: "Commited",
-                    dataIndex: "commited",
-                    renderer: NOC.render.Bool
                 }
             ],
             dockedItems: [
@@ -97,7 +92,7 @@ Ext.define("NOC.sa.managedobject.LinksPanel", {
                 me.store.loadData(data);
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },
