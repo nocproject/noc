@@ -16,21 +16,21 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
         var me = this;
 
         me.closeButton = Ext.create("Ext.button.Button", {
-            text: "Close",
+            text: __("Close"),
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.onClose
         });
 
          me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.onRefresh
         });
 
          me.runSelectedButton = Ext.create("Ext.button.Button", {
-             text: "Run",
+             text: __("Run"),
              glyph: NOC.glyph.play,
              scope: me,
              disabled: true,
@@ -38,7 +38,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
         });
 
         me.stopSelectedButton = Ext.create("Ext.button.Button", {
-             text: "Disable",
+             text: __("Disable"),
              glyph: NOC.glyph.minus_circle,
              scope: me,
              disabled: true,
@@ -87,18 +87,18 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
             split: true,
             columns: [
                 {
-                    text: "Name",
+                    text: __("Job"),
                     dataIndex: "name",
                     width: 120
                 },
                 {
-                    text: "Profile",
+                    text: __("Profile"),
                     dataIndex: "enable_profile",
                     renderer: NOC.render.Bool,
                     width: 40
                 },
                 {
-                    text: "Status",
+                    text: __("Status"),
                     dataIndex: "status",
                     width: 40,
                     renderer: NOC.render.Choices({
@@ -113,13 +113,13 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                     })
                 },
                 {
-                    text: "Last Run",
+                    text: __("Last Run"),
                     dataIndex: "last_run",
                     width: 120,
                     renderer: NOC.render.DateTime
                 },
                 {
-                    text: "Last Status",
+                    text: __("Last Status"),
                     dataIndex: "last_status",
                     width: 40,
                     renderer: NOC.render.Choices({
@@ -130,7 +130,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                     })
                 },
                 {
-                    text: "Next Run",
+                    text: __("Next Run"),
                     dataIndex: "next_run",
                     width: 120,
                     renderer: NOC.render.DateTime
@@ -239,10 +239,11 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                 "names": names
             },
             success: function() {
+                NOC.msg.started(__("Job scheduled to start"));
                 me.onRefresh();
             },
             failure: function() {
-                NOC.error("Failed to run tasks");
+                NOC.error(__("Failed to run tasks"));
             }
         });
     },
