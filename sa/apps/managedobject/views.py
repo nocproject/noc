@@ -158,22 +158,22 @@ class ManagedObjectApplication(ExtModelApplication):
                     l += [i]
                 else:
                     r += [i]
-                for li, ri in zip(l, r):
-                    result += [{
-                        "link_id": str(link.id),
-                        "local_interface": str(li.id),
-                        "local_interface__label": li.name,
-                        "remote_object": ri.managed_object.id,
-                        "remote_object__label": ri.managed_object.name,
-                        "remote_platform": ri.managed_object.platform,
-                        "remote_interface": str(ri.id),
-                        "remote_interface__label": ri.name,
-                        "discovery_method": link.discovery_method,
-                        "local_description": li.description,
-                        "remote_description": ri.description,
-                        "first_discovered": link.first_discovered.isoformat() if link.first_discovered else None,
-                        "last_seen": link.last_seen.isoformat() if link.last_seen else None
-                    }]
+            for li, ri in zip(l, r):
+                result += [{
+                    "link_id": str(link.id),
+                    "local_interface": str(li.id),
+                    "local_interface__label": li.name,
+                    "remote_object": ri.managed_object.id,
+                    "remote_object__label": ri.managed_object.name,
+                    "remote_platform": ri.managed_object.platform,
+                    "remote_interface": str(ri.id),
+                    "remote_interface__label": ri.name,
+                    "discovery_method": link.discovery_method,
+                    "local_description": li.description,
+                    "remote_description": ri.description,
+                    "first_discovered": link.first_discovered.isoformat() if link.first_discovered else None,
+                    "last_seen": link.last_seen.isoformat() if link.last_seen else None
+                }]
         return result
 
     def check_mrt_access(self, request, name):
