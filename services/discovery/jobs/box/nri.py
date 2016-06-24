@@ -127,25 +127,37 @@ class NRICheck(DiscoveryCheck):
         now = datetime.datetime.now()
         nc = ExtNRILink._get_collection()
         links = {}  # nri_name -> {dst_mo, dst_interface}
+        ignored = set()
         for d in nc.find({
             "$or": [
                 {"src_mo": self.object.id},
                 {"dst_mo": self.object.id}
             ]
         }):
-            if d["src_mo"] == d["dst_mo"] or d.get("ignore"):
+            if d["src_mo"] == d["dst_mo"]:
                 continue
             if d["src_mo"] == self.object.id:
                 links[d["src_interface"]] = (d["dst_mo"], d["dst_interface"])
+                if d.get("ignore"):
+                    ignored.add(d["src_interface"])
             else:
                 links[d["dst_interface"]] = (d["src_mo"], d["src_interface"])
+                if d.get("ignore"):
+                    ignored.add(d["dst_interface"])
+        # Dump nri links map
+        for li in sorted(links, key=split_alnum):
+            if li in ignored:
+                self.logger.info("NRI proposal %s -> %s:%s (Ignored)",
+                                 li, links[li][0], links[li][1])
+            else:
+                self.logger.info("NRI proposal %s -> %s:%s",
+                                 li, links[li][0], links[li][1])
+        # Exclude ignored
+        for i in ignored:
+            del links[i]
         if not links:
             self.logger.info("Nothing to link")
             return  # Nothing to link
-        # Dump nri links map
-        for li in sorted(links, key=split_alnum):
-            self.logger.info("NRI proposal %s -> %s:%s",
-                             li, links[li][0], links[li][1])
         # Build nri_name -> name interface map
         nri_map = {}
         for i in six.itervalues(self.interfaces):
