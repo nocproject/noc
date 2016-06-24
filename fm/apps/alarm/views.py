@@ -95,7 +95,7 @@ class AlarmApplication(ExtApplication):
                 q["managed_object__nin"] = Maintainance.currently_affected()
             elif q["maintainance"] == "only":
                 q["managed_object__in"] = Maintainance.currently_affected()
-            del q["maintainace"]
+            del q["maintainance"]
         if "administrative_domain" in q:
             a = AdministrativeDomain.objects.get(id=q["administrative_domain"])
             q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
