@@ -107,7 +107,8 @@ class Maintainance(Document):
         # Calculate affected objects
         affected = set(o.object.id for o in self.direct_objects)
         for o in self.direct_segments:
-            affected |= get_segment_objects(o.segment)
+            if o.segment:
+                affected |= get_segment_objects(o.segment)
         while True:
             r = get_downlinks(affected)
             if not r:
