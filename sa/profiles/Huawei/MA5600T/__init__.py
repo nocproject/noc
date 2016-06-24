@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     pattern_username = r"^>>User name:"
     pattern_password = r"^>>(?:User )?[Pp]assword:"
     pattern_more = [
-        (r"^---- More", " "),
+        (r"^---- More \( Press 'Q' to break \) ----", " "),
         (r"\[<frameId/slotId>\]", "\n"),
         (r"\(y/n\) \[n\]", "y\n"),
         (r"\[to\]\:", "\n")
@@ -27,7 +27,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"% Unknown command"
     command_more = " "
     config_volatile = ["^%.*?$"]
-    command_disable_pager="length 0"
+    command_disable_pager="scroll\n"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "quit"
