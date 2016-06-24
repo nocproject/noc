@@ -153,7 +153,7 @@ class Interface(Document):
         link = self.link
         if link is None:
             raise ValueError("Interface is not linked")
-        if link.is_ptp:
+        if link.is_ptp or link.is_lag:
             link.delete()
         else:
             raise ValueError("Cannot unlink non p-t-p link")
