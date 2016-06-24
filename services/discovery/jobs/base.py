@@ -190,6 +190,7 @@ class DiscoveryCheck(object):
         """
         Returns Interface instance
         """
+        self.logger.debug("Remote port name: %s", name)
         mo = mo or self.object
         name = mo.profile.convert_interface_name(name)
         key = (mo, name)
@@ -205,6 +206,7 @@ class DiscoveryCheck(object):
         """
         Returns Interface instance referred by MAC address
         """
+        self.logger.debug("Remote port MAC: %s", mac)
         mo = mo or self.object
         key = (mo, mac)
         if key not in self.if_mac_cache:
@@ -224,6 +226,7 @@ class DiscoveryCheck(object):
         """
         Returns Interface instance referred by IP address
         """
+        self.logger.debug("Remote port IP: %s", ip)
         mo = mo or self.object
         key = (mo, ip)
         if key not in self.if_ip_cache:
