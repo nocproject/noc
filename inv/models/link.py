@@ -114,10 +114,21 @@ class Link(Document):
         """
         Touch last_seen
         """
-        self.last_seen = datetime.datetime.now()
+        now = datetime.datetime.now()
+        op = {
+            "last_seen": now
+        }
+        self.last_seen = now
         if method:
             self.discovery_method = method
-        self.save()
+            op["discovery_method"] = method
+        # Do not save to prevent rebuilding topology
+        self._get_collection().update({
+            "_id": self.id
+        }, {
+            "$set": op
+        })
+        # self.save()
 
     @classmethod
     def object_links(cls, object):
