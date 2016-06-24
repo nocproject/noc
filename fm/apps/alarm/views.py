@@ -90,12 +90,13 @@ class AlarmApplication(ExtApplication):
             if qp in self.clean_fields:
                 q[p] = self.clean_fields[qp].clean(q[p])
         # Exclude maintainance
-        if "maintainance" in q:
-            if q["maintainance"] == "hide":
-                q["managed_object__nin"] = Maintainance.currently_affected()
-            elif q["maintainance"] == "only":
-                q["managed_object__in"] = Maintainance.currently_affected()
-            del q["maintainance"]
+        if "maintainance" not in q:
+            q["maintainance"] = "hide"
+        if q["maintainance"] == "hide":
+            q["managed_object__nin"] = Maintainance.currently_affected()
+        elif q["maintainance"] == "only":
+            q["managed_object__in"] = Maintainance.currently_affected()
+        del q["maintainance"]
         if "administrative_domain" in q:
             a = AdministrativeDomain.objects.get(id=q["administrative_domain"])
             q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
