@@ -27,7 +27,10 @@ Ext.define("NOC.fm.alarm.Application", {
         me.pollingTaskId = null;
         me.lastCheckTS = null;
         me.sounds = {};  // url -> audio object
-        me.currentQuery = {status: "A"};
+        me.currentQuery = {
+            status: "A",
+            maintainance: "hide"
+        };
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.fm.alarm.Model",
             autoLoad: false,
