@@ -8,6 +8,7 @@
 
 ## Python modules
 import os
+import argparse
 ## Third-party modules
 ## NOC modules
 from noc.core.management.base import BaseCommand
@@ -24,12 +25,20 @@ class Command(BaseCommand):
             default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
             help="Configuration path"
         )
+        parser.add_argument(
+            "services",
+            nargs=argparse.REMAINDER,
+            help="Service names"
+        )
 
-    def handle(self, config, *args, **options):
+    def handle(self, config, services=None, *args, **options):
         catalog = ServiceCatalog(config)
+        services = set(services or [])
         # Enumerate services
         out = [["S", "Service", "Node", "DC", "URL"]]
         for sn in catalog.iter_services():
+            if services and sn not in services:
+                continue
             sd = catalog.get_service(sn)
             for sn in sd.nodes:
                 if sd.external:
