@@ -194,13 +194,11 @@ Ext.define("NOC.fm.alarm.Application", {
                 },
                 {
                     text: __("Show"),
-                    pressed: true,
                     tooltip: __("Show all alarms"),
                     filterExpression: "show"
                 },
                 {
                     text: __("Only"),
-                    pressed: true,
                     tooltip: __("Show only alarms covered by maintainance"),
                     filterExpression: "only"
                 }
