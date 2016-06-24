@@ -46,6 +46,7 @@ from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete
 from noc.inv.models.object import Object
 from credcache import CredentialsCache
+from noc.core.defer import call_later
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
@@ -935,6 +936,30 @@ class ManagedObject(Model):
                 key=self.id,
                 pool=self.pool.name
             )
+
+    def update_topology(self):
+        """
+        Rebuild topology caches
+        """
+        # Rebuild uplinks
+        call_later(
+            "noc.core.topology.segment.update_uplinks",
+            60,
+            segment_id=self.segment.id
+        )
+        # Rebuild PoP links
+        container = self.container
+        for o in Object.get_managed(self):
+            pop = o.get_pop()
+            if not pop and container:
+                # Fallback to MO container
+                pop = container.get_pop()
+            if pop:
+                call_later(
+                    "noc.inv.util.pop_links.update_pop_links",
+                    20,
+                    pop_id=pop.id
+                )
 
 
 @on_save
