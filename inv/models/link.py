@@ -129,38 +129,21 @@ class Link(Document):
         return cls.object_links(object).count()
 
     def on_save(self):
-        self.update_pop_links()
-        self.update_segments()
+        self.update_topology()
 
     def on_delete(self):
-        self.update_pop_links()
-        self.update_segments()
+        self.update_topology()
 
-    def update_pop_links(self):
-        for i in self.interfaces:
-            for o in Object.get_managed(i.managed_object):
-                pop = o.get_pop()
-                if not pop and i.managed_object.container:
-                    # Fallback to MO container
-                    pop = i.managed_object.container.get_pop()
-                if pop:
-                    call_later(
-                        "noc.inv.util.pop_links.update_pop_links",
-                        20,
-                        pop_id=pop.id
-                    )
+    @property
+    def managed_objects(self):
+        """
+        List of connected managed objects
+        """
+        return list(set(i.managed_object for i in self.interfaces))
 
-    def update_segments(self):
-        segments = set()
-        for i in self.interfaces:
-            segments.add(i.managed_object.segment.id)
-        for s in segments:
-            call_later(
-                "noc.core.topology.segment.update_uplinks",
-                60,
-                segment_id=s
-            )
-
+    def update_topology(self):
+        for mo in self.managed_objects:
+            mo.update_topology()
 
 ##
 from object import Object
