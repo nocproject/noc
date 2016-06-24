@@ -16,9 +16,11 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.extnrilink import ExtNRILink
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.service import Service
+from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.link import Link
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.core.etl.portmapper.loader import loader as portmapper_loader
+from noc.lib.text import split_alnum
 
 
 class NRICheck(DiscoveryCheck):
@@ -140,6 +142,10 @@ class NRICheck(DiscoveryCheck):
         if not links:
             self.logger.info("Nothing to link")
             return  # Nothing to link
+        # Dump nri links map
+        for li in sorted(links, key=split_alnum):
+            self.logger.info("NRI proposal %s -> %s:%s",
+                             li, links[li][0], links[li][1])
         # Build nri_name -> name interface map
         nri_map = {}
         for i in six.itervalues(self.interfaces):
@@ -155,6 +161,7 @@ class NRICheck(DiscoveryCheck):
             for i in d["interfaces"]:
                 linked[i] = d.get("discovery_method")
         # Process still unlinked interfaces
+        changed = set()
         for n in nri_map:
             if_name = nri_map[n]["name"]
             if nri_map[n]["_id"] in linked:
@@ -189,13 +196,15 @@ class NRICheck(DiscoveryCheck):
                     "first_discovery": now,
                     "last_seen": now
                 })
-                # @todo: update_pop_links
-                # @todo: update_uplinks
+                changed.add(self.object)
+                changed.add(ManagedObject.get_by_id(rmo))
             else:
                 self.logger.info(
                     "[%s|%s] Cannot find remote interface %s:%s. Skipping",
                     if_name, n, rmo, rnn
                 )
+        for o in changed:
+            o.update_topology()
 
     def process_services(self):
         """
