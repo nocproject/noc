@@ -27,7 +27,10 @@ Ext.define("NOC.fm.alarm.Application", {
         me.pollingTaskId = null;
         me.lastCheckTS = null;
         me.sounds = {};  // url -> audio object
-        me.currentQuery = {status: "A"};
+        me.currentQuery = {
+            status: "A",
+            maintainance: "hide"
+        };
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.fm.alarm.Model",
             autoLoad: false,
@@ -184,6 +187,31 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         });
 
+        me.maintainanceButton = Ext.create("Ext.button.Segmented", {
+            items: [
+                {
+                    text: __("Hide maintainance"),
+                    tooltip: __("Hide alarms covered by maintainance"),
+                    pressed: true,
+                    filterExpression: "hide"
+                },
+                {
+                    text: __("Show"),
+                    tooltip: __("Show all alarms"),
+                    filterExpression: "show"
+                },
+                {
+                    text: __("Only"),
+                    tooltip: __("Show only alarms covered by maintainance"),
+                    filterExpression: "only"
+                }
+            ],
+            listeners: {
+                scope: me,
+                toggle: me.onChangeFilter
+            }
+        });
+
         me.gridMenu = Ext.create("Ext.menu.Menu", {
             items: [
                 {
@@ -251,6 +279,7 @@ Ext.define("NOC.fm.alarm.Application", {
                         me.typeButton,
                         me.expandButton,
                         me.ttConfirmButton,
+                        me.maintainanceButton,
                         me.objectCombo,
                         me.segmentCombo,
                         me.admdomCombo,
@@ -439,6 +468,13 @@ Ext.define("NOC.fm.alarm.Application", {
         if(me.ttConfirmButton.items.first().pressed) {
             q.wait_tt = 1;
         }
+        me.maintainanceButton.items.each(function(b) {
+            if(b.pressed) {
+                q["maintainance"] = b.filterExpression;
+                return false;
+            }
+            return true;
+        });
         // Selector
         setIf("managedobjectselector", me.selectorCombo.getValue());
         // Adm Domain
