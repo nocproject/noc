@@ -188,8 +188,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                 # Notify consequences
                 for a in cons_escalated:
                     c_tt_name, c_tt_id = a.escalation_tt.split(":")
-                    tts_id = tt_system_id_cache[c_tt_name]
-                    cts = tt_system_cache[tts_id]
+                    cts = tt_system_id_cache[c_tt_name]
                     if cts:
                         tts = cts.get_system()
                         try:

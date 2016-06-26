@@ -25,6 +25,10 @@ class CLI(object):
     iostream_class = None
     BUFFER_SIZE = 1048576
     MATCH_TAIL = 256
+    # Retries on immediate disconnect
+    CONNECT_RETRIES = 3
+    # Timeout after immediate disconnect
+    CONNECT_TIMEOUT = 3
 
     class CLIError(Exception):
         pass
@@ -143,8 +147,7 @@ class CLI(object):
 
     @tornado.gen.coroutine
     def read_until_prompt(self):
-        connect_retries = 3
-        connect_timeout = 3
+        connect_retries = self.CONNECT_RETRIES
         while True:
             try:
                 r = yield self.iostream.read_bytes(self.BUFFER_SIZE,
@@ -155,10 +158,10 @@ class CLI(object):
                 if not self.is_started and connect_retries:
                     self.logger.info(
                         "Connection reset. %d retries left. Waiting %d seconds",
-                        connect_retries, connect_timeout
+                        connect_retries, self.CONNECT_TIMEOUT
                     )
                     while connect_retries:
-                        yield tornado.gen.sleep(connect_timeout)
+                        yield tornado.gen.sleep(self.CONNECT_TIMEOUT)
                         connect_retries -= 1
                         self.iostream = self.create_iostream()
                         address = (
