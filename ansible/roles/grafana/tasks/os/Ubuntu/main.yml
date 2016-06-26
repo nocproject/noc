@@ -8,7 +8,7 @@
 
 - name: Add Grafana repo
   apt_repository:
-    repo: "deb https://packagecloud.io/grafana/testing/debian/ wheezy main"
+    repo: "deb https://packagecloud.io/grafana/stable/debian/ wheezy main"
     state: present
     update_cache: yes
   environment:
