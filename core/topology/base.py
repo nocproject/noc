@@ -74,7 +74,7 @@ class BaseTopology(object):
             "shape_height": sh,
             "level": mo.object_profile.level,
             "ports": [],
-            "caps": oc
+            "caps": list(oc)
         })
         self.G.add_node(mo.id, attrs)
 
