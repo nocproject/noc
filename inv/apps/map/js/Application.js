@@ -165,6 +165,15 @@ Ext.define("NOC.inv.map.Application", {
             mapOverlay: me.mapPanel.LO_LOAD
         });
 
+        me.viewStpButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.edit,
+            text: __("STP"),
+            enableToggle: true,
+            disabled: true,
+            tooltip: __("Show STP topology"),
+            scope: me,
+            handler: me.onStp
+        });
 
         Ext.apply(me, {
             dockedItems: [
@@ -313,5 +322,10 @@ Ext.define("NOC.inv.map.Application", {
                 }
             }
         });
+    },
+
+    onStp: function() {
+        var me = this;
+        me.mapPanel.setStp(me.viewStpButton.pressed);
     }
 });
