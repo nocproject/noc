@@ -85,6 +85,11 @@ Ext.define("NOC.inv.map.MapPanel", {
     // Link overlay modes
     LO_NONE: 0,
     LO_LOAD: 1,
+    // Link status
+    LINK_OK: 0,
+    LINK_ADMIN_DOWN: 1,
+    LINK_OPER_DOWN: 2,
+    LINK_STP_BLOCKED: 3,
 
     initComponent: function () {
         var me = this;
@@ -95,6 +100,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.objectsList = [];
         me.portObjects = {};  // port id -> object id
         me.currentStpRoots = {};
+        me.currentStpBlocked = {};
         me.linkBw = {};  // Link id -> {in: ..., out: ...}
         me.isInteractive = false;  // Graph is editable
         me.isDirty = false;  // Graph is changed
@@ -681,46 +687,10 @@ Ext.define("NOC.inv.map.MapPanel", {
                 };
             //
             if(!getStatus(ports[0], "admin_status") || !getStatus(ports[1], "admin_status")) {
-                // Administratively down
-                link.attr({
-                    ".connection": me.adminDownStyle
-                });
-                luStyle = Ext.apply({
-                    attrs: {
-                        text: me.adminDownStyle
-                    },
-                    visibility: "visible",
-                    position: 0.5,
-                    fill: me.adminDownStyle.stroke
-                }, me.adminDownStyle);
-
-                luStyle.fill = luStyle.stroke;
-                luStyle.visibility = "visible";
-                luStyle.text = "\uf00d";
-                luStyle["font-size"] = 10;
-                link.label(0, {attrs: {text: luStyle}});
-                link.label(0, {position: 0.5});
+                me.setLinkStyle(link, me.LINK_ADMIN_DOWN);
             } else if(!getStatus(ports[0], "oper_status") || !getStatus(ports[1], "oper_status")) {
-                // Oper down
-                link.attr({
-                    ".connection": me.operDownStyle
-                });
-                luStyle = Ext.apply({
-                    attrs: {
-                        text: me.operDownStyle
-                    },
-                    visibility: "visible",
-                    position: 0.5,
-                    fill: me.operDownStyle.stroke
-                }, me.operDownStyle);
-
-                luStyle.fill = luStyle.stroke;
-                luStyle.visibility = "visible";
-                luStyle.text = "\uf071";
-                luStyle["font-size"] = 10;
-                link.label(0, {attrs: {text: luStyle}});
-                link.label(0, {position: 0.5});
-            } else {
+                me.setLinkStyle(link, me.LINK_OPER_DOWN);
+            } else if(!me.currentStpBlocked[linkId]) {
                 // Get bandwidth
                 sIn = getTotal(ports[0], "Interface | Load | In");
                 sOut = getTotal(ports[0], "Interface | Load | Out");
@@ -888,29 +858,61 @@ Ext.define("NOC.inv.map.MapPanel", {
     },
 
     setStpBlocked: function(blocked) {
-        var me = this;
+        var me = this,
+            newStpBlocked = {};
         Ext.each(me.graph.getLinks(), function(link) {
-            if(blocked.indexOf(link.get("data").id) !== -1) {
-                // Oper down
-                link.attr({
-                    ".connection": me.stpBlockedStyle
-                });
-                luStyle = Ext.apply({
-                    attrs: {
-                        text: me.stpBlockedStyle
-                    },
-                    visibility: "visible",
-                    position: 0.5,
-                    fill: me.stpBlockedStyle.stroke
-                }, me.stpBlockedStyle);
-
-                luStyle.fill = luStyle.stroke;
-                luStyle.visibility = "visible";
-                luStyle.text = "\uf05e";
-                luStyle["font-size"] = 12;
-                link.label(0, {attrs: {text: luStyle}});
-                link.label(0, {position: 0.5});
+            var linkId = link.get("data").id;
+            if(blocked.indexOf(linkId) !== -1) {
+                newStpBlocked[linkId] = true;
+                me.setLinkStyle(link, me.LINK_STP_BLOCKED);
             }
         });
+        // @todo: Remove changed styles
+        me.currentStpBlocked = newStpBlocked;
+        console.log("blocked", me.currentStpBlocked);
+    },
+
+    setLinkStyle: function(link, status) {
+        var me = this,
+            style, glyph,
+            fontSize = 10,
+            luStyle;
+
+        switch(status) {
+            case me.LINK_OK:
+                break;
+            case me.LINK_ADMIN_DOWN:
+                style = me.adminDownStyle;
+                glyph = "\uf00d";
+                break;
+            case me.LINK_OPER_DOWN:
+                style = me.operDownStyle;
+                glyph = "\uf071";
+                break;
+            case me.LINK_STP_BLOCKED:
+                style = me.stpBlockedStyle;
+                glyph = "\uf05e";
+                fontSize = 12;
+                break;
+        }
+        //
+        link.attr({
+            ".connection": style
+        });
+        luStyle = Ext.apply({
+            attrs: {
+                text: style
+            },
+            visibility: "visible",
+            position: 0.5,
+            fill: style.stroke
+        }, style);
+        // @todo: Remove?
+        luStyle.fill = luStyle.stroke;
+        luStyle.visibility = "visible";
+        luStyle.text = glyph;
+        luStyle["font-size"] = fontSize;
+        link.label(0, {attrs: {text: luStyle}});
+        link.label(0, {position: 0.5});
     }
 });
