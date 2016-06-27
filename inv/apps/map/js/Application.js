@@ -192,7 +192,9 @@ Ext.define("NOC.inv.map.Application", {
                         me.newLayoutButton,
                         "-",
                         me.viewMapButton,
-                        me.viewLoadButton
+                        me.viewLoadButton,
+                        "-",
+                        me.viewStpButton
                     ]
                 },
                 me.inspectorPanel
