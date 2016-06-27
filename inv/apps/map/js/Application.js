@@ -56,6 +56,13 @@ Ext.define("NOC.inv.map.Application", {
             }
         });
 
+        me.reloadButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.refresh,
+            text: __("Reload"),
+            scope: me,
+            handler: me.onReload
+        });
+
         me.editButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.edit,
             text: __("Edit"),
@@ -168,6 +175,7 @@ Ext.define("NOC.inv.map.Application", {
                         me.segmentCombo,
                         "-",
                         me.zoomCombo,
+                        me.reloadButton,
                         "-",
                         me.editButton,
                         me.saveButton,
@@ -263,6 +271,11 @@ Ext.define("NOC.inv.map.Application", {
     },
 
     onRevert: function() {
+        var me = this;
+        me.loadSegment(me.currentSegmentId);
+    },
+
+    onReload: function() {
         var me = this;
         me.loadSegment(me.currentSegmentId);
     },
