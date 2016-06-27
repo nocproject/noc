@@ -104,17 +104,19 @@ class Command(BaseCommand):
             if not os.path.exists(t_dir):
                 os.makedirs(t_dir)
             for domain in self.SERVICES[svc]:
-                src = []
-                for expr in self.SERVICES[svc][domain]:
-                    src += self.glob(expr)
-                subprocess.check_call([
+                args = [
                     self.BABEL, "extract",
                     "-F", self.BABEL_CFG,
                     "--sort-by-file",
                     "--project=%s" % self.PROJECT,
                     "--copyright-holder=%s" % self.COPYRIGHT,
                     "-o", "%s/%s.pot" % (t_dir, domain)
-                ] + src)
+                ]
+                if domain.endswith("_js"):
+                    args += ["-k", "__"]
+                for expr in self.SERVICES[svc][domain]:
+                    args += self.glob(expr)
+                subprocess.check_call(args)
 
     def handle_update(self, services=None, *args, **options):
         if not services:
