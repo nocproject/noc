@@ -42,7 +42,6 @@ class PingService(Service):
         self.source_map = {}  # IP -> {id, interval, status}
         self.ping_tasks = {}  # IP -> PeriodicCallback
         self.omap = None
-        self.fmwriter = None
         self.ping = None
         self.report_rtt = {}  # address -> (name | None)
 
@@ -57,7 +56,6 @@ class PingService(Service):
         self.ping = Ping(self.ioloop, tos=self.config.tos)
         # Register RPC aliases
         self.omap = self.open_rpc("omap")
-        self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
         # Set event listeners
         # self.subscribe("objmapchange.%(pool)s",
         #                self.on_object_map_change)
