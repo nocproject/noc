@@ -26,10 +26,20 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute(self):
+        match = self.re_search(self.rx_ver, self.cli("show switch",
+            cached=True))
+        mac = match.group("id")
         try:
             v = self.cli("show fdb static", cached=True)
             macs = self.rx_line.findall(v)
             if macs:
+                found = False
+                for m in macs:
+                    if m == mac:
+                        found = True
+                        break
+                if not found:
+                    macs += [mac]
                 macs.sort()
                 return [{
                     "first_chassis_mac": f,
@@ -38,9 +48,6 @@ class Script(BaseScript):
         except:
             pass
 
-        match = self.re_search(self.rx_ver, self.cli("show switch",
-            cached=True))
-        mac = match.group("id")
         return {
             "first_chassis_mac": mac,
             "last_chassis_mac": mac
