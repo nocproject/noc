@@ -12,6 +12,7 @@ import urllib
 import json
 ## Third-party modules
 import tornado.httpclient
+from concurrent.futures import ThreadPoolExecutor, as_completed
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
@@ -22,8 +23,8 @@ from noc.inv.models.link import Link
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.lib.stencil import stencil_registry
-#from layout import Layout
 from noc.core.topology.segment import SegmentTopology
+from noc.inv.models.discoveryid import DiscoveryID
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
@@ -69,7 +70,7 @@ class MapApplication(ExtApplication):
         node_hints = {}
         link_hints = {}
         if settings:
-            self.logger.debug("Using stored positions")
+            self.logger.info("Using stored positions")
             for n in settings.nodes:
                 node_hints[int(n.id)] = {
                     "type": n.type,
@@ -83,7 +84,7 @@ class MapApplication(ExtApplication):
                     "vertices": [{"x": v.x, "y": v.y} for v in l.vertices]
                 }
         else:
-            self.logger.debug("Generating positions")
+            self.logger.info("Generating positions")
         # Generate topology
         topology = SegmentTopology(
             segment, node_hints, link_hints,
@@ -93,6 +94,7 @@ class MapApplication(ExtApplication):
         r = {
             "id": str(segment.id),
             "name": segment.name,
+            "caps": list(topology.caps),
             "nodes": [q_mo(x) for x in topology.G.node.itervalues()],
             "links": [topology.G[u][v] for u, v in topology.G.edges()]
         }
@@ -400,3 +402,44 @@ class MapApplication(ExtApplication):
         return {
             "status": True
         }
+
+    @view(url="^stp/status/$", method=["POST"],
+          access="read", api=True,
+          validate={
+              "objects": ListOfParameter(IntParameter())
+          }
+    )
+    def api_objects_stp_status(self, request, objects):
+        def get_stp_status(object_id):
+            roots = set()
+            blocked = set()
+            object = ManagedObject.get_by_id(object_id)
+            sr = object.scripts.get_spanning_tree()
+            for instance in sr["instances"]:
+                ro = DiscoveryID.find_object(instance["root_id"])
+                if ro:
+                    roots.add(ro)
+                for i in instance["interfaces"]:
+                    if i["role"] == "disabled":
+                        blocked.add(i["interface"])
+            return object_id, roots, blocked
+
+        r = {
+            "roots": [],
+            "blocked": []
+        }
+        futures = []
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            for o in objects:
+                futures += [executor.submit(get_stp_status, o)]
+            for future in as_completed(futures):
+                try:
+                    obj, roots, blocked = future.result()
+                    for ro in roots:
+                        if ro.id not in roots:
+                            roots += [ro.id]
+                    for b in blocked:
+                        blocked += [[obj, b]]
+                except Exception as e:
+                    self.logger.error("[stp] Exception: %s", e)
+        return r
