@@ -25,7 +25,7 @@ class CDPCheck(TopologyDiscoveryCheck):
         result = mo.scripts.get_cdp_neighbors()
         for n in result["neighbors"]:
             device_id = n["device_id"]
-            if device_id in self.RESERVED_NAMES and n.get("remove_ip"):
+            if device_id in self.RESERVED_NAMES and n.get("remote_ip"):
                 device_id = n["remote_ip"]
             yield (
                 n["local_interface"],
