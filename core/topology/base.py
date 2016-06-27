@@ -16,11 +16,16 @@ from noc.lib.text import split_alnum
 
 
 class BaseTopology(object):
+    CAPS = set([
+        "Network | STP"
+    ])
+
     def __init__(self, node_hints=None, link_hints=None):
         self.node_hints = node_hints or {}
         self.link_hints = link_hints or {}
         self.G = nx.Graph()
         self.load()
+        self.caps = set()
 
     def __len__(self):
         return len(self.G)
@@ -52,6 +57,9 @@ class BaseTopology(object):
             return
         shape = self.get_object_shape(mo)
         sw, sh = self.get_shape_size(shape)
+        # Get capabilities
+        oc = set(mo.get_caps()) & self.CAPS
+        self.caps |= oc
         # Apply node hints
         attrs.update(self.node_hints.get(mo.id) or {})
         # Apply default attributes
@@ -65,7 +73,8 @@ class BaseTopology(object):
             "shape_width": sw,
             "shape_height": sh,
             "level": mo.object_profile.level,
-            "ports": []
+            "ports": [],
+            "caps": oc
         })
         self.G.add_node(mo.id, attrs)
 
