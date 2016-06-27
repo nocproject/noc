@@ -46,7 +46,7 @@ class ReportEscalationsApplication(SimpleReport):
         if interval:
             ts = datetime.datetime.now() - datetime.timedelta(days=interval)
             q = {
-                "ts": {
+                "timestamp": {
                     "$gte": ts
                 }
             }
@@ -57,7 +57,7 @@ class ReportEscalationsApplication(SimpleReport):
             else:
                 t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
             q = {
-                "ts": {
+                "timestamp": {
                     "$gte": t0,
                     "$lte": t1
                 }
