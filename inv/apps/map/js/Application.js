@@ -166,7 +166,7 @@ Ext.define("NOC.inv.map.Application", {
         });
 
         me.viewStpButton = Ext.create("Ext.button.Button", {
-            glyph: NOC.glyph.edit,
+            glyph: NOC.glyph.sitemap,
             text: __("STP"),
             enableToggle: true,
             disabled: true,
