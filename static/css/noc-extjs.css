@@ -216,3 +216,13 @@ TABLE {
 .noc-bold {
     font-weight: bold;
 }
+/*
+ * Network Map styles
+ */
+.stp-root tspan {
+    font-weight: bold;
+}
+
+.stp-root tspan:before {
+    content: "*";
+}

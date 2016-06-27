@@ -190,7 +190,8 @@ class MapApplication(ExtApplication):
             "external_segment": {
                 "id": str(object.segment.id),
                 "name": object.segment.name
-            }
+            },
+            "caps": object.get_caps()
         }
         return r
 
@@ -420,8 +421,12 @@ class MapApplication(ExtApplication):
                 if ro:
                     roots.add(ro)
                 for i in instance["interfaces"]:
-                    if i["role"] == "disabled":
-                        blocked.add(i["interface"])
+                    if i["state"] == "discarding" and i["role"] == "alternate":
+                        iface = object.get_interface(i["interface"])
+                        if iface:
+                            link = iface.link
+                            if link:
+                                blocked.add(str(link.id))
             return object_id, roots, blocked
 
         r = {
@@ -436,10 +441,9 @@ class MapApplication(ExtApplication):
                 try:
                     obj, roots, blocked = future.result()
                     for ro in roots:
-                        if ro.id not in roots:
-                            roots += [ro.id]
-                    for b in blocked:
-                        blocked += [[obj, b]]
+                        if ro.id not in r["roots"]:
+                            r["roots"] += [ro.id]
+                    r["blocked"] += blocked
                 except Exception as e:
                     self.logger.error("[stp] Exception: %s", e)
         return r
