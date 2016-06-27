@@ -24,8 +24,8 @@ class BaseTopology(object):
         self.node_hints = node_hints or {}
         self.link_hints = link_hints or {}
         self.G = nx.Graph()
-        self.load()
         self.caps = set()
+        self.load()
 
     def __len__(self):
         return len(self.G)

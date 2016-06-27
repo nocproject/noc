@@ -30,6 +30,8 @@ Ext.define("NOC.inv.map.MapPanel", {
         osDown: [192, 57, 43]
     },
 
+    CAP_STP: "Network | STP",
+
     svgDefaultFilters: [
         '<filter id="highlight">' +
             '<feGaussianBlur stdDeviation="4" result="coloredBlur"/>' +
@@ -85,6 +87,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this;
 
         me.shapeRegistry = NOC.inv.map.ShapeRegistry;
+        me.hasStp = false;
         me.objectNodes = {};
         me.objectsList = [];
         me.portObjects = {};  // port id -> object id
@@ -247,6 +250,8 @@ Ext.define("NOC.inv.map.MapPanel", {
                 scope: me
             });
         }
+        me.hasStp = data.caps.indexOf("Network | STP") !== -1;
+        me.app.viewStpButton.setDisabled(!me.hasStp);
     },
 
     //
@@ -818,5 +823,39 @@ Ext.define("NOC.inv.map.MapPanel", {
         window.open(
             "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.nodeMenuObject
         );
+    },
+
+    setStp: function(status) {
+        var me = this;
+        if(status) {
+            me.pollStp();
+        }
+    },
+
+    pollStp: function() {
+        var me = this,
+            stpNodes = [];
+        // Get STP nodes
+        Ext.each(me.objectsList, function(i) {
+            if(me.objectNodes[i].caps.indexOf(me.CAP_STP) !== -1) {
+                stpNodes.push(i);
+            }
+        });
+        // Get STP status
+        Ext.Ajax.request({
+            url: "/inv/map/stp/status/",
+            method: "POST",
+            jsonData: {
+                objects: stpNodes
+            },
+            scope: me,
+            success: function(response) {
+                var data = Ext.decode(response.responseText);
+                console.log("STP", data);
+            },
+            failure: function() {
+                NOC.msg.failed(__("Failed to get STP status"));
+            }
+        });
     }
 });
