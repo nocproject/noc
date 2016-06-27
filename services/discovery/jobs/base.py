@@ -767,7 +767,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 "Interface %s is not discovered",
                 local_object.name, local_interface,
                 remote_object.name, remote_interface,
-                remote_object.name, remote_interface
+                remote_interface
             )
             return
         # Get existing links
