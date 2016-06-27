@@ -70,6 +70,9 @@ Ext.define("NOC.inv.map.MapPanel", {
     operDownStyle: {
         stroke: "#c0392b"
     },
+    stpBlockedStyle: {
+        stroke: "#8e44ad"
+    },
     // Object status filter names
     statusFilter: {
         0: "osUnknown",
@@ -91,6 +94,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.objectNodes = {};
         me.objectsList = [];
         me.portObjects = {};  // port id -> object id
+        me.currentStpRoots = {};
         me.linkBw = {};  // Link id -> {in: ..., out: ...}
         me.isInteractive = false;  // Graph is editable
         me.isDirty = false;  // Graph is changed
@@ -217,6 +221,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.linkBw = {};
         me.objectsList = [];
         me.interfaceMetrics = [];
+        me.currentStpRoots = {};
         me.graph.clear();
         // Create nodes
         Ext.each(data.nodes, function(node) {
@@ -282,7 +287,8 @@ Ext.define("NOC.inv.map.MapPanel", {
             },
             data: {
                 type: data.type,
-                id: data.id
+                id: data.id,
+                caps: data.caps
             }
         });
         me.objectNodes[data.id] = node;
@@ -405,7 +411,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     },
     onContextMenu: function(view, evt, x, y) {
         var me = this;
-        console.log("Context menu:", arguments, me, view.model.get("id"));
         evt.preventDefault();
         me.nodeMenuObject = view.model.get("id").split(":")[1];
         me.nodeMenu.showAt(evt.clientX, evt.clientY);
@@ -654,7 +659,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     // metric -> {ts: .., value: }
     setLoadOverlayData: function(data) {
         var me = this;
-        console.log("setLoadOverlayData", data);
         Ext.each(me.graph.getLinks(), function(link) {
             var sIn, sOut, dIn, dOut, bw,
                 td, dt, lu, cfg, tb, balance,
@@ -836,9 +840,9 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this,
             stpNodes = [];
         // Get STP nodes
-        Ext.each(me.objectsList, function(i) {
-            if(me.objectNodes[i].caps.indexOf(me.CAP_STP) !== -1) {
-                stpNodes.push(i);
+        Ext.Object.each(me.objectNodes, function(k, v) {
+            if(v.attributes.data.caps.indexOf(me.CAP_STP) !== -1) {
+                stpNodes.push(k);
             }
         });
         // Get STP status
@@ -851,10 +855,61 @@ Ext.define("NOC.inv.map.MapPanel", {
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                console.log("STP", data);
+                me.setStpBlocked(data.blocked);
+                me.setStpRoots(data.roots);
             },
             failure: function() {
                 NOC.msg.failed(__("Failed to get STP status"));
+            }
+        });
+    },
+
+    setStpRoots: function(roots) {
+        var me = this,
+            newStpRoots = {};
+        // Set new STP roots
+        Ext.each(roots, function(rootId) {
+            var root = me.objectNodes[rootId];
+            if(root) {
+                if(!me.currentStpRoots[rootId]) {
+                    me.objectNodes[rootId].attr("text/class", "stp-root");
+                }
+                newStpRoots[rootId] = true;
+            }
+        });
+        // Remove previous STP roots
+        Ext.Object.each(me.currentStpRoots, function(k) {
+            if(!newStpRoots[k]) {
+                // Remove node style
+                me.objectNodes[k].attr("text/class", "");
+            }
+        });
+        me.currentStpRoots = newStpRoots;
+    },
+
+    setStpBlocked: function(blocked) {
+        var me = this;
+        Ext.each(me.graph.getLinks(), function(link) {
+            if(blocked.indexOf(link.get("data").id) !== -1) {
+                // Oper down
+                link.attr({
+                    ".connection": me.stpBlockedStyle
+                });
+                luStyle = Ext.apply({
+                    attrs: {
+                        text: me.stpBlockedStyle
+                    },
+                    visibility: "visible",
+                    position: 0.5,
+                    fill: me.stpBlockedStyle.stroke
+                }, me.stpBlockedStyle);
+
+                luStyle.fill = luStyle.stroke;
+                luStyle.visibility = "visible";
+                luStyle.text = "\uf05e";
+                luStyle["font-size"] = 12;
+                link.label(0, {attrs: {text: luStyle}});
+                link.label(0, {position: 0.5});
             }
         });
     }
