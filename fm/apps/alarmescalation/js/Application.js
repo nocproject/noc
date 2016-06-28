@@ -134,7 +134,7 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                             dataIndex: "clear_template",
                             editor: "main.template.LookupField",
                             width: 100,
-                            renderer: NOC.render.Lookup("template")
+                            renderer: NOC.render.Lookup("clear_template")
                         },
                         {
                             text: __("TT"),
