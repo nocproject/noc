@@ -208,6 +208,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                          alarm_id, subject, body)
             log("Sending notification to group %s", a.notification_group.name)
             a.notification_group.notify(subject, body)
+            alarm.set_clear_notification(
+                a.notification_group,
+                a.clear_template
+            )
         #
         if a.stop_processing:
             logger.debug("Stopping processing")
