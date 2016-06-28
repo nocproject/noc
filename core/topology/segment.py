@@ -293,7 +293,6 @@ def update_uplinks(segment_id):
     except NetworkSegment.DoesNotExist:
         return
     st = SegmentTopology(segment)
-    st.load()
     ObjectUplink.update_uplinks(
         st.get_object_uplinks()
     )
