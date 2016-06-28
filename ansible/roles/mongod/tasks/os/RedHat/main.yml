@@ -41,6 +41,14 @@
     dest: "/etc/telegraf/telegraf.d/mongodb.conf"
   notify: reload telegraf
 
+- name: Install mongodb limits file
+  template:
+    src: "etc/security/limits.d/mongo_limits.conf.j2"
+    dest: "/etc/security/limits.d/mongo_limits.conf"
+  tags:
+    - config
+
+
 - name: Set mongod defaults
   template:
     src: "os/RedHat/etc/sysconfig/mongod.j2"
