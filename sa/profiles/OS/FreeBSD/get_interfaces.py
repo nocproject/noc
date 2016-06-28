@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## OS.FreeBSD.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -28,7 +28,7 @@ class Script(BaseScript):
     rx_if_status = re.compile(
         r"^\tstatus: (?P<status>active|associated|running|inserted)\s*$")
     rx_if_vlan = re.compile(
-        r"^\tvlan: (?P<vlan>[1-9]\d*) parent interface: (?P<parent>\S+)$")
+        r"^\tvlan: (?P<vlan>[1-9]\d*).+parent interface: (?P<parent>\S+)$")
     rx_if_wlan = re.compile(r"^\tssid .+$")
     rx_if_bridge = re.compile(r"^\tgroups:.+?bridge.*?$")
     rx_if_bridge_m = re.compile(r"^\tmember: (?P<ifname>\S+) flags=\d+<.+>$")
