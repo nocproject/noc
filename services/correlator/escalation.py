@@ -54,7 +54,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
         logger.info("[%s] Alarm is closed, skipping", alarm_id)
         return
     if alarm.root:
-        log("Alarm is not root cause, skipping")
+        log("[%s] Alarm is not root cause, skipping", alarm_id)
         return
     #
     escalation = escalation_cache[escalation_id]
@@ -110,16 +110,9 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
             "cons_escalated": cons_escalated,
             "total_objects": summary_to_list(alarm.total_objects, ManagedObjectProfile),
             "total_subscribers": summary_to_list(alarm.total_subscribers, SubscriberProfile),
-            "total_services": summary_to_list(alarm.total_services, ServiceProfile)
+            "total_services": summary_to_list(alarm.total_services, ServiceProfile),
+            "tt": None
         }
-        subject = a.template.render_subject(**ctx)
-        body = a.template.render_body(**ctx)
-        logger.debug("[%s] Escalation message:\nSubject: %s\n%s",
-                     alarm_id, subject, body)
-        # Send notification
-        if a.notification_group:
-            log("Sending notification to group %s", a.notification_group.name)
-            a.notification_group.notify(subject, body)
         # Escalate to TT
         if a.create_tt:
             tt_id = None
@@ -138,6 +131,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                     if tt_system:
                         pre_reason = escalation.get_pre_reason(tt_system)
                         if pre_reason is not None:
+                            subject = a.template.render_subject(**ctx)
+                            body = a.template.render_body(**ctx)
+                            logger.debug("[%s] Escalation message:\nSubject: %s\n%s",
+                                         alarm_id, subject, body)
                             log("Creating TT in system %s", tt_system.name)
                             tts = tt_system.get_system()
                             try:
@@ -149,9 +146,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                                     body=body,
                                     login="correlator"
                                 )
-                                alarm.escalate(
-                                    "%s:%s" % (tt_system.name, tt_id)
-                                )
+                                ctx["tt"] = "%s:%s" % (tt_system.name, tt_id)
+                                alarm.escalate(ctx["tt"])
                                 if tts.promote_group_tt:
                                     # Greate group TT
                                     log("Promoting to group tt")
@@ -204,6 +200,14 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                     else:
                         log("Failed to add comment to %s: Invalid TT system",
                             a.escalation_tt)
+        # Send notification
+        if a.notification_group:
+            subject = a.template.render_subject(**ctx)
+            body = a.template.render_body(**ctx)
+            logger.debug("[%s] Notification message:\nSubject: %s\n%s",
+                         alarm_id, subject, body)
+            log("Sending notification to group %s", a.notification_group.name)
+            a.notification_group.notify(subject, body)
         #
         if a.stop_processing:
             logger.debug("Stopping processing")
