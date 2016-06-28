@@ -24,7 +24,7 @@ Ext.define("NOC.fm.alarmescalation.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     flex: 1
                 }
@@ -34,28 +34,29 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "global_limit",
                     xtype: "numberfield",
-                    fieldLabel: "Global limit",
-                    allowBlank: true
+                    fieldLabel: __("Global limit"),
+                    allowBlank: true,
+                    uiStyle: "small"
                 },
                 {
                     name: "alarm_classes",
                     xtype: "gridfield",
-                    fieldLabel: "Alarm Classes",
+                    fieldLabel: __("Alarm Classes"),
                     columns: [
                         {
-                            text: "Alarm Class",
+                            text: __("Alarm Class"),
                             dataIndex: "alarm_class",
                             editor: "fm.alarmclass.LookupField",
                             renderer: NOC.render.Lookup("alarm_class"),
@@ -66,17 +67,17 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                 {
                     name: "pre_reasons",
                     xtype: "gridfield",
-                    fieldLabel: "Pre Reasons",
+                    fieldLabel: __("Pre Reasons"),
                     columns: [
                         {
-                            text: "TT System",
+                            text: __("TT System"),
                             dataIndex: "tt_system",
                             editor: "fm.ttsystem.LookupField",
                             renderer: NOC.render.Lookup("tt_system"),
                             width: 150
                         },
                         {
-                            text: "Pre Reason",
+                            text: __("Pre Reason"),
                             dataIndex: "pre_reason",
                             editor: "textfield",
                             flex: 1
@@ -86,64 +87,71 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                 {
                     name: "escalations",
                     xtype: "gridfield",
-                    fieldLabel: "Escalations",
+                    fieldLabel: __("Escalations"),
                     columns: [
                         {
-                            text: "Delay",
+                            text: __("Delay"),
                             dataIndex: "delay",
                             editor: "numberfield",
                             width: 75
                         },
                         {
-                            text: "Adm. domain",
+                            text: __("Adm. domain"),
                             dataIndex: "administrative_domain",
                             editor: "sa.administrativedomain.LookupField",
                             width: 150,
                             renderer: NOC.render.Lookup("administrative_domain")
                         },
                         {
-                            text: "Selector",
+                            text: __("Selector"),
                             dataIndex: "selector",
                             editor: "sa.managedobjectselector.LookupField",
                             width: 150,
                             renderer: NOC.render.Lookup("selector")
                         },
                         {
-                            text: "Time Pattern",
+                            text: __("Time Pattern"),
                             dataIndex: "time_pattern",
                             editor: "main.timepattern.LookupField",
                             renderer: NOC.render.Lookup("time_pattern")
                         },
                         {
-                            text: "Notification Group",
+                            text: __("Notification Group"),
                             dataIndex: "notification_group",
                             editor: "main.notificationgroup.LookupField",
                             width: 150,
                             renderer: NOC.render.Lookup("notification_group")
                         },
                         {
-                            text: "Template",
+                            text: __("Open Template"),
                             dataIndex: "template",
                             editor: "main.template.LookupField",
-                            flex: 1,
+                            width: 100,
                             renderer: NOC.render.Lookup("template")
                         },
                         {
-                            text: "TT",
+                            text: __("Clear Template"),
+                            dataIndex: "clear_template",
+                            editor: "main.template.LookupField",
+                            width: 100,
+                            renderer: NOC.render.Lookup("template")
+                        },
+                        {
+                            text: __("TT"),
                             dataIndex: "create_tt",
                             editor: "checkboxfield",
                             width: 50,
                             renderer: NOC.render.Bool
                         },
                         {
-                            text: "Wait TT",
+                            text: __("Wait TT"),
                             dataIndex: "wait_tt",
                             editor: "checkboxfield",
                             width: 50,
                             renderer: NOC.render.Bool
                         },
                         {
-                            text: "Stop",
+                            text: __("Stop"),
                             dataIndex: "stop_processing",
                             editor: "checkboxfield",
                             width: 50,

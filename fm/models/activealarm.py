@@ -16,6 +16,8 @@ from alarmlog import AlarmLog
 from alarmclass import AlarmClass
 from noc.main.models import User
 from noc.main.models.style import Style
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.template import Template
 from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
@@ -79,6 +81,9 @@ class ActiveAlarm(nosql.Document):
     total_objects = nosql.ListField(nosql.EmbeddedDocumentField(ObjectSummaryItem))
     total_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
     total_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
+    # Template and notification group to send close notification
+    clear_template = nosql.ForeignKeyField(Template, required=False)
+    clear_notification_group = nosql.ForeignKeyField(NotificationGroup, required=False)
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -194,8 +199,6 @@ class ActiveAlarm(nosql.Document):
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
         a.save()
-        # @todo: Clear related correlator jobs
-        self.delete()
         # Send notifications
         if not a.root and not self.reopens:
             a.managed_object.event(a.managed_object.EV_ALARM_CLEARED, {
@@ -208,6 +211,15 @@ class ActiveAlarm(nosql.Document):
             })
         elif ct:
             pass
+        if self.clear_template:
+            ctx = {
+                "alarm": a
+            }
+            subject = self.clear_template.render_subject(**ctx)
+            body = self.clear_template.render_body(**ctx)
+        else:
+            subject = "Alarm cleared"
+            body = "Alarm has been cleared"
         if a.escalation_tt:
             # Sent message to TT
             tt_system, tt_id = a.escalation_tt.split(":")
@@ -215,10 +227,15 @@ class ActiveAlarm(nosql.Document):
             if tts:
                 tts.add_comment(
                     tt_id,
-                    subject="Alarm cleared",
-                    body="Alarm has been cleared",
+                    subject=subject,
+                    body=body,
                     login="NOC"
                 )
+        if self.clear_notification_group:
+            self.clear_notification_group.notify(subject, body)
+        # Clear alarm
+        self.delete()
+        # Return archived
         return a
 
     def get_template_vars(self):
@@ -395,6 +412,16 @@ class ActiveAlarm(nosql.Document):
         self.escalation_tt = tt_id
         self.escalation_ts = datetime.datetime.now()
         self.log_message("Escalated to %s" % tt_id)
+        self.save(save_condition={
+            "managed_object": {
+                "$exists": True
+            },
+            "id": self.id
+        })
+
+    def set_clear_notification(self, notification_group, template):
+        self.clear_notification_group = notification_group
+        self.clear_template = template
         self.save(save_condition={
             "managed_object": {
                 "$exists": True
