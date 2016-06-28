@@ -51,7 +51,7 @@ class SelectorCache(Document):
         sid = selector
         if hasattr(selector, "id"):
             sid = selector.id
-        return bool(cls._get_collection().count({
+        return bool(cls._get_collection().find_one({
             "object": oid,
             "selector": sid
         }))
