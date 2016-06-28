@@ -3,10 +3,22 @@
   template:
      src: "os/Ubuntu/etc/init/nsqlookupd.conf.j2"
      dest: "/etc/init/nsqlookupd.conf"
+  when: "ansible_service_mgr != 'systemd'"
   notify: restart nsqlookupd
+
+- name: install nsqlookupd.service file
+  template:
+     src: etc/systemd/system/nsqlookupd.service
+     dest: /etc/systemd/system/nsqlookupd.service
+  when: "ansible_service_mgr == 'systemd'"
+  register: nsqlookupd_service
 
 - name: Install nsqlookupd monitoring
   template:
     src: "etc/telegraf/telegraf.d/nsqlookupd.conf.j2"
     dest: "/etc/telegraf/telegraf.d/nsqlookupd.conf"
   notify: reload telegraf
+
+- name: reload systemd
+  shell: systemctl daemon-reload
+  when: "nsqlookupd_service.changed and ansible_service_mgr == 'systemd'"

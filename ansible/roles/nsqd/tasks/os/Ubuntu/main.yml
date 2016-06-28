@@ -3,10 +3,22 @@
   template:
      src: "os/Ubuntu/etc/init/nsqd.conf.j2"
      dest: "/etc/init/nsqd.conf"
+  when: "ansible_service_mgr != 'systemd'"
   notify: restart nsqd
+
+- name: install nsqd.service file
+  template:
+     src: etc/systemd/nsqd.service
+     dest: /etc/systemd/system/nsqd.service
+  when: "ansible_service_mgr == 'systemd'"
+  register: nsqd_service
 
 - name: Install nsqd monitoring
   template:
     src: "etc/telegraf/telegraf.d/nsqd.conf.j2"
     dest: "/etc/telegraf/telegraf.d/nsqd.conf"
   notify: reload telegraf
+
+- name: reload systemd
+  shell: systemctl daemon-reload
+  when: "nsqd_service.changed and ansible_service_mgr == 'systemd'"
