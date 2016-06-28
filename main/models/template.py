@@ -6,9 +6,15 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+from threading import RLock
+import operator
 ## Third-party modules
 from django.db import models
 import jinja2
+import cachetools
+
+id_lock = RLock()
 
 
 class Template(models.Model):
@@ -23,8 +29,18 @@ class Template(models.Model):
     subject = models.TextField("Subject")
     body = models.TextField("Body")
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        try:
+            return Template.objects.get(id=id)
+        except Template.DoesNotExist:
+            return None
 
     def render_subject(self, LANG=None, **kwargs):
         return jinja2.Template(self.subject).render(**kwargs)
