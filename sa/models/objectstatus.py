@@ -28,9 +28,11 @@ class ObjectStatus(Document):
 
     @classmethod
     def get_status(cls, object):
-        s = cls.objects.filter(object=object.id).first()
-        if s:
-            return s.status
+        d = ObjectStatus._get_collection().find_one({
+            "object": object.id
+        })
+        if d:
+            return d["status"]
         else:
             return True
 
@@ -53,7 +55,7 @@ class ObjectStatus(Document):
         from noc.fm.models.outage import Outage
 
         ObjectStatus._get_collection().update({
-            "_id": object.id
+            "object": object.id
         }, {
             "$set": {
                 "status": status
