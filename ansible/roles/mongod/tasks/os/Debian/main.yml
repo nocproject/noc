@@ -42,6 +42,14 @@
   tags:
     - config
 
+- name: Install mongodb limits file
+  template:
+    src: "etc/security/limits.d/mongo_limits.conf.j2"
+    dest: "/etc/security/limits.d/mongo_limits.conf"
+  tags:
+    - config
+
+
 - name: Install mongodb monitoring
   template:
     src: "etc/telegraf/telegraf.d/mongodb.conf.j2"

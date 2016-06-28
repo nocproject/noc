@@ -34,3 +34,9 @@
     dest: "/etc/telegraf/telegraf.d/postgres.conf"
   notify: reload telegraf
 
+- name: Install postgres limits file
+  template:
+    src: "etc/security/limits.d/postgres_limits.conf.j2"
+    dest: "/etc/security/limits.d/postgres_limits.conf"
+  tags:
+    - config
