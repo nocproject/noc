@@ -9,7 +9,8 @@
 ## Python modules
 import datetime
 ## Django modules
-from django.template import Template, Context
+from django.template import Template as DjangoTemplate
+from django.template import Context
 ## NOC modules
 import noc.lib.nosql as nosql
 from alarmlog import AlarmLog
@@ -249,7 +250,7 @@ class ActiveAlarm(nosql.Document):
     @property
     def subject(self):
         ctx = Context(self.get_template_vars())
-        s = Template(self.alarm_class.subject_template).render(ctx)
+        s = DjangoTemplate(self.alarm_class.subject_template).render(ctx)
         if len(s) >= 255:
             s = s[:125] + " ... " + s[-125:]
         return s
@@ -257,7 +258,7 @@ class ActiveAlarm(nosql.Document):
     @property
     def body(self):
         ctx = Context(self.get_template_vars())
-        s = Template(self.alarm_class.body_template).render(ctx)
+        s = DjangoTemplate(self.alarm_class.body_template).render(ctx)
         return s
 
     def change_owner(self, user):
