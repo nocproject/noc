@@ -2,23 +2,26 @@
 ##----------------------------------------------------------------------
 ## NotificationGroup model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import datetime
 import logging
+import operator
+from threading import RLock
 ## Django modules
 from django.db import models
 from django.contrib.auth.models import User
+import cachetools
 ## NOC modules
 from noc.settings import LANGUAGE_CODE
 from noc.lib.timepattern import TimePatternList
 from timepattern import TimePattern
 from noc.core.service.pub import pub
 
-
+id_lock = RLock()
 logger = logging.getLogger(__name__)
 
 
@@ -46,8 +49,18 @@ class NotificationGroup(models.Model):
     name = models.CharField("Name", max_length=64, unique=True)
     description = models.TextField("Description", null=True, blank=True)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        try:
+            return NotificationGroup.objects.get(id=id)
+        except NotificationGroup.DoesNotExist:
+            return None
 
     @property
     def members(self):
