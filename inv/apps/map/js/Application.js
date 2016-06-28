@@ -219,6 +219,7 @@ Ext.define("NOC.inv.map.Application", {
         me.revertButton.setDisabled(true);
         me.inspectSegment();
         me.viewMapButton.setPressed(true);
+        me.viewStpButton.setPressed(false);
         me.zoomCombo.setValue(1.0);
         me.mapPanel.setZoom(1.0);
     },
