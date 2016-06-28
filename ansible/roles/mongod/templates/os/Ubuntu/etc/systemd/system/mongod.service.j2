@@ -1,0 +1,23 @@
+[Unit]
+Description=High-performance, schema-free document-oriented database
+Documentation=man:mongod(1)
+After=syslog.target network.target
+
+[Service]
+LimitFSIZE=infinity
+LimitCPU=infinity
+LimitAS=infinity
+LimitNOFILE=64000
+LimitRSS=infinity
+LimitNPROC=64000
+User={{ mongo_user }}
+Group={{ mongo_user }}
+PIDFile={{ mongo_pid }}
+Environment="OPTIONS= -f {{ noc_root }}/var/etc/mongo/mongod.conf"
+PermissionsStartOnly=true
+ExecStartPre=/bin/touch {{ mongo_pid }}
+ExecStartPre=/bin/chown {{ mongo_user }}:{{ mongo_user }} {{ mongo_pid }}
+ExecStart=/usr/bin/mongod $OPTIONS
+
+[Install]
+WantedBy=multi-user.target
