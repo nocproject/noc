@@ -16,16 +16,30 @@ class Script(BaseScript):
     name = "Huawei.MA5600T.get_version"
     cache = True
     interface = IGetVersion
-    rx_ver = re.compile(
-        r"^\s*(?P<platform>MA\S+)(?P<version>V\S+)\s+RELEASE SOFTWARE",
+    rx_ver1 = re.compile(
+        r"^\s*(?P<platform>MA\S+)(?P<version>V\d+R\d+\S+)\s+",
         re.MULTILINE)
+    rx_ver2 = re.compile(
+        r"^\s*VERSION\s*:\s*MA\S+(?P<version>V\d+R\d+\S+)\s*\n"
+        r".+?"
+        r"^\s*PRODUCT\s+(?P<platform>MA\S+)\s*\n",
+        re.MULTILINE | re.DOTALL)
+
 
     def execute(self):
         v = self.cli("display version\n")
-        match = self.re_search(self.rx_ver, v)
-        r = {
-            "vendor": "Huawei",
-            "platform": match.group("platform"),
-            "version": match.group("version"),
-        }
+        match = self.rx_ver1.search(v)
+        if match:
+            return {
+                "vendor": "Huawei",
+                "platform": match.group("platform"),
+                "version": match.group("version")
+            }
+        else:
+            match = self.rx_ver2.search(v)
+            return {
+                "vendor": "Huawei",
+                "platform": match.group("platform"),
+                "version": match.group("version")
+            }
         return r

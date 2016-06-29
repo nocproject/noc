@@ -16,7 +16,7 @@ class Script(BaseScript):
     name = "Huawei.MA5600T.get_chassis_id"
     interface = IGetChassisID
     rx_mac = re.compile(
-        r"^\s*Current MAC address of active mainboard:\s+(?P<mac>\S+)",
+        r"^\s*Current MAC address of active (?:main|control )board:\s+(?P<mac>\S+)",
         re.MULTILINE)
 
     def execute(self):
