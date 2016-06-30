@@ -50,7 +50,7 @@ class Command(BaseCommand):
         if not b:
             self.die("Beef not found: %s" % beef[0])
         r = [
-            "===[ %s {%s} ]==========" % (b.script, b.guid),
+            "===[ %s {%s} ]==========" % (b.script, b.uuid),
             "Platform : %s %s" % (b.vendor, b.platform),
             "Version  : %s" % b.version,
             "Date     : %s" % b.date
@@ -107,7 +107,7 @@ class Command(BaseCommand):
             profile, script = b.script.rsplit(".", 1)
             r += ["%s,%s,%s,%s,%s,%s,%s" % (
                 provider, profile, script,
-                b.vendor, b.platform, b.version, b.guid)]
+                b.vendor, b.platform, b.version, b.uuid)]
         # Dump output
         self.stdout.write("\n".join(r) + "\n")
         return
@@ -129,7 +129,7 @@ class Command(BaseCommand):
             self.die("Invalid script: %s" % b.script)
         # Build credentials
         credentials = {
-            "address": b.guid,
+            "address": b.uuid,
             "cli_protocol": "beef",
             "beef": b
         }
