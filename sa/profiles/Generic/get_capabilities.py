@@ -29,8 +29,8 @@ class Script(BaseScript):
         """
         if self.credentials.get("snmp_ro"):
             try:
-                self.snmp.get(oid)
-                return True
+                r = self.snmp.get(oid)
+                return r is not None
             except self.snmp.TimeOutError:
                 pass
         return False
