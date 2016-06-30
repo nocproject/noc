@@ -113,6 +113,7 @@ class CLI(object):
         if not self.is_started:
             self.on_start()
             self.motd = yield self.read_until_prompt()
+            self.script.set_motd(self.motd)
             self.is_started = True
         # Send command
         # @todo: encode to object's encoding
