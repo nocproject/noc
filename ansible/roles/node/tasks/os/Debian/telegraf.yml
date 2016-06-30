@@ -31,6 +31,8 @@
   template:
     src: "etc/telegraf/telegraf.conf.j2"
     dest: "/etc/telegraf/telegraf.conf"
+  tags:
+    - config
 
 - name: Enable telegraf system service
   service:
