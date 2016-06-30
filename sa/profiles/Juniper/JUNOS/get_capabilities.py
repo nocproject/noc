@@ -29,3 +29,11 @@ class Script(BaseScript):
         """
         r = self.cli("show lldp | match Enabled")
         return "Enabled" in r
+
+    @false_on_cli_error
+    def has_oam(self):
+        """
+        Check box has oam enabled
+        """
+        r = self.scripts.get_oam_status()
+        return bool(r != [])
