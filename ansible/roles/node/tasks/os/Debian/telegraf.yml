@@ -28,8 +28,14 @@
     http_proxy: "{{http_proxy}}"
 
 - name: render telegraf config
-  template: src="etc/telegraf/telegraf.conf.j2" dest="/etc/telegraf/telegraf.conf"
+  template:
+    src: "etc/telegraf/telegraf.conf.j2"
+    dest: "/etc/telegraf/telegraf.conf"
 
 - name: Enable telegraf system service
-  service: name=telegraf enabled=yes state=started
-
+  service:
+    name: telegraf
+    enabled: yes
+    state: started
+  tags:
+    - config
