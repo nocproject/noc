@@ -7,10 +7,787 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-04-20 19:39+0300",
-        "POT-Creation-Date": "2016-06-14 13:17+0300",
-        "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)",
+        "PO-Revision-Date": "2016-06-30 11:57+0300",
+        "POT-Creation-Date": "2016-06-30 11:29+0300",
+        "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
-        "Report-Msgid-Bugs-To": "EMAIL@ADDRESS"
-    }
+        "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
+        "X-Generator": "Poedit 1.8.8"
+    },
+    "About NOC ...": [
+        null,
+        "О программе ..."
+    ],
+    "Active": [
+        null,
+        "Активный"
+    ],
+    "Add": [
+        null,
+        "Добавить"
+    ],
+    "Address/Platform": [
+        null,
+        "Адрес/Платформа"
+    ],
+    "Adm. Domain": [
+        null,
+        "Зона ответсвенности"
+    ],
+    "Adm. domain": [
+        null,
+        "Зона ответсвенности"
+    ],
+    "Alarm Class": [
+        null,
+        "Класс аварии"
+    ],
+    "Alarm Classes": [
+        null,
+        "Классы аварий"
+    ],
+    "Alarm Weight": [
+        null,
+        "Аварийный вес"
+    ],
+    "Alarm weight": [
+        null,
+        "Вес аварии"
+    ],
+    "Alarms": [
+        null,
+        "Аварии"
+    ],
+    "All": [
+        null,
+        "Все"
+    ],
+    "Anonymous": [
+        null,
+        "Анонимный"
+    ],
+    "Archive": [
+        null,
+        "Архив"
+    ],
+    "Builtin": [
+        null,
+        "Встроен"
+    ],
+    "By Date": [
+        null,
+        "По дате"
+    ],
+    "Card": [
+        null,
+        "Карточка"
+    ],
+    "Card Title Template": [
+        null,
+        "Шаблон заголовка карточки"
+    ],
+    "Change": [
+        null,
+        "Сменить"
+    ],
+    "Change Password": [
+        null,
+        "Смена пароля"
+    ],
+    "Change password ...": [
+        null,
+        "Смена пароля ..."
+    ],
+    "Changing language": [
+        null,
+        "Смена языка"
+    ],
+    "Check on config change after ": [
+        null,
+        "Проверять при смене конфига через"
+    ],
+    "Check on system start after ": [
+        null,
+        "Проверять при загрузке через"
+    ],
+    "Class": [
+        null,
+        "Класс"
+    ],
+    "Clear": [
+        null,
+        "Очистить"
+    ],
+    "Clear Template": [
+        null,
+        "Шаблон закрытия"
+    ],
+    "Clear alarm?": [
+        null,
+        "Очистить аварию?"
+    ],
+    "Clear links": [
+        null,
+        "Сброс линков"
+    ],
+    "Close": [
+        null,
+        "Закрыть"
+    ],
+    "Code": [
+        null,
+        "Код"
+    ],
+    "Collapse panels": [
+        null,
+        "Свернуть панели"
+    ],
+    "Condition": [
+        null,
+        "Условие"
+    ],
+    "Connect": [
+        null,
+        "Соединить"
+    ],
+    "Credentials has been changed": [
+        null,
+        "Пароль изменен"
+    ],
+    "Data": [
+        null,
+        "Данные"
+    ],
+    "Delay": [
+        null,
+        "Задержка"
+    ],
+    "Delete": [
+        null,
+        "Удалить"
+    ],
+    "Description": [
+        null,
+        "Описание"
+    ],
+    "Disable": [
+        null,
+        "Отключить"
+    ],
+    "Disconnect": [
+        null,
+        "Отключить"
+    ],
+    "Do you wish to unlink interface {0}?": [
+        null,
+        "Отсоединить интерфейс {0}?"
+    ],
+    "Download": [
+        null,
+        "Загрузить"
+    ],
+    "Edit": [
+        null,
+        "Редактировать"
+    ],
+    "Edit map": [
+        null,
+        "Редактировать карту"
+    ],
+    "Enable": [
+        null,
+        "Включить"
+    ],
+    "Enable IPAM synchronization": [
+        null,
+        "Синхронизация с IPAM"
+    ],
+    "Escalations": [
+        null,
+        "Эскалации"
+    ],
+    "Events": [
+        null,
+        "События"
+    ],
+    "Expand panels": [
+        null,
+        "Развернуть панели"
+    ],
+    "FQDN template": [
+        null,
+        "Шаблон FQDN"
+    ],
+    "Failed to change credentials: ": [
+        null,
+        "Не удалось сменить пароль"
+    ],
+    "Failed to clear alarm": [
+        null,
+        "Не удалось очистить аварию"
+    ],
+    "Failed to connect interfaces": [
+        null,
+        "Не удалось соединить интерфейсы"
+    ],
+    "Failed to fix": [
+        null,
+        "Не удалось исправить"
+    ],
+    "Failed to get STP status": [
+        null,
+        "Не удалось получить данные"
+    ],
+    "Failed to get alarm": [
+        null,
+        "Не удалось получить данные"
+    ],
+    "Failed to get data": [
+        null,
+        "Не удалось получить данные"
+    ],
+    "Failed to get interfaces list": [
+        null,
+        "Не удалось получить список интерфейсов"
+    ],
+    "Failed to load data": [
+        null,
+        "Ошибка загрузки"
+    ],
+    "Failed to post message": [
+        null,
+        "Не удалось послать сообщение"
+    ],
+    "Failed to run tasks": [
+        null,
+        "Ошибка запуска"
+    ],
+    "Failed to save": [
+        null,
+        "Ошибка сохранения"
+    ],
+    "Failed to set root cause": [
+        null,
+        "Не удалось установить первопричину"
+    ],
+    "Failed to set watcher": [
+        null,
+        "Не удалось подписаться"
+    ],
+    "Filter": [
+        null,
+        "Фильтр"
+    ],
+    "First Discovered": [
+        null,
+        "Первый раз"
+    ],
+    "Fix": [
+        null,
+        "Исправить"
+    ],
+    "From": [
+        null,
+        "С"
+    ],
+    "Global limit": [
+        null,
+        "Глобальный лимит"
+    ],
+    "Help": [
+        null,
+        "Помощь"
+    ],
+    "Hide alarms covered by maintainance": [
+        null,
+        "Скрывать аварии, накрытые РНР"
+    ],
+    "Hide maintainance": [
+        null,
+        "Скрыть РНР"
+    ],
+    "ID": [
+        null,
+        "ID"
+    ],
+    "Icon": [
+        null,
+        "Картинка"
+    ],
+    "Interface": [
+        null,
+        "Интерфейс"
+    ],
+    "Interface Profile": [
+        null,
+        "Профиль интерфейса"
+    ],
+    "Interface status": [
+        null,
+        "Статус интерфейсов"
+    ],
+    "Interval, sec": [
+        null,
+        "Интервал, с"
+    ],
+    "Job": [
+        null,
+        "Задание"
+    ],
+    "Job scheduled to start": [
+        null,
+        "Отправлено на запуск"
+    ],
+    "Jump to Segment": [
+        null,
+        "Перейти в сегмент"
+    ],
+    "Language": [
+        null,
+        "Язык"
+    ],
+    "Last Run": [
+        null,
+        "Последний запуск"
+    ],
+    "Last Status": [
+        null,
+        "Последний статус"
+    ],
+    "Last seen": [
+        null,
+        "Последний раз"
+    ],
+    "Level": [
+        null,
+        "Уровень"
+    ],
+    "Link Inspector": [
+        null,
+        "Свойства линка"
+    ],
+    "Local Description": [
+        null,
+        "Локальное описание"
+    ],
+    "Local Interface": [
+        null,
+        "Локальный интерфейс"
+    ],
+    "Log": [
+        null,
+        "История"
+    ],
+    "Login": [
+        null,
+        "Вход"
+    ],
+    "Logout": [
+        null,
+        "Выход"
+    ],
+    "Mail": [
+        null,
+        "Почта"
+    ],
+    "Message": [
+        null,
+        "Сообщение"
+    ],
+    "Method": [
+        null,
+        "Метод"
+    ],
+    "Metric": [
+        null,
+        "Метрика"
+    ],
+    "Metrics": [
+        null,
+        "Метрики"
+    ],
+    "Min. Weight": [
+        null,
+        "Мин. вес"
+    ],
+    "Name": [
+        null,
+        "Имя"
+    ],
+    "Name template": [
+        null,
+        "Шаблон имени"
+    ],
+    "Navigation": [
+        null,
+        "Навигация"
+    ],
+    "Neighbor": [
+        null,
+        "Сосед"
+    ],
+    "New layout": [
+        null,
+        "Новая раскладка"
+    ],
+    "New message": [
+        null,
+        "Новое сообщение"
+    ],
+    "Next Run": [
+        null,
+        "Следующий запуск"
+    ],
+    "Notification Contacts": [
+        null,
+        "Контакты"
+    ],
+    "Notification Group": [
+        null,
+        "Группа рассылки"
+    ],
+    "Object": [
+        null,
+        "Объект"
+    ],
+    "Object Inspector": [
+        null,
+        "Свойства объекта"
+    ],
+    "Object/Segment": [
+        null,
+        "Объект/Сегмент"
+    ],
+    "Objects": [
+        null,
+        "Объекты"
+    ],
+    "On platform change": [
+        null,
+        "При смене платформы"
+    ],
+    "Only": [
+        null,
+        "Только"
+    ],
+    "Open Template": [
+        null,
+        "Шаблон открытия"
+    ],
+    "Overview": [
+        null,
+        "Обзор"
+    ],
+    "Params": [
+        null,
+        "Параметры"
+    ],
+    "Platform": [
+        null,
+        "Платформа"
+    ],
+    "Please confirm the alarm is closed and must be cleared?": [
+        null,
+        "Пожалуйста, подтвердите, что проблема решена и авария должна быть закрыта"
+    ],
+    "Please enter root cause alarm id": [
+        null,
+        "Пожалуйста, введите ID первопричины"
+    ],
+    "Pre Reason": [
+        null,
+        "Предв. диагностика"
+    ],
+    "Pre Reasons": [
+        null,
+        "Предв. диагностика"
+    ],
+    "Profile": [
+        null,
+        "Профиль"
+    ],
+    "Profile saved": [
+        null,
+        "Профиль сохранен"
+    ],
+    "Refresh": [
+        null,
+        "Обновить"
+    ],
+    "Reload": [
+        null,
+        "Перезагрузить"
+    ],
+    "Remote Description": [
+        null,
+        "Удаленное описание"
+    ],
+    "Remote Interface": [
+        null,
+        "Удаленный интерфейс"
+    ],
+    "Remove": [
+        null,
+        "Удалить"
+    ],
+    "Report ping RTT": [
+        null,
+        "Собирать RTT при ping"
+    ],
+    "Reset": [
+        null,
+        "Сброс"
+    ],
+    "Reset Layout": [
+        null,
+        "Сбросить раскладку"
+    ],
+    "Revert": [
+        null,
+        "Отменить"
+    ],
+    "Root only": [
+        null,
+        "Первопричина"
+    ],
+    "Run": [
+        null,
+        "Запуск"
+    ],
+    "Save": [
+        null,
+        "Сохранить"
+    ],
+    "Segment": [
+        null,
+        "Сегмент"
+    ],
+    "Segment Inspector": [
+        null,
+        "Свойства сегмента"
+    ],
+    "Select managed object ...": [
+        null,
+        "Выберите объект"
+    ],
+    "Selector": [
+        null,
+        "Селектор"
+    ],
+    "Set": [
+        null,
+        "Установить"
+    ],
+    "Set Root Cause": [
+        null,
+        "Установить причину"
+    ],
+    "Set root cause": [
+        null,
+        "Установить первопричину"
+    ],
+    "Severity": [
+        null,
+        "Серьезность"
+    ],
+    "Shape": [
+        null,
+        "Форма"
+    ],
+    "Show": [
+        null,
+        "Показать"
+    ],
+    "Show JSON": [
+        null,
+        "Показ JSON"
+    ],
+    "Show Map": [
+        null,
+        "Карта"
+    ],
+    "Show Object": [
+        null,
+        "Объект"
+    ],
+    "Show STP topology": [
+        null,
+        "Показ топологии STP"
+    ],
+    "Show active alarms": [
+        null,
+        "Показывать активные аварии"
+    ],
+    "Show all alarms": [
+        null,
+        "Показывать все аварии"
+    ],
+    "Show archived alarms": [
+        null,
+        "Показывать архивные аварии"
+    ],
+    "Show dashboard": [
+        null,
+        "Показать графики"
+    ],
+    "Show in summary": [
+        null,
+        "Показывать в итоге"
+    ],
+    "Show interface load": [
+        null,
+        "Загрузка интерфейсов"
+    ],
+    "Show map": [
+        null,
+        "Карта"
+    ],
+    "Show object": [
+        null,
+        "Объект"
+    ],
+    "Show only alarms covered by maintainance": [
+        null,
+        "Показывать только аварии, накрытые РНР"
+    ],
+    "Show only root causes": [
+        null,
+        "Показывать только первопричину"
+    ],
+    "Show only waiting confirmantion": [
+        null,
+        "Показывать только ожидающие подтверждения"
+    ],
+    "Show static map": [
+        null,
+        "Статичная карта"
+    ],
+    "Sound": [
+        null,
+        "Звук"
+    ],
+    "Starting {0}": [
+        null,
+        "Запуск {0}"
+    ],
+    "Status": [
+        null,
+        "Статус"
+    ],
+    "Stop": [
+        null,
+        "Окончание"
+    ],
+    "Style": [
+        null,
+        "Стиль"
+    ],
+    "Subject": [
+        null,
+        "Тема"
+    ],
+    "Subject/Class": [
+        null,
+        "Тема/Класс"
+    ],
+    "Summary": [
+        null,
+        "Итог"
+    ],
+    "Summary/TT": [
+        null,
+        "Затронуто/ТТ"
+    ],
+    "Switch to breadcrumb view": [
+        null,
+        "Компактный режим"
+    ],
+    "TT": [
+        null,
+        "TT"
+    ],
+    "TT System": [
+        null,
+        "Система TT"
+    ],
+    "Test Sound": [
+        null,
+        "Тест звука"
+    ],
+    "Threshold": [
+        null,
+        "Порог"
+    ],
+    "Thresholds": [
+        null,
+        "Пороги"
+    ],
+    "Time": [
+        null,
+        "Время"
+    ],
+    "Time Pattern": [
+        null,
+        "Маска времени"
+    ],
+    "Time/Duration": [
+        null,
+        "Время/Длительность"
+    ],
+    "Title Template": [
+        null,
+        "Шаблон заголовка"
+    ],
+    "To": [
+        null,
+        "По"
+    ],
+    "Toggle autoreload": [
+        null,
+        "Переключить автозагрузку"
+    ],
+    "Total: ": [
+        null,
+        "Итог:"
+    ],
+    "Unlink interface": [
+        null,
+        "Отсоединить интерфейс"
+    ],
+    "User profile ...": [
+        null,
+        "Профиль пользователя ..."
+    ],
+    "Validation": [
+        null,
+        "Проверка"
+    ],
+    "Value": [
+        null,
+        "Значение"
+    ],
+    "View Card": [
+        null,
+        "Просмотр карточки"
+    ],
+    "View card": [
+        null,
+        "Просмотр карточки"
+    ],
+    "Volume": [
+        null,
+        "Громкость"
+    ],
+    "Wait TT": [
+        null,
+        "Ждать TT"
+    ],
+    "Watch": [
+        null,
+        "Подписаться"
+    ],
+    "Would you like to reset current layout and generate new?": [
+        null,
+        "Сбросить раскладку карты и перестроить заново?"
+    ]
 }

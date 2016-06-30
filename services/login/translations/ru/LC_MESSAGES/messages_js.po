@@ -8,17 +8,57 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-14 13:16+0300\n"
-"PO-Revision-Date: 2016-04-17 22:39+0300\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2016-06-30 11:29+0300\n"
+"PO-Revision-Date: 2016-06-30 11:35+0300\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
+"Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
+"X-Generator: Poedit 1.8.8\n"
+
+#: ui/login/app/logic.js:19
+msgid "Failed to log in"
+msgstr "Доступ запрещен"
+
+#: ui/login/app/logic.js:23
+msgid "Failed to login"
+msgstr "Доступ запрещен"
+
+#: ui/login/app/ui.js:14
+msgid "NOC Login"
+msgstr ""
+
+#: ui/login/app/ui.js:29
+msgid "Username"
+msgstr "Пользователь"
+
+#: ui/login/app/ui.js:30
+msgid "User"
+msgstr "Пользователь"
+
+#: ui/login/app/ui.js:32
+msgid "User name cannot be empty"
+msgstr "Имя пользователя должно быть заполнено"
+
+#: ui/login/app/ui.js:38 ui/login/app/ui.js:39
+msgid "Password"
+msgstr "Пароль"
+
+#: ui/login/app/ui.js:41
+msgid "Password cannot be empty"
+msgstr "Пароль не может быть пустым"
+
+#: ui/login/app/ui.js:48
+msgid "Login"
+msgstr "Вход"
+
+#: ui/login/app/ui.js:55
+msgid "Reset"
+msgstr "Сброс"
 
 #~ msgid "Failed to log in"
 #~ msgstr "Доступ запрещен"
@@ -49,4 +89,3 @@ msgstr ""
 
 #~ msgid "Reset"
 #~ msgstr "Сброс"
-

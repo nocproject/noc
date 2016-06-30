@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-14 13:17+0300\n"
+"POT-Creation-Date: 2016-06-30 11:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,19 +38,43 @@ msgstr ""
 msgid "Alarm Detail"
 msgstr ""
 
-#: fm/apps/reportreboots/views.py:23
+#: fm/apps/reportescalations/views.py:41
+msgid "Escalations"
+msgstr ""
+
+#: fm/apps/reportescalations/views.py:85
+msgid "Timestamp"
+msgstr ""
+
+#: fm/apps/reportescalations/views.py:86
+msgid "Escalation Timestamp"
+msgstr ""
+
+#: fm/apps/reportescalations/views.py:88
+msgid "Segment"
+msgstr ""
+
+#: fm/apps/reportescalations/views.py:89
+msgid "Platform"
+msgstr ""
+
+#: fm/apps/reportescalations/views.py:91
+msgid "TT"
+msgstr ""
+
+#: fm/apps/reportescalations/views.py:25 fm/apps/reportreboots/views.py:23
 msgid "Range"
 msgstr ""
 
-#: fm/apps/reportreboots/views.py:24
+#: fm/apps/reportescalations/views.py:26 fm/apps/reportreboots/views.py:24
 msgid "1 day"
 msgstr ""
 
-#: fm/apps/reportreboots/views.py:25
+#: fm/apps/reportescalations/views.py:27 fm/apps/reportreboots/views.py:25
 msgid "1 week"
 msgstr ""
 
-#: fm/apps/reportreboots/views.py:26
+#: fm/apps/reportescalations/views.py:28 fm/apps/reportreboots/views.py:26
 msgid "1 month"
 msgstr ""
 
@@ -58,7 +82,7 @@ msgstr ""
 msgid "Reboots"
 msgstr ""
 
-#: fm/apps/reportreboots/views.py:93
+#: fm/apps/reportescalations/views.py:87 fm/apps/reportreboots/views.py:93
 msgid "Managed Object"
 msgstr ""
 
@@ -66,7 +90,7 @@ msgstr ""
 msgid "Total Outages"
 msgstr ""
 
-#: inv/apps/map/views.py:40 inv/apps/map/views.py:41
+#: inv/apps/map/views.py:41 inv/apps/map/views.py:42
 msgid "Network Map"
 msgstr ""
 
@@ -217,7 +241,7 @@ msgstr ""
 msgid "Prefix %(prefix)s and all descendans have been successfully deleted"
 msgstr ""
 
-#: ip/apps/ipam/views.py:817
+#: fm/apps/reportescalations/views.py:90 ip/apps/ipam/views.py:817
 msgid "Address"
 msgstr ""
 
