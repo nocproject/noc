@@ -16,6 +16,8 @@
     src: "etc/telegraf/telegraf.d/nginx.conf.j2"
     dest: "/etc/telegraf/telegraf.d/nginx.conf"
   notify: reload telegraf
+  tags:
+    - config
 
 - name: Install Nginx
   apt: name="nginx" update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"

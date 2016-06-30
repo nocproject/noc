@@ -14,3 +14,5 @@
     src: "etc/telegraf/telegraf.d/influxdb.conf.j2"
     dest: "/etc/telegraf/telegraf.d/influxdb.conf"
   notify: reload telegraf
+  tags:
+    - config

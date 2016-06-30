@@ -23,3 +23,5 @@
     http_proxy: "{{http_proxy}}"
   tags:
     - requirements
+
+- include: "os/{{ ansible_distribution }}/main.yml"
