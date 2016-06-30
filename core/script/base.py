@@ -121,7 +121,7 @@ class BaseScript(object):
         self.args = self.clean_input(args or {})
         self.cli_stream = None
         if collect_beef:
-            self.beef = Beef()
+            self.beef = Beef(script=self.name)
             self.logger.info("Collecting beef %s", self.beef.uuid)
         else:
             self.beef = None
