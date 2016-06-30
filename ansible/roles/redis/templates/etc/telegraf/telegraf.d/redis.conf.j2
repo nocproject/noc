@@ -8,3 +8,6 @@
   ## If no servers are specified, then localhost is used as the host.
   ## If no port is specified, 6379 is used
   servers = ["tcp://localhost:6379"]
+
+[[inputs.procstat]]
+pid = /var/run/redis/{{ redis_daemon }}.pid
