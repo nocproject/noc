@@ -104,6 +104,13 @@
         - web
         - noc
 
+    - role: card
+      when: "{{ has_svc_card | default(False) }}"
+      tags:
+        - node
+        - card
+        - noc
+
     - role: omap
       when: "{{ has_svc_omap | default(False) }}"
       tags:
