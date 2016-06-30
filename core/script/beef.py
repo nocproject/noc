@@ -28,7 +28,7 @@ class Beef(object):
     BEEF_ROOT = "var/beef/sa"
 
     def __init__(self):
-        self.guid = None
+        self.guid = str(uuid.uuid4())
         self.maxDiff = None
         self.script = None
         self.vendor = None
@@ -45,6 +45,10 @@ class Beef(object):
         self.ignore_timestamp_mismatch = False
         self.private = False
         self.type = self.type_signature
+
+    @property
+    def uuid(self):
+        return self.guid
 
     def load(self, path):
         def q(s):
@@ -136,3 +140,11 @@ class Beef(object):
             beef["guid"] = str(uuid.uuid4())
         beef = q(beef)
         safe_rewrite(path, json.dumps(beef), mode=0644)
+
+    def set_cli(self, command, result):
+        if self.cli is None:
+            self.cli = {}
+        self.cli[command] = result
+
+    def set_snmp_get(self, oid, result):
+        self.snmp_get[oid] = result
