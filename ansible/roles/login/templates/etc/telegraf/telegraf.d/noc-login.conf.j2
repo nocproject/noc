@@ -1,11 +1,11 @@
 [[inputs.procstat]]
-pattern = "noc-ping"
+pattern = "noc-login"
 
 [[inputs.httpjson]]
-  name = "noc-ping"
+  name = "noc-card"
   servers = [
 {% for service in noc_config.services -%}
-    {% if "ping" in service -%}
+    {% if "login" in service -%}
         {% for host in noc_config.services[service] -%}
             {% if ansible_host in host -%}
 "http://{{host}}/mon/",
