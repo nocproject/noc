@@ -94,6 +94,16 @@ class Command(BaseCommand):
                 del credentials["snmp_ro"]
             if "SNMP" in caps:
                 del caps["SNMP"]
+        # Get version info
+        v = obj.version
+        if v.version:
+            version = {
+                "vendor": v.vendor,
+                "platform": v.platform,
+                "version": v.version
+            }
+        else:
+            version = None
         # Run script
         service = ServiceStub(pool=obj.pool.name)
         scr = script_class(
@@ -101,7 +111,7 @@ class Command(BaseCommand):
             credentials=credentials,
             capabilities=caps,
             args=args,
-            version=None,  #@todo: Fix
+            version=version,
             timeout=3600,
             name=script,
             collect_beef=bool(beef)
@@ -121,6 +131,7 @@ class Command(BaseCommand):
             else:
                 # @todo: Fix
                 self.stdout.write("Warning! Beef contains no version info\n")
+            scr.beef = self.result(result)
             if os.path.isdir(beef):
                 beef = os.path.join(beef, "%s.json" % scr.beef.uuid)
             self.stdout.write("Writing beef to %s\n" % beef)
@@ -243,6 +254,9 @@ class JSONObject(object):
         self.caps = data.get("caps")
         self.remote_path = None
         self.pool = PoolStub("default")
+        self._vendor = data.get("vendor")
+        self._platform = data.get("platfrom")
+        self._version = data.get("version")
 
     @property
     def credentials(self):
@@ -254,6 +268,16 @@ class JSONObject(object):
 
     def get_caps(self):
         return self.caps
+
+    @property
+    def version(self):
+        from noc.sa.models.managedobject import Version
+        return Version(
+            profile=self.profile_name,
+            vendor=self._vendor,
+            platform=self._platform,
+            version=self._version
+        )
 
 
 if __name__ == "__main__":
