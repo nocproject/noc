@@ -6,7 +6,10 @@
     http_proxy: "{{http_proxy}}"
 
 - name: Add Debian Nginx repo
-  apt_repository: repo='deb http://nginx.org/packages/debian/ {{ ansible_distribution_release }} nginx' state=present  update_cache=yes
+  apt_repository:
+    repo: 'deb http://nginx.org/packages/debian/ {{ ansible_distribution_release }} nginx'
+    state: present
+    update_cache: yes
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
@@ -20,11 +23,16 @@
     - config
 
 - name: Install Nginx
-  apt: name="nginx" update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
+  apt:
+    name: "nginx"
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
 
 - name: Remove default.conf site
-  file: path=/etc/nginx/conf.d/default.conf state=absent
+  file:
+    path: /etc/nginx/conf.d/default.conf
+    state: absent
   notify: restart nginx

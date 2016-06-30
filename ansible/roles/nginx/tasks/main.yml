@@ -3,14 +3,26 @@
 - include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Set up SSL directory
-  file: path="{{ nginx_ssl_key_path | dirname }}" mode=0700 owner="{{ nginx_user }}" state=directory
+  file:
+    path: "{{ nginx_ssl_key_path | dirname }}"
+    mode: 0700
+    owner: "{{ nginx_user }}"
+    state: directory
 
 - name: Set up SSL key
-  copy: content="{{ noc_ssl_key }}" dest="{{ nginx_ssl_key_path }}" mode=0400 owner="{{ nginx_user }}"
+  copy:
+    content: "{{ noc_ssl_key }}"
+    dest: "{{ nginx_ssl_key_path }}"
+    mode: 0400
+    owner: "{{ nginx_user }}"
   notify: restart nginx
 
 - name: Set up SSL certificate
-  copy: content="{{ noc_ssl_cert }}" dest="{{ nginx_ssl_cert_path }}" mode=0400 owner="{{ nginx_user }}"
+  copy:
+    content: "{{ noc_ssl_cert }}"
+    dest: "{{ nginx_ssl_cert_path }}"
+    mode: 0400
+    owner: "{{ nginx_user }}"
   notify: restart nginx
 
 - name: Setup nginx
@@ -22,7 +34,10 @@
     - config
 
 - name: Enable Nginx system service
-  service: name="{{ nginx_system_service }}" enabled=yes state=started
+  service:
+    name: "{{ nginx_system_service }}"
+    enabled: yes
+    state: started
 
 - name: Install packages
   pip:
