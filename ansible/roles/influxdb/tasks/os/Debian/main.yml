@@ -10,5 +10,8 @@
     http_proxy: "{{http_proxy}}"
 
 - name: Install influx monitoring
-  template: src="etc/telegraf/telegraf.d/influxdb.conf.j2" dest="/etc/telegraf/telegraf.d/influxdb.conf"
-
+  template:
+    src: "etc/telegraf/telegraf.d/influxdb.conf.j2"
+    dest: "/etc/telegraf/telegraf.d/influxdb.conf"
+  tags:
+    - config

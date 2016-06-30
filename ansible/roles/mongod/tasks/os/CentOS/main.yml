@@ -25,6 +25,8 @@
     src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
     dest: "/etc/telegraf/telegraf.d/mongodb.conf"
   notify: reload telegraf
+  tags:
+    - config
 
 - name: Delete mongod init file
   file:
