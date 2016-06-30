@@ -14,7 +14,7 @@ class ConfigCheck(DiscoveryCheck):
     """
     Version discovery
     """
-    name = "caps"
+    name = "config"
     required_script = "get_config"
 
     def handler(self):
