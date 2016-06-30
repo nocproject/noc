@@ -132,6 +132,8 @@ class Command(BaseCommand):
                 # @todo: Fix
                 self.stdout.write("Warning! Beef contains no version info\n")
             scr.beef.set_result(result)
+            if scr._motd:
+                scr.beef.set_motd(scr._motd)
             if os.path.isdir(beef):
                 beef = os.path.join(beef, "%s.json" % scr.beef.uuid)
             self.stdout.write("Writing beef to %s\n" % beef)
