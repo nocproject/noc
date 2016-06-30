@@ -1,0 +1,31 @@
+{
+    "name": "Juniper | MX | PWR-MX480-2520-AC-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "7bb42025-51dc-4eef-8c53-882f6683779c",
+    "vendor__code": "JUNIPER",
+    "description": "MX480 2520W Power Entry Module AC",
+    "cr_context": "PEM",
+    "connections": [
+        {
+            "description": "Internal power slot",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX480 PEM"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["PWR-MX480-2520-AC-S"],
+            "part_no": ["740-029970"]
+        }
+    }
+}
