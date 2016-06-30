@@ -27,10 +27,10 @@ class Beef(object):
     type_signature = "script::beef"
     BEEF_ROOT = "var/beef/sa"
 
-    def __init__(self):
+    def __init__(self, script=None):
         self.guid = str(uuid.uuid4())
         self.maxDiff = None
-        self.script = None
+        self.script = script
         self.vendor = None
         self.platform = None
         self.version = None
