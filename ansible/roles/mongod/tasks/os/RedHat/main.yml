@@ -40,6 +40,8 @@
     src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
     dest: "/etc/telegraf/telegraf.d/mongodb.conf"
   notify: reload telegraf
+  tags:
+    - config
 
 - name: Install mongodb limits file
   template:
@@ -47,7 +49,6 @@
     dest: "/etc/security/limits.d/mongo_limits.conf"
   tags:
     - config
-
 
 - name: Set mongod defaults
   template:

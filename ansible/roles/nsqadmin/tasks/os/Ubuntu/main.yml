@@ -18,6 +18,8 @@
     src: "etc/telegraf/telegraf.d/nsqadmin.conf.j2"
     dest: "/etc/telegraf/telegraf.d/nsqadmin.conf"
   notify: reload telegraf
+  tags:
+    - config
 
 - name: reload systemd
   shell: systemctl daemon-reload

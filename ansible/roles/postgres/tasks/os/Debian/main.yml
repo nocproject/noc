@@ -33,6 +33,8 @@
     src: "etc/telegraf/telegraf.d/postgres.conf.j2"
     dest: "/etc/telegraf/telegraf.d/postgres.conf"
   notify: reload telegraf
+  tags:
+    - config
 
 - name: Install postgres limits file
   template:
