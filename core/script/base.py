@@ -23,6 +23,7 @@ from context import (ConfigurationContextManager, CacheContextManager,
 from noc.core.profile.loader import loader as profile_loader
 from noc.lib.solutions import get_solution
 from noc.lib.mac import MAC
+from beef import Beef
 
 
 class BaseScript(object):
@@ -96,7 +97,7 @@ class BaseScript(object):
     def __init__(self, service, credentials,
                  args=None, capabilities=None,
                  version=None, parent=None, timeout=None,
-                 name=None):
+                 name=None, collect_beef=False):
         self.service = service
         self.tos = self.service.config.tos
         self.pool = self.service.config.pool
@@ -119,13 +120,19 @@ class BaseScript(object):
         self.start_time = None
         self.args = self.clean_input(args or {})
         self.cli_stream = None
+        if collect_beef:
+            self.beef = Beef()
+            self.logger.info("Collecting beef %s", self.beef.uuid)
+        else:
+            self.beef = None
         if self.parent:
             self.snmp = self.root.snmp
+            self.beef = self.parent.beef
         else:
             if self.credentials.get("beef"):
                 self.snmp = BeefSNMP(self)
             else:
-                self.snmp = SNMP(self)
+                self.snmp = SNMP(self, beef=self.beef)
         self.http = HTTP(self)
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.to_shutdown_session = False
@@ -604,6 +611,8 @@ class BaseScript(object):
         r = stream.execute(cmd + command_submit, obj_parser=obj_parser,
                            cmd_next=cmd_next, cmd_stop=cmd_stop)
         if isinstance(r, basestring):
+            if self.beef:
+                self.beef.set_cli(cmd, r)
             # Check for syntax errors
             if not ignore_errors:
                 # Check for syntax error
