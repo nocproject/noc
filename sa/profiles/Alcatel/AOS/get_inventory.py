@@ -33,7 +33,7 @@ class Script(BaseScript):
             "number": None,
             "vendor": "ALU",
             "serial": p["attributes"].get("Serial Number"),
-            "description": p["vendor"] + " " + p["platform"],
+            "description": "%s %s" % (p["vendor"], p["platform"]),
             "part_no": p["platform"],
             "revision": p["attributes"].get("HW version"),
             "builtin": False
@@ -57,7 +57,6 @@ class Script(BaseScript):
                 part = "NoName | Transceiver | 1G | SFP LH"
             elif "GLC-BX" in part_no:
                 part = "Cisco | Transceiver | 1G | GLC-BX-D"
-                vendor = "Cisco"
             else:
                 part = "NoName | Transceiver | 1G | SFP SX"
             objects += [{
@@ -69,6 +68,5 @@ class Script(BaseScript):
                 "part_no": [part],
                 "revision": hw_rev,
                 "builtin": False
-                }]
-                                                                                                                                                                                                                                                                                                
+            }]
         return objects
