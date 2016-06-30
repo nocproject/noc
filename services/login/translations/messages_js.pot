@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-14 13:16+0300\n"
+"POT-Creation-Date: 2016-06-30 11:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,4 +17,44 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
+
+#: ui/login/app/logic.js:19
+msgid "Failed to log in"
+msgstr ""
+
+#: ui/login/app/logic.js:23
+msgid "Failed to login"
+msgstr ""
+
+#: ui/login/app/ui.js:14
+msgid "NOC Login"
+msgstr ""
+
+#: ui/login/app/ui.js:29
+msgid "Username"
+msgstr ""
+
+#: ui/login/app/ui.js:30
+msgid "User"
+msgstr ""
+
+#: ui/login/app/ui.js:32
+msgid "User name cannot be empty"
+msgstr ""
+
+#: ui/login/app/ui.js:38 ui/login/app/ui.js:39
+msgid "Password"
+msgstr ""
+
+#: ui/login/app/ui.js:41
+msgid "Password cannot be empty"
+msgstr ""
+
+#: ui/login/app/ui.js:48
+msgid "Login"
+msgstr ""
+
+#: ui/login/app/ui.js:55
+msgid "Reset"
+msgstr ""
 
