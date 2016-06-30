@@ -163,3 +163,6 @@ class Beef(object):
 
     def set_result(self, result):
         self.result = result
+
+    def set_motd(self, motd):
+        self.motd = motd

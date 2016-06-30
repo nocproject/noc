@@ -102,6 +102,7 @@ class BaseScript(object):
         self.tos = self.service.config.tos
         self.pool = self.service.config.pool
         self.parent = parent
+        self._motd = None
         name = name or self.name
         self.logger = PrefixLoggerAdapter(
             self.base_logger,
@@ -483,12 +484,18 @@ class BaseScript(object):
         if self.parent:
             self.parent.schedule_to_save()
 
+    def set_motd(self, motd):
+        self._motd = motd
+
     @property
     def motd(self):
         """
         Return message of the day
         """
-        return self.get_cli_stream().get_motd()
+        if self._motd:
+            return self._motd
+        else:
+            return self.get_cli_stream().get_motd()
 
     def re_search(self, rx, s, flags=0):
         """
