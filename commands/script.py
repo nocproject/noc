@@ -51,6 +51,10 @@ class Command(BaseCommand):
             help="Disable SNMP"
         )
         parser.add_argument(
+            "--beef",
+            help="Collect beef to file"
+        )
+        parser.add_argument(
             "script",
             nargs=1,
             help="Script name"
@@ -67,7 +71,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, config, script, object_name, arguments, pretty,
-               yaml, use_snmp,
+               yaml, use_snmp, beef,
                *args, **options):
         # Get object
         obj = self.get_object(object_name[0])
@@ -99,7 +103,8 @@ class Command(BaseCommand):
             args=args,
             version=None,  #@todo: Fix
             timeout=3600,
-            name=script
+            name=script,
+            collect_beef=bool(beef)
         )
         result = scr.run()
         if pretty:
@@ -109,7 +114,12 @@ class Command(BaseCommand):
             import sys
             yaml.dump(result, sys.stdout)
         else:
-            print result
+            self.stdout.write("%s\n" % result)
+        if beef:
+            if os.path.isdir(beef):
+                beef = os.path.join(beef, "%s.json" % beef.uuid)
+            self.stdout.write("Writing beef to %s\n" % beef)
+            scr.beef.save(beef)
 
     def get_object(self, object_name):
         """
