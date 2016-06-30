@@ -37,7 +37,7 @@
   tags:
     - redis
 
-- name: Install discovery monitoring
+- name: Install redis monitoring
   template:
     src: "etc/telegraf/telegraf.d/redis.conf.j2"
     dest: "/etc/telegraf/telegraf.d/redis.conf"
