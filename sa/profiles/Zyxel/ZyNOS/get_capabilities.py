@@ -16,7 +16,9 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_capabilities"
 
-    rx_active = re.compile("Active\s*:\s*Yes",
+    rx_lldp_active = re.compile("Active\s*:\s*Yes",
+                           re.MULTILINE | re.IGNORECASE)
+    rx_stp_active = re.compile("Uptime\s*:\s*\d+",
                            re.MULTILINE | re.IGNORECASE)
 
     @false_on_cli_error
@@ -25,4 +27,20 @@ class Script(BaseScript):
         Check box has lldp enabled
         """
         r = self.cli("show lldp config")
-        return bool(self.rx_active.search(r))
+        return bool(self.rx_lldp_active.search(r))
+
+    @false_on_cli_error
+    def has_stp(self):
+        """
+        Check box has stp enabled
+        """
+        r = self.cli("show spanning-tree config")
+        return bool(self.rx_stp_active.search(r))
+
+    @false_on_cli_error
+    def has_oam(self):
+        """
+        Check box has oam enabled
+        """
+        r = self.scripts.get_oam_status()
+        return bool(r != [])
