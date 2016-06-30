@@ -160,3 +160,6 @@ class Beef(object):
 
     def set_snmp_get(self, oid, result):
         self.snmp_get[oid] = result
+
+    def set_result(self, result):
+        self.result = result
