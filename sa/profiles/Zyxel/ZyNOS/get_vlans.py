@@ -30,7 +30,10 @@ class Script(BaseScript):
                     "1.3.6.1.2.1.17.7.1.4.2.1.3",
                     "1.3.6.1.2.1.17.7.1.4.3.1.1"
                 ]):
-                    r += [{"vlan_id": vid, "name": name}]
+                    if name is not None:
+                        r += [{"vlan_id": vid, "name": name}]
+                    else:
+                        r += [{"vlan_id": vid}]
                 return r
             except self.snmp.TimeOutError:
                 pass
