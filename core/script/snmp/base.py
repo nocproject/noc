@@ -20,10 +20,11 @@ class SNMP(object):
     class TimeOutError(Exception):
         pass
 
-    def __init__(self, script):
+    def __init__(self, script, beef=None):
         self.script = script
         self.ioloop = None
         self.result = None
+        self.beef = beef
         self.logger = PrefixLoggerAdapter(script.logger, "snmp")
 
     def close(self):
@@ -54,6 +55,8 @@ class SNMP(object):
                     tos=self.script.tos,
                     ioloop=self.get_ioloop()
                 )
+                if self.beef:
+                    self.beef.set_snmp_get(oids, self.result)
             except SNMPError, why:
                 if why.code == TIMED_OUT:
                     raise self.TimeOutError()
