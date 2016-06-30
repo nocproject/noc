@@ -32,11 +32,14 @@ class InterfaceCheck(DiscoveryCheck):
         if sol:
             self.logger.info("Using %s for interface classification",
                              sol)
-            self.get_interface_profile = get_solution(sol)
-            self.interface_profile_cache = cachetools.LRUCache(
-                1000,
-                missing=lambda x: InterfaceProfile.objects.filter(name=x).first()
-            )
+            try:
+                self.get_interface_profile = get_solution(sol)
+                self.interface_profile_cache = cachetools.LRUCache(
+                    1000,
+                    missing=lambda x: InterfaceProfile.objects.filter(name=x).first()
+                )
+            except Exception as e:
+                self.logger.error("Cannot compile interface classificator: %s", e)
 
     def handler(self):
         self.logger.info("Checking interfaces")
