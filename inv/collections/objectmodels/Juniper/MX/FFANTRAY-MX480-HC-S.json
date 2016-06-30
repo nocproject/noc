@@ -1,0 +1,22 @@
+{
+    "name": "Juniper | MX | FFANTRAY-MX480-HC-S",
+    "$collection": "inv.objectmodels",
+    "uuid": "5222fe6b-289c-4d37-afd1-8305ddc15d24",
+    "vendor__code": "JUNIPER",
+    "description": "MX480 High Capacity fantray (upper or lower)",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | MX480 Fan"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["FFANTRAY-MX480-HC-S"]
+        }
+    }
+}
