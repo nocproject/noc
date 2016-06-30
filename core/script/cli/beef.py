@@ -19,7 +19,7 @@ class BeefCLI(CLI):
         super(BeefCLI, self).__init__(*args, **kwargs)
         self.beef = self.script.credentials["beef"]
 
-    def execute(self, cmd):
+    def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None):
         scm = self.script.profile.command_submit
         if cmd.endswith(self.script.profile.command_submit):
             c = cmd[:-len(scm)]
