@@ -19,7 +19,7 @@ from noc.lib.fileutils import safe_rewrite
 
 class Beef(object):
     beef_args = [
-        "script", "vendor", "platform", "version", "input",
+        "script", "vendor", "platform", "version", "image", "input",
         "result", "cli", "snmp_get", "snmp_getnext", "http_get", "motd",
         "mock_get_version", "ignore_timestamp_mismatch", "maxDiff",
         "date", "private", "guid", "type"]
@@ -34,6 +34,7 @@ class Beef(object):
         self.vendor = None
         self.platform = None
         self.version = None
+        self.image = None
         self.input = {}
         self.result = None
         self.motd = ""
@@ -140,6 +141,17 @@ class Beef(object):
             beef["guid"] = str(uuid.uuid4())
         beef = q(beef)
         safe_rewrite(path, json.dumps(beef), mode=0644)
+
+    def set_version(self, vendor=None, platform=None, version=None,
+                    image=None, *args, **kwargs):
+        if vendor:
+            self.vendor = vendor
+        if platform:
+            self.platform = platform
+        if version:
+            self.version = version
+        if image:
+            self.image = image
 
     def set_cli(self, command, result):
         if self.cli is None:
