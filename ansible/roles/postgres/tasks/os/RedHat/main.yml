@@ -34,7 +34,7 @@
 
 - name: Install postgres monitoring
   template:
-    src: "os/CentOS/etc/telegraf/telegraf.d/postgres.conf.j2"
+    src: "etc/telegraf/telegraf.d/postgres.conf.j2"
     dest: "/etc/telegraf/telegraf.d/postgres.conf"
   notify: reload telegraf
   tags:
