@@ -1,0 +1,563 @@
+# Translations template for The NOC Project.
+# Copyright (C) 2016 The NOC Project
+# This file is distributed under the same license as the The NOC Project
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: The NOC Project VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2016-06-30 18:32-0300\n"
+"PO-Revision-Date: 2016-06-30 18:59-0300\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"X-Generator: Poedit 1.8.8\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: pt_BR\n"
+
+#: dns/apps/reportmissedp2p/views.py:18
+msgid "Missed Link Addresses"
+msgstr "Conexões Perdidas"
+
+#: dns/apps/reportmissedreverse/views.py:18
+msgid "Missed Reverse Zones"
+msgstr "Zonas Reversas Perdidas"
+
+#: fm/apps/heatmap/views.py:15 fm/apps/heatmap/views.py:16
+msgid "Heatmap"
+msgstr ""
+
+#: fm/apps/outage/views.py:15 fm/apps/outage/views.py:16
+msgid "Outages"
+msgstr "Indisponibilidades"
+
+#: fm/apps/reportalarmdetail/views.py:21 fm/apps/reportalarmdetail/views.py:22
+msgid "Alarm Detail"
+msgstr "Detalhes de Alertas"
+
+#: fm/apps/reportescalations/views.py:41
+msgid "Escalations"
+msgstr "Escalações"
+
+#: fm/apps/reportescalations/views.py:85
+msgid "Timestamp"
+msgstr ""
+
+#: fm/apps/reportescalations/views.py:86
+msgid "Escalation Timestamp"
+msgstr "Timestamp de Escalações"
+
+#: fm/apps/reportescalations/views.py:88
+msgid "Segment"
+msgstr "Segmento"
+
+#: fm/apps/reportescalations/views.py:89
+msgid "Platform"
+msgstr "Plataforma"
+
+#: fm/apps/reportescalations/views.py:91
+msgid "TT"
+msgstr ""
+
+#: fm/apps/reportescalations/views.py:25 fm/apps/reportreboots/views.py:23
+msgid "Range"
+msgstr "Intervalo"
+
+#: fm/apps/reportescalations/views.py:26 fm/apps/reportreboots/views.py:24
+msgid "1 day"
+msgstr "1 dia"
+
+#: fm/apps/reportescalations/views.py:27 fm/apps/reportreboots/views.py:25
+msgid "1 week"
+msgstr "1 semana"
+
+#: fm/apps/reportescalations/views.py:28 fm/apps/reportreboots/views.py:26
+msgid "1 month"
+msgstr "1 mês"
+
+#: fm/apps/reportreboots/views.py:39 fm/apps/reportreboots/views.py:94
+msgid "Reboots"
+msgstr ""
+
+#: fm/apps/reportescalations/views.py:87 fm/apps/reportreboots/views.py:93
+msgid "Managed Object"
+msgstr "Objeto Gerenciado"
+
+#: fm/apps/totaloutage/views.py:15 fm/apps/totaloutage/views.py:16
+msgid "Total Outages"
+msgstr "Total de Indisponibilidades"
+
+#: inv/apps/map/views.py:41 inv/apps/map/views.py:42
+msgid "Network Map"
+msgstr "Topologia"
+
+#: inv/apps/reportdiscovery/views.py:24
+msgid "Discovery Summary"
+msgstr "Resumo de Descoberta"
+
+#: inv/apps/reportdiscoveryproblem/views.py:21
+msgid "Discovery Problems"
+msgstr "Problemas de Descoberta"
+
+#: inv/apps/reportdiscoveryproblem/views.py:34
+msgid "Profile check failed"
+msgstr "Falha na checagem de perfil"
+
+#: inv/apps/reportdiscoveryproblem/views.py:44
+msgid "No interfaces"
+msgstr "Nenhuma interface"
+
+#: inv/apps/reportdiscoveryproblem/views.py:51
+msgid "No links"
+msgstr "Nenhum link"
+
+#: inv/apps/reportdiscoveryproblem/views.py:59
+msgid "No uplinks"
+msgstr "Nenhum uplink"
+
+#: inv/apps/unknownmodel/views.py:38
+msgid "Cleaned"
+msgstr "Apagado"
+
+#: ip/apps/ipam/views.py:404
+msgid "Invalid address"
+msgstr "Endereço inválido"
+
+#: ip/apps/ipam/views.py:409
+#, python-format
+msgid "Redirected to %(prefix)s"
+msgstr "Redirecionado para %(prefix)s"
+
+#: ip/apps/ipam/views.py:430
+#, python-format
+msgid "Bookmark set to %(prefix)s"
+msgstr "Favorito adicionado para %(prefix)s"
+
+#: ip/apps/ipam/views.py:433
+#, python-format
+msgid "Bookmark removed from %(prefix)s"
+msgstr "Favorito removido de %(prefix)s"
+
+#: ip/apps/ipam/views.py:446
+#, python-format
+msgid "IPv%(afi)s prefix"
+msgstr ""
+
+#: ip/apps/ipam/views.py:448 ip/apps/ipam/views.py:639
+#: ip/apps/ipam/views.py:822 ip/apps/ipam/views.py:827
+msgid "State"
+msgstr "Estado"
+
+#: ip/apps/ipam/views.py:451 ip/apps/ipam/views.py:641
+#: ip/apps/ipam/views.py:824 ip/apps/ipam/views.py:829
+msgid "Prefix state"
+msgstr "Estado do prefixo"
+
+#: ip/apps/ipam/views.py:453 ip/apps/ipam/views.py:455
+#: ip/apps/ipam/views.py:643 ip/apps/ipam/views.py:645
+#: ip/apps/ipam/views.py:831 ip/apps/ipam/views.py:833
+msgid "Project"
+msgstr "Projeto"
+
+#: ip/apps/ipam/views.py:459 ip/apps/ipam/views.py:636
+msgid "ASN"
+msgstr ""
+
+#: ip/apps/ipam/views.py:471 ip/apps/ipam/views.py:664
+#: ip/apps/ipam/views.py:856
+msgid "TT #"
+msgstr ""
+
+#: ip/apps/ipam/views.py:473 ip/apps/ipam/views.py:666
+#: ip/apps/ipam/views.py:858
+msgid "Ticket #"
+msgstr "# do chamado"
+
+#: ip/apps/ipam/views.py:475 ip/apps/ipam/views.py:668
+#: ip/apps/ipam/views.py:860
+msgid "Style"
+msgstr "Estilo"
+
+#: ip/apps/ipam/views.py:478 ip/apps/ipam/views.py:671
+#: ip/apps/ipam/views.py:863
+msgid "Visual appearance"
+msgstr "Aparência"
+
+#: ip/apps/ipam/views.py:480 ip/apps/ipam/views.py:673
+msgid "Dual-stack prefix"
+msgstr "Prefixo de pilha dupla"
+
+#: ip/apps/ipam/views.py:482 ip/apps/ipam/views.py:675
+msgid "Appropriative dual-stack allocation"
+msgstr "Prefixo de pilha dupla assossiativa"
+
+#: ip/apps/ipam/views.py:485 ip/apps/ipam/views.py:678
+msgid "Enable IP Discovery"
+msgstr "Habilitar Descoberta de IPs"
+
+#: ip/apps/ipam/views.py:505 ip/apps/ipam/views.py:874
+msgid "Permission denied"
+msgstr "Permissão negada"
+
+#: ip/apps/ipam/views.py:520
+#, python-format
+msgid "Prefix %s is already exists in vrf %s"
+msgstr "Prefixo %s já existente na vrf %s"
+
+#: ip/apps/ipam/views.py:534 ip/apps/ipam/views.py:698
+msgid "Permission denied. Cannot set dual-stack allocation"
+msgstr "Permissão negada. Não é possível definir alocação de pilha dupla"
+
+#: ip/apps/ipam/views.py:574
+#, python-format
+msgid "Prefix %(prefix)s has been created"
+msgstr "Prefixo %(prefix)s adicionado com sucesso"
+
+#: ip/apps/ipam/views.py:650
+msgid "VC"
+msgstr ""
+
+#: ip/apps/ipam/views.py:654
+msgid ""
+"VC Related with prefix. Adjust VC Bind Filters if you cannot see required VC"
+msgstr ""
+"VC relacionado com prefixo. Ajuste o VC Bind Filters se você não conseguir "
+"ver o VC requerido"
+
+#: ip/apps/ipam/views.py:729
+#, python-format
+msgid "Prefix %(prefix)s has been changed"
+msgstr "Prefixo %(prefix)s foi modificado com sucesso"
+
+#: ip/apps/ipam/views.py:785 ip/apps/ipam/views.py:798
+#, python-format
+msgid "Prefix %(prefix)s has been successfully deleted"
+msgstr "Prefixo %(prefix)s foi excluído com sucesso"
+
+#: ip/apps/ipam/views.py:791 ip/apps/ipam/views.py:804
+#, python-format
+msgid "Prefix %(prefix)s and all descendans have been successfully deleted"
+msgstr "Prefixo %(prefix)s e todos os descendentes foram excluídos com sucesso"
+
+#: fm/apps/reportescalations/views.py:90 ip/apps/ipam/views.py:817
+msgid "Address"
+msgstr "Endereço"
+
+#: ip/apps/ipam/views.py:818
+#, python-format
+msgid "IPv%(afi)s address"
+msgstr "Endereço IPv%(afi)s"
+
+#: ip/apps/ipam/views.py:836
+msgid "FQDN"
+msgstr ""
+
+#: ip/apps/ipam/views.py:837
+msgid "MAC"
+msgstr ""
+
+#: ip/apps/ipam/views.py:839
+msgid "Auto-update MAC"
+msgstr "Atualizar MAC"
+
+#: ip/apps/ipam/views.py:841
+msgid "Check to automatically fetch MAC from ARP cache"
+msgstr "Marque para atualizar o MAC automaticamente do cache ARP"
+
+#: ip/apps/ipam/views.py:846
+msgid "Set if address belong to managed object's interface"
+msgstr ""
+"Selecione se o endereço pertence a uma interface de um objeto gerenciado"
+
+#: ip/apps/ipam/views.py:879
+msgid "Address is already exists"
+msgstr "Endereço já cadastrado"
+
+#: ip/apps/ipam/views.py:896
+msgid "Invalid Managed Object"
+msgstr "Objeto Gerenciado Inválido"
+
+#: ip/apps/ipam/views.py:925 ip/apps/ipam/views.py:1042
+#: ip/apps/ipam/views.py:1124
+#, python-format
+msgid "Address %(address)s is in the locked range"
+msgstr "Endereço %(address)s já está no intervalo bloqueado"
+
+#: ip/apps/ipam/views.py:933
+#, python-format
+msgid "Address already present in VRF %(vrf)s"
+msgstr "Endereço já cadastrado na VRF %(vrf)s"
+
+#: ip/apps/ipam/views.py:960
+#, python-format
+msgid "Address %(address)s has been created"
+msgstr "Endereço %(address)s adicionado com sucesso"
+
+#: ip/apps/ipam/views.py:1010
+msgid "No free addresses"
+msgstr "Sem endereços livres"
+
+#: ip/apps/ipam/views.py:1071
+#, python-format
+msgid "Address %(address)s changed"
+msgstr "Endereço %(address)s modificado com sucesso"
+
+#: ip/apps/ipam/views.py:1134
+#, python-format
+msgid "Address %(address)s deleted"
+msgstr "Endereço %(address)s excluído com sucesso"
+
+#: ip/apps/ipam/views.py:1218
+#, python-format
+msgid "Prefix %(old_prefix)s is rebased to %(new_prefix)s"
+msgstr "Prefixo %(old_prefix)s movido para %(new_prefix)s"
+
+#: ip/apps/reportallocated/views.py:25 ip/apps/reportexpanded/views.py:24
+#: ip/apps/reportfilter/views.py:26 ip/apps/reportfree/views.py:20
+#: ip/apps/reportsummary/views.py:23
+msgid "VRF"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:28 ip/apps/reportexpanded/views.py:27
+#: ip/apps/reportfilter/views.py:30 ip/apps/reportfree/views.py:24
+#: ip/apps/reportsummary/views.py:26
+msgid "Address Family"
+msgstr "Família do IP"
+
+#: ip/apps/reportallocated/views.py:29 ip/apps/reportexpanded/views.py:28
+#: ip/apps/reportfilter/views.py:34 ip/apps/reportfree/views.py:25
+#: ip/apps/reportsummary/views.py:27
+msgid "IPv4"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:29 ip/apps/reportexpanded/views.py:28
+#: ip/apps/reportfilter/views.py:35 ip/apps/reportfree/views.py:25
+msgid "IPv6"
+msgstr ""
+
+#: dns/apps/reportmissedp2p/views.py:22 ip/apps/ipam/views.py:445
+#: ip/apps/reportallocated/views.py:30 ip/apps/reportexpanded/views.py:29
+#: ip/apps/reportfree/views.py:26 ip/apps/reportsummary/views.py:28
+msgid "Prefix"
+msgstr "Prefixo"
+
+#: ip/apps/reportallocated/views.py:43 ip/apps/reportexpanded/views.py:42
+#: ip/apps/reportfree/views.py:41 ip/apps/reportsummary/views.py:41
+msgid "Prefix not found"
+msgstr "Prefixo não encontrado"
+
+#: ip/apps/reportallocated/views.py:47
+msgid "Allocated Blocks"
+msgstr "Blocos Alocados"
+
+#: ip/apps/ipam/views.py:467 ip/apps/ipam/views.py:660
+#: ip/apps/ipam/views.py:852 ip/apps/reportallocated/views.py:77
+#: ip/apps/reportexpanded/views.py:79 ip/apps/reportfilter/views.py:76
+msgid "Tags"
+msgstr ""
+
+#: ip/apps/reportallocated/views.py:86
+#, python-format
+msgid "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+msgstr "Blocos alocados na VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+
+#: ip/apps/reportexpanded/views.py:82
+#, python-format
+msgid "All allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+msgstr "Todos os blocos alocados na VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+
+#: ip/apps/ipam/views.py:461 ip/apps/ipam/views.py:638
+#: ip/apps/reportfilter/views.py:37
+msgid "AS Number"
+msgstr "Número AS"
+
+#: ip/apps/ipam/views.py:463 ip/apps/ipam/views.py:656
+#: ip/apps/ipam/views.py:848 ip/apps/reportfilter/views.py:42
+msgid "Description"
+msgstr "Descrição"
+
+#: ip/apps/reportfree/views.py:31
+msgid "VRF Required"
+msgstr "VRF Requerida"
+
+#: ip/apps/reportfree/views.py:45
+msgid "Free Blocks"
+msgstr "Blocos Livres"
+
+#: ip/apps/reportfree/views.py:50
+#, python-format
+msgid "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+msgstr "Blocos livres na VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+
+#: ip/apps/reportsummary/views.py:78
+#, python-format
+msgid "Summary for VRF %(vrf)s (IPv%(afi)s): %(prefix)s"
+msgstr "Resumo para VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+
+#: ip/apps/reportsummary/views.py:84
+msgid "Size"
+msgstr "Tamanho"
+
+#: ip/apps/reportsummary/views.py:86
+msgid "%"
+msgstr ""
+
+#: ip/apps/tools/views.py:40 ip/apps/tools/views.py:61
+#: ip/apps/tools/views.py:118
+msgid "Permission denined"
+msgstr "Permissão negada"
+
+#: ip/apps/tools/views.py:73
+msgid "NS"
+msgstr ""
+
+#: ip/apps/tools/views.py:73
+msgid "Name server IP address. NS must have zone transfer enabled for NOC host"
+msgstr ""
+"Nome do servidor de endereço IP. O NS deve ter uma zona de transferência "
+"habilitada para o NOC"
+
+#: ip/apps/tools/views.py:74
+msgid "Zone"
+msgstr "Zona"
+
+#: ip/apps/tools/views.py:74
+msgid "DNS Zone name to transfer"
+msgstr "Nome da Zona DNS para transferência"
+
+#: ip/apps/tools/views.py:75
+msgid "Source Address"
+msgstr "Endereço Fonte"
+
+#: ip/apps/tools/views.py:76
+msgid "Source address to issue zone transfer"
+msgstr "Endereço fonte para resolver a zona de transferência"
+
+#: ip/apps/tools/views.py:130
+#, python-format
+msgid "%(count)s IP addresses uploaded via zone transfer"
+msgstr "%(count)s endereços IP carregados via zona de transferência"
+
+#: main/apps/calculator/calculators/cir2cbr.py:22
+msgid "CIR(bps). K, M and G suffixes can be used"
+msgstr "Sufixos CIR(bps). K, M e G  podem ser usados"
+
+#: main/apps/calculator/calculators/cir2cbr.py:24
+msgid ""
+"Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 is "
+"default)"
+msgstr ""
+"Valores comuns são:  Tc=1.5 para rate-limit e Tc=0.25 para policing (0.25 é "
+"o padrão)"
+
+#: main/apps/calculator/calculators/cir2cbr.py:27
+msgid "Cisco IOS policer"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:28
+msgid "Cisco IOS rate-limit"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:29
+msgid "Juniper JUNOS policer"
+msgstr ""
+
+#: main/apps/calculator/calculators/cir2cbr.py:50
+msgid "Integer is required"
+msgstr "Inteiro é requerido"
+
+#: main/apps/calculator/calculators/cir2cbr.py:58
+msgid "CIR/CAR(bps) to Burst-rate"
+msgstr "CIR/CAR(bps) para Burst-rate"
+
+#: main/apps/calculator/calculators/cir2cbr.py:59
+msgid ""
+"Recommended way for policy-map values calculating is: normal-burst-"
+"bytes=bits-per-second*Tc/8.Recommended way for rate-limit values calculating "
+"is: burst-normal=bits-per-second*Tc/8, burst-max=2*burst-normal"
+msgstr ""
+
+#: main/apps/checkpoint/views.py:20
+msgid "Checkpoints"
+msgstr ""
+
+#: main/apps/checkpoint/views.py:23 main/apps/checkpoint/views.py:26
+msgid "Comment"
+msgstr "Comentário"
+
+#: main/apps/checkpoint/views.py:27
+msgid "Private"
+msgstr "Privado"
+
+#: main/apps/checkpoint/views.py:42
+msgid "Checkpoint has been set"
+msgstr "Checkpoint adicionado com sucesso"
+
+#: main/apps/desktop/views.py:284
+msgid "Failed to change credentials"
+msgstr "Erro ao alterar credenciais"
+
+#: main/apps/language/views.py:17
+msgid "Languages"
+msgstr "Linguagens"
+
+#: main/apps/mimetype/views.py:17
+msgid "MIME Types"
+msgstr "Tipos MIME"
+
+#: main/apps/user/views.py:23
+msgid "Username"
+msgstr "Usuário"
+
+#: main/apps/user/views.py:24
+msgid "Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"
+msgstr ""
+"Obrigatório. 75 caracteres ou menos. Apenas letras, números e @/./+/-/_ são "
+"permitidos"
+
+#: main/apps/user/views.py:25
+msgid "This value must contain only letters, digits and @/./+/-/_."
+msgstr "Este campo deve conter apenas letras, números e @/./+/-/_"
+
+#: main/apps/user/views.py:26
+msgid "Password"
+msgstr "Senha"
+
+#: main/apps/user/views.py:27
+msgid ""
+"Raw passwords are not stored, so there is no way to see this user's "
+"password, but you can change the password using <a href=\"password/\">this "
+"form</a>."
+msgstr ""
+"Senhas criptografadas não são guardadas, então não é possível ver a senha do "
+"usuário, mas ela pode ser alterada através <a href=\"password/\">desse link</"
+"a>. "
+
+#: main/apps/user/views.py:58
+msgid "Personal info"
+msgstr "Informações pessoais"
+
+#: main/apps/user/views.py:59
+msgid "User category"
+msgstr "Categoria de usuário"
+
+#: main/apps/user/views.py:60
+msgid "Groups"
+msgstr "Grupos"
+
+#: main/apps/group/views.py:50 main/apps/user/views.py:61
+msgid "Access"
+msgstr "Acesso"
+
+#: main/apps/user/views.py:62
+msgid "Important dates"
+msgstr "Datas importantes"
+
+#: main/apps/userprofile/views.py:25
+msgid "User Profile"
+msgstr "Perfil de usuário"
