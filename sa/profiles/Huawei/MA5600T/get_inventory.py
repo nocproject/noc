@@ -23,7 +23,7 @@ class Script(BaseScript):
         r"VER (?P<revision>\S+)\s*\n",
         re.MULTILINE | re.IGNORECASE)
     rx_sub = re.compile(
-        r"^\s*SubBoard\[(?P<number>\d+)\]:\s*\n"
+        r"^\s*(VOIP)?SubBoard(\[(?P<number>\d+)\])?:\s*\n"
         r"^\s*Pcb\s+Version\s*:\s+(?P<part_no>\S+)\s+"
         r"VER (?P<revision>\S+)\s*\n",
         re.MULTILINE | re.IGNORECASE)
@@ -51,7 +51,7 @@ class Script(BaseScript):
             for match in self.rx_sub.finditer(v):
                 r += [{
                     "type": "SUB",
-                    "number": match.group("number"),
+                    "number": int(match.group("number") or 0),
                     "vendor": "HUAWEI",
                     "part_no": match.group("part_no"),
                     "revision": match.group("revision")
