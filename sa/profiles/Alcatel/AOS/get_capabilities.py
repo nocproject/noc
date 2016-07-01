@@ -16,7 +16,7 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 class Script(BaseScript):
     name = "Alcatel.AOS.get_capabilities"
 
-    rx_lldp = re.compile(r"LLDP Mode\s+= Bridge Mode")
+    rx_lldp = re.compile(r"^\s*\d+/\d+\s+Rx \+ Tx\s+", re.MULTILINE)
     rx_udld = re.compile("Global UDLD Status\s*:\s*(?P<status>\S+)")
 
     @false_on_cli_error
@@ -24,7 +24,7 @@ class Script(BaseScript):
         """
         Check box has LLDP enabled
         """
-        cmd = self.cli("show lldp LOCAL-SYSTEM")
+        cmd = self.cli("show lldp config")
         return self.rx_lldp.search(cmd) is not None
 
     @false_on_cli_error
