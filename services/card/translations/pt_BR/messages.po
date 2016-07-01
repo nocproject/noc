@@ -1,0 +1,323 @@
+# Translations template for The NOC Project.
+# Copyright (C) 2016 The NOC Project
+# This file is distributed under the same license as the The NOC Project
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: The NOC Project VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2016-06-30 18:25-0300\n"
+"PO-Revision-Date: 2016-06-30 18:32-0300\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"X-Generator: Poedit 1.8.8\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: pt_BR\n"
+
+#: services/card/cards/base.py:178 services/card/cards/base.py:192
+msgid "N/A"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:5
+msgid "Alarm"
+msgstr "Alerta"
+
+#: services/card/templates/alarm.html.j2:13
+#: services/card/templates/alarm.html.j2:79
+msgid "Class"
+msgstr "Classe"
+
+#: services/card/templates/alarm.html.j2:17
+msgid "Severity"
+msgstr "Criticidade"
+
+#: services/card/templates/alarm.html.j2:46
+msgid "Escalation"
+msgstr "Escalação"
+
+#: services/card/templates/alarm.html.j2:53
+msgid "Body"
+msgstr "Corpo"
+
+#: services/card/templates/alarm.html.j2:57
+msgid "Symptoms"
+msgstr "Sintomas"
+
+#: services/card/templates/alarm.html.j2:61
+msgid "Probable Causes"
+msgstr "Possíveis Causas"
+
+#: services/card/templates/alarm.html.j2:65
+msgid "Recommended Actions"
+msgstr "Ações Recomendadas"
+
+#: services/card/templates/alarm.html.j2:105
+msgid "Log"
+msgstr ""
+
+#: services/card/templates/alarmheat.html.j2:2
+msgid "Loading ..."
+msgstr "Carregando ..."
+
+#: services/card/templates/maintainance.html.j2:9
+msgid "Type"
+msgstr "Tipo"
+
+#: services/card/templates/maintainance.html.j2:13
+msgid "Date"
+msgstr "Data"
+
+#: services/card/templates/alarm.html.j2:76
+#: services/card/templates/maintainance.html.j2:17
+#: services/card/templates/maintainance.html.j2:36
+#: services/card/templates/managedobject.html.j2:54
+#: services/card/templates/service.html.j2:72
+#: services/card/templates/tt.html.j2:34
+msgid "Services"
+msgstr "Serviços"
+
+#: services/card/templates/maintainance.html.j2:21
+#: services/card/templates/managedobject.html.j2:78
+#: services/card/templates/tt.html.j2:65
+msgid "Description"
+msgstr "Descrição"
+
+#: services/card/templates/maintainance.html.j2:25
+#: services/card/templates/service.html.j2:110
+msgid "Contacts"
+msgstr "Contatos"
+
+#: services/card/templates/maintainance.html.j2:29
+msgid "Affected objects"
+msgstr "Objetos afetados"
+
+#: services/card/templates/alarm.html.j2:21
+#: services/card/templates/alarm.html.j2:78
+#: services/card/templates/maintainance.html.j2:33
+#: services/card/templates/tt.html.j2:31
+msgid "Object"
+msgstr "Objeto"
+
+#: services/card/templates/maintainance.html.j2:34
+#: services/card/templates/managedobject.html.j2:49
+#: services/card/templates/managedobject.html.j2:93
+msgid "Model"
+msgstr "Modelo"
+
+#: services/card/templates/maintainance.html.j2:35
+#: services/card/templates/managedobject.html.j2:61
+msgid "IP"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:28
+#: services/card/templates/managedobject.html.j2:37
+msgid "Location"
+msgstr "Localização"
+
+#: services/card/templates/alarm.html.j2:41
+#: services/card/templates/managedobject.html.j2:41
+msgid "Administrative Domain"
+msgstr "Domínio Administrativo"
+
+#: services/card/templates/alarm.html.j2:37
+#: services/card/templates/managedobject.html.j2:45
+msgid "Segment"
+msgstr "Segmento"
+
+#: services/card/templates/managedobject.html.j2:69
+msgid "Version"
+msgstr "Versão"
+
+#: services/card/templates/managedobject.html.j2:72
+msgid "Recommended"
+msgstr "Recomendado"
+
+#: services/card/templates/managedobject.html.j2:82
+msgid "Service Range"
+msgstr "Abrangência de Serviços"
+
+#: services/card/templates/managedobject.html.j2:86
+msgid "L2 Terminator"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:91
+msgid "Name"
+msgstr "Nome"
+
+#: services/card/templates/managedobject.html.j2:109
+msgid "L3 Terminator"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:113
+msgid "Neighbors"
+msgstr "Vizinhos"
+
+#: services/card/templates/managedobject.html.j2:118
+msgid "Local port"
+msgstr "Porta local"
+
+#: services/card/templates/managedobject.html.j2:119
+msgid "Remote object"
+msgstr "Objeto remoto"
+
+#: services/card/templates/managedobject.html.j2:120
+msgid "Remote port"
+msgstr "Porta remota"
+
+#: services/card/templates/managedobject.html.j2:186
+msgid "Admin"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:186
+msgid "Oper"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:187
+msgid "Speed"
+msgstr "Velocidade"
+
+#: services/card/templates/managedobject.html.j2:187
+msgid "Duplex"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:189
+msgid "Errors"
+msgstr "Erros"
+
+#: services/card/templates/outage.html.j2:2
+msgid "Outages Summary"
+msgstr "Resumo de Indisponibilidades"
+
+#: services/card/templates/managedobject.html.j2:13
+#: services/card/templates/service.html.j2:48
+msgid "Maintainance"
+msgstr "Manutenção"
+
+#: services/card/templates/managedobject.html.j2:19
+#: services/card/templates/service.html.j2:54
+msgid "Start"
+msgstr "Iniciar"
+
+#: services/card/templates/managedobject.html.j2:20
+#: services/card/templates/service.html.j2:55
+msgid "Stop"
+msgstr "Parar"
+
+#: services/card/templates/managedobject.html.j2:191
+#: services/card/templates/service.html.j2:78
+msgid "Service"
+msgstr "Serviço"
+
+#: services/card/templates/managedobject.html.j2:190
+#: services/card/templates/service.html.j2:79
+msgid "Status"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:92
+#: services/card/templates/service.html.j2:97
+msgid "Address"
+msgstr "Endereço"
+
+#: services/card/templates/service.html.j2:101
+msgid "Subscriber"
+msgstr ""
+
+#: services/card/templates/service.html.j2:118
+msgid "Comment"
+msgstr "Comentário"
+
+#: services/card/templates/service.html.j2:124
+msgid "Connection"
+msgstr "Conexão"
+
+#: services/card/templates/managedobject.html.j2:185
+#: services/card/templates/service.html.j2:152
+msgid "Port"
+msgstr "Porta"
+
+#: services/card/templates/service.html.j2:162
+msgid "CPE"
+msgstr ""
+
+#: services/card/templates/service.html.j2:166
+msgid "Terminator"
+msgstr ""
+
+#: services/card/templates/service.html.j2:171
+msgid "Session"
+msgstr "Sessão"
+
+#: services/card/templates/managedobject.html.j2:188
+#: services/card/templates/subscribersession.html.j2:5
+msgid "VLAN"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:65
+#: services/card/templates/subscribersession.html.j2:6
+msgid "MAC"
+msgstr ""
+
+#: services/card/templates/subscribersession.html.j2:7
+msgid "MAC Vendor"
+msgstr "Fabricante por MAC"
+
+#: services/card/templates/totaloutage.html.j2:19
+msgid "No outages detected"
+msgstr "Nenhuma indisponibilidade detectada"
+
+#: services/card/templates/managedobject.html.j2:153
+#: services/card/templates/service.html.j2:178
+#: services/card/templates/tt.html.j2:5
+msgid "TT"
+msgstr ""
+
+#: services/card/templates/tt.html.j2:12
+msgid "Stage"
+msgstr "Estágio"
+
+#: services/card/templates/alarm.html.j2:69
+#: services/card/templates/managedobject.html.j2:158
+#: services/card/templates/tt.html.j2:25
+msgid "Alarms"
+msgstr "Alertas"
+
+#: services/card/templates/alarm.html.j2:75
+#: services/card/templates/managedobject.html.j2:163
+#: services/card/templates/service.html.j2:133
+#: services/card/templates/tt.html.j2:30
+msgid "Timestamp"
+msgstr ""
+
+#: services/card/templates/alarm.html.j2:77
+#: services/card/templates/managedobject.html.j2:164
+#: services/card/templates/service.html.j2:134
+#: services/card/templates/tt.html.j2:32
+msgid "Duration"
+msgstr "Duração"
+
+#: services/card/templates/alarm.html.j2:80
+#: services/card/templates/managedobject.html.j2:18
+#: services/card/templates/managedobject.html.j2:165
+#: services/card/templates/service.html.j2:53
+#: services/card/templates/service.html.j2:135
+#: services/card/templates/tt.html.j2:33
+msgid "Subject"
+msgstr "Assunto"
+
+#: services/card/templates/tt.html.j2:54
+msgid "Pre Reason"
+msgstr "Motivo Inicial"
+
+#: services/card/templates/tt.html.j2:60
+msgid "Final Reason"
+msgstr "Motivo Final"
+
+#: services/card/templates/tt.html.j2:81
+msgid "Comments"
+msgstr "Comentários"
