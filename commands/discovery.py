@@ -80,17 +80,34 @@ class Command(BaseCommand):
             self.run_job(job, mo, checks)
 
     def run_job(self, job, mo, checks):
-        scheduler = Scheduler("stub")
+        scheduler = Scheduler("discovery", pool=mo.pool.name)
         scheduler.service = ServiceStub()
-        job = get_solution(self.jcls[job])(scheduler, {
+        job_args = {
             Job.ATTR_KEY: mo.id,
             "_checks": checks
-        })
+        }
+        if self.requires_context(job, checks):
+            d = scheduler.get_collection().find_one({
+                Job.ATTR_CLASS: self.jcls[job],
+                Job.ATTR_KEY: mo.id
+
+            }, {
+                Job.ATTR_CONTEXT: 1
+            })
+            if d and d[Job.ATTR_CONTEXT]:
+                job_args[Job.ATTR_CONTEXT] = d[Job.ATTR_CONTEXT]
+        job = get_solution(self.jcls[job])(scheduler, job_args)
         job.dereference()
         job.handler()
         if scheduler.service.metrics:
             for m in scheduler.service.metrics:
                 self.stdout.write("Collected metric: %s\n" % m)
+
+    def requires_context(self, job, checks):
+        """
+        Returns True if job uses context
+        """
+        return job == "periodic" and (not checks or "metrics" in checks)
 
 
 class ServiceStub(object):
