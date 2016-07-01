@@ -81,12 +81,24 @@ class Command(BaseCommand):
 
     def run_job(self, job, mo, checks):
         scheduler = Scheduler("stub")
+        scheduler.service = ServiceStub()
         job = get_solution(self.jcls[job])(scheduler, {
             Job.ATTR_KEY: mo.id,
             "_checks": checks
         })
         job.dereference()
         job.handler()
+        if scheduler.service.metrics:
+            for m in scheduler.service.metrics:
+                self.stdout.write("Collected metric: %s\n" % m)
+
+
+class ServiceStub(object):
+    def __init__(self):
+        self.metrics = []
+
+    def register_metrics(self, batch):
+        self.metrics += batch
 
 if __name__ == "__main__":
     Command().run()
