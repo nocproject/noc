@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Zyxel.ZyNOS.get_portchannel
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -37,7 +37,12 @@ class Script(BaseScript):
     ##
     ## other versions
     ##
-    rx_trunk = re.compile(r"^Group ID\s+(?P<trunk>\d+):\s+active\s*.\s*Status:\s+(?P<lacp>(Static|LACP))\s*.\s*Member number:\s+\d+\s+Member:(?P<ports>(\d+\s+)*)$", re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_trunk = re.compile(
+        r"^Group ID\s+T?(?P<trunk>\d+):\s+active\s*\n"
+        r"(^\s*Criteria\s+:\s+\S+\s*\n)?"
+        r"^\s*Status:\s+(?P<lacp>(Static|LACP))\s*\n"
+        r"^\s*Member number:\s+\d+\s+Member:(?P<ports>(\d+\s+)*)\s*$",
+        re.IGNORECASE | re.MULTILINE)
 
     @BaseScript.match()
     def execute_other(self):
