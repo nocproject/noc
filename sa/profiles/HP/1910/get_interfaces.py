@@ -30,10 +30,15 @@ class Script(BaseScript):
     TIMEOUT = 120
 
     rx_sh_svi = re.compile(
-        r"^\s*(?P<interface>\S+) current state: (?P<admin_status>(UP|DOWN|Administratively DOWN|DOWN \( Administratively \)))\s*.Line protocol current state: (?P<oper_status>\S+).Description: (?P<description>(\S+ \S+ \S+ \S+|\S+ \S+ \S+|\S+ \S+|\S+)).The Maximum Transmit Unit is \d+.Internet Address is (?P<ip>\S+)/(?P<mask>\d+)( Primary|, acquired via DHCP).IP Packet Frame Type: \S+,  Hardware Address: (?P<mac>\S+)",
+        r"^\s*(?P<interface>\S+) current state:\s+"
+        r"(?P<admin_status>(UP|DOWN|Administratively DOWN|DOWN \( Administratively \)))\s*."
+        r"Line protocol current state: (?P<oper_status>\S+)."
+        r"Description: (?P<description>(\S+ \S+ \S+ \S+|\S+ \S+ \S+|\S+ \S+|\S+)).The Maximum Transmit Unit is \d+.Internet Address is (?P<ip>\S+)/(?P<mask>\d+)( Primary|, acquired via DHCP)."
+        r"IP Packet Frame Type: \S+,  Hardware Address: (?P<mac>\S+)",
         re.DOTALL | re.MULTILINE)
     rx_iface = re.compile(
-        r"^\s*(?P<iface>(\S+Ethernet|\S+Aggregation)\S+) current state:\s+(?P<status>(UP|DOWN|Administratively DOWN|DOWN \( Administratively \)))\s*$")
+        r"^\s*(?P<iface>(\S+Ethernet|\S+Aggregation)\S+) current state:\s+"
+        r"(?P<status>(UP|DOWN|Administratively DOWN|DOWN \( Administratively \)))\s*$")
     rx_mac = re.compile(
         r"^\s*IP Packet Frame Type: \S+, Hardware Address:\s+(?P<mac>\S+)$")
     rx_description = re.compile(
@@ -136,7 +141,7 @@ class Script(BaseScript):
                 else:
                     ifname = ifname.replace('GigabitEthernet', 'Gi ')
                 o_stat = match.group("status") == 'UP'
-                a_stat = match.group("status") != 'Administratively DOWN'
+                a_stat = match.group("status") not in ['Administratively DOWN', 'DOWN ( Administratively )']
 
                 i += 1
                 match = self.rx_mac.search(ifaces[i])
