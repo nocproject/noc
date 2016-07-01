@@ -30,10 +30,10 @@ class Script(BaseScript):
     TIMEOUT = 120
 
     rx_sh_svi = re.compile(
-        r"^\s*(?P<interface>\S+) current state: (?P<admin_status>(UP|DOWN|Administratively DOWN))\s*.Line protocol current state: (?P<oper_status>\S+).Description: (?P<description>(\S+ \S+ \S+ \S+|\S+ \S+ \S+|\S+ \S+|\S+)).The Maximum Transmit Unit is \d+.Internet Address is (?P<ip>\S+)/(?P<mask>\d+)( Primary|, acquired via DHCP).IP Packet Frame Type: \S+,  Hardware Address: (?P<mac>\S+)",
+        r"^\s*(?P<interface>\S+) current state: (?P<admin_status>(UP|DOWN|Administratively DOWN|DOWN \( Administratively \)))\s*.Line protocol current state: (?P<oper_status>\S+).Description: (?P<description>(\S+ \S+ \S+ \S+|\S+ \S+ \S+|\S+ \S+|\S+)).The Maximum Transmit Unit is \d+.Internet Address is (?P<ip>\S+)/(?P<mask>\d+)( Primary|, acquired via DHCP).IP Packet Frame Type: \S+,  Hardware Address: (?P<mac>\S+)",
         re.DOTALL | re.MULTILINE)
     rx_iface = re.compile(
-        r"^\s*(?P<iface>(\S+Ethernet|\S+Aggregation)\S+) current state:\s+(?P<status>(UP|DOWN|Administratively DOWN))\s*$")
+        r"^\s*(?P<iface>(\S+Ethernet|\S+Aggregation)\S+) current state:\s+(?P<status>(UP|DOWN|Administratively DOWN|DOWN \( Administratively \)))\s*$")
     rx_mac = re.compile(
         r"^\s*IP Packet Frame Type: \S+, Hardware Address:\s+(?P<mac>\S+)$")
     rx_description = re.compile(
