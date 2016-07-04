@@ -41,6 +41,10 @@ class Script(BaseScript):
         r"^\s*\d+\s+p2p\s+lan\s+0/\d+\s*/(?P<vlan>\d+)\s+\S*\s+\S+\s+\S+\s+"
         r"adl\s+0/\d+\s*/(?P<port>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\d+\s+"
         r"(?P<admin_status>\S+)\s*\n", re.MULTILINE)
+    rx_sp = re.compile(
+        r"^\s*\d+\s+(?P<vlan>\d+)\s+\S+\s+adl\s+0/\d+\s*/(?P<port>\d+)\s+"
+        r"(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s+"
+        r"(?P<admin_status>up|down)\s*$", re.MULTILINE)
 
     def execute(self):
         interfaces = []
@@ -49,7 +53,7 @@ class Script(BaseScript):
         for i in range(len(ports)):
             if ports[i]["t"] == "GE":
                 v = self.cli("display board 0/%d" % i)
-                for match  in self.rx_ether.finditer(v):
+                for match in self.rx_ether.finditer(v):
                     ifname = "0/%d/%d" % (i, int(match.group("port")))
                     admin_status = match.group("admin_status") == "active"
                     oper_status = match.group("oper_status") == "online"
@@ -84,8 +88,13 @@ class Script(BaseScript):
                         "name": "0/%d/%d" % (i, int(match.group("port"))),
                         "oper_state": match.group("oper_state") == "Activated"
                     }]
-                v = self.cli("display pvc 0/%d\n" % i)
-                for match in self.rx_pvc.finditer(v):
+                try:
+                    v = self.cli("display pvc 0/%d\n" % i)
+                    rx_adsl = self.rx_pvc
+                except self.CLISyntaxError:
+                    v = self.cli("display service-port board 0/%d\n" % i)
+                    rx_adsl = self.rx_sp
+                for match in rx_adsl.finditer(v):
                     port = int(match.group("port"))
                     ifname = "0/%d/%d" % (i, port)
                     sub = {
