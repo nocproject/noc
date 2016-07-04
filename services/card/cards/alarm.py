@@ -60,16 +60,10 @@ class AlarmCard(BaseCard):
         # Build alarm tree
         alarms = self.get_alarms()
         # Service summary
-        if self.object.root:
-            service_summary = {
-                "service": self.object.total_services,
-                "subscriber": self.object.total_subscribers
-            }
-        else:
-            service_summary = {
-                "service": SummaryItem.items_to_dict(self.object.total_services),
-                "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers)
-            }
+        service_summary = {
+            "service": SummaryItem.items_to_dict(self.object.total_services),
+            "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers)
+        }
         # Build result
         r = {
             "id": self.object.id,
