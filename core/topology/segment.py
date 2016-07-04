@@ -269,18 +269,21 @@ class SegmentTopology(BaseTopology):
     def get_object_uplinks(self):
         """
         Returns a dict of <object id> -> [<uplink object id>, ...]
+        Shortest path first
         """
         uplinks = self.get_uplinks()
         r = {}
         for o in self.G.node:
             if o in uplinks:
                 continue
-            ups = set()
+            ups = {}
             for u in uplinks:
-                paths = list(nx.all_simple_paths(self.G, o, u))
-                if paths:
-                    ups |= set(p[1] for p in paths)
-            r[o] = sorted(ups)
+                for path in nx.all_simple_paths(self.G, o, u):
+                    lp = len(path)
+                    p = path[1]
+                    ups[p] = min(lp, ups.get(p, lp))
+            # Shortest path first
+            r[o] = sorted(ups, key=lambda x: ups[x])
         return r
 
 
