@@ -19,7 +19,10 @@ from noc.lib.nosql import ForeignKeyField
 class ObjectFact(Document):
     meta = {
         "collection": "noc.objectfacts",
-        "indexes": ["object"]
+        "indexes": [
+            "object",
+            "attrs.rule"
+        ]
     }
     uuid = UUIDField(binary=True, primary_key=True)
     object = ForeignKeyField(ManagedObject)

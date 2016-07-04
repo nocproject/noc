@@ -48,6 +48,11 @@ Ext.define("NOC.cm.validationrule.Model", {
             name: "scope",
             type: "string",
             persist: false
+        },
+        {
+            name: "hits",
+            type: "string",
+            persist: false
         }
     ]
 });

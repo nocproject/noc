@@ -107,6 +107,10 @@ class BaseValidator(object):
         self.config = config or {}
         self.scope = scope
         self.rule = rule
+        if self.rule:
+            self.rule_id = str(self.rule.id)
+        else:
+            self.rule_id = None
 
     def get_priority(self):
         """
@@ -208,7 +212,8 @@ class BaseValidator(object):
             return ""
 
     def assert_error(self, type, obj=None, msg=None):
-        self.engine.assert_fact(Error(type, obj=obj, msg=msg))
+        self.engine.assert_fact(Error(type, obj=obj, msg=msg,
+                                      rule=self.rule_id))
 
 #
 validator_registry.load_all()

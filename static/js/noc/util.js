@@ -250,6 +250,14 @@ Ext.apply(NOC.render, {
 
     JSON: function(v) {
         return Ext.encode(v);
+    },
+
+    Badge: function(v) {
+        if(v) {
+            return "<span class='x-display-tag'>" + v + "</span>";
+        } else {
+            return "";
+        }
     }
 });
 
