@@ -118,6 +118,13 @@
         - node
         - noc
 
+    - role: pmwriter
+      when: "{{ has_svc_pmwriter | default(False) }}"
+      tags:
+        - pmwriter
+        - node
+        - noc
+
     - role: activator
       when: "{{ has_svc_activator | default(False) }}"
       tags:
