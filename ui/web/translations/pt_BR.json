@@ -1,0 +1,805 @@
+{
+    "": {
+        "Content-Transfer-Encoding": "8bit",
+        "Content-Type": "text/plain; charset=utf-8",
+        "Generated-By": "Babel 2.3.4",
+        "Language": "pt_BR",
+        "Language-Team": "pt_BR <LL@li.org>",
+        "Last-Translator": "Gabriela Todeschini <gabrielat@cpd.ufrgs.br>",
+        "MIME-Version": "1.0",
+        "PO-Revision-Date": "2016-07-04 09:15-0300",
+        "POT-Creation-Date": "2016-06-30 19:09-0300",
+        "Plural-Forms": "nplurals=2; plural=(n > 1);",
+        "Project-Id-Version": "The NOC Project VERSION",
+        "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
+        "X-Generator": "Poedit 1.8.8"
+    },
+    "About NOC ...": [
+        null,
+        "Sobre o NOC ..."
+    ],
+    "Active": [
+        null,
+        "Ativo"
+    ],
+    "Add": [
+        null,
+        "Adicionar"
+    ],
+    "Address/Platform": [
+        null,
+        "Endereço/Plataforma"
+    ],
+    "Adm. Domain": [
+        null,
+        "Domínio Adm."
+    ],
+    "Adm. domain": [
+        null,
+        "Domínio Adm."
+    ],
+    "Alarm Class": [
+        null,
+        "Classe de Alerta"
+    ],
+    "Alarm Classes": [
+        null,
+        "Classes de Alertas"
+    ],
+    "Alarm Weight": [
+        null,
+        "Peso do Alerta"
+    ],
+    "Alarm weight": [
+        null,
+        "Peso do alarme"
+    ],
+    "Alarms": [
+        null,
+        "Alertas"
+    ],
+    "All": [
+        null,
+        "Todos"
+    ],
+    "Anonymous": [
+        null,
+        "Anônimo"
+    ],
+    "Archive": [
+        null,
+        "Arquivo"
+    ],
+    "Asset": [
+        null,
+        "Ativo"
+    ],
+    "Box": [
+        null,
+        "Caixa"
+    ],
+    "Box discovery": [
+        null,
+        "Caixa de descoberta"
+    ],
+    "Builtin": [
+        null,
+        "Nativo"
+    ],
+    "By Date": [
+        null,
+        "Por Data"
+    ],
+    "Caps": [
+        null,
+        "Capacidades"
+    ],
+    "Card": [
+        null,
+        "Ficha"
+    ],
+    "Card Title Template": [
+        null,
+        "Modelo de Título de Ficha"
+    ],
+    "Change": [
+        null,
+        "Modificar"
+    ],
+    "Change Password": [
+        null,
+        "Alterar Senha"
+    ],
+    "Change password ...": [
+        null,
+        "Alterar senha ..."
+    ],
+    "Changing language": [
+        null,
+        "Alterando linguagem"
+    ],
+    "Check on config change after ": [
+        null,
+        "Verificar mudança de configuração depois"
+    ],
+    "Check on system start after ": [
+        null,
+        "Verificar o início do sistema depois"
+    ],
+    "Class": [
+        null,
+        "Classe"
+    ],
+    "Clear": [
+        null,
+        "Limpar"
+    ],
+    "Clear Template": [
+        null,
+        "Apagar Modelo"
+    ],
+    "Clear alarm?": [
+        null,
+        "Limpar alerta?"
+    ],
+    "Clear links": [
+        null,
+        "Limpar links"
+    ],
+    "Close": [
+        null,
+        "Fechar"
+    ],
+    "Code": [
+        null,
+        "Código"
+    ],
+    "Collapse panels": [
+        null,
+        "Recolher painéis"
+    ],
+    "Condition": [
+        null,
+        "Estado"
+    ],
+    "Config": [
+        null,
+        "Configurações"
+    ],
+    "Connect": [
+        null,
+        "Conectar"
+    ],
+    "Credentials has been changed": [
+        null,
+        "Credenciais alteradas com sucesso"
+    ],
+    "Data": [
+        null,
+        "Dados"
+    ],
+    "Delay": [
+        null,
+        "Atraso"
+    ],
+    "Delete": [
+        null,
+        "Excluir"
+    ],
+    "Description": [
+        null,
+        "Descrição"
+    ],
+    "Disable": [
+        null,
+        "Desabilitar"
+    ],
+    "Disconnect": [
+        null,
+        "Desconectar"
+    ],
+    "Do you wish to unlink interface {0}?": [
+        null,
+        "Você tem certeza que deseja desconectar a interface {0}?"
+    ],
+    "Edit": [
+        null,
+        "Editar"
+    ],
+    "Edit map": [
+        null,
+        "Editar mapa"
+    ],
+    "Enable": [
+        null,
+        "Habilitar"
+    ],
+    "Enable IPAM synchronization": [
+        null,
+        "Habilitar sincronização de IPAM"
+    ],
+    "Escalations": [
+        null,
+        "Escalações"
+    ],
+    "Events": [
+        null,
+        "Eventos"
+    ],
+    "Expand panels": [
+        null,
+        "Expandir painéis"
+    ],
+    "FQDN template": [
+        null,
+        "Modelo de FQDN"
+    ],
+    "Failed Interval, sec": [
+        null,
+        "Intervalo de Falha, segundos"
+    ],
+    "Failed interval": [
+        null,
+        "Intervalo de falha"
+    ],
+    "Failed to change credentials: ": [
+        null,
+        "Falha ao alterar credenciais:"
+    ],
+    "Failed to clear alarm": [
+        null,
+        "Falha ao apagar alerta"
+    ],
+    "Failed to connect interfaces": [
+        null,
+        "Falha ao conectar as interfaces"
+    ],
+    "Failed to fix": [
+        null,
+        "Falha ao corrigir"
+    ],
+    "Failed to get STP status": [
+        null,
+        "Falha ao obter o status STP"
+    ],
+    "Failed to get alarm": [
+        null,
+        "Falha ao obter alerta"
+    ],
+    "Failed to get data": [
+        null,
+        "Falha ao obter dados"
+    ],
+    "Failed to get interfaces list": [
+        null,
+        "Falha ao obter lista de interfaces"
+    ],
+    "Failed to load data": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to post message": [
+        null,
+        "Falha ao enviar mensagem"
+    ],
+    "Failed to run tasks": [
+        null,
+        "Falha ao executar tarefas"
+    ],
+    "Failed to save": [
+        null,
+        "Falha ao salvar"
+    ],
+    "Failed to set root cause": [
+        null,
+        "Falha ao definir a causa raiz"
+    ],
+    "Failed to set watcher": [
+        null,
+        "Falha ao definir observador"
+    ],
+    "Filter": [
+        null,
+        "Filtro"
+    ],
+    "First Discovered": [
+        null,
+        "Primeira Descoberta"
+    ],
+    "Fix": [
+        null,
+        "Corrigir"
+    ],
+    "From": [
+        null,
+        "De"
+    ],
+    "Global limit": [
+        null,
+        "Limite global"
+    ],
+    "Help": [
+        null,
+        "Ajuda"
+    ],
+    "Hide alarms covered by maintainance": [
+        null,
+        "Ocultar alertas cobertos pela manutenção"
+    ],
+    "Hide maintainance": [
+        null,
+        "Ocultar manutenção"
+    ],
+    "Icon": [
+        null,
+        "Ícone"
+    ],
+    "Interface Profile": [
+        null,
+        "Perfil de Interface"
+    ],
+    "Interface status": [
+        null,
+        "Status da interface"
+    ],
+    "Interval, sec": [
+        null,
+        "Intervalo, segundos"
+    ],
+    "Job": [
+        null,
+        "Tarefa"
+    ],
+    "Job scheduled to start": [
+        null,
+        "Tarefa agendada"
+    ],
+    "Jump to Segment": [
+        null,
+        "Ir para o Segmento"
+    ],
+    "Language": [
+        null,
+        "Linguagem"
+    ],
+    "Last Run": [
+        null,
+        "Última Execução"
+    ],
+    "Last Status": [
+        null,
+        "Último Status"
+    ],
+    "Last seen": [
+        null,
+        "Visto pela última vez"
+    ],
+    "Link Inspector": [
+        null,
+        "Inspetor de Link"
+    ],
+    "Local Description": [
+        null,
+        "Descrição Local"
+    ],
+    "Local Interface": [
+        null,
+        "Interface Local"
+    ],
+    "Login": [
+        null,
+        "Entrar"
+    ],
+    "Logout": [
+        null,
+        "Sair"
+    ],
+    "Message": [
+        null,
+        "Mensagem"
+    ],
+    "Method": [
+        null,
+        "Método"
+    ],
+    "Metric": [
+        null,
+        "Métrica"
+    ],
+    "Metrics": [
+        null,
+        "Métricas"
+    ],
+    "Min. Weight": [
+        null,
+        "Peso Mínimo"
+    ],
+    "Name": [
+        null,
+        "Nome"
+    ],
+    "Name template": [
+        null,
+        "Modelo de nome"
+    ],
+    "Navigation": [
+        null,
+        "Navegar"
+    ],
+    "Neighbor": [
+        null,
+        "Vizinho"
+    ],
+    "New layout": [
+        null,
+        "Novo layout"
+    ],
+    "New message": [
+        null,
+        "Nova mensagem"
+    ],
+    "Next Run": [
+        null,
+        "Próxima  Execução"
+    ],
+    "Notification Contacts": [
+        null,
+        "Contatos de Notificação"
+    ],
+    "Notification Group": [
+        null,
+        "Grupo de Notificação"
+    ],
+    "Object": [
+        null,
+        "Objeto"
+    ],
+    "Object Inspector": [
+        null,
+        "Inspetor de Objeto"
+    ],
+    "Object/Segment": [
+        null,
+        "Objeto/Segmento"
+    ],
+    "Objects": [
+        null,
+        "Objetos"
+    ],
+    "On platform change": [
+        null,
+        "Quando a platarma mudar"
+    ],
+    "Only": [
+        null,
+        "Apenas"
+    ],
+    "Open Template": [
+        null,
+        "Abrir Modelo"
+    ],
+    "Overview": [
+        null,
+        "Visão Geral"
+    ],
+    "Params": [
+        null,
+        "Parâmetros"
+    ],
+    "Periodic discovery": [
+        null,
+        "Descoberta periódica"
+    ],
+    "Platform": [
+        null,
+        "Plataforma"
+    ],
+    "Please confirm the alarm is closed and must be cleared?": [
+        null,
+        "Por favor, confirme: o alerta está fechado e precisa ser apagado?"
+    ],
+    "Please enter root cause alarm id": [
+        null,
+        "Por favor, defina o id da causa raiz do alerta"
+    ],
+    "Pre Reason": [
+        null,
+        "Motivo Prévio"
+    ],
+    "Pre Reasons": [
+        null,
+        "Motivos Prévios"
+    ],
+    "Prefix": [
+        null,
+        "Prefixo"
+    ],
+    "Profile": [
+        null,
+        "Perfil"
+    ],
+    "Profile saved": [
+        null,
+        "Perfil salvo"
+    ],
+    "Refresh": [
+        null,
+        "Recarregar"
+    ],
+    "Reload": [
+        null,
+        "Recarregar"
+    ],
+    "Remote Description": [
+        null,
+        "Descrição Remota"
+    ],
+    "Remote Interface": [
+        null,
+        "Interface Remota"
+    ],
+    "Remove": [
+        null,
+        "Remover"
+    ],
+    "Report ping RTT": [
+        null,
+        "Reportar RTT de ping"
+    ],
+    "Reset": [
+        null,
+        "Redefinir"
+    ],
+    "Reset Layout": [
+        null,
+        "Redefinir Layout"
+    ],
+    "Revert": [
+        null,
+        "Reverter"
+    ],
+    "Root only": [
+        null,
+        "Apenas a raiz"
+    ],
+    "Run": [
+        null,
+        "Executar"
+    ],
+    "Save": [
+        null,
+        "Salvar"
+    ],
+    "Segment": [
+        null,
+        "Segmento"
+    ],
+    "Segment Inspector": [
+        null,
+        "Inspetor de Segmento"
+    ],
+    "Select managed object ...": [
+        null,
+        "Selecionar objeto gerenciado ..."
+    ],
+    "Selector": [
+        null,
+        "Seletor"
+    ],
+    "Set": [
+        null,
+        "Definir"
+    ],
+    "Set Root Cause": [
+        null,
+        "Definir Causa Raiz"
+    ],
+    "Set root cause": [
+        null,
+        "Definir causa raiz"
+    ],
+    "Severity": [
+        null,
+        "Criticidade"
+    ],
+    "Shape": [
+        null,
+        "Formato"
+    ],
+    "Show": [
+        null,
+        "Mostrar"
+    ],
+    "Show JSON": [
+        null,
+        "Mostrar JSON"
+    ],
+    "Show Map": [
+        null,
+        "Mostrar Mapa"
+    ],
+    "Show Object": [
+        null,
+        "Mostrar Objeto"
+    ],
+    "Show STP topology": [
+        null,
+        "Mostrar topologia STP"
+    ],
+    "Show active alarms": [
+        null,
+        "Mostrar alertas ativos"
+    ],
+    "Show all alarms": [
+        null,
+        "Mostrar todos os alertas"
+    ],
+    "Show archived alarms": [
+        null,
+        "Mostrar alertas arquivados"
+    ],
+    "Show dashboard": [
+        null,
+        "Mostrar gráficos"
+    ],
+    "Show in summary": [
+        null,
+        "Mostrar no resumo"
+    ],
+    "Show interface load": [
+        null,
+        "Mostrar tráfego de interface"
+    ],
+    "Show map": [
+        null,
+        "Mostrar mapa"
+    ],
+    "Show object": [
+        null,
+        "Mostrar objeto"
+    ],
+    "Show only alarms covered by maintainance": [
+        null,
+        "Mostrar apenas alertas cobertos pela manutenção"
+    ],
+    "Show only root causes": [
+        null,
+        "Mostrar apenas causas raízes"
+    ],
+    "Show only waiting confirmantion": [
+        null,
+        "Mostrar apenas alertas aguardando confirmação"
+    ],
+    "Show static map": [
+        null,
+        "Mostrar mapa estático"
+    ],
+    "Sound": [
+        null,
+        "Som"
+    ],
+    "Starting {0}": [
+        null,
+        "Iniciando {0}"
+    ],
+    "Stop": [
+        null,
+        "Parar"
+    ],
+    "Style": [
+        null,
+        "Estilo"
+    ],
+    "Subject": [
+        null,
+        "Assunto"
+    ],
+    "Subject/Class": [
+        null,
+        "Assuto/Classe"
+    ],
+    "Summary": [
+        null,
+        "Resumo"
+    ],
+    "Summary/TT": [
+        null,
+        "Resumo/TT"
+    ],
+    "Switch to breadcrumb view": [
+        null,
+        "Alternar para visão de \"migalha de pão\""
+    ],
+    "Sync IPAM": [
+        null,
+        "Sincronizar IPAM"
+    ],
+    "TT": [
+        null,
+        "Tickets"
+    ],
+    "TT System": [
+        null,
+        "Sistema de Tickets"
+    ],
+    "Test Sound": [
+        null,
+        "Testar Som"
+    ],
+    "Time": [
+        null,
+        "Tempo"
+    ],
+    "Time Pattern": [
+        null,
+        "Padrão de Tempo"
+    ],
+    "Time/Duration": [
+        null,
+        "Tempo/Duração"
+    ],
+    "Title Template": [
+        null,
+        "Modelo de Título"
+    ],
+    "To": [
+        null,
+        "Para"
+    ],
+    "Toggle autoreload": [
+        null,
+        "Recarregamento automático de alternância"
+    ],
+    "Topology": [
+        null,
+        "Topologia"
+    ],
+    "UUID": [
+        null,
+        "UUID"
+    ],
+    "Unlink interface": [
+        null,
+        "Desconectar interface"
+    ],
+    "User profile ...": [
+        null,
+        "Perfil do usuário ..."
+    ],
+    "Validation": [
+        null,
+        "Validação"
+    ],
+    "Value": [
+        null,
+        "Valor"
+    ],
+    "Version": [
+        null,
+        "Versão"
+    ],
+    "View Card": [
+        null,
+        "Ver Ficha"
+    ],
+    "View card": [
+        null,
+        "Ver ficha"
+    ],
+    "Volume": [
+        null,
+        "Volume"
+    ],
+    "Wait TT": [
+        null,
+        "Aguardar Ticket"
+    ],
+    "Watch": [
+        null,
+        "Observar"
+    ],
+    "Would you like to reset current layout and generate new?": [
+        null,
+        "Você gostaria de redefinir o layout atual e gerar um novo?"
+    ]
+}
