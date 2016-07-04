@@ -15,7 +15,7 @@ import inspect
 ## NOC modules
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
-
+from noc.lib.debug import error_report
 from cards.managedobject import ManagedObjectCard
 from cards.alarm import AlarmCard
 from cards.service import ServiceCard
@@ -63,11 +63,15 @@ class CardRequestHandler(UIHandler):
         tpl = self.CARDS.get(card_type)
         if not tpl:
             raise tornado.web.HTTPError(404, "Card template not found")
-        card = tpl(card_id)
-        if is_ajax:
-            data = card.get_ajax_data()
-        else:
-            data = card.render()
+        try:
+            card = tpl(card_id)
+            if is_ajax:
+                data = card.get_ajax_data()
+            else:
+                data = card.render()
+        except Exception:
+            error_report()
+            raise tornado.web.HTTPError(500, "Internal server error")
         if not data:
             raise tornado.web.HTTPError(404, "Not found")
         self.set_header("Cache-Control", "no-cache, must-revalidate")
