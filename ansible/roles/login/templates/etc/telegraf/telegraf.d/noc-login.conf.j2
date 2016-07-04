@@ -2,7 +2,7 @@
 pattern = "noc-login"
 
 [[inputs.httpjson]]
-  name = "noc-card"
+  name = "noc-login"
   servers = [
 {% for service in noc_config.services -%}
     {% if "login" in service -%}
