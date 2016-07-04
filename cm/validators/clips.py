@@ -8,6 +8,7 @@
 
 ## Python modules
 import logging
+import re
 ## Django modules
 from django.template import Template, Context
 ## NOC modules
@@ -19,6 +20,11 @@ logger = logging.getLogger(__name__)
 class CLIPSValidator(BaseValidator):
     # String or list of strings containing CLIPS defrule statements
     RULES = None
+
+    rx_assert_error = re.compile(
+        r"\(assert\s+\(error\s+\(",
+        re.MULTILINE | re.DOTALL
+    )
 
     def get_context(self):
         """
@@ -32,7 +38,8 @@ class CLIPSValidator(BaseValidator):
         r = self.get_config()
         r.update({
             "RULENUM": num,
-            "RULENAME": name
+            "RULENAME": name,
+            "RULEID": self.rule_id
         })
         return r
 
@@ -44,6 +51,11 @@ class CLIPSValidator(BaseValidator):
             if isinstance(v, basestring):
                 v = v.replace("\\", "\\\\").replace("\"", "\\\"")
                 ctx[n] = v
+        # Insert rule number to (assert (error ..))
+        match = self.rx_assert_error.search(rule)
+        if match:
+            mr = match.group(0) + "rule \"{{RULEID}}\") ("
+            rule = rule[:match.start()] + mr + rule[match.end():]
         #
         t = Template(rule).render(Context(ctx))
         logger.debug("ADD RULE: %s", t)

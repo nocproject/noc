@@ -30,26 +30,48 @@ Ext.define("NOC.cm.validationrule.Application", {
         var me = this;
 
         me.currentConfigForm = null;
+
+        me.hitsButton = Ext.create("Ext.button.Button", {
+            text: __("Hits"),
+            glyph: NOC.glyph.file,
+            scope: me,
+            handler: me.onHits
+        });
+
+        me.ITEM_HITS = me.registerItem(
+            Ext.create("NOC.cm.validationrule.HitsPanel", {
+                app: me
+            })
+        );
+        
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Hits"),
+                    dataIndex: "hits",
+                    width: 50,
+                    align: "right",
+                    sortable: false,
+                    renderer: NOC.render.Badge
+                },
+                {
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Active",
+                    text: __("Active"),
                     dataIndex: "is_active",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "Scope",
+                    text: __("Scope"),
                     dataIndex: "scope",
                     width: 100
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -59,24 +81,24 @@ Ext.define("NOC.cm.validationrule.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "large"
                 },
                 {
                     name: "is_active",
                     xtype: "checkbox",
-                    boxLabel: "Active"
+                    boxLabel: __("Active")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description"
+                    fieldLabel: __("Description")
                 },
                 {
                     name: "handler",
                     xtype: "main.ref.validator.LookupField",
-                    fieldLabel: "Handler",
+                    fieldLabel: __("Handler"),
                     allowBlank: false,
                     listeners: {
                         scope: me,
@@ -89,7 +111,7 @@ Ext.define("NOC.cm.validationrule.Application", {
                     fieldLabel: "Selectors",
                     columns: [
                         {
-                            text: "Action",
+                            text: __("Action"),
                             dataIndex: "action",
                             width: 100,
                             editor: {
@@ -99,7 +121,7 @@ Ext.define("NOC.cm.validationrule.Application", {
                             renderer: NOC.render.Choices(me.V_CHOICES)
                         },
                         {
-                            text: "Selector",
+                            text: __("Selector"),
                             dataIndex: "selector",
                             flex: 1,
                             editor: "sa.managedobjectselector.LookupField",
@@ -110,10 +132,10 @@ Ext.define("NOC.cm.validationrule.Application", {
                 {
                     name: "objects_list",
                     xtype: "gridfield",
-                    fieldLabel: "Objects",
+                    fieldLabel: __("Objects"),
                     columns: [
                         {
-                            text: "Action",
+                            text: __("Action"),
                             dataIndex: "action",
                             width: 100,
                             editor: {
@@ -123,7 +145,7 @@ Ext.define("NOC.cm.validationrule.Application", {
                             renderer: NOC.render.Choices(me.V_CHOICES)
                         },
                         {
-                            text: "Object",
+                            text: __("Object"),
                             dataIndex: "object",
                             flex: 1,
                             editor: "sa.managedobject.LookupField",
@@ -131,6 +153,9 @@ Ext.define("NOC.cm.validationrule.Application", {
                         }
                     ]
                 }
+            ],
+            formToolbar: [
+                me.hitsButton
             ]
         });
         me.callParent();
@@ -163,7 +188,7 @@ Ext.define("NOC.cm.validationrule.Application", {
             if(cf.length > 0) {
                 me.currentConfigForm = Ext.create("Ext.ux.form.FormField", {
                     name: "config",
-                    fieldLabel: "Config",
+                    fieldLabel: __("Config"),
                     anchor: "100%",
                     form: cf
                 });
@@ -186,5 +211,10 @@ Ext.define("NOC.cm.validationrule.Application", {
         me.callParent([record]);
         // Set the record and fire select event
         me.handlerField.setValue(record.get("handler"), true);
+    },
+    //
+    onHits: function() {
+        var me = this;
+        me.previewItem(me.ITEM_HITS, me.currentRecord);
     }
 });
