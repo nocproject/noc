@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -34,7 +34,6 @@ class Script(BaseScript):
             "version": match.group("version"),
         }
         if r["platform"] != "x86":
-            v = self.cli("system routerboard print")
             v = self.cli("system routerboard print")
             rb = self.re_search(self.rx_rb, v)
             if rb:
