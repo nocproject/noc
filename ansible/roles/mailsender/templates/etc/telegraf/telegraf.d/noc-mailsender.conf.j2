@@ -1,0 +1,18 @@
+[[inputs.procstat]]
+pattern = "noc-mailsender"
+
+[[inputs.httpjson]]
+  name = "noc-mailsender"
+  servers = [
+{% for service in noc_config.services -%}
+    {% if "mailsender" in service -%}
+        {% for host in noc_config.services[service] -%}
+            {% if ansible_host in host -%}
+"http://{{host}}/mon/",
+            {%- endif %}
+        {%- endfor %}
+    {%- endif %}
+{%- endfor %}
+  ]
+  method = "GET"
+  tag_keys = ["service", "instance"]
