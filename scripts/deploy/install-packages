@@ -13,6 +13,7 @@ import tarfile
 import tempfile
 import urllib2
 import json
+import shutil
 
 
 class NPkg(object):
@@ -85,7 +86,10 @@ class NPkg(object):
         with open(mp) as f:
             manifest = json.load(f)
         for f in manifest["files"]:
-            os.unlink(f)
+            if os.path.isdir(f):
+                shutil.rmtree(f)
+            elif os.path.isfile(f):
+                os.unlink(f)
         os.unlink(mp)
 
     def sync(self):
