@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_config
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -17,6 +17,5 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self):
-        config = self.cli("export")
         config = self.cli("export")
         return self.cleaned_config(config)
