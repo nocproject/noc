@@ -111,6 +111,13 @@
         - card
         - noc
 
+    - role: mailsender
+      when: "{{ has_svc_mailsender | default(False) }}"
+      tags:
+        - mailsender
+        - node
+        - noc
+
     - role: omap
       when: "{{ has_svc_omap | default(False) }}"
       tags:
