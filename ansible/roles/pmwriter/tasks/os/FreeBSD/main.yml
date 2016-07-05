@@ -5,7 +5,7 @@
     - config
 
 - name: Setting telegraf flags
-  lineinfile: dest=/etc/rc.conf regexp=^telegraf_flags= line=telegraf_flags="\"-config-directory /usr/local/etc/telegraf\""
+  lineinfile: dest=/etc/rc.conf regexp=^telegraf_flags= line=telegraf_flags="-config-directory /usr/local/etc/telegraf"
   tags:
     - config
 
