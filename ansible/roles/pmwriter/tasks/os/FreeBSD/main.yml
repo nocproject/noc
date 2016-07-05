@@ -12,7 +12,7 @@
 - name: Install pmwriter monitoring
   template:
     src: "etc/telegraf/telegraf.d/noc-pmwriter.conf.j2"
-    dest: "/etc/telegraf/telegraf.d/noc-pmwriter.conf"
+    dest: "/usr/local/etc/telegraf/noc-pmwriter.conf"
   notify: reload telegraf
   tags:
     - config
