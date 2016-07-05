@@ -82,13 +82,15 @@ class Script(BaseScript):
         for i in range(len(ports)):
             if ports[i]["t"] == "ADSL":
                 oper_states = []
-                v = self.cli("display adsl port state 0/%d\n" % i)
+                v = self.cli("display adsl port state 0/%d\r\n" % i)
                 for match in self.rx_adsl_state.finditer(v):
                     oper_states += [{
                         "name": "0/%d/%d" % (i, int(match.group("port"))),
                         "oper_state": match.group("oper_state") == "Activated"
                     }]
                 try:
+                    # Do not delete this line !!!
+                    v = self.cli("display pvc number")
                     v = self.cli("display pvc 0/%d\n" % i)
                     rx_adsl = self.rx_pvc
                 except self.CLISyntaxError:
