@@ -32,6 +32,8 @@ class Profile(BaseProfile):
     command_enter_config = "configure terminal"
     command_leave_config = "quit"
     command_save_config = "save\ny\n"
+    command_exit = "quit\ny\n"
+
 
     rx_slots = re.compile("^\s*\d+", re.MULTILINE)
     rx_ports = re.compile("^\s*\d+\s+(?P<type>ADSL|GE)\s+", re.MULTILINE)
