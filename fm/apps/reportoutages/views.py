@@ -58,7 +58,7 @@ class ReportOutagesApplication(SimpleReport):
             m = mo.get(o)
             if not m:
                 continue  # Hanging Outage
-            dt = otime[o]
+            dt = min(td, otime[o])
             downtime = "%02d:%02d:%02d" % (
                 (dt // 3600) % 24,
                 (dt // 60) % 60,
