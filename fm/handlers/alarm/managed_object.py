@@ -6,51 +6,45 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import operator
 ## NOC modules
 from noc.inv.models.objectuplink import ObjectUplink
 from noc.fm.models.activealarm import ActiveAlarm
 
 
-def topology_rca(alarm):
-    """
-    Process topology-based root cause analysys
-    """
-    def get_alarm(object_id):
-        """
-        Returns active alarm of the same class for object id.
-        None - if no active alarm
-        """
-        return ActiveAlarm.objects.filter(
-            managed_object=object_id,
-            alarm_class=alarm.alarm_class.id
-        ).first()
-
-    def correlate_uplinks(alarm, uplinks):
-        if not uplinks:
-            return
-        uplink_alarms = {}
-        for o in uplinks:
-            a = get_alarm(o)
-            if a:
-                uplink_alarms[o] = a
-        if len(uplink_alarms) == len(uplinks):
-            # All uplinks are faulty,
-            # correlate with the last faulted
-            aa = sorted(uplink_alarms.itervalues(),
-                        key=operator.attrgetter("timestamp"))
-            alarm.set_root(aa[-1])
-
-    if alarm.root:
+def topology_rca(alarm, seen=None):
+    seen = seen or set()
+    if alarm.root or alarm.id in seen:
         return  # Already correlated
+    seen.add(alarm.id)
     o_id = alarm.managed_object.id
+    # Get neighbor objects
+    neighbors = set()
+    uplinks = []
     ou = ObjectUplink.objects.filter(object=o_id).first()
-    # Check uplinks
     if ou and ou.uplinks:
-        correlate_uplinks(alarm, ou.uplinks)
-    # Check downlinks
+        uplinks = ou.uplinks
+        neighbors.update(uplinks)
     for du in ObjectUplink.objects.filter(uplinks=o_id):
-        a = get_alarm(du.object)
-        if a and not a.root:
-            correlate_uplinks(a, du.uplinks)
+        neighbors.add(du.object)
+    if not neighbors:
+        return
+    # Get neighboring alarms
+    na = {}
+    for a in ActiveAlarm.objects.filter(
+        managed_objects__in=list(neighbors),
+        alarm_class=alarm.alarm_class.id
+    ):
+        na[a.managed_object.id] = a
+    # Correlate with uplinks
+    if len([na[o] for o in uplinks if o in na]) == len(uplinks):
+        # All uplinks are faulty
+        # Correlate with the first one (shortest path)
+        alarm.set_root(na[uplinks[0]])
+        # Perform correlation of uplink's alarms
+        for u in uplinks:
+            topology_rca(na[u], seen)
+    # Correlate downlinks
+    for d in na:
+        if d in uplinks:
+            continue
+        topology_rca(na[d], seen)
