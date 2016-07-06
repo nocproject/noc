@@ -185,3 +185,9 @@ TABLE {
 .stp-root tspan:before {
     content: "*";
 }
+/*
+ * Fix ExtJS 6 toolbar buttons' text overflow
+ */
+.x-btn-inner-default-toolbar-small {
+    text-overflow: clip !important;
+}
