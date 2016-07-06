@@ -31,3 +31,5 @@ class Profile(BaseProfile):
     def convert_interface_name(self, s):
         if s.lower().startswith("eth"):
             return "eth%s" % s[3:].strip()
+        else:
+            return s.lower()
