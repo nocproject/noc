@@ -230,6 +230,7 @@ class Script(BaseScript):
             n["admin_status"] = True
             n["oper_status"] = True
             n["description"] = ""
+            n["snmp_ifindex"] = 40000000 + int(i)
             n["subinterfaces"] = [{
                 "name": iface,
                 "admin_status": True,
@@ -253,12 +254,8 @@ class Script(BaseScript):
                 continue
             n["name"] = match.group("name")
             iface = n["name"]
-            data1 = self.cli(
-                "show lldp %s local-port" % iface)
-            for match1 in self.rx_ifindex.finditer(data1):
-                ifindex = match1.group("ifindex")
-            else:
-                ifindex = None
+            slot_n, port_n = iface.split("/")
+            n["snmp_ifindex"] = int(slot_n) * 1000 + int(port_n)
             if iface not in portchannel_members:
                 match = self.rx_mac_local.search(s)
                 if not match:
@@ -276,7 +273,7 @@ class Script(BaseScript):
                     "oper_status": True,
                     "enabled_afi": ["BRIDGE"],
                     "mac": n["mac"],
-                    "snmp_ifindex": ifindex,
+                    "snmp_ifindex": n["snmp_ifindex"],
                     "description": ""
                 }]
                 if switchports[iface][1]:
