@@ -166,6 +166,11 @@ config:
       type: int
       default: 100
 
+    metrics_buffer:
+      label: Metrics buffer size (metrics)
+      type: int
+      default: 500
+
   classifier:
     lookup_solution:
       label: Lookup solution
