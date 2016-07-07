@@ -308,7 +308,7 @@ class Script(BaseScript):
                     "oper_status": True,
                     "enabled_afi": ["BRIDGE"],
                     "mac": n["mac"],
-                    "snmp_ifindex": ifindex,
+                    "snmp_ifindex": n["snmp_ifindex"],
                     "description": ""
                 }]
                 n["type"] = "physical"
