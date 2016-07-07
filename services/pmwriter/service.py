@@ -40,7 +40,7 @@ class PMWriterService(Service):
             self.report, 10000, self.ioloop
         )
         report_callback.start()
-        tornado.ioloop.add_callback(self.write_metrics)
+        self.ioloop.add_callback(self.write_metrics)
         self.influx, channel = self.get_topic()
         self.logger.info("Listening metrics/%s. Writing to %s",
                          channel, self.influx)
@@ -88,7 +88,6 @@ class PMWriterService(Service):
                 )
                 self.overrun_start = None
             self.buffer += data
-            if not self.
             return True
         else:
             if not self.overrun_start:
