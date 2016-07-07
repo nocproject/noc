@@ -59,7 +59,7 @@ Ext.define("NOC.core.InlineModelStore", {
             model: null,
             fields: fields,  // Removed by superclass constructor
             defaultValues: defaultValues,
-            implicitModel: true,
+            implicitModel: "Ext.data.Model",
             proxy: me._proxy,
             listeners: {
                 write: {
