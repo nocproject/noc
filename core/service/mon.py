@@ -2,12 +2,13 @@
 ##----------------------------------------------------------------------
 ## Monitoring endpoint
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Third-party modules
 import tornado.web
+import ujson
 
 
 class MonRequestHandler(tornado.web.RequestHandler):
@@ -15,6 +16,4 @@ class MonRequestHandler(tornado.web.RequestHandler):
         self.service = service
 
     def get(self):
-        self.write(
-            self.service.get_mon_data()
-        )
+        self.write(ujson.dumps(self.service.get_mon_data()))

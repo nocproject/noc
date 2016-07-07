@@ -164,10 +164,13 @@ class BaseLoader(object):
                 self.logger.error("Failed to create directory: %s (%s)",
                                   self.archive_dir, why)
                 # @todo: Die
-        fn = sorted(
-                f for f in os.listdir(self.archive_dir)
-                if self.rx_archive.match(f)
-        )
+        if os.path.isdir(self.archive_dir):
+            fn = sorted(
+                    f for f in os.listdir(self.archive_dir)
+                    if self.rx_archive.match(f)
+            )
+        else:
+            fn = []
         if fn:
             path = os.path.join(self.archive_dir, fn[-1])
             logger.info("Current state from %s", path)

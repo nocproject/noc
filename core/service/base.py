@@ -29,6 +29,7 @@ import setproctitle
 import nsq
 import ujson
 import threading
+from atomiclong import AtomicLong
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
 from .config import Config
@@ -90,7 +91,7 @@ class Service(object):
         self.logger = None
         self.config = None
         self.service_id = str(uuid.uuid4())
-        self.perf_metrics = defaultdict(int)
+        self.perf_metrics = defaultdict(lambda x: AtomicLong(0))
         self.executors = {}
         self.start_time = time.time()
         self.pid = os.getpid()
@@ -420,17 +421,19 @@ class Service(object):
             svc = name
         return RPCProxy(self, svc)
 
+    def get_mon_status(self):
+        return True
+
     def get_mon_data(self):
         """
         Returns monitoring data
         """
         r = {
-            "status": True,
+            "status": self.get_mon_status(),
             "service": self.name,
             "instance": self.config.instance,
             "node": self.config.node,
             "dc": self.config.dc,
-            "config": self.config._conf,
             "pid": self.pid,
             # Current process uptime
             "uptime": time.time() - self.start_time
@@ -438,11 +441,12 @@ class Service(object):
         if self.executors:
             r["threadpools"] = {}
             for x in self.executors:
-                r["threadpools"][x] = {
-                    "qsize": self.executors[x]._work_queue.qsize(),
-                    "threads": len(self.executors[x]._threads)
-                }
-        r.update(self.perf_metrics)
+                r["threadpool_%s_qsize" % x] = self.executors[x]._work_queue.qsize()
+                r["threadpool_%s_threads" % x] = len(self.executors[x]._threads)
+        for k, v in self.perf_metrics.iteritems():
+            if isinstance(v, AtomicLong):
+                v = v.value
+            r[k] = v
         return r
 
     def resolve_service(self, service, n=None):
@@ -470,19 +474,37 @@ class Service(object):
         Subscribe message to channel
         """
         def call_json_handler(message):
+            self.perf_metrics[metric_in] += 1
             try:
                 data = ujson.loads(message.body)
             except ValueError as e:
+                self.perf_metrics[metric_decode_fail] += 1
                 self.logger.debug("Cannot decode JSON message: %s", e)
                 return True  # Broken message
             if isinstance(data, dict):
-                return handler(message, **data)
+                r = handler(message, **data)
             else:
-                return handler(message, data)
+                r = handler(message, data)
+            if r:
+                self.perf_metrics[metric_processed] += 1
+            else:
+                self.perf_metrics[metric_deferred] += 1
+            return r
 
         def call_raw_handler(message):
-            return handler(message, message.body)
+            self.perf_metrics[metric_in] += 1
+            r = handler(message, message.body)
+            if r:
+                self.perf_metrics[metric_processed] += 1
+            else:
+                self.perf_metrics[metric_deferred] += 1
+            return r
 
+        t = topic.replace(".", "_")
+        metric_in = "nsq_msg_in_%s" % t
+        metric_decode_fail = "nsq_msg_decode_fail_%s" % t
+        metric_processed = "nsq_msg_processed_%s" % t
+        metric_deferred = "nsq_msg_deferred_%s" % t
         self.logger.debug("Subscribing to %s/%s", topic, channel)
         self.nsq_readers[handler] = nsq.Reader(
             message_handler=call_raw_handler if raw else call_json_handler,
