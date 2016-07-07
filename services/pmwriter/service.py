@@ -31,9 +31,9 @@ class PMWriterService(Service):
         self.influx = None
         self.last_ts = None
         self.last_metrics = 0
-        self.n_metrics = 0
         self.buffer = []
         self.speed = None
+        self.overrun_start = None
 
     @tornado.gen.coroutine
     def on_activate(self):
@@ -76,8 +76,31 @@ class PMWriterService(Service):
         """
         Called on new dispose message
         """
-        self.buffer += metrics.splitlines()
-        return True
+        l = len(self.buffer)
+        data = metrics.splitlines()
+        ld = len(data)
+        ms = self.config.batch_size * 2
+        self.perf_metrics["metrics_received"] += ld
+        if l < ms:
+            if self.overrun_start:
+                dt = time.time() - self.overrun_start
+                self.logger.info(
+                    "Resuming message reading after %.2fms",
+                    dt * 1000.0
+                )
+                self.overrun_start = None
+            self.buffer += data
+            return True
+        else:
+            if not self.overrun_start:
+                self.logger.info(
+                    "Temporary buffer overrun. "
+                    "Suspending message reading (%s/%s)",
+                    l, ms
+                )
+                self.overrun_start = time.time()
+                self.perf_metrics["metrics_deferred"] += ld
+            return False
 
     @tornado.gen.coroutine
     def send_metrics(self):
@@ -106,12 +129,18 @@ class PMWriterService(Service):
                         body=body
                     )
                     # @todo: Check for 204
-                    self.logger.info(
-                        "%d metrics sent in %.2fms",
-                        len(batch), (self.ioloop.time() - t0) * 1000
-                    )
-                    self.n_metrics += len(batch)
-                    break
+                    if response.code == 204:
+                        self.logger.info(
+                            "%d metrics sent in %.2fms",
+                            len(batch), (self.ioloop.time() - t0) * 1000
+                        )
+                        self.perf_metrics["metrics_written"] += len(batch)
+                        break
+                    else:
+                        self.logger.info(
+                            "Failed to write metrics: %s",
+                            response.body
+                        )
                 except tornado.httpclient.HTTPError as e:
                     self.logger.error("Failed to spool %d metrics: %s",
                                       len(batch), e)
@@ -130,13 +159,14 @@ class PMWriterService(Service):
 
     @tornado.gen.coroutine
     def report(self):
+        nm = self.perf_metrics["metrics_written"].value
         t = self.ioloop.time()
         if self.last_ts:
-            self.speed = float(self.n_metrics - self.last_metrics) / (t - self.last_ts)
+            self.speed = float(nm - self.last_metrics) / (t - self.last_ts)
             self.logger.info(
                 "Feeding speed: %.2fmetrics/sec", self.speed
             )
-        self.last_metrics = self.n_metrics
+        self.last_metrics = nm
         self.last_ts = t
 
 if __name__ == "__main__":
