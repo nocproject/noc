@@ -48,7 +48,11 @@ class SubInterface(Document):
             ("managed_object", "vlan_ids"),
             "interface", "managed_object",
             "untagged_vlan", "tagged_vlans",
-            "enabled_afi"
+            "enabled_afi",
+            {
+                "fields": ["ipv4_addresses"],
+                "sparse": True
+            }
         ]
     }
     interface = PlainReferenceField(Interface)

@@ -14,6 +14,7 @@ from noc.lib.nosql import (Document, EmbeddedDocument,
                            ForeignKeyField, EmbeddedDocumentField)
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
+from noc.inv.models.subinterface import SubInterface
 
 
 class MACRange(EmbeddedDocument):
@@ -66,12 +67,19 @@ class DiscoveryID(Document):
                 hostname=hostname, router_id=router_id).save()
 
     @classmethod
-    def find_object(cls, mac=None):
+    def find_object(cls, mac=None, ipv4_address=None):
         """
         Find managed object
         :param cls:
         :return: Managed object instance or None
         """
+        def has_ip(ip, addresses):
+            x = ip + "/"
+            for a in addresses:
+                if a.startswith(x):
+                    return True
+            return False
+
         c = cls._get_collection()
         # Find by mac
         if mac:
@@ -88,13 +96,41 @@ class DiscoveryID(Document):
                 }
             })
             if r:
-                return ManagedObject.objects.get(id=r["object"])
-        # Fallback to interface search
-        o = set()
-        for i in Interface.objects.filter(mac=mac):
-            o.add(i.managed_object)
-        if len(o) == 1:
-            return o.pop()
+                return ManagedObject.get_by_id(r["object"])
+            # Fallback to interface search
+            o = set(
+                d["managed_object"]
+                for d in Interface._get_collection().find({
+                    "mac": mac
+                }, {
+                    "_id": 0,
+                    "managed_object": 1
+                })
+            )
+            if len(o) == 1:
+                return ManagedObject.get_by_id(list(o)[0])
+        if ipv4_address:
+            # Try router_id
+            d = DiscoveryID.objects.filter(router_id=ipv4_address).first()
+            if d:
+                return d.object
+            # Fallback to interface addresses
+            o = set(
+                d["managed_object"]
+                for d in SubInterface._get_collection().find({
+                    "ipv4_addresses": {
+                        "$gt": ipv4_address + "/",
+                        "$lt": ipv4_address + "/99"
+                    }
+                }, {
+                    "_id": 0,
+                    "managed_object": 1,
+                    "ipv4_addresses": 1
+                })
+                if has_ip(ipv4_address, d["ipv4_addresses"])
+            )
+            if len(o) == 1:
+                return ManagedObject.get_by_id(list(o)[0])
         return None
 
     @classmethod
