@@ -31,7 +31,6 @@ class PMWriterService(Service):
         self.influx = None
         self.last_ts = None
         self.last_metrics = 0
-        self.n_metrics = 0
         self.buffer = []
         self.speed = None
         self.overrun_start = None
@@ -79,9 +78,9 @@ class PMWriterService(Service):
         """
         l = len(self.buffer)
         data = metrics.splitlines()
+        ld = len(data)
         ms = self.config.batch_size * 2
-        self.logger.info("%d metrics received (%d in buffer)",
-                         len(data), l)
+        self.perf_metrics["metrics_received"] += ld
         if l < ms:
             if self.overrun_start:
                 dt = time.time() - self.overrun_start
@@ -100,6 +99,7 @@ class PMWriterService(Service):
                     l, ms
                 )
                 self.overrun_start = time.time()
+                self.perf_metrics["metrics_deferred"] += ld
             return False
 
     @tornado.gen.coroutine
@@ -134,7 +134,7 @@ class PMWriterService(Service):
                             "%d metrics sent in %.2fms",
                             len(batch), (self.ioloop.time() - t0) * 1000
                         )
-                        self.n_metrics += len(batch)
+                        self.perf_metrics["metrics_written"] += len(batch)
                         break
                     else:
                         self.logger.info(
@@ -159,13 +159,14 @@ class PMWriterService(Service):
 
     @tornado.gen.coroutine
     def report(self):
+        nm = self.perf_metrics["metrics_written"].value
         t = self.ioloop.time()
         if self.last_ts:
-            self.speed = float(self.n_metrics - self.last_metrics) / (t - self.last_ts)
+            self.speed = float(nm - self.last_metrics) / (t - self.last_ts)
             self.logger.info(
                 "Feeding speed: %.2fmetrics/sec", self.speed
             )
-        self.last_metrics = self.n_metrics
+        self.last_metrics = nm
         self.last_ts = t
 
 if __name__ == "__main__":
