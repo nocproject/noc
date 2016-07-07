@@ -418,45 +418,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         Resolve neighbor by hostname
         """
         if mac not in self.neighbor_mac_cache:
-            d = DiscoveryID.find_object(mac)
-            if d:
-                self.neighbor_mac_cache[mac] = d
-                self.neighbor_id_cache[d.id] = d
-            else:
-                # Fallback to interface mac
-                r = Interface.objects.aggregate(
-                    {
-                        "$match": {
-                            "mac": mac
-                        }
-                    },
-                    {
-                        "$group": {
-                            "_id": "$managed_object",
-                            "total": {
-                                "$sum": 1
-                            }
-                        }
-                    },
-                    {
-                        "$limit": 2
-                    }
-                )
-                n_id = None
-                for ar in r:
-                    if n_id is None:
-                        n_id = ar["_id"]
-                    else:
-                        # Ambiguous result
-                        n_id = None
-                        break
-                if n_id:
-                    n = self.get_neighbor_by_id(n_id)
-                    self.neighbor_mac_cache[mac] = n
-                    self.neighbor_id_cache[n.id] = n
-                else:
-                    self.neighbor_mac_cache[mac] = None
-
+            mo = DiscoveryID.find_object(mac=mac)
+            self.neighbor_mac_cache[mac] = mo
         return self.neighbor_mac_cache[mac]
 
     def get_neighbor_by_ip(self, ip):
@@ -464,13 +427,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         Resolve neighbor by hostname
         """
         if ip not in self.neighbor_ip_cache:
-            d = DiscoveryID.objects.filter(router_id=ip).first()
-            if d:
-                self.neighbor_ip_cache[ip] = d.object
-                self.neighbor_id_cache[d.object.id] = d.object
-            else:
-                # @todo: Try interface lookup
-                self.neighbor_ip_cache[ip] = None
+            mo = DiscoveryID.find_object(ipv4_address=ip)
+            self.neighbor_ip_cache[ip] = mo
         return self.neighbor_ip_cache[ip]
 
     def get_remote_interface(self, remote_object, remote_interface):
