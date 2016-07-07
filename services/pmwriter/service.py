@@ -13,7 +13,6 @@ import time
 import tornado.ioloop
 import tornado.gen
 import tornado.httpclient
-import tornado.queues
 ## NOC modules
 from noc.core.service.base import Service
 import noc.core.service.httpclient
@@ -27,7 +26,6 @@ class PMWriterService(Service):
 
     def __init__(self):
         super(PMWriterService, self).__init__()
-        self.queue = None
         self.influx = None
         self.last_ts = None
         self.last_metrics = 0
@@ -42,7 +40,7 @@ class PMWriterService(Service):
             self.report, 10000, self.ioloop
         )
         report_callback.start()
-        self.queue = tornado.queues.Queue(maxsize=self.config.batch_size * 4)
+        tornado.ioloop.add_callback(self.write_metrics)
         self.influx, channel = self.get_topic()
         self.logger.info("Listening metrics/%s. Writing to %s",
                          channel, self.influx)
@@ -90,6 +88,7 @@ class PMWriterService(Service):
                 )
                 self.overrun_start = None
             self.buffer += data
+            if not self.
             return True
         else:
             if not self.overrun_start:
@@ -99,14 +98,14 @@ class PMWriterService(Service):
                     l, ms
                 )
                 self.overrun_start = time.time()
-                self.perf_metrics["metrics_deferred"] += ld
+            self.perf_metrics["metrics_deferred"] += ld
             return False
 
     @tornado.gen.coroutine
-    def send_metrics(self):
+    def write_metrics(self):
         self.logger.info("Starting message sender")
+        bs = self.config.batch_size
         while True:
-            bs = self.config.batch_size
             if not self.buffer:
                 yield tornado.gen.sleep(self.MAX_DELAY)
                 continue
@@ -156,6 +155,8 @@ class PMWriterService(Service):
                     timeout * 1000
                 )
                 yield tornado.gen.sleep(timeout)
+        # Not reachable
+        self.logger.error("Terminating message sender")
 
     @tornado.gen.coroutine
     def report(self):
