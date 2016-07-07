@@ -22,9 +22,13 @@
    - postgresql
    - postgresql-devel
    - libcurl-devel
+   - libffi
+   - libffi-devel
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - name: Install supervisord init script
   template:

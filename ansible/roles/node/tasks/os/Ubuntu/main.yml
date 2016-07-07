@@ -17,9 +17,13 @@
     - gcc
     - libpq-dev
     - libcurl4-openssl-dev
+    - libffi6
+    - libffi-dev
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - name: Install supervisord init script
   template:
