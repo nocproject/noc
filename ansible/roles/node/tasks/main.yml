@@ -209,6 +209,8 @@
       owner: root
     - name: var/ui/cache
       owner: "{{ noc_user }}"
+    - name: {{noc_root}}/lib/python2.7/site-packages/__pycache__/
+      owner: "{{ noc_user }}"
 
 - name: Install noc.pth
   template:
