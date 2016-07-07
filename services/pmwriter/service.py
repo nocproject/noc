@@ -78,7 +78,10 @@ class PMWriterService(Service):
         Called on new dispose message
         """
         l = len(self.buffer)
+        data = metrics.splitlines()
         ms = self.config.batch_size * 2
+        self.logger.info("%d metrics received (%d in buffer)",
+                         len(data), l)
         if l < ms:
             if self.overrun_start:
                 dt = time.time() - self.overrun_start
@@ -87,7 +90,7 @@ class PMWriterService(Service):
                     dt * 1000.0
                 )
                 self.overrun_start = None
-            self.buffer += metrics.splitlines()
+            self.buffer += data
             return True
         else:
             if not self.overrun_start:
