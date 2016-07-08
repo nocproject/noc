@@ -82,25 +82,17 @@ class Script(BaseScript):
                     self.logger.debug('remote_chassis_id_subtype is empty!')
                     continue
                 remote_chassis_id_subtype = match.group("subtype").strip()
-                # TODO: Find other subtypes
-                # 0 is reserved
-                if remote_chassis_id_subtype == "Chassis Component":
-                    n["remote_chassis_id_subtype"] = 1
-                elif remote_chassis_id_subtype == "Interface Alias":
-                    n["remote_chassis_id_subtype"] = 2
-                elif remote_chassis_id_subtype == "Port Component":
-                    n["remote_chassis_id_subtype"] = 3
-                elif remote_chassis_id_subtype == "MAC Address":
-                    n["remote_chassis_id_subtype"] = 4
-                elif remote_chassis_id_subtype.lower() == "macaddress":
-                    n["remote_chassis_id_subtype"] = 4
-                elif remote_chassis_id_subtype == "Network Address":
-                    n["remote_chassis_id_subtype"] = 5
-                elif remote_chassis_id_subtype == "Interface Name":
-                    n["remote_chassis_id_subtype"] = 6
-                elif remote_chassis_id_subtype.lower() == "local":
-                    n["remote_chassis_id_subtype"] = 7
-                # 8-255 are reserved
+                n["remote_chassis_id_subtype"] = {
+                    "Chassis Component": 1,
+                    "Interface Alias": 2,
+                    "Port Component": 3,
+                    "MAC Address": 4,
+                    "macaddress": 4,
+                    "Network Address": 5,
+                    "Interface Name": 6,
+                    "Local": 7,
+                    "local": 7
+                }[remote_chassis_id_subtype]
 
                 # remote_chassis_id
                 match = self.rx_remote_chassis_id.search(s1)
@@ -117,32 +109,21 @@ class Script(BaseScript):
                     self.logger.debug('remote_port_id_subtype is empty!')
                     continue
                 remote_port_subtype = match.group("subtype").strip()
-                # TODO: Find other subtypes
-                # 0 is reserved
-                if remote_port_subtype == "Interface Alias":
-                    n["remote_port_subtype"] = 1
-                if remote_port_subtype == "INTERFACE_ALIAS":
-                    n["remote_port_subtype"] = 1
-                # DES-3526 6.00 B48 and DES-3526 6.00 B49
-                if remote_port_subtype == "NTERFACE_ALIAS":
-                    n["remote_port_subtype"] = 1
-                elif remote_port_subtype == "Port Component":
-                    n["remote_port_subtype"] = 2
-                elif remote_port_subtype == "MAC Address":
-                    n["remote_port_subtype"] = 3
-                elif remote_port_subtype.lower() == "macaddress":
-                    n["remote_port_subtype"] = 3
-                elif remote_port_subtype == "Network Address":
-                    n["remote_port_subtype"] = 4
-                elif remote_port_subtype == "Interface Name":
-                    n["remote_port_subtype"] = 5
-                elif remote_port_subtype == "INTERFACE_NAME":
-                    n["remote_port_subtype"] = 5
-                elif remote_port_subtype == "Agent Circuit ID":
-                    n["remote_port_subtype"] = 6
-                elif remote_port_subtype.lower() == "local":
-                    n["remote_port_subtype"] = 7
-                # 8-255 are reserved
+                n["remote_port_subtype"] = {
+                    "Interface Alias": 1,
+                    "INTERFACE_ALIAS": 1,
+                    # DES-3526 6.00 B48 and DES-3526 6.00 B49
+                    "NTERFACE_ALIAS": 1, 
+                    "Port Component": 2,
+                    "MAC Address": 3,
+                    "macaddress": 3,
+                    "Network Address": 4,
+                    "Interface Name": 5,
+                    "INTERFACE_NAME": 5,
+                    "Agent Circuit ID": 6,
+                    "Local": 7,
+                    "local": 7
+                }[remote_port_subtype]
 
                 # remote_port
                 match = self.rx_remote_port_id.search(s1)
@@ -215,25 +196,18 @@ class Script(BaseScript):
                 caps = 0
                 match = self.rx_remote_capabilities.search(s1)
                 if match:
-                    remote_capabilities = match.group("capabilities").strip()
-                    # TODO: Find other capabilities
-                    if remote_capabilities.find("Other") != -1:
-                        caps += 1
-                    if remote_capabilities.find("Repeater") != -1:
-                        caps += 2
-                    if remote_capabilities.find("Bridge") != -1:
-                        caps += 4
-                    if remote_capabilities.find("WLAN Access Point") != -1:
-                        caps += 8
-                    if remote_capabilities.find("Router") != -1:
-                        caps += 16
-                    if remote_capabilities.find("Telephone") != -1:
-                        caps += 32
-                    if remote_capabilities.find("DOCSIS Cable Device") != -1:
-                        caps += 64
-                    if remote_capabilities.find("Station Only") != -1:
-                        caps += 128
-                # 8-15 bits are reserved
+                    for c in match.group("capabilities").split(","):
+                        c = c.strip()
+                        caps |= {
+                            "Other": 1,
+                            "Repeater": 2,
+                            "Bridge": 4,
+                            "WLAN Access Point": 8,
+                            "Router": 16,
+                            "Telephone": 32,
+                            "DOCSIS Cable Device": 64,
+                            "Station Only": 128
+                        }[c]
                 n["remote_capabilities"] = caps
 
                 i["neighbors"] += [n]
