@@ -181,7 +181,10 @@
     chdir: "{{ noc_root }}"
 
 - name: Create required directories
-  file: path="{{noc_root}}/{{item.name}}" state="directory" owner="{{item.owner}}"
+  file:
+    path: "{{noc_root}}/{{item.name}}"
+    state: "directory"
+    owner: "{{item.owner}}"
   with_items:
     - name: etc/config/
       owner: root
@@ -209,7 +212,7 @@
       owner: root
     - name: var/ui/cache
       owner: "{{ noc_user }}"
-    - name: "{{noc_root}}/lib/python2.7/site-packages/__pycache__/"
+    - name: lib/python2.7/site-packages/__pycache__
       owner: "{{ noc_user }}"
 
 - name: Install noc.pth
