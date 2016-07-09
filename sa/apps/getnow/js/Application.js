@@ -135,7 +135,7 @@ Ext.define("NOC.sa.getnow.Application", {
             layout: {type: 'hbox', align: 'middle'}
         });
 
-        me.quickRepoPreview = Ext.create("NOC.core.QuickRepoPreview", {
+        me.quickRepoPreview = Ext.create("NOC.core.RepoPreview", {
             app: me,
             previewName: "{{name}} config",
             restUrl: "/sa/managedobject/{{id}}/repo/cfg/",
