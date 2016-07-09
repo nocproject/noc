@@ -17,6 +17,7 @@ class Script(BaseScript):
     name = "Cisco.NXOS.get_fqdn"
     interface = IGetFQDN
     rx_hostname = re.compile(r"^hostname\s+(?P<hostname>\S+)", re.MULTILINE)
+    rx_domain_name = re.compile(r"^ip domain[ \-]name\s+(?P<domain>\S+)", re.MULTILINE)
 
     def execute(self):
         if self.has_snmp():
@@ -27,8 +28,13 @@ class Script(BaseScript):
                    return v
             except self.snmp.TimeOutError:
                 pass
-        v = self.cli("show running-config | include hostname")
+        v = self.cli(
+            "show running-config | include ^(hostname|ip.domain.name)")
+        fqdn = []
         match = self.rx_hostname.search(v)
         if match:
-            fqdn = match.group("hostname")
-        return fqdn
+            fqdn += [match.group("hostname")]
+        match = self.rx_domain_name.search(v)
+        if match:
+            fqdn += [match.group("domain")]
+        return ".".join(fqdn)
