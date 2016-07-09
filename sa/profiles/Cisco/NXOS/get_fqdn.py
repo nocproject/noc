@@ -28,8 +28,7 @@ class Script(BaseScript):
                    return v
             except self.snmp.TimeOutError:
                 pass
-        v = self.cli(
-            "show running-config | include ^(hostname|ip.domain.name)")
+        v = self.cli("show running-config | include ^(hostname|ip.domain.name)")
         fqdn = []
         match = self.rx_hostname.search(v)
         if match:
