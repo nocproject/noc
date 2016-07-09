@@ -113,6 +113,7 @@ class BaseJUNOSParser(BaseParser):
 
     def on_system_host_name(self, tokens):
         """
+        set groups re0 system host-name <hostname>
         set system host-name <hostname>
         """
         self.get_system_fact().hostname = tokens[-1]
@@ -279,6 +280,13 @@ class BaseJUNOSParser(BaseParser):
         pass
 
     handlers = {
+        "groups": {
+            "re0": {
+                "system": {
+                    "host-name": on_system_host_name,
+                }
+            }
+        },
         "system": {
             "host-name": on_system_host_name,
             "domain-name": on_system_domain_name,
