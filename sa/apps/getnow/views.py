@@ -74,16 +74,20 @@ class GetNowApplication(ExtApplication):
                                key=mo.id,
                                pool=mo.pool.name
                                )
-        last_success = humanize_distance(job["last"]) if "last" in job else '--'
         last_update = mo.config.get_revisions(reverse=True)
         if last_update:
             last_update = humanize_distance(last_update[0].ts)
+        last_success = '--'
+        last_status = None
+        if job:
+            last_success = humanize_distance(job["last"]) if "last" in job else '--'
+            last_status = job["ls"] if "ls" in job else None
         return {
             'id': str(mo.id),
             'name': mo.name,
             'profile_name': mo.profile_name,
             'last_success': last_success,
-            'status': job["s"],
-            'last_status': job["ls"] if "ls" in job else None,
+            'status': job["s"] if job else '--',
+            'last_status': last_status,
             'last_update': last_update if last_update else None
         }
