@@ -15,9 +15,10 @@ class Script(BaseScript):
     name = "Cisco.NXOS.get_version"
     cache = True
     interface = IGetVersion
-    rx_ver = re.compile(r"^Cisco Nexus Operating System \(NX-OS\) Software.+?Software.+?system:\s+version\s+(?P<version>\S+).+?Hardware\s+cisco\s+\S+\s+(?P<platform>\S+)", re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(r"^Cisco Nexus Operating System \(NX-OS\) Software.+?Software.+?system:\s+version\s+"
+                        r"(?P<version>\S+).+?Hardware\s+cisco\s+\S+\s+(?P<platform>\S+)", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(r"^Cisco NX-OS\(tm\) .*?Version (?P<version>[^,]+),", re.IGNORECASE)
-    rx_snmp_platform = re.compile(r"^Nexus\d+ (?P<platform>C\d+) .+Chassis$")
+    rx_snmp_platform = re.compile(r"^Nexus\s+(?P<platform>\S+).+Chassis$", re.IGNORECASE)
 
     def execute(self):
         if self.has_snmp():
@@ -33,7 +34,6 @@ class Script(BaseScript):
                     if match:
                         platform = match.group("platform")
                         break
-                #
                 return {
                     "vendor": "Cisco",
                     "platform": platform,
