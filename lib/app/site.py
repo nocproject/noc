@@ -460,20 +460,16 @@ class Site(object):
             return
         # Connect to mongodb
         import noc.lib.nosql
-        #
-        noc_apps = [a for a in INSTALLED_APPS if a.startswith("noc.")]
-        noc_models = {}
-        # Load models
-        for app in noc_apps:
-            logger.debug("Loading %s models", app)
-            noc_models[app] = load_app(app)
+        prefix = "services/web/apps"
         # Load applications
-        for app in noc_apps:
+        for app in os.listdir(prefix):
+            app_path = os.path.join(prefix, app)
+            if not os.path.isdir(app_path):
+                continue
             logger.debug("Loading %s applications", app)
-            m = app.split(".")[1]
-            root = self.add_module_menu(app)
+            root = self.add_module_menu("noc.%s" % app)
             # Initialize application
-            for f in glob.glob("%s/apps/*/views.py" % m):
+            for f in glob.glob("%s/*/views.py" % app_path):
                 d = os.path.split(f)[0]
                 # Skip application loading if denoted by DISABLED file
                 if os.path.isfile(os.path.join(d, "DISABLED")):
@@ -494,7 +490,7 @@ class Site(object):
                         "iconCls": d_menu.icon,
                         "children": []
                     }
-                    path = [m, d_menu.title]
+                    path = [app, d_menu.title]
                     self.set_menu_id(dm, path)
                     root["children"] += [dm]
                     # Add items

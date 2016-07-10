@@ -135,8 +135,8 @@ class Application(object):
     def __init__(self, site):
         self.site = site
         parts = self.__class__.__module__.split(".")
-        self.module = parts[1]
-        self.app = parts[3]
+        self.module = parts[4]
+        self.app = parts[5]
         self.module_title = __import__("noc.%s" % self.module, {}, {},
             ["MODULE_NAME"]).MODULE_NAME
         self.app_id = "%s.%s" % (self.module, self.app)
@@ -206,7 +206,7 @@ class Application(object):
         Returns application id
         """
         parts = cls.__module__.split(".")
-        return "%s.%s" % (parts[1], parts[3])
+        return "%s.%s" % (parts[4], parts[5])
 
     @property
     def base_url(self):
@@ -236,13 +236,15 @@ class Application(object):
         r = []
         for t in template:
             r += [
-                os.path.join(self.module, "apps", self.app, "templates", t),
+                os.path.join("services", "web", "apps", self.module,
+                             self.app, "templates", t),
                 os.path.join(self.module, "templates", t),
                 os.path.join("templates", t)
             ]
         return r
 
-    def get_object_or_404(self, *args, **kwargs):
+    @staticmethod
+    def get_object_or_404(*args, **kwargs):
         """
         Shortcut to get_object_or_404
         """
@@ -256,7 +258,7 @@ class Application(object):
             # Django model
             return get_object_or_404(*args, **kwargs)
 
-    def render(self, request, template, dict={}, **kwargs):
+    def render(self, request, template, dict=None, **kwargs):
         """
         Render template within context
         """
@@ -265,26 +267,30 @@ class Application(object):
                                   context_instance=RequestContext(request,
                                                                   {"app": self}))
 
-    def render_template(self, template, dict={}, **kwargs):
+    def render_template(self, template, dict=None, **kwargs):
         """
         Render template to string
         """
+        dict = dict or {}
         tp = self.get_template_path(template)
         return loader.render_to_string(tp, dict or kwargs)
 
-    def render_response(self, data, content_type="text/plain"):
+    @staticmethod
+    def render_response(data, content_type="text/plain"):
         """
         Render arbitrary Content-Type response
         """
         return HttpResponse(data, content_type=content_type)
 
-    def render_plain_text(self, text, mimetype="text/plain"):
+    @staticmethod
+    def render_plain_text(text, mimetype="text/plain"):
         """
         Render plain/text response
         """
         return HttpResponse(text, mimetype=mimetype)
 
-    def render_json(self, obj, status=200):
+    @staticmethod
+    def render_json(obj, status=200):
         """
         Create serialized JSON-encoded response
         """

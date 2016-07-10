@@ -201,15 +201,6 @@ server {
         gzip_types text/css text/x-js;
     }
 
-    # Legacy JS mappings
-    location ~*  ^/([^/]+)/([^/]+)/(js|css|img)/(.+)$ {
-        root {{ noc_root }};
-        rewrite ^/([^/]+)/([^/]+)/(js|css|img)/(.+)$
-                /$1/apps/$2/$3/$4 break;
-        gzip on;
-        gzip_types text/css text/x-js;
-    }
-
 {% if noc_config["services"].get("notebook", []) %}
     location ~* ^/notebook/(api/kernels/[^/]+/(channels|iopub|shell|stdin)|terminals/websocket)/? {
         proxy_pass http://notebook;
