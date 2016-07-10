@@ -31,7 +31,7 @@ def topology_rca(alarm, seen=None):
     # Get neighboring alarms
     na = {}
     for a in ActiveAlarm.objects.filter(
-        managed_objects__in=list(neighbors),
+        managed_object__in=list(neighbors),
         alarm_class=alarm.alarm_class.id
     ):
         na[a.managed_object.id] = a
