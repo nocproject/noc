@@ -26,6 +26,9 @@ class Script(BaseScript):
 
     def execute(self):
         objects = []
+        if self.capabilities.get("Cisco | ASA | Security | Context | Mode"):
+            if self.capabilities["Cisco | ASA | Security | Context | Mode"] == "multiple":
+                self.cli("changeto system")
         v = self.cli("show inventory")
         for match in self.rx_item.finditer(v):
             type, number, part_no = self.get_type(
