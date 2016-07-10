@@ -179,14 +179,6 @@ class ExtApplication(Application):
             }
         return self.response(out, status=self.OK)
 
-    @view(url="^(?P<path>(?:js|css|img)/[0-9a-zA-Z_/]+\.(?:js|css|png))$",
-          url_name="static", access=True)
-    def view_static(self, request, path):
-        """
-        Static file server
-        """
-        return self.render_static(request, path)
-
     @view(url="^favorites/app/(?P<action>set|reset)/$",
         method=["POST"],
         access=PermitLogged(), api=True)
