@@ -40,6 +40,10 @@
     {
       "name": "jsmessage",
       "version": "2013.03"
+    },
+    {
+      "name": "handlebars",
+      "version": "4.0.5"
     }
   ]
 }

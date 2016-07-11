@@ -10,12 +10,12 @@ Ext.define("NOC.core.Application", {
     extend: "Ext.panel.Panel",
     layout: "fit",
     permissions: {},  // User permissions
-    templates: {},  // Filled by precompiled handlebars templates
 
     constructor: function(options) {
         var me = this;
         // Initialize templates when exists
         me.appId = me.appId || options.noc.app_id;
+        me.templates = NOC.templates[me.appId.replace(".", "_")];
         // Set up permissions before calling initComponent
         me.permissions = {};
         for(var p in options.noc.permissions) {

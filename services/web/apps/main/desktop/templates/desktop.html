@@ -26,7 +26,7 @@
         <!-- l10n -->
         <link rel="gettext" href="/ui/web/translations/{{ language }}.json" lang="{{ language }}">
         <!-- JS -->
-        <script type="text/javascript" src="/static/pkg/handlebars/handlebars.js"></script>
+        <script type="text/javascript" src="/ui/pkg/handlebars/handlebars.runtime.min.js"></script>
         <script type="text/javascript" src="/static/pkg/stacktrace/stacktrace.js"></script>
         <script type="text/javascript" src="/static/js/logging.js"></script>
         <script type="text/javascript" src="/static/js/noc/jsloader.js"></script>
@@ -77,21 +77,10 @@
                 traceExtJSEvents: {% if setup.trace_extjs_events %}true{% else %}false{% endif %}
             };
             NOC.templates = {};
-            Ext.Loader.setConfig({
-                enabled: true,
-                paths: {
-                    {% for m, a in apps %}"NOC.{{m}}.{{a}}.templates": "/{{m}}/{{a}}/templates",{% endfor %}
-                    {% for m, a in apps %}"NOC.{{m}}.{{a}}": "/{{m}}/{{a}}/js",{% endfor %}
-                    "NOC.models": "/static/js/noc/models",
-                    "NOC.widgets": "/static/js/noc/widgets",
-                    "NOC.core": "/static/js/noc/core",
-                    "Ext.ux": "/static/js/noc/ux"
-                }});
             Ext.setGlyphFontFamily("FontAwesome");
-            Ext.require("NOC.main.desktop.Application");
         </script>
         <script type="text/javascript" src="/static/js/noc/override.js"></script>
-        <script type="text/javascript" src="/main/desktop/js/app.js"></script>
+        <script type="text/javascript" src="/ui/web/main/desktop/app.js"></script>
     </head>
     <body>
     <!-- "Loading" Splash Screen -->

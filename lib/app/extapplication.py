@@ -50,7 +50,7 @@ class ExtApplication(Application):
 
     def __init__(self, *args, **kwargs):
         super(ExtApplication, self).__init__(*args, **kwargs)
-        self.document_root = os.path.join(self.module, "apps", self.app)
+        self.document_root = os.path.join("services", "web", "apps", self.module, self.app)
         self.row_limit = self.config.getint("main", "json_row_limit")
         self.pk = "id"
 
@@ -245,29 +245,3 @@ class ExtApplication(Application):
             return self.response_accepted(
                 location="%sfutures/%s/" % (self.base_url, f.slow_op.id)
             )
-
-    @view(url="^templates/(?P<name>[0-9a-zA-Z_/]+)\.js$", access=True)
-    def view_template(self, request, name):
-        """
-        Handlebars template wrapper
-        """
-        src = os.path.join(self.document_root,
-            "templates", "%s.html" % name)
-        if not os.path.isfile(src):
-            return self.response_not_found()
-        with open(src) as f:
-            tpl = f.read()
-        return self.render_plain_text("""
-Ext.apply(
-    NOC.templates, {
-        "%s": Ext.merge(
-            NOC.templates["%s"] || {},
-            {
-                %s: Handlebars.compile(%r)
-            }
-        )
-    }
-);
-Ext.define("NOC.%s.templates.%s", {});
-""" % (self.app_id, self.app_id, name, tpl, self.app_id, name),
-            mimetype="application/javascript;charset=utf-8")
