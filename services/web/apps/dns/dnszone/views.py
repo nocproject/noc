@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## dns.dnszone application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,15 +10,17 @@
 from noc.lib.app import ExtModelApplication, view
 from noc.lib.app.modelinline import ModelInline
 from noc.lib.app.repoinline import RepoInline
-from noc.dns.models import DNSZone, DNSZoneRecord
+from noc.dns.models.dnszone import DNSZone
+from noc.dns.models.dnszonerecord import DNSZoneRecord
+from noc.core.translation import ugettext as _
 
 
 class DNSZoneApplication(ExtModelApplication):
     """
     DNSZone application
     """
-    title = "DNS Zone"
-    menu = "Zones"
+    title = _("DNS Zone")
+    menu = _("Zones")
     model = DNSZone
     query_condition = "icontains"
 

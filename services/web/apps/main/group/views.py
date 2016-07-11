@@ -13,7 +13,7 @@ from django import forms
 from noc.lib.app import ModelApplication, view
 from django.contrib.auth.models import Group
 from django.contrib import admin
-from noc.main.apps.user.widgets import AccessWidget
+from noc.services.web.apps.main.user.widgets import AccessWidget
 from noc.main.models.permission import Permission
 
 
