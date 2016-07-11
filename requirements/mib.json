@@ -1,0 +1,9 @@
+{
+  "url": "https://cdn.nocproject.org/pkg/",
+  "packages": [
+    {
+      "name": "mibs",
+      "version": "1.0.0"
+    }
+  ]
+}
