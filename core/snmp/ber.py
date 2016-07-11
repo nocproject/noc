@@ -45,10 +45,10 @@ class BERDecoder(object):
         return bool(ord(msg[0]))
 
     INT_MASK = {
-        1: "!b",
-        2: "!h",
-        4: "!i",
-        8: "!q"
+        1: struct.Struct("!b"),
+        2: struct.Struct("!h"),
+        4: struct.Struct("!i"),
+        8: struct.Struct("!q")
     }
 
     def parse_int(self, msg):
@@ -78,7 +78,7 @@ class BERDecoder(object):
         # Try to speedup
         mask = self.INT_MASK.get(len(msg))
         if mask:
-            return struct.unpack(mask, msg)[0]
+            return mask.unpack(msg)[0]
         # Decode as is
         v = 0
         for c in msg:
@@ -262,6 +262,8 @@ class BEREncoder(object):
     NAN = float("nan")
     MZERO = float("-0")
 
+    struct_Q = struct.Struct("!Q")
+
     def encode_tlv(self, tag, primitive, data):
         # Encode tag
         t = tag
@@ -273,7 +275,7 @@ class BEREncoder(object):
             return "%s%s%s" % (chr(t), chr(l), data)
         else:
             # Prepare length's representation
-            ll = struct.pack("!Q", l).lstrip("\x00")
+            ll = self.struct_Q.pack(l).lstrip("\x00")
             return "%s%s%s%s" % (chr(t), chr(0x80 | len(ll)), ll, data)
 
     def encode_octet_string(self, data):
@@ -320,17 +322,17 @@ class BEREncoder(object):
         if data == 0:
             return "\x02\x01\x00"
         elif data > 0:
-            r = struct.pack("!Q", data).lstrip("\x00")
+            r = self.struct_Q(data).lstrip("\x00")
             if r[0] >= "\x80":
                 r = "\x00" + r
         elif data < 0:
             data = -data
-            r = struct.pack("!Q", data).lstrip("\x00")
+            r = self.struct_Q(data).lstrip("\x00")
             l = len(r)
             comp = 1 << (l * 8 - 1)
             if comp < data:
                 comp <<= 8
-            r = struct.pack("!Q", comp - data).lstrip("\x00")
+            r = self.struct_Q(comp - data).lstrip("\x00")
             if r:
                 r = chr(ord(r[0]) | 0x80) + r[1:]
             else:
