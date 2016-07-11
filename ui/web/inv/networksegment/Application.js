@@ -67,7 +67,8 @@ Ext.define("NOC.inv.networksegment.Application", {
                     dataIndex: "count",
                     width: 30,
                     align: "right",
-                    sortable: false
+                    sortable: false,
+                    renderer: NOC.render.Badge
                 }
             ],
 
