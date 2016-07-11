@@ -25,7 +25,7 @@ Ext.define("Ext.ux.form.DictField", {
             text: "Add",
             glyph: NOC.glyph.plus,
             scope: me,
-            handler: me.onAdd
+            handler: me.onAddRow
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
@@ -33,7 +33,7 @@ Ext.define("Ext.ux.form.DictField", {
             glyph: NOC.glyph.minus,
             disabled: true,
             scope: me,
-            handler: me.onDelete
+            handler: me.onDeleteRow
         });
 
         me.grid = Ext.create("Ext.grid.Panel", {
@@ -129,7 +129,7 @@ Ext.define("Ext.ux.form.DictField", {
         me.deleteButton.setDisabled(false);
     },
     //
-    onAdd: function() {
+    onAddRow: function() {
         var me = this,
             rowEditing = me.grid.plugins[0];
         rowEditing.cancelEdit();
@@ -137,7 +137,7 @@ Ext.define("Ext.ux.form.DictField", {
         rowEditing.startEdit(0, 0);
     },
     //
-    onDelete: function() {
+    onDeleteRow: function() {
         var me = this,
             sm = me.grid.getSelectionModel(),
             rowEditing = me.grid.plugins[0];
