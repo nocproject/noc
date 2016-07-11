@@ -2,20 +2,22 @@
 ##----------------------------------------------------------------------
 ## dns.dnszoneprofile application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.dns.models import DNSZoneProfile
+from noc.dns.models.dnszoneprofile import DNSZoneProfile
+from noc.core.translation import ugettext as _
+
 
 class DNSZoneProfileApplication(ExtModelApplication):
     """
     DNSZoneProfiles application
     """
-    title = "Zone Profiles"
-    menu = "Setup | Zone Profiles"
+    title = _("Zone Profiles")
+    menu = _("Setup | Zone Profiles")
     model = DNSZoneProfile
 
     def field_masterslabel(self, o):

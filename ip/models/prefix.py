@@ -588,4 +588,4 @@ from prefixaccess import PrefixAccess
 from prefixbookmark import PrefixBookmark
 from addressrange import AddressRange
 from ippool import IPPool
-from noc.dns.models import DNSZone
+from noc.dns.models.dnszone import DNSZone
