@@ -46,6 +46,7 @@ class MIB(nosql.Document):
     version = nosql.IntField(required=False, default=0)
 
     MIBRequiredException = MIBRequiredException
+    MIB_PATH = ["var/mibs/local", "var/mibs/dist"]
 
     def __unicode__(self):
         return self.name
@@ -55,7 +56,7 @@ class MIB(nosql.Document):
         Returns MIB text
         :return:
         """
-        for d in ["local/share/mibs", "share/mibs"]:
+        for d in self.MIB_PATH:
             path = os.path.join(d, self.name + ".mib")
             if os.path.isfile(path):
                 with open(path) as f:
@@ -113,14 +114,11 @@ class MIB(nosql.Document):
         """
         if not os.path.exists(path):
             raise ValueError("File not found: %s" % path)
-        # Build SMIPATH variable for smidump
-        # to exclude locally installed MIBs
-        smipath = ["share/mibs", "local/share/mibs"]
         # Pass MIB through smilint to detect missed modules
         f = subprocess.Popen(
             [config.get("path", "smilint"), "-m", path],
             stderr=subprocess.PIPE,
-            env={"SMIPATH": ":".join(smipath)}).stderr
+            env={"SMIPATH": ":".join(cls.MIB_PATH)}).stderr
         for l in f:
             match = rx_module_not_found.search(l.strip())
             if match:
@@ -131,7 +129,7 @@ class MIB(nosql.Document):
             subprocess.check_call(
                 [config.get("path", "smidump"), "-k", "-q",
                  "-f", "python", "-o", p, path],
-                env={"SMIPATH": ":".join(smipath)})
+                env={"SMIPATH": ":".join(cls.MIB_PATH)})
             # Add coding string
             with open(p) as f:
                 data = unicode(f.read(), "ascii", "ignore").encode("ascii")
