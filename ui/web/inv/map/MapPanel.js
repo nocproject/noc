@@ -41,7 +41,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             '</feMerge>' +
         '</filter>',
 
-        '<filter id="glow">' +
+        '<filter id="glow" filterUnits="userSpaceOnUse">' +
             '<feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>' +
             '<feMerge>' +
                 '<feMergeNode in="coloredBlur"/>' +
