@@ -23,6 +23,7 @@ Ext.define("NOC.main.desktop.Application", {
     initComponent: function() {
         var me = this;
         me.restartReason = null;
+        me.templates = NOC.templates["main_desktop"];
         // Setup helpers
         NOC.run = Ext.bind(me.launchTab, me);
         NOC.launch = Ext.bind(me.launchApp, me);
