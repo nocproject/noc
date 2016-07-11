@@ -51,6 +51,7 @@ def wait_tt(alarm_id):
         # Check later
         call_later(
             "noc.services.correlator.wait_tt.wait_tt",
+            delay=CHECK_INTERVAL,
             scheduler="correlator",
             alarm_id=alarm_id
         )
