@@ -80,6 +80,7 @@ services:
     level: global
     required_assets:
       - web
+      - mib
 
   card:
     description: Card web interface
@@ -95,6 +96,8 @@ services:
   dev:
     description: Development node
     level: global
+    required_assets:
+      - mib
 
   notebook:
     description: Notebook
