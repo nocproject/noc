@@ -12,7 +12,7 @@ futures>=3.0.5
 Jinja2==2.8
 jsmin==2.2.0
 jsonschema==2.4.0
-pynsq==0.6.9
+pynsq==0.7.0
 pyparsing==2.0.3
 pyproj==1.9.4
 python-creole==0.2.4
