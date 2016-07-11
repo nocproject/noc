@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Abstract module loader/registry
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -34,7 +34,6 @@ class Registry(object):
         #
         self.is_registered = self.daemon_name in self.exclude_daemons
 
-
     def register(self, name, module):
         """
         Should be called within metaclass' __new__ method
@@ -57,7 +56,7 @@ class Registry(object):
             apps = self.apps
         for l in ["", "local"]:  # Look in the local/ directory too
             for app in apps:
-                pd = os.path.join(l, app[4:], self.subdir)
+                pd = os.path.join("services", "web", "apps", l, app[4:], self.subdir)
                 if not os.path.isdir(pd):
                     continue
                 for dirpath, dirnames, filenames in os.walk(pd):
