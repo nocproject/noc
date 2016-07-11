@@ -36,7 +36,7 @@ def topology_rca(alarm, seen=None):
     ):
         na[a.managed_object.id] = a
     # Correlate with uplinks
-    if len([na[o] for o in uplinks if o in na]) == len(uplinks):
+    if uplinks and len([na[o] for o in uplinks if o in na]) == len(uplinks):
         # All uplinks are faulty
         # Correlate with the first one (shortest path)
         alarm.set_root(na[uplinks[0]])
