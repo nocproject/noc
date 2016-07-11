@@ -26,11 +26,9 @@ notification_http_endpoint = ""
 ## nsqlookupd HTTP addresses
 nsqlookupd_http_addresses = [
 {% for service in noc_config.services -%}
-    {% if service == "nsqlookupd" -%}
+    {% if "nsqlookupd" in service -%}
         {% for host in noc_config.services[service] -%}
-            {% if ansible_host in host -%}
-     "{{host}}"
-            {%- endif %}
+     "{{host[:-5]}}:4161",
         {%- endfor %}
     {%- endif %}
 {%- endfor %}
