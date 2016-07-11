@@ -182,8 +182,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                         alarm.managed_object.name)
             if tt_id and cons_escalated:
                 # Notify consequences
-                for a in cons_escalated:
-                    c_tt_name, c_tt_id = a.escalation_tt.split(":")
+                for ca in cons_escalated:
+                    c_tt_name, c_tt_id = ca.escalation_tt.split(":")
                     cts = tt_system_id_cache[c_tt_name]
                     if cts:
                         tts = cts.get_system()
@@ -196,10 +196,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                             )
                         except tts.TTError as e:
                             log("Failed to add comment to %s: %s",
-                                a.escalation_tt, e)
+                                ca.escalation_tt, e)
                     else:
                         log("Failed to add comment to %s: Invalid TT system",
-                            a.escalation_tt)
+                            ca.escalation_tt)
         # Send notification
         if a.notification_group:
             subject = a.template.render_subject(**ctx)
