@@ -462,7 +462,7 @@ class Site(object):
         import noc.lib.nosql
         prefix = "services/web/apps"
         # Load applications
-        for app in os.listdir(prefix):
+        for app in [x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc.")]:
             app_path = os.path.join(prefix, app)
             if not os.path.isdir(app_path):
                 continue
