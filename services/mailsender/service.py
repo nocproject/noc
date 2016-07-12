@@ -36,14 +36,14 @@ class MailSenderService(Service):
 
     def on_message(self, message, address, subject, body, **kwargs):
         self.logger.info(
-            "[%s] Sending message: %s (%s) [%s, attempt %d]",
+            "[%s] Receiving message: %s (%s) [%s, attempt %d]",
             message.id, subject, address,
             datetime.datetime.fromtimestamp(message.timestamp / 1000000000.0),
             message.attempts
         )
-        return self.send_mail(address, subject, body)
+        return self.send_mail(message.id, address, subject, body)
 
-    def send_mail(self, address, subject, body):
+    def send_mail(self, message_id, address, subject, body):
         """
         Send mail message
         :param address: Mail address
@@ -64,13 +64,14 @@ class MailSenderService(Service):
         # Connect to SMTP server
         smtp = smtplib.SMTP()
         self.logger.debug(
-            "Connecting %s:%s",
+            "[%s] Connecting %s:%s",
+            message_id,
             self.config.smtp_server, self.config.smtp_port
         )
         try:
             smtp.connect(self.config.smtp_server, self.config.smtp_port)
         except socket.error as e:
-            self.logger.error("SMTP error: %s", e)
+            self.logger.error("[%s] SMTP error: %s", message_id, e)
             return False
         smtp.ehlo(self.config.helo_hostname)
         # Enforce TLS when required
@@ -78,37 +79,62 @@ class MailSenderService(Service):
             try:
                 smtp.starttls()
             except smtplib.SMTPException as e:
-                self.logger.error("STARTTLS failed: %s", e)
+                self.logger.error("[%s] STARTTLS failed: %s", message_id, e)
                 return False
             smtp.ehlo(self.config.helo_hostname)
         # Authenticate when necessary
         if self.config.smtp_user and self.config.smtp_password:
-            self.logger.debug("Authenticating as %s",
-                              self.config.smtp_user)
+            self.logger.debug(
+                "[%s] Authenticating as %s",
+                message_id,
+                self.config.smtp_user
+            )
             try:
                 smtp.login(
                     self.config.smtp_user,
                     self.config.smtp_password
                 )
             except smtplib.SMTPAuthenticationError as e:
-                self.logger.error("SMTP Authentication error: %s", e)
+                self.logger.error("[%s] SMTP Authentication error: %s", message_id, e)
                 return False
-            # Send mail
+        # Send mail
         try:
-            self.logger.debug("Sending")
-            smtp.sendmail(from_address, [address], msg)
-        except smtplib.SMTPSenderRefused as e:
-            self.logger.error("Sender refused: %s", e)
+            smtp.ehlo_or_helo_if_needed()
+            esmtp_opts = []
+            if smtp.does_esmtp:
+                if smtp.has_extn('size'):
+                    esmtp_opts.append("size=%d" % len(msg))
+            # MAIL FROM
+            code, resp = smtp.mail(from_address, esmtp_opts)
+            if code != 250:
+                smtp.rset()
+                self.logger.error("[%s] MAIL FROM '%s' failed: %s %s",
+                                  message_id, from_address, code, resp)
+                return False
+            # RCPT TO
+            code, resp = smtp.rcpt(address, [])
+            if code not in (250, 251):
+                smtp.rset()
+                self.logger.error("[%s] RCPT TO '%s' failed: %s %s",
+                                  message_id, address, code, resp)
+                return False
+            # Data
+            code, resp = smtp.data(msg)
+            if code != 250:
+                smtp.rset()
+                self.logger.error("[%s] DATA failed: %s %s",
+                                  message_id, code, resp)
+                return False
+            self.logger.info("[%s] Message sent: %s", message_id, resp)
+        except smtplib.SMTPException as e:
+            self.logger.error("[%s] SMTP Error: %s", message_id, e)
+            smtp.rset()
             return False
-        except smtplib.SMTPServerDisconnected as e:
-            self.logger.error("Server disconnected: %s", e)
-            return False
-        except smtplib.SMTPDataError as e:
-            self.logger.error("Data error: %s", e)
-            return False
-        self.logger.debug("Sent")
+        try:
+            smtp.quit()
+        except smtplib.SMTPException as e:
+            self.logger.error("[%s] Failed to quit properly: %s", message_id, e)
         return True
-
 
 if __name__ == "__main__":
     MailSenderService().start()
