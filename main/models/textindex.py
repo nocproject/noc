@@ -2,13 +2,14 @@
 ##----------------------------------------------------------------------
 ## Full-text search index
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import logging
 import datetime
+import re
 ## Django modules
 from django.db.models import signals as django_signals
 ## Third-party modules
@@ -54,6 +55,8 @@ class TextIndex(Document):
     changed = DateTimeField()
     #
     language = StringField(default="english")
+
+    rx_phrases = re.compile(r"(\d+(?:[-_.:]\d+)+)")
 
     def __unicode__(self):
         return "%s:%s" % (self.model, self.object)
@@ -110,8 +113,26 @@ class TextIndex(Document):
         })
 
     @classmethod
-    def search(cls, query):
-        return TextIndex.objects.search_text(query).order_by("$text_score")
+    def search(cls, query, limit=1000):
+        # Convert IP, prefixes and MAC addresses to phrases search
+        query = cls.rx_phrases.sub("\"\\1\"", query)
+        #
+        r = TextIndex._get_collection().aggregate([
+            {"$match": {"$text": {"$search": query}}},
+            {"$sort": {"score": {"$meta": "textScore"}}},
+            {"$limit": limit},
+            {
+                "$project": {
+                    "_id": 1, "model": 1, "object": 1,
+                    "title": 1, "card": 1, "tags": 1,
+                    "score": {"$meta": "textScore"}
+                }
+            }
+        ])
+        if r["ok"]:
+            return r["result"]
+        else:
+            return []
 
 
 def full_text_search(cls):
