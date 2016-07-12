@@ -383,8 +383,6 @@ class CorrelatorService(Service):
                 error_report()
 
     def correlate(self, r, a):
-        #
-        a.perf_metrics = self.perf_metrics
         # RCA
         if a.alarm_class.id in self.rca_forward:
             # Check alarm is a consequence of existing one

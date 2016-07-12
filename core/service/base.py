@@ -29,7 +29,6 @@ import setproctitle
 import nsq
 import ujson
 import threading
-from atomiclong import AtomicLong
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
 from .config import Config
@@ -39,6 +38,7 @@ from .mon import MonRequestHandler
 from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
 from .ctl import CtlAPI
+from noc.core.perf import metrics, apply_metrics
 
 
 class Service(object):
@@ -91,7 +91,7 @@ class Service(object):
         self.logger = None
         self.config = None
         self.service_id = str(uuid.uuid4())
-        self.perf_metrics = defaultdict(lambda: AtomicLong(0))
+        self.perf_metrics = metrics
         self.executors = {}
         self.start_time = time.time()
         self.pid = os.getpid()
@@ -443,10 +443,7 @@ class Service(object):
             for x in self.executors:
                 r["threadpool_%s_qsize" % x] = self.executors[x]._work_queue.qsize()
                 r["threadpool_%s_threads" % x] = len(self.executors[x]._threads)
-        for k, v in self.perf_metrics.iteritems():
-            if isinstance(v, AtomicLong):
-                v = v.value
-            r[k] = v
+        r = apply_metrics(r)
         return r
 
     def resolve_service(self, service, n=None):
