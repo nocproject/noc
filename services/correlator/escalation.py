@@ -22,6 +22,7 @@ from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.core.perf import metrics
 
 
 logger = logging.getLogger(__name__)
@@ -97,6 +98,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                 "Escalation limit exceeded (%s/%s). Skipping",
                 ae, tt_escalation_limit
             )
+            metrics["escalation_throttled"] += 1
             return
         # Check whether consequences has escalations
         cons_escalated = sorted(alarm.iter_escalated(),
@@ -171,15 +173,20 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                                             gtt,
                                             d["remote_id"]
                                         )
+                                metrics["escalation_tt_create"] += 1
                             except tts.TTError as e:
                                 log("Failed to create TT: %s", e)
+                                metrics["escalation_tt_fail"] += 1
                         else:
                             log("Cannot find pre reason")
+                            metrics["escalation_tt_fail"] += 1
                     else:
                         log("Cannot find TT system %s", d["tt_system"])
+                        metrics["escalation_tt_fail"] += 1
                 else:
                     log("Cannot find TT system for %s",
                         alarm.managed_object.name)
+                    metrics["escalation_tt_fail"] += 1
             if tt_id and cons_escalated:
                 # Notify consequences
                 for ca in cons_escalated:
@@ -194,12 +201,15 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                                 body="Covered by TT %s" % tt_id,
                                 login="correlator"
                             )
+                            metrics["escalation_tt_comment"] += 1
                         except tts.TTError as e:
                             log("Failed to add comment to %s: %s",
                                 ca.escalation_tt, e)
+                            metrics["escalation_tt_comment_fail"] += 1
                     else:
                         log("Failed to add comment to %s: Invalid TT system",
                             ca.escalation_tt)
+                        metrics["escalation_tt_comment_fail"] += 1
         # Send notification
         if a.notification_group:
             subject = a.template.render_subject(**ctx)
@@ -212,6 +222,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                 a.notification_group,
                 a.clear_template
             )
+            metrics["escalation_notify"] += 1
         #
         if a.stop_processing:
             logger.debug("Stopping processing")
