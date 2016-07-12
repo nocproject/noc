@@ -12,20 +12,24 @@ Ext.define("NOC.main.search.Application", {
         var me = this;
         me.store = Ext.create("NOC.main.search.SearchStore");
         me.searchField = Ext.create("Ext.ux.form.SearchField", {
-            fieldLabel: "Search",
+            fieldLabel: __("Search"),
             labelWidth: 40,
             width: "500",
+            explicitSubmit: true,
             scope: me,
             handler: me.doSearch
         });
+        me.totalField = Ext.create("Ext.form.field.Display");
         me.grid = Ext.create("Ext.grid.Panel", {
             store: me.store,
             columns: [
                 {
-                    text: "Result",
+                    text: __("Result"),
                     xtype: "templatecolumn",
                     flex: 1,
-                    tpl: "<b>{title}</b><br/>{card}<tpl if='tags'><br/><span class='x-display-tag'>{tags}</span></tpl>"
+                    tpl: "<div class='noc-search-title'>{title}</div>" +
+                         "<div class='noc-search-card'>{card}</div>" +
+                         "<tpl for='tags'><span class='x-display-tag'>{.}</span></tpl>"
                 }
             ],
             listeners: {
@@ -42,7 +46,9 @@ Ext.define("NOC.main.search.Application", {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
-                        me.searchField
+                        me.searchField,
+                        "->",
+                        me.totalField
                     ]
                 }
             ]
@@ -71,6 +77,8 @@ Ext.define("NOC.main.search.Application", {
     //
     doSearch: function(query) {
         var me = this;
+        NOC.msg.started(__("Starting search"));
+        me.mask();
         Ext.Ajax.request({
             url: "/main/search/",
             method: "POST",
@@ -79,10 +87,13 @@ Ext.define("NOC.main.search.Application", {
             },
             scope: me,
             success: function(response) {
+                me.unmask();
+                NOC.msg.complete(__("Search complete"));
                 me.showResult(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to search");
+                me.unmask();
+                NOC.msg.failed(__("Failed to search"));
             }
         });
     },
@@ -91,6 +102,8 @@ Ext.define("NOC.main.search.Application", {
         var me = this;
         me.searchField.focus();
         me.store.loadData(result);
+        console.log(result);
+        me.totalField.setValue(__("Total: ") + result.length);
     },
     //
     onSelect: function(model, record, index, opts) {

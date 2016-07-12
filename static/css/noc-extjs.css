@@ -191,3 +191,13 @@ TABLE {
 .x-btn-inner-default-toolbar-small {
     text-overflow: clip !important;
 }
+/*
+ * Search styles
+ */
+.noc-search-title {
+    font-weight: bold;
+}
+
+.noc-search-card {
+    padding-left: 20px;
+}
