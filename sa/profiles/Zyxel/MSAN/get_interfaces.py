@@ -44,7 +44,7 @@ class Script(BaseScript):
         r"^\s*(?P<vlan_id>\d+)\s+(?P<ports>\S+)/(?P<mode>\S+)\s+\S+\s*"
         r"(?P<name>.*)$", re.MULTILINE)
     rx_vlan2 = re.compile(
-        r"^\s*(?P<vlan_id>\d+).+\n^.+\n^.+\n"
+        r"^\s*(?P<vlan_id>\d+)\s.+\n(^.+\n)?^\s+enabled\s+.+\n"
         r"^\s*(?P<ports>\S+) (?P<eports>\S+)\s*\n"
         r"^\s*(?P<mode>\S+) (?P<emode>\S+)\s*\n", re.MULTILINE)
     rx_vlan3 = re.compile(
