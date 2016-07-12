@@ -20,6 +20,8 @@ from tornado.ioloop import IOLoop
 import tornado.gen
 import tornado.concurrent
 from tornado.util import errno_from_exception
+## NOC modules
+from noc.speedup.ip import build_icmp_echo_request
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +35,10 @@ ICMPv6_ECHO = 128
 ICMPv6_ECHOREPLY = 129
 MAX_RECV = 1500
 _ERRNO_WOULDBLOCK = (errno.EWOULDBLOCK, errno.EAGAIN)
+
+IPv4_STRUCT = struct.Struct("!BBHHHBBHII")
+ICMP_STRUCT = struct.Struct("!BBHHH")
+TS_STRUCT = struct.Struct("!d")
 
 
 class PingSocket(object):
@@ -174,23 +180,10 @@ class PingSocket(object):
         return ~s & 0xFFFF
 
     def build_echo_request(self, size, request_id, seq):
-        checksum = 0
-        # Fake header with zero checksum
-        header = struct.pack(
-            "!BBHHH",
-            self.ECHO_TYPE, 0,
-            checksum, request_id, seq)
         # Pad to size
         ts = self.io_loop.time()
-        payload = (struct.pack("!d", ts) + "A" * (size - self.HEADER_SIZE - 8))[:size - self.HEADER_SIZE]
-        # Get checksum
-        checksum = self.get_checksum(header + payload)
-        # Rebuild header with proper checksum
-        header = struct.pack(
-            "!BBHHH",
-            self.ECHO_TYPE, 0,
-            checksum, request_id, seq)
-        return header + payload
+        payload = (TS_STRUCT.pack(ts) + "A" * (size - self.HEADER_SIZE - 8))[:size - self.HEADER_SIZE]
+        return build_icmp_echo_request(request_id, seq, payload)
 
     def send(self, address, msg):
         self.out_buffer += [(address, msg)]
@@ -245,24 +238,23 @@ class Ping4Socket(PingSocket):
         ip_header = msg[:20]
         (ver, tos, plen, pid, flags,
          ttl, proto, checksum, src_ip,
-         dst_ip) = struct.unpack("!BBHHHBBHII", ip_header)
+         dst_ip) = IPv4_STRUCT.unpack(ip_header)
         if proto != ICMPv4_PROTO:
             return
         icmp_header = msg[20:28]
         (icmp_type, icmp_code, icmp_checksum,
-        req_id, seq) = struct.unpack(
-            "!BBHHH", icmp_header)
+        req_id, seq) = ICMP_STRUCT.unpack(icmp_header)
         if icmp_type == ICMPv4_ECHOREPLY:
             rtt = None
             if len(msg) > 36:
-                t0 = struct.unpack("!d", msg[28:36])[0]
+                t0 = TS_STRUCT.unpack(msg[28:36])[0]
                 rtt = self.io_loop.time() - t0
             return True, addr, req_id, seq, rtt
         elif icmp_type in (ICMPv4_UNREACHABLE, ICMPv4_TTL_EXCEEDED):
             if plen >= 48:
-                (_, _, _, _, _, _, o_proto, _, o_src_ip, o_dst_ip) = struct.unpack("!BBHHHBBHII", msg[28:48])
+                _, _, _, _, _, _, o_proto, _, o_src_ip, o_dst_ip = IPv4_STRUCT.unpack(msg[28:48])
                 if o_proto == ICMPv4_PROTO:
-                    (o_icmp_type, _, _, o_req_id, _) = struct.unpack("!BBHHH", msg[48:56])
+                    o_icmp_type, _, _, o_req_id, _ = ICMP_STRUCT.unpack(msg[48:56])
                     if o_icmp_type == ICMPv4_ECHO:
                         return False, addr, req_id, seq, None
         return None, None, None, None, None
@@ -297,11 +289,11 @@ class Ping6Socket(PingSocket):
         # icmp_header = msg[40:48]
         icmp_header = msg[:8]
         (icmp_type, icmp_code, icmp_checksum,
-         req_id, seq) = struct.unpack("!BBHHH", icmp_header)
+         req_id, seq) = ICMP_STRUCT.unpack(icmp_header)
         payload = msg[8:]
         rtt = None
         if len(payload) >= 8:
-            t0 = struct.unpack("!d", payload[:8])[0]
+            t0 = TS_STRUCT.unpack(payload[:8])[0]
             rtt = self.io_loop.time() - t0
         if icmp_type == ICMPv6_ECHOREPLY:
             return True, addr, req_id, seq, rtt
