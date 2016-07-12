@@ -27,9 +27,10 @@ class WebService(Service):
         super(WebService, self).__init__()
 
     def get_handlers(self):
-        wsgi = tornado.wsgi.WSGIContainer(
+        wsgi = NOCWSGIContainer(
             django.core.handlers.wsgi.WSGIHandler()
         )
+        wsgi._service = self
         return [
             # Pass to NOC
             (r"^.*$", tornado.web.FallbackHandler, {"fallback": wsgi})
@@ -41,6 +42,22 @@ class WebService(Service):
         from noc.lib.app import site
         site.service = self
         site.autodiscover()
+
+
+class NOCWSGIContainer(tornado.wsgi.WSGIContainer):
+    def _log(self, status_code, request):
+        method = request.method
+        uri = request.uri
+        remote_ip = request.remote_ip
+        self._service.logger.info(
+            "%s %s (%s) %.2fms",
+            method, uri, remote_ip,
+            1000.0 * request.request_time()
+        )
+        self._service.perf_metrics["http_requests"] += 1
+        self._service.perf_metrics["http_requests_%s" % method.lower()] += 1
+        self._service.perf_metrics["http_response_%s" % status_code] += 1
+
 
 if __name__ == "__main__":
     WebService().start()
