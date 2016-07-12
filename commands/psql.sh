@@ -3,4 +3,4 @@
 # PGPASSFILE=var/etc/postgres/.pgpass
 # PGDATABASE, PGHOST, PGPORT, PGUSER
 source var/etc/postgres/env
-su - $PGUSER -c psql
+su - $NOC_USER -c psql
