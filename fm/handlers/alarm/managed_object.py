@@ -40,6 +40,8 @@ def topology_rca(alarm, seen=None):
         # All uplinks are faulty
         # Correlate with the first one (shortest path)
         alarm.set_root(na[uplinks[0]])
+        if hasattr(alarm, "perf_metrics"):
+            alarm.perf_metrics["alarm_correlated_topology"] += 1
         # Perform correlation of uplink's alarms
         for u in uplinks:
             topology_rca(na[u], seen)
