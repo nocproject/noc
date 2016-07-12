@@ -484,6 +484,8 @@ class Service(object):
                 r = handler(message, data)
             if r:
                 self.perf_metrics[metric_processed] += 1
+            elif message.is_async():
+                message.on("finish", on_finish)
             else:
                 self.perf_metrics[metric_deferred] += 1
             return r
@@ -493,9 +495,14 @@ class Service(object):
             r = handler(message, message.body)
             if r:
                 self.perf_metrics[metric_processed] += 1
+            elif message.is_async():
+                message.on("finish", on_finish)
             else:
                 self.perf_metrics[metric_deferred] += 1
             return r
+
+        def on_finish(*args, **kwargs):
+            self.perf_metrics[metric_processed] += 1
 
         t = topic.replace(".", "_")
         metric_in = "nsq_msg_in_%s" % t
