@@ -431,7 +431,7 @@ class Service(object):
         r = {
             "status": self.get_mon_status(),
             "service": self.name,
-            "instance": self.config.instance,
+            "instance": str(self.config.instance),
             "node": self.config.node,
             "dc": self.config.dc,
             "pid": self.pid,

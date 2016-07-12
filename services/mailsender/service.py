@@ -38,7 +38,9 @@ class MailSenderService(Service):
         self.logger.info(
             "[%s] Receiving message: %s (%s) [%s, attempt %d]",
             message.id, subject, address,
-            datetime.datetime.fromtimestamp(message.timestamp / 1000000000.0),
+            datetime.datetime.fromtimestamp(
+                message.timestamp / 1000000000.0
+            ),
             message.attempts
         )
         return self.send_mail(message.id, address, subject, body)
@@ -46,6 +48,7 @@ class MailSenderService(Service):
     def send_mail(self, message_id, address, subject, body):
         """
         Send mail message
+        :param message_id: NSQ Message id
         :param address: Mail address
         :param subject: Mail subject
         :param body: mail body
@@ -95,7 +98,11 @@ class MailSenderService(Service):
                     self.config.smtp_password
                 )
             except smtplib.SMTPAuthenticationError as e:
-                self.logger.error("[%s] SMTP Authentication error: %s", message_id, e)
+                self.logger.error(
+                    "[%s] SMTP Authentication error: %s",
+                    message_id, e
+                )
+                self.perf_metrics["smtp_response_%d" % e.smtp_code] += 1
                 return False
         # Send mail
         try:
@@ -110,6 +117,7 @@ class MailSenderService(Service):
                 smtp.rset()
                 self.logger.error("[%s] MAIL FROM '%s' failed: %s %s",
                                   message_id, from_address, code, resp)
+                self.perf_metrics["smtp_response_%d" % code] += 1
                 return False
             # RCPT TO
             code, resp = smtp.rcpt(address, [])
@@ -117,6 +125,7 @@ class MailSenderService(Service):
                 smtp.rset()
                 self.logger.error("[%s] RCPT TO '%s' failed: %s %s",
                                   message_id, address, code, resp)
+                self.perf_metrics["smtp_response_%d" % code] += 1
                 return False
             # Data
             code, resp = smtp.data(msg)
@@ -124,8 +133,10 @@ class MailSenderService(Service):
                 smtp.rset()
                 self.logger.error("[%s] DATA failed: %s %s",
                                   message_id, code, resp)
+                self.perf_metrics["smtp_response_%d" % code] += 1
                 return False
             self.logger.info("[%s] Message sent: %s", message_id, resp)
+            self.perf_metrics["smtp_response_%d" % code] += 1
         except smtplib.SMTPException as e:
             self.logger.error("[%s] SMTP Error: %s", message_id, e)
             smtp.rset()
@@ -133,7 +144,10 @@ class MailSenderService(Service):
         try:
             smtp.quit()
         except smtplib.SMTPException as e:
-            self.logger.error("[%s] Failed to quit properly: %s", message_id, e)
+            self.logger.error(
+                "[%s] Failed to quit properly: %s",
+                message_id, e
+            )
         return True
 
 if __name__ == "__main__":
