@@ -16,7 +16,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zyxel.MSAN"
-    pattern_prompt = r"^\S+?>"
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\s]+)?>\s*"
     pattern_syntax_error = "invalid (command|input)"
     pattern_more = "Press any key to continue, 'n' to nopause,'e' to exit"
     config_volatile = [r"^time\s+(\d+|date).*?^"]
