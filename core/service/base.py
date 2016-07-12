@@ -344,7 +344,8 @@ class Service(object):
         """
         return {
             "template_path": os.getcwd(),
-            "cookie_secret": "12345"
+            "cookie_secret": "12345",
+            "log_function": self.log_request
         }
 
     def activate(self):
@@ -439,7 +440,6 @@ class Service(object):
             "uptime": time.time() - self.start_time
         }
         if self.executors:
-            r["threadpools"] = {}
             for x in self.executors:
                 r["threadpool_%s_qsize" % x] = self.executors[x]._work_queue.qsize()
                 r["threadpool_%s_threads" % x] = len(self.executors[x]._threads)
@@ -602,3 +602,26 @@ class Service(object):
         with self.metrics_lock:
             w.pub("metrics", "\n".join(self._metrics))
             self._metrics = []
+
+    def log_request(self, handler):
+        """
+        Custom HTTP Log request handler
+        :param handler:
+        :return:
+        """
+        status = handler.get_status()
+        method = handler.request.method
+        uri = handler.request.uri
+        remote_ip = handler.request.remote_ip
+        if status == 200 and uri == "/mon/" and method == "GET":
+            self.logger.debug("Monitoring request (%s)", remote_ip)
+            self.perf_metrics["mon_requests"] += 1
+        else:
+            self.logger.info(
+                "%s %s (%s) %.2fms",
+                method, uri, remote_ip,
+                1000.0 * handler.request.request_time()
+            )
+            self.perf_metrics["http_requests"] += 1
+            self.perf_metrics["http_requests_%s" % method.lower()] += 1
+            self.perf_metrics["http_response_%s" % status] += 1
