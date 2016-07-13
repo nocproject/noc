@@ -246,6 +246,7 @@ class CorrelatorService(Service):
                 # Root cause found
                 self.logger.debug("%s is root cause for %s (Rule: %s)",
                     root.id, a.id, rc.name)
+                self.perf_metrics["alarm_correlated_rule"] += 1
                 a.set_root(root)
                 return True
         return False
@@ -274,6 +275,7 @@ class CorrelatorService(Service):
                         "%s is root cause for %s (Reverse rule: %s)",
                         a.id, ca.id, rc.name
                     )
+                    self.perf_metrics["alarm_correlated_rule"] += 1
                     ca.set_root(a)
                     found = True
         return found
@@ -284,8 +286,11 @@ class CorrelatorService(Service):
             self.logger.info("Empty managed object, ignoring")
             return
         if e.managed_object.id != managed_object.id:
-            self.logger.info("Changing managed object to %s",
-                          managed_object.name)
+            self.perf_metrics["alarm_change_mo"] += 1
+            self.logger.info(
+                "Changing managed object to %s",
+                managed_object.name
+            )
         discriminator, vars = r.get_vars(e)
         if r.unique:
             assert discriminator is not None
@@ -309,6 +314,7 @@ class CorrelatorService(Service):
                         a.alarm_class.name, a.id
                     )
                     a = a.reopen("Reopened by disposition rule '%s'" % r.u_name)
+                    self.perf_metrics["alarm_reopen"] += 1
             if a:
                 # Active alarm found, refresh
                 self.logger.info(
@@ -318,6 +324,7 @@ class CorrelatorService(Service):
                     a.alarm_class.name, a.id
                 )
                 a.contribute_event(e)
+                self.perf_metrics["alarm_contribute"] += 1
                 return
         # Calculate alarm coverage
         summary = ServiceSummary.get_object_summary(managed_object)
@@ -326,8 +333,11 @@ class CorrelatorService(Service):
         }
         #
         severity = max(ServiceSummary.get_severity(summary), 1)
-        self.logger.debug("%s: Calculated alarm severity is: %s",
-                      r.u_name, severity)
+        self.logger.info(
+            "[%s|%s|%s] %s: Calculated alarm severity is: %s",
+            e.id, managed_object.name, managed_object.address,
+            r.u_name, severity
+        )
         # Create new alarm
         a = ActiveAlarm(
             timestamp=e.timestamp,
@@ -360,6 +370,7 @@ class CorrelatorService(Service):
             e.event_class.name,
             a.alarm_class.name, a.id, a.vars
         )
+        self.perf_metrics["alarm_raise"] += 1
         self.correlate_queue.put((r, a))
 
     def correlator_worker(self):
@@ -386,6 +397,7 @@ class CorrelatorService(Service):
                     h(a)
                 except:
                     error_report()
+                    self.perf_metrics["alarm_handler_errors"] += 1
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:
@@ -399,6 +411,7 @@ class CorrelatorService(Service):
             # Silently drop alarm
             self.logger.debug("Alarm severity is 0, dropping")
             a.delete()
+            self.perf_metrics["alarm_drop"] += 1
             return
         # Launch jobs when necessary
         if a.alarm_class.id in self.alarm_jobs:
@@ -443,6 +456,7 @@ class CorrelatorService(Service):
                     "Cleared by disposition rule '%s'" % r.u_name,
                     ts=e.timestamp
                 )
+                self.perf_metrics["alarm_clear"] += 1
 
     def get_delayed_event(self, r, e):
         """
@@ -507,6 +521,7 @@ class CorrelatorService(Service):
         self.get_executor("max").submit(self.dispose_worker, message, event_id)
 
     def dispose_worker(self, message, event_id):
+        self.perf_metrics["alarm_dispose"] += 1
         self.dispose_event(event_id)
         self.ioloop.add_callback(message.finish)
 
