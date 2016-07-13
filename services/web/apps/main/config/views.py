@@ -13,14 +13,15 @@ import hashlib
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.lib.serialize import json_decode
+from noc.core.translation import ugettext as _
 
 
 class ConfigApplication(ExtApplication):
     """
     main.config application
     """
-    title = "Configs"
-    menu = "Setup | Configs"
+    title = _("Configs")
+    menu = [_("Setup"), _("Configs")]
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)

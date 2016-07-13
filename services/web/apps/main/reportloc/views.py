@@ -13,10 +13,11 @@ import glob
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn, SectionRow
 from noc import settings
+from noc.core.translation import ugettext as _
 
 
 class ReportLOC(SimpleReport):
-    title = "Lines Of Code"
+    title = _("Lines Of Code")
 
     def get_data(self, **kwargs):
         def lines(path):

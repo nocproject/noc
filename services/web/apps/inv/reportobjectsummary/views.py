@@ -10,10 +10,11 @@
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
+from noc.core.translation import ugettext as _
 
 
 class ReportObjectSummaryApplication(SimpleReport):
-    title = "Object Summary"
+    title = _("Object Summary")
 
     def get_data(self, **kwargs):
         self.model_name = {}  # oid -> name

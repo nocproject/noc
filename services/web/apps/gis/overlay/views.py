@@ -10,14 +10,15 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.gis.models import Overlay
 from noc.gis.geo import inverse_mercator
+from noc.core.translation import ugettext as _
 
 
 class OverlayApplication(ExtDocApplication):
     """
     Overlay application
     """
-    title = "Overlay"
-    menu = "Setup | Overlays"
+    title = _("Overlay")
+    menu = [_("Setup"), _("Overlays")]
     model = Overlay
 
     def extra_permissions(self):

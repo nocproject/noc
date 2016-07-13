@@ -10,14 +10,15 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.gis.models.division import Division
 from noc.gis.models.street import Street
+from noc.core.translation import ugettext as _
 
 
 class StreetApplication(ExtDocApplication):
     """
     Street application
     """
-    title = "Street"
-    menu = "Setup | Streets"
+    title = _("Street")
+    menu = [_("Setup"), _("Streets")]
     model = Street
     parent_model = Division
     parent_field = "parent"

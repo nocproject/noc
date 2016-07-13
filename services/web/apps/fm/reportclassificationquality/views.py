@@ -9,10 +9,11 @@
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.fm.models import EventClass, ActiveEvent
+from noc.core.translation import ugettext as _
 
 
 class ReportClassificationQuality(SimpleReport):
-    title = "Classification Quality"
+    title = _("Classification Quality")
 
     def get_data(self, **kwargs):
         default_ids = [c.id for c in

@@ -11,14 +11,15 @@ from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.connectionrule import ConnectionRule
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.lib.prettyjson import to_json
+from noc.core.translation import ugettext as _
 
 
 class ConnectionRuleApplication(ExtDocApplication):
     """
     ConnectionRule application
     """
-    title = "Connection Rules"
-    menu = "Setup | Connection Rules"
+    title = _("Connection Rules")
+    menu = [_("Setup"), _("Connection Rules")]
     model = ConnectionRule
     query_fields = ["name__icontains", "description__icontains"]
 

@@ -13,14 +13,15 @@ import itertools
 from noc.lib.app import ExtApplication, view
 from noc.lib.nosql import get_db
 from noc.lib.dateutils import humanize_timedelta
+from noc.core.translation import ugettext as _
 
 
 class FMMonitorApplication(ExtApplication):
     """
     fm.monitor application
     """
-    title = "FM Monitor"
-    menu = "FM Monitor"
+    title = _("FM Monitor")
+    menu = _("FM Monitor")
 
     @view(url="^data/", method=["GET"], access="read", api=True)
     def api_data(self, request):

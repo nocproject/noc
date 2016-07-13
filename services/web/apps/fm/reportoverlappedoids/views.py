@@ -9,10 +9,11 @@
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.fm.models import MIBData
+from noc.core.translation import ugettext as _
 
 
 class ReportOverlappedOIDsApplication(SimpleReport):
-    title = "Overlapped MIB OIDs"
+    title = _("Overlapped MIB OIDs")
 
     def get_data(self, **kwargs):
         data = [

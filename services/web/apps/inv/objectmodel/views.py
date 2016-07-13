@@ -13,14 +13,15 @@ from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.modelinterface import ModelInterface
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
 from noc.lib.prettyjson import to_json
+from noc.core.translation import ugettext as _
 
 
 class ObjectModelApplication(ExtDocApplication):
     """
     ObjectModel application
     """
-    title = "Object Models"
-    menu = "Setup | Object Models"
+    title = _("Object Models")
+    menu = [_("Setup"), _("Object Models")]
     model = ObjectModel
     parent_model = DocCategory
     parent_field = "parent"

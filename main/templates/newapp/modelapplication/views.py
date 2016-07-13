@@ -16,5 +16,5 @@ class {{model}}Application({{base_class}}):
     {{model}} application
     """
     title = "{{model}}"
-    menu = "Setup | {{model}}"
+    menu = [_("Setup"), _("{{model}}")]
     model = {{model}}

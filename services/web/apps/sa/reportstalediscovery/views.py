@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Stale Discovery Job Report
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -14,10 +14,11 @@ from noc.lib.app.simplereport import SimpleReport
 from noc.lib.nosql import get_db
 from noc.lib.dateutils import humanize_distance
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.translation import ugettext as _
 
 
 class ReportStaleDiscoveryJob(SimpleReport):
-    title = "Stale discovery"
+    title = _("Stale discovery")
 
     # Minutes
     STALE_INTERVAL = 24 * 60 * 2

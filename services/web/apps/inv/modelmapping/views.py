@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.modelmapping import ModelMapping
+from noc.core.translation import ugettext as _
 
 
 class ModelMappingApplication(ExtDocApplication):
     """
     ModelMapping application
     """
-    title = "Model Mapping"
-    menu = "Setup | Model Mapping"
+    title = _("Model Mapping")
+    menu = [_("Setup"), _("Model Mapping")]
     model = ModelMapping

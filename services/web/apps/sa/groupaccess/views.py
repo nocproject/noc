@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.sa.models.groupaccess import GroupAccess
+from noc.core.translation import ugettext as _
 
 
 class GroupAccessApplication(ExtModelApplication):
     """
     GroupAccess application
     """
-    title = "Group Access"
-    menu = "Setup | Group Access"
+    title = _("Group Access")
+    menu = [_("Setup"), _("Group Access")]
     model = GroupAccess

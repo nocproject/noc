@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-30 11:29+0300\n"
+"POT-Creation-Date: 2016-07-14 00:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,534 +18,1690 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: dns/apps/reportmissedp2p/views.py:18
+#: services/web/apps/cm/errortype/views.py:19
+msgid "Error Type"
+msgstr ""
+
+#: services/web/apps/cm/errortype/views.py:20
+msgid "Error Types"
+msgstr ""
+
+#: services/web/apps/cm/objectnotify/views.py:24
+msgid "Object Notifies"
+msgstr ""
+
+#: services/web/apps/cm/prefixlist/views.py:25
+msgid "Prefix Lists"
+msgstr ""
+
+#: services/web/apps/cm/reportlatestchanges/views.py:23
+msgid "Latest Changes"
+msgstr ""
+
+#: services/web/apps/cm/reportlatestchanges/views.py:32
+msgid "Last Changed"
+msgstr ""
+
+#: services/web/apps/cm/reportvalidationmethods/views.py:16
+msgid "Validation Methods"
+msgstr ""
+
+#: services/web/apps/cm/reportvalidationmethods/views.py:33
+msgid "Handler"
+msgstr ""
+
+#: services/web/apps/cm/rpsl/views.py:25
+msgid "RPSL Objects"
+msgstr ""
+
+#: services/web/apps/cm/validationpolicy/views.py:19
+#: services/web/apps/cm/validationpolicy/views.py:20
+msgid "Validation Policy"
+msgstr ""
+
+#: services/web/apps/cm/validationpolicysettings/views.py:23
+msgid "Validation Policy Settings"
+msgstr ""
+
+#: services/web/apps/cm/validationrule/views.py:21
+msgid "Validation Rule"
+msgstr ""
+
+#: services/web/apps/cm/validationrule/views.py:22
+msgid "Validation Rules"
+msgstr ""
+
+#: services/web/apps/crm/subscriber/views.py:19
+msgid "Subscriber"
+msgstr ""
+
+#: services/web/apps/crm/subscriber/views.py:20
+msgid "Subscribers"
+msgstr ""
+
+#: services/web/apps/crm/subscriberprofile/views.py:19
+msgid "Subscriber Profile"
+msgstr ""
+
+#: services/web/apps/crm/subscriberprofile/views.py:20
+msgid "Subscriber Profiles"
+msgstr ""
+
+#: services/web/apps/crm/supplier/views.py:19
+#: services/web/apps/crm/supplier/views.py:20
+msgid "Supplier"
+msgstr ""
+
+#: services/web/apps/crm/supplierprofile/views.py:19
+msgid "Supplier Profile"
+msgstr ""
+
+#: services/web/apps/crm/supplierprofile/views.py:20
+msgid "Supplier Profiles"
+msgstr ""
+
+#: services/web/apps/dns/dnsserver/views.py:19
+msgid "DNS Server"
+msgstr ""
+
+#: services/web/apps/dns/dnsserver/views.py:20
+msgid "Setup | DNS Servers"
+msgstr ""
+
+#: services/web/apps/dns/dnszone/views.py:22
+msgid "DNS Zone"
+msgstr ""
+
+#: services/web/apps/dns/dnszone/views.py:23
+msgid "Zones"
+msgstr ""
+
+#: services/web/apps/dns/dnszoneprofile/views.py:19
+msgid "Zone Profiles"
+msgstr ""
+
+#: services/web/apps/dns/dnszoneprofile/views.py:20
+msgid "Setup | Zone Profiles"
+msgstr ""
+
+#: services/web/apps/dns/reportduplicatedfqdns/views.py:16
+msgid "Duplicated FQDNs"
+msgstr ""
+
+#: services/web/apps/dns/reportexpiringdomains/views.py:21
+msgid "Expiring Domains"
+msgstr ""
+
+#: services/web/apps/dns/reportexpiringdomains/views.py:26
+msgid "Domain"
+msgstr ""
+
+#: services/web/apps/dns/reportexpiringdomains/views.py:27
+msgid "Expired"
+msgstr ""
+
+#: services/web/apps/dns/reportexpiringdomains/views.py:28
+msgid "Paid Till"
+msgstr ""
+
+#: services/web/apps/dns/reportmissedp2p/views.py:19
 msgid "Missed Link Addresses"
 msgstr ""
 
-#: dns/apps/reportmissedreverse/views.py:18
+#: services/web/apps/dns/reportmissedreverse/views.py:17
 msgid "Missed Reverse Zones"
 msgstr ""
 
-#: fm/apps/heatmap/views.py:15 fm/apps/heatmap/views.py:16
+#: services/web/apps/dns/reportnszonesummary/views.py:14
+msgid "NS Zone Summary"
+msgstr ""
+
+#: services/web/apps/fm/alarm/views.py:37
+msgid "Alarm"
+msgstr ""
+
+#: services/web/apps/fm/alarm/views.py:38
+msgid "Alarms"
+msgstr ""
+
+#: services/web/apps/fm/alarmclass/views.py:20
+msgid "Alarm Class"
+msgstr ""
+
+#: services/web/apps/fm/alarmclass/views.py:21
+msgid "Alarm Classes"
+msgstr ""
+
+#: services/web/apps/fm/alarmclassconfig/views.py:19
+#: services/web/apps/fm/alarmclassconfig/views.py:20
+msgid "Alarm Class Config"
+msgstr ""
+
+#: services/web/apps/fm/alarmescalation/views.py:19
+#: services/web/apps/fm/alarmescalation/views.py:20
+msgid "Alarm Escalation"
+msgstr ""
+
+#: services/web/apps/fm/alarmseverity/views.py:19
+msgid "Alarm Severity"
+msgstr ""
+
+#: services/web/apps/fm/alarmseverity/views.py:20
+msgid "Alarm Severities"
+msgstr ""
+
+#: services/web/apps/fm/alarmtrigger/views.py:19
+#: services/web/apps/fm/alarmtrigger/views.py:20
+msgid "Alarm Triggers"
+msgstr ""
+
+#: services/web/apps/fm/classificationrule/views.py:27
+msgid "Classification Rule"
+msgstr ""
+
+#: services/web/apps/fm/classificationrule/views.py:28
+#: services/web/apps/fm/reportclassificationrule/views.py:25
+msgid "Classification Rules"
+msgstr ""
+
+#: services/web/apps/fm/event/views.py:35
+#: services/web/apps/fm/event/views.py:36
+msgid "Events"
+msgstr ""
+
+#: services/web/apps/fm/eventclass/views.py:19
+msgid "Event Class"
+msgstr ""
+
+#: services/web/apps/fm/eventclass/views.py:20
+msgid "Event Classes"
+msgstr ""
+
+#: services/web/apps/fm/eventtrigger/views.py:19
+#: services/web/apps/fm/eventtrigger/views.py:20
+msgid "Event Triggers"
+msgstr ""
+
+#: services/web/apps/fm/heatmap/views.py:15
+#: services/web/apps/fm/heatmap/views.py:16
 msgid "Heatmap"
 msgstr ""
 
-#: fm/apps/outage/views.py:15 fm/apps/outage/views.py:16
-msgid "Outages"
+#: services/web/apps/fm/ignoreeventrule/views.py:20
+#: services/web/apps/fm/ignoreeventrule/views.py:21
+msgid "Ignore Event Rules"
 msgstr ""
 
-#: fm/apps/reportalarmdetail/views.py:21 fm/apps/reportalarmdetail/views.py:22
+#: services/web/apps/fm/ignorepattern/views.py:20
+#: services/web/apps/fm/ignorepattern/views.py:21
+msgid "Ignore Patterns"
+msgstr ""
+
+#: services/web/apps/fm/mib/views.py:22 services/web/apps/fm/mib/views.py:23
+msgid "MIB"
+msgstr ""
+
+#: services/web/apps/fm/mibpreference/views.py:20
+#: services/web/apps/fm/mibpreference/views.py:21
+msgid "MIB Preference"
+msgstr ""
+
+#: services/web/apps/fm/monitor/views.py:23
+#: services/web/apps/fm/monitor/views.py:24
+msgid "FM Monitor"
+msgstr ""
+
+#: services/web/apps/fm/oidalias/views.py:20
+#: services/web/apps/fm/oidalias/views.py:21
+msgid "OID Aliases"
+msgstr ""
+
+#: services/web/apps/fm/reportalarmdetail/views.py:21
+#: services/web/apps/fm/reportalarmdetail/views.py:22
 msgid "Alarm Detail"
 msgstr ""
 
-#: fm/apps/reportescalations/views.py:41
-msgid "Escalations"
+#: services/web/apps/fm/reportavailability/views.py:22
+msgid "Availability"
 msgstr ""
 
-#: fm/apps/reportescalations/views.py:85
-msgid "Timestamp"
+#: services/web/apps/fm/reportclassificationquality/views.py:16
+msgid "Classification Quality"
 msgstr ""
 
-#: fm/apps/reportescalations/views.py:86
-msgid "Escalation Timestamp"
+#: services/web/apps/fm/reportclassificationrule/views.py:21
+#: services/web/apps/sa/reportobjectsummary/views.py:36
+#: services/web/apps/sa/reportobjectsummary/views.py:68
+msgid "Profile"
 msgstr ""
 
-#: fm/apps/reportescalations/views.py:88
-msgid "Segment"
-msgstr ""
-
-#: fm/apps/reportescalations/views.py:89
-msgid "Platform"
-msgstr ""
-
-#: fm/apps/reportescalations/views.py:91
-msgid "TT"
-msgstr ""
-
-#: fm/apps/reportescalations/views.py:25 fm/apps/reportreboots/views.py:23
+#: services/web/apps/fm/reportescalations/views.py:25
+#: services/web/apps/fm/reportreboots/views.py:23
 msgid "Range"
 msgstr ""
 
-#: fm/apps/reportescalations/views.py:26 fm/apps/reportreboots/views.py:24
+#: services/web/apps/fm/reportescalations/views.py:26
+#: services/web/apps/fm/reportreboots/views.py:24
 msgid "1 day"
 msgstr ""
 
-#: fm/apps/reportescalations/views.py:27 fm/apps/reportreboots/views.py:25
+#: services/web/apps/fm/reportescalations/views.py:27
+#: services/web/apps/fm/reportreboots/views.py:25
 msgid "1 week"
 msgstr ""
 
-#: fm/apps/reportescalations/views.py:28 fm/apps/reportreboots/views.py:26
+#: services/web/apps/fm/reportescalations/views.py:28
+#: services/web/apps/fm/reportreboots/views.py:26
 msgid "1 month"
 msgstr ""
 
-#: fm/apps/reportreboots/views.py:39 fm/apps/reportreboots/views.py:94
-msgid "Reboots"
+#: services/web/apps/fm/reportescalations/views.py:41
+msgid "Escalations"
 msgstr ""
 
-#: fm/apps/reportescalations/views.py:87 fm/apps/reportreboots/views.py:93
+#: services/web/apps/fm/reportescalations/views.py:85
+msgid "Timestamp"
+msgstr ""
+
+#: services/web/apps/fm/reportescalations/views.py:86
+msgid "Escalation Timestamp"
+msgstr ""
+
+#: services/web/apps/fm/reportescalations/views.py:87
+#: services/web/apps/fm/reportreboots/views.py:93
 msgid "Managed Object"
 msgstr ""
 
-#: fm/apps/totaloutage/views.py:15 fm/apps/totaloutage/views.py:16
+#: services/web/apps/fm/reportescalations/views.py:88
+msgid "Segment"
+msgstr ""
+
+#: services/web/apps/fm/reportescalations/views.py:89
+#: services/web/apps/sa/reportobjectsummary/views.py:68
+#: services/web/apps/sa/reportobjectsummary/views.py:74
+msgid "Platform"
+msgstr ""
+
+#: services/web/apps/fm/reportescalations/views.py:90
+#: services/web/apps/ip/ipam/views.py:817
+msgid "Address"
+msgstr ""
+
+#: services/web/apps/fm/reportescalations/views.py:91
+msgid "TT"
+msgstr ""
+
+#: services/web/apps/fm/reporteventsummary/views.py:20
+msgid "By Event Class"
+msgstr ""
+
+#: services/web/apps/fm/reporteventsummary/views.py:21
+msgid "By Managed Object"
+msgstr ""
+
+#: services/web/apps/fm/reporteventsummary/views.py:23
+msgid "By Status"
+msgstr ""
+
+#: services/web/apps/fm/reporteventsummary/views.py:32
+msgid "Event Summary"
+msgstr ""
+
+#: services/web/apps/fm/reporthierarchy/views.py:21
+msgid "Events and Alarm Hierarchy"
+msgstr ""
+
+#: services/web/apps/fm/reportlocalrules/views.py:20
+msgid "Local Classification Rules (JSON)"
+msgstr ""
+
+#: services/web/apps/fm/reportmibs/views.py:16
+msgid "Installed MIBs"
+msgstr ""
+
+#: services/web/apps/fm/reportmissedmibs/views.py:18
+msgid "Missed MIBs"
+msgstr ""
+
+#: services/web/apps/fm/outage/views.py:15
+#: services/web/apps/fm/outage/views.py:16
+#: services/web/apps/fm/reportoutages/views.py:32
+msgid "Outages"
+msgstr ""
+
+#: services/web/apps/fm/reportoverlappedoids/views.py:16
+msgid "Overlapped MIB OIDs"
+msgstr ""
+
+#: services/web/apps/fm/reportreboots/views.py:39
+#: services/web/apps/fm/reportreboots/views.py:94
+msgid "Reboots"
+msgstr ""
+
+#: services/web/apps/fm/reportrulesbyprofile/views.py:19
+msgid "Rules by Profile"
+msgstr ""
+
+#: services/web/apps/fm/reportrulesetsummary/views.py:18
+msgid "Ruleset Summary"
+msgstr ""
+
+#: services/web/apps/fm/reportunclassifiedoids/views.py:16
+msgid "Unclassified Trap OIDs"
+msgstr ""
+
+#: services/web/apps/fm/totaloutage/views.py:15
+#: services/web/apps/fm/totaloutage/views.py:16
 msgid "Total Outages"
 msgstr ""
 
-#: inv/apps/map/views.py:41 inv/apps/map/views.py:42
+#: services/web/apps/fm/ttsystem/views.py:19
+#: services/web/apps/fm/ttsystem/views.py:20
+msgid "TT System"
+msgstr ""
+
+#: services/web/apps/gis/area/views.py:19
+msgid "Area"
+msgstr ""
+
+#: services/web/apps/gis/area/views.py:20
+msgid "Areas"
+msgstr ""
+
+#: services/web/apps/gis/building/views.py:27
+msgid "Building"
+msgstr ""
+
+#: services/web/apps/gis/building/views.py:28
+msgid "Buildings"
+msgstr ""
+
+#: services/web/apps/gis/division/views.py:19
+msgid "Division"
+msgstr ""
+
+#: services/web/apps/gis/division/views.py:20
+msgid "Divisions"
+msgstr ""
+
+#: services/web/apps/gis/layer/views.py:21
+#: services/web/apps/gis/layer/views.py:22
+msgid "Layers"
+msgstr ""
+
+#: services/web/apps/gis/overlay/views.py:20
+msgid "Overlay"
+msgstr ""
+
+#: services/web/apps/gis/overlay/views.py:21
+msgid "Overlays"
+msgstr ""
+
+#: services/web/apps/gis/street/views.py:20
+msgid "Street"
+msgstr ""
+
+#: services/web/apps/gis/street/views.py:21
+msgid "Streets"
+msgstr ""
+
+#: services/web/apps/inv/capability/views.py:20
+msgid "Capability"
+msgstr ""
+
+#: services/web/apps/inv/capability/views.py:21
+msgid "Capabilities"
+msgstr ""
+
+#: services/web/apps/inv/connectionrule/views.py:21
+#: services/web/apps/inv/connectionrule/views.py:22
+msgid "Connection Rules"
+msgstr ""
+
+#: services/web/apps/inv/connectiontype/views.py:21
+#: services/web/apps/inv/connectiontype/views.py:22
+msgid "Connection Types"
+msgstr ""
+
+#: services/web/apps/inv/coverage/views.py:22
+#: services/web/apps/inv/coverage/views.py:23
+msgid "Coverage"
+msgstr ""
+
+#: services/web/apps/inv/firmware/views.py:19
+#: services/web/apps/inv/firmware/views.py:20
+msgid "Firmware"
+msgstr ""
+
+#: services/web/apps/inv/firmwarepolicy/views.py:19
+#: services/web/apps/inv/firmwarepolicy/views.py:20
+msgid "Firmware Policy"
+msgstr ""
+
+#: services/web/apps/inv/interface/views.py:30
+#: services/web/apps/inv/interface/views.py:31
+msgid "Interfaces"
+msgstr ""
+
+#: services/web/apps/inv/interfaceclassificationrule/views.py:19
+msgid "Interface Classification Rule"
+msgstr ""
+
+#: services/web/apps/inv/interfaceclassificationrule/views.py:20
+msgid "Interface Classification Rules"
+msgstr ""
+
+#: services/web/apps/inv/interfaceprofile/views.py:19
+msgid "Interface Profile"
+msgstr ""
+
+#: services/web/apps/inv/interfaceprofile/views.py:20
+msgid "Interface Profiles"
+msgstr ""
+
+#: services/web/apps/inv/inv/views.py:26 services/web/apps/inv/inv/views.py:27
+msgid "Inventory"
+msgstr ""
+
+#: services/web/apps/inv/macdb/views.py:26
+msgid "MacDB"
+msgstr ""
+
+#: services/web/apps/inv/macdb/views.py:27
+msgid "Mac DB"
+msgstr ""
+
+#: services/web/apps/inv/map/views.py:41 services/web/apps/inv/map/views.py:42
 msgid "Network Map"
 msgstr ""
 
-#: inv/apps/reportdiscovery/views.py:24
+#: services/web/apps/inv/modelinterface/views.py:19
+msgid "Model Interface"
+msgstr ""
+
+#: services/web/apps/inv/modelinterface/views.py:20
+msgid "Model Interfaces"
+msgstr ""
+
+#: services/web/apps/inv/modelmapping/views.py:19
+#: services/web/apps/inv/modelmapping/views.py:20
+msgid "Model Mapping"
+msgstr ""
+
+#: services/web/apps/inv/monitor/views.py:24
+#: services/web/apps/inv/monitor/views.py:25
+#: services/web/apps/sa/monitor/views.py:18
+#: services/web/apps/sa/monitor/views.py:19
+msgid "Monitor"
+msgstr ""
+
+#: services/web/apps/inv/networksegment/views.py:20
+msgid "NetworkSegment"
+msgstr ""
+
+#: services/web/apps/inv/networksegment/views.py:21
+msgid "Network Segments"
+msgstr ""
+
+#: services/web/apps/inv/objectmodel/views.py:23
+#: services/web/apps/inv/objectmodel/views.py:24
+msgid "Object Models"
+msgstr ""
+
+#: services/web/apps/inv/reportcompare/views.py:17
+msgid "Compare Specs"
+msgstr ""
+
+#: services/web/apps/inv/reportdiscovery/views.py:24
 msgid "Discovery Summary"
 msgstr ""
 
-#: inv/apps/reportdiscoveryproblem/views.py:21
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:21
 msgid "Discovery Problems"
 msgstr ""
 
-#: inv/apps/reportdiscoveryproblem/views.py:34
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:34
 msgid "Profile check failed"
 msgstr ""
 
-#: inv/apps/reportdiscoveryproblem/views.py:44
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:44
 msgid "No interfaces"
 msgstr ""
 
-#: inv/apps/reportdiscoveryproblem/views.py:51
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:51
 msgid "No links"
 msgstr ""
 
-#: inv/apps/reportdiscoveryproblem/views.py:59
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:59
 msgid "No uplinks"
 msgstr ""
 
-#: inv/apps/unknownmodel/views.py:38
+#: services/web/apps/inv/reportobjectsummary/views.py:17
+msgid "Object Summary"
+msgstr ""
+
+#: services/web/apps/inv/reportpartnumbers/views.py:17
+msgid "Part Numbers"
+msgstr ""
+
+#: services/web/apps/inv/reportunknownsummary/views.py:15
+msgid "Unknown Models Summary"
+msgstr ""
+
+#: services/web/apps/inv/technology/views.py:18
+msgid "Technology"
+msgstr ""
+
+#: services/web/apps/inv/technology/views.py:19
+msgid "Technologies"
+msgstr ""
+
+#: services/web/apps/inv/unknownmodel/views.py:20
+#: services/web/apps/inv/unknownmodel/views.py:21
+msgid "Unknown Models"
+msgstr ""
+
+#: services/web/apps/inv/unknownmodel/views.py:38
 msgid "Cleaned"
 msgstr ""
 
-#: ip/apps/ipam/views.py:404
+#: services/web/apps/inv/vendor/views.py:20
+msgid "Vendor"
+msgstr ""
+
+#: services/web/apps/inv/vendor/views.py:21
+msgid "Vendors"
+msgstr ""
+
+#: services/web/apps/ip/addressrange/views.py:20
+msgid "Address Ranges"
+msgstr ""
+
+#: services/web/apps/ip/ipam/views.py:404
 msgid "Invalid address"
 msgstr ""
 
-#: ip/apps/ipam/views.py:409
+#: services/web/apps/ip/ipam/views.py:409
 #, python-format
 msgid "Redirected to %(prefix)s"
 msgstr ""
 
-#: ip/apps/ipam/views.py:430
+#: services/web/apps/ip/ipam/views.py:430
 #, python-format
 msgid "Bookmark set to %(prefix)s"
 msgstr ""
 
-#: ip/apps/ipam/views.py:433
+#: services/web/apps/ip/ipam/views.py:433
 #, python-format
 msgid "Bookmark removed from %(prefix)s"
 msgstr ""
 
-#: ip/apps/ipam/views.py:446
+#: services/web/apps/ip/ipam/views.py:446
 #, python-format
 msgid "IPv%(afi)s prefix"
 msgstr ""
 
-#: ip/apps/ipam/views.py:448 ip/apps/ipam/views.py:639
-#: ip/apps/ipam/views.py:822 ip/apps/ipam/views.py:827
+#: services/web/apps/ip/ipam/views.py:448
+#: services/web/apps/ip/ipam/views.py:639
+#: services/web/apps/ip/ipam/views.py:822
+#: services/web/apps/ip/ipam/views.py:827
 msgid "State"
 msgstr ""
 
-#: ip/apps/ipam/views.py:451 ip/apps/ipam/views.py:641
-#: ip/apps/ipam/views.py:824 ip/apps/ipam/views.py:829
+#: services/web/apps/ip/ipam/views.py:451
+#: services/web/apps/ip/ipam/views.py:641
+#: services/web/apps/ip/ipam/views.py:824
+#: services/web/apps/ip/ipam/views.py:829
 msgid "Prefix state"
 msgstr ""
 
-#: ip/apps/ipam/views.py:453 ip/apps/ipam/views.py:455
-#: ip/apps/ipam/views.py:643 ip/apps/ipam/views.py:645
-#: ip/apps/ipam/views.py:831 ip/apps/ipam/views.py:833
-msgid "Project"
-msgstr ""
-
-#: ip/apps/ipam/views.py:459 ip/apps/ipam/views.py:636
+#: services/web/apps/ip/ipam/views.py:459
+#: services/web/apps/ip/ipam/views.py:636
 msgid "ASN"
 msgstr ""
 
-#: ip/apps/ipam/views.py:471 ip/apps/ipam/views.py:664
-#: ip/apps/ipam/views.py:856
+#: services/web/apps/ip/ipam/views.py:471
+#: services/web/apps/ip/ipam/views.py:664
+#: services/web/apps/ip/ipam/views.py:856
 msgid "TT #"
 msgstr ""
 
-#: ip/apps/ipam/views.py:473 ip/apps/ipam/views.py:666
-#: ip/apps/ipam/views.py:858
+#: services/web/apps/ip/ipam/views.py:473
+#: services/web/apps/ip/ipam/views.py:666
+#: services/web/apps/ip/ipam/views.py:858
 msgid "Ticket #"
 msgstr ""
 
-#: ip/apps/ipam/views.py:475 ip/apps/ipam/views.py:668
-#: ip/apps/ipam/views.py:860
-msgid "Style"
-msgstr ""
-
-#: ip/apps/ipam/views.py:478 ip/apps/ipam/views.py:671
-#: ip/apps/ipam/views.py:863
+#: services/web/apps/ip/ipam/views.py:478
+#: services/web/apps/ip/ipam/views.py:671
+#: services/web/apps/ip/ipam/views.py:863
 msgid "Visual appearance"
 msgstr ""
 
-#: ip/apps/ipam/views.py:480 ip/apps/ipam/views.py:673
+#: services/web/apps/ip/ipam/views.py:480
+#: services/web/apps/ip/ipam/views.py:673
 msgid "Dual-stack prefix"
 msgstr ""
 
-#: ip/apps/ipam/views.py:482 ip/apps/ipam/views.py:675
+#: services/web/apps/ip/ipam/views.py:482
+#: services/web/apps/ip/ipam/views.py:675
 msgid "Appropriative dual-stack allocation"
 msgstr ""
 
-#: ip/apps/ipam/views.py:485 ip/apps/ipam/views.py:678
+#: services/web/apps/ip/ipam/views.py:485
+#: services/web/apps/ip/ipam/views.py:678
 msgid "Enable IP Discovery"
 msgstr ""
 
-#: ip/apps/ipam/views.py:505 ip/apps/ipam/views.py:874
+#: services/web/apps/ip/ipam/views.py:505
+#: services/web/apps/ip/ipam/views.py:874
 msgid "Permission denied"
 msgstr ""
 
-#: ip/apps/ipam/views.py:520
+#: services/web/apps/ip/ipam/views.py:520
 #, python-format
 msgid "Prefix %s is already exists in vrf %s"
 msgstr ""
 
-#: ip/apps/ipam/views.py:534 ip/apps/ipam/views.py:698
+#: services/web/apps/ip/ipam/views.py:534
+#: services/web/apps/ip/ipam/views.py:698
 msgid "Permission denied. Cannot set dual-stack allocation"
 msgstr ""
 
-#: ip/apps/ipam/views.py:574
+#: services/web/apps/ip/ipam/views.py:574
 #, python-format
 msgid "Prefix %(prefix)s has been created"
 msgstr ""
 
-#: ip/apps/ipam/views.py:650
-msgid "VC"
-msgstr ""
-
-#: ip/apps/ipam/views.py:654
+#: services/web/apps/ip/ipam/views.py:654
 msgid ""
 "VC Related with prefix. Adjust VC Bind Filters if you cannot see required"
 " VC"
 msgstr ""
 
-#: ip/apps/ipam/views.py:729
+#: services/web/apps/ip/ipam/views.py:729
 #, python-format
 msgid "Prefix %(prefix)s has been changed"
 msgstr ""
 
-#: ip/apps/ipam/views.py:785 ip/apps/ipam/views.py:798
+#: services/web/apps/ip/ipam/views.py:785
+#: services/web/apps/ip/ipam/views.py:798
 #, python-format
 msgid "Prefix %(prefix)s has been successfully deleted"
 msgstr ""
 
-#: ip/apps/ipam/views.py:791 ip/apps/ipam/views.py:804
+#: services/web/apps/ip/ipam/views.py:791
+#: services/web/apps/ip/ipam/views.py:804
 #, python-format
 msgid "Prefix %(prefix)s and all descendans have been successfully deleted"
 msgstr ""
 
-#: fm/apps/reportescalations/views.py:90 ip/apps/ipam/views.py:817
-msgid "Address"
-msgstr ""
-
-#: ip/apps/ipam/views.py:818
+#: services/web/apps/ip/ipam/views.py:818
 #, python-format
 msgid "IPv%(afi)s address"
 msgstr ""
 
-#: ip/apps/ipam/views.py:836
+#: services/web/apps/ip/ipam/views.py:836
 msgid "FQDN"
 msgstr ""
 
-#: ip/apps/ipam/views.py:837
+#: services/web/apps/ip/ipam/views.py:837
 msgid "MAC"
 msgstr ""
 
-#: ip/apps/ipam/views.py:839
+#: services/web/apps/ip/ipam/views.py:839
 msgid "Auto-update MAC"
 msgstr ""
 
-#: ip/apps/ipam/views.py:841
+#: services/web/apps/ip/ipam/views.py:841
 msgid "Check to automatically fetch MAC from ARP cache"
 msgstr ""
 
-#: ip/apps/ipam/views.py:846
+#: services/web/apps/ip/ipam/views.py:846
 msgid "Set if address belong to managed object's interface"
 msgstr ""
 
-#: ip/apps/ipam/views.py:879
+#: services/web/apps/ip/ipam/views.py:879
 msgid "Address is already exists"
 msgstr ""
 
-#: ip/apps/ipam/views.py:896
+#: services/web/apps/ip/ipam/views.py:896
 msgid "Invalid Managed Object"
 msgstr ""
 
-#: ip/apps/ipam/views.py:925 ip/apps/ipam/views.py:1042
-#: ip/apps/ipam/views.py:1124
+#: services/web/apps/ip/ipam/views.py:925
+#: services/web/apps/ip/ipam/views.py:1042
+#: services/web/apps/ip/ipam/views.py:1124
 #, python-format
 msgid "Address %(address)s is in the locked range"
 msgstr ""
 
-#: ip/apps/ipam/views.py:933
+#: services/web/apps/ip/ipam/views.py:933
 #, python-format
 msgid "Address already present in VRF %(vrf)s"
 msgstr ""
 
-#: ip/apps/ipam/views.py:960
+#: services/web/apps/ip/ipam/views.py:960
 #, python-format
 msgid "Address %(address)s has been created"
 msgstr ""
 
-#: ip/apps/ipam/views.py:1010
+#: services/web/apps/ip/ipam/views.py:1010
 msgid "No free addresses"
 msgstr ""
 
-#: ip/apps/ipam/views.py:1071
+#: services/web/apps/ip/ipam/views.py:1071
 #, python-format
 msgid "Address %(address)s changed"
 msgstr ""
 
-#: ip/apps/ipam/views.py:1134
+#: services/web/apps/ip/ipam/views.py:1134
 #, python-format
 msgid "Address %(address)s deleted"
 msgstr ""
 
-#: ip/apps/ipam/views.py:1218
+#: services/web/apps/ip/ipam/views.py:1218
 #, python-format
 msgid "Prefix %(old_prefix)s is rebased to %(new_prefix)s"
 msgstr ""
 
-#: ip/apps/reportallocated/views.py:25 ip/apps/reportexpanded/views.py:24
-#: ip/apps/reportfilter/views.py:26 ip/apps/reportfree/views.py:20
-#: ip/apps/reportsummary/views.py:23
-msgid "VRF"
+#: services/web/apps/ip/ippool/views.py:21
+msgid "IP Pools"
 msgstr ""
 
-#: ip/apps/reportallocated/views.py:28 ip/apps/reportexpanded/views.py:27
-#: ip/apps/reportfilter/views.py:30 ip/apps/reportfree/views.py:24
-#: ip/apps/reportsummary/views.py:26
-msgid "Address Family"
+#: services/web/apps/ip/prefixaccess/views.py:19
+#: services/web/apps/ip/prefixaccess/views.py:20
+msgid "Prefix Access"
 msgstr ""
 
-#: ip/apps/reportallocated/views.py:29 ip/apps/reportexpanded/views.py:28
-#: ip/apps/reportfilter/views.py:34 ip/apps/reportfree/views.py:25
-#: ip/apps/reportsummary/views.py:27
-msgid "IPv4"
-msgstr ""
-
-#: ip/apps/reportallocated/views.py:29 ip/apps/reportexpanded/views.py:28
-#: ip/apps/reportfilter/views.py:35 ip/apps/reportfree/views.py:25
-msgid "IPv6"
-msgstr ""
-
-#: dns/apps/reportmissedp2p/views.py:22 ip/apps/ipam/views.py:445
-#: ip/apps/reportallocated/views.py:30 ip/apps/reportexpanded/views.py:29
-#: ip/apps/reportfree/views.py:26 ip/apps/reportsummary/views.py:28
-msgid "Prefix"
-msgstr ""
-
-#: ip/apps/reportallocated/views.py:43 ip/apps/reportexpanded/views.py:42
-#: ip/apps/reportfree/views.py:41 ip/apps/reportsummary/views.py:41
-msgid "Prefix not found"
-msgstr ""
-
-#: ip/apps/reportallocated/views.py:47
+#: services/web/apps/ip/reportallocated/views.py:47
 msgid "Allocated Blocks"
 msgstr ""
 
-#: ip/apps/ipam/views.py:467 ip/apps/ipam/views.py:660
-#: ip/apps/ipam/views.py:852 ip/apps/reportallocated/views.py:77
-#: ip/apps/reportexpanded/views.py:79 ip/apps/reportfilter/views.py:76
-msgid "Tags"
-msgstr ""
-
-#: ip/apps/reportallocated/views.py:86
+#: services/web/apps/ip/reportallocated/views.py:86
 #, python-format
 msgid "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
 msgstr ""
 
-#: ip/apps/reportexpanded/views.py:82
+#: services/web/apps/dns/reportmissedp2p/views.py:23
+#: services/web/apps/ip/ipam/views.py:445
+#: services/web/apps/ip/reportallocated/views.py:30
+#: services/web/apps/ip/reportexpanded/views.py:29
+#: services/web/apps/ip/reportfree/views.py:26
+#: services/web/apps/ip/reportsummary/views.py:28
+msgid "Prefix"
+msgstr ""
+
+#: services/web/apps/ip/reportallocated/views.py:43
+#: services/web/apps/ip/reportexpanded/views.py:42
+#: services/web/apps/ip/reportfree/views.py:41
+#: services/web/apps/ip/reportsummary/views.py:41
+msgid "Prefix not found"
+msgstr ""
+
+#: services/web/apps/ip/reportexpanded/views.py:82
 #, python-format
 msgid "All allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
 msgstr ""
 
-#: ip/apps/ipam/views.py:461 ip/apps/ipam/views.py:638
-#: ip/apps/reportfilter/views.py:37
+#: services/web/apps/ip/reportallocated/views.py:25
+#: services/web/apps/ip/reportexpanded/views.py:24
+#: services/web/apps/ip/reportfilter/views.py:26
+#: services/web/apps/ip/reportfree/views.py:20
+#: services/web/apps/ip/reportsummary/views.py:23
+#: services/web/apps/ip/vrf/views.py:22
+msgid "VRF"
+msgstr ""
+
+#: services/web/apps/ip/reportallocated/views.py:28
+#: services/web/apps/ip/reportexpanded/views.py:27
+#: services/web/apps/ip/reportfilter/views.py:30
+#: services/web/apps/ip/reportfree/views.py:24
+#: services/web/apps/ip/reportsummary/views.py:26
+msgid "Address Family"
+msgstr ""
+
+#: services/web/apps/ip/reportallocated/views.py:29
+#: services/web/apps/ip/reportexpanded/views.py:28
+#: services/web/apps/ip/reportfilter/views.py:34
+#: services/web/apps/ip/reportfree/views.py:25
+#: services/web/apps/ip/reportsummary/views.py:27
+msgid "IPv4"
+msgstr ""
+
+#: services/web/apps/ip/reportallocated/views.py:29
+#: services/web/apps/ip/reportexpanded/views.py:28
+#: services/web/apps/ip/reportfilter/views.py:35
+#: services/web/apps/ip/reportfree/views.py:25
+msgid "IPv6"
+msgstr ""
+
+#: services/web/apps/ip/ipam/views.py:461
+#: services/web/apps/ip/ipam/views.py:638
+#: services/web/apps/ip/reportfilter/views.py:37
 msgid "AS Number"
 msgstr ""
 
-#: ip/apps/ipam/views.py:463 ip/apps/ipam/views.py:656
-#: ip/apps/ipam/views.py:848 ip/apps/reportfilter/views.py:42
+#: services/web/apps/cm/reportvalidationmethods/views.py:32
+#: services/web/apps/ip/ipam/views.py:463
+#: services/web/apps/ip/ipam/views.py:656
+#: services/web/apps/ip/ipam/views.py:848
+#: services/web/apps/ip/reportfilter/views.py:42
 msgid "Description"
 msgstr ""
 
-#: ip/apps/reportfree/views.py:31
+#: services/web/apps/cm/reportvalidationmethods/views.py:34
+#: services/web/apps/ip/ipam/views.py:467
+#: services/web/apps/ip/ipam/views.py:660
+#: services/web/apps/ip/ipam/views.py:852
+#: services/web/apps/ip/reportallocated/views.py:77
+#: services/web/apps/ip/reportexpanded/views.py:79
+#: services/web/apps/ip/reportfilter/views.py:76
+msgid "Tags"
+msgstr ""
+
+#: services/web/apps/ip/reportfree/views.py:31
 msgid "VRF Required"
 msgstr ""
 
-#: ip/apps/reportfree/views.py:45
+#: services/web/apps/ip/reportfree/views.py:45
 msgid "Free Blocks"
 msgstr ""
 
-#: ip/apps/reportfree/views.py:50
+#: services/web/apps/ip/reportfree/views.py:50
 #, python-format
 msgid "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
 msgstr ""
 
-#: ip/apps/reportsummary/views.py:78
+#: services/web/apps/ip/reportsummary/views.py:78
 #, python-format
 msgid "Summary for VRF %(vrf)s (IPv%(afi)s): %(prefix)s"
 msgstr ""
 
-#: ip/apps/reportsummary/views.py:84
+#: services/web/apps/ip/reportsummary/views.py:84
 msgid "Size"
 msgstr ""
 
-#: ip/apps/reportsummary/views.py:86
+#: services/web/apps/ip/reportsummary/views.py:86
 msgid "%"
 msgstr ""
 
-#: ip/apps/tools/views.py:40 ip/apps/tools/views.py:61
-#: ip/apps/tools/views.py:118
+#: services/web/apps/ip/routeimport/views.py:72
+msgid "Import Connected"
+msgstr ""
+
+#: services/web/apps/ip/tools/views.py:29
+msgid "Tools"
+msgstr ""
+
+#: services/web/apps/ip/tools/views.py:40
+#: services/web/apps/ip/tools/views.py:61
+#: services/web/apps/ip/tools/views.py:118
 msgid "Permission denined"
 msgstr ""
 
-#: ip/apps/tools/views.py:73
+#: services/web/apps/ip/tools/views.py:73
 msgid "NS"
 msgstr ""
 
-#: ip/apps/tools/views.py:73
+#: services/web/apps/ip/tools/views.py:73
 msgid "Name server IP address. NS must have zone transfer enabled for NOC host"
 msgstr ""
 
-#: ip/apps/tools/views.py:74
+#: services/web/apps/ip/tools/views.py:74
 msgid "Zone"
 msgstr ""
 
-#: ip/apps/tools/views.py:74
+#: services/web/apps/ip/tools/views.py:74
 msgid "DNS Zone name to transfer"
 msgstr ""
 
-#: ip/apps/tools/views.py:75
+#: services/web/apps/ip/tools/views.py:75
 msgid "Source Address"
 msgstr ""
 
-#: ip/apps/tools/views.py:76
+#: services/web/apps/ip/tools/views.py:76
 msgid "Source address to issue zone transfer"
 msgstr ""
 
-#: ip/apps/tools/views.py:130
+#: services/web/apps/ip/tools/views.py:130
 #, python-format
 msgid "%(count)s IP addresses uploaded via zone transfer"
 msgstr ""
 
-#: main/apps/calculator/calculators/cir2cbr.py:22
+#: services/web/apps/ip/vrfgroup/views.py:19
+#: services/web/apps/ip/vrfgroup/views.py:20
+msgid "VRF Groups"
+msgstr ""
+
+#: services/web/apps/main/audittrail/views.py:19
+#: services/web/apps/main/audittrail/views.py:20
+msgid "Audit Trail"
+msgstr ""
+
+#: services/web/apps/main/calculator/calculators/cir2cbr.py:22
 msgid "CIR(bps). K, M and G suffixes can be used"
 msgstr ""
 
-#: main/apps/calculator/calculators/cir2cbr.py:24
+#: services/web/apps/main/calculator/calculators/cir2cbr.py:24
 msgid ""
 "Common values are: Tc=1.5 for rate-limit and Tc=0.25 for policing (0.25 "
 "is default)"
 msgstr ""
 
-#: main/apps/calculator/calculators/cir2cbr.py:27
+#: services/web/apps/main/calculator/calculators/cir2cbr.py:27
 msgid "Cisco IOS policer"
 msgstr ""
 
-#: main/apps/calculator/calculators/cir2cbr.py:28
+#: services/web/apps/main/calculator/calculators/cir2cbr.py:28
 msgid "Cisco IOS rate-limit"
 msgstr ""
 
-#: main/apps/calculator/calculators/cir2cbr.py:29
+#: services/web/apps/main/calculator/calculators/cir2cbr.py:29
 msgid "Juniper JUNOS policer"
 msgstr ""
 
-#: main/apps/calculator/calculators/cir2cbr.py:50
+#: services/web/apps/main/calculator/calculators/cir2cbr.py:50
 msgid "Integer is required"
 msgstr ""
 
-#: main/apps/calculator/calculators/cir2cbr.py:58
+#: services/web/apps/main/calculator/calculators/cir2cbr.py:58
 msgid "CIR/CAR(bps) to Burst-rate"
 msgstr ""
 
-#: main/apps/calculator/calculators/cir2cbr.py:59
+#: services/web/apps/main/calculator/calculators/cir2cbr.py:59
 msgid ""
 "Recommended way for policy-map values calculating is: normal-burst-bytes"
 "=bits-per-second*Tc/8.Recommended way for rate-limit values calculating "
 "is: burst-normal=bits-per-second*Tc/8, burst-max=2*burst-normal"
 msgstr ""
 
-#: main/apps/checkpoint/views.py:20
+#: services/web/apps/main/calculator/views.py:19
+msgid "Calculators"
+msgstr ""
+
+#: services/web/apps/main/checkpoint/views.py:21
 msgid "Checkpoints"
 msgstr ""
 
-#: main/apps/checkpoint/views.py:23 main/apps/checkpoint/views.py:26
+#: services/web/apps/main/checkpoint/views.py:24
+#: services/web/apps/main/checkpoint/views.py:27
 msgid "Comment"
 msgstr ""
 
-#: main/apps/checkpoint/views.py:27
+#: services/web/apps/main/checkpoint/views.py:28
 msgid "Private"
 msgstr ""
 
-#: main/apps/checkpoint/views.py:42
+#: services/web/apps/main/checkpoint/views.py:43
 msgid "Checkpoint has been set"
 msgstr ""
 
-#: main/apps/desktop/views.py:284
+#: services/web/apps/main/config/views.py:23
+#: services/web/apps/main/config/views.py:24
+msgid "Configs"
+msgstr ""
+
+#: services/web/apps/main/csv/views.py:25
+msgid "CSV Export/Import"
+msgstr ""
+
+#: services/web/apps/main/customfield/views.py:19
+#: services/web/apps/main/customfield/views.py:20
+msgid "Custom Fields"
+msgstr ""
+
+#: services/web/apps/main/customfieldenumgroup/views.py:20
+#: services/web/apps/main/customfieldenumgroup/views.py:21
+msgid "Enum Groups"
+msgstr ""
+
+#: services/web/apps/main/dbtrigger/views.py:19
+#: services/web/apps/main/dbtrigger/views.py:20
+msgid "DB Triggers"
+msgstr ""
+
+#: services/web/apps/main/desktop/views.py:284
 msgid "Failed to change credentials"
 msgstr ""
 
-#: main/apps/language/views.py:17
+#: services/web/apps/main/jsonimport/views.py:21
+#: services/web/apps/main/jsonimport/views.py:22
+msgid "JSON Import"
+msgstr ""
+
+#: services/web/apps/main/language/views.py:16
+#: services/web/apps/main/language/views.py:18
 msgid "Languages"
 msgstr ""
 
-#: main/apps/mimetype/views.py:17
+#: services/web/apps/main/mimetype/views.py:16
+#: services/web/apps/main/mimetype/views.py:18
 msgid "MIME Types"
 msgstr ""
 
-#: main/apps/user/views.py:23
+#: services/web/apps/main/notificationgroup/views.py:23
+msgid "Notification Group"
+msgstr ""
+
+#: services/web/apps/main/notificationgroup/views.py:24
+msgid "Notification Groups"
+msgstr ""
+
+#: services/web/apps/main/pool/views.py:19
+msgid "Pool"
+msgstr ""
+
+#: services/web/apps/main/pool/views.py:20
+msgid "Pools"
+msgstr ""
+
+#: services/web/apps/main/prefixtable/views.py:22
+msgid "Prefix Table"
+msgstr ""
+
+#: services/web/apps/main/prefixtable/views.py:23
+msgid "Prefix Tables"
+msgstr ""
+
+#: services/web/apps/main/pyrule/views.py:20
+#: services/web/apps/main/pyrule/views.py:22
+msgid "PyRule"
+msgstr ""
+
+#: services/web/apps/main/refbook/views.py:20
+msgid "Reference Books"
+msgstr ""
+
+#: services/web/apps/main/reportbackups/views.py:16
+msgid "Backup Status"
+msgstr ""
+
+#: services/web/apps/main/reportdbsummary/views.py:14
+msgid "Database Summary"
+msgstr ""
+
+#: services/web/apps/main/reportloc/views.py:20
+msgid "Lines Of Code"
+msgstr ""
+
+#: services/web/apps/main/reportsystemversion/views.py:20
+msgid "System Version"
+msgstr ""
+
+#: services/web/apps/main/reporttaggedmodels/views.py:18
+msgid "Tagged Models"
+msgstr ""
+
+#: services/web/apps/main/resourcestate/views.py:19
+#: services/web/apps/main/resourcestate/views.py:20
+msgid "Resource States"
+msgstr ""
+
+#: services/web/apps/main/schedule/views.py:82
+msgid "Schedules"
+msgstr ""
+
+#: services/web/apps/main/search/views.py:20
+#: services/web/apps/main/search/views.py:21
+msgid "Search"
+msgstr ""
+
+#: services/web/apps/ip/ipam/views.py:475
+#: services/web/apps/ip/ipam/views.py:668
+#: services/web/apps/ip/ipam/views.py:860
+#: services/web/apps/main/style/views.py:20
+msgid "Style"
+msgstr ""
+
+#: services/web/apps/main/style/views.py:21
+msgid "Styles"
+msgstr ""
+
+#: services/web/apps/main/sync/views.py:25
+#: services/web/apps/main/sync/views.py:26
+msgid "Sync"
+msgstr ""
+
+#: services/web/apps/main/systemnotification/views.py:19
+#: services/web/apps/main/systemnotification/views.py:20
+msgid "System Notifications"
+msgstr ""
+
+#: services/web/apps/main/systemtemplate/views.py:19
+#: services/web/apps/main/systemtemplate/views.py:20
+msgid "System Templates"
+msgstr ""
+
+#: services/web/apps/main/template/views.py:18
+#: services/web/apps/main/template/views.py:19
+msgid "Templates"
+msgstr ""
+
+#: services/web/apps/main/timepattern/views.py:24
+msgid "Time Pattern"
+msgstr ""
+
+#: services/web/apps/main/timepattern/views.py:25
+msgid "Time Patterns"
+msgstr ""
+
+#: services/web/apps/main/update/views.py:20
+msgid "Update"
+msgstr ""
+
+#: services/web/apps/main/user/views.py:23
 msgid "Username"
 msgstr ""
 
-#: main/apps/user/views.py:24
+#: services/web/apps/main/user/views.py:24
 msgid "Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"
 msgstr ""
 
-#: main/apps/user/views.py:25
+#: services/web/apps/main/user/views.py:25
 msgid "This value must contain only letters, digits and @/./+/-/_."
 msgstr ""
 
-#: main/apps/user/views.py:26
+#: services/web/apps/main/user/views.py:26
 msgid "Password"
 msgstr ""
 
-#: main/apps/user/views.py:27
+#: services/web/apps/main/user/views.py:27
 msgid ""
 "Raw passwords are not stored, so there is no way to see this user's "
 "password, but you can change the password using <a "
 "href=\"password/\">this form</a>."
 msgstr ""
 
-#: main/apps/user/views.py:58
+#: services/web/apps/main/user/views.py:58
 msgid "Personal info"
 msgstr ""
 
-#: main/apps/user/views.py:59
+#: services/web/apps/main/user/views.py:59
 msgid "User category"
 msgstr ""
 
-#: main/apps/user/views.py:60
+#: services/web/apps/main/group/views.py:65
+#: services/web/apps/main/user/views.py:60
 msgid "Groups"
 msgstr ""
 
-#: main/apps/group/views.py:50 main/apps/user/views.py:61
+#: services/web/apps/main/group/views.py:51
+#: services/web/apps/main/user/views.py:61
 msgid "Access"
 msgstr ""
 
-#: main/apps/user/views.py:62
+#: services/web/apps/main/user/views.py:62
 msgid "Important dates"
 msgstr ""
 
-#: main/apps/userprofile/views.py:25
+#: services/web/apps/main/user/views.py:74
+msgid "Users"
+msgstr ""
+
+#: services/web/apps/main/userprofile/views.py:25
 msgid "User Profile"
+msgstr ""
+
+#: services/web/apps/main/welcome/views.py:18
+msgid "Welcome"
+msgstr ""
+
+#: services/web/apps/maintainance/maintainance/views.py:19
+#: services/web/apps/maintainance/maintainance/views.py:20
+msgid "Maintainance"
+msgstr ""
+
+#: services/web/apps/maintainance/maintainancetype/views.py:19
+msgid "Maintainance Type"
+msgstr ""
+
+#: services/web/apps/maintainance/maintainancetype/views.py:20
+msgid "Maintainance Types"
+msgstr ""
+
+#: services/web/apps/peer/asset/views.py:21
+#: services/web/apps/peer/asset/views.py:22
+msgid "AS Sets"
+msgstr ""
+
+#: services/web/apps/peer/community/views.py:19
+#: services/web/apps/peer/community/views.py:20
+msgid "Communities"
+msgstr ""
+
+#: services/web/apps/peer/communitytype/views.py:19
+#: services/web/apps/peer/communitytype/views.py:20
+msgid "Community Types"
+msgstr ""
+
+#: services/web/apps/peer/maintainer/views.py:21
+#: services/web/apps/peer/maintainer/views.py:22
+msgid "Maintainers"
+msgstr ""
+
+#: services/web/apps/peer/organisation/views.py:19
+#: services/web/apps/peer/organisation/views.py:20
+msgid "Organisations"
+msgstr ""
+
+#: services/web/apps/peer/peer/views.py:24
+#: services/web/apps/peer/peer/views.py:25
+msgid "Peers"
+msgstr ""
+
+#: services/web/apps/peer/peergroup/views.py:19
+#: services/web/apps/peer/peergroup/views.py:20
+msgid "Peer Groups"
+msgstr ""
+
+#: services/web/apps/cm/errortype/views.py:20
+#: services/web/apps/cm/objectnotify/views.py:24
+#: services/web/apps/cm/validationpolicy/views.py:20
+#: services/web/apps/cm/validationrule/views.py:22
+#: services/web/apps/crm/subscriberprofile/views.py:20
+#: services/web/apps/crm/supplier/views.py:20
+#: services/web/apps/crm/supplierprofile/views.py:20
+#: services/web/apps/fm/alarmclass/views.py:21
+#: services/web/apps/fm/alarmclassconfig/views.py:20
+#: services/web/apps/fm/alarmescalation/views.py:20
+#: services/web/apps/fm/alarmseverity/views.py:20
+#: services/web/apps/fm/alarmtrigger/views.py:20
+#: services/web/apps/fm/classificationrule/views.py:28
+#: services/web/apps/fm/eventclass/views.py:20
+#: services/web/apps/fm/eventtrigger/views.py:20
+#: services/web/apps/fm/ignoreeventrule/views.py:21
+#: services/web/apps/fm/ignorepattern/views.py:21
+#: services/web/apps/fm/mibpreference/views.py:21
+#: services/web/apps/fm/oidalias/views.py:21
+#: services/web/apps/fm/ttsystem/views.py:20
+#: services/web/apps/gis/area/views.py:20
+#: services/web/apps/gis/building/views.py:28
+#: services/web/apps/gis/division/views.py:20
+#: services/web/apps/gis/layer/views.py:22
+#: services/web/apps/gis/overlay/views.py:21
+#: services/web/apps/gis/street/views.py:21
+#: services/web/apps/inv/capability/views.py:21
+#: services/web/apps/inv/connectionrule/views.py:22
+#: services/web/apps/inv/connectiontype/views.py:22
+#: services/web/apps/inv/coverage/views.py:23
+#: services/web/apps/inv/firmware/views.py:20
+#: services/web/apps/inv/firmwarepolicy/views.py:20
+#: services/web/apps/inv/interfaceclassificationrule/views.py:20
+#: services/web/apps/inv/interfaceprofile/views.py:20
+#: services/web/apps/inv/modelinterface/views.py:20
+#: services/web/apps/inv/modelmapping/views.py:20
+#: services/web/apps/inv/networksegment/views.py:21
+#: services/web/apps/inv/objectmodel/views.py:24
+#: services/web/apps/inv/technology/views.py:19
+#: services/web/apps/inv/vendor/views.py:21
+#: services/web/apps/ip/addressrange/views.py:20
+#: services/web/apps/ip/ippool/views.py:21
+#: services/web/apps/ip/prefixaccess/views.py:20
+#: services/web/apps/ip/routeimport/views.py:72
+#: services/web/apps/ip/vrfgroup/views.py:20
+#: services/web/apps/main/config/views.py:24
+#: services/web/apps/main/customfield/views.py:20
+#: services/web/apps/main/customfieldenumgroup/views.py:21
+#: services/web/apps/main/dbtrigger/views.py:20
+#: services/web/apps/main/group/views.py:65
+#: services/web/apps/main/jsonimport/views.py:22
+#: services/web/apps/main/language/views.py:18
+#: services/web/apps/main/mimetype/views.py:18
+#: services/web/apps/main/notificationgroup/views.py:24
+#: services/web/apps/main/pool/views.py:20
+#: services/web/apps/main/prefixtable/views.py:23
+#: services/web/apps/main/pyrule/views.py:22
+#: services/web/apps/main/resourcestate/views.py:20
+#: services/web/apps/main/schedule/views.py:82
+#: services/web/apps/main/style/views.py:21
+#: services/web/apps/main/sync/views.py:26
+#: services/web/apps/main/systemnotification/views.py:20
+#: services/web/apps/main/systemtemplate/views.py:20
+#: services/web/apps/main/template/views.py:19
+#: services/web/apps/main/timepattern/views.py:25
+#: services/web/apps/main/user/views.py:74
+#: services/web/apps/maintainance/maintainancetype/views.py:20
+#: services/web/apps/peer/communitytype/views.py:20
+#: services/web/apps/peer/maintainer/views.py:22
+#: services/web/apps/peer/organisation/views.py:20
+#: services/web/apps/peer/peergroup/views.py:20
+#: services/web/apps/peer/peeringpoint/views.py:20
+#: services/web/apps/peer/person/views.py:21
+#: services/web/apps/peer/rir/views.py:20
+#: services/web/apps/pm/metrictype/views.py:21
+#: services/web/apps/sa/action/views.py:20
+#: services/web/apps/sa/actioncommands/views.py:22
+#: services/web/apps/sa/administrativedomain/views.py:20
+#: services/web/apps/sa/authprofile/views.py:20
+#: services/web/apps/sa/commandsnippet/views.py:20
+#: services/web/apps/sa/groupaccess/views.py:20
+#: services/web/apps/sa/managedobjectprofile/views.py:20
+#: services/web/apps/sa/managedobjectselector/views.py:22
+#: services/web/apps/sa/mrtconfig/views.py:20
+#: services/web/apps/sa/objectnotification/views.py:20
+#: services/web/apps/sa/profilecheckrule/views.py:20
+#: services/web/apps/sa/serviceprofile/views.py:20
+#: services/web/apps/sa/terminationgroup/views.py:41
+#: services/web/apps/sa/useraccess/views.py:20
+#: services/web/apps/support/account/views.py:21
+#: services/web/apps/vc/vcbindfilter/views.py:20
+#: services/web/apps/vc/vcdomain/views.py:20
+#: services/web/apps/vc/vcfilter/views.py:21
+#: services/web/apps/vc/vctype/views.py:20
+msgid "Setup"
+msgstr ""
+
+#: services/web/apps/peer/peeringpoint/views.py:19
+#: services/web/apps/peer/peeringpoint/views.py:20
+msgid "Peering Points"
+msgstr ""
+
+#: services/web/apps/peer/person/views.py:20
+msgid "Persons/Roles"
+msgstr ""
+
+#: services/web/apps/peer/person/views.py:21
+msgid "Persons"
+msgstr ""
+
+#: services/web/apps/peer/prefixlistbuilder/views.py:41
+#: services/web/apps/peer/prefixlistbuilder/views.py:42
+msgid "Prefix List Builder"
+msgstr ""
+
+#: services/web/apps/peer/reportcone/views.py:17
+msgid "Cone Analysis"
+msgstr ""
+
+#: services/web/apps/peer/rir/views.py:19
+msgid "RIR"
+msgstr ""
+
+#: services/web/apps/peer/rir/views.py:20
+msgid "RIRs"
+msgstr ""
+
+#: services/web/apps/pm/ddash/views.py:20
+msgid "Dynamic Dashboard"
+msgstr ""
+
+#: services/web/apps/pm/metrictype/views.py:20
+msgid "Metric Type"
+msgstr ""
+
+#: services/web/apps/pm/metrictype/views.py:21
+msgid "Metric Types"
+msgstr ""
+
+#: services/web/apps/ip/ipam/views.py:453
+#: services/web/apps/ip/ipam/views.py:455
+#: services/web/apps/ip/ipam/views.py:643
+#: services/web/apps/ip/ipam/views.py:645
+#: services/web/apps/ip/ipam/views.py:831
+#: services/web/apps/ip/ipam/views.py:833
+#: services/web/apps/project/project/views.py:22
+msgid "Project"
+msgstr ""
+
+#: services/web/apps/project/project/views.py:23
+msgid "Projects"
+msgstr ""
+
+#: services/web/apps/sa/action/views.py:19
+msgid "Action"
+msgstr ""
+
+#: services/web/apps/sa/action/views.py:20
+msgid "Actions"
+msgstr ""
+
+#: services/web/apps/sa/actioncommands/views.py:21
+msgid "Action Command"
+msgstr ""
+
+#: services/web/apps/sa/actioncommands/views.py:22
+msgid "Action Commands"
+msgstr ""
+
+#: services/web/apps/sa/administrativedomain/views.py:19
+#: services/web/apps/sa/administrativedomain/views.py:20
+msgid "Administrative Domains"
+msgstr ""
+
+#: services/web/apps/sa/authprofile/views.py:19
+msgid "Auth Profile"
+msgstr ""
+
+#: services/web/apps/sa/authprofile/views.py:20
+msgid "Auth Profiles"
+msgstr ""
+
+#: services/web/apps/sa/commandsnippet/views.py:19
+#: services/web/apps/sa/commandsnippet/views.py:20
+msgid "Command Snippets"
+msgstr ""
+
+#: services/web/apps/sa/getnow/views.py:23
+#: services/web/apps/sa/getnow/views.py:24
+msgid "Get Now"
+msgstr ""
+
+#: services/web/apps/sa/groupaccess/views.py:19
+#: services/web/apps/sa/groupaccess/views.py:20
+msgid "Group Access"
+msgstr ""
+
+#: services/web/apps/sa/macreport/views.py:88
+#: services/web/apps/sa/macreport/views.py:89
+msgid "MAC Report"
+msgstr ""
+
+#: services/web/apps/sa/managedobject/views.py:57
+#: services/web/apps/sa/managedobject/views.py:58
+msgid "Managed Objects"
+msgstr ""
+
+#: services/web/apps/sa/managedobjectprofile/views.py:19
+msgid "Managed Object Profile"
+msgstr ""
+
+#: services/web/apps/sa/managedobjectprofile/views.py:20
+msgid "Managed Object Profiles"
+msgstr ""
+
+#: services/web/apps/sa/managedobjectselector/views.py:21
+#: services/web/apps/sa/managedobjectselector/views.py:22
+msgid "Managed Object Selector"
+msgstr ""
+
+#: services/web/apps/sa/mrtconfig/views.py:19
+#: services/web/apps/sa/mrtconfig/views.py:20
+msgid "MRT Config"
+msgstr ""
+
+#: services/web/apps/sa/objectnotification/views.py:19
+#: services/web/apps/sa/objectnotification/views.py:20
+msgid "Object Notification"
+msgstr ""
+
+#: services/web/apps/sa/profilecheckrule/views.py:19
+msgid "Profile Check Rule"
+msgstr ""
+
+#: services/web/apps/sa/profilecheckrule/views.py:20
+msgid "Profile Check Rules"
+msgstr ""
+
+#: services/web/apps/sa/reportfailedscript/views.py:16
+msgid "Failed Scripts"
+msgstr ""
+
+#: services/web/apps/fm/reporteventsummary/views.py:22
+#: services/web/apps/sa/reportobjectsummary/views.py:18
+msgid "By Profile"
+msgstr ""
+
+#: services/web/apps/sa/reportobjectsummary/views.py:19
+msgid "By Administrative Domain"
+msgstr ""
+
+#: services/web/apps/sa/reportobjectsummary/views.py:20
+msgid "By Administrative Domain and Profile"
+msgstr ""
+
+#: services/web/apps/sa/reportobjectsummary/views.py:21
+msgid "By Tags"
+msgstr ""
+
+#: services/web/apps/sa/reportobjectsummary/views.py:22
+msgid "By Platform"
+msgstr ""
+
+#: services/web/apps/sa/reportobjectsummary/views.py:23
+msgid "By Version"
+msgstr ""
+
+#: services/web/apps/sa/reportobjectsummary/views.py:31
+msgid "Managed Objects Summary"
+msgstr ""
+
+#: services/web/apps/sa/reportobjectsummary/views.py:40
+#: services/web/apps/sa/reportobjectsummary/views.py:47
+msgid "Administrative Domain"
+msgstr ""
+
+#: services/web/apps/main/tag/views.py:19
+#: services/web/apps/sa/reportobjectsummary/views.py:54
+msgid "Tag"
+msgstr ""
+
+#: services/web/apps/sa/reportobjectsummary/views.py:74
+msgid "Version"
+msgstr ""
+
+#: services/web/apps/sa/reportobjectsummary/views.py:85
+msgid "Quantity"
+msgstr ""
+
+#: services/web/apps/sa/reportstalediscovery/views.py:21
+msgid "Stale discovery"
+msgstr ""
+
+#: services/web/apps/sa/runcommands/views.py:38
+msgid "Run commands"
+msgstr ""
+
+#: services/web/apps/sa/runcommands/views.py:39
+msgid "Run Commands"
+msgstr ""
+
+#: services/web/apps/sa/runcommands/views.py:48
+msgid "Ignore CLI errors and continue execution"
+msgstr ""
+
+#: services/web/apps/sa/runsnippet/views.py:59
+msgid "Run Snippet"
+msgstr ""
+
+#: services/web/apps/sa/serviceprofile/views.py:19
+msgid "Service Profile"
+msgstr ""
+
+#: services/web/apps/sa/serviceprofile/views.py:20
+msgid "Service Profiles"
+msgstr ""
+
+#: services/web/apps/sa/setuntagged/views.py:36
+#: services/web/apps/sa/setuntagged/views.py:37
+msgid "Set Untagged"
+msgstr ""
+
+#: services/web/apps/sa/macreport/views.py:89
+#: services/web/apps/sa/runcommands/views.py:39
+#: services/web/apps/sa/setuntagged/views.py:37
+#: services/web/apps/sa/showswitchports/views.py:47
+#: services/web/apps/sa/switchportvalidation/views.py:92
+#: services/web/apps/sa/versioninventory/views.py:88
+msgid "Tasks"
+msgstr ""
+
+#: services/web/apps/sa/setuntagged/views.py:44
+msgid "Comma-separated list of interfaces"
+msgstr ""
+
+#: services/web/apps/sa/showswitchports/views.py:46
+#: services/web/apps/sa/showswitchports/views.py:47
+msgid "Show Switchports"
+msgstr ""
+
+#: services/web/apps/sa/switchportvalidation/views.py:91
+#: services/web/apps/sa/switchportvalidation/views.py:92
+msgid "Switchport Validation"
+msgstr ""
+
+#: services/web/apps/sa/terminationgroup/views.py:40
+msgid "Termination Group"
+msgstr ""
+
+#: services/web/apps/sa/terminationgroup/views.py:41
+msgid "Termination Groups"
+msgstr ""
+
+#: services/web/apps/sa/useraccess/views.py:19
+#: services/web/apps/sa/useraccess/views.py:20
+msgid "User Access"
+msgstr ""
+
+#: services/web/apps/sa/versioninventory/views.py:87
+#: services/web/apps/sa/versioninventory/views.py:88
+msgid "Version Inventory"
+msgstr ""
+
+#: services/web/apps/support/account/views.py:20
+#: services/web/apps/support/account/views.py:21
+msgid "Account"
+msgstr ""
+
+#: services/web/apps/support/crashinfo/views.py:21
+#: services/web/apps/support/crashinfo/views.py:22
+msgid "Crashinfo"
+msgstr ""
+
+#: services/web/apps/ip/ipam/views.py:650 services/web/apps/vc/vc/views.py:27
+msgid "VC"
+msgstr ""
+
+#: services/web/apps/vc/vc/views.py:28
+msgid "Virtual Circuits"
+msgstr ""
+
+#: services/web/apps/vc/vcbindfilter/views.py:19
+#: services/web/apps/vc/vcbindfilter/views.py:20
+msgid "VC Bind Filters"
+msgstr ""
+
+#: services/web/apps/vc/vcdomain/views.py:19
+msgid "VCDomain"
+msgstr ""
+
+#: services/web/apps/vc/vcdomain/views.py:20
+msgid "VC Domains"
+msgstr ""
+
+#: services/web/apps/vc/vcfilter/views.py:20
+msgid "VC Filter"
+msgstr ""
+
+#: services/web/apps/vc/vcfilter/views.py:21
+msgid "VC Filters"
+msgstr ""
+
+#: services/web/apps/vc/vctype/views.py:19
+msgid "VCType"
+msgstr ""
+
+#: services/web/apps/vc/vctype/views.py:20
+msgid "VC Types"
 msgstr ""
 

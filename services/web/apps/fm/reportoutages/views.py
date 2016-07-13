@@ -17,6 +17,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.lib.dateutils import total_seconds
 from noc.lib.nosql import Q
+from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):
@@ -28,7 +29,7 @@ class ReportForm(forms.Form):
 
 
 class ReportOutagesApplication(SimpleReport):
-    title = "Outages"
+    title = _("Outages")
 
     form = ReportForm
 

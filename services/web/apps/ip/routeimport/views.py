@@ -17,6 +17,7 @@ from noc.ip.models import Prefix, VRF
 from noc.lib.widgets import LabelWidget
 from noc.lib.validators import check_prefix
 from noc.lib.ip import IP
+from noc.core.translation import ugettext as _
 
 
 def reduce_route(task):
@@ -68,7 +69,7 @@ class RouteImportAppplication(SAApplication):
     Route import application
     """
     title = "Import from routing table"
-    menu = "Setup | Import Connected"
+    menu = [_("Setup"), _("Import Connected")]
     reduce_task = reduce_route
     map_task = "get_interfaces"
     timeout = 0  # Auto-detect

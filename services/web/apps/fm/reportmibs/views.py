@@ -9,10 +9,11 @@
 # NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.fm.models import MIB, MIBData
+from noc.core.translation import ugettext as _
 
 
 class ReportreportMIBs(SimpleReport):
-    title="Installed MIBs"
+    title = _("Installed MIBs")
     def get_data(self,**kwargs):
         data = []  # Mib, Last Updated, Entries, Depends, Used by
         for m in MIB.objects.order_by("name"):

@@ -10,14 +10,15 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmclasscategory import AlarmClassCategory
+from noc.core.translation import ugettext as _
 
 
 class AlarmClassApplication(ExtDocApplication):
     """
     AlarmClass application
     """
-    title = "Alarm Class"
-    menu = "Setup | Alarm Classes"
+    title = _("Alarm Class")
+    menu = [_("Setup"), _("Alarm Classes")]
     model = AlarmClass
     parent_model = AlarmClassCategory
     parent_field = "parent"

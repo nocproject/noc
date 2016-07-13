@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.gis.models.division import Division
+from noc.core.translation import ugettext as _
 
 
 class DivisionApplication(ExtDocApplication):
     """
     Division application
     """
-    title = "Division"
-    menu = "Setup | Divisions"
+    title = _("Division")
+    menu = [_("Setup"), _("Divisions")]
     model = Division
     parent_field = "parent"
     query_fields = ["name__icontains"]

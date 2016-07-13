@@ -2,12 +2,13 @@
 ##----------------------------------------------------------------------
 ## Show Switchports
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app.saapplication import SAApplication
+from noc.core.translation import ugettext as _
 
 
 ##
@@ -42,7 +43,7 @@ def reduce_switchport(task):
 
 
 class ShowSwithportsApplication(SAApplication):
-    title = "Show Switchports"
-    menu = "Tasks | Show Switchports"
+    title = _("Show Switchports")
+    menu = [_("Tasks"), _("Show Switchports")]
     map_task = "get_switchport"
     reduce_task = reduce_switchport

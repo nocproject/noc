@@ -14,14 +14,15 @@ from noc.lib.app import ExtApplication, view
 from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job
+from noc.core.translation import ugettext as _
 
 
 class InvMonitorApplication(ExtApplication):
     """
     fm.monitor application
     """
-    title = "Monitor"
-    menu = "Monitor"
+    title = _("Monitor")
+    menu = _("Monitor")
 
     @view(url="^$", method=["GET"], access="read", api=True)
     def api_data(self, request):

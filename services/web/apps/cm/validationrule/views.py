@@ -11,14 +11,15 @@ from noc.lib.app import ExtDocApplication, view
 from noc.cm.models.validationrule import ValidationRule
 from noc.cm.models.objectfact import ObjectFact
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.translation import ugettext as _
 
 
 class ValidationRuleApplication(ExtDocApplication):
     """
     ValidationRule application
     """
-    title = "Validation Rule"
-    menu = "Setup | Validation Rules"
+    title = _("Validation Rule")
+    menu = [_("Setup"), _("Validation Rules")]
     model = ValidationRule
 
     def field_scope(self, o):

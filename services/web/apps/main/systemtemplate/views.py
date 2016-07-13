@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.main.models import SystemTemplate
+from noc.core.translation import ugettext as _
 
 
 class SystemTemplateApplication(ExtModelApplication):
     """
     SystemTemplate application
     """
-    title = "System Templates"
-    menu = "Setup | System Templates"
+    title = _("System Templates")
+    menu = [_("Setup"), _("System Templates")]
     model = SystemTemplate
     query_fields = ["name__icontains"]
 

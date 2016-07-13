@@ -10,14 +10,15 @@
 from noc.lib.app import ExtModelApplication, view
 from noc.main.models.style import Style
 from noc.sa.interfaces.base import ColorParameter
+from noc.core.translation import ugettext as _
 
 
 class StyleApplication(ExtModelApplication):
     """
     Style application
     """
-    title = "Style"
-    menu = "Setup | Styles"
+    title = _("Style")
+    menu = [_("Setup"), _("Styles")]
     model = Style
     icon = "icon_style"
 

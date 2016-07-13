@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.main.models.audittrail import AuditTrail
+from noc.core.translation import ugettext as _
 
 
 class AuditTrailApplication(ExtDocApplication):
     """
     AuditTrails application
     """
-    title = "Audit Trail"
-    menu = "Audit Trail"
+    title = _("Audit Trail")
+    menu = _("Audit Trail")
     model = AuditTrail
     query_fields = ["model_id", "user"]
 

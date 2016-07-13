@@ -10,13 +10,14 @@
 from mercurial import ui, localrepo
 ## NOC modules
 from noc.lib.app import ExtApplication, view
+from noc.core.translation import ugettext as _
 
 
 class UpdateApplication(ExtApplication):
     """
     main.update application
     """
-    title = "Update"
+    title = _("Update")
 
     def get_url(self, request):
         proto = "https" if request.is_secure() else "http"

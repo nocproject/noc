@@ -10,14 +10,15 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models import IgnorePattern
 from noc.fm.models import get_event
+from noc.core.translation import ugettext as _
 
 
 class IgnorePatternApplication(ExtDocApplication):
     """
     IgnorePattern application
     """
-    title = "Ignore Patterns"
-    menu = "Setup | Ignore Patterns"
+    title = _("Ignore Patterns")
+    menu = [_("Setup"), _("Ignore Patterns")]
     model = IgnorePattern
 
     @view(url="^from_event/(?P<event_id>[0-9a-f]{24})/$",

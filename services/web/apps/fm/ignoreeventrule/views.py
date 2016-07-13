@@ -10,14 +10,15 @@
 from noc.lib.app import ExtModelApplication, view
 from noc.fm.models import IgnoreEventRules
 from noc.sa.interfaces.base import REParameter
+from noc.core.translation import ugettext as _
 
 
 class IgnoreEventRuleApplication(ExtModelApplication):
     """
     IgnoreEventRule application
     """
-    title = "Ignore Event Rules"
-    menu = "Setup | Ignore Event Rules"
+    title = _("Ignore Event Rules")
+    menu = [_("Setup"), _("Ignore Event Rules")]
     model = IgnoreEventRules
 
     clean_fields = {

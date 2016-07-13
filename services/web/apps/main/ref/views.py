@@ -21,6 +21,7 @@ from noc import settings
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.cm.validators.base import validator_registry
 from noc.core.profile.loader import loader as profile_loader
+from noc.core.translation import ugettext as _
 
 
 class RefAppplication(ExtApplication):

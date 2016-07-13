@@ -9,6 +9,7 @@ from noc.lib.app.saapplication import SAApplication
 from django import forms
 from noc.sa.interfaces.base import VLANIDParameter,MACAddressParameter
 from noc.vc.models import VCDomain
+from noc.core.translation import ugettext as _
 ##
 ##
 ##
@@ -84,8 +85,8 @@ def reduce_macreport(task,vc_domain=None):
 ##
 ##
 class MACReportAppplication(SAApplication):
-    title="MAC Report"
-    menu="Tasks | MAC Report"
+    title=_("MAC Report")
+    menu = [_("Tasks"), _("MAC Report")]
     reduce_task=reduce_macreport
     map_task="get_mac_address_table"
     class MACReportForm(forms.Form):

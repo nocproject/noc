@@ -27,14 +27,15 @@ from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
 from noc.maintainance.models.maintainance import Maintainance
 from noc.sa.models.servicesummary import SummaryItem
 from noc.inv.models.networksegment import NetworkSegment
+from noc.core.translation import ugettext as _
 
 
 class AlarmApplication(ExtApplication):
     """
     fm.alarm application
     """
-    title = "Alarm"
-    menu = "Alarms"
+    title = _("Alarm")
+    menu = _("Alarms")
     glyph = "exclamation-triangle"
 
     implied_permissions = {

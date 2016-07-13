@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## vc.vc application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,16 +17,16 @@ from noc.inv.models.subinterface import SubInterface
 from noc.sa.interfaces.base import DictParameter, ModelParameter, ListOfParameter,\
     IntParameter, StringParameter
 from noc.vc.caches import vcinterfacescount, vcprefixes
+from noc.core.translation import ugettext as _
 
 
 class VCApplication(ExtModelApplication):
     """
     VC application
     """
-    title = "VC"
-    menu = "Virtual Circuits"
+    title = _("VC")
+    menu = _("Virtual Circuits")
     model = VC
-    icon = "icon_link"
 
     query_fields = ["name", "description"]
     query_condition = "icontains"

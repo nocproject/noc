@@ -15,10 +15,11 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.lib.dateutils import total_seconds
 from noc.lib.nosql import Q
+from noc.core.translation import ugettext as _
 
 
 class ReportAvailabilityApplication(SimpleReport):
-    title = "Availability"
+    title = _("Availability")
 
     def get_availability(self, days):
         now = datetime.datetime.now()

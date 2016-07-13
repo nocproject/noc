@@ -20,14 +20,15 @@ from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from noc.lib.text import split_alnum
+from noc.core.translation import ugettext as _
 
 
 class InterfaceAppplication(ExtApplication):
     """
     inv.interface application
     """
-    title = "Interfaces"
-    menu = "Interfaces"
+    title = _("Interfaces")
+    menu = _("Interfaces")
 
     mrt_config = {
         "get_mac": {

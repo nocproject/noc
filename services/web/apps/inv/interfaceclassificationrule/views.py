@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
+from noc.core.translation import ugettext as _
 
 
 class InterfaceClassificationRuleApplication(ExtDocApplication):
     """
     InterfaceClassificationRule application
     """
-    title = "Interface Classification Rule"
-    menu = "Setup | Interface Classification Rules"
+    title = _("Interface Classification Rule")
+    menu = [_("Setup"), _("Interface Classification Rules")]
     model = InterfaceClassificationRule
 
     query_fields = ["name__icontains", "description__icontains"]

@@ -2,12 +2,13 @@
 ##----------------------------------------------------------------------
 ## sa.version_inventory application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app.saapplication import SAApplication
+from noc.core.translation import ugettext as _
 
 
 def reduce(task):
@@ -83,8 +84,8 @@ def reduce(task):
 
 
 class VersionInventoryApplication(SAApplication):
-    title = "Version Inventory"
-    menu = "Tasks | Version Inventory"
+    title = _("Version Inventory")
+    menu = [_("Tasks"), _("Version Inventory")]
     reduce_task = reduce
     map_task = "get_version"
     timeout = 0

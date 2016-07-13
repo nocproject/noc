@@ -17,14 +17,15 @@ from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.lib.validators import is_objectid, is_oid
 from noc.fm.models import get_event
+from noc.core.translation import ugettext as _
 
 
 class EventClassificationRuleApplication(ExtDocApplication):
     """
     EventClassificationRule application
     """
-    title = "Classification Rule"
-    menu = "Setup | Classification Rules"
+    title = _("Classification Rule")
+    menu = [_("Setup"), _("Classification Rules")]
     model = EventClassificationRule
     parent_model = EventClassificationRuleCategory
     parent_field = "parent"

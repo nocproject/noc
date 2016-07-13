@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Parallel command execution
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from django import forms
 ## NOC modules
 from noc.lib.app.saapplication import SAApplication
+from noc.core.translation import ugettext as _
 
 
 ##
@@ -34,8 +35,8 @@ def reduce_commands(task, commands):
 
 
 class RunCommandsApplication(SAApplication):
-    title = "Run commands"
-    menu = "Tasks | Run Commands"
+    title = _("Run commands")
+    menu = [_("Tasks"), _("Run Commands")]
     reduce_task = reduce_commands
     map_task = "commands"
     timeout = None
@@ -44,7 +45,7 @@ class RunCommandsApplication(SAApplication):
         commands = forms.CharField(widget=forms.Textarea,
                                    help_text="Enter a list of commands to execute. One command per a line.")
         ignore_cli_errors = forms.BooleanField(required=False,
-            help_text="Ignore CLI errors and continue execution")
+            help_text=_("Ignore CLI errors and continue execution"))
         batch = forms.BooleanField(
             required=False,
             help_text="Run as single command"

@@ -10,10 +10,11 @@
 from noc.lib.app.simplereport import SimpleReport, SectionRow
 from noc.inv.models.vendor import Vendor
 from noc.inv.models.objectmodel import ObjectModel
+from noc.core.translation import ugettext as _
 
 
 class ReportCompareApplication(SimpleReport):
-    title = "Compare Specs"
+    title = _("Compare Specs")
 
     def get_data(self, **kwargs):
         data = []

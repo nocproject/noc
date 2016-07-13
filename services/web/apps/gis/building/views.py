@@ -12,6 +12,7 @@ from noc.lib.app.docinline import DocInline
 from noc.gis.models.division import Division
 from noc.gis.models.building import Building
 from noc.gis.models.address import Address
+from noc.core.translation import ugettext as _
 
 
 class AddressInline(DocInline):
@@ -23,8 +24,8 @@ class BuildingApplication(ExtDocApplication):
     """
     Building application
     """
-    title = "Building"
-    menu = "Setup | Buildings"
+    title = _("Building")
+    menu = [_("Setup"), _("Buildings")]
     glyph = "building"
     model = Building
     parent_model = Division

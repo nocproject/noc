@@ -14,14 +14,15 @@ from noc.main.models.timepattern import TimePattern
 from noc.main.models.timepatternterm import TimePatternTerm
 from noc.lib.app.modelinline import ModelInline
 from noc.sa.interfaces.base import ModelParameter, ListOfParameter, StringParameter
+from noc.core.translation import ugettext as _
 
 
 class TimePatternApplication(ExtModelApplication):
     """
     TimePattern application
     """
-    title = "Time Pattern"
-    menu = "Setup | Time Patterns"
+    title = _("Time Pattern")
+    menu = [_("Setup"), _("Time Patterns")]
     model = TimePattern
     glyph = "clock-o"
 

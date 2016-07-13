@@ -11,14 +11,15 @@ from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.connectiontype import ConnectionType
 from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
+from noc.core.translation import ugettext as _
 
 
 class ConnectionTypeApplication(ExtDocApplication):
     """
     ConnectionType application
     """
-    title = "Connection Types"
-    menu = "Setup | Connection Types"
+    title = _("Connection Types")
+    menu = [_("Setup"), _("Connection Types")]
     model = ConnectionType
     parent_model = DocCategory
     parent_field = "parent"

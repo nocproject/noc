@@ -10,13 +10,14 @@
 from noc.lib.app.extapplication import ExtApplication, view
 from dashboards.base import BaseDashboard
 from dashboards.managedobject import ManagedObjectDashboard
+from noc.core.translation import ugettext as _
 
 
 class DynamicDashboardApplication(ExtApplication):
     """
     MetricType application
     """
-    title = "Dynamic Dashboard"
+    title = _("Dynamic Dashboard")
 
     dashboards = {
         "managedobject": ManagedObjectDashboard

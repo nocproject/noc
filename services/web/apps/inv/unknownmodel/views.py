@@ -17,8 +17,8 @@ class UnknownModelApplication(ExtDocApplication):
     """
     UnknownModel application
     """
-    title = "Unknown Models"
-    menu = "Unknown Models"
+    title = _("Unknown Models")
+    menu = _("Unknown Models")
     model = UnknownModel
 
     query_condition = "icontains"

@@ -8,11 +8,12 @@
 from noc.lib.app.simplereport import SimpleReport,Report
 from noc.settings import config
 import os,datetime,stat
+from noc.core.translation import ugettext as _
 ##
 ##
 ##
 class ReportBackups(SimpleReport):
-    title="Backup Status"
+    title = _("Backup Status")
     def get_data(self,**kwargs):
         data=[]
         bd=config.get("path","backup_dir")

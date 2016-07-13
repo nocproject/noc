@@ -2,12 +2,13 @@
 ##----------------------------------------------------------------------
 ## Switchport Validation Application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app.saapplication import SAApplication
+from noc.core.translation import ugettext as _
 
 
 ##
@@ -87,7 +88,7 @@ def switchport_validation_reduce(task):
 ##
 ##
 class SwitchportValidationAppplication(SAApplication):
-    title = "Switchport Validation"
-    menu = "Tasks | Switchport Validation"
+    title = _("Switchport Validation")
+    menu = [_("Tasks"), _("Switchport Validation")]
     reduce_task = switchport_validation_reduce
     map_task = ["get_mac_address_table", "get_switchport"]

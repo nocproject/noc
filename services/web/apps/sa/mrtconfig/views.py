@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.sa.models.mrtconfig import MRTConfig
+from noc.core.translation import ugettext as _
 
 
 class MRTConfigApplication(ExtDocApplication):
     """
     MRTConfig application
     """
-    title = "MRT Config"
-    menu = "Setup | MRT Config"
+    title = _("MRT Config")
+    menu = [_("Setup"), _("MRT Config")]
     model = MRTConfig

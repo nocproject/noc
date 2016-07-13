@@ -11,14 +11,15 @@ from django.template import Template
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.sa.models.actioncommands import ActionCommands
+from noc.core.translation import ugettext as _
 
 
 class ActionCommandsApplication(ExtDocApplication):
     """
     ActionCommands application
     """
-    title = "Action Command"
-    menu = "Setup | Action Commands"
+    title = _("Action Command")
+    menu = [_("Setup"), _("Action Commands")]
     model = ActionCommands
 
     def clean(self, data):

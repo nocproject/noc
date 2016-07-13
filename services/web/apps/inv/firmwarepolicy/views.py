@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
+from noc.core.translation import ugettext as _
 
 
 class FirmwarePolicyApplication(ExtDocApplication):
     """
     FirmwarePolicy application
     """
-    title = "FirmwarePolicy"
-    menu = "Setup | Firmware Policy"
+    title = _("Firmware Policy")
+    menu = [_("Setup"), _("Firmware Policy")]
     model = FirmwarePolicy

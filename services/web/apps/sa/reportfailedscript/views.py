@@ -9,10 +9,11 @@
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from sa.models.failedscriptlog import FailedScriptLog
+from noc.core.translate import ugettext as _
 
 
 class ReportObjectsSummary(SimpleReport):
-    title = "Failed Scripts"
+    title = _("Failed Scripts")
 
     def get_data(self, **kwargs):
         data = [

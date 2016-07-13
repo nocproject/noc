@@ -6,11 +6,12 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from noc.lib.app.simplereport import SimpleReport,TableColumn
+from noc.core.translation import ugettext as _
 ##
 ##
 ##
 class ReportreportDBSummary(SimpleReport):
-    title="Database Summary"
+    title = _("Database Summary")
     def get_data(self,**kwargs):
         return self.from_query(title=self.title,
             columns=["Table","Tablespace",

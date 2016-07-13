@@ -25,14 +25,15 @@ from noc.sa.models.selectorcache import SelectorCache
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter)
 from noc.lib.escape import json_escape
+from noc.core.translation import ugettext as _
 
 
 class EventApplication(ExtApplication):
     """
     fm.event application
     """
-    title = "Events"
-    menu = "Events"
+    title = _("Events")
+    menu = _("Events")
     icon = "icon_find"
 
     model_map = {

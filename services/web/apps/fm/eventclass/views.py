@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models.eventclass import EventClass, EventClassCategory
+from noc.core.translation import ugettext as _
 
 
 class EventClassApplication(ExtDocApplication):
     """
     EventClass application
     """
-    title = "Event Class"
-    menu = "Setup | Event Classes"
+    title = _("Event Class")
+    menu = [_("Setup"), _("Event Classes")]
     model = EventClass
     parent_model = EventClassCategory
     parent_field = "parent"

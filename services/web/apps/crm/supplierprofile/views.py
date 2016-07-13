@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.crm.models.supplierprofile import SupplierProfile
+from noc.core.translation import ugettext as _
 
 
 class SupplierProfileApplication(ExtDocApplication):
     """
     SupplierProfile application
     """
-    title = "Supplier Profile"
-    menu = "Setup | Supplier Profiles"
+    title = _("Supplier Profile")
+    menu = [_("Setup"), _("Supplier Profiles")]
     model = SupplierProfile
     query_fields = ["name__icontains", "description__icontains"]
 

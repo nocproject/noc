@@ -6,15 +6,14 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.utils.translation import ugettext as _
 ## NOC modules
 from noc.lib.app import ExtModelApplication
 from noc.main.models.language import Language
+from noc.core.translation import ugettext as _
 
 
 class LanguageApplication(ExtModelApplication):
     title = _("Languages")
     model = Language
-    menu = "Setup | Languages"
+    menu = [_("Setup"), _("Languages")]
     query_fields = ["name__icontains", "native_name__icontains"]

@@ -10,14 +10,15 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models import MIBPreference
 from noc.main.models.collectioncache import CollectionCache
+from noc.core.translation import ugettext as _
 
 
 class MIBPreferenceApplication(ExtDocApplication):
     """
     MIBPreference application
     """
-    title = "MIB Preference"
-    menu = "Setup | MIB Preference"
+    title = _("MIB Preference")
+    menu = [_("Setup"), _("MIB Preference")]
     model = MIBPreference
 
     def field_is_builtin(self, o):

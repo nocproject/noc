@@ -12,7 +12,6 @@ import cStringIO
 import datetime
 import subprocess
 # Django Modules
-from django.utils.translation import ugettext_lazy as _
 from django import forms
 # NOC Modules
 from noc.lib.app import Application,HasPerm,view
@@ -21,12 +20,13 @@ from noc.ip.models import *
 from noc.lib.validators import *
 from noc.lib.forms import *
 from noc.settings import config
+from noc.core.translation import ugettext as _
 
 ##
 ## IP Block tooks
 ##
 class ToolsAppplication(Application):
-    title="Tools"
+    title = _("Tools")
     ##
     ## An index of tools available for block
     ##

@@ -8,10 +8,11 @@
 
 ## NOC modules
 from noc.lib.app import ExtApplication, view
+from noc.core.translation import ugettext as _
 
 
 class WelcomeApplication(ExtApplication):
     """
     main.welcome application
     """
-    title = "Welcome"
+    title = _("Welcome")

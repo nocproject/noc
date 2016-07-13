@@ -13,13 +13,14 @@ from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models import (ActiveEvent, EventClass,
                            NewEvent, FailedEvent, ArchivedEvent)
+from noc.core.translation import ugettext as _
 
 ## Report types
 report_types = [
-    ("class", "By Event Class"),
-    ("object", "By Managed Object"),
-    ("profile", "By Profile"),
-    ("status", "By Status")
+    ("class", _("By Event Class")),
+    ("object", _("By Managed Object")),
+    ("profile", _("By Profile")),
+    ("status", _("By Status"))
 ]
 
 
@@ -28,7 +29,7 @@ class ReportForm(forms.Form):
 
 
 class EventSummaryReport(SimpleReport):
-    title = "Event Summary"
+    title = _("Event Summary")
     form = ReportForm
 
     def get_by_event_class(self):

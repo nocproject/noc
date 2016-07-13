@@ -10,14 +10,15 @@
 from noc.lib.app import ExtApplication, view
 from noc.sa.interfaces.base import UnicodeParameter
 from noc.main.models.textindex import TextIndex
+from noc.core.translation import ugettext as _
 
 
 class SearchApplication(ExtApplication):
     """
     main.search application
     """
-    title = "Search"
-    menu = "Search"
+    title = _("Search")
+    menu = _("Search")
     glyph = "search noc-preview"
 
     @view(url="^$", method=["POST"], access="launch", api=True,

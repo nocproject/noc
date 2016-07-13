@@ -12,14 +12,15 @@ from noc.lib.app.modelinline import ModelInline
 from noc.main.models import PrefixTable, PrefixTablePrefix
 from noc.sa.interfaces.base import (IPParameter, ListOfParameter,
                                     ModelParameter)
+from noc.core.translation import ugettext as _
 
 
 class PrefixTableApplication(ExtModelApplication):
     """
     PrefixTable application
     """
-    title = "Prefix Table"
-    menu = "Setup | Prefix Tables"
+    title = _("Prefix Table")
+    menu = [_("Setup"), _("Prefix Tables")]
     model = PrefixTable
 
     prefixes = ModelInline(PrefixTablePrefix)

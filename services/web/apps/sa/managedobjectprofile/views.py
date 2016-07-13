@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.core.translation import ugettext as _
 
 
 class ManagedObjectProfileApplication(ExtModelApplication):
     """
     ManagedObjectProfile application
     """
-    title = "Managed Object Profile"
-    menu = "Setup | Managed Object Profiles"
+    title = _("Managed Object Profile")
+    menu = [_("Setup"), _("Managed Object Profiles")]
     model = ManagedObjectProfile
 
     def field_row_class(self, o):

@@ -15,14 +15,15 @@ from noc.main.models.sync import Sync
 from noc.main.models.synccache import SyncCache
 from noc.sa.interfaces.base import DateTimeParameter
 from noc.settings import config
+from noc.core.translation import ugettext as _
 
 
 class SyncApplication(ExtDocApplication):
     """
     Sync application
     """
-    title = "Sync"
-    menu = "Setup | Sync"
+    title = _("Sync")
+    menu = [_("Setup"), _("Sync")]
     glyph = "refresh"
     model = Sync
     query_fields = ["name"]

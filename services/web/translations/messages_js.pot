@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-30 11:29+0300\n"
+"POT-Creation-Date: 2016-07-14 00:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,942 +18,998 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: fm/apps/alarm/js/AlarmPanel.js:44
-msgid "Overview"
+#: ui/web/cm/validationrule/Application.js:69
+msgid "Scope"
 msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:49
-msgid "Help"
+#: ui/web/cm/validationrule/Application.js:101
+msgid "Handler"
 msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:54
-msgid "Data"
+#: ui/web/cm/validationrule/Application.js:114
+#: ui/web/cm/validationrule/Application.js:138
+msgid "Action"
 msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:69
-msgid "New message"
+#: ui/web/cm/validationrule/Application.js:35
+#: ui/web/cm/validationrule/Application.js:50
+#: ui/web/cm/validationrule/HitsPanel.js:56
+msgid "Hits"
 msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:81
-msgid "Log"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:87 fm/apps/alarm/js/AlarmPanel.js:131
-#: fm/apps/alarm/js/AlarmPanel.js:172
-msgid "Time"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:105
-msgid "Message"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:120 fm/apps/alarm/js/Application.js:398
-msgid "Events"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:137 fm/apps/alarm/js/AlarmPanel.js:184
-#: fm/apps/alarm/js/Application.js:123 fm/apps/alarm/js/Application.js:240
-msgid "Class"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:143 fm/apps/alarm/js/AlarmPanel.js:189
-msgid "Subject"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:159
-msgid "Alarms"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:178 fm/apps/alarm/js/Application.js:93
-#: fm/apps/alarm/js/Application.js:228
+#: ui/web/cm/validationrule/Application.js:148
+#: ui/web/cm/validationrule/HitsPanel.js:70 ui/web/fm/alarm/AlarmPanel.js:178
+#: ui/web/fm/alarm/Application.js:93 ui/web/fm/alarm/Application.js:228
 msgid "Object"
 msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:214
-msgid "Clear"
+#: ui/web/cm/validationrule/HitsPanel.js:75
+msgid "Address"
 msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:221
-msgid "Watch"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:229
-msgid "Set Root Cause"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:236
-msgid "Show Map"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:243
-msgid "Show Object"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:308
-msgid "Failed to get alarm"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:430
-msgid "Failed to post message"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:459
-msgid "Clear alarm?"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:460
-msgid "Please confirm the alarm is closed and must be cleared?"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:473
-msgid "Failed to clear alarm"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:493
-msgid "Failed to set watcher"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:502
-msgid "Set root cause"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:503
-msgid "Please enter root cause alarm id"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:517
-msgid "Failed to set root cause"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:55
-msgid "Toggle autoreload"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:65
-msgid "Active"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:67
-msgid "Show active alarms"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:71
-msgid "Archive"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:72
-msgid "Show archived alarms"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:82
-msgid "Adm. Domain"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:155
-msgid "Root only"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:157
-msgid "Show only root causes"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:161 fm/apps/alarm/js/Application.js:179
-msgid "All"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:162 fm/apps/alarm/js/Application.js:181
-#: fm/apps/alarm/js/Application.js:200
-msgid "Show all alarms"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:175
-msgid "Show only waiting confirmantion"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:193
-msgid "Hide maintainance"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:194
-msgid "Hide alarms covered by maintainance"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:199
-msgid "Show"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:204
-msgid "Only"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:205
-msgid "Show only alarms covered by maintainance"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:224 fm/apps/alarm/js/Application.js:269
-msgid "Filter"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:291
-msgid "By Date"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:314
-msgid "Show map"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:320
-msgid "Show object"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:334
-msgid "Time/Duration"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:344
-msgid "Object/Segment"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:354
-msgid "Address/Platform"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:374
-msgid "Subject/Class"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:385
-msgid "Summary/TT"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:631
-msgid "Total: "
-msgstr ""
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:11
-msgid "Thresholds"
-msgstr ""
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:32
-msgid "Metric"
-msgstr ""
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:42
-#: sa/apps/managedobjectprofile/js/Application.js:47
-#: sa/apps/managedobjectprofile/js/Application.js:147
-msgid "Level"
-msgstr ""
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:47
-msgid "Value"
-msgstr ""
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:53
-msgid "Condition"
-msgstr ""
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:58
-msgid "Threshold"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:49
-msgid "Global limit"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:56
-msgid "Alarm Classes"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:59
-msgid "Alarm Class"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:70
-msgid "Pre Reasons"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:73
-msgid "TT System"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:80
-msgid "Pre Reason"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:90
-msgid "Escalations"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:93
-msgid "Delay"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:99
-msgid "Adm. domain"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:103
-#: fm/apps/alarmescalation/js/Application.js:106
-msgid "Selector"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:113
-#: main/apps/userprofile/js/Application.js:51
-msgid "Time Pattern"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:119
-msgid "Notification Group"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:126
-msgid "Open Template"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:133
-msgid "Clear Template"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:140
-msgid "TT"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:174
-#: fm/apps/alarmescalation/js/Application.js:147
-msgid "Wait TT"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:154
-msgid "Stop"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:24
-msgid "Builtin"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:364
-#: fm/apps/alarmseverity/js/Application.js:31
-#: fm/apps/alarmseverity/js/Application.js:69
-msgid "Severity"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:37
-#: fm/apps/alarmseverity/js/Application.js:75
-msgid "Min. Weight"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:58
-msgid "UUID"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:81
-#: sa/apps/managedobjectprofile/js/Application.js:154
-msgid "Style"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:87
-msgid "Sound"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:93
-msgid "Volume"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:113
-msgid "JSON"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:115
-msgid "Show JSON"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:121
-#: fm/apps/alarmseverity/js/Application.js:123
-msgid "Test Sound"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:93 fm/apps/alarm/js/Application.js:133
-#: fm/apps/reportalarmdetail/js/Application.js:35
-msgid "From"
-msgstr ""
-
-#: fm/apps/alarm/js/AlarmPanel.js:99 fm/apps/alarm/js/Application.js:143
-#: fm/apps/reportalarmdetail/js/Application.js:43
-msgid "To"
-msgstr ""
-
-#: fm/apps/reportalarmdetail/js/Application.js:56
-msgid "Download"
-msgstr ""
-
-#: fm/apps/alarm/js/Application.js:113 fm/apps/alarm/js/Application.js:234
-#: inv/apps/map/js/Application.js:35
-msgid "Segment"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:61
-msgid "Reload"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:68 inv/apps/map/js/MapPanel.js:135
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:26
-msgid "Edit"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:71
-msgid "Edit map"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:78
-#: main/apps/userprofile/js/Application.js:156
-msgid "Save"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:86
-msgid "Revert"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:94
-msgid "New layout"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:149
-msgid "Show static map"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:160
-msgid "Show interface load"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:173
-msgid "Show STP topology"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:318
-msgid "Reset Layout"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:319
-msgid "Would you like to reset current layout and generate new?"
-msgstr ""
-
-#: inv/apps/map/js/MapPanel.js:129
-msgid "View Card"
-msgstr ""
-
-#: inv/apps/map/js/MapPanel.js:832
-msgid "Failed to get STP status"
-msgstr ""
-
-#: inv/apps/map/js/SelectIconForm.js:43
-msgid "Set"
-msgstr ""
-
-#: inv/apps/map/js/inspectors/LinkInspector.js:11
-msgid "Link Inspector"
-msgstr ""
-
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:11
-msgid "Object Inspector"
-msgstr ""
-
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:34
-msgid "View card"
-msgstr ""
-
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:42
-msgid "Jump to Segment"
-msgstr ""
-
-#: inv/apps/map/js/MapPanel.js:141
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:50
-msgid "Show dashboard"
-msgstr ""
-
-#: inv/apps/map/js/inspectors/SegmentInspector.js:11
-msgid "Segment Inspector"
-msgstr ""
-
-#: inv/apps/unknownmodel/js/Application.js:47
-msgid "Remove"
-msgstr ""
-
-#: main/apps/desktop/js/Application.js:140
-msgid "Starting {0}"
-msgstr ""
-
-#: main/apps/desktop/js/ChangeCredentials.js:11
-msgid "Change Password"
-msgstr ""
-
-#: main/apps/desktop/js/ChangeCredentials.js:46
-msgid "Reset"
-msgstr ""
-
-#: main/apps/desktop/js/ChangeCredentials.js:52
-msgid "Change"
-msgstr ""
-
-#: main/apps/desktop/js/ChangeCredentials.js:103
-msgid "Credentials has been changed"
-msgstr ""
-
-#: main/apps/desktop/js/ChangeCredentials.js:106
-#: main/apps/desktop/js/ChangeCredentials.js:111
-msgid "Failed to change credentials: "
-msgstr ""
-
-#: main/apps/desktop/js/HeaderPanel.js:35
-msgid "Anonymous"
-msgstr ""
-
-#: main/apps/desktop/js/HeaderPanel.js:41
-msgid "About NOC ..."
-msgstr ""
-
-#: main/apps/desktop/js/HeaderPanel.js:48
-msgid "User profile ..."
-msgstr ""
-
-#: main/apps/desktop/js/HeaderPanel.js:55
-msgid "Change password ..."
-msgstr ""
-
-#: main/apps/desktop/js/HeaderPanel.js:63
-msgid "Logout"
-msgstr ""
-
-#: main/apps/desktop/js/NavPanel.js:24
-msgid "Navigation"
-msgstr ""
-
-#: main/apps/desktop/js/NavPanel.js:34
-msgid "Switch to breadcrumb view"
-msgstr ""
-
-#: main/apps/desktop/js/WorkplacePanel.js:22
-#: main/apps/desktop/js/WorkplacePanel.js:114
-msgid "Collapse panels"
-msgstr ""
-
-#: main/apps/desktop/js/WorkplacePanel.js:108
-msgid "Expand panels"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:21
-msgid "Login"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:29
-msgid "Mail"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:33
-msgid "Language"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:58
-#: sa/apps/managedobject/js/LinksPanel.js:56
-msgid "Method"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:64
-msgid "Params"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:81
-msgid "Add"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:92
-msgid "Delete"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:139
-msgid "Notification Contacts"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:181
-msgid "Failed to load data"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:209
-msgid "Profile saved"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:211
-msgid "Changing language"
-msgstr ""
-
-#: main/apps/userprofile/js/Application.js:215
-msgid "Failed to save"
-msgstr ""
-
-#: sa/apps/managedobject/js/Application.js:320
+#: ui/web/cm/validationrule/HitsPanel.js:80
+#: ui/web/sa/managedobject/Application.js:320
 msgid "Platform"
 msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:263
-#: main/apps/desktop/js/ChangeCredentials.js:40
-#: sa/apps/managedobject/js/DiscoveryPanel.js:19
-msgid "Close"
+#: ui/web/core/ModelApplication.js:648
+msgid "Saved"
 msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:269 fm/apps/alarm/js/Application.js:218
-#: sa/apps/managedobject/js/DiscoveryPanel.js:26
-#: sa/apps/managedobject/js/LinksPanel.js:19
-msgid "Refresh"
+#: ui/web/fm/alarm/AlarmPanel.js:44
+msgid "Overview"
 msgstr ""
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:33
-msgid "Run"
+#: ui/web/fm/alarm/AlarmPanel.js:49
+msgid "Help"
 msgstr ""
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:41
-msgid "Disable"
+#: ui/web/fm/alarm/AlarmPanel.js:54
+msgid "Data"
 msgstr ""
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:90
-msgid "Job"
+#: ui/web/fm/alarm/AlarmPanel.js:69
+msgid "New message"
 msgstr ""
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:95
-#: sa/apps/managedobjectprofile/js/Application.js:414
-msgid "Profile"
+#: ui/web/fm/alarm/AlarmPanel.js:81
+msgid "Log"
 msgstr ""
 
-#: fm/apps/alarm/js/Application.js:327
-#: sa/apps/managedobject/js/DiscoveryPanel.js:101
-msgid "Status"
+#: ui/web/fm/alarm/AlarmPanel.js:87 ui/web/fm/alarm/AlarmPanel.js:131
+#: ui/web/fm/alarm/AlarmPanel.js:172
+msgid "Time"
 msgstr ""
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:116
-msgid "Last Run"
+#: ui/web/fm/alarm/AlarmPanel.js:105
+msgid "Message"
 msgstr ""
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:122
-msgid "Last Status"
+#: ui/web/fm/alarm/AlarmPanel.js:143 ui/web/fm/alarm/AlarmPanel.js:189
+msgid "Subject"
 msgstr ""
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:133
-msgid "Next Run"
+#: ui/web/fm/alarm/AlarmPanel.js:159
+msgid "Alarms"
 msgstr ""
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:242
-msgid "Job scheduled to start"
+#: ui/web/fm/alarm/AlarmPanel.js:214
+msgid "Clear"
 msgstr ""
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:246
-msgid "Failed to run tasks"
+#: ui/web/fm/alarm/AlarmPanel.js:221
+msgid "Watch"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinkForm.js:33
-msgid "Disconnect"
+#: ui/web/fm/alarm/AlarmPanel.js:229
+msgid "Set Root Cause"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinkForm.js:41
-msgid "Fix"
+#: ui/web/fm/alarm/AlarmPanel.js:236
+msgid "Show Map"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinkForm.js:56
-msgid "Select managed object ..."
+#: ui/web/fm/alarm/AlarmPanel.js:243
+msgid "Show Object"
 msgstr ""
 
-#: fm/apps/alarm/js/plugins/Thresholds.js:37
-#: sa/apps/managedobject/js/LinkForm.js:68
-#: sa/apps/managedobjectprofile/js/Application.js:429
-msgid "Interface"
+#: ui/web/fm/alarm/AlarmPanel.js:308
+msgid "Failed to get alarm"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinkForm.js:80
-msgid "Connect"
+#: ui/web/fm/alarm/AlarmPanel.js:430
+msgid "Failed to post message"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinkForm.js:108
-msgid "Failed to get interfaces list"
+#: ui/web/fm/alarm/AlarmPanel.js:459
+msgid "Clear alarm?"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinkForm.js:130
-msgid "Failed to connect interfaces"
+#: ui/web/fm/alarm/AlarmPanel.js:460
+msgid "Please confirm the alarm is closed and must be cleared?"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinkForm.js:138
-msgid "Unlink interface"
+#: ui/web/fm/alarm/AlarmPanel.js:473
+msgid "Failed to clear alarm"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinkForm.js:139
-msgid "Do you wish to unlink interface {0}?"
+#: ui/web/fm/alarm/AlarmPanel.js:493
+msgid "Failed to set watcher"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinkForm.js:184
-msgid "Failed to fix"
+#: ui/web/fm/alarm/AlarmPanel.js:502
+msgid "Set root cause"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinksPanel.js:33
-msgid "Local Interface"
+#: ui/web/fm/alarm/AlarmPanel.js:503
+msgid "Please enter root cause alarm id"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinksPanel.js:38
-msgid "Local Description"
+#: ui/web/fm/alarm/AlarmPanel.js:517
+msgid "Failed to set root cause"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinksPanel.js:42
-msgid "Neighbor"
+#: ui/web/fm/alarm/Application.js:55
+msgid "Toggle autoreload"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinksPanel.js:47
-msgid "Remote Interface"
+#: ui/web/cm/validationrule/Application.js:63
+#: ui/web/cm/validationrule/Application.js:91 ui/web/fm/alarm/Application.js:65
+msgid "Active"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinksPanel.js:52
-msgid "Remote Description"
+#: ui/web/fm/alarm/Application.js:67
+msgid "Show active alarms"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinksPanel.js:60
-msgid "First Discovered"
+#: ui/web/fm/alarm/Application.js:71
+msgid "Archive"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinksPanel.js:64
-msgid "Last seen"
+#: ui/web/fm/alarm/Application.js:72
+msgid "Show archived alarms"
 msgstr ""
 
-#: sa/apps/managedobject/js/LinksPanel.js:105
-msgid "Failed to get data"
+#: ui/web/fm/alarm/Application.js:82
+msgid "Adm. Domain"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:34
-msgid "Validation"
+#: ui/web/fm/alarm/AlarmPanel.js:137 ui/web/fm/alarm/AlarmPanel.js:184
+#: ui/web/fm/alarm/Application.js:123 ui/web/fm/alarm/Application.js:240
+msgid "Class"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:53
-msgid "Ping"
+#: ui/web/fm/alarm/Application.js:155
+msgid "Root only"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:69
-msgid "Sync IPAM"
+#: ui/web/fm/alarm/Application.js:157
+msgid "Show only root causes"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:76
-msgid "Box discovery"
+#: ui/web/fm/alarm/Application.js:161 ui/web/fm/alarm/Application.js:179
+msgid "All"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:89
-msgid "Failed interval"
+#: ui/web/fm/alarm/Application.js:162 ui/web/fm/alarm/Application.js:181
+#: ui/web/fm/alarm/Application.js:200
+msgid "Show all alarms"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:96
-msgid "Periodic discovery"
+#: ui/web/fm/alarm/Application.js:175
+msgid "Show only waiting confirmantion"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:109
-msgid "Objects"
+#: ui/web/fm/alarm/Application.js:193
+msgid "Hide maintainance"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:160
-msgid "Shape"
+#: ui/web/fm/alarm/Application.js:194
+msgid "Hide alarms covered by maintainance"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:166
-msgid "Name template"
+#: ui/web/fm/alarm/Application.js:199
+msgid "Show"
 msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:250
-#: sa/apps/managedobjectprofile/js/Application.js:178
-msgid "Card"
+#: ui/web/fm/alarm/Application.js:204
+msgid "Only"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:185
-msgid "Card Title Template"
+#: ui/web/fm/alarm/Application.js:205
+msgid "Show only alarms covered by maintainance"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:197
-msgid "Enable IPAM synchronization"
+#: ui/web/fm/alarm/Application.js:224 ui/web/fm/alarm/Application.js:269
+msgid "Filter"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:203
-msgid "FQDN template"
+#: ui/web/fm/alarm/Application.js:291
+msgid "By Date"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:215
-#: sa/apps/managedobjectprofile/js/Application.js:282
-#: sa/apps/managedobjectprofile/js/Application.js:542
-msgid "Enable"
+#: ui/web/fm/alarm/Application.js:314
+msgid "Show map"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:238
-#: sa/apps/managedobjectprofile/js/Application.js:303
-#: sa/apps/managedobjectprofile/js/Application.js:563
-msgid "Interval, sec"
+#: ui/web/fm/alarm/Application.js:320
+msgid "Show object"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:259
-msgid "Report ping RTT"
+#: ui/web/fm/alarm/Application.js:334
+msgid "Time/Duration"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:270
-msgid "Alarm Weight"
+#: ui/web/fm/alarm/Application.js:344
+msgid "Object/Segment"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:331
-msgid "Failed Interval, sec"
+#: ui/web/fm/alarm/Application.js:354
+msgid "Address/Platform"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:359
-msgid "Check on system start after "
+#: ui/web/fm/alarm/Application.js:374
+msgid "Subject/Class"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:385
-msgid "Check on config change after "
+#: ui/web/fm/alarm/Application.js:385
+msgid "Summary/TT"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:405
-msgid "Box"
+#: ui/web/fm/alarm/AlarmPanel.js:120 ui/web/fm/alarm/Application.js:398
+msgid "Events"
 msgstr ""
 
-#: sa/apps/managedobject/js/Application.js:326
-#: sa/apps/managedobjectprofile/js/Application.js:419
-msgid "Version"
+#: ui/web/fm/alarm/plugins/Thresholds.js:11
+msgid "Thresholds"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:424
-msgid "Caps"
+#: ui/web/fm/alarm/plugins/Thresholds.js:32
+msgid "Metric"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:434
-msgid "Prefix"
+#: ui/web/fm/alarm/plugins/Thresholds.js:47
+msgid "Value"
 msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:167
-#: sa/apps/managedobjectprofile/js/Application.js:439
-msgid "ID"
+#: ui/web/fm/alarm/plugins/Thresholds.js:53
+msgid "Condition"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:444
-msgid "Config"
+#: ui/web/fm/alarm/plugins/Thresholds.js:58
+msgid "Threshold"
 msgstr ""
 
-#: sa/apps/managedobjectprofile/js/Application.js:449
-msgid "Asset"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:454
-msgid "VLAN"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:460
-msgid "Topology"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:469
-msgid "NRI"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:474
-msgid "BFD"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:479
-msgid "CDP"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:484
-msgid "FDP"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:489
-msgid "LLDP"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:494
-msgid "OAM"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:499
-msgid "REP"
-msgstr ""
-
-#: inv/apps/map/js/Application.js:170
-#: sa/apps/managedobjectprofile/js/Application.js:504
-msgid "STP"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:509
-msgid "UDLD"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:515
-msgid "Clear links"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:524
-msgid "On platform change"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:595
-msgid "Uptime"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:600
-msgid "Interface status"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:605
-msgid "MAC"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:610
-#: sa/apps/managedobjectprofile/js/Application.js:622
-msgid "Metrics"
-msgstr ""
-
-#: sa/apps/serviceprofile/js/Application.js:25
-#: sa/apps/serviceprofile/js/Application.js:91
-msgid "Icon"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:27
-#: fm/apps/alarmescalation/js/Application.js:37
-#: fm/apps/alarmseverity/js/Application.js:20
-#: fm/apps/alarmseverity/js/Application.js:52
-#: main/apps/userprofile/js/Application.js:25
-#: sa/apps/managedobjectprofile/js/Application.js:43
-#: sa/apps/managedobjectprofile/js/Application.js:120
-#: sa/apps/serviceprofile/js/Application.js:38
-#: sa/apps/serviceprofile/js/Application.js:63
+#: ui/web/cm/validationrule/Application.js:58
+#: ui/web/cm/validationrule/Application.js:84
+#: ui/web/fm/alarmescalation/Application.js:27
+#: ui/web/fm/alarmescalation/Application.js:37
+#: ui/web/fm/alarmseverity/Application.js:20
+#: ui/web/fm/alarmseverity/Application.js:52
+#: ui/web/main/userprofile/Application.js:25
+#: ui/web/sa/managedobjectprofile/Application.js:43
+#: ui/web/sa/managedobjectprofile/Application.js:120
+#: ui/web/sa/serviceprofile/Application.js:38
+#: ui/web/sa/serviceprofile/Application.js:63
 msgid "Name"
 msgstr ""
 
-#: sa/apps/serviceprofile/js/Application.js:43
-#: sa/apps/serviceprofile/js/Application.js:77
-msgid "Code"
-msgstr ""
-
-#: sa/apps/serviceprofile/js/Application.js:48
-msgid "Summary"
-msgstr ""
-
-#: fm/apps/alarmescalation/js/Application.js:43
-#: fm/apps/alarmseverity/js/Application.js:43
-#: fm/apps/alarmseverity/js/Application.js:63
-#: sa/apps/managedobjectprofile/js/Application.js:140
-#: sa/apps/serviceprofile/js/Application.js:54
-#: sa/apps/serviceprofile/js/Application.js:70
+#: ui/web/cm/validationrule/Application.js:74
+#: ui/web/cm/validationrule/Application.js:96
+#: ui/web/fm/alarmescalation/Application.js:43
+#: ui/web/fm/alarmseverity/Application.js:43
+#: ui/web/fm/alarmseverity/Application.js:63
+#: ui/web/sa/managedobjectprofile/Application.js:140
+#: ui/web/sa/serviceprofile/Application.js:54
+#: ui/web/sa/serviceprofile/Application.js:70
 msgid "Description"
 msgstr ""
 
-#: sa/apps/serviceprofile/js/Application.js:84
+#: ui/web/fm/alarmescalation/Application.js:49
+msgid "Global limit"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:56
+msgid "Alarm Classes"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:59
+msgid "Alarm Class"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:70
+msgid "Pre Reasons"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:73
+msgid "TT System"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:80
+msgid "Pre Reason"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:90
+msgid "Escalations"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:93
+msgid "Delay"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:99
+msgid "Adm. domain"
+msgstr ""
+
+#: ui/web/cm/validationrule/Application.js:124
+#: ui/web/fm/alarm/Application.js:103
+#: ui/web/fm/alarmescalation/Application.js:106
+msgid "Selector"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:113
+#: ui/web/main/userprofile/Application.js:51
+msgid "Time Pattern"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:119
+msgid "Notification Group"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:126
+msgid "Open Template"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:133
+msgid "Clear Template"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:140
+msgid "TT"
+msgstr ""
+
+#: ui/web/fm/alarm/Application.js:174
+#: ui/web/fm/alarmescalation/Application.js:147
+msgid "Wait TT"
+msgstr ""
+
+#: ui/web/fm/alarmescalation/Application.js:154
+msgid "Stop"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:24
+msgid "Builtin"
+msgstr ""
+
+#: ui/web/fm/alarm/Application.js:364 ui/web/fm/alarmseverity/Application.js:31
+#: ui/web/fm/alarmseverity/Application.js:69
+msgid "Severity"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:37
+#: ui/web/fm/alarmseverity/Application.js:75
+msgid "Min. Weight"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:58
+msgid "UUID"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:81
+#: ui/web/sa/managedobjectprofile/Application.js:154
+msgid "Style"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:87
+msgid "Sound"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:93
+msgid "Volume"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:113
+msgid "JSON"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:115
+msgid "Show JSON"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:121
+#: ui/web/fm/alarmseverity/Application.js:123
+msgid "Test Sound"
+msgstr ""
+
+#: ui/web/fm/alarm/AlarmPanel.js:93 ui/web/fm/alarm/Application.js:133
+#: ui/web/fm/reportalarmdetail/Application.js:35
+msgid "From"
+msgstr ""
+
+#: ui/web/fm/alarm/AlarmPanel.js:99 ui/web/fm/alarm/Application.js:143
+#: ui/web/fm/reportalarmdetail/Application.js:43
+msgid "To"
+msgstr ""
+
+#: ui/web/fm/reportalarmdetail/Application.js:56
+msgid "Download"
+msgstr ""
+
+#: ui/web/fm/alarm/Application.js:113 ui/web/fm/alarm/Application.js:234
+#: ui/web/inv/map/Application.js:35
+msgid "Segment"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:61
+msgid "Reload"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:68 ui/web/inv/map/MapPanel.js:135
+#: ui/web/inv/map/inspectors/ManagedObjectInspector.js:26
+msgid "Edit"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:71
+msgid "Edit map"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:78 ui/web/main/userprofile/Application.js:156
+msgid "Save"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:86
+msgid "Revert"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:94
+msgid "New layout"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:149
+msgid "Show static map"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:160
+msgid "Show interface load"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:173
+msgid "Show STP topology"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:318
+msgid "Reset Layout"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:319
+msgid "Would you like to reset current layout and generate new?"
+msgstr ""
+
+#: ui/web/inv/map/MapPanel.js:129
+msgid "View Card"
+msgstr ""
+
+#: ui/web/inv/map/MapPanel.js:141
+#: ui/web/inv/map/inspectors/ManagedObjectInspector.js:50
+msgid "Show dashboard"
+msgstr ""
+
+#: ui/web/inv/map/MapPanel.js:832
+msgid "Failed to get STP status"
+msgstr ""
+
+#: ui/web/inv/map/SelectIconForm.js:43
+msgid "Set"
+msgstr ""
+
+#: ui/web/inv/map/inspectors/LinkInspector.js:11
+msgid "Link Inspector"
+msgstr ""
+
+#: ui/web/inv/map/inspectors/ManagedObjectInspector.js:11
+msgid "Object Inspector"
+msgstr ""
+
+#: ui/web/inv/map/inspectors/ManagedObjectInspector.js:34
+msgid "View card"
+msgstr ""
+
+#: ui/web/inv/map/inspectors/ManagedObjectInspector.js:42
+msgid "Jump to Segment"
+msgstr ""
+
+#: ui/web/inv/map/inspectors/SegmentInspector.js:11
+msgid "Segment Inspector"
+msgstr ""
+
+#: ui/web/inv/unknownmodel/Application.js:47
+msgid "Remove"
+msgstr ""
+
+#: ui/web/main/desktop/Application.js:136
+msgid "Starting {0}"
+msgstr ""
+
+#: ui/web/main/desktop/ChangeCredentials.js:11
+msgid "Change Password"
+msgstr ""
+
+#: ui/web/main/desktop/ChangeCredentials.js:46
+msgid "Reset"
+msgstr ""
+
+#: ui/web/main/desktop/ChangeCredentials.js:52
+msgid "Change"
+msgstr ""
+
+#: ui/web/main/desktop/ChangeCredentials.js:103
+msgid "Credentials has been changed"
+msgstr ""
+
+#: ui/web/main/desktop/ChangeCredentials.js:106
+#: ui/web/main/desktop/ChangeCredentials.js:111
+msgid "Failed to change credentials: "
+msgstr ""
+
+#: ui/web/main/desktop/HeaderPanel.js:35
+msgid "Anonymous"
+msgstr ""
+
+#: ui/web/main/desktop/HeaderPanel.js:41
+msgid "About NOC ..."
+msgstr ""
+
+#: ui/web/main/desktop/HeaderPanel.js:48
+msgid "User profile ..."
+msgstr ""
+
+#: ui/web/main/desktop/HeaderPanel.js:55
+msgid "Change password ..."
+msgstr ""
+
+#: ui/web/main/desktop/HeaderPanel.js:63
+msgid "Logout"
+msgstr ""
+
+#: ui/web/main/desktop/NavPanel.js:24
+msgid "Navigation"
+msgstr ""
+
+#: ui/web/main/desktop/NavPanel.js:34
+msgid "Switch to breadcrumb view"
+msgstr ""
+
+#: ui/web/main/desktop/WorkplacePanel.js:22
+#: ui/web/main/desktop/WorkplacePanel.js:114
+msgid "Collapse panels"
+msgstr ""
+
+#: ui/web/main/desktop/WorkplacePanel.js:108
+msgid "Expand panels"
+msgstr ""
+
+#: ui/web/main/search/Application.js:15
+msgid "Search"
+msgstr ""
+
+#: ui/web/main/search/Application.js:27
+msgid "Result"
+msgstr ""
+
+#: ui/web/main/search/Application.js:80
+msgid "Starting search"
+msgstr ""
+
+#: ui/web/main/search/Application.js:91
+msgid "Search complete"
+msgstr ""
+
+#: ui/web/main/search/Application.js:96
+msgid "Failed to search"
+msgstr ""
+
+#: ui/web/core/ModelApplication.js:1218 ui/web/fm/alarm/Application.js:631
+#: ui/web/main/search/Application.js:106
+msgid "Total: "
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:21
+msgid "Login"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:29
+msgid "Mail"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:33
+msgid "Language"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:64
+msgid "Params"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:81
+msgid "Add"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:92
+msgid "Delete"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:139
+msgid "Notification Contacts"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:181
+msgid "Failed to load data"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:209
+msgid "Profile saved"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:211
+msgid "Changing language"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:215
+msgid "Failed to save"
+msgstr ""
+
+#: ui/web/fm/alarm/AlarmPanel.js:263
+#: ui/web/main/desktop/ChangeCredentials.js:40
+#: ui/web/sa/managedobject/DiscoveryPanel.js:19
+msgid "Close"
+msgstr ""
+
+#: ui/web/fm/alarm/AlarmPanel.js:269 ui/web/fm/alarm/Application.js:218
+#: ui/web/sa/managedobject/DiscoveryPanel.js:26
+#: ui/web/sa/managedobject/LinksPanel.js:19
+msgid "Refresh"
+msgstr ""
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:33
+msgid "Run"
+msgstr ""
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:41
+msgid "Disable"
+msgstr ""
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:90
+msgid "Job"
+msgstr ""
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:95
+#: ui/web/sa/managedobjectprofile/Application.js:414
+msgid "Profile"
+msgstr ""
+
+#: ui/web/fm/alarm/Application.js:327
+#: ui/web/sa/managedobject/DiscoveryPanel.js:101
+msgid "Status"
+msgstr ""
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:116
+msgid "Last Run"
+msgstr ""
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:122
+msgid "Last Status"
+msgstr ""
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:133
+msgid "Next Run"
+msgstr ""
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:242
+msgid "Job scheduled to start"
+msgstr ""
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:246
+msgid "Failed to run tasks"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinkForm.js:33
+msgid "Disconnect"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinkForm.js:41
+msgid "Fix"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinkForm.js:56
+msgid "Select managed object ..."
+msgstr ""
+
+#: ui/web/fm/alarm/plugins/Thresholds.js:37
+#: ui/web/sa/managedobject/LinkForm.js:68
+#: ui/web/sa/managedobjectprofile/Application.js:429
+msgid "Interface"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinkForm.js:80
+msgid "Connect"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinkForm.js:108
+msgid "Failed to get interfaces list"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinkForm.js:130
+msgid "Failed to connect interfaces"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinkForm.js:138
+msgid "Unlink interface"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinkForm.js:139
+msgid "Do you wish to unlink interface {0}?"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinkForm.js:184
+msgid "Failed to fix"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinksPanel.js:33
+msgid "Local Interface"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinksPanel.js:38
+msgid "Local Description"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinksPanel.js:42
+msgid "Neighbor"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinksPanel.js:47
+msgid "Remote Interface"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinksPanel.js:52
+msgid "Remote Description"
+msgstr ""
+
+#: ui/web/main/userprofile/Application.js:58
+#: ui/web/sa/managedobject/LinksPanel.js:56
+msgid "Method"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinksPanel.js:60
+msgid "First Discovered"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinksPanel.js:64
+msgid "Last seen"
+msgstr ""
+
+#: ui/web/sa/managedobject/LinksPanel.js:105
+msgid "Failed to get data"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:34
+msgid "Validation"
+msgstr ""
+
+#: ui/web/fm/alarm/plugins/Thresholds.js:42
+#: ui/web/sa/managedobjectprofile/Application.js:47
+#: ui/web/sa/managedobjectprofile/Application.js:147
+msgid "Level"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:53
+msgid "Ping"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:69
+msgid "Sync IPAM"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:76
+msgid "Box discovery"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:89
+msgid "Failed interval"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:96
+msgid "Periodic discovery"
+msgstr ""
+
+#: ui/web/cm/validationrule/Application.js:135
+#: ui/web/sa/managedobjectprofile/Application.js:109
+msgid "Objects"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:160
+msgid "Shape"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:166
+msgid "Name template"
+msgstr ""
+
+#: ui/web/fm/alarm/AlarmPanel.js:250
+#: ui/web/sa/managedobjectprofile/Application.js:178
+msgid "Card"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:185
+msgid "Card Title Template"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:197
+msgid "Enable IPAM synchronization"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:203
+msgid "FQDN template"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:215
+#: ui/web/sa/managedobjectprofile/Application.js:282
+#: ui/web/sa/managedobjectprofile/Application.js:542
+msgid "Enable"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:238
+#: ui/web/sa/managedobjectprofile/Application.js:303
+#: ui/web/sa/managedobjectprofile/Application.js:563
+msgid "Interval, sec"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:259
+msgid "Report ping RTT"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:270
+msgid "Alarm Weight"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:331
+msgid "Failed Interval, sec"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:359
+msgid "Check on system start after "
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:385
+msgid "Check on config change after "
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:405
+msgid "Box"
+msgstr ""
+
+#: ui/web/sa/managedobject/Application.js:326
+#: ui/web/sa/managedobjectprofile/Application.js:419
+msgid "Version"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:424
+msgid "Caps"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:434
+msgid "Prefix"
+msgstr ""
+
+#: ui/web/fm/alarm/AlarmPanel.js:167
+#: ui/web/sa/managedobjectprofile/Application.js:439
+msgid "ID"
+msgstr ""
+
+#: ui/web/cm/validationrule/Application.js:191
+#: ui/web/sa/managedobjectprofile/Application.js:444
+msgid "Config"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:449
+msgid "Asset"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:454
+msgid "VLAN"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:460
+msgid "Topology"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:469
+msgid "NRI"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:474
+msgid "BFD"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:479
+msgid "CDP"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:484
+msgid "FDP"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:489
+msgid "LLDP"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:494
+msgid "OAM"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:499
+msgid "REP"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:170
+#: ui/web/sa/managedobjectprofile/Application.js:504
+msgid "STP"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:509
+msgid "UDLD"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:515
+msgid "Clear links"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:524
+msgid "On platform change"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:595
+msgid "Uptime"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:600
+msgid "Interface status"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:605
+msgid "MAC"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:610
+#: ui/web/sa/managedobjectprofile/Application.js:622
+msgid "Metrics"
+msgstr ""
+
+#: ui/web/sa/serviceprofile/Application.js:25
+#: ui/web/sa/serviceprofile/Application.js:91
+msgid "Icon"
+msgstr ""
+
+#: ui/web/sa/serviceprofile/Application.js:43
+#: ui/web/sa/serviceprofile/Application.js:77
+msgid "Code"
+msgstr ""
+
+#: ui/web/sa/serviceprofile/Application.js:48
+msgid "Summary"
+msgstr ""
+
+#: ui/web/sa/serviceprofile/Application.js:84
 msgid "Title Template"
 msgstr ""
 
-#: sa/apps/serviceprofile/js/Application.js:98
+#: ui/web/sa/serviceprofile/Application.js:98
 msgid "Show in summary"
 msgstr ""
 
-#: sa/apps/serviceprofile/js/Application.js:104
+#: ui/web/sa/serviceprofile/Application.js:104
 msgid "Interface Profile"
 msgstr ""
 
-#: sa/apps/serviceprofile/js/Application.js:110
+#: ui/web/sa/serviceprofile/Application.js:110
 msgid "Alarm weight"
 msgstr ""
 

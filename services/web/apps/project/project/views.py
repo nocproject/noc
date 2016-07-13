@@ -12,14 +12,15 @@ from noc.project.models.project import Project
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.main.models.resourcestate import ResourceState
+from noc.core.translation import ugettext as _
 
 
 class ProjectApplication(ExtModelApplication):
     """
     Project application
     """
-    title = "Project"
-    menu = "Projects"
+    title = _("Project")
+    menu = _("Projects")
     model = Project
     query_condition = "icontains"
     query_fields = ["code", "name", "description"]

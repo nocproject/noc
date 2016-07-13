@@ -9,13 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.main.models import SystemNotification
+from noc.core.translation import ugettext as _
+
 
 class SystemNotificationApplication(ExtModelApplication):
     """
     SystemNotification application
     """
-    title = "System Notifications"
-    menu = "Setup | System Notifications"
+    title = _("System Notifications")
+    menu = [_("Setup"), _("System Notifications")]
     model = SystemNotification
     query_fields = ["name__icontains"]
 

@@ -11,10 +11,11 @@ import re
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.fm.models import MIB, ActiveEvent, EventClass, MIB
+from noc.core.translation import ugettext as _
 
 
 class ReportMissedMIBs(SimpleReport):
-    title = "Missed MIBs"
+    title = _("Missed MIBs")
 
     c_f = """
     function() {

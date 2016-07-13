@@ -2,17 +2,18 @@
 ##----------------------------------------------------------------------
 ## cm.reportvalidationmethods
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableSection, SectionRow
 from noc.cm.validators.base import validator_registry
+from noc.core.translation import ugettext as _
 
 
 class ReportvalidationmethodsApplication(SimpleReport):
-    title = "Validation Methods"
+    title = _("Validation Methods")
 
     def get_data(self, **kwargs):
         ov = {}
@@ -28,9 +29,9 @@ class ReportvalidationmethodsApplication(SimpleReport):
                 SectionRow(
                     "[%s] %s" % (", ".join(scopes), v.TITLE)
                 ),
-                ["Description", v.DESCRIPTION],
-                ["Handler", "%s.%s" % (v.__module__, v.__name__)],
-                ["Tags", ", ".join(v.TAGS or [])]
+                [_("Description"), v.DESCRIPTION],
+                [_("Handler"), "%s.%s" % (v.__module__, v.__name__)],
+                [_("Tags"), ", ".join(v.TAGS or [])]
             ]
             if v.is_object():
                 ov[v.TITLE] = r

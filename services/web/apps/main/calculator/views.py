@@ -9,13 +9,14 @@
 ## NOC modules
 from noc.lib.app import Application, HasPerm, view
 from noc.services.web.apps.main.calculator.calculators import calculator_registry
+from noc.core.translation import ugettext as _
 
 # Register all calculators
 calculator_registry.register_all()
 
 
 class CalculatorAppplication(Application):
-    title = "Calculators"
+    title = _("Calculators")
 
     @view(url=r"^$",
           url_name="index",

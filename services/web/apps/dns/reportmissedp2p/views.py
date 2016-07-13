@@ -11,11 +11,12 @@ from django.utils.translation import ugettext_lazy as _
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.ip.models import VRF
+from noc.core.translation import ugettext as _
 ##
 ##
 ##
 class Reportreportmissedp2p(SimpleReport):
-    title=_("Missed Link Addresses")
+    title = _("Missed Link Addresses")
     def get_data(self,**kwargs):
         vrf_id=VRF.get_global().id
         return self.from_query(title=self.title,

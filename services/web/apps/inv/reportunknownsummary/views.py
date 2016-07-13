@@ -12,7 +12,7 @@ from noc.inv.models.unknownmodel import UnknownModel
 
 
 class ReportUnknownModelsSummary(SimpleReport):
-    title = "Unknown Models Summary"
+    title = _("Unknown Models Summary")
 
     def get_data(self, **kwargs):
         data = {}  # vendor, part_no -> description, count

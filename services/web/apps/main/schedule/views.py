@@ -15,6 +15,7 @@ from django import forms
 from noc.lib.app import ModelApplication
 from noc.main.models import Schedule, PyRule
 from noc.lib.periodic import periodic_registry
+from noc.core.translation import ugettext as _
 
 
 class ScheduleAdminForm(forms.ModelForm):
@@ -78,4 +79,4 @@ class ScheduleApplication(ModelApplication):
     """
     model = Schedule
     model_admin = ScheduleAdmin
-    menu = "Setup | Schedules"
+    menu = [_("Setup"), _("Schedules")]

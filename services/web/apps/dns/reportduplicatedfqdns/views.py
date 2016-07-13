@@ -9,10 +9,11 @@
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.ip.models import VRF
+from noc.core.translation import ugettext as _
 
 
 class Reportreportduplicatedfqdns(SimpleReport):
-    title = "Duplicated FQDNs"
+    title = _("Duplicated FQDNs")
 
     def get_data(self, **kwargs):
         vrf_id = VRF.get_global().id

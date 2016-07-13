@@ -2,19 +2,20 @@
 ##----------------------------------------------------------------------
 ## cm.validationpolicy application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.cm.models.validationpolicy import ValidationPolicy
+from noc.core.translation import ugettext as _
 
 
 class ValidationPolicyApplication(ExtDocApplication):
     """
     ValidationPolicy application
     """
-    title = "Validation Policy"
-    menu = "Setup | Validation Policy"
+    title = _("Validation Policy")
+    menu = [_("Setup"), _("Validation Policy")]
     model = ValidationPolicy

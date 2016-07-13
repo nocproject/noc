@@ -9,6 +9,7 @@ from noc.lib.app.simplereport import SimpleReport,TableColumn
 from noc.cm.models import Object
 from django import forms
 import datetime
+from noc.core.translation import ugettext as _
 ##
 ## Report Form
 ##
@@ -19,7 +20,7 @@ class ReportForm(forms.Form):
 ##
 ##
 class ReportreportLatestChanges(SimpleReport):
-    title="Latest Changes"
+    title=_("Latest Changes")
     form=ReportForm
     def get_data(self,repo,days,**kwargs):
         oc=Object.get_object_class(repo)
@@ -28,6 +29,6 @@ class ReportreportLatestChanges(SimpleReport):
             title="%s: %s in %d days"%(self.title,repo,days),
             columns=[
                 "Object",
-                TableColumn("Last Changed",format="datetime")],
+                TableColumn(_("Last Changed"),format="datetime")],
             data=[(o,o.last_modified) for o in oc.objects.filter(last_modified__gte=baseline).order_by("-last_modified")],
             enumerate=True)

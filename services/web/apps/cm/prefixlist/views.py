@@ -8,6 +8,7 @@
 from django.contrib import admin
 from noc.cm.repoapp import RepoApplication
 from noc.cm.models import PrefixList
+from noc.core.translation import ugettext as _
 ##
 ## PrefixList admin
 ##
@@ -21,4 +22,4 @@ class PrefixListApplication(RepoApplication):
     repo="prefix-list"
     model=PrefixList
     model_admin=PrefixListAdmin
-    menu="Prefix Lists"
+    menu = _("Prefix Lists")

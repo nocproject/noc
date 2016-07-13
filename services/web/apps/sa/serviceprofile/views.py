@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.sa.models.serviceprofile import ServiceProfile
+from noc.core.translation import ugettext as _
 
 
 class ServiceProfileApplication(ExtDocApplication):
     """
     ServiceProfile application
     """
-    title = "Service Profile"
-    menu = "Setup | Service Profiles"
+    title = _("Service Profile")
+    menu = [_("Setup"), _("Service Profiles")]
     model = ServiceProfile
