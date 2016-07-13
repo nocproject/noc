@@ -23,6 +23,7 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
+from noc.main.models.notificationgroup import NotificationGroup
 
 
 logger = logging.getLogger(__name__)
@@ -229,6 +230,43 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
             break
 
 
+def notify_close(alarm_id, tt_id, subject, body, notification_group_id):
+    def log(message, *args):
+        msg = message % args
+        logger.info("[%s] %s", alarm_id, msg)
+
+    if tt_id:
+        c_tt_name, c_tt_id = tt_id.split(":")
+        cts = tt_system_id_cache[c_tt_name]
+        if cts:
+            tts = cts.get_system()
+            try:
+                log("Appending comment to TT %s", tt_id)
+                tts.add_comment(
+                    c_tt_id,
+                    subject=subject,
+                    body=body,
+                    login="correlator"
+                )
+                metrics["escalation_tt_comment"] += 1
+            except tts.TTError as e:
+                log("Failed to add comment to %s: %s",
+                    tt_id, e)
+                metrics["escalation_tt_comment_fail"] += 1
+        else:
+            log("Failed to add comment to %s: Invalid TT system",
+                tt_id)
+            metrics["escalation_tt_comment_fail"] += 1
+    if notification_group_id:
+        notification_group = notification_group_cache[notification_group_id]
+        if notification_group:
+            log("Sending notification to group %s", notification_group.name)
+            notification_group.notify(subject, body)
+            metrics["escalation_notify"] += 1
+        else:
+            log("Invalid notification group %s", notification_group_id)
+
+
 def get_item(model, **kwargs):
     if not id:
         return None
@@ -250,4 +288,8 @@ tt_system_cache = cachetools.TTLCache(
 
 tt_system_id_cache = cachetools.TTLCache(
     CACHE_SIZE, TTL, missing=lambda x: get_item(TTSystem, name=x)
+)
+
+notification_group_cache = cachetools.TTLCache(
+    CACHE_SIZE, TTL, missing=lambda x: get_item(NotificationGroup, id=x)
 )
