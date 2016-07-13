@@ -25,7 +25,7 @@ Ext.define("Ext.ux.form.StringsField", {
             text: "Add",
             glyph: NOC.glyph.plus,
             scope: me,
-            handler: me.onAdd
+            handler: me.onAddRecord
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
@@ -33,7 +33,7 @@ Ext.define("Ext.ux.form.StringsField", {
             glyph: NOC.glyph.minus,
             disabled: true,
             scope: me,
-            handler: me.onDelete
+            handler: me.onDeleteRecord
         });
 
         me.grid = Ext.create("Ext.grid.Panel", {
@@ -112,7 +112,7 @@ Ext.define("Ext.ux.form.StringsField", {
         me.deleteButton.setDisabled(false);
     },
     //
-    onAdd: function() {
+    onAddRecord: function() {
         var me = this,
             rowEditing = me.grid.plugins[0];
         rowEditing.cancelEdit();
@@ -120,7 +120,7 @@ Ext.define("Ext.ux.form.StringsField", {
         rowEditing.startEdit(0, 0);
     },
     //
-    onDelete: function() {
+    onDeleteRecord: function() {
         var me = this,
             sm = me.grid.getSelectionModel(),
             rowEditing = me.grid.plugins[0];
