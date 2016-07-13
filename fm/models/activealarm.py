@@ -22,7 +22,6 @@ from noc.main.models.template import Template
 from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
-from ttsystem import TTSystem
 from noc.core.defer import call_later
 
 
@@ -212,28 +211,25 @@ class ActiveAlarm(nosql.Document):
             })
         elif ct:
             pass
-        if self.clear_template:
-            ctx = {
-                "alarm": a
-            }
-            subject = self.clear_template.render_subject(**ctx)
-            body = self.clear_template.render_body(**ctx)
-        else:
-            subject = "Alarm cleared"
-            body = "Alarm has been cleared"
-        if a.escalation_tt:
-            # Sent message to TT
-            tt_system, tt_id = a.escalation_tt.split(":")
-            tts = TTSystem.get_by_name(tt_system)
-            if tts:
-                tts.add_comment(
-                    tt_id,
-                    subject=subject,
-                    body=body,
-                    login="NOC"
-                )
-        if self.clear_notification_group:
-            self.clear_notification_group.notify(subject, body)
+        if a.escalation_tt or self.clear_template:
+            if self.clear_template:
+                ctx = {
+                    "alarm": a
+                }
+                subject = self.clear_template.render_subject(**ctx)
+                body = self.clear_template.render_body(**ctx)
+            else:
+                subject = "Alarm cleared"
+                body = "Alarm has been cleared"
+            call_later(
+                "noc.services.correlator.escalation.notify_close",
+                scheduler="correlator",
+                alarm_id=self.id,
+                tt_id=self.escalation_tt,
+                subject=subject,
+                body=body,
+                notification_group=self.clear_notification_group.id if self.clear_notification_group else None
+            )
         # Clear alarm
         self.delete()
         # Return archived
