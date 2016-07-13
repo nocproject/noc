@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.main.models.template import Template
+from noc.core.translation import ugettext as _
 
 
 class TemplateApplication(ExtModelApplication):

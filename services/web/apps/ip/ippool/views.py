@@ -11,13 +11,14 @@ from noc.lib.app import ExtModelApplication, view
 from noc.ip.models import IPPool
 from noc.inv.models.technology import Technology
 from noc.sa.interfaces.base import InterfaceTypeError
+from noc.core.translation import ugettext as _
 
 
 class IPPoolApplication(ExtModelApplication):
     """
     IPPool application
     """
-    title = "IP Pool"
+    title = _("IP Pool")
     menu = [_("Setup"), _("IP Pools")]
     model = IPPool
 

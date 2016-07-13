@@ -11,6 +11,8 @@ from noc.lib.app import ExtModelApplication, view
 from noc.ip.models import AddressRange
 from noc.lib.ip import *
 from noc.lib.validators import *
+from noc.core.translation import ugettext as _
+
 
 class AddressRangeApplication(ExtModelApplication):
     """

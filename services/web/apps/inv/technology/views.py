@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.technology import Technology
+from noc.core.translation import ugettext as _
 
 
 class TechnologyApplication(ExtDocApplication):

@@ -18,7 +18,7 @@ class VRFApplication(ExtModelApplication):
     """
     VRF application
     """
-    title = _("VRFs)
+    title = _("VRF")
     menu = _("VRF")
     model = VRF
     query_fields = ["name", "rd", "description"]
