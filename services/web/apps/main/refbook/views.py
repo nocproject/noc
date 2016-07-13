@@ -13,10 +13,11 @@ from django.shortcuts import get_object_or_404
 from noc.lib.app import Application, view, HasPerm
 from noc.main.models.permission import Permission
 from noc.main.models import RefBook, RefBookData
+from noc.core.translation import ugettext as _
 
 
 class RefBookAppplication(Application):
-    title = "Reference Books"
+    title = _("Reference Books")
 
     @view(url=r"^$", url_name="index",
         menu="Reference Books", access="view")

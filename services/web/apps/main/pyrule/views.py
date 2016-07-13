@@ -10,15 +10,16 @@
 from noc.lib.app import ExtModelApplication, view
 from noc.main.models.pyrule import PyRule
 from noc.lib.solutions import get_solution
+from noc.core.translation import ugettext as _
 
 
 class PyRuleApplication(ExtModelApplication):
     """
     PyRule application
     """
-    title = "PyRule"
+    title = _("PyRule")
     icon = "icon_py"
-    menu = "Setup | PyRule"
+    menu = [_("Setup"), _("PyRule")]
     model = PyRule
     query_fields = ["name__icontains"]
 

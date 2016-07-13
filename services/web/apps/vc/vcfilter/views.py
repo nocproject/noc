@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## vc.vcfilter application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,14 +10,15 @@
 from noc.lib.app import ExtModelApplication, view
 from noc.vc.models import VCFilter
 from noc.sa.interfaces.base import IntParameter
+from noc.core.translation import ugettext as _
 
 
 class VCFilterApplication(ExtModelApplication):
     """
     VCFilter application
     """
-    title = "VC Filter"
-    menu = "Setup | VC Filters"
+    title = _("VC Filter")
+    menu = [_("Setup"), _("VC Filters")]
     model = VCFilter
 
     def lookup_vc(self, q, name, value):

@@ -9,13 +9,14 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.main.models.dbtrigger import DBTrigger
+from noc.core.translation import ugettext as _
 
 
 class DBTriggerApplication(ExtModelApplication):
     """
     DBTrigger application
     """
-    title = "DB Triggers"
-    menu = "Setup | DB Triggers"
+    title = _("DB Triggers")
+    menu = [_("Setup"), _("DB Triggers")]
     model = DBTrigger
     icon = "icon_database_gear"

@@ -12,6 +12,7 @@ from django.contrib import admin
 from noc.lib.app import ModelApplication, site
 from noc.peer.models import AS
 from noc.ip.models import Prefix
+from noc.core.translation import ugettext as _
 
 
 def allocated_prefixes(obj):

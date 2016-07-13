@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.sa.models.authprofile import AuthProfile
+from noc.core.translation import ugettext as _
 
 
 class AuthProfileApplication(ExtModelApplication):
     """
     AuthProfile application
     """
-    title = "Auth Profile"
-    menu = "Setup | Auth Profiles"
+    title = _("Auth Profile")
+    menu = [_("Setup"), _("Auth Profiles")]
     model = AuthProfile

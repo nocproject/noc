@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.main.models.tag import Tag
+from noc.core.translation import ugettext as _
 
 
 class TagApplication(ExtDocApplication):
     """
     Tag application
     """
-    title = "Tag"
-    # menu = "Setup | Tag"
+    title = _("Tag")
+    # menu = [_("Setup"), _("Tag")]
     model = Tag
     query_fields = ["tag"]
 

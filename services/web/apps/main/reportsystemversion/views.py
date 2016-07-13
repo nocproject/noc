@@ -13,10 +13,11 @@ import sys
 from noc.lib.app.simplereport import *
 from noc.lib.version import get_version
 from noc.lib.nosql import get_connection
+from noc.core.translation import ugettext as _
 
 
 class ReportSystemVersion(SimpleReport):
-    title = "System Version"
+    title = _("System Version")
 
     def get_data(self, **kwargs):
         si = get_connection().server_info()

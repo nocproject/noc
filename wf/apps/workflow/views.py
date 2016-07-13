@@ -16,14 +16,15 @@ from noc.lib.app.docinline import DocInline
 from noc.wf.handlers import handlers
 from noc.sa.interfaces.base import DictListParameter
 from noc.lib.serialize import json_decode
+from noc.core.translation import ugettext as _
 
 
 class WorkflowApplication(ExtDocApplication):
     """
     Workflow application
     """
-    title = "Workflow"
-    menu = "Setup | Workflows"
+    title = _("Workflow")
+    menu = [_("Setup"), _("Workflows")]
     model = Workflow
 
     lanes = DocInline(Lane)

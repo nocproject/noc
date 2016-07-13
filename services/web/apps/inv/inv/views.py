@@ -16,14 +16,15 @@ from noc.inv.models.objectmodel import ObjectModel
 from noc.lib.validators import is_objectid
 from noc.sa.interfaces.base import (StringParameter, ObjectIdParameter,
                                     UnicodeParameter, ListOfParameter)
+from noc.core.translation import ugettext as _
 
 
 class InvApplication(ExtApplication):
     """
     inv.inv application
     """
-    title = "Inventory"
-    menu = "Inventory"
+    title = _("Inventory")
+    menu = _("Inventory")
 
     # Undeletable nodes
     UNDELETABLE = set([

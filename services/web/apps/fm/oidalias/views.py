@@ -10,14 +10,15 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models import OIDAlias
 from noc.main.models.collectioncache import CollectionCache
+from noc.core.translation import ugettext as _
 
 
 class OIDAliasApplication(ExtDocApplication):
     """
     OIDAlias application
     """
-    title = "OID Aliases"
-    menu = "Setup | OID Aliases"
+    title = _("OID Aliases")
+    menu = [_("Setup"), _("OID Aliases")]
     model = OIDAlias
 
     def field_is_builtin(self, o):

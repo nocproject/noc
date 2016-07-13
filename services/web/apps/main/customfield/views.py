@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.main.models import CustomField
+from noc.core.translation import ugettext as _
 
 
 class CustomFieldApplication(ExtModelApplication):
     """
     CustomField application
     """
-    title = "Custom Fields"
-    menu = "Setup | Custom Fields"
+    title = _("Custom Fields")
+    menu = [_("Setup"), _("Custom Fields")]
     model = CustomField
     icon = "icon_cog_add"
     query_fields = ["name", "description", "table"]

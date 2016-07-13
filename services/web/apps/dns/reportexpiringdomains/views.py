@@ -8,6 +8,7 @@
 from noc.lib.app.simplereport import SimpleReport,TableColumn
 from django import forms
 from noc.settings import config
+from noc.core.translation import ugettext as _
 ##
 ##
 ##
@@ -17,14 +18,14 @@ class ReportForm(forms.Form):
 ##
 ##
 class Reportreportexpiringdomains(SimpleReport):
-    title="Expiring Domains"
+    title = _("Expiring Domains")
     form=ReportForm
     def get_data(self,days,**kwargs):
         return self.from_query(title=self.title,
             columns=[
-                "Domain",
-                TableColumn("Expired",format="bool"),
-                TableColumn("Paid Till",format="date")],
+                _("Domain"),
+                TableColumn(_("Expired"), format="bool"),
+                TableColumn(_("Paid Till"), format="date")],
             query="""
                 SELECT name,paid_till<='now'::date,paid_till
                 FROM dns_dnszone

@@ -11,14 +11,15 @@ from noc.lib.app import ExtModelApplication, view
 from noc.lib.app.modelinline import ModelInline
 from noc.sa.models.managedobjectselector import (
     ManagedObjectSelector, ManagedObjectSelectorByAttribute)
+from noc.core.translation import ugettext as _
 
 
 class ManagedObjectSelectorApplication(ExtModelApplication):
     """
     ManagedObjectSelector application
     """
-    title = "Managed Object Selector"
-    menu = "Setup | Managed Object Selector"
+    title = _("Managed Object Selector")
+    menu = [_("Setup"), _("Managed Object Selector")]
     model = ManagedObjectSelector
     query_fields = ["name__icontains", "description__icontains"]
     attrs = ModelInline(ManagedObjectSelectorByAttribute)

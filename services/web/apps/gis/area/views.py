@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.gis.models import Area
+from noc.core.translation import ugettext as _
 
 
 class AreaApplication(ExtDocApplication):
     """
     Area application
     """
-    title = "Area"
-    menu = "Setup | Areas"
+    title = _("Area")
+    menu = [_("Setup"), _("Areas")]
     model = Area

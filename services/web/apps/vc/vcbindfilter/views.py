@@ -2,21 +2,22 @@
 ##----------------------------------------------------------------------
 ## vc.vcbindfilter application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.vc.models import VCBindFilter
+from noc.core.translation import ugettext as _
 
 
 class VCBindFilterApplication(ExtModelApplication):
     """
     VCBindFilter application
     """
-    title = "VC Bind Filters"
-    menu = "Setup | VC Bind Filters"
+    title = _("VC Bind Filters")
+    menu = [_("Setup"), _("VC Bind Filters")]
     model = VCBindFilter
 
     def field_vc_filter_expression(self, obj):

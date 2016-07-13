@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models.alarmclassconfig import AlarmClassConfig
+from noc.core.translation import ugettext as _
 
 
 class AlarmClassConfigApplication(ExtDocApplication):
     """
     AlarmClassConfig application
     """
-    title = "Alarm Class Config"
-    menu = "Setup | Alarm Class Config"
+    title = _("Alarm Class Config")
+    menu = [_("Setup"), _("Alarm Class Config")]
     model = AlarmClassConfig

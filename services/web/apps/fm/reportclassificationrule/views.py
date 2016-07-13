@@ -14,14 +14,15 @@ from django import forms
 from noc.lib.app.simplereport import SimpleReport, SectionRow
 from noc.fm.models import EventClassificationRule
 from noc.core.profile.loader import loader as profile_loader
+from noc.core.translation import ugettext as _
 
 
 class ReportForm(forms.Form):
-    profile = forms.ChoiceField(label="Profile",
+    profile = forms.ChoiceField(label=_("Profile"),
                                 choices=profile_loader.choices())
 
 class ReportClassificationRules(SimpleReport):
-    title="Classification Rules"
+    title = _("Classification Rules")
     form = ReportForm
 
     def get_data(self, profile):

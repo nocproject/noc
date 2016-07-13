@@ -11,14 +11,15 @@ from noc.lib.app import ExtApplication, view
 from noc.lib.serialize import json_decode
 from noc.sa.interfaces.base import StringParameter
 from noc.lib.collection import Collection
+from noc.core.translation import ugettext as _
 
 
 class JSONImportApplication(ExtApplication):
     """
     main.jsonimport application
     """
-    title = "JSON Import"
-    menu = "Setup | JSON Import"
+    title = _("JSON Import")
+    menu = [_("Setup"), _("JSON Import")]
 
     @view(url="^$", method=["POST"], access="launch",
           validate={

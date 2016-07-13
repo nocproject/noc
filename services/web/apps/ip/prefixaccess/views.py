@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.ip.models import PrefixAccess
+from noc.core.translation import ugettext as _
 
 
 class PrefixAccessApplication(ExtModelApplication):
     """
     PrefixAccess application
     """
-    title = "Prefix Access"
-    menu = "Setup | Prefix Access"
+    title = _("Prefix Access")
+    menu = [_("Setup"), _("Prefix Access")]
     model = PrefixAccess
     query_fields = ["user__username", "prefix"]
     query_condition = "icontains"

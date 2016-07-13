@@ -13,10 +13,11 @@ from noc.lib.app.reportapplication import ReportApplication
 from noc.fm.models import EventClassificationRule
 from noc.lib.text import indent
 from noc.main.models.collectioncache import CollectionCache
+from noc.core.translation import ugettext as _
 
 
 class ReportClassificationRules(ReportApplication):
-    title = "Local Classification Rules (JSON)"
+    title = _("Local Classification Rules (JSON)")
 
     def report_html(self):
         def is_local(r):

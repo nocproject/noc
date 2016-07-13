@@ -12,10 +12,11 @@ import re
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.core.profile.loader import loader as profile_loader
 from noc.fm.models import EventClassificationRule
+from noc.core.translation import ugettext as _
 
 
 class Reportreportrulesbyprofile(SimpleReport):
-    title = "Rules by Profile"
+    title = _("Rules by Profile")
 
     def get_data(self,**kwargs):
         # profile -> (syslog, snmp, other)

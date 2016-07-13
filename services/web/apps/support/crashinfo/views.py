@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## support.crashinfo application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,14 +11,15 @@ import uuid
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.support.models.crashinfo import Crashinfo
+from noc.core.translation import ugettext as _
 
 
 class CrashinfoApplication(ExtDocApplication):
     """
     Crashinfo application
     """
-    title = "Crashinfo"
-    menu = "Crashinfo"
+    title = _("Crashinfo")
+    menu = _("Crashinfo")
     model = Crashinfo
 
     @view(url="^(?P<id>\S+)/traceback/", method=["GET"],

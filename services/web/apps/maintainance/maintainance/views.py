@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.maintainance.models.maintainance import Maintainance
+from noc.core.translation import ugettext as _
 
 
 class MaintainanceApplication(ExtDocApplication):
     """
     Maintainance application
     """
-    title = "Maintainance"
-    menu = "Maintainance"
+    title = _("Maintainance")
+    menu = _("Maintainance")
     model = Maintainance

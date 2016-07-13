@@ -11,13 +11,15 @@ from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import ASSet
 from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
                                     StringParameter)
+from noc.core.translation import ugettext as _
+
 
 class ASSetApplication(ExtModelApplication):
     """
     ASSet application
     """
-    title = "AS Sets"
-    menu = "AS Sets"
+    title = _("AS Sets")
+    menu = _("AS Sets")
     model = ASSet
     query_fields = ["name__icontains","description__icontains",
                     "members__icontains"]

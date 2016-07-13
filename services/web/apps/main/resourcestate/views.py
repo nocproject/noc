@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.main.models import ResourceState
+from noc.core.translation import ugettext as _
 
 
 class ResourceStateApplication(ExtModelApplication):
     """
     ResourceState application
     """
-    title = "Resource States"
-    menu = "Setup | Resource States"
+    title = _("Resource States")
+    menu = [_("Setup"), _("Resource States")]
     model = ResourceState
     query_fields = ["name", "description"]
     query_condition = "icontains"

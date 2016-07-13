@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Parallel command execution
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -18,6 +18,7 @@ from noc.sa.models.reducetask import ReduceTask
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.permission import Permission
 from noc.lib.mac import MAC
+from noc.core.translation import ugettext as _
 
 
 ## Form clean for mac address
@@ -55,7 +56,7 @@ def reduce_task(task, snippet):
 
 
 class RunSnippetApplication(Application):
-    title = "Run Snippet"
+    title = _("Run Snippet")
 
     def extra_permissions(self):
         x = set([s.permission_name

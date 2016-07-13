@@ -14,13 +14,15 @@ from noc.lib.validators import *
 from noc.lib.ip import IP   
 from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
                                     StringParameter)
+from noc.core.translation import ugettext as _
+
 
 class PeerApplication(ExtModelApplication):
     """
     Peers application
     """
-    title = "Peers"
-    menu = "Peers"
+    title = _("Peers")
+    menu = _("Peers")
     model = Peer
     query_fields = ["remote_asn__icontains","description__icontains",
                     "local_ip__icontains","local_backup_ip__icontains",

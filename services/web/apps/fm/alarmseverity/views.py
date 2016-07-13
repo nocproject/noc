@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models import AlarmSeverity
+from noc.core.translation import ugettext as _
 
 
 class AlarmSeverityApplication(ExtDocApplication):
     """
     AlarmSeverity application
     """
-    title = "Alarm Severity"
-    menu = "Setup | Alarm Severities"
+    title = _("Alarm Severity")
+    menu = [_("Setup"), _("Alarm Severities")]
     model = AlarmSeverity
 
     def field_row_class(self, o):

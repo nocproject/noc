@@ -15,6 +15,7 @@ from django.contrib.auth.models import Group
 from django.contrib import admin
 from noc.services.web.apps.main.user.widgets import AccessWidget
 from noc.main.models.permission import Permission
+from noc.core.translation import ugettext as _
 
 
 class GroupChangeForm(forms.ModelForm):
@@ -61,7 +62,7 @@ class GroupAdmin(admin.ModelAdmin):
 class GroupApplication(ModelApplication):
     model = Group
     model_admin = GroupAdmin
-    menu = "Setup | Groups"
+    menu = [_("Setup"), _("Groups")]
     glyph = "users"
     title = "Groups"
 

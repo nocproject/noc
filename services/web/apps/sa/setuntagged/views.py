@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Set untagged ports
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 from django import forms
 ## NOC modules
 from noc.lib.app.saapplication import SAApplication
+from noc.core.translation import ugettext as _
 
 
 def reduce_untagged(task):
@@ -32,15 +33,15 @@ def reduce_untagged(task):
 
 
 class SetUntaggedApplication(SAApplication):
-    title = "Set Untagged"
-    menu = "Tasks | Set Untagged"
+    title = _("Set Untagged")
+    menu = [_("Tasks"), _("Set Untagged")]
     reduce_task = reduce_untagged
     map_task = "set_switchport"
 
     class SetUntaggedForm(forms.Form):
         vlan = forms.IntegerField()
         interfaces = forms.CharField(
-            help_text="Comma-separated list of interfaces")
+            help_text=_("Comma-separated list of interfaces"))
 
         def clean_interfaces(self):
             interfaces = [x.strip() for x in

@@ -10,14 +10,15 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
+from noc.core.translation import ugettext as _
 
 
 class NetworkSegmentApplication(ExtDocApplication):
     """
     NetworkSegment application
     """
-    title = "NetworkSegment"
-    menu = "Setup | Network Segments"
+    title = _("NetworkSegment")
+    menu = [_("Setup"), _("Network Segments")]
     model = NetworkSegment
     query_fields = ["name__icontains", "description__icontains"]
 

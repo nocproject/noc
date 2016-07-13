@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.fm.models import EventTrigger
+from noc.core.translation import ugettext as _
 
 
 class EventTriggerApplication(ExtModelApplication):
     """
     EventTrigger application
     """
-    title = "Event Triggers"
-    menu = "Setup | Event Triggers"
+    title = _("Event Triggers")
+    menu = [_("Setup"), _("Event Triggers")]
     model = EventTrigger

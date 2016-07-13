@@ -12,14 +12,15 @@ from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 from noc.fm.models.syntaxalias import SyntaxAlias
 from noc.lib.fileutils import temporary_file
+from noc.core.translation import ugettext as _
 
 
 class MIBApplication(ExtDocApplication):
     """
     MIB application
     """
-    title = "MIB"
-    menu = "MIB"
+    title = _("MIB")
+    menu = _("MIB")
     model = MIB
 
     @view(url="^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],

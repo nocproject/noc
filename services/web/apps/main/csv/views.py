@@ -18,10 +18,11 @@ from django.db import models
 from noc.lib.app import Application, view
 from noc.lib.csvutils import csv_export, csv_import, get_model_fields,\
     IR_FAIL, IR_SKIP, IR_UPDATE
+from noc.core.translation import ugettext as _    
 
 
 class CSVApplication(Application):
-    title = "CSV Export/Import"
+    title = _("CSV Export/Import")
 
     @view(url="^$", url_name="index", menu="Setup | CSV Export/Import",
         access="import")

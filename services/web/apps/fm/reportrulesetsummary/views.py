@@ -11,10 +11,11 @@ from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.fm.models import (AlarmClass, EventClass,
                            EventClassificationRule)
 from noc.lib.collection import Collection
+from noc.core.translation import ugettext as _
 
 
 class ReportRulesetSummary(SimpleReport):
-    title = "Ruleset Summary"
+    title = _("Ruleset Summary")
 
     def get_data(self, **kwargs):
         def get_count(cn, m):

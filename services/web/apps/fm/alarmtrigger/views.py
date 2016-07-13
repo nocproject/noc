@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.fm.models import AlarmTrigger
+from noc.core.translation import ugettext as _
 
 
 class AlarmTriggerApplication(ExtModelApplication):
     """
     AlarmTrigger application
     """
-    title = "Alarm Triggers"
-    menu = "Setup | Alarm Triggers"
+    title = _("Alarm Triggers")
+    menu = [_("Setup"), _("Alarm Triggers")]
     model = AlarmTrigger

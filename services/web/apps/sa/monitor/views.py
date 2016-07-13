@@ -8,14 +8,15 @@
 
 ## NOC modules
 from noc.lib.app import ExtApplication, view
+from noc.core.translation import ugettext as _
 
 
 class MonitorApplication(ExtApplication):
     """
     sa.monitor application
     """
-    title = "Monitor"
-    menu = "Monitor"
+    title = _("Monitor")
+    menu = _("Monitor")
     icon = "icon_monitor"
 
     mrt_config = {

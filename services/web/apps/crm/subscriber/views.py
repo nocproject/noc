@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.crm.models.subscriber import Subscriber
+from noc.core.translation import ugettext as _
 
 
 class SubscriberApplication(ExtDocApplication):
     """
     Subscriber application
     """
-    title = "Subscriber"
-    menu = "Subscribers"
+    title = _("Subscriber")
+    menu = _("Subscribers")
     model = Subscriber
     query_fields = ["name__icontains"]
 

@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## cm.validationpolicysettings application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -13,13 +13,14 @@ from noc.cm.models.validationpolicysettings import (
 from noc.cm.models.validationpolicy import ValidationPolicy
 from noc.sa.interfaces.base import (DictListParameter, DocumentParameter,
                                     BooleanParameter)
+from noc.core.translation import ugettext as _
 
 
 class ValidationPolicySettingsApplication(ExtDocApplication):
     """
     ValidationPolicySettings application
     """
-    title = "Validation Policy Settings"
+    title = _("Validation Policy Settings")
     model = ValidationPolicySettings
 
     MODEL_SCOPES = {

@@ -9,13 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import Organisation
+from noc.core.translation import ugettext as _
+
 
 class OrganisationApplication(ExtModelApplication):
     """
     Person application
     """
-    title = "Organisations"
-    menu = "Setup | Organisations"
+    title = _("Organisations")
+    menu = [_("Setup"), _("Organisations")]
     model = Organisation
     query_fields = ["organisation__icontains","org_name__icontains"]
 

@@ -13,13 +13,15 @@ from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.lib.dateutils import humanize_distance
 from noc.sa.interfaces.base import ModelParameter
 from noc.core.scheduler.job import Job
+from noc.core.translation import ugettext as _
+
 
 class GetNowApplication(ExtApplication):
     """
     sa.getnow application
     """
-    title = "Get Now"
-    menu = "Get Now"
+    title = _("Get Now")
+    menu = _("Get Now")
     icon = "icon_monitor"
 
     ignored_params = ["status", "_dc", "managed_object", "profile_name", "administrative_domain"]

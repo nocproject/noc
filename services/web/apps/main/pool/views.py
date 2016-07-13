@@ -9,13 +9,14 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.main.models.pool import Pool
+from noc.core.translation import ugettext as _
 
 
 class PoolApplication(ExtDocApplication):
     """
     Pool application
     """
-    title = "Pool"
-    menu = "Setup | Pools"
+    title = _("Pool")
+    menu = [_("Setup"), _("Pools")]
     model = Pool
     glyph = "database"

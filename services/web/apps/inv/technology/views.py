@@ -15,7 +15,7 @@ class TechnologyApplication(ExtDocApplication):
     """
     Technology application
     """
-    title = "Technology"
-    menu = "Setup | Technologies"
+    title = _("Technology")
+    menu = [_("Setup"), _("Technologies")]
     model = Technology
     search = ["name"]

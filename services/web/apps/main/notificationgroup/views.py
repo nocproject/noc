@@ -13,14 +13,15 @@ from noc.main.models import (NotificationGroup, NotificationGroupUser,
 from noc.lib.app.modelinline import ModelInline
 from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
                                     UnicodeParameter)
+from noc.core.translation import ugettext as _
 
 
 class NotificationGroupApplication(ExtModelApplication):
     """
     NotificationGroup application
     """
-    title = "Notification Group"
-    menu = "Setup | Notification Groups"
+    title = _("Notification Group")
+    menu = [_("Setup"), _("Notification Groups")]
     model = NotificationGroup
     glyph = "envelope-o"
 

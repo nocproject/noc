@@ -14,6 +14,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.macdb import MACDB
 from noc.inv.models.maclog import MACLog
 from noc.inv.models.interface import Interface
+from noc.core.translation import ugettext as _
 
 ##@todo: REST proxy for backend buffered output(paging support in history)
 ##@todo: search in field Managed Object/Port/Description
@@ -22,8 +23,8 @@ class MACApplication(ExtDocApplication):
     """
     MAC application
     """
-    title = "MacDB"
-    menu = "Mac DB"
+    title = _("MacDB")
+    menu = _("Mac DB")
     model = MACDB
 
     query_fields = ["mac"]

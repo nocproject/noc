@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import RIR
+from noc.core.translation import ugettext as _
 
 
 class RIRApplication(ExtModelApplication):
     """
     RIR application
     """
-    title = "RIR"
-    menu = "Setup | RIRs"
+    title = _("RIR")
+    menu = [_("Setup"), _("RIRs")]
     model = RIR

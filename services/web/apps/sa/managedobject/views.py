@@ -47,14 +47,15 @@ from noc.lib.validators import is_ipv4, is_ipv4_prefix
 from noc.lib.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.core.translation import ugettext as _
 
 
 class ManagedObjectApplication(ExtModelApplication):
     """
     ManagedObject application
     """
-    title = "Managed Objects"
-    menu = "Managed Objects"
+    title = _("Managed Objects")
+    menu = _("Managed Objects")
     model = ManagedObject
     query_condition = "icontains"
     query_fields = ["name", "description"]

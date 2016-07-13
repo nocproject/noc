@@ -17,7 +17,7 @@ class AddressRangeApplication(ExtModelApplication):
     AddressRanges application
     """
     title = "Address Ranges"
-    menu = "Setup | Address Ranges"
+    menu = [_("Setup"), _("Address Ranges")]
     model = AddressRange
     query_fields = ["name__icontains", "description__icontains"]
 

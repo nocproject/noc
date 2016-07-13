@@ -9,12 +9,13 @@
 ## Python modules
 import datetime
 ## Django modules
-from django.utils.translation import ugettext_lazy as _
 from django import forms
 ## NOC modules
 from noc.lib.app import Application, view, HasPerm
 from noc.lib.forms import NOCForm
 from noc.main.models import Checkpoint
+from noc.core.translation import ugettext as _
+
 
 class CheckpointAppplication(Application):
     title = _("Checkpoints")

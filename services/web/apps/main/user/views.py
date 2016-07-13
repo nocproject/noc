@@ -71,7 +71,7 @@ class UserApplication(ModelApplication):
     model = User
     model_admin = UserAdmin
     glyph = "user"
-    menu = "Setup | Users"
+    menu = [_("Setup"), _("Users")]
     icon = "icon_user"
     title = "Users"
 

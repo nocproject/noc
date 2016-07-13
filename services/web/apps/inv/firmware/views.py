@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.firmware import Firmware
+from noc.core.translation import ugettext as _
 
 
 class FirmwareApplication(ExtDocApplication):
     """
     Firmware application
     """
-    title = "Firmware"
-    menu = "Setup | Firmware"
+    title = _("Firmware")
+    menu = [_("Setup"), _("Firmware")]
     model = Firmware

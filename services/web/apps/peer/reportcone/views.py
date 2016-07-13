@@ -10,10 +10,11 @@
 from noc.lib.app.simplereport import SimpleReport, TableColumn, SectionRow
 from noc.peer.models import Peer, WhoisCache
 from noc.lib.ip import IP
+from noc.core.translation import ugettext as _
 
 
 class ReportLOC(SimpleReport):
-    title = "Cone Analysis"
+    title = _("Cone Analysis")
 
     def get_data(self):
         def ppower(prefix):

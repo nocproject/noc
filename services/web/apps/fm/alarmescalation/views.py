@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.core.translation import ugettext as _
 
 
 class AlarmEscalationApplication(ExtDocApplication):
     """
     AlarmEscalation application
     """
-    title = "Alarm Escalation"
-    menu = "Setup | Alarm Escalation"
+    title = _("Alarm Escalation")
+    menu = [_("Setup"), _("Alarm Escalation")]
     model = AlarmEscalation

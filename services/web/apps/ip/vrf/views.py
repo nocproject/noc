@@ -11,14 +11,15 @@ from noc.lib.app import ExtModelApplication, view
 from noc.ip.models import VRF, VRFGroup
 from noc.sa.interfaces.base import StringParameter, BooleanParameter,\
     ModelParameter, RDParameter, ListOfParameter, DictParameter
+from noc.core.translation import ugettext as _
 
 
 class VRFApplication(ExtModelApplication):
     """
     VRF application
     """
-    title = "VRFs"
-    menu = "VRFs"
+    title = _("VRFs)
+    menu = _("VRF")
     model = VRF
     query_fields = ["name", "rd", "description"]
 

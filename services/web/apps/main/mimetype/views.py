@@ -6,14 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
-from django.utils.translation import ugettext as _
 ## NOC modules
 from noc.lib.app import ExtModelApplication
 from noc.main.models import MIMEType
+from noc.core.translation import ugettext as _
 
 
 class MIMETypeApplication(ExtModelApplication):
     title = _("MIME Types")
     model = MIMEType
-    menu = "Setup | MIME Types"
+    menu = [_("Setup"), _("MIME Types")]

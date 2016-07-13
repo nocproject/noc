@@ -11,14 +11,15 @@ from noc.lib.app import ExtDocApplication, view
 from noc.gis.models.layer import Layer
 from noc.main.models.collectioncache import CollectionCache
 from noc.sa.interfaces.base import ColorParameter
+from noc.core.translation import ugettext as _
 
 
 class LayerApplication(ExtDocApplication):
     """
     Layer application
     """
-    title = "Layers"
-    menu = "Setup | Layers"
+    title = _("Layers")
+    menu = [_("Setup"), _("Layers")]
     model = Layer
 
     clean_fields = {

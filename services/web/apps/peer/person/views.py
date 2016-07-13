@@ -10,14 +10,15 @@
 from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import Person
 from noc.lib.app.repoinline import RepoInline
+from noc.core.translation import ugettext as _
 
 
 class PersonApplication(ExtModelApplication):
     """
     Person application
     """
-    title = "Persons/Roles"
-    menu = "Setup | Persons"
+    title = _("Persons/Roles")
+    menu = [_("Setup"), _("Persons")]
     model = Person
     query_fields = ["nic_hdl__icontains","person__icontains"]
 

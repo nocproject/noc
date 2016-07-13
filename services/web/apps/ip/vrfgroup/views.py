@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.ip.models import VRFGroup
+from noc.core.translation import ugettext as _
 
 
 class VRFGroupApplication(ExtModelApplication):
     """
     VRFGroup application
     """
-    title = "VRF Groups"
-    menu = "Setup | VRF Groups"
+    title = _("VRF Groups")
+    menu = [_("Setup"), _("VRF Groups")]
     model = VRFGroup
     query_condition = "icontains"
 

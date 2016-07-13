@@ -15,8 +15,8 @@ class TemplateApplication(ExtModelApplication):
     """
     Template application
     """
-    title = "Templates"
-    menu = "Setup | Templates"
+    title = _("Templates")
+    menu = [_("Setup"), _("Templates")]
     model = Template
     query_fields = ["name__icontains", "subject__icontains"]
 

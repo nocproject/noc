@@ -10,14 +10,15 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.wf.models.solution import Solution
 from noc.wf.models.workflow import Workflow
+from noc.core.translation import ugettext as _
 
 
 class SolutionApplication(ExtDocApplication):
     """
     Solution application
     """
-    title = "Solution"
-    menu = "Setup | Solutions"
+    title = _("Solution")
+    menu = [_("Setup"), _("Solutions")]
     model = Solution
 
     def field_wf_count(self, obj):

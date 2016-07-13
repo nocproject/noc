@@ -9,10 +9,11 @@
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.fm.models import MIB, ActiveEvent, EventClass, MIB
+from noc.core.translation import ugettext as _
 
 
 class ReportUnclassifiedOIDs(SimpleReport):
-    title = "Unclassified Trap OIDs"
+    title = _("Unclassified Trap OIDs")
 
     c_f = """
     function() {

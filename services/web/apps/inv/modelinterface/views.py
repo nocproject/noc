@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.modelinterface import ModelInterface
+from noc.core.translation import ugettext as _
 
 
 class ModelInterfaceApplication(ExtDocApplication):
     """
     ModelInterface application
     """
-    title = "Model Interface"
-    menu = "Setup | Model Interfaces"
+    title = _("Model Interface")
+    menu = [_("Setup"), _("Model Interfaces")]
     model = ModelInterface
     query_fields = ["name__icontains", "description__icontains"]
 

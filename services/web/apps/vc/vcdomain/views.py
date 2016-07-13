@@ -2,23 +2,23 @@
 ##----------------------------------------------------------------------
 ## vc.vcdomain application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.vc.models import VCDomain
+from noc.core.translation import ugettext as _
 
 
 class VCDomainApplication(ExtModelApplication):
     """
     VCDomain application
     """
-    title = "VCDomain"
-    menu = "Setup | VC Domains"
+    title = _("VCDomain")
+    menu = [_("Setup"), _("VC Domains")]
     model = VCDomain
-    icon = "icon_world_link"
     query_fields = ["name", "description"]
     query_condition = "icontains"
 

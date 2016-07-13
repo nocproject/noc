@@ -10,14 +10,15 @@
 from noc.lib.app import ExtDocApplication, view
 from noc.inv.models.capability import Capability
 from noc.main.models.doccategory import DocCategory
+from noc.core.translation import ugettext as _
 
 
 class CapabilityApplication(ExtDocApplication):
     """
     Capability application
     """
-    title = "Capability"
-    menu = "Setup | Capabilities"
+    title = _("Capability")
+    menu = [_("Setup"), _("Capabilities")]
     model = Capability
     query_fields = ["name", "description"]
     parent_model = DocCategory

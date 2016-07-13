@@ -9,14 +9,15 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.crm.models.supplier import Supplier
+from noc.core.translation import ugettext as _
 
 
 class SupplierApplication(ExtDocApplication):
     """
     Supplier application
     """
-    title = "Supplier"
-    menu = "Setup | Supplier"
+    title = _("Supplier")
+    menu = [_("Setup"), _("Supplier")]
     model = Supplier
     query_fields = ["name__icontains"]
 

@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## support.account application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,14 +10,15 @@
 from noc.lib.app import ExtApplication, view
 from noc.support.cp import CPClient
 from noc.sa.interfaces.base import StringParameter, REStringParameter
+from noc.core.translation import ugettext as _
 
 
 class AccountApplication(ExtApplication):
     """
     support.account application
     """
-    title = "Account"
-    menu = "Setup | Account"
+    title = _("Account")
+    menu = [_("Setup"), _("Account")]
 
     @view(url="^$", method=["GET"], access="launch", api=True)
     def api_get(self, request):

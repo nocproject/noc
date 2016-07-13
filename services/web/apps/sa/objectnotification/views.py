@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.sa.models.objectnotification import ObjectNotification
+from noc.core.translation import ugettext as _
 
 
 class ObjectNotificationApplication(ExtModelApplication):
     """
     ObjectNotification application
     """
-    title = "Object Notification"
-    menu = "Setup | Object Notification"
+    title = _("Object Notification")
+    menu = [_("Setup"), _("Object Notification")]
     model = ObjectNotification

@@ -18,7 +18,7 @@ class IPPoolApplication(ExtModelApplication):
     IPPool application
     """
     title = "IP Pool"
-    menu = "Setup | IP Pools"
+    menu = [_("Setup"), _("IP Pools")]
     model = IPPool
 
     def clean(self, data):

@@ -9,12 +9,13 @@
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.fm.models.ttsystem import TTSystem
+from noc.core.translation import ugettext as _
 
 
 class TTSystemApplication(ExtDocApplication):
     """
     TTSystem application
     """
-    title = "TT System"
-    menu = "Setup | TT System"
+    title = _("TT System")
+    menu = [_("Setup"), _("TT System")]
     model = TTSystem

@@ -12,14 +12,15 @@ from noc.lib.app.docinline import DocInline
 from noc.inv.models.coverage import Coverage
 from noc.inv.models.coveredobject import CoveredObject
 from noc.inv.models.coveredbuilding import CoveredBuilding
+from noc.core.translation import ugettext as _
 
 
 class CoverageApplication(ExtDocApplication):
     """
     Coverage application
     """
-    title = "Coverage"
-    menu = "Setup | Coverage"
+    title = _("Coverage")
+    menu = [_("Setup"), _("Coverage")]
     model = Coverage
     query_fields = ["name", "description"]
 

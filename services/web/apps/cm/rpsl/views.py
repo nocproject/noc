@@ -8,6 +8,7 @@
 from django.contrib import admin
 from noc.cm.repoapp import RepoApplication
 from noc.cm.models import RPSL
+from noc.core.translation import ugettext as _
 ##
 ## RPSL admin
 ##
@@ -21,4 +22,4 @@ class RPSLApplication(RepoApplication):
     repo="rpsl"
     model=RPSL
     model_admin=RPSLAdmin
-    menu="RPSL Objects"
+    menu = _("RPSL Objects")

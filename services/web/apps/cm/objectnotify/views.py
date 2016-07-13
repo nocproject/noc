@@ -8,6 +8,7 @@
 from django.contrib import admin
 from noc.lib.app import ModelApplication
 from noc.cm.models import ObjectNotify
+from noc.core.translation import ugettext as _
 ##
 ## ObjectNotify admin
 ##
@@ -20,4 +21,4 @@ class ObjectNotifyAdmin(admin.ModelAdmin):
 class ObjectNotifyApplication(ModelApplication):
     model=ObjectNotify
     model_admin=ObjectNotifyAdmin
-    menu="Setup | Object Notifies"
+    menu = [_("Setup"), _("Object Notifies")]

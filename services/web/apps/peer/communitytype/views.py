@@ -9,12 +9,14 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.peer.models import CommunityType
+from noc.core.translation import ugettext as _
+
 
 class CommunityTypeApplication(ExtModelApplication):
     """
     Community Types application
     """
-    title = "Community Types"
-    menu = "Setup | Community Types"
+    title = _("Community Types")
+    menu = [_("Setup"), _("Community Types")]
     model = CommunityType
     query_fields = ["name__icontains"]

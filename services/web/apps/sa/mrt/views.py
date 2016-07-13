@@ -16,6 +16,7 @@ from noc.sa.models.reducetask import ReduceTask
 from noc.sa.models.mrtconfig import MRTConfig
 from noc.main.models.permission import Permission
 from noc.lib.serialize import json_decode
+from noc.core.translation import ugettext as _
 
 
 class MRTAppplication(ExtApplication):
