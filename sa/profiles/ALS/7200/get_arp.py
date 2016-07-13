@@ -27,4 +27,23 @@ class Script(BaseScript):
             and (interface != match.group("interface")):
                 continue
             r.append(match.groupdict())
+        cards = self.profile.fill_cards(self)
+        for c in cards:
+            if c["s"]:
+                self.cli("join 0/%s" % c["n"])
+                for match in self.rx_line.finditer(self.cli("show arp switch")):
+                    mac = match.group("mac")
+                    ip = match.group("ip")
+                    found = False
+                    for i in r:
+                        if (i["ip"] == ip) and (i["mac"] == mac):
+                            found = True
+                            break
+                    if not found:
+                        r += [{
+                            "mac": mac,
+                            "ip": ip,
+                            "interface": "1/%s" % match.group("interface")
+                        }]
+                self.cli("quit")
         return r

@@ -16,7 +16,7 @@ from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Script(BaseScript):
-    name = "Iskratel.MSAN.get_mac_address_table"
+    name = "ALS.7200.get_mac_address_table"
     interface = IGetMACAddressTable
 
     rx_all = re.compile(
