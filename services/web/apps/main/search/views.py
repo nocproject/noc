@@ -33,9 +33,10 @@ class SearchApplication(ExtApplication):
             ]
 
         return [{
-            "id": "%s:%s" % (qr.model, qr.object),
-            "title": str(qr.title),
-            "card": str(qr.card),
-            "tags:": [str(x) for x in qr.tags],
-            "info": get_info(qr.model, qr.object)
+            "id": "%s:%s" % (qr["model"], qr["object"]),
+            "title": str(qr["title"]),
+            "card": str(qr["card"]),
+            "tags:": [str(x) for x in qr["tags"]],
+            "info": get_info(qr["model"], qr["object"]),
+            "score": qr["score"]
         } for qr in TextIndex.search(query)]

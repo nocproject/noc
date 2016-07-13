@@ -243,9 +243,7 @@ class Site(object):
                     app_logger.debug("API %s %s %s",
                                      request.method, request.path, a)
                 # Call handler
-                v.__dict__["hits_metric"] += 1
-                with v.__dict__["time_metric"].timer():
-                    r = v(request, *args, **kwargs)
+                r = v(request, *args, **kwargs)
                 # Dump SQL statements
                 if self.log_sql_statements:
                     from django.db import connections
@@ -262,10 +260,10 @@ class Site(object):
                     if x:
                         x = " (%s)" % x
                     app_logger.debug("SQL statements: %d%s" % (tsc, x))
-            except PermissionDenied, why:
-                return HttpResponseForbidden(why)
-            except Http404, why:
-                return HttpResponseNotFound(why)
+            except PermissionDenied as e:
+                return HttpResponseForbidden(e)
+            except Http404 as e:
+                return HttpResponseNotFound(e)
             except:
                 # Generate 500
                 r = HttpResponse(
@@ -403,13 +401,6 @@ class Site(object):
                     m = umap.get(u.url, [])
                     m += [(u, view)]
                     umap[u.url] = m
-            vn = view.__name__
-            if vn.startswith("api_"):
-                vn = vn[4:]
-            elif vn.startswith("view_"):
-                vn = vn[5:]
-            view.__dict__["hits_metric"] = app.metrics.add_metric("%s.hits" % vn)
-            view.__dict__["time_metric"] = app.metrics.add_metric("%s.time" % vn)
         for url in umap:
             mm = {}
             names = set()

@@ -322,17 +322,17 @@ class BEREncoder(object):
         if data == 0:
             return "\x02\x01\x00"
         elif data > 0:
-            r = self.struct_Q(data).lstrip("\x00")
+            r = self.struct_Q.pack(data).lstrip("\x00")
             if r[0] >= "\x80":
                 r = "\x00" + r
         elif data < 0:
             data = -data
-            r = self.struct_Q(data).lstrip("\x00")
+            r = self.struct_Q.pack(data).lstrip("\x00")
             l = len(r)
             comp = 1 << (l * 8 - 1)
             if comp < data:
                 comp <<= 8
-            r = self.struct_Q(comp - data).lstrip("\x00")
+            r = self.struct_Q.pack(comp - data).lstrip("\x00")
             if r:
                 r = chr(ord(r[0]) | 0x80) + r[1:]
             else:

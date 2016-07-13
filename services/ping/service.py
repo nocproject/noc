@@ -131,6 +131,7 @@ class PingService(Service):
         for d in xd & nd:
             if self.source_map[d]["interval"] != sm[d]["interval"] or self.source_map[d]["report_rtt"] != sm[d]["report_rtt"]:
                 self.update_probe(d, sm[d])
+        self.perf_metrics["ping_objects"] = len(self.ping_tasks)
 
     def on_object_map_change(self, topic):
         self.logger.info("Object mappings changed. Rerequesting")
@@ -152,6 +153,7 @@ class PingService(Service):
             self.report_rtt[ip] = data["name"]
         else:
             self.report_rtt[ip] = None
+        self.perf_metrics["ping_probe_create"] += 1
 
     def delete_probe(self, ip):
         if ip not in self.source_map:
@@ -161,6 +163,7 @@ class PingService(Service):
         pt.stop()
         del self.source_map[ip]
         del self.report_rtt[ip]
+        self.perf_metrics["ping_probe_delete"] += 1
 
     def update_probe(self, ip, data):
         self.logger.info("Update probe: %s (%ds)", ip, data["interval"])
@@ -170,6 +173,7 @@ class PingService(Service):
             self.report_rtt[ip] = data["name"]
         else:
             self.report_rtt[ip] = None
+        self.perf_metrics["ping_probe_update"] += 1
 
     @tornado.gen.coroutine
     def ping_check(self, address):
@@ -178,6 +182,7 @@ class PingService(Service):
         """
         if address not in self.ping_tasks:
             return
+        self.perf_metrics["ping_check_total"] += 1
         t0 = time.time()
         rtt = yield self.ping.ping_check_rtt(
             address,
@@ -185,6 +190,10 @@ class PingService(Service):
             timeout=self.config.timeout
         )
         s = rtt is not None
+        if s:
+            self.perf_metrics["ping_check_success"] += 1
+        else:
+            self.perf_metrics["ping_check_fail"] += 1
         smd = self.source_map.get(address)
         if s is not None and smd and s != smd["status"]:
             self.logger.info(

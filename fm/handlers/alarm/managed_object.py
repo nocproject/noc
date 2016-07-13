@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.inv.models.objectuplink import ObjectUplink
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.core.perf import metrics
 
 
 def topology_rca(alarm, seen=None):
@@ -40,6 +41,7 @@ def topology_rca(alarm, seen=None):
         # All uplinks are faulty
         # Correlate with the first one (shortest path)
         alarm.set_root(na[uplinks[0]])
+        metrics["alarm_correlated_topology"] += 1
         # Perform correlation of uplink's alarms
         for u in uplinks:
             topology_rca(na[u], seen)

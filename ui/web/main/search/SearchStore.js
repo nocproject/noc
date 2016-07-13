@@ -29,6 +29,10 @@ Ext.define("NOC.main.search.SearchStore", {
         {
             name: "info",
             type: "auto"
+        },
+        {
+            name: "score",
+            type: "auto"
         }
     ],
     data: []
