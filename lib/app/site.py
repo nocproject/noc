@@ -2,12 +2,11 @@
 ##----------------------------------------------------------------------
 ## Site implementation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-import re
 import types
 import glob
 import os
@@ -16,7 +15,7 @@ import hashlib
 import logging
 import json
 from collections import defaultdict
-## Django modules
+## Third-party modules
 from django.http import HttpResponse, HttpResponseNotFound,\
                         HttpResponseForbidden, Http404
 from django.conf.urls.defaults import *
@@ -24,6 +23,7 @@ from django.core.urlresolvers import *
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django.db.models.loading import load_app
+import six
 ## NOC modules
 from noc.settings import INSTALLED_APPS, config
 from noc.lib.debug import error_report
@@ -299,7 +299,11 @@ class Site(object):
         if not menu:
             return
         path = [app.module]
-        parts = [x.strip() for x in menu.split("|")]
+        if isinstance(menu, six.string_types):
+            parts = menu.split("|")
+        else:
+            parts = menu
+        parts = [x.strip() for x in parts]
         root = self.menu[-1]
         while len(parts) > 1:
             p = parts.pop(0)
