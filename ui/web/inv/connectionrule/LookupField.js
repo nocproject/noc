@@ -8,6 +8,6 @@ console.debug("Defining NOC.inv.connectionrule.LookupField");
 
 Ext.define("NOC.inv.connectionrule.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.inv.connectionrule.LookupField"
+    alias: "widget.inv.connectionrule.LookupField",
     uiStyle: "medium"
 });
