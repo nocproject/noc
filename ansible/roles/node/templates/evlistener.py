@@ -53,6 +53,12 @@ def main():
                 severity = 'warning'
             elif event.endswith('EXITED'):
                 severity = 'minor'
+            elif event.endswith('STATE_STOPPING'):
+                listener.send_cmd('RESULT 2\nOK')
+                continue
+            elif event.endswith('STATE_STARTING'):
+                listener.send_cmd('RESULT 2\nOK')
+                continue
             else:
                 severity = 'normal'
 
