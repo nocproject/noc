@@ -22,6 +22,8 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
             handler: me.onRefresh
         });
 
+        me.totalField = Ext.create("Ext.form.field.Display");
+
         me.store = Ext.create("Ext.data.Store", {
             model: "NOC.sa.managedobjectselector.ObjectsModel"
         });
@@ -77,7 +79,12 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
                 {
                     xtype: "toolbar",
                     dock: "top",
-                    items: [me.getCloseButton()]
+                    items: [
+                        me.getCloseButton(),
+                        me.refreshButton,
+                        "->",
+                        me.totalField
+                    ]
                 }
             ]
         });
@@ -98,6 +105,7 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
                 var data = Ext.decode(response.responseText);
                 me.grid.setTitle(record.get("name") + " objects");
                 me.store.loadData(data);
+                me.totalField.setValue(__("Total: ") + data.length);
             },
             failure: function() {
                 NOC.error("Failed to get data");
