@@ -20,7 +20,8 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^\s*.*(?P<p_type>eth|adl)\s+(?P<mac>\S+)\s+(?P<type>dynamic|static)\s+"
         r"(?P<interfaces>\d+\s*/\d+\s*/\d+)\s+"
-        r"(?P<vpi>\d+|\-)\s+(?P<vci>\d+|\-)\s+(?P<vlan_id>\d+)\s*\n",
+        r"(?P<vpi>\d+|\-)\s+(?P<vci>\d+|\-)\s+"
+        r"((?P<FLOWTYPE>\d+|\-)\s+(?P<FLOWPARA>\d+|\-)\s+)?(?P<vlan_id>\d+)\s*\n",
         re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
@@ -31,13 +32,13 @@ class Script(BaseScript):
         for i in range(len(ports)):
             p = 0
             while p <= int(ports[i]["n"]):
-                if ports[i]["t"] == "ADSL":
+                if (ports[i]["t"] == "ADSL") and ports[i]["s"][p]:
                     try:
                         v = self.cli("display mac-address %s 0/%d/%d" % (adsl_port, i, p))
                     except self.CLISyntaxError:
                         v = self.cli("display mac-address port 0/%d/%d" % (i, p))
                         adsl_port = "port"
-                if ports[i]["t"] == "GE":
+                if (ports[i]["t"] in ["GE", "FE"]) and ports[i]["s"][p]:
                     try:
                         v = self.cli("display mac-address %s 0/%d/%d" % (ethernet_port, i, p))
                     except self.CLISyntaxError:

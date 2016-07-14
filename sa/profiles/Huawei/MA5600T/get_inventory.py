@@ -38,7 +38,7 @@ class Script(BaseScript):
             "part_no": platform,
         }]
         for i in range(self.profile.get_slots_n(self)):
-            v = self.cli("display  version 0/%d" % i)
+            v = self.cli("display version 0/%d" % i)
             match = self.rx_slot.search(v)
             if match:
                 r += [{
