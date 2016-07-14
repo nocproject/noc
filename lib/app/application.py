@@ -134,8 +134,10 @@ class Application(object):
         parts = self.__class__.__module__.split(".")
         self.module = parts[4]
         self.app = parts[5]
-        self.module_title = __import__("noc.%s" % self.module, {}, {},
-            ["MODULE_NAME"]).MODULE_NAME
+        self.module_title = __import__(
+            "noc.services.web.apps.%s" % self.module, {}, {},
+            ["MODULE_NAME"]
+        ).MODULE_NAME
         self.app_id = "%s.%s" % (self.module, self.app)
         self.menu_url = None   # Set by site.autodiscover()
         self.logger = logging.getLogger(self.app_id)
