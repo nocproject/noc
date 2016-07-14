@@ -17,7 +17,7 @@ class DNSZoneProfileApplication(ExtModelApplication):
     DNSZoneProfiles application
     """
     title = _("Zone Profiles")
-    menu = _("Setup | Zone Profiles")
+    menu = [_("Setup"), _("Zone Profiles")]
     model = DNSZoneProfile
 
     def field_masterslabel(self, o):

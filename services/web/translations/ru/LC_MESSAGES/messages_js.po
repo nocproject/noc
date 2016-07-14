@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-30 11:29+0300\n"
-"PO-Revision-Date: 2016-06-30 11:57+0300\n"
+"POT-Creation-Date: 2016-07-14 00:19+0300\n"
+"PO-Revision-Date: 2016-07-14 08:44+0300\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -20,942 +20,998 @@ msgstr ""
 "Generated-By: Babel 2.3.4\n"
 "X-Generator: Poedit 1.8.8\n"
 
-#: fm/apps/alarm/js/AlarmPanel.js:44
-msgid "Overview"
-msgstr "Обзор"
+#: ui/web/cm/validationrule/Application.js:69
+msgid "Scope"
+msgstr ""
 
-#: fm/apps/alarm/js/AlarmPanel.js:49
-msgid "Help"
-msgstr "Помощь"
+#: ui/web/cm/validationrule/Application.js:101
+msgid "Handler"
+msgstr "Обработчик"
 
-#: fm/apps/alarm/js/AlarmPanel.js:54
-msgid "Data"
-msgstr "Данные"
+#: ui/web/cm/validationrule/Application.js:114
+#: ui/web/cm/validationrule/Application.js:138
+msgid "Action"
+msgstr "Действие"
 
-#: fm/apps/alarm/js/AlarmPanel.js:69
-msgid "New message"
-msgstr "Новое сообщение"
+#: ui/web/cm/validationrule/Application.js:35
+#: ui/web/cm/validationrule/Application.js:50
+#: ui/web/cm/validationrule/HitsPanel.js:56
+msgid "Hits"
+msgstr "Срабатываний"
 
-#: fm/apps/alarm/js/AlarmPanel.js:81
-msgid "Log"
-msgstr "История"
-
-#: fm/apps/alarm/js/AlarmPanel.js:87 fm/apps/alarm/js/AlarmPanel.js:131
-#: fm/apps/alarm/js/AlarmPanel.js:172
-msgid "Time"
-msgstr "Время"
-
-#: fm/apps/alarm/js/AlarmPanel.js:105
-msgid "Message"
-msgstr "Сообщение"
-
-#: fm/apps/alarm/js/AlarmPanel.js:120 fm/apps/alarm/js/Application.js:398
-msgid "Events"
-msgstr "События"
-
-#: fm/apps/alarm/js/AlarmPanel.js:137 fm/apps/alarm/js/AlarmPanel.js:184
-#: fm/apps/alarm/js/Application.js:123 fm/apps/alarm/js/Application.js:240
-msgid "Class"
-msgstr "Класс"
-
-#: fm/apps/alarm/js/AlarmPanel.js:143 fm/apps/alarm/js/AlarmPanel.js:189
-msgid "Subject"
-msgstr "Тема"
-
-#: fm/apps/alarm/js/AlarmPanel.js:159
-msgid "Alarms"
-msgstr "Аварии"
-
-#: fm/apps/alarm/js/AlarmPanel.js:178 fm/apps/alarm/js/Application.js:93
-#: fm/apps/alarm/js/Application.js:228
+#: ui/web/cm/validationrule/Application.js:148
+#: ui/web/cm/validationrule/HitsPanel.js:70 ui/web/fm/alarm/AlarmPanel.js:178
+#: ui/web/fm/alarm/Application.js:93 ui/web/fm/alarm/Application.js:228
 msgid "Object"
 msgstr "Объект"
 
-#: fm/apps/alarm/js/AlarmPanel.js:214
-msgid "Clear"
-msgstr "Очистить"
-
-#: fm/apps/alarm/js/AlarmPanel.js:221
-msgid "Watch"
-msgstr "Подписаться"
-
-#: fm/apps/alarm/js/AlarmPanel.js:229
-msgid "Set Root Cause"
-msgstr "Установить причину"
-
-#: fm/apps/alarm/js/AlarmPanel.js:236
-msgid "Show Map"
-msgstr "Карта"
-
-#: fm/apps/alarm/js/AlarmPanel.js:243
-msgid "Show Object"
-msgstr "Объект"
-
-#: fm/apps/alarm/js/AlarmPanel.js:308
-msgid "Failed to get alarm"
-msgstr "Не удалось получить данные"
-
-#: fm/apps/alarm/js/AlarmPanel.js:430
-msgid "Failed to post message"
-msgstr "Не удалось послать сообщение"
-
-#: fm/apps/alarm/js/AlarmPanel.js:459
-msgid "Clear alarm?"
-msgstr "Очистить аварию?"
-
-#: fm/apps/alarm/js/AlarmPanel.js:460
-msgid "Please confirm the alarm is closed and must be cleared?"
-msgstr "Пожалуйста, подтвердите, что проблема решена и авария должна быть закрыта"
-
-#: fm/apps/alarm/js/AlarmPanel.js:473
-msgid "Failed to clear alarm"
-msgstr "Не удалось очистить аварию"
-
-#: fm/apps/alarm/js/AlarmPanel.js:493
-msgid "Failed to set watcher"
-msgstr "Не удалось подписаться"
-
-#: fm/apps/alarm/js/AlarmPanel.js:502
-msgid "Set root cause"
-msgstr "Установить первопричину"
-
-#: fm/apps/alarm/js/AlarmPanel.js:503
-msgid "Please enter root cause alarm id"
-msgstr "Пожалуйста, введите ID первопричины"
-
-#: fm/apps/alarm/js/AlarmPanel.js:517
-msgid "Failed to set root cause"
-msgstr "Не удалось установить первопричину"
-
-#: fm/apps/alarm/js/Application.js:55
-msgid "Toggle autoreload"
-msgstr "Переключить автозагрузку"
-
-#: fm/apps/alarm/js/Application.js:65
-msgid "Active"
-msgstr "Активный"
-
-#: fm/apps/alarm/js/Application.js:67
-msgid "Show active alarms"
-msgstr "Показывать активные аварии"
-
-#: fm/apps/alarm/js/Application.js:71
-msgid "Archive"
-msgstr "Архив"
-
-#: fm/apps/alarm/js/Application.js:72
-msgid "Show archived alarms"
-msgstr "Показывать архивные аварии"
-
-#: fm/apps/alarm/js/Application.js:82
-msgid "Adm. Domain"
-msgstr "Зона ответсвенности"
-
-#: fm/apps/alarm/js/Application.js:155
-msgid "Root only"
-msgstr "Первопричина"
-
-#: fm/apps/alarm/js/Application.js:157
-msgid "Show only root causes"
-msgstr "Показывать только первопричину"
-
-#: fm/apps/alarm/js/Application.js:161 fm/apps/alarm/js/Application.js:179
-msgid "All"
-msgstr "Все"
-
-#: fm/apps/alarm/js/Application.js:162 fm/apps/alarm/js/Application.js:181
-#: fm/apps/alarm/js/Application.js:200
-msgid "Show all alarms"
-msgstr "Показывать все аварии"
-
-#: fm/apps/alarm/js/Application.js:175
-msgid "Show only waiting confirmantion"
-msgstr "Показывать только ожидающие подтверждения"
-
-#: fm/apps/alarm/js/Application.js:193
-msgid "Hide maintainance"
-msgstr "Скрыть РНР"
-
-#: fm/apps/alarm/js/Application.js:194
-msgid "Hide alarms covered by maintainance"
-msgstr "Скрывать аварии, накрытые РНР"
-
-#: fm/apps/alarm/js/Application.js:199
-msgid "Show"
-msgstr "Показать"
-
-#: fm/apps/alarm/js/Application.js:204
-msgid "Only"
-msgstr "Только"
-
-#: fm/apps/alarm/js/Application.js:205
-msgid "Show only alarms covered by maintainance"
-msgstr "Показывать только аварии, накрытые РНР"
-
-#: fm/apps/alarm/js/Application.js:224 fm/apps/alarm/js/Application.js:269
-msgid "Filter"
-msgstr "Фильтр"
-
-#: fm/apps/alarm/js/Application.js:291
-msgid "By Date"
-msgstr "По дате"
-
-#: fm/apps/alarm/js/Application.js:314
-msgid "Show map"
-msgstr "Карта"
-
-#: fm/apps/alarm/js/Application.js:320
-msgid "Show object"
-msgstr "Объект"
-
-#: fm/apps/alarm/js/Application.js:334
-msgid "Time/Duration"
-msgstr "Время/Длительность"
-
-#: fm/apps/alarm/js/Application.js:344
-msgid "Object/Segment"
-msgstr "Объект/Сегмент"
-
-#: fm/apps/alarm/js/Application.js:354
-msgid "Address/Platform"
-msgstr "Адрес/Платформа"
-
-#: fm/apps/alarm/js/Application.js:374
-msgid "Subject/Class"
-msgstr "Тема/Класс"
-
-#: fm/apps/alarm/js/Application.js:385
-msgid "Summary/TT"
-msgstr "Затронуто/ТТ"
-
-#: fm/apps/alarm/js/Application.js:631
-msgid "Total: "
-msgstr "Итог:"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:11
-msgid "Thresholds"
-msgstr "Пороги"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:32
-msgid "Metric"
-msgstr "Метрика"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:42
-#: sa/apps/managedobjectprofile/js/Application.js:47
-#: sa/apps/managedobjectprofile/js/Application.js:147
-msgid "Level"
-msgstr "Уровень"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:47
-msgid "Value"
-msgstr "Значение"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:53
-msgid "Condition"
-msgstr "Условие"
-
-#: fm/apps/alarm/js/plugins/Thresholds.js:58
-msgid "Threshold"
-msgstr "Порог"
-
-#: fm/apps/alarmescalation/js/Application.js:49
-msgid "Global limit"
-msgstr "Глобальный лимит"
-
-#: fm/apps/alarmescalation/js/Application.js:56
-msgid "Alarm Classes"
-msgstr "Классы аварий"
-
-#: fm/apps/alarmescalation/js/Application.js:59
-msgid "Alarm Class"
-msgstr "Класс аварии"
-
-#: fm/apps/alarmescalation/js/Application.js:70
-msgid "Pre Reasons"
-msgstr "Предв. диагностика"
-
-#: fm/apps/alarmescalation/js/Application.js:73
-msgid "TT System"
-msgstr "Система TT"
-
-#: fm/apps/alarmescalation/js/Application.js:80
-msgid "Pre Reason"
-msgstr "Предв. диагностика"
-
-#: fm/apps/alarmescalation/js/Application.js:90
-msgid "Escalations"
-msgstr "Эскалации"
-
-#: fm/apps/alarmescalation/js/Application.js:93
-msgid "Delay"
-msgstr "Задержка"
-
-#: fm/apps/alarmescalation/js/Application.js:99
-msgid "Adm. domain"
-msgstr "Зона ответсвенности"
-
-#: fm/apps/alarm/js/Application.js:103
-#: fm/apps/alarmescalation/js/Application.js:106
-msgid "Selector"
-msgstr "Селектор"
-
-#: fm/apps/alarmescalation/js/Application.js:113
-#: main/apps/userprofile/js/Application.js:51
-msgid "Time Pattern"
-msgstr "Маска времени"
-
-#: fm/apps/alarmescalation/js/Application.js:119
-msgid "Notification Group"
-msgstr "Группа рассылки"
-
-#: fm/apps/alarmescalation/js/Application.js:126
-msgid "Open Template"
-msgstr "Шаблон открытия"
-
-#: fm/apps/alarmescalation/js/Application.js:133
-msgid "Clear Template"
-msgstr "Шаблон закрытия"
-
-#: fm/apps/alarmescalation/js/Application.js:140
-msgid "TT"
-msgstr "TT"
-
-#: fm/apps/alarm/js/Application.js:174
-#: fm/apps/alarmescalation/js/Application.js:147
-msgid "Wait TT"
-msgstr "Ждать TT"
-
-#: fm/apps/alarmescalation/js/Application.js:154
-msgid "Stop"
-msgstr "Окончание"
-
-#: fm/apps/alarmseverity/js/Application.js:24
-msgid "Builtin"
-msgstr "Встроен"
-
-#: fm/apps/alarm/js/Application.js:364
-#: fm/apps/alarmseverity/js/Application.js:31
-#: fm/apps/alarmseverity/js/Application.js:69
-msgid "Severity"
-msgstr "Серьезность"
-
-#: fm/apps/alarmseverity/js/Application.js:37
-#: fm/apps/alarmseverity/js/Application.js:75
-msgid "Min. Weight"
-msgstr "Мин. вес"
-
-#: fm/apps/alarmseverity/js/Application.js:58
-msgid "UUID"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:81
-#: sa/apps/managedobjectprofile/js/Application.js:154
-msgid "Style"
-msgstr "Стиль"
-
-#: fm/apps/alarmseverity/js/Application.js:87
-msgid "Sound"
-msgstr "Звук"
-
-#: fm/apps/alarmseverity/js/Application.js:93
-msgid "Volume"
-msgstr "Громкость"
-
-#: fm/apps/alarmseverity/js/Application.js:113
-msgid "JSON"
-msgstr ""
-
-#: fm/apps/alarmseverity/js/Application.js:115
-msgid "Show JSON"
-msgstr "Показ JSON"
-
-#: fm/apps/alarmseverity/js/Application.js:121
-#: fm/apps/alarmseverity/js/Application.js:123
-msgid "Test Sound"
-msgstr "Тест звука"
-
-#: fm/apps/alarm/js/AlarmPanel.js:93 fm/apps/alarm/js/Application.js:133
-#: fm/apps/reportalarmdetail/js/Application.js:35
-msgid "From"
-msgstr "С"
-
-#: fm/apps/alarm/js/AlarmPanel.js:99 fm/apps/alarm/js/Application.js:143
-#: fm/apps/reportalarmdetail/js/Application.js:43
-msgid "To"
-msgstr "По"
-
-#: fm/apps/reportalarmdetail/js/Application.js:56
-msgid "Download"
-msgstr "Загрузить"
-
-#: fm/apps/alarm/js/Application.js:113 fm/apps/alarm/js/Application.js:234
-#: inv/apps/map/js/Application.js:35
-msgid "Segment"
-msgstr "Сегмент"
-
-#: inv/apps/map/js/Application.js:61
-msgid "Reload"
-msgstr "Перезагрузить"
-
-#: inv/apps/map/js/Application.js:68 inv/apps/map/js/MapPanel.js:135
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:26
-msgid "Edit"
-msgstr "Редактировать"
-
-#: inv/apps/map/js/Application.js:71
-msgid "Edit map"
-msgstr "Редактировать карту"
-
-#: inv/apps/map/js/Application.js:78
-#: main/apps/userprofile/js/Application.js:156
-msgid "Save"
-msgstr "Сохранить"
-
-#: inv/apps/map/js/Application.js:86
-msgid "Revert"
-msgstr "Отменить"
-
-#: inv/apps/map/js/Application.js:94
-msgid "New layout"
-msgstr "Новая раскладка"
-
-#: inv/apps/map/js/Application.js:149
-msgid "Show static map"
-msgstr "Статичная карта"
-
-#: inv/apps/map/js/Application.js:160
-msgid "Show interface load"
-msgstr "Загрузка интерфейсов"
-
-#: inv/apps/map/js/Application.js:173
-msgid "Show STP topology"
-msgstr "Показ топологии STP"
-
-#: inv/apps/map/js/Application.js:318
-msgid "Reset Layout"
-msgstr "Сбросить раскладку"
-
-#: inv/apps/map/js/Application.js:319
-msgid "Would you like to reset current layout and generate new?"
-msgstr "Сбросить раскладку карты и перестроить заново?"
-
-#: inv/apps/map/js/MapPanel.js:129
-msgid "View Card"
-msgstr "Просмотр карточки"
-
-#: inv/apps/map/js/MapPanel.js:832
-msgid "Failed to get STP status"
-msgstr "Не удалось получить данные"
-
-#: inv/apps/map/js/SelectIconForm.js:43
-msgid "Set"
-msgstr "Установить"
-
-#: inv/apps/map/js/inspectors/LinkInspector.js:11
-msgid "Link Inspector"
-msgstr "Свойства линка"
-
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:11
-msgid "Object Inspector"
-msgstr "Свойства объекта"
-
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:34
-msgid "View card"
-msgstr "Просмотр карточки"
-
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:42
-msgid "Jump to Segment"
-msgstr "Перейти в сегмент"
-
-#: inv/apps/map/js/MapPanel.js:141
-#: inv/apps/map/js/inspectors/ManagedObjectInspector.js:50
-msgid "Show dashboard"
-msgstr "Показать графики"
-
-#: inv/apps/map/js/inspectors/SegmentInspector.js:11
-msgid "Segment Inspector"
-msgstr "Свойства сегмента"
-
-#: inv/apps/unknownmodel/js/Application.js:47
-msgid "Remove"
-msgstr "Удалить"
-
-#: main/apps/desktop/js/Application.js:140
-msgid "Starting {0}"
-msgstr "Запуск {0}"
-
-#: main/apps/desktop/js/ChangeCredentials.js:11
-msgid "Change Password"
-msgstr "Смена пароля"
-
-#: main/apps/desktop/js/ChangeCredentials.js:46
-msgid "Reset"
-msgstr "Сброс"
-
-#: main/apps/desktop/js/ChangeCredentials.js:52
-msgid "Change"
-msgstr "Сменить"
-
-#: main/apps/desktop/js/ChangeCredentials.js:103
-msgid "Credentials has been changed"
-msgstr "Пароль изменен"
-
-#: main/apps/desktop/js/ChangeCredentials.js:106
-#: main/apps/desktop/js/ChangeCredentials.js:111
-msgid "Failed to change credentials: "
-msgstr "Не удалось сменить пароль"
-
-#: main/apps/desktop/js/HeaderPanel.js:35
-msgid "Anonymous"
-msgstr "Анонимный"
-
-#: main/apps/desktop/js/HeaderPanel.js:41
-msgid "About NOC ..."
-msgstr "О программе ..."
-
-#: main/apps/desktop/js/HeaderPanel.js:48
-msgid "User profile ..."
-msgstr "Профиль пользователя ..."
-
-#: main/apps/desktop/js/HeaderPanel.js:55
-msgid "Change password ..."
-msgstr "Смена пароля ..."
-
-#: main/apps/desktop/js/HeaderPanel.js:63
-msgid "Logout"
-msgstr "Выход"
-
-#: main/apps/desktop/js/NavPanel.js:24
-msgid "Navigation"
-msgstr "Навигация"
-
-#: main/apps/desktop/js/NavPanel.js:34
-msgid "Switch to breadcrumb view"
-msgstr "Компактный режим"
-
-#: main/apps/desktop/js/WorkplacePanel.js:22
-#: main/apps/desktop/js/WorkplacePanel.js:114
-msgid "Collapse panels"
-msgstr "Свернуть панели"
-
-#: main/apps/desktop/js/WorkplacePanel.js:108
-msgid "Expand panels"
-msgstr "Развернуть панели"
-
-#: main/apps/userprofile/js/Application.js:21
-msgid "Login"
-msgstr "Вход"
-
-#: main/apps/userprofile/js/Application.js:29
-msgid "Mail"
-msgstr "Почта"
-
-#: main/apps/userprofile/js/Application.js:33
-msgid "Language"
-msgstr "Язык"
-
-#: main/apps/userprofile/js/Application.js:58
-#: sa/apps/managedobject/js/LinksPanel.js:56
-msgid "Method"
-msgstr "Метод"
-
-#: main/apps/userprofile/js/Application.js:64
-msgid "Params"
-msgstr "Параметры"
-
-#: main/apps/userprofile/js/Application.js:81
-msgid "Add"
-msgstr "Добавить"
-
-#: main/apps/userprofile/js/Application.js:92
-msgid "Delete"
-msgstr "Удалить"
-
-#: main/apps/userprofile/js/Application.js:139
-msgid "Notification Contacts"
-msgstr "Контакты"
-
-#: main/apps/userprofile/js/Application.js:181
-msgid "Failed to load data"
-msgstr "Ошибка загрузки"
-
-#: main/apps/userprofile/js/Application.js:209
-msgid "Profile saved"
-msgstr "Профиль сохранен"
-
-#: main/apps/userprofile/js/Application.js:211
-msgid "Changing language"
-msgstr "Смена языка"
-
-#: main/apps/userprofile/js/Application.js:215
-msgid "Failed to save"
-msgstr "Ошибка сохранения"
-
-#: sa/apps/managedobject/js/Application.js:320
+#: ui/web/cm/validationrule/HitsPanel.js:75
+msgid "Address"
+msgstr "Адрес"
+
+#: ui/web/cm/validationrule/HitsPanel.js:80
+#: ui/web/sa/managedobject/Application.js:320
 msgid "Platform"
 msgstr "Платформа"
 
-#: fm/apps/alarm/js/AlarmPanel.js:263
-#: main/apps/desktop/js/ChangeCredentials.js:40
-#: sa/apps/managedobject/js/DiscoveryPanel.js:19
-msgid "Close"
-msgstr "Закрыть"
+#: ui/web/core/ModelApplication.js:648
+msgid "Saved"
+msgstr "Сохранено"
 
-#: fm/apps/alarm/js/AlarmPanel.js:269 fm/apps/alarm/js/Application.js:218
-#: sa/apps/managedobject/js/DiscoveryPanel.js:26
-#: sa/apps/managedobject/js/LinksPanel.js:19
-msgid "Refresh"
-msgstr "Обновить"
+#: ui/web/fm/alarm/AlarmPanel.js:44
+msgid "Overview"
+msgstr "Обзор"
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:33
-msgid "Run"
-msgstr "Запуск"
+#: ui/web/fm/alarm/AlarmPanel.js:49
+msgid "Help"
+msgstr "Помощь"
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:41
-msgid "Disable"
-msgstr "Отключить"
+#: ui/web/fm/alarm/AlarmPanel.js:54
+msgid "Data"
+msgstr "Данные"
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:90
-msgid "Job"
-msgstr "Задание"
+#: ui/web/fm/alarm/AlarmPanel.js:69
+msgid "New message"
+msgstr "Новое сообщение"
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:95
-#: sa/apps/managedobjectprofile/js/Application.js:414
-msgid "Profile"
-msgstr "Профиль"
+#: ui/web/fm/alarm/AlarmPanel.js:81
+msgid "Log"
+msgstr "История"
 
-#: fm/apps/alarm/js/Application.js:327
-#: sa/apps/managedobject/js/DiscoveryPanel.js:101
-msgid "Status"
-msgstr "Статус"
+#: ui/web/fm/alarm/AlarmPanel.js:87 ui/web/fm/alarm/AlarmPanel.js:131
+#: ui/web/fm/alarm/AlarmPanel.js:172
+msgid "Time"
+msgstr "Время"
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:116
-msgid "Last Run"
-msgstr "Последний запуск"
+#: ui/web/fm/alarm/AlarmPanel.js:105
+msgid "Message"
+msgstr "Сообщение"
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:122
-msgid "Last Status"
-msgstr "Последний статус"
+#: ui/web/fm/alarm/AlarmPanel.js:143 ui/web/fm/alarm/AlarmPanel.js:189
+msgid "Subject"
+msgstr "Тема"
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:133
-msgid "Next Run"
-msgstr "Следующий запуск"
+#: ui/web/fm/alarm/AlarmPanel.js:159
+msgid "Alarms"
+msgstr "Аварии"
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:242
-msgid "Job scheduled to start"
-msgstr "Отправлено на запуск"
+#: ui/web/fm/alarm/AlarmPanel.js:214
+msgid "Clear"
+msgstr "Очистить"
 
-#: sa/apps/managedobject/js/DiscoveryPanel.js:246
-msgid "Failed to run tasks"
-msgstr "Ошибка запуска"
+#: ui/web/fm/alarm/AlarmPanel.js:221
+msgid "Watch"
+msgstr "Подписаться"
 
-#: sa/apps/managedobject/js/LinkForm.js:33
-msgid "Disconnect"
-msgstr "Отключить"
+#: ui/web/fm/alarm/AlarmPanel.js:229
+msgid "Set Root Cause"
+msgstr "Установить причину"
 
-#: sa/apps/managedobject/js/LinkForm.js:41
-msgid "Fix"
-msgstr "Исправить"
+#: ui/web/fm/alarm/AlarmPanel.js:236
+msgid "Show Map"
+msgstr "Карта"
 
-#: sa/apps/managedobject/js/LinkForm.js:56
-msgid "Select managed object ..."
-msgstr "Выберите объект"
+#: ui/web/fm/alarm/AlarmPanel.js:243
+msgid "Show Object"
+msgstr "Объект"
 
-#: fm/apps/alarm/js/plugins/Thresholds.js:37
-#: sa/apps/managedobject/js/LinkForm.js:68
-#: sa/apps/managedobjectprofile/js/Application.js:429
-msgid "Interface"
-msgstr "Интерфейс"
-
-#: sa/apps/managedobject/js/LinkForm.js:80
-msgid "Connect"
-msgstr "Соединить"
-
-#: sa/apps/managedobject/js/LinkForm.js:108
-msgid "Failed to get interfaces list"
-msgstr "Не удалось получить список интерфейсов"
-
-#: sa/apps/managedobject/js/LinkForm.js:130
-msgid "Failed to connect interfaces"
-msgstr "Не удалось соединить интерфейсы"
-
-#: sa/apps/managedobject/js/LinkForm.js:138
-msgid "Unlink interface"
-msgstr "Отсоединить интерфейс"
-
-#: sa/apps/managedobject/js/LinkForm.js:139
-msgid "Do you wish to unlink interface {0}?"
-msgstr "Отсоединить интерфейс {0}?"
-
-#: sa/apps/managedobject/js/LinkForm.js:184
-msgid "Failed to fix"
-msgstr "Не удалось исправить"
-
-#: sa/apps/managedobject/js/LinksPanel.js:33
-msgid "Local Interface"
-msgstr "Локальный интерфейс"
-
-#: sa/apps/managedobject/js/LinksPanel.js:38
-msgid "Local Description"
-msgstr "Локальное описание"
-
-#: sa/apps/managedobject/js/LinksPanel.js:42
-msgid "Neighbor"
-msgstr "Сосед"
-
-#: sa/apps/managedobject/js/LinksPanel.js:47
-msgid "Remote Interface"
-msgstr "Удаленный интерфейс"
-
-#: sa/apps/managedobject/js/LinksPanel.js:52
-msgid "Remote Description"
-msgstr "Удаленное описание"
-
-#: sa/apps/managedobject/js/LinksPanel.js:60
-msgid "First Discovered"
-msgstr "Первый раз"
-
-#: sa/apps/managedobject/js/LinksPanel.js:64
-msgid "Last seen"
-msgstr "Последний раз"
-
-#: sa/apps/managedobject/js/LinksPanel.js:105
-msgid "Failed to get data"
+#: ui/web/fm/alarm/AlarmPanel.js:308
+msgid "Failed to get alarm"
 msgstr "Не удалось получить данные"
 
-#: sa/apps/managedobjectprofile/js/Application.js:34
-msgid "Validation"
-msgstr "Проверка"
+#: ui/web/fm/alarm/AlarmPanel.js:430
+msgid "Failed to post message"
+msgstr "Не удалось послать сообщение"
 
-#: sa/apps/managedobjectprofile/js/Application.js:53
-msgid "Ping"
-msgstr ""
+#: ui/web/fm/alarm/AlarmPanel.js:459
+msgid "Clear alarm?"
+msgstr "Очистить аварию?"
 
-#: sa/apps/managedobjectprofile/js/Application.js:69
-msgid "Sync IPAM"
-msgstr ""
+#: ui/web/fm/alarm/AlarmPanel.js:460
+msgid "Please confirm the alarm is closed and must be cleared?"
+msgstr "Пожалуйста, подтвердите, что проблема решена и авария должна быть закрыта"
 
-#: sa/apps/managedobjectprofile/js/Application.js:76
-msgid "Box discovery"
-msgstr ""
+#: ui/web/fm/alarm/AlarmPanel.js:473
+msgid "Failed to clear alarm"
+msgstr "Не удалось очистить аварию"
 
-#: sa/apps/managedobjectprofile/js/Application.js:89
-msgid "Failed interval"
-msgstr ""
+#: ui/web/fm/alarm/AlarmPanel.js:493
+msgid "Failed to set watcher"
+msgstr "Не удалось подписаться"
 
-#: sa/apps/managedobjectprofile/js/Application.js:96
-msgid "Periodic discovery"
-msgstr ""
+#: ui/web/fm/alarm/AlarmPanel.js:502
+msgid "Set root cause"
+msgstr "Установить первопричину"
 
-#: sa/apps/managedobjectprofile/js/Application.js:109
-msgid "Objects"
-msgstr "Объекты"
+#: ui/web/fm/alarm/AlarmPanel.js:503
+msgid "Please enter root cause alarm id"
+msgstr "Пожалуйста, введите ID первопричины"
 
-#: sa/apps/managedobjectprofile/js/Application.js:160
-msgid "Shape"
-msgstr "Форма"
+#: ui/web/fm/alarm/AlarmPanel.js:517
+msgid "Failed to set root cause"
+msgstr "Не удалось установить первопричину"
 
-#: sa/apps/managedobjectprofile/js/Application.js:166
-msgid "Name template"
-msgstr "Шаблон имени"
+#: ui/web/fm/alarm/Application.js:55
+msgid "Toggle autoreload"
+msgstr "Переключить автозагрузку"
 
-#: fm/apps/alarm/js/AlarmPanel.js:250
-#: sa/apps/managedobjectprofile/js/Application.js:178
-msgid "Card"
-msgstr "Карточка"
+#: ui/web/cm/validationrule/Application.js:63
+#: ui/web/cm/validationrule/Application.js:91 ui/web/fm/alarm/Application.js:65
+msgid "Active"
+msgstr "Активный"
 
-#: sa/apps/managedobjectprofile/js/Application.js:185
-msgid "Card Title Template"
-msgstr "Шаблон заголовка карточки"
+#: ui/web/fm/alarm/Application.js:67
+msgid "Show active alarms"
+msgstr "Показывать активные аварии"
 
-#: sa/apps/managedobjectprofile/js/Application.js:197
-msgid "Enable IPAM synchronization"
-msgstr "Синхронизация с IPAM"
+#: ui/web/fm/alarm/Application.js:71
+msgid "Archive"
+msgstr "Архив"
 
-#: sa/apps/managedobjectprofile/js/Application.js:203
-msgid "FQDN template"
-msgstr "Шаблон FQDN"
+#: ui/web/fm/alarm/Application.js:72
+msgid "Show archived alarms"
+msgstr "Показывать архивные аварии"
 
-#: sa/apps/managedobjectprofile/js/Application.js:215
-#: sa/apps/managedobjectprofile/js/Application.js:282
-#: sa/apps/managedobjectprofile/js/Application.js:542
-msgid "Enable"
-msgstr "Включить"
+#: ui/web/fm/alarm/Application.js:82
+msgid "Adm. Domain"
+msgstr "Зона ответсвенности"
 
-#: sa/apps/managedobjectprofile/js/Application.js:238
-#: sa/apps/managedobjectprofile/js/Application.js:303
-#: sa/apps/managedobjectprofile/js/Application.js:563
-msgid "Interval, sec"
-msgstr "Интервал, с"
+#: ui/web/fm/alarm/AlarmPanel.js:137 ui/web/fm/alarm/AlarmPanel.js:184
+#: ui/web/fm/alarm/Application.js:123 ui/web/fm/alarm/Application.js:240
+msgid "Class"
+msgstr "Класс"
 
-#: sa/apps/managedobjectprofile/js/Application.js:259
-msgid "Report ping RTT"
-msgstr "Собирать RTT при ping"
+#: ui/web/fm/alarm/Application.js:155
+msgid "Root only"
+msgstr "Первопричина"
 
-#: sa/apps/managedobjectprofile/js/Application.js:270
-msgid "Alarm Weight"
-msgstr "Аварийный вес"
+#: ui/web/fm/alarm/Application.js:157
+msgid "Show only root causes"
+msgstr "Показывать только первопричину"
 
-#: sa/apps/managedobjectprofile/js/Application.js:331
-msgid "Failed Interval, sec"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:161 ui/web/fm/alarm/Application.js:179
+msgid "All"
+msgstr "Все"
 
-#: sa/apps/managedobjectprofile/js/Application.js:359
-msgid "Check on system start after "
-msgstr "Проверять при загрузке через"
+#: ui/web/fm/alarm/Application.js:162 ui/web/fm/alarm/Application.js:181
+#: ui/web/fm/alarm/Application.js:200
+msgid "Show all alarms"
+msgstr "Показывать все аварии"
 
-#: sa/apps/managedobjectprofile/js/Application.js:385
-msgid "Check on config change after "
-msgstr "Проверять при смене конфига через"
+#: ui/web/fm/alarm/Application.js:175
+msgid "Show only waiting confirmantion"
+msgstr "Показывать только ожидающие подтверждения"
 
-#: sa/apps/managedobjectprofile/js/Application.js:405
-msgid "Box"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:193
+msgid "Hide maintainance"
+msgstr "Скрыть РНР"
 
-#: sa/apps/managedobject/js/Application.js:326
-#: sa/apps/managedobjectprofile/js/Application.js:419
-msgid "Version"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:194
+msgid "Hide alarms covered by maintainance"
+msgstr "Скрывать аварии, накрытые РНР"
 
-#: sa/apps/managedobjectprofile/js/Application.js:424
-msgid "Caps"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:199
+msgid "Show"
+msgstr "Показать"
 
-#: sa/apps/managedobjectprofile/js/Application.js:434
-msgid "Prefix"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:204
+msgid "Only"
+msgstr "Только"
 
-#: fm/apps/alarm/js/AlarmPanel.js:167
-#: sa/apps/managedobjectprofile/js/Application.js:439
-msgid "ID"
-msgstr "ID"
+#: ui/web/fm/alarm/Application.js:205
+msgid "Show only alarms covered by maintainance"
+msgstr "Показывать только аварии, накрытые РНР"
 
-#: sa/apps/managedobjectprofile/js/Application.js:444
-msgid "Config"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:224 ui/web/fm/alarm/Application.js:269
+msgid "Filter"
+msgstr "Фильтр"
 
-#: sa/apps/managedobjectprofile/js/Application.js:449
-msgid "Asset"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:291
+msgid "By Date"
+msgstr "По дате"
 
-#: sa/apps/managedobjectprofile/js/Application.js:454
-msgid "VLAN"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:314
+msgid "Show map"
+msgstr "Карта"
 
-#: sa/apps/managedobjectprofile/js/Application.js:460
-msgid "Topology"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:320
+msgid "Show object"
+msgstr "Объект"
 
-#: sa/apps/managedobjectprofile/js/Application.js:469
-msgid "NRI"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:334
+msgid "Time/Duration"
+msgstr "Время/Длительность"
 
-#: sa/apps/managedobjectprofile/js/Application.js:474
-msgid "BFD"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:344
+msgid "Object/Segment"
+msgstr "Объект/Сегмент"
 
-#: sa/apps/managedobjectprofile/js/Application.js:479
-msgid "CDP"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:354
+msgid "Address/Platform"
+msgstr "Адрес/Платформа"
 
-#: sa/apps/managedobjectprofile/js/Application.js:484
-msgid "FDP"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:374
+msgid "Subject/Class"
+msgstr "Тема/Класс"
 
-#: sa/apps/managedobjectprofile/js/Application.js:489
-msgid "LLDP"
-msgstr ""
+#: ui/web/fm/alarm/Application.js:385
+msgid "Summary/TT"
+msgstr "Затронуто/ТТ"
 
-#: sa/apps/managedobjectprofile/js/Application.js:494
-msgid "OAM"
-msgstr ""
+#: ui/web/fm/alarm/AlarmPanel.js:120 ui/web/fm/alarm/Application.js:398
+msgid "Events"
+msgstr "События"
 
-#: sa/apps/managedobjectprofile/js/Application.js:499
-msgid "REP"
-msgstr ""
+#: ui/web/fm/alarm/plugins/Thresholds.js:11
+msgid "Thresholds"
+msgstr "Пороги"
 
-#: inv/apps/map/js/Application.js:170
-#: sa/apps/managedobjectprofile/js/Application.js:504
-msgid "STP"
-msgstr ""
+#: ui/web/fm/alarm/plugins/Thresholds.js:32
+msgid "Metric"
+msgstr "Метрика"
 
-#: sa/apps/managedobjectprofile/js/Application.js:509
-msgid "UDLD"
-msgstr ""
+#: ui/web/fm/alarm/plugins/Thresholds.js:47
+msgid "Value"
+msgstr "Значение"
 
-#: sa/apps/managedobjectprofile/js/Application.js:515
-msgid "Clear links"
-msgstr "Сброс линков"
+#: ui/web/fm/alarm/plugins/Thresholds.js:53
+msgid "Condition"
+msgstr "Условие"
 
-#: sa/apps/managedobjectprofile/js/Application.js:524
-msgid "On platform change"
-msgstr "При смене платформы"
+#: ui/web/fm/alarm/plugins/Thresholds.js:58
+msgid "Threshold"
+msgstr "Порог"
 
-#: sa/apps/managedobjectprofile/js/Application.js:595
-msgid "Uptime"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:600
-msgid "Interface status"
-msgstr "Статус интерфейсов"
-
-#: sa/apps/managedobjectprofile/js/Application.js:605
-msgid "MAC"
-msgstr ""
-
-#: sa/apps/managedobjectprofile/js/Application.js:610
-#: sa/apps/managedobjectprofile/js/Application.js:622
-msgid "Metrics"
-msgstr "Метрики"
-
-#: sa/apps/serviceprofile/js/Application.js:25
-#: sa/apps/serviceprofile/js/Application.js:91
-msgid "Icon"
-msgstr "Картинка"
-
-#: fm/apps/alarmescalation/js/Application.js:27
-#: fm/apps/alarmescalation/js/Application.js:37
-#: fm/apps/alarmseverity/js/Application.js:20
-#: fm/apps/alarmseverity/js/Application.js:52
-#: main/apps/userprofile/js/Application.js:25
-#: sa/apps/managedobjectprofile/js/Application.js:43
-#: sa/apps/managedobjectprofile/js/Application.js:120
-#: sa/apps/serviceprofile/js/Application.js:38
-#: sa/apps/serviceprofile/js/Application.js:63
+#: ui/web/cm/validationrule/Application.js:58
+#: ui/web/cm/validationrule/Application.js:84
+#: ui/web/fm/alarmescalation/Application.js:27
+#: ui/web/fm/alarmescalation/Application.js:37
+#: ui/web/fm/alarmseverity/Application.js:20
+#: ui/web/fm/alarmseverity/Application.js:52
+#: ui/web/main/userprofile/Application.js:25
+#: ui/web/sa/managedobjectprofile/Application.js:43
+#: ui/web/sa/managedobjectprofile/Application.js:120
+#: ui/web/sa/serviceprofile/Application.js:38
+#: ui/web/sa/serviceprofile/Application.js:63
 msgid "Name"
 msgstr "Имя"
 
-#: sa/apps/serviceprofile/js/Application.js:43
-#: sa/apps/serviceprofile/js/Application.js:77
-msgid "Code"
-msgstr "Код"
-
-#: sa/apps/serviceprofile/js/Application.js:48
-msgid "Summary"
-msgstr "Итог"
-
-#: fm/apps/alarmescalation/js/Application.js:43
-#: fm/apps/alarmseverity/js/Application.js:43
-#: fm/apps/alarmseverity/js/Application.js:63
-#: sa/apps/managedobjectprofile/js/Application.js:140
-#: sa/apps/serviceprofile/js/Application.js:54
-#: sa/apps/serviceprofile/js/Application.js:70
+#: ui/web/cm/validationrule/Application.js:74
+#: ui/web/cm/validationrule/Application.js:96
+#: ui/web/fm/alarmescalation/Application.js:43
+#: ui/web/fm/alarmseverity/Application.js:43
+#: ui/web/fm/alarmseverity/Application.js:63
+#: ui/web/sa/managedobjectprofile/Application.js:140
+#: ui/web/sa/serviceprofile/Application.js:54
+#: ui/web/sa/serviceprofile/Application.js:70
 msgid "Description"
 msgstr "Описание"
 
-#: sa/apps/serviceprofile/js/Application.js:84
+#: ui/web/fm/alarmescalation/Application.js:49
+msgid "Global limit"
+msgstr "Глобальный лимит"
+
+#: ui/web/fm/alarmescalation/Application.js:56
+msgid "Alarm Classes"
+msgstr "Классы аварий"
+
+#: ui/web/fm/alarmescalation/Application.js:59
+msgid "Alarm Class"
+msgstr "Класс аварии"
+
+#: ui/web/fm/alarmescalation/Application.js:70
+msgid "Pre Reasons"
+msgstr "Предв. диагностика"
+
+#: ui/web/fm/alarmescalation/Application.js:73
+msgid "TT System"
+msgstr "Система TT"
+
+#: ui/web/fm/alarmescalation/Application.js:80
+msgid "Pre Reason"
+msgstr "Предв. диагностика"
+
+#: ui/web/fm/alarmescalation/Application.js:90
+msgid "Escalations"
+msgstr "Эскалации"
+
+#: ui/web/fm/alarmescalation/Application.js:93
+msgid "Delay"
+msgstr "Задержка"
+
+#: ui/web/fm/alarmescalation/Application.js:99
+msgid "Adm. domain"
+msgstr "Зона ответсвенности"
+
+#: ui/web/cm/validationrule/Application.js:124
+#: ui/web/fm/alarm/Application.js:103
+#: ui/web/fm/alarmescalation/Application.js:106
+msgid "Selector"
+msgstr "Селектор"
+
+#: ui/web/fm/alarmescalation/Application.js:113
+#: ui/web/main/userprofile/Application.js:51
+msgid "Time Pattern"
+msgstr "Маска времени"
+
+#: ui/web/fm/alarmescalation/Application.js:119
+msgid "Notification Group"
+msgstr "Группа рассылки"
+
+#: ui/web/fm/alarmescalation/Application.js:126
+msgid "Open Template"
+msgstr "Шаблон открытия"
+
+#: ui/web/fm/alarmescalation/Application.js:133
+msgid "Clear Template"
+msgstr "Шаблон закрытия"
+
+#: ui/web/fm/alarmescalation/Application.js:140
+msgid "TT"
+msgstr "TT"
+
+#: ui/web/fm/alarm/Application.js:174
+#: ui/web/fm/alarmescalation/Application.js:147
+msgid "Wait TT"
+msgstr "Ждать TT"
+
+#: ui/web/fm/alarmescalation/Application.js:154
+msgid "Stop"
+msgstr "Окончание"
+
+#: ui/web/fm/alarmseverity/Application.js:24
+msgid "Builtin"
+msgstr "Встроен"
+
+#: ui/web/fm/alarm/Application.js:364 ui/web/fm/alarmseverity/Application.js:31
+#: ui/web/fm/alarmseverity/Application.js:69
+msgid "Severity"
+msgstr "Серьезность"
+
+#: ui/web/fm/alarmseverity/Application.js:37
+#: ui/web/fm/alarmseverity/Application.js:75
+msgid "Min. Weight"
+msgstr "Мин. вес"
+
+#: ui/web/fm/alarmseverity/Application.js:58
+msgid "UUID"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:81
+#: ui/web/sa/managedobjectprofile/Application.js:154
+msgid "Style"
+msgstr "Стиль"
+
+#: ui/web/fm/alarmseverity/Application.js:87
+msgid "Sound"
+msgstr "Звук"
+
+#: ui/web/fm/alarmseverity/Application.js:93
+msgid "Volume"
+msgstr "Громкость"
+
+#: ui/web/fm/alarmseverity/Application.js:113
+msgid "JSON"
+msgstr ""
+
+#: ui/web/fm/alarmseverity/Application.js:115
+msgid "Show JSON"
+msgstr "Показ JSON"
+
+#: ui/web/fm/alarmseverity/Application.js:121
+#: ui/web/fm/alarmseverity/Application.js:123
+msgid "Test Sound"
+msgstr "Тест звука"
+
+#: ui/web/fm/alarm/AlarmPanel.js:93 ui/web/fm/alarm/Application.js:133
+#: ui/web/fm/reportalarmdetail/Application.js:35
+msgid "From"
+msgstr "С"
+
+#: ui/web/fm/alarm/AlarmPanel.js:99 ui/web/fm/alarm/Application.js:143
+#: ui/web/fm/reportalarmdetail/Application.js:43
+msgid "To"
+msgstr "По"
+
+#: ui/web/fm/reportalarmdetail/Application.js:56
+msgid "Download"
+msgstr "Загрузить"
+
+#: ui/web/fm/alarm/Application.js:113 ui/web/fm/alarm/Application.js:234
+#: ui/web/inv/map/Application.js:35
+msgid "Segment"
+msgstr "Сегмент"
+
+#: ui/web/inv/map/Application.js:61
+msgid "Reload"
+msgstr "Перезагрузить"
+
+#: ui/web/inv/map/Application.js:68 ui/web/inv/map/MapPanel.js:135
+#: ui/web/inv/map/inspectors/ManagedObjectInspector.js:26
+msgid "Edit"
+msgstr "Редактировать"
+
+#: ui/web/inv/map/Application.js:71
+msgid "Edit map"
+msgstr "Редактировать карту"
+
+#: ui/web/inv/map/Application.js:78 ui/web/main/userprofile/Application.js:156
+msgid "Save"
+msgstr "Сохранить"
+
+#: ui/web/inv/map/Application.js:86
+msgid "Revert"
+msgstr "Отменить"
+
+#: ui/web/inv/map/Application.js:94
+msgid "New layout"
+msgstr "Новая раскладка"
+
+#: ui/web/inv/map/Application.js:149
+msgid "Show static map"
+msgstr "Статичная карта"
+
+#: ui/web/inv/map/Application.js:160
+msgid "Show interface load"
+msgstr "Загрузка интерфейсов"
+
+#: ui/web/inv/map/Application.js:173
+msgid "Show STP topology"
+msgstr "Показ топологии STP"
+
+#: ui/web/inv/map/Application.js:318
+msgid "Reset Layout"
+msgstr "Сбросить раскладку"
+
+#: ui/web/inv/map/Application.js:319
+msgid "Would you like to reset current layout and generate new?"
+msgstr "Сбросить раскладку карты и перестроить заново?"
+
+#: ui/web/inv/map/MapPanel.js:129
+msgid "View Card"
+msgstr "Просмотр карточки"
+
+#: ui/web/inv/map/MapPanel.js:141
+#: ui/web/inv/map/inspectors/ManagedObjectInspector.js:50
+msgid "Show dashboard"
+msgstr "Показать графики"
+
+#: ui/web/inv/map/MapPanel.js:832
+msgid "Failed to get STP status"
+msgstr "Не удалось получить данные"
+
+#: ui/web/inv/map/SelectIconForm.js:43
+msgid "Set"
+msgstr "Установить"
+
+#: ui/web/inv/map/inspectors/LinkInspector.js:11
+msgid "Link Inspector"
+msgstr "Свойства линка"
+
+#: ui/web/inv/map/inspectors/ManagedObjectInspector.js:11
+msgid "Object Inspector"
+msgstr "Свойства объекта"
+
+#: ui/web/inv/map/inspectors/ManagedObjectInspector.js:34
+msgid "View card"
+msgstr "Просмотр карточки"
+
+#: ui/web/inv/map/inspectors/ManagedObjectInspector.js:42
+msgid "Jump to Segment"
+msgstr "Перейти в сегмент"
+
+#: ui/web/inv/map/inspectors/SegmentInspector.js:11
+msgid "Segment Inspector"
+msgstr "Свойства сегмента"
+
+#: ui/web/inv/unknownmodel/Application.js:47
+msgid "Remove"
+msgstr "Удалить"
+
+#: ui/web/main/desktop/Application.js:136
+msgid "Starting {0}"
+msgstr "Запуск {0}"
+
+#: ui/web/main/desktop/ChangeCredentials.js:11
+msgid "Change Password"
+msgstr "Смена пароля"
+
+#: ui/web/main/desktop/ChangeCredentials.js:46
+msgid "Reset"
+msgstr "Сброс"
+
+#: ui/web/main/desktop/ChangeCredentials.js:52
+msgid "Change"
+msgstr "Сменить"
+
+#: ui/web/main/desktop/ChangeCredentials.js:103
+msgid "Credentials has been changed"
+msgstr "Пароль изменен"
+
+#: ui/web/main/desktop/ChangeCredentials.js:106
+#: ui/web/main/desktop/ChangeCredentials.js:111
+msgid "Failed to change credentials: "
+msgstr "Не удалось сменить пароль"
+
+#: ui/web/main/desktop/HeaderPanel.js:35
+msgid "Anonymous"
+msgstr "Анонимный"
+
+#: ui/web/main/desktop/HeaderPanel.js:41
+msgid "About NOC ..."
+msgstr "О программе ..."
+
+#: ui/web/main/desktop/HeaderPanel.js:48
+msgid "User profile ..."
+msgstr "Профиль пользователя ..."
+
+#: ui/web/main/desktop/HeaderPanel.js:55
+msgid "Change password ..."
+msgstr "Смена пароля ..."
+
+#: ui/web/main/desktop/HeaderPanel.js:63
+msgid "Logout"
+msgstr "Выход"
+
+#: ui/web/main/desktop/NavPanel.js:24
+msgid "Navigation"
+msgstr "Навигация"
+
+#: ui/web/main/desktop/NavPanel.js:34
+msgid "Switch to breadcrumb view"
+msgstr "Компактный режим"
+
+#: ui/web/main/desktop/WorkplacePanel.js:22
+#: ui/web/main/desktop/WorkplacePanel.js:114
+msgid "Collapse panels"
+msgstr "Свернуть панели"
+
+#: ui/web/main/desktop/WorkplacePanel.js:108
+msgid "Expand panels"
+msgstr "Развернуть панели"
+
+#: ui/web/main/search/Application.js:15
+msgid "Search"
+msgstr "Поиск"
+
+#: ui/web/main/search/Application.js:27
+msgid "Result"
+msgstr "Результат"
+
+#: ui/web/main/search/Application.js:80
+msgid "Starting search"
+msgstr "Идет поиск"
+
+#: ui/web/main/search/Application.js:91
+msgid "Search complete"
+msgstr "Поиск завершен"
+
+#: ui/web/main/search/Application.js:96
+msgid "Failed to search"
+msgstr "Ошибка поиска"
+
+#: ui/web/core/ModelApplication.js:1218 ui/web/fm/alarm/Application.js:631
+#: ui/web/main/search/Application.js:106
+msgid "Total: "
+msgstr "Итог:"
+
+#: ui/web/main/userprofile/Application.js:21
+msgid "Login"
+msgstr "Вход"
+
+#: ui/web/main/userprofile/Application.js:29
+msgid "Mail"
+msgstr "Почта"
+
+#: ui/web/main/userprofile/Application.js:33
+msgid "Language"
+msgstr "Язык"
+
+#: ui/web/main/userprofile/Application.js:64
+msgid "Params"
+msgstr "Параметры"
+
+#: ui/web/main/userprofile/Application.js:81
+msgid "Add"
+msgstr "Добавить"
+
+#: ui/web/main/userprofile/Application.js:92
+msgid "Delete"
+msgstr "Удалить"
+
+#: ui/web/main/userprofile/Application.js:139
+msgid "Notification Contacts"
+msgstr "Контакты"
+
+#: ui/web/main/userprofile/Application.js:181
+msgid "Failed to load data"
+msgstr "Ошибка загрузки"
+
+#: ui/web/main/userprofile/Application.js:209
+msgid "Profile saved"
+msgstr "Профиль сохранен"
+
+#: ui/web/main/userprofile/Application.js:211
+msgid "Changing language"
+msgstr "Смена языка"
+
+#: ui/web/main/userprofile/Application.js:215
+msgid "Failed to save"
+msgstr "Ошибка сохранения"
+
+#: ui/web/fm/alarm/AlarmPanel.js:263
+#: ui/web/main/desktop/ChangeCredentials.js:40
+#: ui/web/sa/managedobject/DiscoveryPanel.js:19
+msgid "Close"
+msgstr "Закрыть"
+
+#: ui/web/fm/alarm/AlarmPanel.js:269 ui/web/fm/alarm/Application.js:218
+#: ui/web/sa/managedobject/DiscoveryPanel.js:26
+#: ui/web/sa/managedobject/LinksPanel.js:19
+msgid "Refresh"
+msgstr "Обновить"
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:33
+msgid "Run"
+msgstr "Запуск"
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:41
+msgid "Disable"
+msgstr "Отключить"
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:90
+msgid "Job"
+msgstr "Задание"
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:95
+#: ui/web/sa/managedobjectprofile/Application.js:414
+msgid "Profile"
+msgstr "Профиль"
+
+#: ui/web/fm/alarm/Application.js:327
+#: ui/web/sa/managedobject/DiscoveryPanel.js:101
+msgid "Status"
+msgstr "Статус"
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:116
+msgid "Last Run"
+msgstr "Последний запуск"
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:122
+msgid "Last Status"
+msgstr "Последний статус"
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:133
+msgid "Next Run"
+msgstr "Следующий запуск"
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:242
+msgid "Job scheduled to start"
+msgstr "Отправлено на запуск"
+
+#: ui/web/sa/managedobject/DiscoveryPanel.js:246
+msgid "Failed to run tasks"
+msgstr "Ошибка запуска"
+
+#: ui/web/sa/managedobject/LinkForm.js:33
+msgid "Disconnect"
+msgstr "Отключить"
+
+#: ui/web/sa/managedobject/LinkForm.js:41
+msgid "Fix"
+msgstr "Исправить"
+
+#: ui/web/sa/managedobject/LinkForm.js:56
+msgid "Select managed object ..."
+msgstr "Выберите объект"
+
+#: ui/web/fm/alarm/plugins/Thresholds.js:37
+#: ui/web/sa/managedobject/LinkForm.js:68
+#: ui/web/sa/managedobjectprofile/Application.js:429
+msgid "Interface"
+msgstr "Интерфейс"
+
+#: ui/web/sa/managedobject/LinkForm.js:80
+msgid "Connect"
+msgstr "Соединить"
+
+#: ui/web/sa/managedobject/LinkForm.js:108
+msgid "Failed to get interfaces list"
+msgstr "Не удалось получить список интерфейсов"
+
+#: ui/web/sa/managedobject/LinkForm.js:130
+msgid "Failed to connect interfaces"
+msgstr "Не удалось соединить интерфейсы"
+
+#: ui/web/sa/managedobject/LinkForm.js:138
+msgid "Unlink interface"
+msgstr "Отсоединить интерфейс"
+
+#: ui/web/sa/managedobject/LinkForm.js:139
+msgid "Do you wish to unlink interface {0}?"
+msgstr "Отсоединить интерфейс {0}?"
+
+#: ui/web/sa/managedobject/LinkForm.js:184
+msgid "Failed to fix"
+msgstr "Не удалось исправить"
+
+#: ui/web/sa/managedobject/LinksPanel.js:33
+msgid "Local Interface"
+msgstr "Локальный интерфейс"
+
+#: ui/web/sa/managedobject/LinksPanel.js:38
+msgid "Local Description"
+msgstr "Локальное описание"
+
+#: ui/web/sa/managedobject/LinksPanel.js:42
+msgid "Neighbor"
+msgstr "Сосед"
+
+#: ui/web/sa/managedobject/LinksPanel.js:47
+msgid "Remote Interface"
+msgstr "Удаленный интерфейс"
+
+#: ui/web/sa/managedobject/LinksPanel.js:52
+msgid "Remote Description"
+msgstr "Удаленное описание"
+
+#: ui/web/main/userprofile/Application.js:58
+#: ui/web/sa/managedobject/LinksPanel.js:56
+msgid "Method"
+msgstr "Метод"
+
+#: ui/web/sa/managedobject/LinksPanel.js:60
+msgid "First Discovered"
+msgstr "Первый раз"
+
+#: ui/web/sa/managedobject/LinksPanel.js:64
+msgid "Last seen"
+msgstr "Последний раз"
+
+#: ui/web/sa/managedobject/LinksPanel.js:105
+msgid "Failed to get data"
+msgstr "Не удалось получить данные"
+
+#: ui/web/sa/managedobjectprofile/Application.js:34
+msgid "Validation"
+msgstr "Проверка"
+
+#: ui/web/fm/alarm/plugins/Thresholds.js:42
+#: ui/web/sa/managedobjectprofile/Application.js:47
+#: ui/web/sa/managedobjectprofile/Application.js:147
+msgid "Level"
+msgstr "Уровень"
+
+#: ui/web/sa/managedobjectprofile/Application.js:53
+msgid "Ping"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:69
+msgid "Sync IPAM"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:76
+msgid "Box discovery"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:89
+msgid "Failed interval"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:96
+msgid "Periodic discovery"
+msgstr ""
+
+#: ui/web/cm/validationrule/Application.js:135
+#: ui/web/sa/managedobjectprofile/Application.js:109
+msgid "Objects"
+msgstr "Объекты"
+
+#: ui/web/sa/managedobjectprofile/Application.js:160
+msgid "Shape"
+msgstr "Форма"
+
+#: ui/web/sa/managedobjectprofile/Application.js:166
+msgid "Name template"
+msgstr "Шаблон имени"
+
+#: ui/web/fm/alarm/AlarmPanel.js:250
+#: ui/web/sa/managedobjectprofile/Application.js:178
+msgid "Card"
+msgstr "Карточка"
+
+#: ui/web/sa/managedobjectprofile/Application.js:185
+msgid "Card Title Template"
+msgstr "Шаблон заголовка карточки"
+
+#: ui/web/sa/managedobjectprofile/Application.js:197
+msgid "Enable IPAM synchronization"
+msgstr "Синхронизация с IPAM"
+
+#: ui/web/sa/managedobjectprofile/Application.js:203
+msgid "FQDN template"
+msgstr "Шаблон FQDN"
+
+#: ui/web/sa/managedobjectprofile/Application.js:215
+#: ui/web/sa/managedobjectprofile/Application.js:282
+#: ui/web/sa/managedobjectprofile/Application.js:542
+msgid "Enable"
+msgstr "Включить"
+
+#: ui/web/sa/managedobjectprofile/Application.js:238
+#: ui/web/sa/managedobjectprofile/Application.js:303
+#: ui/web/sa/managedobjectprofile/Application.js:563
+msgid "Interval, sec"
+msgstr "Интервал, с"
+
+#: ui/web/sa/managedobjectprofile/Application.js:259
+msgid "Report ping RTT"
+msgstr "Собирать RTT при ping"
+
+#: ui/web/sa/managedobjectprofile/Application.js:270
+msgid "Alarm Weight"
+msgstr "Аварийный вес"
+
+#: ui/web/sa/managedobjectprofile/Application.js:331
+msgid "Failed Interval, sec"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:359
+msgid "Check on system start after "
+msgstr "Проверять при загрузке через"
+
+#: ui/web/sa/managedobjectprofile/Application.js:385
+msgid "Check on config change after "
+msgstr "Проверять при смене конфига через"
+
+#: ui/web/sa/managedobjectprofile/Application.js:405
+msgid "Box"
+msgstr ""
+
+#: ui/web/sa/managedobject/Application.js:326
+#: ui/web/sa/managedobjectprofile/Application.js:419
+msgid "Version"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:424
+msgid "Caps"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:434
+msgid "Prefix"
+msgstr ""
+
+#: ui/web/fm/alarm/AlarmPanel.js:167
+#: ui/web/sa/managedobjectprofile/Application.js:439
+msgid "ID"
+msgstr "ID"
+
+#: ui/web/cm/validationrule/Application.js:191
+#: ui/web/sa/managedobjectprofile/Application.js:444
+msgid "Config"
+msgstr "Конфиг"
+
+#: ui/web/sa/managedobjectprofile/Application.js:449
+msgid "Asset"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:454
+msgid "VLAN"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:460
+msgid "Topology"
+msgstr "Топология"
+
+#: ui/web/sa/managedobjectprofile/Application.js:469
+msgid "NRI"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:474
+msgid "BFD"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:479
+msgid "CDP"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:484
+msgid "FDP"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:489
+msgid "LLDP"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:494
+msgid "OAM"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:499
+msgid "REP"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:170
+#: ui/web/sa/managedobjectprofile/Application.js:504
+msgid "STP"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:509
+msgid "UDLD"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:515
+msgid "Clear links"
+msgstr "Сброс линков"
+
+#: ui/web/sa/managedobjectprofile/Application.js:524
+msgid "On platform change"
+msgstr "При смене платформы"
+
+#: ui/web/sa/managedobjectprofile/Application.js:595
+msgid "Uptime"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:600
+msgid "Interface status"
+msgstr "Статус интерфейсов"
+
+#: ui/web/sa/managedobjectprofile/Application.js:605
+msgid "MAC"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:610
+#: ui/web/sa/managedobjectprofile/Application.js:622
+msgid "Metrics"
+msgstr "Метрики"
+
+#: ui/web/sa/serviceprofile/Application.js:25
+#: ui/web/sa/serviceprofile/Application.js:91
+msgid "Icon"
+msgstr "Картинка"
+
+#: ui/web/sa/serviceprofile/Application.js:43
+#: ui/web/sa/serviceprofile/Application.js:77
+msgid "Code"
+msgstr "Код"
+
+#: ui/web/sa/serviceprofile/Application.js:48
+msgid "Summary"
+msgstr "Итог"
+
+#: ui/web/sa/serviceprofile/Application.js:84
 msgid "Title Template"
 msgstr "Шаблон заголовка"
 
-#: sa/apps/serviceprofile/js/Application.js:98
+#: ui/web/sa/serviceprofile/Application.js:98
 msgid "Show in summary"
 msgstr "Показывать в итоге"
 
-#: sa/apps/serviceprofile/js/Application.js:104
+#: ui/web/sa/serviceprofile/Application.js:104
 msgid "Interface Profile"
 msgstr "Профиль интерфейса"
 
-#: sa/apps/serviceprofile/js/Application.js:110
+#: ui/web/sa/serviceprofile/Application.js:110
 msgid "Alarm weight"
 msgstr "Вес аварии"
 

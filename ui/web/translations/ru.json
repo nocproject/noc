@@ -7,8 +7,8 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-06-30 11:57+0300",
-        "POT-Creation-Date": "2016-06-30 11:29+0300",
+        "PO-Revision-Date": "2016-07-14 08:44+0300",
+        "POT-Creation-Date": "2016-07-14 00:19+0300",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
@@ -18,6 +18,10 @@
         null,
         "О программе ..."
     ],
+    "Action": [
+        null,
+        "Действие"
+    ],
     "Active": [
         null,
         "Активный"
@@ -25,6 +29,10 @@
     "Add": [
         null,
         "Добавить"
+    ],
+    "Address": [
+        null,
+        "Адрес"
     ],
     "Address/Platform": [
         null,
@@ -146,6 +154,10 @@
         null,
         "Условие"
     ],
+    "Config": [
+        null,
+        "Конфиг"
+    ],
     "Connect": [
         null,
         "Соединить"
@@ -266,6 +278,10 @@
         null,
         "Ошибка сохранения"
     ],
+    "Failed to search": [
+        null,
+        "Ошибка поиска"
+    ],
     "Failed to set root cause": [
         null,
         "Не удалось установить первопричину"
@@ -294,6 +310,10 @@
         null,
         "Глобальный лимит"
     ],
+    "Handler": [
+        null,
+        "Обработчик"
+    ],
     "Help": [
         null,
         "Помощь"
@@ -305,6 +325,10 @@
     "Hide maintainance": [
         null,
         "Скрыть РНР"
+    ],
+    "Hits": [
+        null,
+        "Срабатываний"
     ],
     "ID": [
         null,
@@ -542,6 +566,10 @@
         null,
         "Сбросить раскладку"
     ],
+    "Result": [
+        null,
+        "Результат"
+    ],
     "Revert": [
         null,
         "Отменить"
@@ -557,6 +585,18 @@
     "Save": [
         null,
         "Сохранить"
+    ],
+    "Saved": [
+        null,
+        "Сохранено"
+    ],
+    "Search": [
+        null,
+        "Поиск"
+    ],
+    "Search complete": [
+        null,
+        "Поиск завершен"
     ],
     "Segment": [
         null,
@@ -666,6 +706,10 @@
         null,
         "Звук"
     ],
+    "Starting search": [
+        null,
+        "Идет поиск"
+    ],
     "Starting {0}": [
         null,
         "Запуск {0}"
@@ -745,6 +789,10 @@
     "Toggle autoreload": [
         null,
         "Переключить автозагрузку"
+    ],
+    "Topology": [
+        null,
+        "Топология"
     ],
     "Total: ": [
         null,

@@ -16,7 +16,7 @@ class VCDomainApplication(ExtModelApplication):
     """
     VCDomain application
     """
-    title = _("VCDomain")
+    title = _("VC Domain")
     menu = [_("Setup"), _("VC Domains")]
     model = VCDomain
     query_fields = ["name", "description"]

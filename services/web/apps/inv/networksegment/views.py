@@ -17,7 +17,7 @@ class NetworkSegmentApplication(ExtDocApplication):
     """
     NetworkSegment application
     """
-    title = _("NetworkSegment")
+    title = _("Network Segment")
     menu = [_("Setup"), _("Network Segments")]
     model = NetworkSegment
     query_fields = ["name__icontains", "description__icontains"]
