@@ -27,15 +27,42 @@ Ext.define("NOC.core.LookupField", {
         minWidth: 240
     },
     isLookupField: true,
+    restUrl: null,
 
     initComponent: function() {
         var me = this,
-            // Get store class name
-            sclass = me.$className.replace(".LookupField", ".Lookup");
+            p;
+        // Calculate restUrl
+        p = me.$className.split(".");
+        if(!me.restUrl && p[0] === "NOC" && p[3] === "LookupField") {
+            me.restUrl = "/" + p[1] + "/" + p[2] + "/lookup/"
+        }
+        if(!me.restUrl) {
+            throw "Cannot determine restUrl for " + me.$className;
+        }
+
         Ext.apply(me, {
-            store: Ext.create(sclass)
+            store: Ext.create("Ext.data.Store", {
+                fields: ["id", "label"],
+                proxy: {
+                    type: "rest",
+                    url: me.restUrl,
+                    pageParam: "__page",
+                    startParam: "__start",
+                    limitParam: "__limit",
+                    sortParam: "__sort",
+                    extraParams: {
+                        "__format": "ext"
+                    },
+                    reader: {
+                        type: "json",
+                        rootProperty: "data",
+                        totalProperty: "total",
+                        successProperty: "success"
+                    }
+                }
+            })
         });
-        me.restUrl = me.store.url;
         if(me.query) {
             Ext.apply(me.store.proxy.extraParams, me.query);
         }
