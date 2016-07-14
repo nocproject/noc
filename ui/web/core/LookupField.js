@@ -15,7 +15,7 @@ Ext.define("NOC.core.LookupField", {
     queryParam: "__query",
     queryCaching: false,
     queryDelay: 200,
-    forceSelection: true,
+    forceSelection: false,
     minChars: 2,
     typeAhead: true,
     triggerAction: "all",
@@ -103,7 +103,7 @@ Ext.define("NOC.core.LookupField", {
             vm,
             params = {};
         if(typeof value === "string" || typeof value === "number") {
-            if(value === "") {
+            if(value === "" || value === 0) {
                 me.clearValue();
                 return;
             }
