@@ -8,6 +8,5 @@ console.debug("Defining NOC.cm.errortype.LookupField");
 
 Ext.define("NOC.cm.errortype.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.cm.errortype.LookupField",
-    requires: ["NOC.cm.errortype.Lookup"]
+    alias: "widget.cm.errortype.LookupField"
 });

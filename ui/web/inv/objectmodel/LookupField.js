@@ -8,6 +8,5 @@ console.debug("Defining NOC.inv.objectmodel.LookupField");
 
 Ext.define("NOC.inv.objectmodel.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.inv.objectmodel.LookupField",
-    requires: ["NOC.inv.objectmodel.Lookup"]
+    alias: "widget.inv.objectmodel.LookupField"
 });

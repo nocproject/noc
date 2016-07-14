@@ -8,6 +8,5 @@ console.debug("Defining NOC.main.audittrail.LookupField");
 
 Ext.define("NOC.main.audittrail.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.audittrail.LookupField",
-    requires: ["NOC.main.audittrail.Lookup"]
+    alias: "widget.main.audittrail.LookupField"
 });

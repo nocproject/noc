@@ -8,6 +8,5 @@ console.debug("Defining NOC.sa.authprofile.LookupField");
 
 Ext.define("NOC.sa.authprofile.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.sa.authprofile.LookupField",
-    requires: ["NOC.sa.authprofile.Lookup"]
+    alias: "widget.sa.authprofile.LookupField"
 });

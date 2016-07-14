@@ -8,6 +8,5 @@ console.debug("Defining NOC.dns.dnszone.LookupField");
 
 Ext.define("NOC.dns.dnszone.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.dns.dnszone.LookupField",
-    requires: ["NOC.dns.dnszone.Lookup"]
+    alias: "widget.dns.dnszone.LookupField"
 });

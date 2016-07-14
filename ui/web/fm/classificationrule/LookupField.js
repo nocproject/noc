@@ -8,6 +8,5 @@ console.debug("Defining NOC.fm.classificationrule.LookupField");
 
 Ext.define("NOC.fm.classificationrule.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.fm.classificationrule.LookupField",
-    requires: ["NOC.fm.classificationrule.Lookup"]
+    alias: "widget.fm.classificationrule.LookupField"
 });

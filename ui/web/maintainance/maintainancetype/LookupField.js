@@ -8,6 +8,5 @@ console.debug("Defining NOC.maintainance.maintainancetype.LookupField");
 
 Ext.define("NOC.maintainance.maintainancetype.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.maintainance.maintainancetype.LookupField",
-    requires: ["NOC.maintainance.maintainancetype.Lookup"]
+    alias: "widget.maintainance.maintainancetype.LookupField"
 });

@@ -8,6 +8,5 @@ console.debug("Defining NOC.main.dbtrigger.LookupField");
 
 Ext.define("NOC.main.dbtrigger.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.dbtrigger.LookupField",
-    requires: ["NOC.main.dbtrigger.Lookup"]
+    alias: "widget.main.dbtrigger.LookupField"
 });

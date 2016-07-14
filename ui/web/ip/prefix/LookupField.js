@@ -8,6 +8,5 @@ console.debug("Defining NOC.ip.prefix.LookupField");
 
 Ext.define("NOC.ip.prefix.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.ip.prefix.LookupField",
-    requires: ["NOC.ip.prefix.Lookup"]
+    alias: "widget.ip.prefix.LookupField"
 });

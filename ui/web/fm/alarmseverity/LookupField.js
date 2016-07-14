@@ -8,7 +8,6 @@ console.debug("Defining NOC.fm.alarmseverity.LookupField");
 
 Ext.define("NOC.fm.alarmseverity.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.fm.alarmseverity.LookupField",
-    requires: ["NOC.fm.alarmseverity.Lookup"],
+    alias: "widget.fm.alarmseverity.LookupField"
     uiStyle: "medium"
 });

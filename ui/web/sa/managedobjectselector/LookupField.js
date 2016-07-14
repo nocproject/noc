@@ -8,6 +8,5 @@ console.debug("Defining NOC.sa.managedobjectselector.LookupField");
 
 Ext.define("NOC.sa.managedobjectselector.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.sa.managedobjectselector.LookupField",
-    requires: ["NOC.sa.managedobjectselector.Lookup"]
+    alias: "widget.sa.managedobjectselector.LookupField"
 });

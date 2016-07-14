@@ -8,6 +8,5 @@ console.debug("Defining NOC.sa.groupaccess.LookupField");
 
 Ext.define("NOC.sa.groupaccess.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.sa.groupaccess.LookupField",
-    requires: ["NOC.sa.groupaccess.Lookup"]
+    alias: "widget.sa.groupaccess.LookupField"
 });

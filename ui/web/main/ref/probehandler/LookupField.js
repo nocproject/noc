@@ -8,8 +8,7 @@ console.debug("Defining NOC.main.ref.probehandler.LookupField");
 
 Ext.define("NOC.main.ref.probehandler.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.ref.probehandler.LookupField",
-    requires: ["NOC.main.ref.probehandler.Lookup"],
+    alias: "widget.main.ref.probehandler.LookupField"
     tpl: [
         '<tpl for=".">',
             '<div class="x-boundlist-item">',

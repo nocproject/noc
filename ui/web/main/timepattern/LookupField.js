@@ -8,6 +8,5 @@ console.debug("Defining NOC.main.timepattern.LookupField");
 
 Ext.define("NOC.main.timepattern.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.timepattern.LookupField",
-    requires: ["NOC.main.timepattern.Lookup"]
+    alias: "widget.main.timepattern.LookupField"
 });

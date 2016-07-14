@@ -8,6 +8,5 @@ console.debug("Defining NOC.vc.vcbindfilter.LookupField");
 
 Ext.define("NOC.vc.vcbindfilter.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.vc.vcbindfilter.LookupField",
-    requires: ["NOC.vc.vcbindfilter.Lookup"]
+    alias: "widget.vc.vcbindfilter.LookupField"
 });

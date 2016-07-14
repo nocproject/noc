@@ -8,6 +8,5 @@ console.debug("Defining NOC.main.resourcestate.LookupField");
 
 Ext.define("NOC.main.resourcestate.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.resourcestate.LookupField",
-    requires: ["NOC.main.resourcestate.Lookup"]
+    alias: "widget.main.resourcestate.LookupField"
 });

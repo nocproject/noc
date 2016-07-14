@@ -8,7 +8,6 @@ console.debug("Defining NOC.sa.administrativedomain.LookupField");
 
 Ext.define("NOC.sa.administrativedomain.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.sa.administrativedomain.LookupField",
-    requires: ["NOC.sa.administrativedomain.Lookup"],
+    alias: "widget.sa.administrativedomain.LookupField"
     uiStyle: "medium"
 });

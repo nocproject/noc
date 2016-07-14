@@ -8,6 +8,5 @@ console.debug("Defining NOC.sa.profilecheckrule.LookupField");
 
 Ext.define("NOC.sa.profilecheckrule.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.sa.profilecheckrule.LookupField",
-    requires: ["NOC.sa.profilecheckrule.Lookup"]
+    alias: "widget.sa.profilecheckrule.LookupField"
 });

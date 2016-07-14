@@ -8,6 +8,5 @@ console.debug("Defining NOC.fm.oidalias.LookupField");
 
 Ext.define("NOC.fm.oidalias.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.fm.oidalias.LookupField",
-    requires: ["NOC.fm.oidalias.Lookup"]
+    alias: "widget.fm.oidalias.LookupField"
 });

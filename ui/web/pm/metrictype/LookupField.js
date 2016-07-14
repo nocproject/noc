@@ -8,6 +8,5 @@ console.debug("Defining NOC.pm.metrictype.LookupField");
 
 Ext.define("NOC.pm.metrictype.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.pm.metrictype.LookupField",
-    requires: ["NOC.pm.metrictype.Lookup"]
+    alias: "widget.pm.metrictype.LookupField"
 });

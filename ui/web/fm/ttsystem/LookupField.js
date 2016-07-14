@@ -8,6 +8,5 @@ console.debug("Defining NOC.fm.ttsystem.LookupField");
 
 Ext.define("NOC.fm.ttsystem.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.fm.ttsystem.LookupField",
-    requires: ["NOC.fm.ttsystem.Lookup"]
+    alias: "widget.fm.ttsystem.LookupField"
 });

@@ -8,6 +8,5 @@ console.debug("Defining NOC.fm.mibpreference.LookupField");
 
 Ext.define("NOC.fm.mibpreference.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.fm.mibpreference.LookupField",
-    requires: ["NOC.fm.mibpreference.Lookup"]
+    alias: "widget.fm.mibpreference.LookupField"
 });
