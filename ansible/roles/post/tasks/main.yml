@@ -80,5 +80,6 @@
     body_format: json
     status_code: 201, 202
   when: "alerta_notified.changed"
+  run_once: true
   tags:
     - always
