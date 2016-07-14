@@ -17,14 +17,13 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
     rx_ver1 = re.compile(
-        r"^\s*(?P<platform>MA\S+)(?P<version>V\d+R\d+\S+)\s+",
+        r"^\s*(?P<platform>[UM]A\S+)(?P<version>V\d+R\d+\S*)\s+",
         re.MULTILINE)
     rx_ver2 = re.compile(
         r"^\s*VERSION\s*:\s*MA\S+(?P<version>V\d+R\d+\S+)\s*\n"
         r".+?"
         r"^\s*PRODUCT\s+(?P<platform>MA\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
-
 
     def execute(self):
         v = self.cli("display version\n")

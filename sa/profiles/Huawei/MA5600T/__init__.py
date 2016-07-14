@@ -20,14 +20,15 @@ class Profile(BaseProfile):
         (r"^---- More \( Press 'Q' to break \) ----", " "),
         (r"\[<frameId/slotId>\]", "\n"),
         (r"\(y/n\) \[n\]", "y\n"),
-        (r"\[to\]\:", "\n")
+        (r"\[to\]\:", "\n"),
+        (r"\{ \<cr\>\|vpi\<K\> \}\:", "\n")
     ]
     pattern_unpriveleged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
     pattern_syntax_error = r"% Unknown command"
     command_more = " "
     config_volatile = ["^%.*?$"]
-    command_disable_pager="scroll\n"
+    command_disable_pager="scroll 512"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "quit"
@@ -36,7 +37,10 @@ class Profile(BaseProfile):
 
 
     rx_slots = re.compile("^\s*\d+", re.MULTILINE)
-    rx_ports = re.compile("^\s*\d+\s+(?P<type>ADSL|GE)\s+", re.MULTILINE)
+    rx_ports = re.compile(
+        "^\s*\d+\s+(?P<type>ADSL|GE|FE)\s+.+?"
+        "(?P<state>online|offline|Activating|Activated)",
+         re.MULTILINE)
 
     def get_slots_n(self, script):
         i = -1
@@ -48,11 +52,13 @@ class Profile(BaseProfile):
     def get_ports_n(self, script, slot_no):
         i = -1
         t = ""
+        s = []
         v = script.cli(("display board 0/%d" % slot_no), cached=True)
         for match in self.rx_ports.finditer(v):
             i += 1
             t = match.group("type")
-        return {"n": i, "t": t}
+            s += [match.group("state") in ["online", "Activated"]]
+        return {"n": i, "t": t, "s": s}
 
     def fill_ports(self, script):
         n = self.get_slots_n(script)
