@@ -67,7 +67,7 @@ class AccessWidget(forms.Widget):
                 mode="group"
         for module in [m for m in settings.INSTALLED_APPS if m.startswith("noc.")]:
             mod=module[4:]
-            m=__import__(module,{},{},"MODULE_NAME")
+            m=__import__("noc.services.web.apps.%s" % mod,{},{},"MODULE_NAME")
             r+=["<tr><td colspan='3' class='module-name'>%s</td></tr>"%m.MODULE_NAME]
             for app in [app for app in apps if app.startswith(mod+".")]:
                 app_perms=sorted([p for p in perms if p.startswith(app.replace(".",":")+":")])
