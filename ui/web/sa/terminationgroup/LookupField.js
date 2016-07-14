@@ -8,6 +8,6 @@ console.debug("Defining NOC.sa.terminationgroup.LookupField");
 
 Ext.define("NOC.sa.terminationgroup.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.sa.terminationgroup.LookupField"
+    alias: "widget.sa.terminationgroup.LookupField",
     uiStyle: "medium"
 });
