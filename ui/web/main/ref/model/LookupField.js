@@ -8,5 +8,6 @@ console.debug("Defining NOC.main.pyrule.LookupField");
 
 Ext.define("NOC.main.ref.model.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.ref.model.LookupField"
+    alias: "widget.main.ref.model.LookupField",
+    restUrl: "/main/ref/model/lookup/"
 });

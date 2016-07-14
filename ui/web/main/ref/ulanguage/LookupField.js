@@ -8,5 +8,6 @@ console.debug("Defining NOC.main.pyrule.LookupField");
 
 Ext.define("NOC.main.ref.ulanguage.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.ref.ulanguage.LookupField"
+    alias: "widget.main.ref.ulanguage.LookupField",
+    restUrl: "/main/ref/ulanguage/lookup/"
 });
