@@ -8,5 +8,6 @@ console.debug("Defining NOC.main.unotificationmethod.LookupField");
 
 Ext.define("NOC.main.ref.unotificationmethod.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.ref.unotificationmethod.LookupField"
+    alias: "widget.main.ref.unotificationmethod.LookupField",
+    restUrl: "/main/ref/unotificationmethod/lookup/"
 });
