@@ -48,6 +48,7 @@ Ext.define("NOC.fm.alarm.Application", {
                 load: me.onLoad
             }
         });
+
         me.autoreloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
             enableToggle: true,
@@ -56,6 +57,17 @@ Ext.define("NOC.fm.alarm.Application", {
             listeners: {
                 scope: me,
                 toggle: me.onAutoReloadToggle
+            }
+        });
+
+        me.soundButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.volume_up,
+            enableToggle: true,
+            pressed: true,
+            tooltip: __("Toggle sound"),
+            listeners: {
+                scope: me,
+                toggle: me.onSoundToggle
             }
         });
 
@@ -276,6 +288,7 @@ Ext.define("NOC.fm.alarm.Application", {
                     },
                     items: [
                         me.autoreloadButton,
+                        me.soundButton,
                         me.typeButton,
                         me.expandButton,
                         me.ttConfirmButton,
@@ -583,7 +596,7 @@ Ext.define("NOC.fm.alarm.Application", {
         var me = this,
             ts, delta;
         ts = new Date().getTime();
-        if(me.lastCheckTS) {
+        if(me.lastCheckTS && me.soundButton.pressed) {
             delta = Math.ceil((ts - me.lastCheckTS) / 1000.0);
             Ext.Ajax.request({
                 url: "/fm/alarm/notification/?delta=" + delta,
@@ -607,6 +620,15 @@ Ext.define("NOC.fm.alarm.Application", {
         var me = this;
         if(me.autoreloadButton.pressed) {
             me.store.load();
+        }
+    },
+    //
+    onSoundToggle: function() {
+        var me = this;
+        if(me.soundButton.pressed) {
+            me.soundButton.setGlyph(NOC.glyph.volume_up);
+        } else {
+            me.soundButton.setGlyph(NOC.glyph.volume_off);
         }
     },
     //
