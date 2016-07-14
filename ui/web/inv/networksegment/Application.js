@@ -32,6 +32,13 @@ Ext.define("NOC.inv.networksegment.Application", {
             handler: me.onEffectiveSettings
         });
 
+        me.showMapButton = Ext.create("Ext.button.Button", {
+            text: __("Show Map"),
+            glyph: NOC.glyph.globe,
+            scope: me,
+            handler: me.onShowMap
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -121,7 +128,8 @@ Ext.define("NOC.inv.networksegment.Application", {
             ],
 
             formToolbar: [
-                me.settingsButton
+                me.settingsButton,
+                me.showMapButton
             ]
         });
         me.callParent();
@@ -130,5 +138,12 @@ Ext.define("NOC.inv.networksegment.Application", {
     onEffectiveSettings: function() {
         var me = this;
         me.previewItem(me.ITEM_EFFECTIVE_SETTINGS, me.currentRecord);
+    },
+    //
+    onShowMap: function() {
+        var me = this;
+        NOC.launch("inv.map", "history", {
+            args: [me.currentRecord.get("id")]
+        });
     }
 });
