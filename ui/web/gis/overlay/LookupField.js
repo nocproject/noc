@@ -8,6 +8,5 @@ console.debug("Defining NOC.gis.overlay.LookupField");
 
 Ext.define("NOC.gis.overlay.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.gis.overlay.LookupField",
-    requires: ["NOC.gis.overlay.Lookup"]
+    alias: "widget.gis.overlay.LookupField"
 });

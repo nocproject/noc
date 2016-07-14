@@ -8,6 +8,5 @@ console.debug("Defining NOC.crm.subscriber.LookupField");
 
 Ext.define("NOC.crm.subscriber.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.crm.subscriber.LookupField",
-    requires: ["NOC.crm.subscriber.Lookup"]
+    alias: "widget.crm.subscriber.LookupField"
 });

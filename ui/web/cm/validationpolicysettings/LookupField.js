@@ -8,6 +8,5 @@ console.debug("Defining NOC.cm.validationpolicysettings.LookupField");
 
 Ext.define("NOC.cm.validationpolicysettings.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.cm.validationpolicysettings.LookupField",
-    requires: ["NOC.cm.validationpolicysettings.Lookup"]
+    alias: "widget.cm.validationpolicysettings.LookupField"
 });

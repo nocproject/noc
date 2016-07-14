@@ -8,7 +8,6 @@ console.debug("Defining NOC.main.pyrule.LookupField");
 
 Ext.define("NOC.main.ref.profile.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.ref.profile.LookupField",
-    requires: ["NOC.main.ref.profile.Lookup"],
+    alias: "widget.main.ref.profile.LookupField"
     uiStyle: "medium"
 });

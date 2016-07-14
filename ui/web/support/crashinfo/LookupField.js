@@ -8,6 +8,5 @@ console.debug("Defining NOC.support.crashinfo.LookupField");
 
 Ext.define("NOC.support.crashinfo.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.support.crashinfo.LookupField",
-    requires: ["NOC.support.crashinfo.Lookup"]
+    alias: "widget.support.crashinfo.LookupField"
 });

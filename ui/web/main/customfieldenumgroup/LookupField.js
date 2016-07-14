@@ -8,6 +8,5 @@ console.debug("Defining NOC.main.customfieldenumgroup.LookupField");
 
 Ext.define("NOC.main.customfieldenumgroup.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.customfieldenumgroup.LookupField",
-    requires: ["NOC.main.customfieldenumgroup.Lookup"]
+    alias: "widget.main.customfieldenumgroup.LookupField"
 });

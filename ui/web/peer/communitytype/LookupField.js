@@ -8,6 +8,5 @@ console.debug("Defining NOC.peer.communitytype.LookupField");
 
 Ext.define("NOC.peer.communitytype.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.peer.communitytype.LookupField",
-    requires: ["NOC.peer.communitytype.Lookup"]
+    alias: "widget.peer.communitytype.LookupField"
 });

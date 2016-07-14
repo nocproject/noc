@@ -8,6 +8,5 @@ console.debug("Defining NOC.fm.eventclass.LookupField");
 
 Ext.define("NOC.fm.eventclass.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.fm.eventclass.LookupField",
-    requires: ["NOC.fm.eventclass.Lookup"]
+    alias: "widget.fm.eventclass.LookupField"
 });

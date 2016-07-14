@@ -8,6 +8,5 @@ console.debug("Defining NOC.peer.organisation.LookupField");
 
 Ext.define("NOC.peer.organisation.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.peer.organisation.LookupField",
-    requires: ["NOC.peer.organisation.Lookup"]
+    alias: "widget.peer.organisation.LookupField"
 });

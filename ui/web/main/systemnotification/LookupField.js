@@ -8,6 +8,5 @@ console.debug("Defining NOC.main.systemnotification.LookupField");
 
 Ext.define("NOC.main.systemnotification.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.systemnotification.LookupField",
-    requires: ["NOC.main.systemnotification.Lookup"]
+    alias: "widget.main.systemnotification.LookupField"
 });

@@ -8,6 +8,5 @@ console.debug("Defining NOC.sa.mrtconfig.LookupField");
 
 Ext.define("NOC.sa.mrtconfig.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.sa.mrtconfig.LookupField",
-    requires: ["NOC.sa.mrtconfig.Lookup"]
+    alias: "widget.sa.mrtconfig.LookupField"
 });

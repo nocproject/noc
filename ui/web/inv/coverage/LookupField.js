@@ -8,6 +8,5 @@ console.debug("Defining NOC.inv.coverage.LookupField");
 
 Ext.define("NOC.inv.coverage.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.inv.coverage.LookupField",
-    requires: ["NOC.inv.coverage.Lookup"]
+    alias: "widget.inv.coverage.LookupField"
 });

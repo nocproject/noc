@@ -8,6 +8,5 @@ console.debug("Defining NOC.ip.vrfgroup.LookupField");
 
 Ext.define("NOC.ip.vrfgroup.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.ip.vrfgroup.LookupField",
-    requires: ["NOC.ip.vrfgroup.Lookup"]
+    alias: "widget.ip.vrfgroup.LookupField"
 });

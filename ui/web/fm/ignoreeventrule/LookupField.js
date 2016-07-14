@@ -8,6 +8,5 @@ console.debug("Defining NOC.fm.ignoreeventrule.LookupField");
 
 Ext.define("NOC.fm.ignoreeventrule.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.fm.ignoreeventrule.LookupField",
-    requires: ["NOC.fm.ignoreeventrule.Lookup"]
+    alias: "widget.fm.ignoreeventrule.LookupField"
 });

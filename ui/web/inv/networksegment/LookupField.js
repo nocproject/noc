@@ -8,6 +8,5 @@ console.debug("Defining NOC.inv.networksegment.LookupField");
 
 Ext.define("NOC.inv.networksegment.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.inv.networksegment.LookupField",
-    requires: ["NOC.inv.networksegment.Lookup"]
+    alias: "widget.inv.networksegment.LookupField"
 });

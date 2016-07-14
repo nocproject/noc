@@ -8,6 +8,5 @@ console.debug("Defining NOC.fm.alarmtrigger.LookupField");
 
 Ext.define("NOC.fm.alarmtrigger.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.fm.alarmtrigger.LookupField",
-    requires: ["NOC.fm.alarmtrigger.Lookup"]
+    alias: "widget.fm.alarmtrigger.LookupField"
 });

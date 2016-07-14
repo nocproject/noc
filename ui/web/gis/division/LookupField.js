@@ -8,6 +8,5 @@ console.debug("Defining NOC.gis.division.LookupField");
 
 Ext.define("NOC.gis.division.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.gis.division.LookupField",
-    requires: ["NOC.gis.division.Lookup"]
+    alias: "widget.gis.division.LookupField"
 });

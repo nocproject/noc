@@ -8,6 +8,5 @@ console.debug("Defining NOC.sa.actioncommands.LookupField");
 
 Ext.define("NOC.sa.actioncommands.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.sa.actioncommands.LookupField",
-    requires: ["NOC.sa.actioncommands.Lookup"]
+    alias: "widget.sa.actioncommands.LookupField"
 });

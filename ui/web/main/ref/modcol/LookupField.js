@@ -8,8 +8,7 @@ console.debug("Defining NOC.main.ref.modcol.LookupField");
 
 Ext.define("NOC.main.ref.modcol.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.ref.modcol.LookupField",
-    requires: ["NOC.main.ref.modcol.Lookup"],
+    alias: "widget.main.ref.modcol.LookupField"
     tpl: [
         '<tpl for=".">',
             '<div class="x-boundlist-item">',
