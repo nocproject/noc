@@ -10,34 +10,34 @@ Ext.define("NOC.sa.managedobject.scripts.ShowMPLSVPN", {
     extend: "NOC.sa.managedobject.scripts.TablePreview",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 120
         },
         {
-            text: "Status",
+            text: __("Status"),
             dataIndex: "status",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Type",
+            text: __("Type"),
             dataIndex: "type",
             width: 70
         },
         {
-            text: "RD",
+            text: __("RD"),
             dataIndex: "rd",
             width: 100
         },
         {
-            text: "Interfaces",
+            text: __("Interfaces"),
             dataIndex: "interfaces",
             flex: 1,
             renderer: NOC.render.Join(", ")
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }

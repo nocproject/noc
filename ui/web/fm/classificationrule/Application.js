@@ -18,24 +18,24 @@ Ext.define("NOC.fm.classificationrule.Application", {
     treeFilter: "category",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 500
         },
         {
-            text: "Builtin",
+            text: __("Builtin"),
             dataIndex: "is_builtin",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Event Class",
+            text: __("Event Class"),
             dataIndex: "event_class",
             flex: 1,
             renderer: NOC.render.Lookup("event_class")
         },
         {
-            text: "Pref",
+            text: __("Pref"),
             dataIndex: "preference",
             width: 50
         }
@@ -76,24 +76,24 @@ Ext.define("NOC.fm.classificationrule.Application", {
                 {
                     xtype: "textfield",
                     name: "name",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     xtype: "displayfield",
                     name: "uuid",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     xtype: "textarea",
                     name: "description",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     xtype: "numberfield",
                     name: "preference",
-                    fieldLabel: "Preference",
+                    fieldLabel: __("Preference"),
                     allowBlank: false,
                     defaultValue: 1000,
                     minValue: 0,
@@ -102,7 +102,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
                 {
                     xtype: "fm.eventclass.LookupField",
                     name: "event_class",
-                    fieldLabel: "Event Class",
+                    fieldLabel: __("Event Class"),
                     allowBlank: false,
                     listeners: {
                         select: {
@@ -114,18 +114,18 @@ Ext.define("NOC.fm.classificationrule.Application", {
                 {
                     xtype: "gridfield",
                     name: "patterns",
-                    fieldLabel: "Patterns",
+                    fieldLabel: __("Patterns"),
                     allowBlank: false,
                     columns: [
                         {
-                            text: "Key RE",
+                            text: __("Key RE"),
                             dataIndex: "key_re",
                             flex: 1,
                             editor: "textfield",
                             renderer: NOC.render.htmlEncode
                         },
                         {
-                            text: "Value RE",
+                            text: __("Value RE"),
                             dataIndex: "value_re",
                             flex: 1,
                             editor: "textfield",
@@ -136,18 +136,18 @@ Ext.define("NOC.fm.classificationrule.Application", {
                 {
                     xtype: "gridfield",
                     name: "vars",
-                    fieldLabel: "Vars",
+                    fieldLabel: __("Vars"),
                     allowBlank: true,
                     columns: [
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name",
                             width: 100,
                             editor: "textfield",
                             renderer: NOC.render.htmlEncode
                         },
                         {
-                            text: "Value",
+                            text: __("Value"),
                             dataIndex: "value",
                             flex: 1,
                             editor: "textfield",
@@ -158,7 +158,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),
@@ -166,7 +166,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
                     handler: me.onJSON
                 },
                 {
-                    text: "Test",
+                    text: __("Test"),
                     glyph: NOC.glyph.question_circle,
                     tooltip: "Test rule",
                     hasAccess: NOC.hasPermission("test"),

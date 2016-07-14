@@ -54,7 +54,7 @@ Ext.define("NOC.sa.managedobject.LinkForm", {
                             xtype: "sa.managedobject.LookupField",
                             name: "managed_object",
                             emptyText: __("Select managed object ..."),
-                            fieldLabel: "Object",
+                            fieldLabel: __("Object"),
                             width: 360,
                             allowBlank: false,
                             listeners: {

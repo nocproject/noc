@@ -109,7 +109,7 @@ Ext.define("NOC.ip.vrf.VRFImportForm", {
                             xtype: "toolbar",
                             items: [
                                 {
-                                    text: "Save",
+                                    text: __("Save"),
                                     glyph: NOC.glyph.save,
                                     scope: me,
                                     handler: me.onSave

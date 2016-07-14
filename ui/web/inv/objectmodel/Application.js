@@ -64,36 +64,36 @@ Ext.define("NOC.inv.objectmodel.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Builtin",
+                    text: __("Builtin"),
                     dataIndex: "is_builtin",
                     renderer: NOC.render.Bool,
                     width: 50,
                     sortable: false
                 },
                 {
-                    text: "Vendor",
+                    text: __("Vendor"),
                     dataIndex: "vendor",
                     renderer: NOC.render.Lookup("vendor"),
                     width: 150
                 },
                 {
-                    text: "Connection Rule",
+                    text: __("Connection Rule"),
                     dataIndex: "connection_rule",
                     renderer: NOC.render.Lookup("connection_rule"),
                     width: 100
                 },
                 {
-                    text: "CR. Context",
+                    text: __("CR. Context"),
                     dataIndex: "cr_context",
                     width: 70
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -102,78 +102,78 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "large"
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description"
+                    fieldLabel: __("Description")
                 },
                 {
                     name: "vendor",
                     xtype: "inv.vendor.LookupField",
-                    fieldLabel: "Vendor",
+                    fieldLabel: __("Vendor"),
                     allowBlank: false
                 },
                 {
                     name: "connection_rule",
                     xtype: "inv.connectionrule.LookupField",
-                    fieldLabel: "Connection Rule",
+                    fieldLabel: __("Connection Rule"),
                     allowBlank: true
                 },
                 {
                     name: "cr_context",
                     xtype: "textfield",
-                    fieldLabel: "Connection Context",
+                    fieldLabel: __("Connection Context"),
                     allowBlank: true,
                     uiStyle: "medium"
                 },
                 {
                     name: "plugins",
                     xtype: "textfield",
-                    fieldLabel: "Plugins",
+                    fieldLabel: __("Plugins"),
                     allowBlank: true
                 },
                 {
                     name: "data",
                     xtype: "modeldatafield",
-                    fieldLabel: "Model Data",
+                    fieldLabel: __("Model Data"),
                     labelAlign: "top"
                 },
                 {
                     name: "connections",
                     xtype: "gridfield",
-                    fieldLabel: "Connections",
+                    fieldLabel: __("Connections"),
                     labelAlign: "top",
                     columns: [
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name",
                             editor: "textfield",
                             width: 100
                         },
                         {
-                            text: "Connection Type",
+                            text: __("Connection Type"),
                             dataIndex: "type",
                             editor: "inv.connectiontype.LookupField",
                             width: 200,
                             renderer: NOC.render.Lookup("type")
                         },
                         {
-                            text: "Group",
+                            text: __("Group"),
                             dataIndex: "group",
                             editor: "textfield",
                             width: 50
                         },
                         {
-                            text: "Direction",
+                            text: __("Direction"),
                             dataIndex: "direction",
                             editor: {
                                 xtype: "combobox",
@@ -186,7 +186,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             width: 50
                         },
                         {
-                            text: "Gender",
+                            text: __("Gender"),
                             dataIndex: "gender",
                             editor: {
                                 xtype: "combobox",
@@ -199,26 +199,26 @@ Ext.define("NOC.inv.objectmodel.Application", {
                             width: 50
                         },
                         {
-                            text: "Cross",
+                            text: __("Cross"),
                             dataIndex: "cross",
                             width: 100,
                             editor: "textfield"
                         },
                         {
-                            text: "Protocols",
+                            text: __("Protocols"),
                             dataIndex: "protocols",
                             width: 150,
                             editor: "textfield",
                             renderer: NOC.render.htmlEncode
                         },
                         {
-                            text: "Internal name",
+                            text: __("Internal name"),
                             dataIndex: "internal_name",
                             width: 150,
                             editor: "textfield"
                         },
                         {
-                            text: "Description",
+                            text: __("Description"),
                             dataIndex: "description",
                             editor: "textfield",
                             flex: 1
@@ -232,7 +232,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),
@@ -240,7 +240,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                     handler: me.onJSON
                 },
                 {
-                    text: "Test",
+                    text: __("Test"),
                     glyph: NOC.glyph.question,
                     tooltip: "Test compatible types",
                     hasAccess: NOC.hasPermission("read"),

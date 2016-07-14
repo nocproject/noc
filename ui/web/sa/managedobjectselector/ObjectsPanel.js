@@ -16,7 +16,7 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
         var me = this;
 
         me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.onRefresh
@@ -32,42 +32,42 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
             stateId: "sa.managedobjectselector-objects",
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Managed",
+                    text: __("Managed"),
                     dataIndex: "is_managed",
                     renderer: NOC.render.Bool,
                     width: 50
                 },
                 {
-                    text: "Adm. domain",
+                    text: __("Adm. domain"),
                     dataIndex: "administrative_domain"
                 },
                 {
-                    text: "Profile",
+                    text: __("Profile"),
                     dataIndex: "profile",
                     width: 100
                 },
                 {
-                    text: "Platform",
+                    text: __("Platform"),
                     dataIndex: "platform",
                     width: 100
                 },
                 {
-                    text: "Address",
+                    text: __("Address"),
                     dataIndex: "address",
                     width: 100
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 },
                 {
-                    text: "Tags",
+                    text: __("Tags"),
                     dataIndex: "tags",
                     renderer: NOC.render.Tags,
                     width: 150

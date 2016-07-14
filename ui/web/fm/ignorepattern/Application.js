@@ -19,18 +19,18 @@ Ext.define("NOC.fm.ignorepattern.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Source",
+                    text: __("Source"),
                     dataIndex: "source",
                     width: 75
                 },
                 {
-                    text: "Active",
+                    text: __("Active"),
                     dataIndex: "is_active",
                     width: 25,
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "Pattern",
+                    text: __("Pattern"),
                     dataIndex: "pattern",
                     flex: 1
                 }
@@ -39,7 +39,7 @@ Ext.define("NOC.fm.ignorepattern.Application", {
                 {
                     name: "source",
                     xtype: "combobox",
-                    fieldLabel: "Source",
+                    fieldLabel: __("Source"),
                     allowBlank: false,
                     store: [
                         ["syslog", "SYSLOG"],
@@ -49,18 +49,18 @@ Ext.define("NOC.fm.ignorepattern.Application", {
                 {
                     name: "is_active",
                     xtype: "checkbox",
-                    boxLabel: "Active"
+                    boxLabel: __("Active")
                 },
                 {
                     name: "pattern",
                     xtype: "textfield",
-                    fieldLabel: "Pattern (RE)",
+                    fieldLabel: __("Pattern (RE)"),
                     allowBlank: false
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 }
             ]

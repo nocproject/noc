@@ -30,7 +30,7 @@ Ext.define("NOC.vc.vc.MOSelectForm", {
                         {
                             xtype: "vc.vcdomain.LookupField",
                             name: "vc_domain",
-                            fieldLabel: "VC Domain",
+                            fieldLabel: __("VC Domain"),
                             allowBlank: false,
                             itemId: "vc_domain",
                             listeners: {
@@ -43,7 +43,7 @@ Ext.define("NOC.vc.vc.MOSelectForm", {
                         {
                             xtype: "sa.managedobject.LookupField",
                             name: "managed_object",
-                            fieldLabel: "Managed Object",
+                            fieldLabel: __("Managed Object"),
                             allowBlank: false,
                             disabled: true,
                             itemId: "managed_object"
@@ -51,7 +51,7 @@ Ext.define("NOC.vc.vc.MOSelectForm", {
                         {
                             xtype: "vc.vcfilter.LookupField",
                             name: "vc_filter",
-                            fieldLabel: "VC Filter",
+                            fieldLabel: __("VC Filter"),
                             allowBlank: false,
                             itemId: "vc_filter"
                         }
@@ -60,7 +60,7 @@ Ext.define("NOC.vc.vc.MOSelectForm", {
             ],
             buttons: [
                 {
-                    text: "Import",
+                    text: __("Import"),
                     itemId: "import",
                     glyph: NOC.glyph.sign_in,
                     scope: me,

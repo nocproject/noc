@@ -22,7 +22,7 @@ Ext.define("NOC.ip.prefix.Application", {
     columns: [
         /*
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         }*/
     ],
@@ -30,151 +30,151 @@ Ext.define("NOC.ip.prefix.Application", {
         {
             name: "parent",
             xtype: "ip.prefix.LookupField",
-            fieldLabel: "Parent",
+            fieldLabel: __("Parent"),
             allowBlank: true
         },
         {
             name: "vrf",
             xtype: "ip.vrf.LookupField",
-            fieldLabel: "VRF",
+            fieldLabel: __("VRF"),
             allowBlank: false
         },
         {
             name: "afi",
             xtype: "textfield",
-            fieldLabel: "Address Family",
+            fieldLabel: __("Address Family"),
             allowBlank: false
         },
         {
             name: "prefix",
             xtype: "textfield",
-            fieldLabel: "Prefix",
+            fieldLabel: __("Prefix"),
             allowBlank: false
         },
         {
             name: "asn",
             xtype: "peer.as.LookupField",
-            fieldLabel: "AS",
+            fieldLabel: __("AS"),
             allowBlank: false
         },
         {
             name: "vc",
             xtype: "vc.vc.LookupField",
-            fieldLabel: "VC",
+            fieldLabel: __("VC"),
             allowBlank: true
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "tags",
             xtype: "tagsfield",
-            fieldLabel: "Tags",
+            fieldLabel: __("Tags"),
             allowBlank: true
         },
         {
             name: "tt",
             xtype: "numberfield",
-            fieldLabel: "TT",
+            fieldLabel: __("TT"),
             allowBlank: true
         },
         {
             name: "style",
             xtype: "main.style.LookupField",
-            fieldLabel: "Style",
+            fieldLabel: __("Style"),
             allowBlank: true
         },
         {
             name: "state",
             xtype: "main.resourcestate.LookupField",
-            fieldLabel: "State",
+            fieldLabel: __("State"),
             allowBlank: false
         },
         {
             name: "allocated_till",
             xtype: "datefield",
-            fieldLabel: "Allocated till",
+            fieldLabel: __("Allocated till"),
             allowBlank: true
         },
         {
             name: "ipv6_transition",
             xtype: "ip.prefix.LookupField",
-            fieldLabel: "ipv6 transition",
+            fieldLabel: __("ipv6 transition"),
             allowBlank: true
         },
         {
             name: "service",
             xtype: "textfield",
-            fieldLabel: "service",
+            fieldLabel: __("service"),
             allowBlank: true
         },
         {
             name: "site",
             xtype: "textfield",
-            fieldLabel: "site",
+            fieldLabel: __("site"),
             allowBlank: true
         },
         {
             name: "is_primary",
             xtype: "checkboxfield",
-            boxLabel: "is primary",
+            boxLabel: __("is primary"),
             allowBlank: false
         },
         {
             name: "host",
             xtype: "textfield",
-            fieldLabel: "host",
+            fieldLabel: __("host"),
             allowBlank: true
         },
         {
             name: "last_changed",
             xtype: "datefield",
-            fieldLabel: "last changed",
+            fieldLabel: __("last changed"),
             allowBlank: true
         },
         {
             name: "last_changed_by",
             xtype: "textfield",
-            fieldLabel: "last changed by",
+            fieldLabel: __("last changed by"),
             allowBlank: true
         },
         {
             name: "customer",
             xtype: "textfield",
-            fieldLabel: "customer",
+            fieldLabel: __("customer"),
             allowBlank: true
         },
         {
             name: "division",
             xtype: "textfield",
-            fieldLabel: "division",
+            fieldLabel: __("division"),
             allowBlank: true
         },
         {
             name: "vlan",
             xtype: "numberfield",
-            fieldLabel: "vlan",
+            fieldLabel: __("vlan"),
             allowBlank: true
         },
         {
             name: "origin",
             xtype: "textfield",
-            fieldLabel: "origin",
+            fieldLabel: __("origin"),
             allowBlank: true
         },
         {
             name: "cluster",
             xtype: "textfield",
-            fieldLabel: "cluster",
+            fieldLabel: __("cluster"),
             allowBlank: true
         },
         {
             name: "project",
             xtype: "textfield",
-            fieldLabel: "project",
+            fieldLabel: __("project"),
             allowBlank: true
         }
     ]

@@ -33,20 +33,20 @@ Ext.define("NOC.inv.interface.MACForm", {
                     layout: "fit",
                     columns: [
                         {
-                            text: "Interface",
+                            text: __("Interface"),
                             dataIndex: "interfaces"
                         },
                         {
-                            text: "MAC",
+                            text: __("MAC"),
                             dataIndex: "mac",
                             width: 110
                         },
                         {
-                            text: "VLAN",
+                            text: __("VLAN"),
                             dataIndex: "vlan_id"
                         },
                         {
-                            text: "type",
+                            text: __("type"),
                             dataIndex: "type"
                         }
                     ]

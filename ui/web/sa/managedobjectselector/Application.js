@@ -32,7 +32,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
             "NOC.sa.managedobjectselector.ObjectsPanel"
         );
         me.objectsButton = Ext.create("Ext.button.Button", {
-            text: "Matched Objects",
+            text: __("Matched Objects"),
             glyph: NOC.glyph.list,
             scope: me,
             handler: me.onObjects
@@ -40,18 +40,18 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Enabled",
+                    text: __("Enabled"),
                     dataIndex: "is_enabled",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "Expression",
+                    text: __("Expression"),
                     dataIndex: "expression",
                     flex: 1
                 }
@@ -60,26 +60,26 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "medium"
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "is_enabled",
                     xtype: "checkboxfield",
-                    boxLabel: "Is Enabled",
+                    boxLabel: __("Is Enabled"),
                     allowBlank: false
                 },
                 {
                     name: "filter_id",
                     xtype: "numberfield",
-                    fieldLabel: "Filter by ID",
+                    fieldLabel: __("Filter by ID"),
                     allowBlank: true,
                     uiStyle: "small",
                     hideTrigger: true
@@ -87,14 +87,14 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                 {
                     name: "filter_name",
                     xtype: "textfield",
-                    fieldLabel: "Filter by Name (REGEXP)",
+                    fieldLabel: __("Filter by Name (REGEXP)"),
                     allowBlank: true,
                     uiStyle: "large"
                 },
                 {
                     name: "filter_managed",
                     xtype: "combobox",
-                    fieldLabel: "Filter by Is Managed",
+                    fieldLabel: __("Filter by Is Managed"),
                     allowBlank: true,
                     store: [
                         [null, "-"],
@@ -106,85 +106,85 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                 {
                     name: "filter_profile",
                     xtype: "main.ref.profile.LookupField",
-                    fieldLabel: "Filter by Profile",
+                    fieldLabel: __("Filter by Profile"),
                     allowBlank: true
                 },
                 {
                     name: "filter_object_profile",
                     xtype: "sa.managedobjectprofile.LookupField",
-                    fieldLabel: "Filter by Object Profile",
+                    fieldLabel: __("Filter by Object Profile"),
                     allowBlank: true
                 },
                 {
                     name: "filter_address",
                     xtype: "textfield",
-                    fieldLabel: "Filter by Address (REGEXP)",
+                    fieldLabel: __("Filter by Address (REGEXP)"),
                     allowBlank: true
                 },
                 {
                     name: "filter_prefix",
                     xtype: "main.prefixtable.LookupField",
-                    fieldLabel: "Filter by Prefix Table",
+                    fieldLabel: __("Filter by Prefix Table"),
                     allowBlank: true
                 },
                 {
                     name: "filter_administrative_domain",
                     xtype: "sa.administrativedomain.LookupField",
-                    fieldLabel: "Filter by Administrative Domain",
+                    fieldLabel: __("Filter by Administrative Domain"),
                     allowBlank: true
                 },
                 {
                     name: "filter_vrf",
                     xtype: "ip.vrf.LookupField",
-                    fieldLabel: "Filter by VRF",
+                    fieldLabel: __("Filter by VRF"),
                     allowBlank: true
                 },
                 {
                     name: "filter_vc_domain",
                     xtype: "vc.vcdomain.LookupField",
-                    fieldLabel: "Filter by VC Domain",
+                    fieldLabel: __("Filter by VC Domain"),
                     allowBlank: true
                 },
                 {
                     name: "filter_termination_group",
                     xtype: "sa.terminationgroup.LookupField",
-                    fieldLabel: "Filter by termination group",
+                    fieldLabel: __("Filter by termination group"),
                     allowBlank: true
                 },
                 {
                     name: "filter_service_terminator",
                     xtype: "sa.terminationgroup.LookupField",
-                    fieldLabel: "Filter by service terminator",
+                    fieldLabel: __("Filter by service terminator"),
                     allowBlank: true
                 },
                 {
                     name: "filter_user",
                     xtype: "textfield",
-                    fieldLabel: "Filter by User (REGEXP)",
+                    fieldLabel: __("Filter by User (REGEXP)"),
                     allowBlank: true
                 },
                 {
                     name: "filter_remote_path",
                     xtype: "textfield",
-                    fieldLabel: "Filter by Remote Path (REGEXP)",
+                    fieldLabel: __("Filter by Remote Path (REGEXP)"),
                     allowBlank: true
                 },
                 {
                     name: "filter_description",
                     xtype: "textfield",
-                    fieldLabel: "Filter by Description (REGEXP)",
+                    fieldLabel: __("Filter by Description (REGEXP)"),
                     allowBlank: true
                 },
                 {
                     name: "filter_tags",
                     xtype: "textfield",
-                    fieldLabel: "Filter By Tags",
+                    fieldLabel: __("Filter By Tags"),
                     allowBlank: true
                 },
                 {
                     name: "source_combine_method",
                     xtype: "combobox",
-                    fieldLabel: "Source Combine Method",
+                    fieldLabel: __("Source Combine Method"),
                     allowBlank: false,
                     store: [
                         ["O", "OR"],
@@ -197,7 +197,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     name: "sources",
                     height: 220,
                     width: 600,
-                    fieldLabel: "Sources",
+                    fieldLabel: __("Sources"),
                     buttons: ["add", "remove"],
                     allowBlank: true
                 }
@@ -208,13 +208,13 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     model: "NOC.sa.managedobjectselector.AttributesModel",
                     columns: [
                         {
-                            text: "Key (RE)",
+                            text: __("Key (RE)"),
                             dataIndex: "key_re",
                             width: 100,
                             editor: "textfield"
                         },
                         {
-                            text: "Value (RE)",
+                            text: __("Value (RE)"),
                             dataIndex: "value_re",
                             editor: "textfield",
                             flex: 1

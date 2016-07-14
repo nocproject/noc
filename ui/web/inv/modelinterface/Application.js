@@ -24,19 +24,19 @@ Ext.define("NOC.inv.modelinterface.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     width: 300,
                     dataIndex: "name"
                 },
                 {
-                    text: "Builtin",
+                    text: __("Builtin"),
                     width: 50,
                     dataIndex: "is_builtin",
                     renderer: NOC.render.Bool,
                     sortable: false
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     flex: 1,
                     dataIndex: "description"
                 }
@@ -45,31 +45,31 @@ Ext.define("NOC.inv.modelinterface.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description"
+                    fieldLabel: __("Description")
                 },
                 {
                     name: "attrs",
                     xtype: "gridfield",
-                    fieldLabel: "Attrs",
+                    fieldLabel: __("Attrs"),
                     columns: [
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name",
                             editor: "textfield"
                         },
                         {
-                            text: "Type",
+                            text: __("Type"),
                             dataIndex: "type",
                             editor: {
                                 xtype: "combobox",
@@ -82,20 +82,20 @@ Ext.define("NOC.inv.modelinterface.Application", {
                             }
                         },
                         {
-                            text: "Description",
+                            text: __("Description"),
                             dataIndex: "description",
                             editor: "textfield",
                             flex: 1
                         },
                         {
-                            text: "Req.",
+                            text: __("Req."),
                             dataIndex: "required",
                             editor: "checkboxfield",
                             width: 30,
                             renderer: NOC.render.Bool
                         },
                         {
-                            text: "Const.",
+                            text: __("Const."),
                             dataIndex: "is_const",
                             editor: "checkboxfield",
                             width: 30,
@@ -106,7 +106,7 @@ Ext.define("NOC.inv.modelinterface.Application", {
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),

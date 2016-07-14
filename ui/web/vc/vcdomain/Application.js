@@ -18,18 +18,18 @@ Ext.define("NOC.vc.vcdomain.Application", {
     rowClassField: "row_class",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
 
         {
-            text: "Type",
+            text: __("Type"),
             dataIndex: "type",
             renderer: NOC.render.Lookup("type")
         },
 
         {
-            text: "Object Count",
+            text: __("Object Count"),
             dataIndex: "object_count",
             align: "right",
             sortable: false,
@@ -37,19 +37,19 @@ Ext.define("NOC.vc.vcdomain.Application", {
         },
 
         {
-            text: "Provisioning",
+            text: __("Provisioning"),
             dataIndex: "enable_provisioning",
             renderer: NOC.render.Bool
         },
 
         {
-            text: "Bind filter",
+            text: __("Bind filter"),
             dataIndex: "enable_vc_bind_filter",
             renderer: NOC.render.Bool
         },
 
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }
@@ -58,35 +58,35 @@ Ext.define("NOC.vc.vcdomain.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true,
             anchor: "100%"
         },
         {
             name: "type",
             xtype: "vc.vctype.LookupField",
-            fieldLabel: "VC Type"
+            fieldLabel: __("VC Type")
         },
         {
             name: "enable_provisioning",
             xtype: "checkboxfield",
-            boxLabel: "Enable Provisioning"
+            boxLabel: __("Enable Provisioning")
         },
         {
             name: "enable_vc_bind_filter",
             xtype: "checkboxfield",
-            boxLabel: "Enable VC Bind filter"
+            boxLabel: __("Enable VC Bind filter")
         },
         {
             name: "style",
             xtype: "main.style.LookupField",
-            fieldLabel: "Style",
+            fieldLabel: __("Style"),
             allowBlank: true
         }
     ],

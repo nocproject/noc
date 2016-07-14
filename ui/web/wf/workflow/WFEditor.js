@@ -60,7 +60,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         });
 
         me.saveButton = Ext.create("Ext.button.Button", {
-            text: "Save",
+            text: __("Save"),
             tooltip: "Save changes",
             glyph: NOC.glyph.save,
             disabled: true,
@@ -69,21 +69,21 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         });
         // Zoom buttons
         me.zoomInButton = Ext.create("Ext.button.Button", {
-            text: "Zoom In",
+            text: __("Zoom In"),
             tooltip: "Zoom In",
             glyph: NOC.glyph.search_plus,
             scope: me,
             handler: me.onZoomIn,
         });
         me.zoomOutButton = Ext.create("Ext.button.Button", {
-            text: "Zoom Out",
+            text: __("Zoom Out"),
             tooltip: "Zoom Out",
             glyph: NOC.glyph.search_minus,
             scope: me,
             handler: me.onZoomOut,
         });
         me.zoomActualButton = Ext.create("Ext.button.Button", {
-            text: "Zoom Actual",
+            text: __("Zoom Actual"),
             tooltip: "Zoom Actual",
             glyph: NOC.glyph.search,
             scope: me,
@@ -96,7 +96,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         });
 
         me.addButton = Ext.create("Ext.button.Button", {
-            text: "Add",
+            text: __("Add"),
             tooltip: "Add",
             glyph: NOC.glyph.plus,
             scope: me,
@@ -104,7 +104,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
-            text: "Delete",
+            text: __("Delete"),
             tooltip: "Delete",
             glyph: NOC.glyph.minus,
             scope: me,

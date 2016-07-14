@@ -19,18 +19,18 @@ Ext.define("NOC.ip.ippool.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Term. Group",
+                    text: __("Term. Group"),
                     dataIndex: "termination_group",
                     width: 150,
                     renderer: NOC.render.Lookup("termination_group")
                 },
                 {
-                    text: "Pool Name",
+                    text: __("Pool Name"),
                     dataIndex: "name",
                     width: 100
                 },
                 {
-                    text: "Type",
+                    text: __("Type"),
                     dataIndex: "type",
                     width: 70,
                     renderer: NOC.render.Choices({
@@ -39,13 +39,13 @@ Ext.define("NOC.ip.ippool.Application", {
                     })
                 },
                 {
-                    text: "VRF",
+                    text: __("VRF"),
                     dataIndex: "vrf",
                     width: 150,
                     renderer: NOC.render.Lookup("vrf")
                 },
                 {
-                    text: "AFI",
+                    text: __("AFI"),
                     dataIndex: "afi",
                     width: 50,
                     renderer: NOC.render.Choices({
@@ -54,17 +54,17 @@ Ext.define("NOC.ip.ippool.Application", {
                     })
                 },
                 {
-                    text: "From",
+                    text: __("From"),
                     dataIndex: "from_address",
                     width: 100
                 },
                 {
-                    text: "To",
+                    text: __("To"),
                     dataIndex: "to_address",
                     width: 100
                 },
                 {
-                    text: "Technologies",
+                    text: __("Technologies"),
                     dataIndex: "technologies",
                     flex: 1
                 }
@@ -73,19 +73,19 @@ Ext.define("NOC.ip.ippool.Application", {
                 {
                     name: "termination_group",
                     xtype: "sa.terminationgroup.LookupField",
-                    fieldLabel: "Termination Group",
+                    fieldLabel: __("Termination Group"),
                     allowBlank: false
                 },
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Pool Name",
+                    fieldLabel: __("Pool Name"),
                     allowBlank: false
                 },
                 {
                     name: "type",
                     xtype: "combobox",
-                    fieldLabel: "Type",
+                    fieldLabel: __("Type"),
                     allowBlank: false,
                     store: [
                         ["D", "Dynamic"],
@@ -95,13 +95,13 @@ Ext.define("NOC.ip.ippool.Application", {
                 {
                     name: "vrf",
                     xtype: "ip.vrf.LookupField",
-                    fieldLabel: "VRF",
+                    fieldLabel: __("VRF"),
                     allowBlank: false
                 },
                 {
                     name: "afi",
                     xtype: "combobox",
-                    fieldLabel: "Address Family",
+                    fieldLabel: __("Address Family"),
                     allowBlank: false,
                     store: [
                         ["4", "IPv4"],
@@ -111,19 +111,19 @@ Ext.define("NOC.ip.ippool.Application", {
                 {
                     name: "from_address",
                     xtype: "textfield",
-                    fieldLabel: "From Address",
+                    fieldLabel: __("From Address"),
                     allowBlank: false
                 },
                 {
                     name: "to_address",
                     xtype: "textfield",
-                    fieldLabel: "To address",
+                    fieldLabel: __("To address"),
                     allowBlank: false
                 },
                 {
                     name: "technologies",
                     xtype: "textfield",
-                    fieldLabel: "Technologies",
+                    fieldLabel: __("Technologies"),
                     allowBlank: true
                 }
             ]

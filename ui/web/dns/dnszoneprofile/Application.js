@@ -18,28 +18,28 @@ Ext.define("NOC.dns.dnszoneprofile.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             flex: 1
         },
         {
-            text: "TTL",
+            text: __("TTL"),
             dataIndex: "zone_ttl",
             flex: 1
         },
         {
-            text: "Notification Group",
+            text: __("Notification Group"),
             dataIndex: "notification_group",
             renderer: NOC.render.Lookup("notification_group"),
             flex: 1
         },
         {
-            text: "Masters",
+            text: __("Masters"),
             dataIndex: "masterslabel",
             flex: 1
         },
         {
-            text: "Slaves",
+            text: __("Slaves"),
             dataIndex: "slaveslabel",
             flex: 1
         }
@@ -48,39 +48,39 @@ Ext.define("NOC.dns.dnszoneprofile.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             xtype: "dns.dnsserver.M2MField",
             name: "masters",
-            fieldLabel: "Masters",
+            fieldLabel: __("Masters"),
             allowBlank: true
         },
         {
             xtype: "dns.dnsserver.M2MField",
             name: "slaves",
-            fieldLabel: "Slaves",
+            fieldLabel: __("Slaves"),
             allowBlank: true
         },
         {
             name: "zone_soa",
             xtype: "textfield",
-            fieldLabel: "SOA",
+            fieldLabel: __("SOA"),
             width: 300,
             allowBlank: false
         },
         {
             name: "zone_contact",   
             xtype: "textfield",
-            fieldLabel: "Contact",
+            fieldLabel: __("Contact"),
             width: 300,
             allowBlank: false
         },
         {
             name: "zone_refresh",
             xtype: "numberfield",
-            fieldLabel: "Refresh",
+            fieldLabel: __("Refresh"),
             hideTrigger: true,
             width: 160,
             keyNavEnabled: false,
@@ -90,7 +90,7 @@ Ext.define("NOC.dns.dnszoneprofile.Application", {
         {
             name: "zone_retry",
             xtype: "numberfield",
-            fieldLabel: "Retry",     
+            fieldLabel: __("Retry"),     
             hideTrigger: true,
             width: 160,                    
             keyNavEnabled: false,        
@@ -100,7 +100,7 @@ Ext.define("NOC.dns.dnszoneprofile.Application", {
         {
             name: "zone_expire",
             xtype: "numberfield",
-            fieldLabel: "Expire",     
+            fieldLabel: __("Expire"),     
             hideTrigger: true,
             width: 160,                    
             keyNavEnabled: false,        
@@ -110,7 +110,7 @@ Ext.define("NOC.dns.dnszoneprofile.Application", {
         {
             name: "zone_ttl",
             xtype: "numberfield",
-            fieldLabel: "TTL",     
+            fieldLabel: __("TTL"),     
             hideTrigger: true,
             width: 160,                    
             keyNavEnabled: false,        
@@ -120,13 +120,13 @@ Ext.define("NOC.dns.dnszoneprofile.Application", {
         {
             name: "notification_group",
             xtype: "main.notificationgroup.LookupField",
-            fieldLabel: "Notification Group",
+            fieldLabel: __("Notification Group"),
             allowBlank: true
         },
         {
             name: "description",
             xtype: "textareafield",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true,      
             width: 600, 
             height: 100,

@@ -161,7 +161,7 @@ Ext.define("NOC.core.Rack", {
         if(label) {
             out.push({
                 type: "text",
-                text: "Rack: " + label,
+                text: __("Rack: ") + label,
                 x: x + e_width - me.TEXT_PADDING - me.SIDE_WIDTH,
                 y: y + me.U_HEIGH - me.TEXT_PADDING,
                 fill: "#e0e0e0",

@@ -28,25 +28,25 @@ Ext.define("NOC.sa.managedobject.LAGPanel", {
                     store: me.store,
                     columns: [
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name"
                         },
                         {
-                            text: "Count",
+                            text: __("Count"),
                             dataIndex: "count"
                         },
                         {
-                            text: "Members",
+                            text: __("Members"),
                             dataIndex: "members"
                         },
                         {
-                            text: "Profile",
+                            text: __("Profile"),
                             dataIndex: "profile",
                             renderer: NOC.render.Lookup("profile"),
                             editor: "inv.interfaceprofile.LookupField"
                         },
                         {
-                            text: "Description",
+                            text: __("Description"),
                             dataIndex: "description",
                             flex: 1
                         }

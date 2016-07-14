@@ -19,50 +19,50 @@ Ext.define("NOC.fm.eventtrigger.Application", {
     model: "NOC.fm.eventtrigger.Model",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Enabled",
+            text: __("Enabled"),
             dataIndex: "is_enabled",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Event Class RE",
+            text: __("Event Class RE"),
             dataIndex: "event_class_re"
         },
         {
-            text: "Condition",
+            text: __("Condition"),
             dataIndex: "condition"
         },
         {
-            text: "Time Pattern",
+            text: __("Time Pattern"),
             dataIndex: "time_pattern",
             renderer: NOC.render.Lookup("time_pattern")
         },
         {
-            text: "Selector",
+            text: __("Selector"),
             dataIndex: "selector",
             renderer: NOC.render.Lookup("selector")
         },
         {
-            text: "Notification Group",
+            text: __("Notification Group"),
             dataIndex: "notification_group",
             renderer: NOC.render.Lookup("notification_group")
         },
         {
-            text: "Template",
+            text: __("Template"),
             dataIndex: "template",
             renderer: NOC.render.Lookup("template")
         },
         {
-            text: "PyRule",
+            text: __("PyRule"),
             dataIndex: "pyrule",
             renderer: NOC.render.Lookup("pyrule")
         },
         {
-            text: "Handler",
+            text: __("Handler"),
             dataIndex: "handler"
         }
     ],
@@ -70,61 +70,61 @@ Ext.define("NOC.fm.eventtrigger.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "is_enabled",
             xtype: "checkboxfield",
-            boxLabel: "Is Enabled",
+            boxLabel: __("Is Enabled"),
             allowBlank: false
         },
         {
             name: "event_class_re",
             xtype: "textfield",
-            fieldLabel: "Event class RE",
+            fieldLabel: __("Event class RE"),
             allowBlank: false
         },
         {
             name: "condition",
             xtype: "textfield",
-            fieldLabel: "Condition",
+            fieldLabel: __("Condition"),
             allowBlank: false
         },
         {
             name: "time_pattern",
             xtype: "main.timepattern.LookupField",
-            fieldLabel: "Time Pattern",
+            fieldLabel: __("Time Pattern"),
             allowBlank: true
         },
         {
             name: "selector",
             xtype: "sa.managedobjectselector.LookupField",
-            fieldLabel: "Managed Object Selector",
+            fieldLabel: __("Managed Object Selector"),
             allowBlank: true
         },
         {
             name: "notification_group",
             xtype: "main.notificationgroup.LookupField",
-            fieldLabel: "Notification Group",
+            fieldLabel: __("Notification Group"),
             allowBlank: true
         },
         {
             name: "template",
             xtype: "main.template.LookupField",
-            fieldLabel: "Template",
+            fieldLabel: __("Template"),
             allowBlank: true
         },
         {
             name: "pyrule",
             xtype: "main.pyrule.LookupField",
-            fieldLabel: "pyRule",
+            fieldLabel: __("pyRule"),
             allowBlank: true
         },
         {
             name: "handler",
             xtype: "textfield",
-            fieldLabel: "Handler",
+            fieldLabel: __("Handler"),
             allowBlank: true
         }
     ],

@@ -35,7 +35,7 @@ Ext.define("NOC.main.desktop.Application", {
         me.navStore = Ext.create("Ext.data.TreeStore", {
             root: {
                 id: "root",
-                text: "All",
+                text: __("All"),
                 expanded: true,
                 children: []
             }
@@ -224,7 +224,7 @@ Ext.define("NOC.main.desktop.Application", {
                 {
                     xtype: "textfield",
                     name: "old_password",
-                    fieldLabel: "Old Password",
+                    fieldLabel: __("Old Password"),
                     allowBlank: false,
                     inputType: "password"
                 },
@@ -232,7 +232,7 @@ Ext.define("NOC.main.desktop.Application", {
                 {
                     xtype: "textfield",
                     name: "new_password",
-                    fieldLabel: "New Password",
+                    fieldLabel: __("New Password"),
                     allowBlank: false,
                     inputType: "password"
                 },
@@ -240,7 +240,7 @@ Ext.define("NOC.main.desktop.Application", {
                 {
                     xtype: "textfield",
                     name: "retype_password",
-                    fieldLabel: "Retype New Password",
+                    fieldLabel: __("Retype New Password"),
                     allowBlank: false,
                     inputType: "password",
                     vtype: "password",

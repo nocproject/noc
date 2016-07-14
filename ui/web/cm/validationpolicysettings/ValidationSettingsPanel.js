@@ -38,14 +38,14 @@ Ext.define("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
                     layout: "fit",
                     columns: [
                         {
-                            text: "Active",
+                            text: __("Active"),
                             dataIndex: "is_active",
                             width: 50,
                             renderer: NOC.render.Bool,
                             editor: "checkbox"
                         },
                         {
-                            text: "Policy",
+                            text: __("Policy"),
                             dataIndex: "policy",
                             flex: 1,
                             renderer: NOC.render.Lookup("policy"),
@@ -61,7 +61,7 @@ Ext.define("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
                     items: [
                         {
                             xtype: "button",
-                            text: "Close",
+                            text: __("Close"),
                             glyph: NOC.glyph.arrow_left,
                             scope: me,
                             handler: me.onClose
@@ -69,7 +69,7 @@ Ext.define("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
                         "-",
                         {
                             xtype: "button",
-                            text: "Save",
+                            text: __("Save"),
                             glyph: NOC.glyph.save,
                             scope: me,
                             handler: me.onSaveSettings

@@ -26,7 +26,7 @@ Ext.define("NOC.inv.networksegment.Application", {
         );
 
         me.settingsButton = Ext.create("Ext.button.Button", {
-            text: "Effective Settings",
+            text: __("Effective Settings"),
             glyph: NOC.glyph.file,
             scope: me,
             handler: me.onEffectiveSettings
@@ -35,35 +35,35 @@ Ext.define("NOC.inv.networksegment.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Parent",
+                    text: __("Parent"),
                     dataIndex: "parent",
                     width: 200,
                     renderer: NOC.render.Lookup("parent")
                 },
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 },
                 {
-                    text: "Tags",
+                    text: __("Tags"),
                     dataIndex: "tags",
                     width: 100,
                     renderer: NOC.render.Tags
                 },
                 {
-                    text: "Selector",
+                    text: __("Selector"),
                     dataIndex: "selector",
                     width: 100,
                     renderer: NOC.render.Lookup("selector")
                 },
                 {
-                    text: "Obj.",
+                    text: __("Obj."),
                     dataIndex: "count",
                     width: 30,
                     align: "right",
@@ -76,46 +76,46 @@ Ext.define("NOC.inv.networksegment.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     uiStyle: "large",
                     allowBlank: false
                 },
                 {
                     name: "parent",
                     xtype: "inv.networksegment.LookupField",
-                    fieldLabel: "Parent",
+                    fieldLabel: __("Parent"),
                     uiStyle: "large",
                     allowBlank: true
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     uiStyle: "extra",
                     allowBlank: true
                 },
                 {
                     name: "sibling",
                     xtype: "inv.networksegment.LookupField",
-                    fieldLabel: "Sibling",
+                    fieldLabel: __("Sibling"),
                     uiStyle: "large",
                     allowBlank: true
                 },
                 {
                     name: "settings",
                     xtype: "dictfield",
-                    fieldLabel: "Settings"
+                    fieldLabel: __("Settings")
                 },
                 {
                     name: "selector",
                     xtype: "sa.managedobjectselector.LookupField",
-                    fieldLabel: "Selector",
+                    fieldLabel: __("Selector"),
                     allowBlank: true
                 },
                 {
                     name: "tags",
                     xtype: "tagsfield",
-                    fieldLabel: "Tags",
+                    fieldLabel: __("Tags"),
                     allowBlank: true
                 }
             ],

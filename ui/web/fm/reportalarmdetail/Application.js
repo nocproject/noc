@@ -14,11 +14,11 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         me.formatButton = Ext.create("Ext.button.Segmented", {
             items: [
                 {
-                    text: "CSV",
+                    text: __("CSV"),
                     pressed: true
                 },
                 {
-                    text: "Excel"
+                    text: __("Excel")
                 }
             ],
             anchor: null

@@ -107,7 +107,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                     },
                     tbar: [
                         {
-                            text: "Apply",
+                            text: __("Apply"),
                             glyph: NOC.glyph.save,
                             scope: me,
                             handler: me.applyChanges

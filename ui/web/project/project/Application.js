@@ -21,7 +21,7 @@ Ext.define("NOC.project.project.Application", {
             formToolbar: [
                 {
                     itemId: "resources",
-                    text: "Resources",
+                    text: __("Resources"),
                     glyph: NOC.glyph.list,
                     tooltip: "Show Allocated resources",
                     hasAccess: NOC.hasPermission("read"),
@@ -31,17 +31,17 @@ Ext.define("NOC.project.project.Application", {
             ],
             columns: [
                 {
-                    text: "Code",
+                    text: __("Code"),
                     dataIndex: "code",
                     width: 150
                 },
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 300
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -50,19 +50,19 @@ Ext.define("NOC.project.project.Application", {
                 {
                     name: "code",
                     xtype: "textfield",
-                    fieldLabel: "Code",
+                    fieldLabel: __("Code"),
                     allowBlank: false
                 },
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 }
             ]

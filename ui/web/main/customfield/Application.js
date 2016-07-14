@@ -17,48 +17,48 @@ Ext.define("NOC.main.customfield.Application", {
     search: true,
     columns: [
         {
-            text: "Table",
+            text: __("Table"),
             dataIndex: "table"
         },
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Active",
+            text: __("Active"),
             dataIndex: "is_active",
             renderer: NOC.render.Bool
         },
         {
-            text: "Label",
+            text: __("Label"),
             dataIndex: "label"
         },
         {
-            text: "Type",
+            text: __("Type"),
             dataIndex: "type"
         },
         {
-            text: "Enum Group",
+            text: __("Enum Group"),
             dataIndex: "enum_group",
             renderer: NOC.render.Lookup("enum_group")
         },
         {
-            text: "Indexed",
+            text: __("Indexed"),
             dataIndex: "is_indexed",
             renderer: NOC.render.Bool
         },
         {
-            text: "Searchable",
+            text: __("Searchable"),
             dataIndex: "is_searchable",
             renderer: NOC.render.Bool
         },
         {
-            text: "Filtered",
+            text: __("Filtered"),
             dataIndex: "is_filtered",
             renderer: NOC.render.Bool
         },
         {
-            text: "Hidden",
+            text: __("Hidden"),
             dataIndex: "is_hidden",
             renderer: NOC.render.Bool
         }
@@ -67,32 +67,32 @@ Ext.define("NOC.main.customfield.Application", {
         {
             name: "table",
             xtype: "main.ref.modcol.LookupField",
-            fieldLabel: "Table",
+            fieldLabel: __("Table"),
             allowBlank: false
         },
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false,
             regex: /^[a-zA-Z0-9_]+$/
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Is Active",
+            boxLabel: __("Is Active"),
             allowBlank: false
         },
         {
             name: "label",
             xtype: "textfield",
-            fieldLabel: "Label",
+            fieldLabel: __("Label"),
             allowBlank: false
         },
         {
             name: "type",
             xtype: "combobox",
-            fieldLabel: "Type",
+            fieldLabel: __("Type"),
             allowBlank: false,
             queryMode: "local",
             displayField: "label",
@@ -111,7 +111,7 @@ Ext.define("NOC.main.customfield.Application", {
         {
             name: "enum_group",
             xtype: "main.customfieldenumgroup.LookupField",
-            fieldLabel: "Enum Group",
+            fieldLabel: __("Enum Group"),
             allowBlank: true,
             query: {
                 is_active: true
@@ -120,43 +120,43 @@ Ext.define("NOC.main.customfield.Application", {
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "max_length",
             xtype: "numberfield",
-            fieldLabel: "Max. Length",
+            fieldLabel: __("Max. Length"),
             allowBlank: true
         },
         {
             name: "regexp",
             xtype: "textfield",
-            fieldLabel: "Regexp",
+            fieldLabel: __("Regexp"),
             allowBlank: true
         },
         {
             name: "is_indexed",
             xtype: "checkboxfield",
-            boxLabel: "Is Indexed",
+            boxLabel: __("Is Indexed"),
             allowBlank: false
         },
         {
             name: "is_searchable",
             xtype: "checkboxfield",
-            boxLabel: "Is Searchable",
+            boxLabel: __("Is Searchable"),
             allowBlank: false
         },
         {
             name: "is_filtered",
             xtype: "checkboxfield",
-            boxLabel: "Is Filtered",
+            boxLabel: __("Is Filtered"),
             allowBlank: false
         },
         {
             name: "is_hidden",
             xtype: "checkboxfield",
-            boxLabel: "Is Hidden",
+            boxLabel: __("Is Hidden"),
             allowBlank: false
         }
     ],

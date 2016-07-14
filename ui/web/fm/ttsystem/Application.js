@@ -17,12 +17,12 @@ Ext.define("NOC.fm.ttsystem.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 100
                 },
                 {
-                    text: "Handler",
+                    text: __("Handler"),
                     dataIndex: "handler",
                     flex: 1
                 }
@@ -32,25 +32,25 @@ Ext.define("NOC.fm.ttsystem.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "handler",
                     xtype: "textfield",
-                    fieldLabel: "Handler",
+                    fieldLabel: __("Handler"),
                     allowBlank: false
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: false
                 },
                 {
                     name: "connection",
                     xtype: "textfield",
-                    fieldLabel: "Connection",
+                    fieldLabel: __("Connection"),
                     allowBlank: false
                 }
             ]

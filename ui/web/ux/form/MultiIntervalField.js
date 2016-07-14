@@ -49,7 +49,7 @@ Ext.define("Ext.ux.form.MultiIntervalField", {
                     ]
                 },
                 {
-                    text: "Time (sec)",
+                    text: __("Time (sec)"),
                     dataIndex: "time",
                     width: 150,
                     editor: "textfield",
@@ -62,7 +62,7 @@ Ext.define("Ext.ux.form.MultiIntervalField", {
                     }
                 },
                 {
-                    text: "Interval (sec)",
+                    text: __("Interval (sec)"),
                     dataIndex: "interval",
                     flex: 150,
                     editor: "textfield",

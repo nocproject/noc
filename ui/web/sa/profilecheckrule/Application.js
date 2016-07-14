@@ -27,12 +27,12 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Profile Check Rule Name",
+                    text: __("Profile Check Rule Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Blt",
+                    text: __("Blt"),
                     // tooltip: "Built-in", - broken in ExtJS 5.1
                     dataIndex: "is_builtin",
                     width: 40,
@@ -40,40 +40,40 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                     align: "center"
                 },
                 {
-                    text: "Pref.",
+                    text: __("Pref."),
                     // tooltip: "Preference", - broken in ExtJS 5.1
                     dataIndex: "preference",
                     width: 40,
                     align: "right"
                 },
                 {
-                    text: "Method",
+                    text: __("Method"),
                     dataIndex: "method",
                     width: 100
                 },
                 {
-                    text: "Parameter",
+                    text: __("Parameter"),
                     dataIndex: "param",
                     width: 180
                 },
                 {
-                    text: "Match",
+                    text: __("Match"),
                     dataIndex: "match_method",
                     width: 50,
                     align: "center"
                 },
                 {
-                    text: "Value",
+                    text: __("Value"),
                     dataIndex: "value",
                     width: 200
                 },
                 {
-                    text: "Action",
+                    text: __("Action"),
                     dataIndex: "action",
                     width: 50
                 },
                 {
-                    text: "Profile",
+                    text: __("Profile"),
                     dataIndex: "profile",
                     flex: 1,
                     width: 150
@@ -84,24 +84,24 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "large"
                 },
                 {
                     xtype: "displayfield",
                     name: "uuid",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description"
+                    fieldLabel: __("Description")
                 },
                 {
                     name: "preference",
                     xtype: "numberfield",
-                    fieldLabel: "Preference",
+                    fieldLabel: __("Preference"),
                     allowBlank: true,
                     uiStyle: "small"
                 },
@@ -117,7 +117,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                         {
                             name: "method",
                             xtype: "combobox",
-                            fieldLabel: "Method",
+                            fieldLabel: __("Method"),
                             store: [
                                 ["snmp_v2c_get", "snmp_v2c_get"],
                                 ["http_get", "http_get"],
@@ -130,14 +130,14 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                         {
                             name: "param",
                             xtype: "textfield",
-                            fieldLabel: "Parameter",
+                            fieldLabel: __("Parameter"),
                             allowBlank: false,
                             uiStyle: "large"
                         },
                         {
                             name: "match_method",
                             xtype: "combobox",
-                            fieldLabel: "Match",
+                            fieldLabel: __("Match"),
                             store: [
                                 ["eq", "equals"],
                                 ["contains", "contains"],
@@ -150,7 +150,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                         {
                             name: "value",
                             xtype: "textfield",
-                            fieldLabel: "Value",
+                            fieldLabel: __("Value"),
                             allowBlank: false,
                             uiStyle: "large"
                         }
@@ -168,7 +168,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                         {
                             name: "action",
                             xtype: "combobox",
-                            fieldLabel: "Action",
+                            fieldLabel: __("Action"),
                             store: [
                                 ["match", "Match"],
                                 ["maybe", "Maybe"]
@@ -180,7 +180,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                         {
                             name: "profile",
                             xtype: "main.ref.profile.LookupField",
-                            fieldLabel: "Profile",
+                            fieldLabel: __("Profile"),
                             allowBlank: false,
                             uiStyle: "medium"
                         }
@@ -189,7 +189,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),

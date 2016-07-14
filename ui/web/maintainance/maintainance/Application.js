@@ -19,7 +19,7 @@ Ext.define("NOC.maintainance.maintainance.Application", {
         var me = this;
 
         me.cardButton = Ext.create("Ext.button.Button", {
-            text: "Card",
+            text: __("Card"),
             glyph: NOC.glyph.eye,
             scope: me,
             handler: me.onCard
@@ -28,29 +28,29 @@ Ext.define("NOC.maintainance.maintainance.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Type",
+                    text: __("Type"),
                     dataIndex: "type",
                     width: 150,
                     renderer: NOC.render.Lookup("type")
                 },
                 {
-                    text: "Start",
+                    text: __("Start"),
                     dataIndex: "start",
                     width: 120
                 },
                 {
-                    text: "Stop",
+                    text: __("Stop"),
                     dataIndex: "stop",
                     width: 120
                 },
                 {
-                    text: "Completed",
+                    text: __("Completed"),
                     dataIndex: "is_completed",
                     width: 25,
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "Subject",
+                    text: __("Subject"),
                     dataIndex: "subject",
                     flex: 1
                 }
@@ -60,13 +60,13 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                 {
                     name: "subject",
                     xtype: "textfield",
-                    fieldLabel: "Subject",
+                    fieldLabel: __("Subject"),
                     allowBlank: false
                 },
                 {
                     name: "type",
                     xtype: "maintainance.maintainancetype.LookupField",
-                    fieldLabel: "Type",
+                    fieldLabel: __("Type"),
                     allowBlank: false
                 },
                 {
@@ -76,7 +76,7 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                         {
                             name: "start_date",
                             xtype: "datefield",
-                            fieldLabel: "Start",
+                            fieldLabel: __("Start"),
                             allowBlank: false,
                             uiStyle: "small",
                             width: 200,
@@ -100,7 +100,7 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                         {
                             name: "stop_date",
                             xtype: "datefield",
-                            fieldLabel: "Stop",
+                            fieldLabel: __("Stop"),
                             allowBlank: false,
                             uiStyle: "small",
                             width: 200,
@@ -120,32 +120,32 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                 {
                     name: "is_completed",
                     xtype: "checkbox",
-                    boxLabel: "Completed"
+                    boxLabel: __("Completed")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "contacts",
                     xtype: "textarea",
-                    fieldLabel: "Contacts",
+                    fieldLabel: __("Contacts"),
                     allowBlank: false
                 },
                 {
                     name: "suppress_alarms",
                     xtype: "checkbox",
-                    boxLabel: "Suppress alarms"
+                    boxLabel: __("Suppress alarms")
                 },
                 {
                     name: "direct_objects",
                     xtype: "gridfield",
-                    fieldLabel: "Objects",
+                    fieldLabel: __("Objects"),
                     columns: [
                         {
-                            text: "Object",
+                            text: __("Object"),
                             dataIndex: "object",
                             editor: "sa.managedobject.LookupField",
                             flex: 1,
@@ -156,10 +156,10 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                 {
                     name: "direct_segments",
                     xtype: "gridfield",
-                    fieldLabel: "Segments",
+                    fieldLabel: __("Segments"),
                     columns: [
                         {
-                            text: "Segment",
+                            text: __("Segment"),
                             dataIndex: "segment",
                             editor: "inv.networksegment.LookupField",
                             flex: 1,

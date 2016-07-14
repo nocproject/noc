@@ -62,44 +62,44 @@ Ext.define("NOC.vc.vc.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "VC Domain",
+                    text: __("VC Domain"),
                     dataIndex: "vc_domain",
                     renderer: NOC.render.Lookup("vc_domain")
                 },
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name"
                 },
                 {
-                    text: "State",
+                    text: __("State"),
                     dataIndex: "state",
                     renderer: NOC.render.Lookup("state")
                 },
                 {
-                    text: "Project",
+                    text: __("Project"),
                     dataIndex: "project",
                     renderer: NOC.render.Lookup("project")
                 },
                 {
-                    text: "Label",
+                    text: __("Label"),
                     dataIndex: "label",
                     width: 50,
                     sortable: false
                 },
                 {
-                    text: "L1",
+                    text: __("L1"),
                     dataIndex: "l1",
                     width: 25,
                     hidden: true
                 },
                 {
-                    text: "L2",
+                    text: __("L2"),
                     dataIndex: "l2",
                     width: 25,
                     hidden: true
                 },
                 {
-                    text: "Int.",
+                    text: __("Int."),
                     dataIndex: "interfaces_count",
                     width: 50,
                     sortable: false,
@@ -108,18 +108,18 @@ Ext.define("NOC.vc.vc.Application", {
                     onClick: me.onInterfacesCellClick
                 },
                 {
-                    text: "Prefixes",
+                    text: __("Prefixes"),
                     dataIndex: "prefixes",
                     width: 100,
                     sortable: false
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 },
                 {
-                    text: "Tags",
+                    text: __("Tags"),
                     dataIndex: "tags",
                     renderer: NOC.render.Tags
                 }
@@ -128,56 +128,56 @@ Ext.define("NOC.vc.vc.Application", {
                 {
                     name: "vc_domain",
                     xtype: "vc.vcdomain.LookupField",
-                    fieldLabel: "VC Domain",
+                    fieldLabel: __("VC Domain"),
                     allowBlank: false
                 },
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     regex: /^[a-zA-Z0-9_\-]+$/
                 },
                 {
                     name: "state",
                     xtype: "main.resourcestate.LookupField",
-                    fieldLabel: "State",
+                    fieldLabel: __("State"),
                     allowBlank: false
                 },
                 {
                     name: "project",
                     xtype: "project.project.LookupField",
-                    fieldLabel: "Project",
+                    fieldLabel: __("Project"),
                     allowBlank: true
                 },
                 {
                     name: "l1",
                     xtype: "numberfield",
-                    fieldLabel: "L1",
+                    fieldLabel: __("L1"),
                     allowBlank: false
                 },
                 { // @todo: Auto-hide when VC domain does not support l2
                     name: "l2",
                     xtype: "numberfield",
-                    fieldLabel: "L2",
+                    fieldLabel: __("L2"),
                     allowBlank: true
                 },
                 {
                     name: "description",
                     xtype: "textfield",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "style",
                     xtype: "main.style.LookupField",
-                    fieldLabel: "Style",
+                    fieldLabel: __("Style"),
                     allowBlank: true
                 },
                 {
                     name: "tags",
                     xtype: "tagsfield",
-                    fieldLabel: "Tags",
+                    fieldLabel: __("Tags"),
                     allowBlank: true
                 }
             ],
@@ -185,7 +185,7 @@ Ext.define("NOC.vc.vc.Application", {
             gridToolbar: [
                 {
                     itemId: "create_first",
-                    text: "Add First Free",
+                    text: __("Add First Free"),
                     glyph: NOC.glyph.plus_circle,
                     tooltip: "Add first free VC",
                     hasAccess: NOC.hasPermission("create"),
@@ -194,7 +194,7 @@ Ext.define("NOC.vc.vc.Application", {
                 },
                 {
                     itemId: "import",
-                    text: "Import",
+                    text: __("Import"),
                     glyph: NOC.glyph.level_down,
                     tooltip: "Import VCs",
                     hasAccess: NOC.hasPermission("import"),
@@ -203,7 +203,7 @@ Ext.define("NOC.vc.vc.Application", {
                         plain: true,
                         items: [
                             {
-                                text: "VLANs From Switch",
+                                text: __("VLANs From Switch"),
                                 itemId: "vlans_from_switch",
                                 glyph: NOC.glyph.level_down,
                             }
@@ -220,7 +220,7 @@ Ext.define("NOC.vc.vc.Application", {
             formToolbar: [
                 {
                     itemId: "interfaces",
-                    text: "VC Interfaces",
+                    text: __("VC Interfaces"),
                     glyph: NOC.glyph.list,
                     tooltip: "Show VC interfaces",
                     hasAccess: NOC.hasPermission("read"),
@@ -229,7 +229,7 @@ Ext.define("NOC.vc.vc.Application", {
                 },
                 {
                     itemId: "add_interfaces",
-                    text: "Add Interfaces",
+                    text: __("Add Interfaces"),
                     glyph: NOC.glyph.plus_circle,
                     tooltip: "Add interfaces to VC",
                     hasAccess: NOC.hasPermission("set_untagged"),

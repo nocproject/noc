@@ -21,14 +21,14 @@ Ext.define("NOC.core.JSONPreview", {
 
         // Close button
         tb.push(Ext.create("Ext.button.Button", {
-            text: "Close",
+            text: __("Close"),
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.onClose
         }));
         //
         me.installButton = Ext.create("Ext.button.Button", {
-            text: "Install",
+            text: __("Install"),
             glyph: NOC.glyph.download,
             scope: me,
             handler: me.onInstallJSON

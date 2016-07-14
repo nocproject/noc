@@ -19,24 +19,24 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Profile",
+                    text: __("Profile"),
                     dataIndex: "object_profile",
                     renderer: NOC.render.Lookup("object_profile"),
                     width: 150
                 },
                 {
-                    text: "Platform",
+                    text: __("Platform"),
                     dataIndex: "platform",
                     width: 150
                 },
                 {
-                    text: "Firmware",
+                    text: __("Firmware"),
                     dataIndex: "firmware",
                     renderer: NOC.render.Lookup("firmware"),
                     width: 150
                 },
                 {
-                    text: "Status",
+                    text: __("Status"),
                     dataIndex: "status",
                     width: 50,
                     renderer: NOC.render.Choices({
@@ -47,7 +47,7 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                     })
                 },
                 {
-                    text: "Management",
+                    text: __("Management"),
                     dataIndex: "management",
                     flex: 1,
                     renderer: function(v) {
@@ -60,25 +60,25 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                 {
                     name: "object_profile",
                     xtype: "sa.managedobjectprofile.LookupField",
-                    fieldLabel: "Profile",
+                    fieldLabel: __("Profile"),
                     allowBlank: false
                 },
                 {
                     name: "platform",
                     xtype: "textfield",
-                    fieldLabel: "Platform",
+                    fieldLabel: __("Platform"),
                     allowBlank: false
                 },
                 {
                     name: "firmware",
                     xtype: "inv.firmware.LookupField",
-                    fieldLabel: "Firmware",
+                    fieldLabel: __("Firmware"),
                     allowBlank: false
                 },
                 {
                     name: "status",
                     xtype: "combobox",
-                    fieldLabel: "Status",
+                    fieldLabel: __("Status"),
                     allowBlank: false,
                     store: [
                         ["r", "Recommended"],
@@ -90,16 +90,16 @@ Ext.define("NOC.inv.firmwarepolicy.Application", {
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "management",
                     xtype: "gridfield",
-                    fieldLabel: "Management",
+                    fieldLabel: __("Management"),
                     columns: [
                         {
-                            text: "Protocol",
+                            text: __("Protocol"),
                             dataIndex: "protocol",
                             flex: 1,
                             editor: {

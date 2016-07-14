@@ -16,7 +16,7 @@ Ext.define("NOC.sa.managedobject.CapsPanel", {
         var me = this;
 
         me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.onRefresh
@@ -34,18 +34,18 @@ Ext.define("NOC.sa.managedobject.CapsPanel", {
             stateId: "sa.managedobject-caps",
             columns: [
                 {
-                    text: "Capability",
+                    text: __("Capability"),
                     dataIndex: "capability",
                     width: 300
                 },
                 {
-                    text: "Value",
+                    text: __("Value"),
                     dataIndex: "value",
                     width: 100,
                     renderer: me.renderValue
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }

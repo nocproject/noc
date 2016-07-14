@@ -41,7 +41,7 @@ Ext.define("NOC.sa.managedobject.scripts.ResultPreview", {
     getCloseButton: function(cfg) {
         var me = this,
             opts = {
-                text: "Close",
+                text: __("Close"),
                 glyph: NOC.glyph.arrow_left,
                 scope: me,
                 handler: me.onClose

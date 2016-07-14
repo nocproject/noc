@@ -16,42 +16,42 @@ Ext.define("NOC.main.dbtrigger.Application", {
     model: "NOC.main.dbtrigger.Model",
     columns: [
         {
-            text: "Model",
+            text: __("Model"),
             dataIndex: "model"
         },
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Active",
+            text: __("Active"),
             dataIndex: "is_active",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Order",
+            text: __("Order"),
             dataIndex: "order",
             width: 70,
             align: "right"
         },
         {
-            text: "PreSave",
+            text: __("PreSave"),
             dataIndex: "pre_save_rule",
             renderer: NOC.render.Lookup("pre_save_rule")
         },
         {
-            text: "PostSave",
+            text: __("PostSave"),
             dataIndex: "post_save_rule",
             renderer: NOC.render.Lookup("post_save_rule")
         },
         {
-            text: "PreDelete",
+            text: __("PreDelete"),
             dataIndex: "pre_delete_rule",
             renderer: NOC.render.Lookup("pre_delete_rule")
         },
         {
-            text: "PostDelete",
+            text: __("PostDelete"),
             dataIndex: "post_delete_rule",
             renderer: NOC.render.Lookup("post_delete_rule")
         }
@@ -60,37 +60,37 @@ Ext.define("NOC.main.dbtrigger.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "model",
             xtype: "main.ref.model.LookupField",
-            fieldLabel: "Model",
+            fieldLabel: __("Model"),
             allowBlank: false
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Is Active",
+            boxLabel: __("Is Active"),
             allowBlank: false
         },
         {
             name: "order",
             xtype: "numberfield",
-            fieldLabel: "Order",
+            fieldLabel: __("Order"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "pre_save_rule",
             xtype: "main.pyrule.LookupField",
-            fieldLabel: "Pre-Save Rule",
+            fieldLabel: __("Pre-Save Rule"),
             allowBlank: true,
             query: {
                 interface: "IDBPreSave"
@@ -99,7 +99,7 @@ Ext.define("NOC.main.dbtrigger.Application", {
         {
             name: "post_save_rule",
             xtype: "main.pyrule.LookupField",
-            fieldLabel: "Post-Save Rule",
+            fieldLabel: __("Post-Save Rule"),
             allowBlank: true,
             query: {
                 interface: "IDBPostSave"
@@ -108,7 +108,7 @@ Ext.define("NOC.main.dbtrigger.Application", {
         {
             name: "pre_delete_rule",
             xtype: "main.pyrule.LookupField",
-            fieldLabel: "Pre-Delete Rule",
+            fieldLabel: __("Pre-Delete Rule"),
             allowBlank: true,
             query: {
                 interface: "IDBPreDelete"
@@ -117,7 +117,7 @@ Ext.define("NOC.main.dbtrigger.Application", {
         {
             name: "post_delete_rule",
             xtype: "main.pyrule.LookupField",
-            fieldLabel: "Post-Delete Rule",
+            fieldLabel: __("Post-Delete Rule"),
             allowBlank: true,
             query: {
                 interface: "IDBPostDelete"

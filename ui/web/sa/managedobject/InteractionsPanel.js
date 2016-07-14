@@ -16,14 +16,14 @@ Ext.define("NOC.sa.managedobject.InteractionsPanel", {
         var me = this;
 
         me.closeButton = Ext.create("Ext.button.Button", {
-            text: "Close",
+            text: __("Close"),
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.onClose
         });
 
          me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.onRefresh
@@ -56,13 +56,13 @@ Ext.define("NOC.sa.managedobject.InteractionsPanel", {
             stateId: "sa.managedobject-interactions",
             columns: [
                 {
-                    text: "Date",
+                    text: __("Date"),
                     dataIndex: "ts",
                     width: 120,
                     renderer: NOC.render.DateTime
                 },
                 {
-                    text: "Operation",
+                    text: __("Operation"),
                     dataIndex: "op",
                     width: 100,
                     renderer: NOC.render.Choices({
@@ -76,12 +76,12 @@ Ext.define("NOC.sa.managedobject.InteractionsPanel", {
                     })
                 },
                 {
-                    text: "User",
+                    text: __("User"),
                     dataIndex: "user",
                     width: 100
                 },
                 {
-                    text: "Text",
+                    text: __("Text"),
                     dataIndex: "text",
                     flex: 1
                 }

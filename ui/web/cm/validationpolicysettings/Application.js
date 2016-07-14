@@ -18,7 +18,7 @@ Ext.define("NOC.cm.validationpolicysettings.Application", {
             columns: [
                 /*
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name"
                 }*/
             ],

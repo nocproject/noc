@@ -13,19 +13,19 @@ Ext.define("NOC.sa.administrativedomain.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 150
         },
         {
-            text: "Objects",
+            text: __("Objects"),
             dataIndex: "object_count",
             width: 50,
             align: "right",
             sortable: false
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: true
         }
@@ -34,13 +34,13 @@ Ext.define("NOC.sa.administrativedomain.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textfield",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         }
     ]

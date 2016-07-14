@@ -15,15 +15,15 @@ Ext.define("NOC.main.language.Application", {
     
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Native Name",
+            text: __("Native Name"),
             dataIndex: "native_name"
         },
         {
-            text: "Active",
+            text: __("Active"),
             dataIndex: "is_active",
             renderer: NOC.render.Bool
         }
@@ -32,21 +32,21 @@ Ext.define("NOC.main.language.Application", {
     fields: [
         {
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             name: "name",
             allowBlank: false
         },
 
         {
             xtype: "textfield",
-            fieldLabel: "Native Name",
+            fieldLabel: __("Native Name"),
             name: "native_name",
             allowBlank: false
         },
         
         {
             xtype: "checkboxfield",
-            boxLabel: "Is Active",
+            boxLabel: __("Is Active"),
             name: "is_active",
             inputValue: true
         }

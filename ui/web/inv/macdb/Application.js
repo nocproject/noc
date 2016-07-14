@@ -28,30 +28,30 @@ Ext.define("NOC.inv.macdb.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Mac Address",
+                    text: __("Mac Address"),
                     dataIndex: "mac",
                     width: 110
                 },
                 {
-                    text: "VC Domain",
+                    text: __("VC Domain"),
                     dataIndex: "vc_domain",
                     renderer: NOC.render.Lookup("vc_domain"),
                     flex: 1
                 },
                 {
-                    text: "Vlan",
+                    text: __("Vlan"),
                     dataIndex: "vlan",
                     width: 40
                 },
                 {
                     flex: 1,
-                    text: "Managed Object",
+                    text: __("Managed Object"),
                     renderer: NOC.render.Lookup("managed_object"),
                     dataIndex: "managed_object"
                 },
                 {
                     flex: 1,
-                    text: "Interface",
+                    text: __("Interface"),
                     renderer: function(v) {
                         var array = v.split(":");
                         return array[1];
@@ -60,11 +60,11 @@ Ext.define("NOC.inv.macdb.Application", {
                 },
                 {
                     flex: 1,
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description"
                 },
                 {
-                    text: "Last Changed",
+                    text: __("Last Changed"),
                     dataIndex: "last_changed",
                     width: 150
                 }

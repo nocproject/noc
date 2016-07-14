@@ -17,11 +17,11 @@ Ext.define("NOC.inv.coverage.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }
@@ -30,13 +30,13 @@ Ext.define("NOC.inv.coverage.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description"
+            fieldLabel: __("Description")
         }
     ],
     inlines: [
@@ -45,20 +45,20 @@ Ext.define("NOC.inv.coverage.Application", {
             model: "NOC.inv.coverage.BuildingModel",
             columns: [
                 {
-                    text: "Pref.",
+                    text: __("Pref."),
                     tooltip: "Preference",
                     dataIndex: "preference",
                     width: 50,
                     textAlign: "right"
                 },
                 {
-                    text: "Building",
+                    text: __("Building"),
                     dataIndex: "building",
                     renderer: NOC.render.Lookup("building"),
                     flex: 1
                 },
                 {
-                    text: "Entrance",
+                    text: __("Entrance"),
                     dataIndex: "entrance",
                     width: 100
                 }
@@ -69,14 +69,14 @@ Ext.define("NOC.inv.coverage.Application", {
             model: "NOC.inv.coverage.ObjectModel",
             columns: [
                 {
-                    text: "Pref.",
+                    text: __("Pref."),
                     tooltip: "Preference",
                     dataIndex: "preference",
                     width: 50,
                     textAlign: "right"
                 },
                 {
-                    text: "Object",
+                    text: __("Object"),
                     dataIndex: "object",
                     renderer: NOC.render.Lookup("object"),
                     flex: 1

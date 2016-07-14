@@ -45,7 +45,7 @@ Ext.define("NOC.sa.getnow.Application", {
 
         me.rawButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.android,
-            text: "Raw",
+            text: __("Raw"),
             tooltip: "Raw",
             scope: me,
             handler: me.onRaw
@@ -53,7 +53,7 @@ Ext.define("NOC.sa.getnow.Application", {
 
         me.managedObject = Ext.create("NOC.sa.managedobject.LookupField", {
             name: "id",
-            fieldLabel: "Managed object",
+            fieldLabel: __("Managed object"),
             allowBlank: true,
             valueField: "id",
             listeners: {
@@ -64,7 +64,7 @@ Ext.define("NOC.sa.getnow.Application", {
 
         me.saProfile = Ext.create("NOC.main.ref.profile.LookupField", {
             name: "profile_name",
-            fieldLabel: "By SA Profile",
+            fieldLabel: __("By SA Profile"),
             allowBlank: true,
             listeners: {
                 scope: me,
@@ -74,7 +74,7 @@ Ext.define("NOC.sa.getnow.Application", {
 
         me.administrativeDomain = Ext.create("NOC.sa.administrativedomain.LookupField", {
             name: "administrative_domain",
-            fieldLabel: "By Adm. domain",
+            fieldLabel: __("By Adm. domain"),
             allowBlank: true,
             listeners: {
                 scope: me,
@@ -83,7 +83,7 @@ Ext.define("NOC.sa.getnow.Application", {
         });
 
         me.resetFilter = Ext.create("Ext.Button", {
-            text: "Reset filter",
+            text: __("Reset filter"),
             listeners: {
                 scope: me,
                 click: function () {
@@ -104,7 +104,7 @@ Ext.define("NOC.sa.getnow.Application", {
         });
 
         me.getConfigNow = Ext.create("Ext.Button", {
-            text: "Get config NOW",
+            text: __("Get config NOW"),
             listeners: {
                 scope: me,
                 click: function () {
@@ -158,7 +158,7 @@ Ext.define("NOC.sa.getnow.Application", {
             columns: [
                 {
                     xtype: 'gridcolumn',
-                    text: "ID",
+                    text: __("ID"),
                     dataIndex: "id",
                     width: 30
                 },

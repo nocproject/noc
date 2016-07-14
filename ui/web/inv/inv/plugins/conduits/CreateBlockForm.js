@@ -23,7 +23,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.CreateBlockForm", {
                 {
                     name: "count",
                     xtype: "numberfield",
-                    fieldLabel: "Count",
+                    fieldLabel: __("Count"),
                     allowBlank: false,
                     minValue: 1,
                     value: 1
@@ -31,7 +31,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.CreateBlockForm", {
                 {
                     name: "w",
                     xtype: "numberfield",
-                    fieldLabel: "Columns",
+                    fieldLabel: __("Columns"),
                     allowBlank: false,
                     minValue: 1,
                     value: 1
@@ -39,7 +39,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.CreateBlockForm", {
                 {
                     name: "d",
                     xtype: "numberfield",
-                    fieldLabel: "Diameter (mm)",
+                    fieldLabel: __("Diameter (mm)"),
                     value: 100,
                     allowBlank: false,
                     minValue: 1
@@ -47,7 +47,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.CreateBlockForm", {
                 {
                     name: "start",
                     xtype: "numberfield",
-                    fieldLabel: "First Number",
+                    fieldLabel: __("First Number"),
                     value: 1,
                     allowBlank: false,
                     minValue: 1
@@ -55,14 +55,14 @@ Ext.define("NOC.inv.inv.plugins.conduits.CreateBlockForm", {
             ],
             buttons: [
                 {
-                    text: "Create",
+                    text: __("Create"),
                     glyph: NOC.glyph.plus,
                     formBind: true,
                     scope: me,
                     handler: me.onCreateBlock
                 },
                 {
-                    text: "Close",
+                    text: __("Close"),
                     glyph: NOC.glyph.times,
                     scope: me,
                     handler: me.onClose

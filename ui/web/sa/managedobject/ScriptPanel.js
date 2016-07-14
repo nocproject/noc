@@ -32,7 +32,7 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
             store: me.scriptStore,
             columns: [
                 {
-                    text: "Script",
+                    text: __("Script"),
                     dataIndex: "name",
                     flex: 1,
                     renderer: function(value, meta, record) {
@@ -156,14 +156,14 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
                     dock: "top",
                     items: [
                         {
-                            text: "Close",
+                            text: __("Close"),
                             glyph: NOC.glyph.arrow_left,
                             scope: me,
                             handler: me.onFormClose
                         },
                         "-",
                         {
-                            text: "Run",
+                            text: __("Run"),
                             glyph: NOC.glyph.play,
                             scope: me,
                             handler: Ext.bind(me.onFormRun, me, [name])

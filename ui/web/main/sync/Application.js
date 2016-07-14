@@ -20,30 +20,30 @@ Ext.define("NOC.main.sync.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Active",
+                    text: __("Active"),
                     dataIndex: "is_active",
                     renderer: NOC.render.Bool,
                     width: 50
                 },
                 {
-                    text: "Instances",
+                    text: __("Instances"),
                     dataIndex: "n_instances",
                     width: 70,
                     align: "right"
                 },
                 {
-                    text: "Credentials",
+                    text: __("Credentials"),
                     dataIndex: "user",
                     width: 100,
                     renderer: NOC.render.Lookup("user")
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -53,29 +53,29 @@ Ext.define("NOC.main.sync.Application", {
                     name: "name",
                     xtype: "textfield",
                     allowBlank: false,
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     regex: /^[0-9a-zA-Z\-_\.]+$/
                 },
                 {
                     name: "is_active",
                     xtype: "checkboxfield",
-                    boxLabel: "Active"
+                    boxLabel: __("Active")
                 },
                 {
                     name: "user",
                     xtype: "main.user.LookupField",
-                    fieldLabel: "Credentials"
+                    fieldLabel: __("Credentials")
                 },
                 {
                     name: "n_instances",
                     xtype: "numberfield",
-                    fieldLabel: "Instances",
+                    fieldLabel: __("Instances"),
                     minValue: 1
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 }
             ],

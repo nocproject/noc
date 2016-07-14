@@ -27,25 +27,25 @@ Ext.define("NOC.sa.managedobject.L2Panel", {
                     store: me.store,
                     columns: [
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name"
                         },
                         {
-                            text: "Untag.",
+                            text: __("Untag."),
                             dataIndex: "untagged_vlan",
                             width: 50
                         },
                         {
-                            text: "Tagged",
+                            text: __("Tagged"),
                             dataIndex: "tagged_vlans",
                             hidden: true
                         },
                         {
-                            text: "Tagged (Ranges)",
+                            text: __("Tagged (Ranges)"),
                             dataIndex: "tagged_range"
                         },
                         {
-                            text: "Description",
+                            text: __("Description"),
                             dataIndex: "description",
                             flex: 1
                         }

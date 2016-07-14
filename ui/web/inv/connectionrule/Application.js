@@ -38,19 +38,19 @@ Ext.define("NOC.inv.connectionrule.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Builtin",
+                    text: __("Builtin"),
                     dataIndex: "is_builtin",
                     width: 50,
                     renderer: NOC.render.Bool,
                     sortable: false
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -58,39 +58,39 @@ Ext.define("NOC.inv.connectionrule.Application", {
             fields: [
                 {
                     name: "name",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     xtype: "textfield",
                     allowBlank: false
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description"
+                    fieldLabel: __("Description")
                 },
                 {
                     name: "context",
                     xtype: "gridfield",
-                    fieldLabel: "Context",
+                    fieldLabel: __("Context"),
                     columns: [
                         {
-                            text: "Type",
+                            text: __("Type"),
                             dataIndex: "type",
                             width: 100,
                             editor: "textfield"
                         },
                         {
-                            text: "Scope",
+                            text: __("Scope"),
                             dataIndex: "scope",
                             width: 70,
                             editor: "textfield"
                         },
                         {
-                            text: "Reset Scopes",
+                            text: __("Reset Scopes"),
                             dataIndex: "reset_scopes",
                             flex: 1,
                             editor: "stringlistfield"
@@ -100,40 +100,40 @@ Ext.define("NOC.inv.connectionrule.Application", {
                 {
                     name: "rules",
                     xtype: "gridfield",
-                    fieldLabel: "Rules",
+                    fieldLabel: __("Rules"),
                     columns: [
                         {
-                            text: "Match Type",
+                            text: __("Match Type"),
                             dataIndex: "match_type",
                             width: 100,
                             editor: "textfield"
                         },
                         {
-                            text: "Match Connection",
+                            text: __("Match Connection"),
                             dataIndex: "match_connection",
                             width: 100,
                             editor: "textfield"
                         },
                         {
-                            text: "Scope",
+                            text: __("Scope"),
                             dataIndex: "scope",
                             width: 50,
                             editor: "textfield"
                         },
                         {
-                            text: "Target Type",
+                            text: __("Target Type"),
                             dataIndex: "target_type",
                             width: 100,
                             editor: "textfield"
                         },
                         {
-                            text: "Target Number",
+                            text: __("Target Number"),
                             dataIndex: "target_number",
                             width: 100,
                             editor: "textfield"
                         },
                         {
-                            text: "Target Connection",
+                            text: __("Target Connection"),
                             dataIndex: "target_connection",
                             width: 100,
                             editor: "textfield"
@@ -143,7 +143,7 @@ Ext.define("NOC.inv.connectionrule.Application", {
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),

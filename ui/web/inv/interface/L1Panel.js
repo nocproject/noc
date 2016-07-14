@@ -47,19 +47,19 @@ Ext.define("NOC.inv.interface.L1Panel", {
                             ]
                         },
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name"
                         },
                         {
-                            text: "MAC",
+                            text: __("MAC"),
                             dataIndex: "mac"
                         },
                         {
-                            text: "LAG",
+                            text: __("LAG"),
                             dataIndex: "lag"
                         },
                         {
-                            text: "Link",
+                            text: __("Link"),
                             dataIndex: "link",
                             renderer: function(v) {
                                 if(v) {
@@ -70,40 +70,40 @@ Ext.define("NOC.inv.interface.L1Panel", {
                             }
                         },
                         {
-                            text: "Profile",
+                            text: __("Profile"),
                             dataIndex: "profile",
                             renderer: NOC.render.ClickableLookup("profile"),
                             onClick: me.onChangeProfile
                         },
                         {
-                            text: "Project",
+                            text: __("Project"),
                             dataIndex: "project",
                             renderer: NOC.render.ClickableLookup("project"),
                             onClick: me.onChangeProject
                         },
                         {
-                            text: "State",
+                            text: __("State"),
                             dataIndex: "state",
                             renderer: NOC.render.ClickableLookup("state"),
                             onClick: me.onChangeState
                         },
                         {
-                            text: "VC Domain",
+                            text: __("VC Domain"),
                             dataIndex: "vc_domain",
                             renderer: NOC.render.ClickableLookup("vc_domain"),
                             onClick: me.onChangeVCDomain
                         },
                         {
-                            text: "Protocols",
+                            text: __("Protocols"),
                             dataIndex: "enabled_protocols"
                         },
                         {
-                            text: "Description",
+                            text: __("Description"),
                             dataIndex: "description",
                             flex: 1
                         },
                         {
-                            text: "ifIndex",
+                            text: __("ifIndex"),
                             dataIndex: "ifindex",
                             hidden: true
                         }

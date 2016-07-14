@@ -16,12 +16,12 @@ Ext.define("NOC.sa.groupaccess.Application", {
     model: "NOC.sa.groupaccess.Model",
     columns: [
         {
-            text: "Group",
+            text: __("Group"),
             dataIndex: "group",
             renderer: NOC.render.Lookup("group")
         },
         {
-            text: "Selector",
+            text: __("Selector"),
             dataIndex: "selector",
             renderer: NOC.render.Lookup("selector")
         }
@@ -30,13 +30,13 @@ Ext.define("NOC.sa.groupaccess.Application", {
         {
             name: "group",
             xtype: "main.group.LookupField",
-            fieldLabel: "Group",
+            fieldLabel: __("Group"),
             allowBlank: false
         },
         {
             name: "selector",
             xtype: "sa.managedobjectselector.LookupField",
-            fieldLabel: "Object Selector",
+            fieldLabel: __("Object Selector"),
             allowBlank: false
         }
     ],

@@ -17,7 +17,7 @@ Ext.define("NOC.core.modelfilter.AFI", {
             items: [
                 {
                     xtype: "button",
-                    text: "IPv4",
+                    text: __("IPv4"),
                     toggleGroup: "afigroup",
                     scope: me,
                     handler: function(button, e) {
@@ -27,7 +27,7 @@ Ext.define("NOC.core.modelfilter.AFI", {
                 },
                 {
                     xtype: "button",
-                    text: "IPv6",
+                    text: __("IPv6"),
                     toggleGroup: "afigroup",
                     scope: me,
                     handler: function(button, e) {

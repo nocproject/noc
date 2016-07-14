@@ -19,35 +19,35 @@ Ext.define("NOC.peer.peer.Application", {
     search: true,
     columns: [
         {
-            text: "Peering Point",
+            text: __("Peering Point"),
             flex: 1,
             dataIndex: "peering_point",
             renderer: NOC.render.Lookup("peering_point")
         },
         {
-            text: "Peer Group",
+            text: __("Peer Group"),
             flex: 1,
             dataIndex: "peer_group",
             renderer: NOC.render.Lookup("peer_group")
         },
         {
-            text: "Project",
+            text: __("Project"),
             dataIndex: "project",
             renderer: NOC.render.Lookup("project")
         },
         {
-            text: "Local AS",
+            text: __("Local AS"),
             flex: 1,
             dataIndex: "local_asn",
             renderer: NOC.render.Lookup("local_asn")
         },
         {
-            text: "Remote AS",
+            text: __("Remote AS"),
             flex: 1,
             dataIndex: "remote_asn"
         },
         {
-            text: "Status",
+            text: __("Status"),
             width: 70,
             dataIndex: "status",
             renderer: function(a) {
@@ -56,42 +56,42 @@ Ext.define("NOC.peer.peer.Application", {
             }
         },
         {
-            text: "Import Filter",
+            text: __("Import Filter"),
             flex: 1,
             dataIndex: "import_filter"
         },
         {
-            text: "Export Filter",
+            text: __("Export Filter"),
             flex: 1,
             dataIndex: "export_filter"
         },
         {
-            text: "Local Address",
+            text: __("Local Address"),
             flex: 1,
             dataIndex: "local_ip"
         },
         {
-            text: "Remote Address",
+            text: __("Remote Address"),
             flex: 1,
             dataIndex: "remote_ip"
         },
         {
-            text: "TT",
+            text: __("TT"),
             flex: 1,
             dataIndex: "tt"
         },
         {
-            text: "Description",
+            text: __("Description"),
             flex: 1,
             dataIndex: "description"
         }, 
         {
-            text: "Import Communities",
+            text: __("Import Communities"),
             flex: 1,
             dataIndex: "communities"
         }, 
         {
-            text: "Tags",
+            text: __("Tags"),
             flex: 1,
             dataIndex: "tags",
             renderer: "NOC.render.Tags"
@@ -113,35 +113,35 @@ Ext.define("NOC.peer.peer.Application", {
                 {
                     name: "peering_point",
                     xtype: "peer.peeringpoint.LookupField",
-                    fieldLabel: "Peering Point",
+                    fieldLabel: __("Peering Point"),
                     width: 400,
                     allowBlank: false
                 },
                 {
                     name: "peer_group",
                     xtype: "peer.peergroup.LookupField",
-                    fieldLabel: "Peer Group",
+                    fieldLabel: __("Peer Group"),
                     width: 400,
                     allowBlank: false
                 },
                 {
                     name: "project",
                     xtype: "project.project.LookupField",
-                    fieldLabel: "Project",
+                    fieldLabel: __("Project"),
                     width: 400,
                     allowBlank: true
                 },
                 {
                     name: "local_asn",
                     xtype: "peer.as.LookupField",
-                    fieldLabel: "Local AS",
+                    fieldLabel: __("Local AS"),
                     width: 400,
                     allowBlank: false
                 },
                 {
                     name: "remote_asn",
                     xtype: "numberfield",
-                    fieldLabel: "Remote AS",
+                    fieldLabel: __("Remote AS"),
                     hideTrigger: true,
                     keyNavEnabled: false,
                     mouseWheelEnabled: false,
@@ -151,7 +151,7 @@ Ext.define("NOC.peer.peer.Application", {
                 {
                     name: "status",
                     xtype: "combobox",
-                    fieldLabel: "Status",
+                    fieldLabel: __("Status"),
                     allowBlank: false,
                     store: [
                         ["P", "Planned"],
@@ -178,24 +178,24 @@ Ext.define("NOC.peer.peer.Application", {
                     name: "local_ip",
                     xtype: "textfield",
                     allowBlank: false,
-                    fieldLabel: "Local IP"
+                    fieldLabel: __("Local IP")
                 },
                 {
                     name: "local_backup_ip",
                     xtype: "textfield",
-                    fieldLabel: "Local Backup IP",
+                    fieldLabel: __("Local Backup IP"),
                     allowBlank: true
                 },
                 {
                     name: "remote_ip",
                     xtype: "textfield",
                     allowBlank: false,
-                    fieldLabel: "Remote IP"
+                    fieldLabel: __("Remote IP")
                 },
                 {
                     name: "remote_backup_ip",
                     xtype: "textfield",
-                    fieldLabel: "Remote Backup IP",
+                    fieldLabel: __("Remote Backup IP"),
                     allowBlank: true
                 }
             ]
@@ -216,14 +216,14 @@ Ext.define("NOC.peer.peer.Application", {
                     name: "description",
                     xtype: "textfield",
                     width: 400,
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "rpsl_remark",
                     xtype: "textfield",
                     width: 400,
-                    fieldLabel: "RPSL Remark",
+                    fieldLabel: __("RPSL Remark"),
                     allowBlank: true
                 }
             ]
@@ -245,42 +245,42 @@ Ext.define("NOC.peer.peer.Application", {
                     xtype: "textfield",
                     width: 400,
                     allowBlank: false,
-                    fieldLabel: "Import Filter",
-                    emptyText: "ANY"
+                    fieldLabel: __("Import Filter"),
+                    emptytext: __("ANY")
                 },
                 {
                     name: "export_filter",
                     xtype: "textfield",
                     width: 400,
                     allowBlank: false,
-                    fieldLabel: "Export Filter",
-                    emptyText: "ANY"
+                    fieldLabel: __("Export Filter"),
+                    emptytext: __("ANY")
                 },
                 {
                     name: "import_filter_name",
                     xtype: "textfield",
                     width: 400,
-                    fieldLabel: "Import Filter Name",
+                    fieldLabel: __("Import Filter Name"),
                     allowBlank: true
                 },
                 {
                     name: "export_filter_name",
                     xtype: "textfield",
                     width: 400,
-                    fieldLabel: "Export Filter Name",
+                    fieldLabel: __("Export Filter Name"),
                     allowBlank: true
                 },
                 {
                     name: "max_prefixes",
                     xtype: "numberfield",
                     allowBlank: false,
-                    fieldLabel: "Max. Prefixes"
+                    fieldLabel: __("Max. Prefixes")
                 },
                 {
                     name: "communities",
                     xtype: "textfield",
                     width: 400,
-                    fieldLabel: "Import Communities",
+                    fieldLabel: __("Import Communities"),
                     allowBlank: true
                 }
             ]
@@ -300,19 +300,19 @@ Ext.define("NOC.peer.peer.Application", {
                 {
                     name: "local_pref",
                     xtype: "numberfield",
-                    fieldLabel: "Local Pref",
+                    fieldLabel: __("Local Pref"),
                     allowBlank: true
                 },
                 {
                     name: "import_med",   
                     xtype: "numberfield",
-                    fieldLabel: "Import MED",
+                    fieldLabel: __("Import MED"),
                     allowBlank: true   
                 },
                 {
                     name: "export_med",   
                     xtype: "numberfield",
-                    fieldLabel: "Export MED",
+                    fieldLabel: __("Export MED"),
                     allowBlank: true   
                 }
             ]
@@ -332,13 +332,13 @@ Ext.define("NOC.peer.peer.Application", {
                 {
                     name: "tt",
                     xtype: "numberfield",
-                    fieldLabel: "TT",
+                    fieldLabel: __("TT"),
                     allowBlank: true
                 },
                 {
                     name: "tags",
                     xtype: "tagsfield",
-                    fieldLabel: "Tags",
+                    fieldLabel: __("Tags"),
                     width: 400,
                     allowBlank: true
                 }

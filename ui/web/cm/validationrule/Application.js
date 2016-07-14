@@ -108,7 +108,7 @@ Ext.define("NOC.cm.validationrule.Application", {
                 {
                     name: "selectors_list",
                     xtype: "gridfield",
-                    fieldLabel: "Selectors",
+                    fieldLabel: __("Selectors"),
                     columns: [
                         {
                             text: __("Action"),

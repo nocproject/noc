@@ -33,18 +33,18 @@ Ext.define("NOC.fm.alarmclass.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 250
                 },
                 {
-                    text: "Builtin",
+                    text: __("Builtin"),
                     dataIndex: "is_builtin",
                     renderer: NOC.render.Bool,
                     width: 30
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -57,14 +57,14 @@ Ext.define("NOC.fm.alarmclass.Application", {
                         {
                             name: "name",
                             xtype: "textfield",
-                            fieldLabel: "Name",
+                            fieldLabel: __("Name"),
                             allowBlank: false,
                             uiStyle: "large"
                         },
                         {
                             name: "uuid",
                             xtype: "displayfield",
-                            fieldLabel: "UUID"
+                            fieldLabel: __("UUID")
                         }
                     ]
                 },
@@ -84,41 +84,41 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                 {
                                     name: "description",
                                     xtype: "textarea",
-                                    fieldLabel: "Description",
+                                    fieldLabel: __("Description"),
                                     uiStyle: "extra"
                                 },
                                 {
                                     name: "subject_template",
                                     xtype: "textfield",
-                                    fieldLabel: "Subject Template",
+                                    fieldLabel: __("Subject Template"),
                                     uiStyle: "extra",
                                     allowBlank: false
                                 },
                                 {
                                     name: "body_template",
                                     xtype: "textarea",
-                                    fieldLabel: "Body Template",
+                                    fieldLabel: __("Body Template"),
                                     uiStyle: "extra",
                                     allowBlank: false
                                 },
                                 {
                                     name: "symptoms",
                                     xtype: "textarea",
-                                    fieldLabel: "Symptoms",
+                                    fieldLabel: __("Symptoms"),
                                     uiStyle: "extra",
                                     allowBlank: true
                                 },
                                 {
                                     name: "probable_causes",
                                     xtype: "textarea",
-                                    fieldLabel: "Probable Causes",
+                                    fieldLabel: __("Probable Causes"),
                                     uiStyle: "extra",
                                     allowBlank: true
                                 },
                                 {
                                     name: "recommended_actions",
                                     xtype: "textarea",
-                                    fieldLabel: "Recommended Actions",
+                                    fieldLabel: __("Recommended Actions"),
                                     uiStyle: "extra",
                                     allowBlank: true
                                 }
@@ -130,22 +130,22 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                 {
                                     name: "default_severity",
                                     xtype: "fm.alarmseverity.LookupField",
-                                    fieldLabel: "Default Severity"
+                                    fieldLabel: __("Default Severity")
                                 },
                                 {
                                     name: "is_unique",
                                     xtype: "checkboxfield",
-                                    boxLabel: "Unique"
+                                    boxLabel: __("Unique")
                                 },
                                 {
                                     name: "user_clearable",
                                     xtype: "checkboxfield",
-                                    boxLabel: "User Clearable"
+                                    boxLabel: __("User Clearable")
                                 },
                                 {
                                     name: "discriminator",
                                     xtype: "stringsfield",
-                                    fieldLabel: "Discriminator"
+                                    fieldLabel: __("Discriminator")
                                 }
                             ]
                         },
@@ -157,19 +157,19 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                     xtype: "gridfield",
                                     columns: [
                                         {
-                                            text: "Name",
+                                            text: __("Name"),
                                             dataIndex: "name",
                                             width: 100,
                                             editor: "textfield"
                                         },
                                         {
-                                            text: "Description",
+                                            text: __("Description"),
                                             dataIndex: "description",
                                             flex: 1,
                                             editor: "textfield"
                                         },
                                         {
-                                            text: "Default",
+                                            text: __("Default"),
                                             dataIndex: "default",
                                             width: 150,
                                             editor: "textfield"
@@ -186,19 +186,19 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                     xtype: "gridfield",
                                     columns: [
                                         {
-                                            text: "Name",
+                                            text: __("Name"),
                                             dataIndex: "name",
                                             width: 100,
                                             editor: "textfield"
                                         },
                                         {
-                                            text: "Datasource",
+                                            text: __("Datasource"),
                                             dataIndex: "datasource",
                                             width: 100,
                                             editor: "textfield"
                                         },
                                         {
-                                            text: "Search",
+                                            text: __("Search"),
                                             dataIndex: "search",
                                             flex: 1,
                                             editor: "jsonfield",
@@ -216,32 +216,32 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                     xtype: "gridfield",
                                     columns: [
                                         {
-                                            text: "Name",
+                                            text: __("Name"),
                                             dataIndex: "name",
                                             width: 200,
                                             editor: "textfield"
                                         },
                                         {
-                                            text: "Root",
+                                            text: __("Root"),
                                             dataIndex: "root",
                                             renderer: NOC.render.Lookup("root"),
                                             editor: "fm.alarmclass.LookupField",
                                             width: 200
                                         },
                                         {
-                                            text: "Window",
+                                            text: __("Window"),
                                             dataIndex: "window",
                                             width: 50,
                                             editor: "numberfield"
                                         },
                                         {
-                                            text: "Condition",
+                                            text: __("Condition"),
                                             dataIndex: "condition",
                                             editor: "textfield",
                                             width: 150
                                         },
                                         {
-                                            text: "Match Condition",
+                                            text: __("Match Condition"),
                                             dataIndex: "match_condition",
                                             editor: "jsonfield",
                                             flex: 1,
@@ -259,19 +259,19 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                     xtype: "gridfield",
                                     columns: [
                                         {
-                                            text: "Job",
+                                            text: __("Job"),
                                             dataIndex: "job",
                                             width: 100,
                                             editor: "textfield"
                                         },
                                         {
-                                            text: "Interval",
+                                            text: __("Interval"),
                                             dataIndex: "interval",
                                             width: 50,
                                             editor: "numberfield"
                                         },
                                         {
-                                            text: "Vars",
+                                            text: __("Vars"),
                                             dataIndex: "vars",
                                             flex: 1,
                                             editor: "jsonfield",
@@ -287,7 +287,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                 {
                                     xtype: "stringsfield",
                                     name: "handlers",
-                                    fieldLabel: "Handlers"
+                                    fieldLabel: __("Handlers")
                                 }
                             ]
                         },
@@ -297,16 +297,16 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                 {
                                     xtype: "gridfield",
                                     name: "plugins",
-                                    fieldLabel: "Plugins",
+                                    fieldLabel: __("Plugins"),
                                     columns: [
                                         {
-                                            text: "Name",
+                                            text: __("Name"),
                                             dataIndex: "name",
                                             editor: "textfield",
                                             width: 150
                                         },
                                         {
-                                            text: "Config",
+                                            text: __("Config"),
                                             dataIndex: "config",
                                             editor: "jsonfield",
                                             flex: 1,
@@ -322,42 +322,42 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                 {
                                     name: "flap_window",
                                     xtype: "numberfield",
-                                    fieldLabel: "Flap Window",
+                                    fieldLabel: __("Flap Window"),
                                     allowBlank: true,
                                     uiStyle: "small"
                                 },
                                 {
                                     name: "flap_threshold",
                                     xtype: "numberfield",
-                                    fieldLabel: "Flap Threshold",
+                                    fieldLabel: __("Flap Threshold"),
                                     allowBlank: true,
                                     uiStyle: "small"
                                 },
                                 {
                                     name: "notification_delay",
                                     xtype: "numberfield",
-                                    fieldLabel: "Notification Delay",
+                                    fieldLabel: __("Notification Delay"),
                                     allowBlank: true,
                                     uiStyle: "small"
                                 },
                                 {
                                     name: "control_time0",
                                     xtype: "numberfield",
-                                    fieldLabel: "Control Time 0",
+                                    fieldLabel: __("Control Time 0"),
                                     allowBlank: true,
                                     uiStyle: "small"
                                 },
                                 {
                                     name: "control_time1",
                                     xtype: "numberfield",
-                                    fieldLabel: "Control Time 1",
+                                    fieldLabel: __("Control Time 1"),
                                     allowBlank: true,
                                     uiStyle: "small"
                                 },
                                 {
                                     name: "control_timeN",
                                     xtype: "numberfield",
-                                    fieldLabel: "Control Time N",
+                                    fieldLabel: __("Control Time N"),
                                     allowBlank: true,
                                     uiStyle: "small"
                                 }
@@ -369,7 +369,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "View as JSON",
                     hasAccess: NOC.hasPermission("read"),

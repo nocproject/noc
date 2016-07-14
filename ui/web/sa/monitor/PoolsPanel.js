@@ -31,42 +31,42 @@ Ext.define("NOC.sa.monitor.PoolsPanel", {
                     }],
                     columns: [
                         {
-                            text: "Instance",
+                            text: __("Instance"),
                             dataIndex: "instance"
                         },
                         {
-                            text: "State",
+                            text: __("State"),
                             dataIndex: "state"
                         },
                         {
-                            text: "Changed",
+                            text: __("Changed"),
                             dataIndex: "last_state_change",
                             xtype: "datecolumn",
                             format: "Y-m-d H:i:s"
                         },
                         {
-                            text: "Scripts",
+                            text: __("Scripts"),
                             columns: [
                                 {
-                                    text: "Current",
+                                    text: __("Current"),
                                     dataIndex: "current_scripts",
                                     summaryType: "sum",
                                     align: "right"
                                 },
                                 {
-                                    text: "Limit",
+                                    text: __("Limit"),
                                     dataIndex: "max_scripts",
                                     summaryType: "sum",
                                     align: "right"
                                 },
                                 {
-                                    text: "Processed",
+                                    text: __("Processed"),
                                     dataIndex: "scripts_processed",
                                     summaryType: "sum",
                                     align: "right"
                                 },
                                 {
-                                    text: "Failed",
+                                    text: __("Failed"),
                                     dataIndex: "scripts_failed",
                                     summaryType: "sum",
                                     align: "right"
@@ -76,7 +76,7 @@ Ext.define("NOC.sa.monitor.PoolsPanel", {
                     ],
                     tbar: [
                         {
-                            text: "Refresh",
+                            text: __("Refresh"),
                             glyph: NOC.glyph.refresh,
                             scope: me.app,
                             handler: me.app.refreshData

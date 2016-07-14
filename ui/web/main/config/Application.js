@@ -38,7 +38,7 @@ Ext.define("NOC.main.config.Application", {
 
         me.saveButton = Ext.create("Ext.button.Button", {
             name: "save",
-            text: "Save",
+            text: __("Save"),
             glyph: NOC.glyph.save,
             disabled: true,
             scope: me,
@@ -63,22 +63,22 @@ Ext.define("NOC.main.config.Application", {
             }],
             columns: [
                 {
-                    text: "Section",
+                    text: __("Section"),
                     dataIndex: "section",
                     hidden: true
                 },
                 {
-                    text: "Key",
+                    text: __("Key"),
                     dataIndex: "key",
                     width: 300
                 },
                 {
-                    text: "Default",
+                    text: __("Default"),
                     dataIndex: "default",
                     flex: 1
                 },
                 {
-                    text: "Value",
+                    text: __("Value"),
                     dataIndex: "value",
                     editor: "textfield",
                     flex: 1
@@ -95,7 +95,7 @@ Ext.define("NOC.main.config.Application", {
                             name: "config",
                             itemId: "config",
                             width: 150,
-                            emptyText: "Select Config ...",
+                            emptytext: __("Select Config ..."),
                             store: me.configListStore,
                             queryMode: "local",
                             displayField: "name",

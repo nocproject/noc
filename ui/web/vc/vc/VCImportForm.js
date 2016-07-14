@@ -74,7 +74,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                             xtype: "toolbar",
                             items: [
                                 {
-                                    text: "Save",
+                                    text: __("Save"),
                                     glyph: NOC.glyph.save,
                                     scope: me,
                                     handler: me.onSave

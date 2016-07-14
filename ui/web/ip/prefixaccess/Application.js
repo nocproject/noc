@@ -17,32 +17,32 @@ Ext.define("NOC.ip.prefixaccess.Application", {
     search: true,
     columns: [
         {
-            text: "User",
+            text: __("User"),
             dataIndex: "user",
             renderer: NOC.render.Lookup("user")
         },
         {
-            text: "VRF",
+            text: __("VRF"),
             dataIndex: "vrf",
             renderer: NOC.render.Lookup("vrf")
         },
         {
-            text: "AFI",
+            text: __("AFI"),
             dataIndex: "afi",
             renderer: function(v) { return "IPv" + v; }
         },
         {
-            text: "Prefix",
+            text: __("Prefix"),
             dataIndex: "prefix"
         },
         {
-            text: "View",
+            text: __("View"),
             dataIndex: "can_view",
             renderer: NOC.render.Bool,
             width: 50
         },
         {
-            text: "Change",
+            text: __("Change"),
             dataIndex: "can_change",
             renderer: NOC.render.Bool,
             width: 50
@@ -52,19 +52,19 @@ Ext.define("NOC.ip.prefixaccess.Application", {
         {
             name: "user",
             xtype: "main.user.LookupField",
-            fieldLabel: "User",
+            fieldLabel: __("User"),
             allowBlank: false
         },
         {
             name: "vrf",
             xtype: "ip.vrf.LookupField",
-            fieldLabel: "VRF",
+            fieldLabel: __("VRF"),
             allowBlank: false
         },
         {
             name: "afi",
             xtype: "combobox",
-            fieldLabel: "Address Family",
+            fieldLabel: __("Address Family"),
             allowBlank: false,
             queryMode: "local",
             displayField: "label",
@@ -80,19 +80,19 @@ Ext.define("NOC.ip.prefixaccess.Application", {
         {
             name: "prefix",
             xtype: "textfield",
-            fieldLabel: "Prefix",
+            fieldLabel: __("Prefix"),
             allowBlank: false
         },
         {
             name: "can_view",
             xtype: "checkboxfield",
-            boxLabel: "Can View",
+            boxLabel: __("Can View"),
             allowBlank: false
         },
         {
             name: "can_change",
             xtype: "checkboxfield",
-            boxLabel: "Can Change",
+            boxLabel: __("Can Change"),
             allowBlank: false
         }
     ],

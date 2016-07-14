@@ -15,39 +15,39 @@ Ext.define("NOC.inv.modelmapping.Application", {
     model: "NOC.inv.modelmapping.Model",
     columns: [
         {
-            text: "Vendor",
+            text: __("Vendor"),
             dataIndex: "vendor",
             width: 100
         },
         {
-            text: "Part No",
+            text: __("Part No"),
             dataIndex: "part_no",
             width: 75
         },
         {
-            text: "From serial",
+            text: __("From serial"),
             dataIndex: "from_serial",
             width: 75
         },
         {
-            text: "To serial",
+            text: __("To serial"),
             dataIndex: "to_serial",
             width: 75
         },
         {
-            text: "Model",
+            text: __("Model"),
             dataIndex: "model",
             renderer: NOC.render.Lookup("model"),
             width: 200
         },
         {
-            text: "Active",
+            text: __("Active"),
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
             width: 50
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }
@@ -56,42 +56,42 @@ Ext.define("NOC.inv.modelmapping.Application", {
         {
             name: "vendor",
             xtype: "textfield",
-            fieldLabel: "Vendor",
+            fieldLabel: __("Vendor"),
             allowBlank: false
         },
         {
             name: "part_no",
             xtype: "textfield",
-            fieldLabel: "Part No",
+            fieldLabel: __("Part No"),
             allowBlank: true
         },
         {
             name: "from_serial",
             xtype: "textfield",
-            fieldLabel: "From Serial",
+            fieldLabel: __("From Serial"),
             allowBlank: true
         },
         {
             name: "to_serial",
             xtype: "textfield",
-            fieldLabel: "To Serial",
+            fieldLabel: __("To Serial"),
             allowBlank: true
         },
         {
             name: "model",
             xtype: "inv.objectmodel.LookupField",
-            fieldLabel: "Model",
+            fieldLabel: __("Model"),
             allowBlank: false
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Active"
+            boxLabel: __("Active")
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         }
     ]

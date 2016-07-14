@@ -21,19 +21,19 @@ Ext.define("NOC.crm.subscriber.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Profile",
+                    text: __("Profile"),
                     dataIndex: "profile",
                     width: 200,
                     renderer: NOC.render.Lookup("profile"),
                     flex: 1
                 },
                 {
-                    text: "Tags",
+                    text: __("Tags"),
                     dataIndex: "tags",
                     width: 150,
                     render: NOC.render.Tags
@@ -44,48 +44,48 @@ Ext.define("NOC.crm.subscriber.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "large"
                 },
                 {
                     name: "profile",
                     xtype: "crm.subscriberprofile.LookupField",
-                    fieldLabel: "Profile",
+                    fieldLabel: __("Profile"),
                     allowBlank: true
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true,
                     uiStyle: "expand"
                 },
                 {
                     name: "address",
                     xtype: "textfield",
-                    fieldLabel: "Address",
+                    fieldLabel: __("Address"),
                     allowBlank: true,
                     uiStyle: "extra"
                 },
                 {
                     name: "tech_contact_person",
                     xtype: "textfield",
-                    fieldLabel: "Contact",
+                    fieldLabel: __("Contact"),
                     allowBlank: true,
                     uiStyle: "extra"
                 },
                 {
                     name: "tech_contact_phone",
                     xtype: "textfield",
-                    fieldLabel: "Phone",
+                    fieldLabel: __("Phone"),
                     allowBlank: true,
                     uiStyle: "extra"
                 },
                 {
                     name: "tags",
                     xtype: "tagsfield",
-                    fieldLabel: "Tags",
+                    fieldLabel: __("Tags"),
                     allowBlank: true
                 }
             ]

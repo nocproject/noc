@@ -21,7 +21,7 @@ Ext.define("NOC.gis.division.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Type",
+                    text: __("Type"),
                     dataIndex: "type",
                     width: 100,
                     renderer: NOC.render.Choices({
@@ -29,23 +29,23 @@ Ext.define("NOC.gis.division.Application", {
                     })
                 },
                 {
-                    text: "Short",
+                    text: __("Short"),
                     dataIndex: "short_name",
                     width: 50
                 },
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 300
                 },
                 {
-                    text: "Active",
+                    text: __("Active"),
                     dataIndex: "is_active",
                     renderer: NOC.render.Bool,
                     width: 25
                 },
                 {
-                    text: "Parent",
+                    text: __("Parent"),
                     dataIndex: "full_parent",
                     flex: 1,
                     sort: false
@@ -55,12 +55,12 @@ Ext.define("NOC.gis.division.Application", {
                 {
                     name: "full_path",
                     xtype: "displayfield",
-                    fieldLabel: "Full Path"
+                    fieldLabel: __("Full Path")
                 },
                 {
                     name: "type",
                     xtype: "combobox",
-                    fieldLabel: "Type",
+                    fieldLabel: __("Type"),
                     allowBlank: false,
                     store: [
                         ["A", "Administrative"]
@@ -70,29 +70,29 @@ Ext.define("NOC.gis.division.Application", {
                 {
                     name: "parent",
                     xtype: "gis.division.LookupField",
-                    fieldLabel: "Parent"
+                    fieldLabel: __("Parent")
                 },
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "short_name",
                     xtype: "textfield",
-                    fieldLabel: "Short Name",
+                    fieldLabel: __("Short Name"),
                     allowBlank: true
                 },
                 {
                     name: "is_active",
                     xtype: "checkboxfield",
-                    boxLabel: "Active"
+                    boxLabel: __("Active")
                 },
                 {
                     xtype: "dictfield",
                     name: "data",
-                    fieldLabel: "Data",
+                    fieldLabel: __("Data"),
                     allowBlank: true
                 }
             ]

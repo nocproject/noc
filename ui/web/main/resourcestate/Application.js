@@ -16,40 +16,40 @@ Ext.define("NOC.main.resourcestate.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Active",
+            text: __("Active"),
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
             width: 70
         },
         {
-            text: "Starting",
+            text: __("Starting"),
             dataIndex: "is_starting",
             renderer: NOC.render.Bool,
             width: 70
         },
         {
-            text: "Default",
+            text: __("Default"),
             dataIndex: "is_default",
             renderer: NOC.render.Bool,
             width: 70
         },
         {
-            text: "Provisioned",
+            text: __("Provisioned"),
             dataIndex: "is_provisioned",
             renderer: NOC.render.Bool,
             width: 70
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         },
         {
-            text: "Step to",
+            text: __("Step to"),
             dataIndex: "step_to",
             renderer: NOC.render.Lookup("step_to")
         }
@@ -58,44 +58,44 @@ Ext.define("NOC.main.resourcestate.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true,
             anchor: "100%"
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Active",
+            boxLabel: __("Active"),
             allowBlank: false
         },
         {
             name: "is_starting",
             xtype: "checkboxfield",
-            boxLabel: "Starting",
+            boxLabel: __("Starting"),
             allowBlank: false
         },
         {
             name: "is_default",
             xtype: "checkboxfield",
-            boxLabel: "Default",
+            boxLabel: __("Default"),
             allowBlank: false
         },
         {
             name: "is_provisioned",
             xtype: "checkboxfield",
-            boxLabel: "Provisioned",
+            boxLabel: __("Provisioned"),
             allowBlank: false
         },
         {
             name: "step_to",
             xtype: "main.resourcestate.LookupField",
-            fieldLabel: "Step to",
+            fieldLabel: __("Step to"),
             allowBlank: true
         }
     ]

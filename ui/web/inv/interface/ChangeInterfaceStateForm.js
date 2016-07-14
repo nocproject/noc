@@ -38,14 +38,14 @@ Ext.define("NOC.inv.interface.ChangeInterfaceStateForm", {
                         {
                             xtype: "main.resourcestate.LookupField",
                             name: "state",
-                            fieldLabel: "State",
+                            fieldLabel: __("State"),
                             allowBlank: false
                         }
                     ],
                     buttonAlign: "center",
                     buttons: [
                         {
-                            text: "Change",
+                            text: __("Change"),
                             glyph: NOC.glyph.check,
                             formBind: true,
                             scope: me,

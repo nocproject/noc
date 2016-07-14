@@ -22,18 +22,18 @@ Ext.define("NOC.gis.building.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Address",
+                    text: __("Address"),
                     dataIndex: "full_path",
                     flex: 1
                 },
                 {
-                    text: "Floors",
+                    text: __("Floors"),
                     dataIndex: "floors",
                     width: 75,
                     align: "right"
                 },
                 {
-                    text: "Homes",
+                    text: __("Homes"),
                     dataIndex: "homes",
                     width: 75,
                     align: "right"
@@ -43,18 +43,18 @@ Ext.define("NOC.gis.building.Application", {
                 {
                     name: "full_path",
                     xtype: "displayfield",
-                    fieldLabel: "Address"
+                    fieldLabel: __("Address")
                 },
                 {
                     name: "adm_division",
                     xtype: "gis.division.LookupField",
-                    fieldLabel: "Administrative Division",
+                    fieldLabel: __("Administrative Division"),
                     allowBlank: false
                 },
                 {
                     name: "status",
                     xtype: "combobox",
-                    fieldLabel: "Status",
+                    fieldLabel: __("Status"),
                     allowBlank: false,
                     store: [
                         ["P", "PROJECT"],
@@ -68,19 +68,19 @@ Ext.define("NOC.gis.building.Application", {
                 {
                     name: "postal_code",
                     xtype: "textfield",
-                    fieldLabel: "Postal Code",
+                    fieldLabel: __("Postal Code"),
                     allowBlank: true
                 },
                 {
                     name: "floors",
                     xtype: "numberfield",
-                    fieldLabel: "Floors",
+                    fieldLabel: __("Floors"),
                     allowBlank: true
                 },
                 {
                     name: "homes",
                     xtype: "numberfield",
-                    fieldLabel: "Homes",
+                    fieldLabel: __("Homes"),
                     allowBlank: true
                 },
                 {
@@ -90,63 +90,63 @@ Ext.define("NOC.gis.building.Application", {
                         {
                             name: "has_cellar",
                             xtype: "checkboxfield",
-                            boxLabel: "Cellar"
+                            boxLabel: __("Cellar")
                         },
                         {
                             name: "has_attric",
                             xtype: "checkboxfield",
-                            boxLabel: "Attic"
+                            boxLabel: __("Attic")
                         },
                         {
                             name: "is_administrative",
                             xtype: "checkboxfield",
-                            boxLabel: "Administrative"
+                            boxLabel: __("Administrative")
                         },
                         {
                             name: "is_habitated",
                             xtype: "checkboxfield",
-                            boxLabel: "Habitated"
+                            boxLabel: __("Habitated")
                         }
                     ]
                 },
                 {
                     xtype: "dictfield",
                     name: "data",
-                    fieldLabel: "Data",
+                    fieldLabel: __("Data"),
                     allowBlank: true
                 },
                 {
                     xtype: "gridfield",
                     name: "entrances",
-                    fieldLabel: "Entrances",
+                    fieldLabel: __("Entrances"),
                     allowBlank: true,
                     columns: [
                         {
-                            text: "Number",
+                            text: __("Number"),
                             dataIndex: "number",
                             width: 75,
                             editor: "textfield"
                         },
                         {
-                            text: "First Floor",
+                            text: __("First Floor"),
                             dataIndex: "first_floor",
                             width: 75,
                             editor: "textfield"
                         },
                         {
-                            text: "Last Floor",
+                            text: __("Last Floor"),
                             dataIndex: "last_floor",
                             width: 75,
                             editor: "textfield"
                         },
                         {
-                            text: "First Home",
+                            text: __("First Home"),
                             dataIndex: "first_home",
                             width: 75,
                             editor: "textfield"
                         },
                         {
-                            text: "Last Home",
+                            text: __("Last Home"),
                             dataIndex: "last_home",
                             width: 75,
                             editor: "textfield"
@@ -154,7 +154,7 @@ Ext.define("NOC.gis.building.Application", {
                     ],
                     toolbar: [
                         {
-                            text: "Fill Entrances",
+                            text: __("Fill Entrances"),
                             glyph: NOC.glyph.plus_square,
                             scope: me,
                             handler: me.onFillEntrances
@@ -168,7 +168,7 @@ Ext.define("NOC.gis.building.Application", {
                     model: "NOC.gis.building.AddressesModel",
                     columns: [
                         {
-                            text: "Primary",
+                            text: __("Primary"),
                             dataIndex: "is_primary",
                             width: 50,
                             renderer: NOC.render.Bool,
@@ -181,80 +181,80 @@ Ext.define("NOC.gis.building.Application", {
                             }
                         },
                         {
-                            text: "Street",
+                            text: __("Street"),
                             dataIndex: "street",
                             width: 150,
                             renderer: NOC.render.Lookup("street"),
                             editor: "gis.street.LookupField"
                         },
                         {
-                            text: "Num",
+                            text: __("Num"),
                             dataIndex: "num",
                             width: 50,
                             editor: "numberfield"
                         },
                         {
-                            text: "Num2",
+                            text: __("Num2"),
                             dataIndex: "num2",
                             width: 50,
                             editor: "numberfield"
                         },
                         {
-                            text: "Num Letter",
+                            text: __("Num Letter"),
                             dataIndex: "num_letter",
                             width: 50,
                             editor: "textfield"
                         },
                         {
-                            text: "Build",
+                            text: __("Build"),
                             dataIndex: "build",
                             width: 50,
                             editor: "numberfield"
                         },
                         {
-                            text: "Build Letter",
+                            text: __("Build Letter"),
                             dataIndex: "build_letter",
                             width: 50,
                             editor: "textfield"
                         },
                         {
-                            text: "Struct",
+                            text: __("Struct"),
                             dataIndex: "struct",
                             width: 50,
                             editor: "numberfield"
                         },
                         {
-                            text: "Struct2",
+                            text: __("Struct2"),
                             dataIndex: "struct2",
                             width: 50,
                             editor: "numberfield"
                         },
                         {
-                            text: "Struct Letter",
+                            text: __("Struct Letter"),
                             dataIndex: "struct_letter",
                             width: 50,
                             editor: "textfield"
                         },
                         {
-                            text: "Estate",
+                            text: __("Estate"),
                             dataIndex: "estate",
                             width: 50,
                             editor: "numberfield"
                         },
                         {
-                            text: "Estate2",
+                            text: __("Estate2"),
                             dataIndex: "estate2",
                             width: 50,
                             editor: "numberfield"
                         },
                         {
-                            text: "Est. Letter",
+                            text: __("Est. Letter"),
                             dataIndex: "estate_letter",
                             width: 50,
                             editor: "textfield"
                         },
                         {
-                            text: "Full Number",
+                            text: __("Full Number"),
                             dataIndex: "text_address",
                             flex: 1
                         }

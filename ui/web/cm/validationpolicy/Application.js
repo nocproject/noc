@@ -20,18 +20,18 @@ Ext.define("NOC.cm.validationpolicy.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Active",
+                    text: __("Active"),
                     dataIndex: "is_active",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -41,34 +41,34 @@ Ext.define("NOC.cm.validationpolicy.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "large"
                 },
                 {
                     name: "is_active",
                     xtype: "checkbox",
-                    boxLabel: "Active"
+                    boxLabel: __("Active")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description"
+                    fieldLabel: __("Description")
                 },
                 {
                     name: "rules",
                     xtype: "gridfield",
-                    fieldLabel: "Rules",
+                    fieldLabel: __("Rules"),
                     columns: [
                         {
-                            text: "Active",
+                            text: __("Active"),
                             dataIndex: "is_active",
                             width: 50,
                             renderer: NOC.render.Bool,
                             editor: "checkbox"
                         },
                         {
-                            text: "Validation Rule",
+                            text: __("Validation Rule"),
                             dataIndex: "rule",
                             flex: 1,
                             editor: "cm.validationrule.LookupField",

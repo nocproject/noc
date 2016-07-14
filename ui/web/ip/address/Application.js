@@ -21,7 +21,7 @@ Ext.define("NOC.ip.address.Application", {
     columns: [
         /*
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         }*/
     ],
@@ -29,97 +29,97 @@ Ext.define("NOC.ip.address.Application", {
         {
             name: "prefix",
             xtype: "ip.prefix.LookupField",
-            fieldLabel: "Prefix",
+            fieldLabel: __("Prefix"),
             allowBlank: false
         },
         {
             name: "vrf",
             xtype: "ip.vrf.LookupField",
-            fieldLabel: "VRF",
+            fieldLabel: __("VRF"),
             allowBlank: false
         },
         {
             name: "afi",
             xtype: "textfield",
-            fieldLabel: "Address Family",
+            fieldLabel: __("Address Family"),
             allowBlank: false
         },
         {
             name: "address",
             xtype: "textfield",
-            fieldLabel: "Address",
+            fieldLabel: __("Address"),
             allowBlank: false
         },
         {
             name: "fqdn",
             xtype: "textfield",
-            fieldLabel: "FQDN",
+            fieldLabel: __("FQDN"),
             allowBlank: false
         },
         {
             name: "mac",
             xtype: "textfield",
-            fieldLabel: "MAC",
+            fieldLabel: __("MAC"),
             allowBlank: true
         },
         {
             name: "auto_update_mac",
             xtype: "checkboxfield",
-            boxLabel: "Auto Update MAC",
+            boxLabel: __("Auto Update MAC"),
             allowBlank: false
         },
         {
             name: "managed_object",
             xtype: "sa.managedobject.LookupField",
-            fieldLabel: "Managed Object",
+            fieldLabel: __("Managed Object"),
             allowBlank: true
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "tags",
             xtype: "tagsfield",
-            fieldLabel: "Tags",
+            fieldLabel: __("Tags"),
             allowBlank: true
         },
         {
             name: "tt",
             xtype: "numberfield",
-            fieldLabel: "TT",
+            fieldLabel: __("TT"),
             allowBlank: true
         },
         {
             name: "style",
             xtype: "main.style.LookupField",
-            fieldLabel: "Style",
+            fieldLabel: __("Style"),
             allowBlank: true
         },
         {
             name: "state",
             xtype: "main.resourcestate.LookupField",
-            fieldLabel: "State",
+            fieldLabel: __("State"),
             allowBlank: false
         },
         {
             name: "allocated_till",
             xtype: "datefield",
-            fieldLabel: "Allocated till",
+            fieldLabel: __("Allocated till"),
             allowBlank: true
         },
         {
             name: "ipv6_transition",
             xtype: "ip.address.LookupField",
-            fieldLabel: "ipv6 transition",
+            fieldLabel: __("ipv6 transition"),
             allowBlank: true
         },
         {
             name: "customer",
             xtype: "textfield",
-            fieldLabel: "customer",
+            fieldLabel: __("customer"),
             allowBlank: true
         }
     ]

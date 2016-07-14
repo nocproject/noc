@@ -16,14 +16,14 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
         var me = this;
 
         me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.onRefresh
         });
 
         me.revalidateButton = Ext.create("Ext.button.Button", {
-            text: "Revalidate",
+            text: __("Revalidate"),
             glyph: NOC.glyph.check_circle,
             scope: me,
             handler: me.onRevalidate
@@ -43,22 +43,22 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
             autoScroll: true,
             columns: [
                 {
-                    text: "Class",
+                    text: __("Class"),
                     dataIndex: "cls",
                     flex: 1
                 },
                 {
-                    text: "Facts",
+                    text: __("Facts"),
                     dataIndex: "label",
                     flex: 1
                 },
                 {
-                    text: "Introduced",
+                    text: __("Introduced"),
                     dataIndex: "introduced",
                     width: 150
                 },
                 {
-                    text: "Changed",
+                    text: __("Changed"),
                     dataIndex: "changed",
                     width: 150
                 },

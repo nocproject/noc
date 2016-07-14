@@ -17,12 +17,12 @@ Ext.define("NOC.main.timepattern.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 100
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }
@@ -31,13 +31,13 @@ Ext.define("NOC.main.timepattern.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         }
     ],
@@ -47,7 +47,7 @@ Ext.define("NOC.main.timepattern.Application", {
             model: "NOC.main.timepattern.TermModel",
             columns: [
                 {
-                    text: "Pattern",
+                    text: __("Pattern"),
                     dataIndex: "term",
                     flex: 1,
                     editor: "textfield"
@@ -64,14 +64,14 @@ Ext.define("NOC.main.timepattern.Application", {
                 {
                     name: "date",
                     xtype: "datefield",
-                    fieldLabel: "Date",
+                    fieldLabel: __("Date"),
                     allowBlank: false,
                     format: "Y-m-d"
                 },
                 {
                     name: "time",
                     xtype: "timefield",
-                    fieldLabel: "Time",
+                    fieldLabel: __("Time"),
                     allowBlank: true,
                     format: "H:i"
                 }

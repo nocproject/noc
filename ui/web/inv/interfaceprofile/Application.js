@@ -31,7 +31,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         );
 
         me.validationSettingsButton = Ext.create("Ext.button.Button", {
-            text: "Validation",
+            text: __("Validation"),
             glyph: NOC.glyph.file,
             scope: me,
             handler: me.onValidationSettings
@@ -40,11 +40,11 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         Ext.apply(me, {
                 columns: [
                     {
-                        text: "Name",
+                        text: __("Name"),
                         dataIndex: "name"
                     },
                     {
-                        text: "Link Events",
+                        text: __("Link Events"),
                         dataIndex: "link_events",
                         renderer: function (value) {
                             return {
@@ -55,12 +55,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         }
                     },
                     {
-                        text: "Style",
+                        text: __("Style"),
                         dataIndex: "style",
                         renderer: NOC.render.Lookup("style")
                     },
                     {
-                        text: "Policy",
+                        text: __("Policy"),
                         dataIndex: "discovery_policy",
                         renderer: NOC.render.Choices({
                             I: "Ignore",
@@ -70,13 +70,13 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         })
                     },
                     {
-                        text: "MAC",
+                        text: __("MAC"),
                         dataIndex: "mac_discovery",
                         renderer: NOC.render.Bool,
                         width: 50
                     },
                     {
-                        text: "Description",
+                        text: __("Description"),
                         dataIndex: "description",
                         flex: 1
                     }
@@ -85,25 +85,25 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                     {
                         name: "name",
                         xtype: "textfield",
-                        fieldLabel: "Name",
+                        fieldLabel: __("Name"),
                         allowBlank: false
                     },
                     {
                         name: "description",
                         xtype: "textarea",
-                        fieldLabel: "Description",
+                        fieldLabel: __("Description"),
                         allowBlank: true
                     },
                     {
                         name: "style",
                         xtype: "main.style.LookupField",
-                        fieldLabel: "Style",
+                        fieldLabel: __("Style"),
                         allowBlank: true
                     },
                     {
                         name: "link_events",
                         xtype: "combobox",
-                        fieldLabel: "Link Events",
+                        fieldLabel: __("Link Events"),
                         allowBlank: false,
                         queryMode: "local",
                         displayField: "label",
@@ -124,7 +124,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                     {
                         name: "discovery_policy",
                         xtype: "combobox",
-                        fieldLabel: "Discovery Policy",
+                        fieldLabel: __("Discovery Policy"),
                         allowBlank: false,
                         queryMode: "local",
                         displayField: "label",
@@ -143,49 +143,49 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                     {
                         name: "weight",
                         xtype: "numberfield",
-                        fieldLabel: "Alarm Weight",
+                        fieldLabel: __("Alarm Weight"),
                         allowBlank: false,
                         uiStyle: "small"
                     },
                     {
                         name: "mac_discovery",
                         xtype: "checkbox",
-                        boxLabel: "MAC Discovery",
+                        boxLabel: __("MAC Discovery"),
                         allowBlank: true
                     },
                     {
                         name: "status_discovery",
                         xtype: "checkbox",
-                        boxLabel: "Status Discovery",
+                        boxLabel: __("Status Discovery"),
                         allowBlank: true
                     },
                     {
                         name: "status_change_notification",
                         xtype: "main.notificationgroup.LookupField",
-                        fieldLabel: "Status Change Notification",
+                        fieldLabel: __("Status Change Notification"),
                         allowBlank: true
                     },
                     {
                         name: "metrics",
                         xtype: "gridfield",
-                        fieldLabel: "Metrics",
+                        fieldLabel: __("Metrics"),
                         columns: [
                             {
-                                text: "Metric Type",
+                                text: __("Metric Type"),
                                 dataIndex: "metric_type",
                                 width: 150,
                                 editor: "pm.metrictype.LookupField",
                                 renderer: NOC.render.Lookup("metric_type")
                             },
                             {
-                                text: "Active",
+                                text: __("Active"),
                                 dataIndex: "is_active",
                                 width: 50,
                                 renderer: NOC.render.Bool,
                                 editor: "checkbox"
                             },
                             {
-                                text: "Low Error",
+                                text: __("Low Error"),
                                 dataIndex: "low_error",
                                 width: 60,
                                 editor: "textfield",
@@ -193,7 +193,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 renderer: NOC.render.Size
                             },
                             {
-                                text: "Low Warn",
+                                text: __("Low Warn"),
                                 dataIndex: "low_warn",
                                 width: 60,
                                 editor: "textfield",
@@ -201,7 +201,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 renderer: NOC.render.Size
                             },
                             {
-                                text: "High Warn",
+                                text: __("High Warn"),
                                 dataIndex: "high_warn",
                                 width: 60,
                                 editor: "textfield",
@@ -209,7 +209,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 renderer: NOC.render.Size
                             },
                             {
-                                text: "High Error",
+                                text: __("High Error"),
                                 dataIndex: "high_error",
                                 width: 60,
                                 editor: "textfield",

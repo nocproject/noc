@@ -32,7 +32,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
         });
 
         me.applyButton = Ext.create("Ext.button.Button", {
-            text: "Apply",
+            text: __("Apply"),
             tooltip: "Apply changes",
             glyph: NOC.glyph.save,
             disabled: true,
@@ -41,7 +41,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
         });
 
         me.resetButton = Ext.create("Ext.button.Button", {
-            text: "Reset",
+            text: __("Reset"),
             tooltip: "Reset changes",
             glyph: NOC.glyph.refresh,
             disabled: true,
@@ -58,7 +58,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
                     name: "name",
                     itemId: "name",
                     labelAlign: "top",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     width: 288
                 },
                 {
@@ -66,7 +66,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
                     name: "label",
                     itemId: "label",
                     labelAlign: "top",
-                    fieldLabel: "Label",
+                    fieldLabel: __("Label"),
                     width: 288
                 },
                 {
@@ -74,7 +74,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
                     name: "handler",
                     itemId: "handler",
                     labelAlign: "top",
-                    fieldLabel: "Handler",
+                    fieldLabel: __("Handler"),
                     forceSelection: true,
                     width: 288,
                     store: me.handlersStore,
@@ -97,7 +97,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
                     name: "description",
                     itemId: "description",
                     labelAlign: "top",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     width: 288
                 },
                 me.paramsGrid

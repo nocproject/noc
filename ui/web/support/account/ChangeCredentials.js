@@ -38,14 +38,14 @@ Ext.define("NOC.support.account.ChangeCredentials", {
                 {
                     xtype: "textfield",
                     name: "old_password",
-                    fieldLabel: "Old Password",
+                    fieldLabel: __("Old Password"),
                     allowBlank: false,
                     inputType: "password"
                 },
                 {
                     xtype: "textfield",
                     name: "new_password",
-                    fieldLabel: "New Password",
+                    fieldLabel: __("New Password"),
                     allowBlank: false,
                     inputType: "password",
                     minLength: me.minPasswordLength
@@ -53,7 +53,7 @@ Ext.define("NOC.support.account.ChangeCredentials", {
                 {
                     xtype: "textfield",
                     name: "new_password2",
-                    fieldLabel: "New Password (Retype)",
+                    fieldLabel: __("New Password (Retype)"),
                     allowBlank: false,
                     inputType: "password",
                     vtype: "password",
@@ -64,19 +64,19 @@ Ext.define("NOC.support.account.ChangeCredentials", {
             buttonAlign: "center",
             buttons: [
                 {
-                    text: "Close",
+                    text: __("Close"),
                     glyph: NOC.glyph.times,
                     scope: me,
                     handler: me.onClose
                 },
                 {
-                    text: "Reset",
+                    text: __("Reset"),
                     glyph: NOC.glyph.undo,
                     scope: me,
                     handler: me.onReset
                 },
                 {
-                    text: "Change",
+                    text: __("Change"),
                     glyph: NOC.glyph.save,
                     disabled: true,
                     formBind: true,

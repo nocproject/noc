@@ -15,7 +15,7 @@ Ext.define("NOC.main.jsonimport.Application", {
         var me = this;
 
         me.saveButton = Ext.create("Ext.button.Button", {
-            text: "Save",
+            text: __("Save"),
             glyph: NOC.glyph.save,
             scope: me,
             handler: me.onSave,

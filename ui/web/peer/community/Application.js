@@ -15,18 +15,18 @@ Ext.define("NOC.peer.community.Application", {
     search: true,
     columns: [
         {
-            text: "Community",
+            text: __("Community"),
             dataIndex: "community",
             flex: 1
         },
         {
-            text: "Type",  
+            text: __("Type"),  
             dataIndex: "type",
             renderer: NOC.render.Lookup("type"),
             flex: 1
         },
         {
-            text: "Description",  
+            text: __("Description"),  
             dataIndex: "description",
             flex: 1
         }
@@ -35,21 +35,21 @@ Ext.define("NOC.peer.community.Application", {
         {
             name: "community",
             xtype: "textfield",
-            fieldLabel: "Community",
+            fieldLabel: __("Community"),
             width: 400,
             allowBlank: false
         },
         {
             name: "type",
             xtype: "peer.communitytype.LookupField",
-            fieldLabel: "Type",
+            fieldLabel: __("Type"),
             width: 400,
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textfield",
-            fieldLabel: "Description",  
+            fieldLabel: __("Description"),  
             width: 400,
             allowBlank: false
         } 

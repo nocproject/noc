@@ -15,18 +15,18 @@ Ext.define("NOC.peer.peergroup.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             flex: 1
         },
 
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         },
         {
-            text: "Import Communities",
+            text: __("Import Communities"),
             dataIndex: "communities",
             flex: 1
         }
@@ -35,21 +35,21 @@ Ext.define("NOC.peer.peergroup.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false,
             width: 300
         },
         {
             name: "description",
             xtype: "textfield",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: false,
             width: 300
         },
         {
             name: "communities",
             xtype: "textfield",
-            fieldLabel: "Import Communities",
+            fieldLabel: __("Import Communities"),
             allowBlank: true,
             width: 300
         },
@@ -57,28 +57,28 @@ Ext.define("NOC.peer.peergroup.Application", {
             name: "max_prefixes",
             xtype: "textfield",
             maskRe: /\d/i,
-            fieldLabel: "Max. Prefixes",
+            fieldLabel: __("Max. Prefixes"),
             allowBlank: false
         },
         {
             name: "local_pref",
             xtype: "textfield",
             maskRe: /\d/i,
-            fieldLabel: "Local Pref",
+            fieldLabel: __("Local Pref"),
             allowBlank: true
         },
         {
             name: "import_med",
             xtype: "textfield",
             maskRe: /\d/i,
-            fieldLabel: "Import MED",
+            fieldLabel: __("Import MED"),
             allowBlank: true
         },
         {
             name: "export_med",
             xtype: "textfield",
             maskRe: /\d/i,
-            fieldLabel: "Export MED",
+            fieldLabel: __("Export MED"),
             allowBlank: true
         }
     ],

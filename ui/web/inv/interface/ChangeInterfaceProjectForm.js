@@ -38,14 +38,14 @@ Ext.define("NOC.inv.interface.ChangeInterfaceProjectForm", {
                         {
                             xtype: "project.project.LookupField",
                             name: "project",
-                            fieldLabel: "Project",
+                            fieldLabel: __("Project"),
                             allowBlank: true
                         }
                     ],
                     buttonAlign: "center",
                     buttons: [
                         {
-                            text: "Change",
+                            text: __("Change"),
                             glyph: NOC.glyph.check,
                             formBind: true,
                             scope: me,

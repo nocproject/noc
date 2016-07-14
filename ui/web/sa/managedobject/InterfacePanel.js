@@ -18,7 +18,7 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
         me.currentObject = null;
 
         me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.onRefresh

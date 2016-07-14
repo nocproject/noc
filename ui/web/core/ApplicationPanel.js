@@ -35,7 +35,7 @@ Ext.define("NOC.core.ApplicationPanel", {
     getCloseButton: function(cfg) {
         var me = this,
             opts = {
-                text: "Close",
+                text: __("Close"),
                 glyph: NOC.glyph.arrow_left,
                 scope: me,
                 handler: me.onClose

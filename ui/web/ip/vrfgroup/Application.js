@@ -15,12 +15,12 @@ Ext.define("NOC.ip.vrfgroup.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 150
         },
         {
-            text: "Constraint",
+            text: __("Constraint"),
             dataIndex: "address_constraint",
             width: 100,
             renderer: function(value) {
@@ -31,18 +31,18 @@ Ext.define("NOC.ip.vrfgroup.Application", {
             }
         },
         {
-            text: "VRFs",
+            text: __("VRFs"),
             dataIndex: "vrf_count",
             sortable: false,
             width: 50
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         },
         {
-            text: "Tags",
+            text: __("Tags"),
             dataIndex: "tags",
             renderer: "NOC.render.Tags"
         }
@@ -51,13 +51,13 @@ Ext.define("NOC.ip.vrfgroup.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "VRF Group",
+            fieldLabel: __("VRF Group"),
             allowBlank: false
         },
         {
             name: "address_constraint",
             xtype: "combobox",
-            fieldLabel: "Address Constraint",
+            fieldLabel: __("Address Constraint"),
             allowBlank: false,
             queryMode: "local",
             displayField: "label",
@@ -73,13 +73,13 @@ Ext.define("NOC.ip.vrfgroup.Application", {
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "tags",
             xtype: "tagsfield",
-            fieldLabel: "Tags",
+            fieldLabel: __("Tags"),
             allowBlank: true
         }
     ]

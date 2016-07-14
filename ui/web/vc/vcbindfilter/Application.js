@@ -17,33 +17,33 @@ Ext.define("NOC.vc.vcbindfilter.Application", {
     model: "NOC.vc.vcbindfilter.Model",
     columns: [
         {
-            text: "VC Domain",
+            text: __("VC Domain"),
             renderer: NOC.render.Lookup("vc_domain"),
             dataIndex: "vc_domain"
         },
         {
-            text: "VRF",
+            text: __("VRF"),
             dataIndex: "vrf",
             renderer: NOC.render.Lookup("vrf")
         },
         {
-            text: "AFI",
+            text: __("AFI"),
             dataIndex: "afi",
             renderer: function(v) {
                 return "IPv" + v;
             }
         },
         {
-            text: "Prefix",
+            text: __("Prefix"),
             dataIndex: "prefix"
         },
         {
-            text: "VC Filter",
+            text: __("VC Filter"),
             dataIndex: "vc_filter",
             renderer: NOC.render.Lookup("vc_filter")
         },
         {
-            text: "VC Filter Expression",
+            text: __("VC Filter Expression"),
             dataIndex: "vc_filter_expression",
             flex: 1
         }
@@ -52,32 +52,32 @@ Ext.define("NOC.vc.vcbindfilter.Application", {
         {
             name: "vc_domain",
             xtype: "vc.vcdomain.LookupField",
-            fieldLabel: "VC Domain",
+            fieldLabel: __("VC Domain"),
             allowBlank: false
         },
         {
             name: "vrf",
             xtype: "ip.vrf.LookupField",
-            fieldLabel: "VRF",
+            fieldLabel: __("VRF"),
             allowBlank: false
         },
         {
             name: "afi",
             xtype: "combobox",
-            fieldLabel: "Address Family",
+            fieldLabel: __("Address Family"),
             allowBlank: false,
             store: [["4", "IPv4"], ["6", "IPv6"]]
         },
         {
             name: "prefix",
             xtype: "textfield",
-            fieldLabel: "Prefix",
+            fieldLabel: __("Prefix"),
             allowBlank: false
         },
         {
             name: "vc_filter",
             xtype: "vc.vcfilter.LookupField",
-            fieldLabel: "VC Filter",
+            fieldLabel: __("VC Filter"),
             allowBlank: false
         }
     ],

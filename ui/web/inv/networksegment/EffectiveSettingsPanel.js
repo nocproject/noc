@@ -18,7 +18,7 @@ Ext.define("NOC.inv.networksegment.EffectiveSettingsPanel", {
         me.currentObject = null;
 
         me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.onRefresh
@@ -35,12 +35,12 @@ Ext.define("NOC.inv.networksegment.EffectiveSettingsPanel", {
             columns: [
                 {
                     dataIndex: "key",
-                    text: "Key",
+                    text: __("Key"),
                     width: 150
                 },
                 {
                     dataIndex: "value",
-                    text: "Value",
+                    text: __("Value"),
                     flex: 1
                 }
             ]

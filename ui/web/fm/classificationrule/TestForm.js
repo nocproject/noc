@@ -16,7 +16,7 @@ Ext.define("NOC.fm.classificationrule.TestForm", {
         me.dataField = Ext.create("Ext.form.field.TextArea", {
             name: "data",
             labelAlign: "top",
-            fieldLabel: "Event id or JSON code",
+            fieldLabel: __("Event id or JSON code"),
             width: 400,
             height: 200
         });
@@ -28,13 +28,13 @@ Ext.define("NOC.fm.classificationrule.TestForm", {
                     dock: "top",
                     items: [
                         {
-                            text: "Close",
+                            text: __("Close"),
                             glyph: NOC.glyph.arrow_left,
                             scope: me,
                             handler: me.onClose
                         },
                         {
-                            text: "Test",
+                            text: __("Test"),
                             glyph: NOC.glyph.question_circle,
                             scope: me,
                             handler: me.onTest

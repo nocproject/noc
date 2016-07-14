@@ -15,31 +15,31 @@ Ext.define("NOC.fm.alarmclassconfig.Application", {
     model: "NOC.fm.alarmclassconfig.Model",
     columns: [
         {
-            text: "Alarm Class",
+            text: __("Alarm Class"),
             dataIndex: "alarm_class",
             renderer: NOC.render.Lookup("alarm_class"),
             width: 200
         },
         {
-            text: "Notification Delay",
+            text: __("Notification Delay"),
             dataIndex: "notification_delay",
             width: 100,
             align: "right"
         },
         {
-            text: "Control Time 0",
+            text: __("Control Time 0"),
             dataIndex: "control_time0",
             width: 100,
             align: "right"
         },
         {
-            text: "Control Time 1",
+            text: __("Control Time 1"),
             dataIndex: "control_time1",
             width: 100,
             align: "right"
         },
         {
-            text: "Control Time N",
+            text: __("Control Time N"),
             dataIndex: "control_timeN",
             width: 100,
             align: "right"
@@ -49,34 +49,34 @@ Ext.define("NOC.fm.alarmclassconfig.Application", {
         {
             name: "alarm_class",
             xtype: "fm.alarmclass.LookupField",
-            fieldLabel: "Alarm Class",
+            fieldLabel: __("Alarm Class"),
             allowBlank: false
         },
         {
             name: "notification_delay",
             xtype: "numberfield",
-            fieldLabel: "Notification Delay (s)",
+            fieldLabel: __("Notification Delay (s)"),
             allowBlank: true,
             minValue: 0
         },
         {
             name: "control_time0",
             xtype: "numberfield",
-            fieldLabel: "Control time (no reopens)",
+            fieldLabel: __("Control time (no reopens)"),
             allowBlank: true,
             minValue: 0
         },
         {
             name: "control_time1",
             xtype: "numberfield",
-            fieldLabel: "Control time (1 reopen)",
+            fieldLabel: __("Control time (1 reopen)"),
             allowBlank: true,
             minValue: 0
         },
         {
             name: "control_timeN",
             xtype: "numberfield",
-            fieldLabel: "Control time (multiple reopens)",
+            fieldLabel: __("Control time (multiple reopens)"),
             allowBlank: true,
             minValue: 0
         }

@@ -18,34 +18,34 @@ Ext.define("NOC.wf.workflow.Application", {
     model: "NOC.wf.workflow.Model",
     columns: [
         {
-            text: "Solution",
+            text: __("Solution"),
             dataIndex: "solution",
             renderer: NOC.render.Lookup("solution"),
             width: 150
         },
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 100
         },
         {
-            text: "Display Name",
+            text: __("Display Name"),
             dataIndex: "display_name",
             width: 150
         },
         {
-            text: "Version",
+            text: __("Version"),
             dataIndex: "version",
             width: 70
         },
         {
-            text: "Act",
+            text: __("Act"),
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
             width: 50
         },
         {
-            text: "Trace",
+            text: __("Trace"),
             dataIndex: "trace",
             renderer: NOC.render.Bool,
             width: 50
@@ -54,21 +54,21 @@ Ext.define("NOC.wf.workflow.Application", {
     fields: [
         {
             name: "solution",
-            fieldLabel: "Solution",
+            fieldLabel: __("Solution"),
             xtype: "wf.solution.LookupField",
             allowBlank: false,
             anchor: "100%"
         },
         {
             name: "name",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             xtype: "textfield",
             allowBlank: false,
             anchor: "100%"
         },
         {
             name: "display_name",
-            fieldLabel: "Display Name",
+            fieldLabel: __("Display Name"),
             xtype: "textfield",
             allowBlank: false,
             anchor: "100%"
@@ -76,26 +76,26 @@ Ext.define("NOC.wf.workflow.Application", {
         {
             name: "version",
             xtype: "numberfield",
-            fieldLabel: "Version",
+            fieldLabel: __("Version"),
             allowBlank: false,
             defaultValue: 1
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Active"
+            boxLabel: __("Active")
         },
         {
             name: "description",
             xtype: "textarea",
             allowBlank: true,
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             anchor: "100%"
         },
         {
             name: "trace",
             xtype: "checkboxfield",
-            boxLabel: "Trace"
+            boxLabel: __("Trace")
         }
     ],
     inlines: [
@@ -104,32 +104,32 @@ Ext.define("NOC.wf.workflow.Application", {
             model: "NOC.wf.workflow.VariablesModel",
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 100,
                     editor: "textfield"
                 },
                 {
-                    text: "Type",
+                    text: __("Type"),
                     dataIndex: "type",
                     width: 100,
                     editor: "textfield"
                 },
                 {
-                    text: "Req",
+                    text: __("Req"),
                     dataIndex: "required",
                     width: 50,
                     renderer: NOC.render.Bool,
                     editor: "checkboxfield"
                 },
                 {
-                    text: "Default",
+                    text: __("Default"),
                     dataIndex: "default",
                     width: 200,
                     editor: "textfield"
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1,
                     editor: "textfield"
@@ -141,13 +141,13 @@ Ext.define("NOC.wf.workflow.Application", {
             model: "NOC.wf.workflow.LanesModel",
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200,
                     editor: "textfield"
                 },
                 {
-                    text: "Act",
+                    text: __("Act"),
                     dataIndex: "is_active",
                     width: 50,
                     renderer: NOC.render.Bool,
@@ -163,7 +163,7 @@ Ext.define("NOC.wf.workflow.Application", {
             formToolbar: [
                 {
                     itemId: "wfedit",
-                    text: "WF Editor",
+                    text: __("WF Editor"),
                     glyph: NOC.glyph.pencil,
                     tooltip: "Workflow Editor",
                     scope: me,

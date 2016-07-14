@@ -18,7 +18,7 @@ Ext.define("NOC.project.project.ProjectResources", {
         var me = this;
 
         me.closeButton = Ext.create("Ext.button.Button", {
-            text: "Close",
+            text: __("Close"),
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.onClose

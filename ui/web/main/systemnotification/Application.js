@@ -16,12 +16,12 @@ Ext.define("NOC.main.systemnotification.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             flex: 1
         },
         {
-            text: "Notification Group",
+            text: __("Notification Group"),
             dataIndex: "notification_group",
             renderer: NOC.render.Lookup("notification_group"),
             flex: 1
@@ -31,7 +31,7 @@ Ext.define("NOC.main.systemnotification.Application", {
         {
             name: "name",
             xtype: "combobox",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             width: 400,
             allowBlank: false,
             store: [
@@ -45,7 +45,7 @@ Ext.define("NOC.main.systemnotification.Application", {
         {
             name: "notification_group",
             xtype: "main.notificationgroup.LookupField",
-            fieldLabel: "Notification Group",
+            fieldLabel: __("Notification Group"),
             width: 400,
             allowBlank: true
         }

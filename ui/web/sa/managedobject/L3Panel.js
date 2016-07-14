@@ -27,42 +27,42 @@ Ext.define("NOC.sa.managedobject.L3Panel", {
                     store: me.store,
                     columns: [
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name"
                         },
                         {
-                            text: "VRF",
+                            text: __("VRF"),
                             dataIndex: "vrf"
                         },
                         {
-                            text: "IP",
+                            text: __("IP"),
                             dataIndex: "ip"
                         },
                         {
-                            text: "IPv4",
+                            text: __("IPv4"),
                             dataIndex: "ipv4_addresses",
                             hidden: true
                         },
                         {
-                            text: "IPv6",
+                            text: __("IPv6"),
                             dataIndex: "ipv6_addresses",
                             hidden: true
                         },
                         {
-                            text: "Protocols",
+                            text: __("Protocols"),
                             dataIndex: "enabled_protocols"
                         },
                         {
-                            text: "VLAN",
+                            text: __("VLAN"),
                             dataIndex: "vlan"
                         },
                         {
-                            text: "MAC",
+                            text: __("MAC"),
                             dataIndex: "mac",
                             width: 120
                         },
                         {
-                            text: "Description",
+                            text: __("Description"),
                             dataIndex: "description",
                             flex: 1
                         }

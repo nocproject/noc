@@ -29,19 +29,19 @@ Ext.define("NOC.inv.capability.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Builtin",
+                    text: __("Builtin"),
                     dataIndex: "is_builtin",
                     renderer: NOC.render.Bool,
                     width: 50,
                     sortable: false
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -51,24 +51,24 @@ Ext.define("NOC.inv.capability.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "type",
                     xtype: "combobox",
-                    fieldLabel: "Type",
+                    fieldLabel: __("Type"),
                     store: [
                         ["bool", "Boolean"],
                         ["str", "String"],
@@ -79,14 +79,14 @@ Ext.define("NOC.inv.capability.Application", {
                 {
                     name: "card_template",
                     xtype: "textfield",
-                    fieldLabel: "Card Template",
+                    fieldLabel: __("Card Template"),
                     allowBlank: true
                 }
             ],
 
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),
