@@ -8,7 +8,7 @@ console.debug("Defining NOC.main.style.LookupField");
 
 Ext.define("NOC.main.style.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.style.LookupField"
+    alias: "widget.main.style.LookupField",
 
     initComponent: function() {
         var me = this;
