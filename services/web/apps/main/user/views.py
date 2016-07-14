@@ -12,11 +12,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 ## NOC modules
 from noc.lib.app import ModelApplication, view
 from noc.main.models.permission import Permission
 from widgets import AccessWidget
+from noc.core.translation import ugettext as _
 
 
 class UserChangeForm(forms.ModelForm):

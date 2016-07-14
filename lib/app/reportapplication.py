@@ -5,7 +5,10 @@
 ## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from application import *
+
+# NOC modules
+from application import Application, view
+from noc.core.translation import ugettext as _
 
 
 class ReportApplication(Application):
@@ -49,7 +52,7 @@ class ReportApplication(Application):
         pass
 
     def get_menu(self):
-        return "Reports | " + unicode(self.title)
+        return [_("Reports"), unicode(self.title)]
 
     @view(url=r"^$", url_name="view", access="view", menu=get_menu)
     def view_report(self, request, format="html"):

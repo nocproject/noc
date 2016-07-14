@@ -9,7 +9,7 @@
 ## Django modules
 from django.db.models import Count
 ## NOC modules
-from noc.lib.app.application import Application, view
+from noc.lib.app.application import Application, view, HasPerm
 from noc.sa.models.reducetask import ReduceTask
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.managedobject import ManagedObject

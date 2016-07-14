@@ -341,7 +341,11 @@ class Site(object):
             self.add_module_menu(app.get_app_id().split(".")[0])
         root = self.menu[-1]
         path = [app.module]
-        parts = [x.strip() for x in unicode(app.menu).split("|")]
+        if isinstance(app.menu, six.string_types):
+            parts = app.menu.split("|")
+        else:
+            parts = app.menu
+        parts = [x.strip() for x in parts]
         while len(parts) > 1:
             p = parts.pop(0)
             path += [p]
@@ -440,7 +444,8 @@ class Site(object):
             c.set_app(app)
 
     def add_module_menu(self, m):
-        mod_name = __import__(m, {}, {}, ["MODULE_NAME"]).MODULE_NAME
+        mn = "noc.services.web.apps.%s" % m[4:]  # Strip noc.
+        mod_name = __import__(mn, {}, {}, ["MODULE_NAME"]).MODULE_NAME
         r = {"title": mod_name, "children": []}
         self.set_menu_id(r, [m])
         self.menu += [r]

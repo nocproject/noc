@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-14 00:19+0300\n"
+"POT-Creation-Date: 2016-07-14 09:58+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
+
+#: services/web/apps/cm/__init__.py:12
+msgid "Configuration Management"
+msgstr ""
 
 #: services/web/apps/cm/errortype/views.py:19
 msgid "Error Type"
@@ -71,6 +75,10 @@ msgstr ""
 msgid "Validation Rules"
 msgstr ""
 
+#: services/web/apps/crm/__init__.py:12
+msgid "CRM"
+msgstr ""
+
 #: services/web/apps/crm/subscriber/views.py:19
 msgid "Subscriber"
 msgstr ""
@@ -100,12 +108,16 @@ msgstr ""
 msgid "Supplier Profiles"
 msgstr ""
 
+#: services/web/apps/dns/__init__.py:12
+msgid "DNS"
+msgstr ""
+
 #: services/web/apps/dns/dnsserver/views.py:19
 msgid "DNS Server"
 msgstr ""
 
 #: services/web/apps/dns/dnsserver/views.py:20
-msgid "Setup | DNS Servers"
+msgid "DNS Servers"
 msgstr ""
 
 #: services/web/apps/dns/dnszone/views.py:22
@@ -117,11 +129,8 @@ msgid "Zones"
 msgstr ""
 
 #: services/web/apps/dns/dnszoneprofile/views.py:19
-msgid "Zone Profiles"
-msgstr ""
-
 #: services/web/apps/dns/dnszoneprofile/views.py:20
-msgid "Setup | Zone Profiles"
+msgid "Zone Profiles"
 msgstr ""
 
 #: services/web/apps/dns/reportduplicatedfqdns/views.py:16
@@ -154,6 +163,10 @@ msgstr ""
 
 #: services/web/apps/dns/reportnszonesummary/views.py:14
 msgid "NS Zone Summary"
+msgstr ""
+
+#: services/web/apps/fm/__init__.py:12
+msgid "Fault Management"
 msgstr ""
 
 #: services/web/apps/fm/alarm/views.py:37
@@ -400,6 +413,10 @@ msgstr ""
 msgid "TT System"
 msgstr ""
 
+#: services/web/apps/gis/__init__.py:12
+msgid "GIS"
+msgstr ""
+
 #: services/web/apps/gis/area/views.py:19
 msgid "Area"
 msgstr ""
@@ -443,6 +460,11 @@ msgstr ""
 
 #: services/web/apps/gis/street/views.py:21
 msgid "Streets"
+msgstr ""
+
+#: services/web/apps/inv/__init__.py:13 services/web/apps/inv/inv/views.py:26
+#: services/web/apps/inv/inv/views.py:27
+msgid "Inventory"
 msgstr ""
 
 #: services/web/apps/inv/capability/views.py:20
@@ -499,10 +521,6 @@ msgstr ""
 msgid "Interface Profiles"
 msgstr ""
 
-#: services/web/apps/inv/inv/views.py:26 services/web/apps/inv/inv/views.py:27
-msgid "Inventory"
-msgstr ""
-
 #: services/web/apps/inv/macdb/views.py:26
 msgid "MacDB"
 msgstr ""
@@ -536,7 +554,7 @@ msgid "Monitor"
 msgstr ""
 
 #: services/web/apps/inv/networksegment/views.py:20
-msgid "NetworkSegment"
+msgid "Network Segment"
 msgstr ""
 
 #: services/web/apps/inv/networksegment/views.py:21
@@ -584,15 +602,15 @@ msgstr ""
 msgid "Part Numbers"
 msgstr ""
 
-#: services/web/apps/inv/reportunknownsummary/views.py:15
+#: services/web/apps/inv/reportunknownsummary/views.py:16
 msgid "Unknown Models Summary"
 msgstr ""
 
-#: services/web/apps/inv/technology/views.py:18
+#: services/web/apps/inv/technology/views.py:19
 msgid "Technology"
 msgstr ""
 
-#: services/web/apps/inv/technology/views.py:19
+#: services/web/apps/inv/technology/views.py:20
 msgid "Technologies"
 msgstr ""
 
@@ -613,7 +631,11 @@ msgstr ""
 msgid "Vendors"
 msgstr ""
 
-#: services/web/apps/ip/addressrange/views.py:20
+#: services/web/apps/ip/__init__.py:13
+msgid "IPAM"
+msgstr ""
+
+#: services/web/apps/ip/addressrange/views.py:22
 msgid "Address Ranges"
 msgstr ""
 
@@ -691,11 +713,6 @@ msgstr ""
 #: services/web/apps/ip/ipam/views.py:485
 #: services/web/apps/ip/ipam/views.py:678
 msgid "Enable IP Discovery"
-msgstr ""
-
-#: services/web/apps/ip/ipam/views.py:505
-#: services/web/apps/ip/ipam/views.py:874
-msgid "Permission denied"
 msgstr ""
 
 #: services/web/apps/ip/ipam/views.py:520
@@ -806,6 +823,10 @@ msgid "Prefix %(old_prefix)s is rebased to %(new_prefix)s"
 msgstr ""
 
 #: services/web/apps/ip/ippool/views.py:21
+msgid "IP Pool"
+msgstr ""
+
+#: services/web/apps/ip/ippool/views.py:22
 msgid "IP Pools"
 msgstr ""
 
@@ -849,7 +870,7 @@ msgstr ""
 #: services/web/apps/ip/reportfilter/views.py:26
 #: services/web/apps/ip/reportfree/views.py:20
 #: services/web/apps/ip/reportsummary/views.py:23
-#: services/web/apps/ip/vrf/views.py:22
+#: services/web/apps/ip/vrf/views.py:21 services/web/apps/ip/vrf/views.py:22
 msgid "VRF"
 msgstr ""
 
@@ -934,10 +955,11 @@ msgstr ""
 msgid "Tools"
 msgstr ""
 
+#: services/web/apps/ip/ipam/views.py:505
+#: services/web/apps/ip/ipam/views.py:874
 #: services/web/apps/ip/tools/views.py:40
 #: services/web/apps/ip/tools/views.py:61
-#: services/web/apps/ip/tools/views.py:118
-msgid "Permission denined"
+msgid "Permission denied"
 msgstr ""
 
 #: services/web/apps/ip/tools/views.py:73
@@ -964,6 +986,10 @@ msgstr ""
 msgid "Source address to issue zone transfer"
 msgstr ""
 
+#: services/web/apps/ip/tools/views.py:118
+msgid "Permission denined"
+msgstr ""
+
 #: services/web/apps/ip/tools/views.py:130
 #, python-format
 msgid "%(count)s IP addresses uploaded via zone transfer"
@@ -972,6 +998,14 @@ msgstr ""
 #: services/web/apps/ip/vrfgroup/views.py:19
 #: services/web/apps/ip/vrfgroup/views.py:20
 msgid "VRF Groups"
+msgstr ""
+
+#: services/web/apps/kb/__init__.py:13
+msgid "Knowledge Base"
+msgstr ""
+
+#: services/web/apps/main/__init__.py:11
+msgid "Main"
 msgstr ""
 
 #: services/web/apps/main/audittrail/views.py:19
@@ -1173,8 +1207,8 @@ msgstr ""
 msgid "System Templates"
 msgstr ""
 
-#: services/web/apps/main/template/views.py:18
 #: services/web/apps/main/template/views.py:19
+#: services/web/apps/main/template/views.py:20
 msgid "Templates"
 msgstr ""
 
@@ -1247,6 +1281,7 @@ msgstr ""
 msgid "Welcome"
 msgstr ""
 
+#: services/web/apps/maintainance/__init__.py:12
 #: services/web/apps/maintainance/maintainance/views.py:19
 #: services/web/apps/maintainance/maintainance/views.py:20
 msgid "Maintainance"
@@ -1258,6 +1293,10 @@ msgstr ""
 
 #: services/web/apps/maintainance/maintainancetype/views.py:20
 msgid "Maintainance Types"
+msgstr ""
+
+#: services/web/apps/peer/__init__.py:13
+msgid "Peering Management"
 msgstr ""
 
 #: services/web/apps/peer/asset/views.py:21
@@ -1302,6 +1341,8 @@ msgstr ""
 #: services/web/apps/crm/subscriberprofile/views.py:20
 #: services/web/apps/crm/supplier/views.py:20
 #: services/web/apps/crm/supplierprofile/views.py:20
+#: services/web/apps/dns/dnsserver/views.py:20
+#: services/web/apps/dns/dnszoneprofile/views.py:20
 #: services/web/apps/fm/alarmclass/views.py:21
 #: services/web/apps/fm/alarmclassconfig/views.py:20
 #: services/web/apps/fm/alarmescalation/views.py:20
@@ -1333,10 +1374,10 @@ msgstr ""
 #: services/web/apps/inv/modelmapping/views.py:20
 #: services/web/apps/inv/networksegment/views.py:21
 #: services/web/apps/inv/objectmodel/views.py:24
-#: services/web/apps/inv/technology/views.py:19
+#: services/web/apps/inv/technology/views.py:20
 #: services/web/apps/inv/vendor/views.py:21
-#: services/web/apps/ip/addressrange/views.py:20
-#: services/web/apps/ip/ippool/views.py:21
+#: services/web/apps/ip/addressrange/views.py:22
+#: services/web/apps/ip/ippool/views.py:22
 #: services/web/apps/ip/prefixaccess/views.py:20
 #: services/web/apps/ip/routeimport/views.py:72
 #: services/web/apps/ip/vrfgroup/views.py:20
@@ -1358,7 +1399,7 @@ msgstr ""
 #: services/web/apps/main/sync/views.py:26
 #: services/web/apps/main/systemnotification/views.py:20
 #: services/web/apps/main/systemtemplate/views.py:20
-#: services/web/apps/main/template/views.py:19
+#: services/web/apps/main/template/views.py:20
 #: services/web/apps/main/timepattern/views.py:25
 #: services/web/apps/main/user/views.py:74
 #: services/web/apps/maintainance/maintainancetype/views.py:20
@@ -1422,6 +1463,10 @@ msgstr ""
 msgid "RIRs"
 msgstr ""
 
+#: services/web/apps/pm/__init__.py:12
+msgid "Performance Management"
+msgstr ""
+
 #: services/web/apps/pm/ddash/views.py:20
 msgid "Dynamic Dashboard"
 msgstr ""
@@ -1432,6 +1477,10 @@ msgstr ""
 
 #: services/web/apps/pm/metrictype/views.py:21
 msgid "Metric Types"
+msgstr ""
+
+#: services/web/apps/project/__init__.py:12
+msgid "Project Management"
 msgstr ""
 
 #: services/web/apps/ip/ipam/views.py:453
@@ -1446,6 +1495,10 @@ msgstr ""
 
 #: services/web/apps/project/project/views.py:23
 msgid "Projects"
+msgstr ""
+
+#: services/web/apps/sa/__init__.py:12
+msgid "Service Activation"
 msgstr ""
 
 #: services/web/apps/sa/action/views.py:19
@@ -1658,6 +1711,10 @@ msgstr ""
 msgid "Version Inventory"
 msgstr ""
 
+#: services/web/apps/support/__init__.py:12
+msgid "Support"
+msgstr ""
+
 #: services/web/apps/support/account/views.py:20
 #: services/web/apps/support/account/views.py:21
 msgid "Account"
@@ -1666,6 +1723,10 @@ msgstr ""
 #: services/web/apps/support/crashinfo/views.py:21
 #: services/web/apps/support/crashinfo/views.py:22
 msgid "Crashinfo"
+msgstr ""
+
+#: services/web/apps/vc/__init__.py:11
+msgid "VC Management"
 msgstr ""
 
 #: services/web/apps/ip/ipam/views.py:650 services/web/apps/vc/vc/views.py:27
@@ -1682,7 +1743,7 @@ msgid "VC Bind Filters"
 msgstr ""
 
 #: services/web/apps/vc/vcdomain/views.py:19
-msgid "VCDomain"
+msgid "VC Domain"
 msgstr ""
 
 #: services/web/apps/vc/vcdomain/views.py:20
@@ -1698,7 +1759,7 @@ msgid "VC Filters"
 msgstr ""
 
 #: services/web/apps/vc/vctype/views.py:19
-msgid "VCType"
+msgid "VC Type"
 msgstr ""
 
 #: services/web/apps/vc/vctype/views.py:20
