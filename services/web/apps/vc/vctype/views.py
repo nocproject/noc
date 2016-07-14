@@ -16,7 +16,7 @@ class VCTypeApplication(ExtModelApplication):
     """
     VCType application
     """
-    title = _("VCType")
+    title = _("VC Type")
     menu = [_("Setup"), _("VC Types")]
     model = VCType
     query_fields = ["name"]

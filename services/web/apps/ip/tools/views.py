@@ -37,7 +37,7 @@ class ToolsAppplication(Application):
         vrf=self.get_object_or_404(VRF,id=int(vrf_id))
         prefix=self.get_object_or_404(Prefix,vrf=vrf,afi=afi,prefix=prefix)
         if not prefix.can_change(request.user):
-            return self.response_forbidden(_("Permission denined"))
+            return self.response_forbidden(_("Permission denied"))
         return self.render(request,"index.html",vrf=vrf,afi=afi,prefix=prefix,
             upload_ips_axfr_form=self.AXFRForm())
     
@@ -58,7 +58,7 @@ class ToolsAppplication(Application):
         vrf=self.get_object_or_404(VRF,id=int(vrf_id))
         prefix=self.get_object_or_404(Prefix,vrf=vrf,afi=afi,prefix=prefix)
         if not prefix.can_change(request.user):
-            return self.response_forbidden(_("Permission denined"))
+            return self.response_forbidden(_("Permission denied"))
         out=cStringIO.StringIO()
         writer=csv.writer(out)
         writer.writerow(["address","fqdn","mac","description","tt","tags"])

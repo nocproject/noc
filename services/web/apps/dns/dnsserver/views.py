@@ -17,5 +17,5 @@ class DNSServerApplication(ExtModelApplication):
     DNSServer application
     """
     title = _("DNS Server")
-    menu = _("Setup | DNS Servers")
+    menu = [_("Setup"), _("DNS Servers")]
     model = DNSServer
