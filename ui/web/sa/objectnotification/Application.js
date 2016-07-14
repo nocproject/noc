@@ -16,73 +16,73 @@ Ext.define("NOC.sa.objectnotification.Application", {
     model: "NOC.sa.objectnotification.Model",
     columns: [
         {
-            text: "Selector",
+            text: __("Selector"),
             dataIndex: "selector",
             renderer: NOC.render.Lookup("selector"),
             width: 200
         },
         {
-            text: "Notification",
+            text: __("Notification"),
             dataIndex: "notification_group",
             renderer: NOC.render.Lookup("notification_group"),
             width: 200
         },
         {
-            text: "Config Changed",
+            text: __("Config Changed"),
             dataIndex: "config_changed",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Alarm Risen",
+            text: __("Alarm Risen"),
             dataIndex: "alarm_risen",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Alarm Reopened",
+            text: __("Alarm Reopened"),
             dataIndex: "alarm_reopened",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Alarm Cleared",
+            text: __("Alarm Cleared"),
             dataIndex: "alarm_cleared",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Alarm Commented",
+            text: __("Alarm Commented"),
             dataIndex: "alarm_commented",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "New",
+            text: __("New"),
             dataIndex: "new",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Deleted",
+            text: __("Deleted"),
             dataIndex: "deleted",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Version Changed",
+            text: __("Version Changed"),
             dataIndex: "version_changed",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Script Failed",
+            text: __("Script Failed"),
             dataIndex: "script_failed",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Config Policy Violation",
+            text: __("Config Policy Violation"),
             dataIndex: "config_policy_violation",
             width: 50,
             renderer: NOC.render.Bool
@@ -92,69 +92,69 @@ Ext.define("NOC.sa.objectnotification.Application", {
         {
             name: "selector",
             xtype: "sa.managedobjectselector.LookupField",
-            fieldLabel: "Selector",
+            fieldLabel: __("Selector"),
             allowBlank: false
         },
         {
             name: "notification_group",
             xtype: "main.notificationgroup.LookupField",
-            fieldLabel: "Notification Group",
+            fieldLabel: __("Notification Group"),
             allowBlank: false
         },
         {
             name: "config_changed",
             xtype: "checkboxfield",
-            boxLabel: "Config changed"
+            boxLabel: __("Config changed")
         },
         {
             name: "alarm_risen",
             xtype: "checkboxfield",
-            boxLabel: "Alarm risen"
+            boxLabel: __("Alarm risen")
         },
         {
             name: "alarm_reopened",
             xtype: "checkboxfield",
-            boxLabel: "Alarm reopened"
+            boxLabel: __("Alarm reopened")
         },
         {
             name: "alarm_cleared",
             xtype: "checkboxfield",
-            boxLabel: "Alarm cleared"
+            boxLabel: __("Alarm cleared")
         },
         {
             name: "alarm_commented",
             xtype: "checkboxfield",
-            boxLabel: "Alarm commented"
+            boxLabel: __("Alarm commented")
         },
         {
             name: "new",
             xtype: "checkboxfield",
-            boxLabel: "New"
+            boxLabel: __("New")
         },
         {
             name: "deleted",
             xtype: "checkboxfield",
-            boxLabel: "Deleted"
+            boxLabel: __("Deleted")
         },
         {
             name: "version_changed",
             xtype: "checkboxfield",
-            boxLabel: "Version changed"
+            boxLabel: __("Version changed")
         },
         {
             name: "interface_changed",
             xtype: "checkboxfield",
-            boxLabel: "Interface changed"
+            boxLabel: __("Interface changed")
         },
         {
             name: "script_failed",
             xtype: "checkboxfield",
-            boxLabel: "Script failed"
+            boxLabel: __("Script failed")
         },
         {
             name: "config_policy_violation",
             xtype: "checkboxfield",
-            boxLabel: "Config policy violation"
+            boxLabel: __("Config policy violation")
         }
     ]
 });

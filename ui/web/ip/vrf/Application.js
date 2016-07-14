@@ -20,48 +20,48 @@ Ext.define("NOC.ip.vrf.Application", {
     rowClassField: "row_class",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "State",
+            text: __("State"),
             dataIndex: "state",
             renderer: NOC.render.Lookup("state")
         },
         {
-            text: "Group",
+            text: __("Group"),
             dataIndex: "vrf_group",
             renderer: NOC.render.Lookup("vrf_group")
         },
         {
-            text: "Project",
+            text: __("Project"),
             dataIndex: "project",
             renderer: NOC.render.Lookup("project")
         },
         {
-            text: "RD",
+            text: __("RD"),
             dataIndex: "rd",
             width: 100
         },
         {
-            text: "IPv4",
+            text: __("IPv4"),
             dataIndex: "afi_ipv4",
             renderer: NOC.render.Bool,
             width: 50
         },
         {
-            text: "IPv6",
+            text: __("IPv6"),
             dataIndex: "afi_ipv6",
             renderer: NOC.render.Bool,
             width: 50
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         },
         {
-            text: "Tags",
+            text: __("Tags"),
             dataIndex: "tags",
             renderer: NOC.render.Tags
         }
@@ -70,74 +70,74 @@ Ext.define("NOC.ip.vrf.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "VRF",
+            fieldLabel: __("VRF"),
             allowBlank: false
         },
         {
             name: "state",
             xtype: "main.resourcestate.LookupField",
-            fieldLabel: "State",
+            fieldLabel: __("State"),
             allowBlank: false
         },
         {
             name: "vrf_group",
             xtype: "ip.vrfgroup.LookupField",
-            fieldLabel: "VRF Group",
+            fieldLabel: __("VRF Group"),
             allowBlank: false
         },
         {
             name: "project",
             xtype: "project.project.LookupField",
-            fieldLabel: "Project",
+            fieldLabel: __("Project"),
             allowBlank: true
         },
         {
             name: "rd",
             xtype: "textfield",
-            fieldLabel: "RD",
+            fieldLabel: __("RD"),
             allowBlank: false
         },
         {
             name: "afi_ipv4",
             xtype: "checkboxfield",
-            boxLabel: "IPv4",
+            boxLabel: __("IPv4"),
             allowBlank: false
         },
         {
             name: "afi_ipv6",
             xtype: "checkboxfield",
-            boxLabel: "IPv6",
+            boxLabel: __("IPv6"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "tt",
             xtype: "textfield",
             regexText: /^\d*$/,
-            fieldLabel: "TT",
+            fieldLabel: __("TT"),
             allowBlank: true
         },
         {
             name: "tags",
             xtype: "tagsfield",
-            fieldLabel: "Tags",
+            fieldLabel: __("Tags"),
             allowBlank: true
         },
         {
             name: "style",
             xtype: "main.style.LookupField",
-            fieldLabel: "Style",
+            fieldLabel: __("Style"),
             allowBlank: true
         },
         {
             name: "allocated_till",
             xtype: "datefield",
-            fieldLabel: "Allocated till",
+            fieldLabel: __("Allocated till"),
             allowBlank: true
         }
     ],
@@ -179,7 +179,7 @@ Ext.define("NOC.ip.vrf.Application", {
             gridToolbar: [
                 {
                     "itemId": "import",
-                    text: "Import",
+                    text: __("Import"),
                     glyph: NOC.glyph.level_down,
                     tooltip: "Import VRFs",
                     checkAccess: NOC.hasPermission("import"),
@@ -188,7 +188,7 @@ Ext.define("NOC.ip.vrf.Application", {
                         plain: true,
                         items: [
                             {
-                                text: "From Router",
+                                text: __("From Router"),
                                 itemId: "from_router",
                                 glyph: NOC.glyph.level_down
                             }

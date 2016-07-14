@@ -21,10 +21,10 @@ Ext.define("NOC.fm.mib.MIBUpload", {
             me.uploadFiles.push(
                 Ext.create("Ext.form.field.File", {
                     name: "mib_" + i,
-                    fieldLabel: "MIB #" + i,
+                    fieldLabel: __("MIB #") + i,
                     labelWidth: 50,
                     width: 400,
-                    buttonText: "Select MIB..."
+                    buttontext: __("Select MIB...")
                 })
             );
         }
@@ -36,7 +36,7 @@ Ext.define("NOC.fm.mib.MIBUpload", {
                     dock: "bottom",
                     items: [
                         {
-                            text: "Upload",
+                            text: __("Upload"),
                             glyph: NOC.glyph.upload,
                             scope: me,
                             handler: me.onUpload

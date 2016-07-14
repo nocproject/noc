@@ -21,22 +21,22 @@ Ext.define("NOC.main.audittrail.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Timestamp",
+                    text: __("Timestamp"),
                     dataIndex: "timestamp",
                     width: 160
                 },
                 {
-                    text: "User",
+                    text: __("User"),
                     dataIndex: "user",
                     width: 100
                 },
                 {
-                    text: "Model",
+                    text: __("Model"),
                     dataIndex: "model_id",
                     width: 150
                 },
                 {
-                    text: "Operation",
+                    text: __("Operation"),
                     dataIndex: "op",
                     flex: 1,
                     renderer: NOC.render.Choices({
@@ -50,39 +50,39 @@ Ext.define("NOC.main.audittrail.Application", {
                 {
                     name: "timestamp",
                     xtype: "displayfield",
-                    fieldLabel: "Timestamp"
+                    fieldLabel: __("Timestamp")
                 },
                 {
                     name: "user",
                     xtype: "displayfield",
-                    fieldLabel: "User"
+                    fieldLabel: __("User")
                 },
                 {
                     name: "model_id",
                     xtype: "displayfield",
-                    fieldLabel: "Model"
+                    fieldLabel: __("Model")
                 },
                 {
                     name: "op",
                     xtype: "displayfield",
-                    fieldLabel: "Operation"
+                    fieldLabel: __("Operation")
                 },
                 {
                     name: "changes",
                     xtype: "displayfield",
-                    fieldLabel: "Changes",
+                    fieldLabel: __("Changes"),
                     renderer: NOC.render.Table({
                         columns: [
                             {
-                                text: "Field",
+                                text: __("Field"),
                                 dataIndex: "field"
                             },
                             {
-                                text: "Old",
+                                text: __("Old"),
                                 dataIndex: "old"
                             },
                             {
-                                text: "New",
+                                text: __("New"),
                                 dataIndex: "new"
                             }
                         ]

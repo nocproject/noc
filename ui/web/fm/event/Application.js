@@ -40,7 +40,7 @@ Ext.define("NOC.fm.event.Application", {
         });
 
         me.typeCombo = Ext.create("Ext.form.ComboBox", {
-            fieldLabel: "State",
+            fieldLabel: __("State"),
             labelWidth: 30,
             queryMode: "local",
             displayField: "name",
@@ -65,7 +65,7 @@ Ext.define("NOC.fm.event.Application", {
         });
 
         me.objectCombo = Ext.create("NOC.sa.managedobject.LookupField", {
-            fieldLabel: "Object",
+            fieldLabel: __("Object"),
             labelWidth: 40,
             width: 200,
             listeners: {
@@ -76,7 +76,7 @@ Ext.define("NOC.fm.event.Application", {
         });
 
         me.selectorCombo = Ext.create("NOC.sa.managedobjectselector.LookupField", {
-            fieldLabel: "Selector",
+            fieldLabel: __("Selector"),
             labelWidth: 40,
             width: 200,
             listeners: {
@@ -87,7 +87,7 @@ Ext.define("NOC.fm.event.Application", {
         });
 
         me.admdomCombo = Ext.create("NOC.sa.administrativedomain.LookupField", {
-            fieldLabel: "Adm. Domain",
+            fieldLabel: __("Adm. Domain"),
             labelWidth: 40,
             width: 200,
             listeners: {
@@ -98,7 +98,7 @@ Ext.define("NOC.fm.event.Application", {
         });
 
         me.eventClassCombo = Ext.create("NOC.fm.eventclass.LookupField", {
-            fieldLabel: "Class",
+            fieldLabel: __("Class"),
             labelWidth: 40,
             width: 300,
             listeners: {
@@ -109,7 +109,7 @@ Ext.define("NOC.fm.event.Application", {
         });
 
         me.fromDateField = Ext.create("Ext.form.field.Date", {
-            fieldLabel: "From",
+            fieldLabel: __("From"),
             labelWidth: 35,
             format: "d.m.Y",
             width: 130,
@@ -120,7 +120,7 @@ Ext.define("NOC.fm.event.Application", {
         });
 
         me.toDateField = Ext.create("Ext.form.field.Date", {
-            fieldLabel: "To",
+            fieldLabel: __("To"),
             labelWidth: 25,
             format: "d.m.Y",
             width: 120,
@@ -163,60 +163,60 @@ Ext.define("NOC.fm.event.Application", {
             ],
             columns: [
                 {
-                    text: "ID",
+                    text: __("ID"),
                     dataIndex: "id",
                     width: 150
                 },
                 {
-                    text: "Status",
+                    text: __("Status"),
                     dataIndex: "status",
                     width: 50,
                     renderer: NOC.render.Choices(me.STATUS_MAP),
                     hidden: true
                 },
                 {
-                    text: "Time",
+                    text: __("Time"),
                     dataIndex: "timestamp",
                     width: 100,
                     renderer: NOC.render.DateTime
                 },
                 {
-                    text: "Administrative Domain",
+                    text: __("Administrative Domain"),
                     dataIndex: "administrative_domain",
                     width: 200,
                     renderer: NOC.render.Lookup("administrative_domain")
                 },
                 {
-                    text: "Object",
+                    text: __("Object"),
                     dataIndex: "managed_object",
                     width: 200,
                     renderer: NOC.render.Lookup("managed_object")
                 },
                 {
-                    text: "Class",
+                    text: __("Class"),
                     dataIndex: "event_class",
                     width: 300,
                     renderer: NOC.render.Lookup("event_class")
                 },
                 {
-                    text: "Subject",
+                    text: __("Subject"),
                     dataIndex: "subject",
                     flex: 1
                 },
                 {
-                    text: "Alrm.",
+                    text: __("Alrm."),
                     dataIndex: "alarms",
                     width: 30,
                     align: "right"
                 },
                 {
-                    text: "Rep.",
+                    text: __("Rep."),
                     dataIndex: "repeats",
                     width: 30,
                     align: "right"
                 },
                 {
-                    text: "Dur.",
+                    text: __("Dur."),
                     dataIndex: "duration",
                     width: 70,
                     align: "right",

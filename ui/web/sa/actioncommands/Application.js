@@ -28,23 +28,23 @@ Ext.define("NOC.sa.actioncommands.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 300
                 },
                 {
-                    text: "Builtin",
+                    text: __("Builtin"),
                     dataIndex: "is_builtin",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "Profile",
+                    text: __("Profile"),
                     dataIndex: "profile",
                     width: 100
                 },
                 {
-                    text: "Preference",
+                    text: __("Preference"),
                     dataIndex: "preference",
                     width: 100,
                     align: "right"
@@ -55,64 +55,64 @@ Ext.define("NOC.sa.actioncommands.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "large"
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "action",
                     xtype: "sa.action.LookupField",
-                    fieldLabel: "Action",
+                    fieldLabel: __("Action"),
                     allowBlank: false,
                     uiStyle: "medium"
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     uiStyle: "extra"
                 },
                 {
                     name: "profile",
                     xtype: "main.ref.profile.LookupField",
-                    fieldLabel: "Profile",
+                    fieldLabel: __("Profile"),
                     uiStyle: "medium",
                     allowBlank: false
                 },
                 {
                     name: "config_mode",
                     xtype: "checkbox",
-                    boxLabel: "Config. Mode"
+                    boxLabel: __("Config. Mode")
                 },
                 {
                     name: "preference",
                     xtype: "numberfield",
-                    fieldLabel: "Preference",
+                    fieldLabel: __("Preference"),
                     allowBlank: true
                 },
                 {
                     name: "timeout",
                     xtype: "numberfield",
-                    fieldLabel: "Timeout",
+                    fieldLabel: __("Timeout"),
                     allowBlank: true
                 },
                 {
                     name: "match",
                     xtype: "gridfield",
-                    fieldLabel: "Match",
+                    fieldLabel: __("Match"),
                     columns: [
                         {
-                            text: "Platform (Regex)",
+                            text: __("Platform (Regex)"),
                             dataIndex: "platform_re",
                             editor: "textfield"
                         },
                         {
-                            text: "Version (Regex)",
+                            text: __("Version (Regex)"),
                             dataIndex: "version_re",
                             editor: "textfield"
                         }
@@ -121,13 +121,13 @@ Ext.define("NOC.sa.actioncommands.Application", {
                 {
                     name: "commands",
                     xtype: "textarea",
-                    fieldLabel: "Commands",
+                    fieldLabel: __("Commands"),
                     allowBlank: false
                 }
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),

@@ -37,8 +37,8 @@ Ext.define("NOC.inv.interface.LinkForm", {
                         {
                             xtype: "sa.managedobject.LookupField",
                             name: "managed_object",
-                            emptyText: "Select managed object ...",
-                            fieldLabel: "Object",
+                            emptytext: __("Select managed object ..."),
+                            fieldLabel: __("Object"),
                             width: 360,
                             allowBlank: false,
                             listeners: {
@@ -49,7 +49,7 @@ Ext.define("NOC.inv.interface.LinkForm", {
                         {
                             xtype: "combobox",
                             name: "interface",
-                            fieldLabel: "Interface",
+                            fieldLabel: __("Interface"),
                             width: 360,
                             allowBlank: false,
                             displayField: "label",
@@ -61,7 +61,7 @@ Ext.define("NOC.inv.interface.LinkForm", {
                     buttonAlign: "center",
                     buttons: [
                         {
-                            text: "Connect",
+                            text: __("Connect"),
                             glyph: NOC.glyph.link,
                             formBind: true,
                             scope: me,

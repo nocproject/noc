@@ -38,18 +38,18 @@ Ext.define("NOC.inv.inv.plugins.map.AddObjectForm", {
                 {
                     xtype: "textfield",
                     name: "name",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 }
             ],
             buttons: [
                 {
-                    text: "Close",
+                    text: __("Close"),
                     scope: me,
                     handler: me.onPressClose
                 },
                 {
-                    text: "Add",
+                    text: __("Add"),
                     glyph: NOC.glyph.plus,
                     scope: me,
                     handler: me.onPressAdd,

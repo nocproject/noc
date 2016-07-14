@@ -28,14 +28,14 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
         });
 
         me.editButton = Ext.create("Ext.button.Button", {
-            text: "Edit",
+            text: __("Edit"),
             glyph: NOC.glyph.edit,
             scope: me,
             handler: me.onEdit
         });
 
         me.saveButton = Ext.create("Ext.button.Button", {
-            text: "Save",
+            text: __("Save"),
             glyph: NOC.glyph.save,
             scope: me,
             handler: me.onSave,

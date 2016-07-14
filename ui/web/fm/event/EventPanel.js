@@ -21,7 +21,7 @@ Ext.define("NOC.fm.event.EventPanel", {
             lw = 50;
 
         me.eventIdField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "ID",
+            fieldLabel: __("ID"),
             labelWidth: 20,
             width: 190,
             labelClsExtra: "noc-label-required"
@@ -64,7 +64,7 @@ Ext.define("NOC.fm.event.EventPanel", {
         });
 
         me.messageField = Ext.create("Ext.form.TextField", {
-            fieldLabel: "New message",
+            fieldLabel: __("New message"),
             labelWidth: 75,
             anchor: "100%",
             listeners: {
@@ -82,25 +82,25 @@ Ext.define("NOC.fm.event.EventPanel", {
             columns: [
                 {
                     dataIndex: "timestamp",
-                    text: "Time",
+                    text: __("Time"),
                     renderer: NOC.render.DateTime,
                     width: 120
                 },
                 {
                     dataIndex: "from_status",
-                    text: "From",
+                    text: __("From"),
                     renderer: NOC.render.Choices(me.app.STATUS_MAP),
                     width: 50
                 },
                 {
                     dataIndex: "to_status",
-                    text: "To",
+                    text: __("To"),
                     renderer: NOC.render.Choices(me.app.STATUS_MAP),
                     width: 50
                 },
                 {
                     dataIndex: "message",
-                    text: "Message",
+                    text: __("Message"),
                     flex: 1
                 }
             ],
@@ -131,18 +131,18 @@ Ext.define("NOC.fm.event.EventPanel", {
             columns: [
                 {
                     dataIndex: "id",
-                    text: "ID",
+                    text: __("ID"),
                     width: 200
                 },
                 {
                     dataIndex: "timestamp",
-                    text: "Time",
+                    text: __("Time"),
                     renderer: NOC.render.DateTime,
                     width: 120
                 },
                 {
                     dataIndex: "role",
-                    text: "Event Role",
+                    text: __("Event Role"),
                     renderer: NOC.render.Choices({
                         O: "Opening",
                         C: "Closing"
@@ -151,7 +151,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 },
                 {
                     dataIndex: "status",
-                    text: "Alrm Status",
+                    text: __("Alrm Status"),
                     renderer: NOC.render.Choices({
                         A: "Active",
                         C: "Closed"
@@ -160,13 +160,13 @@ Ext.define("NOC.fm.event.EventPanel", {
                 },
                 {
                     dataIndex: "alarm_class",
-                    text: "Class",
+                    text: __("Class"),
                     renderer: NOC.render.Lookup("alarm_class"),
                     width: 250
                 },
                 {
                     dataIndex: "subject",
-                    text: "Subject",
+                    text: __("Subject"),
                     flex: 1
                 }
             ]
@@ -184,14 +184,14 @@ Ext.define("NOC.fm.event.EventPanel", {
         });
 
         me.reclassifyButton = Ext.create("Ext.button.Button", {
-            text: "Reclassify",
+            text: __("Reclassify"),
             glyph: NOC.glyph.repeat,
             scope: me,
             handler: me.onReclassify
         });
 
         me.showMapButton = Ext.create("Ext.button.Button", {
-            text: "Show Map",
+            text: __("Show Map"),
             glyph: NOC.glyph.globe,
             scope: me,
             handler: me.onShowMap
@@ -204,13 +204,13 @@ Ext.define("NOC.fm.event.EventPanel", {
                     dock: "top",
                     items: [
                         {
-                            text: "Close",
+                            text: __("Close"),
                             glyph: NOC.glyph.arrow_left,
                             scope: me,
                             handler: me.onClose
                         },
                         {
-                            text: "Refresh",
+                            text: __("Refresh"),
                             glyph: NOC.glyph.refresh,
                             scope: me,
                             handler: me.onRefresh
@@ -221,19 +221,19 @@ Ext.define("NOC.fm.event.EventPanel", {
                         me.reclassifyButton,
                         "-",
                         {
-                            text: "JSON",
+                            text: __("JSON"),
                             glyph: NOC.glyph.file,
                             scope: me,
                             handler: me.onJSON
                         },
                         {
-                            text: "Create Rule",
+                            text: __("Create Rule"),
                             glyph: NOC.glyph.file_text,
                             scope: me,
                             handler: me.onCreateRule
                         },
                         {
-                            text: "Create Ignore Pattern",
+                            text: __("Create Ignore Pattern"),
                             glyph: NOC.glyph.file_text,
                             scope: me,
                             handler: me.onCreateIgnorePattern

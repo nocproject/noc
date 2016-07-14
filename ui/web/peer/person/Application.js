@@ -16,17 +16,17 @@ Ext.define("NOC.peer.person.Application", {
     search: true,
     columns: [
         {
-            text: "Nic-hdl",
+            text: __("Nic-hdl"),
             dataIndex: "nic_hdl",
             flex: 1
         },
         {
-            text: "Person/Role Name",
+            text: __("Person/Role Name"),
             dataIndex: "person",
             flex: 1
         },
         {
-            text: "Type",
+            text: __("Type"),
             dataIndex: "type",
             renderer: function(a) {
                 return {P: "Person", R: "Role"}[a];
@@ -34,7 +34,7 @@ Ext.define("NOC.peer.person.Application", {
             flex: 1
         },
         {
-            text: "RIR",
+            text: __("RIR"),
             dataIndex: "rir",
             renderer: NOC.render.Lookup("rir"),
             flex: 1
@@ -44,14 +44,14 @@ Ext.define("NOC.peer.person.Application", {
         {
             name: "nic_hdl",
             xtype: "textfield",
-            fieldLabel: "Nic-hdl",
+            fieldLabel: __("Nic-hdl"),
             allowBlank: false,
             anchor: "70%"
         },
         {
             name: "type",
             xtype: "combobox",
-            fieldLabel: "Type",
+            fieldLabel: __("Type"),
             allowBlank: false,
             store: [
                 ["P", "Person"],
@@ -61,47 +61,47 @@ Ext.define("NOC.peer.person.Application", {
         {
             name: "person",
             xtype: "textfield",
-            fieldLabel: "Person/Role Name",
+            fieldLabel: __("Person/Role Name"),
             allowBlank: false,
             anchor: "70%"
         },
         {
             name: "address",
             xtype: "textareafield",
-            fieldLabel: "Address",
+            fieldLabel: __("Address"),
             allowBlank: false,
             anchor: "70%"
         },
         {
             name: "phone",
             xtype: "textareafield",
-            fieldLabel: "Phone",
+            fieldLabel: __("Phone"),
             allowBlank: false,
             anchor: "70%"
         },
         {
             name: "fax_no",
             xtype: "textareafield",
-            fieldLabel: "Fax-no",
+            fieldLabel: __("Fax-no"),
             anchor: "70%"
         },
         {
             name: "email",
             xtype: "textareafield",
-            fieldLabel: "Email",
+            fieldLabel: __("Email"),
             allowBlank: false,
             anchor: "70%"
         },
         {
             name: "rir",
             xtype: "peer.rir.LookupField",
-            fieldLabel: "RIR",
+            fieldLabel: __("RIR"),
             allowBlank: false
         },
         {
             name: "extra",
             xtype: "textareafield",
-            fieldLabel: "Extra",
+            fieldLabel: __("Extra"),
             anchor: "70%"
         }
     ],

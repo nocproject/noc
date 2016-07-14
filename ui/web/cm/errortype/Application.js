@@ -27,12 +27,12 @@ Ext.define("NOC.cm.errortype.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 300
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -42,35 +42,35 @@ Ext.define("NOC.cm.errortype.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description"
+                    fieldLabel: __("Description")
                 },
                 {
                     name: "subject_template",
                     xtype: "textarea",
-                    fieldLabel: "Subject Template",
+                    fieldLabel: __("Subject Template"),
                     allowBlank: false
                 },
                 {
                     name: "body_template",
                     xtype: "textarea",
-                    fieldLabel: "Body Template",
+                    fieldLabel: __("Body Template"),
                     allowBlank: false
                 }
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),

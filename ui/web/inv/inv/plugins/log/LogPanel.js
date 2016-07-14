@@ -34,33 +34,33 @@ Ext.define("NOC.inv.inv.plugins.log.LogPanel", {
                     store: me.store,
                     columns: [
                         {
-                            text: "Time",
+                            text: __("Time"),
                             dataIndex: "ts",
                             renderer: NOC.render.DateTime,
                             width: 100
                         },
                         {
-                            text: "User",
+                            text: __("User"),
                             dataIndex: "user",
                             width: 70
                         },
                         {
-                            text: "System",
+                            text: __("System"),
                             dataIndex: "system",
                             width: 70
                         },
                         {
-                            text: "Operation",
+                            text: __("Operation"),
                             dataIndex: "op",
                             width: 70
                         },
                         {
-                            text: "Object",
+                            text: __("Object"),
                             dataIndex: "managed_object",
                             width: 100
                         },
                         {
-                            text: "Message",
+                            text: __("Message"),
                             dataIndex: "message",
                             flex: 1
                         }

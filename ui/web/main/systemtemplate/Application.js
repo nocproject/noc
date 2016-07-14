@@ -16,13 +16,13 @@ Ext.define("NOC.main.systemtemplate.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             flex: 1
         },
 
         {
-            text: "Template",
+            text: __("Template"),
             dataIndex: "template",
             renderer: NOC.render.Lookup("template"),
             flex: 1
@@ -32,21 +32,21 @@ Ext.define("NOC.main.systemtemplate.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false,
             width: 400
         },
         {
             name: "description",
             xtype: "textareafield",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: false,
             anchor: "100%"
         },
         {
             name: "template",
             xtype: "main.template.LookupField",
-            fieldLabel: "Template",
+            fieldLabel: __("Template"),
             allowBlank: false,
             width: 400
         }

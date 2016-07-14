@@ -21,24 +21,24 @@ Ext.define("NOC.sa.terminationgroup.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 150
                 },
                 {
-                    text: "Terminators",
+                    text: __("Terminators"),
                     dataIndex: "terminators",
                     width: 200,
                     sortable: false
                 },
                 {
-                    text: "Access",
+                    text: __("Access"),
                     dataIndex: "n_access",
                     width: 50,
                     sortable: false
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -47,19 +47,19 @@ Ext.define("NOC.sa.terminationgroup.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "terminators",
                     xtype: "displayfield",
-                    fieldLabel: "Terminators",
+                    fieldLabel: __("Terminators"),
                     allowBlank: false
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 }
             ]
@@ -73,13 +73,13 @@ Ext.define("NOC.sa.terminationgroup.Application", {
             columns: [
                 {
                     dataIndex: "name",
-                    text: "Pool Name",
+                    text: __("Pool Name"),
                     editor: "textfield",
                     width: 100
                 },
                 {
                     dataIndex: "type",
-                    text: "Type",
+                    text: __("Type"),
                     editor: {
                         xtype: "combobox",
                         store: [
@@ -95,14 +95,14 @@ Ext.define("NOC.sa.terminationgroup.Application", {
                 },
                 {
                     dataIndex: "vrf",
-                    text: "VRF",
+                    text: __("VRF"),
                     editor: "ip.vrf.LookupField",
                     width: 150,
                     renderer: NOC.render.Lookup("vrf")
                 },
                 {
                     dataIndex: "afi",
-                    text: "AFI",
+                    text: __("AFI"),
                     editor: {
                         xtype: "combobox",
                         store: [
@@ -118,19 +118,19 @@ Ext.define("NOC.sa.terminationgroup.Application", {
                 },
                 {
                     dataIndex: "from_address",
-                    text: "From Address",
+                    text: __("From Address"),
                     editor: "textfield",
                     width: 100
                 },
                 {
                     dataIndex: "to_address",
-                    text: "To address",
+                    text: __("To address"),
                     editor: "textfield",
                     width: 100
                 },
                 {
                     dataIndex: "technologies",
-                    text: "Technologies",
+                    text: __("Technologies"),
                     editor: "textfield",
                     flex: 1
                 }

@@ -22,14 +22,14 @@ Ext.define("Ext.ux.form.StringsField", {
         });
 
         me.addButton = Ext.create("Ext.button.Button", {
-            text: "Add",
+            text: __("Add"),
             glyph: NOC.glyph.plus,
             scope: me,
             handler: me.onAddRecord
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
-            text: "Delete",
+            text: __("Delete"),
             glyph: NOC.glyph.minus,
             disabled: true,
             scope: me,
@@ -41,7 +41,7 @@ Ext.define("Ext.ux.form.StringsField", {
             store: me.store,
             columns: [
                 {
-                    text: "Value",
+                    text: __("Value"),
                     dataIndex: "value",
                     flex: 1,
                     editor: "textfield",

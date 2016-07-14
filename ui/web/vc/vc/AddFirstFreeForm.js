@@ -31,13 +31,13 @@ Ext.define("NOC.vc.vc.AddFirstFreeForm", {
                         {
                             xtype: "vc.vcdomain.LookupField",
                             name: "vc_domain",
-                            fieldLabel: "VC Domain",
+                            fieldLabel: __("VC Domain"),
                             allowBlank: false
                         },
                         {
                             xtype: "vc.vcfilter.LookupField",
                             name: "vc_filter",
-                            fieldLabel: "VC Filter",
+                            fieldLabel: __("VC Filter"),
                             allowBlank: false
                         }
                     ]
@@ -45,7 +45,7 @@ Ext.define("NOC.vc.vc.AddFirstFreeForm", {
             ],
             buttons: [
                 {
-                    text: "Add First Free",
+                    text: __("Add First Free"),
                     itemId: "add",
                     glyph: NOC.glyph.plus,
                     scope: me,

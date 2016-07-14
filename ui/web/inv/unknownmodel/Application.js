@@ -15,27 +15,27 @@ Ext.define("NOC.inv.unknownmodel.Application", {
     search: true,
     columns: [
         {
-            text: "Object",
+            text: __("Object"),
             dataIndex: "managed_object",
             width: 100
         },
         {
-            text: "Platform",
+            text: __("Platform"),
             dataIndex: "platform",
             width: 100
         },
         {
-            text: "Vendor",
+            text: __("Vendor"),
             dataIndex: "vendor",
             width: 70
         },
         {
-            text: "Part No",
+            text: __("Part No"),
             dataIndex: "part_no",
             width: 100
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }

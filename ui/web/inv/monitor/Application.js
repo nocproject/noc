@@ -19,7 +19,7 @@ Ext.define("NOC.inv.monitor.Application", {
         });
 
         me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             tooltip: "Refresh data",
             glyph: NOC.glyph.refresh,
             scope: me,
@@ -37,30 +37,30 @@ Ext.define("NOC.inv.monitor.Application", {
             ],
             columns: [
                 {
-                    text: "Pool",
+                    text: __("Pool"),
                     dataIndex: "pool",
                     width: 100
                 },
                 {
-                    text: "Tasks",
+                    text: __("Tasks"),
                     dataIndex: "total_tasks",
                     width: 100,
                     align: "right"
                 },
                 {
-                    text: "Running",
+                    text: __("Running"),
                     dataIndex: "running_tasks",
                     width: 100,
                     align: "right"
                 },
                 {
-                    text: "Late",
+                    text: __("Late"),
                     dataIndex: "late_tasks",
                     width: 100,
                     align: "right"
                 },
                 {
-                    text: "Lag",
+                    text: __("Lag"),
                     dataIndex: "lag",
                     width: 100,
                     align: "right"

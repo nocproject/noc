@@ -15,11 +15,11 @@ Ext.define("NOC.vc.vcfilter.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Expression",
+            text: __("Expression"),
             dataIndex: "expression",
             flex: 1
         }
@@ -28,19 +28,19 @@ Ext.define("NOC.vc.vcfilter.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "expression",
             xtype: "textfield",
-            fieldLabel: "Expression",
+            fieldLabel: __("Expression"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         }
     ],

@@ -28,7 +28,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         });
 
         me.sideFrontButton = Ext.create("Ext.button.Button", {
-            text: "Front",
+            text: __("Front"),
             scope: me,
             toggleGroup: "side",
             pressed: true,
@@ -36,14 +36,14 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         });
 
         me.sideRearButton = Ext.create("Ext.button.Button", {
-            text: "Rear",
+            text: __("Rear"),
             scope: me,
             toggleGroup: "side",
             handler: me.onReload
         });
 
         me.editLoadButton = Ext.create("Ext.button.Button", {
-            text: "Edit",
+            text: __("Edit"),
             glyph: NOC.glyph.edit,
             scope: me,
             handler: me.onEdit,
@@ -66,34 +66,34 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
             hidden: true,
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 100
                 },
                 {
-                    text: "Model",
+                    text: __("Model"),
                     dataIndex: "model",
                     width: 200
                 },
                 {
-                    text: "Units",
+                    text: __("Units"),
                     dataIndex: "units",
                     width: 50
                 },
                 {
-                    text: "Pos. Front",
+                    text: __("Pos. Front"),
                     dataIndex: "position_front",
                     width: 50,
                     editor: "numberfield"
                 },
                 {
-                    text: "Pos. Rear",
+                    text: __("Pos. Rear"),
                     dataIndex: "position_rear",
                     width: 50,
                     editor: "numberfield"
                 },
                 {
-                    text: "Shift",
+                    text: __("Shift"),
                     dataIndex: "shift",
                     width: 50,
                     editor: {

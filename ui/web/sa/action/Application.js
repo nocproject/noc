@@ -27,28 +27,28 @@ Ext.define("NOC.sa.action.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Label",
+                    text: __("Label"),
                     dataIndex: "Label",
                     width: 200
                 },
                 {
-                    text: "Builtin",
+                    text: __("Builtin"),
                     dataIndex: "is_builtin",
                     width: 50,
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 },
                 {
-                    text: "Lvl",
+                    text: __("Lvl"),
                     dataIndex: "access_level",
                     width: 50
                 }
@@ -57,7 +57,7 @@ Ext.define("NOC.sa.action.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "medium",
                     regex: /^[a-zA-Z_][a-zA-Z_\-0-9]*$/
@@ -65,25 +65,25 @@ Ext.define("NOC.sa.action.Application", {
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "label",
                     xtype: "textfield",
-                    fieldLabel: "Label",
+                    fieldLabel: __("Label"),
                     allowBlank: false,
                     uiStyle: "medium"
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     uiStyle: "extra"
                 },
                 {
                     name: "access_level",
                     xtype: "numberfield",
-                    fieldLabel: "Access Level",
+                    fieldLabel: __("Access Level"),
                     value: 15,
                     minValue: 0,
                     maxValue: 15,
@@ -92,17 +92,17 @@ Ext.define("NOC.sa.action.Application", {
                 {
                     name: "handler",
                     xtype: "textfield",
-                    fieldLabel: "Handler",
+                    fieldLabel: __("Handler"),
                     allowBlank: true,
                     uiStyle: "large"
                 },
                 {
                     name: "params",
                     xtype: "gridfield",
-                    fieldLabel: "Params",
+                    fieldLabel: __("Params"),
                     columns: [
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name",
                             width: 150,
                             editor: {
@@ -111,14 +111,14 @@ Ext.define("NOC.sa.action.Application", {
                             }
                         },
                         {
-                            text: "Required",
+                            text: __("Required"),
                             dataIndex: "is_required",
                             width: 50,
                             editor: "checkbox",
                             renderer: NOC.render.Bool
                         },
                         {
-                            text: "Type",
+                            text: __("Type"),
                             dataIndex: "type",
                             width: 100,
                             editor: {
@@ -134,13 +134,13 @@ Ext.define("NOC.sa.action.Application", {
                             }
                         },
                         {
-                            text: "Default",
+                            text: __("Default"),
                             dataIndex: "default",
                             width: 100,
                             editor: "textfield"
                         },
                         {
-                            text: "Description",
+                            text: __("Description"),
                             dataIndex: "description",
                             flex: 1,
                             editor: "textfield"
@@ -150,7 +150,7 @@ Ext.define("NOC.sa.action.Application", {
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),

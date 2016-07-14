@@ -23,14 +23,14 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         var me = this;
 
         me.closeButton = Ext.create("Ext.button.Button", {
-            text: "Close",
+            text: __("Close"),
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.onClose
         });
 
         me.saveButton = Ext.create("Ext.button.Button", {
-            text: "Save",
+            text: __("Save"),
             glyph: NOC.glyph.save,
             scope: me,
             disabled: true,
@@ -38,14 +38,14 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         });
 
         me.addButton = Ext.create("Ext.button.Button", {
-            text: "Add",
+            text: __("Add"),
             glyph: NOC.glyph.plus,
             scope: me,
             handler: me.onAddConduits
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
-            text: "Remove",
+            text: __("Remove"),
             glyph: NOC.glyph.minus,
             disabled: true,
             scope: me,
@@ -53,7 +53,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
         });
 
         me.followButton = Ext.create("Ext.button.Button", {
-            text: "Follow",
+            text: __("Follow"),
             glyph: NOC.glyph.long_arrow_right,
             disabled: true,
             scope: me,
@@ -92,19 +92,19 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             }],
             columns: [
                 {
-                    text: "Target",
+                    text: __("Target"),
                     dataIndex: "target_name",
                     width: 100
                 },
                 {
-                    text: "Map Distange (m)",
+                    text: __("Map Distange (m)"),
                     dataIndex: "map_distance",
                     width: 100,
                     align: "right",
                     renderer: me.renderSize
                 },
                 {
-                    text: "Proj. Distange (m)",
+                    text: __("Proj. Distange (m)"),
                     dataIndex: "project_distance",
                     width: 100,
                     align: "right",
@@ -112,12 +112,12 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
                     editor: "textfield"
                 },
                 {
-                    text: "Bearing",
+                    text: __("Bearing"),
                     dataIndex: "s_bearing",
                     width: 50
                 },
                 {
-                    text: "Conduits",
+                    text: __("Conduits"),
                     dataIndex: "n_conduits",
                     width: 50,
                     align: "right"

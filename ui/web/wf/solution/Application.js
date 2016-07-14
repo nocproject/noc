@@ -14,23 +14,23 @@ Ext.define("NOC.wf.solution.Application", {
     model: "NOC.wf.solution.Model",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 200
         },
         {
-            text: "Version",
+            text: __("Version"),
             dataIndex: "version",
             width: 70
         },
         {
-            text: "Act",
+            text: __("Act"),
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
             width: 50
         },
         {
-            text: "Workflows",
+            text: __("Workflows"),
             dataIndex: "wf_count",
             width: 70
         }
@@ -39,26 +39,26 @@ Ext.define("NOC.wf.solution.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "version",
             xtype: "numberfield",
-            fieldLabel: "Version",
+            fieldLabel: __("Version"),
             allowBlank: false,
             defaultValue: 1
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Active"
+            boxLabel: __("Active")
         },
         {
             name: "description",
             xtype: "textarea",
             allowBlank: true,
-            fieldLabel: "Description"
+            fieldLabel: __("Description")
         }
     ]
 });

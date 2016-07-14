@@ -21,12 +21,12 @@ Ext.define("NOC.crm.supplierprofile.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     flex: 1
                 },
                 {
-                    text: "Tags",
+                    text: __("Tags"),
                     dataIndex: "tags",
                     width: 150,
                     render: NOC.render.Tags
@@ -37,27 +37,27 @@ Ext.define("NOC.crm.supplierprofile.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "medium"
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true,
                     uiStyle: "expand"
                 },
                 {
                     name: "style",
                     xtype: "main.style.LookupField",
-                    fieldLabel: "Style",
+                    fieldLabel: __("Style"),
                     allowBlank: true
                 },
                 {
                     name: "tags",
                     xtype: "tagsfield",
-                    fieldLabel: "Tags",
+                    fieldLabel: __("Tags"),
                     allowBlank: true
                 }
             ]

@@ -20,7 +20,7 @@ Ext.define("NOC.core.RepoPreview", {
         me.currentTheme = "default";
 
         me.revCombo = Ext.create("Ext.form.ComboBox", {
-            fieldLabel: "Version",
+            fieldLabel: __("Version"),
             labelWidth: 45,
             labelAlign: "right",
             width: 210,
@@ -55,7 +55,7 @@ Ext.define("NOC.core.RepoPreview", {
         });
 
         me.diffCombo = Ext.create("Ext.form.ComboBox", {
-            fieldLabel: "Compare",
+            fieldLabel: __("Compare"),
             disabled: true,
             labelWidth: 45,
             labelAlign: "right",
@@ -92,7 +92,7 @@ Ext.define("NOC.core.RepoPreview", {
 
         me.reloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
-            text: "Reload",
+            text: __("Reload"),
             tooltip: "Reload",
             scope: me,
             handler: me.onReload
@@ -123,7 +123,7 @@ Ext.define("NOC.core.RepoPreview", {
         });
 
         me.lastDayButton = Ext.create("Ext.button.Button", {
-            text: "Day",
+            text: __("Day"),
             tooltip: "Last day's changes",
             toogleGroup: "diffrange",
             scope: me,
@@ -132,7 +132,7 @@ Ext.define("NOC.core.RepoPreview", {
         });
 
         me.lastWeekButton = Ext.create("Ext.button.Button", {
-            text: "Week",
+            text: __("Week"),
             tooltip: "Last week's changes",
             toogleGroup: "diffrange",
             scope: me,
@@ -141,7 +141,7 @@ Ext.define("NOC.core.RepoPreview", {
         });
 
         me.lastMonthButton = Ext.create("Ext.button.Button", {
-            text: "Month",
+            text: __("Month"),
             tooltip: "Last month's changes",
             toogleGroup: "diffrange",
             scope: me,
@@ -169,7 +169,7 @@ Ext.define("NOC.core.RepoPreview", {
                 items: [
                     {
                         itemId: "close",
-                        text: "Close",
+                        text: __("Close"),
                         glyph: NOC.glyph.arrow_left,
                         scope: me,
                         handler: me.onClose

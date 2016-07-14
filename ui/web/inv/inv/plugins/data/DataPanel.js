@@ -37,19 +37,19 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                     region: "center",
                     columns: [
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name"
                         },
                         {
-                            text: "Description",
+                            text: __("Description"),
                             dataIndex: "description"
                         },
                         {
-                            text: "Type",
+                            text: __("Type"),
                             dataIndex: "type"
                         },
                         {
-                            text: "Value",
+                            text: __("Value"),
                             dataIndex: "value",
                             flex: 1,
                             editor: "textfield",

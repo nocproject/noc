@@ -13,12 +13,12 @@ Ext.define("NOC.fm.mib.Application", {
 
     columns: [
         {
-            text: "MIB",
+            text: __("MIB"),
             dataIndex: "name",
             flex: 1
         },
         {
-            text: "Last Updated",
+            text: __("Last Updated"),
             dataIndex: "last_updated",
             width: 100
         }
@@ -34,19 +34,19 @@ Ext.define("NOC.fm.mib.Application", {
         var me = this;
         //
         me.toolbarIdField = Ext.create("Ext.form.field.Display", {
-            fieldLabel: "ID",
+            fieldLabel: __("ID"),
             labelWidth: 15
         });
         //
         me.closeButton = Ext.create("Ext.button.Button", {
-            text: "Close",
+            text: __("Close"),
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.showGrid
         });
         //
         me.previewButton = Ext.create("Ext.button.Button", {
-            text: "View",
+            text: __("View"),
             glyph: NOC.glyph.file,
             scope: me,
             handler: me.onPreview
@@ -67,24 +67,24 @@ Ext.define("NOC.fm.mib.Application", {
             columns: [
                 {
                     xtype: "treecolumn",
-                    text: "OID",
+                    text: __("OID"),
                     dataIndex: "oid",
                     width: 300
                 },
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 300
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1,
                     xtype: "templatecolumn",
                     tpl: "<pre>{description}</pre>"
                 },
                 {
-                    text: "Syntax",
+                    text: __("Syntax"),
                     dataIndex: "syntax",
                     width: 200,
                     xtype: "templatecolumn",

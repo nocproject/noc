@@ -15,14 +15,14 @@ Ext.define("NOC.support.account.SystemPanel", {
     closable: false,
 
     minPasswordLength: 8,
-    notRegisteredText: "System is not registred. Please register your system to get access to additional support and services",
-    registeredText: "System is registred. You have access to additional support and services",
+    notRegisteredtext: __("System is not registred. Please register your system to get access to additional support and services"),
+    registeredtext: __("System is registred. You have access to additional support and services"),
 
     initComponent: function() {
         var me = this;
 
         me.saveButton = Ext.create("Ext.button.Button", {
-            text: "Save",
+            text: __("Save"),
             glyph: NOC.glyph.save,
             scope: me,
             handler: me.onSave,
@@ -44,20 +44,20 @@ Ext.define("NOC.support.account.SystemPanel", {
                 {
                     xtype: "displayfield",
                     name: "uuid",
-                    fieldLabel: "UUID",
+                    fieldLabel: __("UUID"),
                     itemId: "uuid"
                 },
                 {
                     xtype: "textfield",
                     name: "name",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     regex: /^[a-z0-9\.\-_]+$/i
                 },
                 {
                     xtype: "combobox",
                     name: "type",
-                    fieldLabel: "Type",
+                    fieldLabel: __("Type"),
                     allowBlank: false,
                     store: [
                         ["dev", "Development"],
@@ -70,7 +70,7 @@ Ext.define("NOC.support.account.SystemPanel", {
                 {
                     xtype: "textarea",
                     name: "description",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true,
                     anchor: "100%"
                 }

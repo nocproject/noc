@@ -28,19 +28,19 @@ Ext.define("NOC.pm.metrictype.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 150
                 },
                 {
-                    text: "Builtin",
+                    text: __("Builtin"),
                     dataIndex: "is_builtin",
                     renderer: NOC.render.Bool,
                     width: 50,
                     sortable: false
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -50,24 +50,24 @@ Ext.define("NOC.pm.metrictype.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     regex: /^[a-zA-Z0-9\-\_ ]+( \| [a-zA-Z0-9\-\_ ]+)*$/
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "description",
                     xtype: "textareafield",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "scope",
                     xtype: "combobox",
-                    fieldLabel: "Scope",
+                    fieldLabel: __("Scope"),
                     store: [
                         ["o", "Object"],
                         ["i", "Interface"]
@@ -76,12 +76,12 @@ Ext.define("NOC.pm.metrictype.Application", {
                 {
                     name: "measure",
                     xtype: "textfield",
-                    fieldLabel: "Measure"
+                    fieldLabel: __("Measure")
                 }
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),

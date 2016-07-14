@@ -12,12 +12,12 @@ Ext.define("NOC.peer.rir.Application", {
     model: "NOC.peer.rir.Model",
     columns: [
         {
-            text: "RIR",
+            text: __("RIR"),
             dataIndex: "name"
         },
         
         {
-            text: "whois",
+            text: __("whois"),
             dataIndex: "whois"
         }
     ],
@@ -25,13 +25,13 @@ Ext.define("NOC.peer.rir.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "name",
+            fieldLabel: __("name"),
             allowBlank: false
         },
         {
             name: "whois",
             xtype: "textfield",
-            fieldLabel: "whois",
+            fieldLabel: __("whois"),
             allowBlank: true
         }
     ]

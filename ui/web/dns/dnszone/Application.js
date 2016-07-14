@@ -25,35 +25,35 @@ Ext.define("NOC.dns.dnszone.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Gen.",
+                    text: __("Gen."),
                     dataIndex: "is_auto_generated",
                     renderer: NOC.render.Bool,
                     width: 30
                 },
                 {
-                    text: "Serial",
+                    text: __("Serial"),
                     dataIndex: "serial",
                     width: 75
                 },
                 {
-                    text: "Profile",
+                    text: __("Profile"),
                     dataIndex: "profile",
                     renderer: NOC.render.Lookup("profile"),
                     width: 100
                 },
                 {
-                    text: "Project",
+                    text: __("Project"),
                     dataIndex: "project",
                     renderer: NOC.render.Lookup("project"),
                     width: 150
                 },
                 {
-                    text: "Paid Till",
+                    text: __("Paid Till"),
                     dataIndex: "paid_till",
                     width: 100,
                     format: "Y-m-d",
@@ -61,18 +61,18 @@ Ext.define("NOC.dns.dnszone.Application", {
                     renderer: NOC.render.Date
                 },
                 {
-                    text: "Notification",
+                    text: __("Notification"),
                     dataIndex: "notification_group",
                     renderer: NOC.render.Lookup("notification_group"),
                     width: 100
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 },
                 {
-                    text: "Tags",
+                    text: __("Tags"),
                     dataIndex: "tags",
                     renderer: NOC.render.Tags
                 }
@@ -81,55 +81,55 @@ Ext.define("NOC.dns.dnszone.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Domain",
+                    fieldLabel: __("Domain"),
                     allowBlank: false
                 },
                 {
                     name: "description",
                     xtype: "textfield",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "is_auto_generated",
                     xtype: "checkboxfield",
-                    boxLabel: "Auto generated?",
+                    boxLabel: __("Auto generated?"),
                     allowBlank: false
                 },
                 {
                     name: "serial",
                     xtype: "displayfield",
-                    fieldLabel: "Serial",
+                    fieldLabel: __("Serial"),
                     allowBlank: false
                 },
                 {
                     name: "profile",
                     xtype: "dns.dnszoneprofile.LookupField",
-                    fieldLabel: "Profile",
+                    fieldLabel: __("Profile"),
                     allowBlank: false
                 },
                 {
                     name: "project",
                     xtype: "project.project.LookupField",
-                    fieldLabel: "Project",
+                    fieldLabel: __("Project"),
                     allowBlank: true
                 },
                 {
                     name: "notification_group",
                     xtype: "main.notificationgroup.LookupField",
-                    fieldLabel: "Notification Group",
+                    fieldLabel: __("Notification Group"),
                     allowBlank: true
                 },
                 {
                     name: "paid_till",
                     xtype: "datefield",
-                    fieldLabel: "Paid Till",
+                    fieldLabel: __("Paid Till"),
                     allowBlank: true
                 },
                 {
                     name: "tags",
                     xtype: "tagsfield",
-                    fieldLabel: "Tags",
+                    fieldLabel: __("Tags"),
                     allowBlank: true
                 }
             ],
@@ -139,20 +139,20 @@ Ext.define("NOC.dns.dnszone.Application", {
                     model: "NOC.dns.dnszone.RecordsModel",
                     columns: [
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name",
                             width: 150,
                             editor: "textfield"
                         },
                         {
-                            text: "TTL",
+                            text: __("TTL"),
                             dataIndex: "ttl",
                             width: 50,
                             align: "right",
                             editor: "numberfield"
                         },
                         {
-                            text: "Type",
+                            text: __("Type"),
                             dataIndex: "type",
                             width: 75,
                             editor: {
@@ -164,14 +164,14 @@ Ext.define("NOC.dns.dnszone.Application", {
                             }
                         },
                         {
-                            text: "Prio.",
+                            text: __("Prio."),
                             dataIndex: "priority",
                             width: 50,
                             align: "right",
                             editor: "numberfield"
                         },
                         {
-                            text: "Content",
+                            text: __("Content"),
                             dataIndex: "content",
                             flex: 1,
                             editor: {
@@ -180,7 +180,7 @@ Ext.define("NOC.dns.dnszone.Application", {
                             }
                         },
                         {
-                            text: "Tags",
+                            text: __("Tags"),
                             dataIndex: "tags",
                             width: 100,
                             editor: "tagsfield"
@@ -190,7 +190,7 @@ Ext.define("NOC.dns.dnszone.Application", {
             ],
             formToolbar: [
                 {
-                    text: "Preview",
+                    text: __("Preview"),
                     glyph: NOC.glyph.search,
                     tooltip: "Preview zone",
                     hasAccess: NOC.hasPermission("read"),

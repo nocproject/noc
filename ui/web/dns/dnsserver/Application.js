@@ -16,23 +16,23 @@ Ext.define("NOC.dns.dnsserver.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 100
         },
         {
-            text: "IP",
+            text: __("IP"),
             dataIndex: "ip",
             width: 100
         },
         {
-            text: "Sync",
+            text: __("Sync"),
             dataIndex: "sync",
             renderer: NOC.render.Lookup("sync"),
             width: 150
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }
@@ -41,25 +41,25 @@ Ext.define("NOC.dns.dnsserver.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "ip",
             xtype: "textfield",
-            fieldLabel: "IP",
+            fieldLabel: __("IP"),
             allowBlank: true
         },
         {
             name: "description",
             xtype: "textfield",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "sync",
             xtype: "main.sync.LookupField",
-            fieldLabel: "Sync channel",
+            fieldLabel: __("Sync channel"),
             allowBlank: true
         }
     ]

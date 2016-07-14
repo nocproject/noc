@@ -17,23 +17,23 @@ Ext.define("NOC.ip.addressrange.Application", {
     rowClassField: "row_class",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             flex: 1
         },
         {
             dataIndex: "is_active",
-            text: "Active?",
+            text: __("Active?"),
             renderer: NOC.render.Bool,
             width: 50
         },
         {
-            text: "VRF",
+            text: __("VRF"),
             dataIndex: "vrf",
             renderer: NOC.render.Lookup("vrf")
         },
         {
-            text: "AFI",
+            text: __("AFI"),
             dataIndex: "afi",
             width: 40,
             renderer: function(v) {
@@ -41,34 +41,34 @@ Ext.define("NOC.ip.addressrange.Application", {
             }
         },
         {
-            text: "From Address",
+            text: __("From Address"),
             dataIndex: "from_address",
             width: 80
         },
         {
-            text: "To Address", 
+            text: __("To Address"), 
             dataIndex: "to_address",
             width: 80
         },
         {
             dataIndex: "is_locked",
-            text: "Locked?",
+            text: __("Locked?"),
             renderer: NOC.render.Bool,
             width: 50
         },
         {
-            text: "Action",
+            text: __("Action"),
             dataIndex: "action",
             renderer: function(a) {
                 return {N: "Do nothing", G: "Generate FQDNs", D: "Partial reverse zone delegation"}[a];
             }
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description"
         },
         {
-            text: "Tags",
+            text: __("Tags"),
             dataIndex: "tags",
             renderer: NOC.render.Tags
         }
@@ -77,55 +77,55 @@ Ext.define("NOC.ip.addressrange.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Is Active"
+            boxLabel: __("Is Active")
         },
         {
             name: "vrf",
             xtype: "ip.vrf.LookupField",
-            fieldLabel: "VRF",
+            fieldLabel: __("VRF"),
             allowBlank: false
         },
         {
             name: "afi",
             xtype: "combobox",
-            fieldLabel: "Address Family",
+            fieldLabel: __("Address Family"),
             allowBlank: false,
             store: [["4", "IPv4"], ["6", "IPv6"]]
         },
         {
             name: "from_address",
             xtype: "textfield",
-            fieldLabel: "From Address",
+            fieldLabel: __("From Address"),
             allowBlank: false
         },
         {
             name: "to_address",
             xtype: "textfield",
-            fieldLabel: "To Address",
+            fieldLabel: __("To Address"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textareafield",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: false,
             anchor: "70%"
         },
         {
             name: "is_locked",
             xtype: "checkboxfield",
-            boxLabel: "Is Locked"
+            boxLabel: __("Is Locked")
         },
         {
             name: "action",
             xtype: "combobox",
-            fieldLabel: "Action",
+            fieldLabel: __("Action"),
             allowBlank: false,
             store: [
                 ["N", "Do nothing"],
@@ -137,31 +137,31 @@ Ext.define("NOC.ip.addressrange.Application", {
             name: "fqdn_template",
             xtype: "textfield",
             allowBlank: true,
-            fieldLabel: "FQDN Template"
+            fieldLabel: __("FQDN Template")
         },
         {
             name: "reverse_nses",
             xtype: "textfield",
             allowBlank: true,
-            fieldLabel: "Reverse NSes"
+            fieldLabel: __("Reverse NSes")
         },
         {
             name: "tags",
             xtype: "tagsfield",
-            fieldLabel: "Tags",
+            fieldLabel: __("Tags"),
             allowBlank: true
         },
         {
             name: "tt",
             xtype: "textfield",
             regexText: /^\d*$/,
-            fieldLabel: "TT",
+            fieldLabel: __("TT"),
             allowBlank: true
         },
         {
             name: "allocated_till",
             xtype: "datefield",
-            fieldLabel: "Allocated till",
+            fieldLabel: __("Allocated till"),
             allowBlank: true
         }
     ],

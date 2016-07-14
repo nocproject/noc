@@ -23,7 +23,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         var me = this;
 
         me.alarmIdField = Ext.create("Ext.form.DisplayField", {
-            fieldLabel: "ID",
+            fieldLabel: __("ID"),
             labelWidth: 20,
             width: 190,
             labelClsExtra: "noc-label-required"
@@ -123,7 +123,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             columns: [
                 {
                     dataIndex: "id",
-                    text: "ID",
+                    text: __("ID"),
                     width: 150
                 },
                 {
@@ -147,7 +147,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         });
         // Alarms
         me.defaultRoot = {
-            text: ".",
+            text: __("."),
             children: []
         };
 

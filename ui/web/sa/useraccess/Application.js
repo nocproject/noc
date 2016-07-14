@@ -16,12 +16,12 @@ Ext.define("NOC.sa.useraccess.Application", {
     model: "NOC.sa.useraccess.Model",
     columns: [
         {
-            text: "User",
+            text: __("User"),
             dataIndex: "user",
             renderer: NOC.render.Lookup("user")
         },
         {
-            text: "Selector",
+            text: __("Selector"),
             dataIndex: "selector",
             renderer: NOC.render.Lookup("selector")
         }
@@ -30,13 +30,13 @@ Ext.define("NOC.sa.useraccess.Application", {
         {
             name: "user",
             xtype: "main.user.LookupField",
-            fieldLabel: "User",
+            fieldLabel: __("User"),
             allowBlank: false
         },
         {
             name: "selector",
             xtype: "sa.managedobjectselector.LookupField",
-            fieldLabel: "Object Selector",
+            fieldLabel: __("Object Selector"),
             allowBlank: false
         }
     ],

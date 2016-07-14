@@ -46,23 +46,23 @@ Ext.define("NOC.fm.alarm.plugins.Validation", {
             columns: [
                 {
                     dataIndex: "subject",
-                    text: "Subject",
+                    text: __("Subject"),
                     flex: 1
                 },
                 {
                     dataIndex: "cls",
-                    text: "Error Type",
+                    text: __("Error Type"),
                     width: 200
                 },
                 {
                     dataIndex: "introduced",
-                    text: "Introduced",
+                    text: __("Introduced"),
                     width: 150,
                     renderer: NOC.render.DateTime
                 },
                 {
                     dataIndex: "changed",
-                    text: "Changed",
+                    text: __("Changed"),
                     width: 150,
                     renderer: NOC.render.DateTime
                 }

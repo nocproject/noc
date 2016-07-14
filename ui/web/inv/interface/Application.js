@@ -48,7 +48,7 @@ Ext.define("NOC.inv.interface.Application", {
             xtype: "searchfield",
             name: "search",
             disabled: true,
-            emptyText: "Search ...",
+            emptytext: __("Search ..."),
             typeAhead: true,
             scope: me,
             handler: me.onSearch
@@ -80,7 +80,7 @@ Ext.define("NOC.inv.interface.Application", {
                     xtype: "sa.managedobject.LookupField",
                     name: "managedobject",
                     itemId: "managedobject",
-                    emptyText: "Select managed object ...",
+                    emptytext: __("Select managed object ..."),
                     listeners: {
                         select: {
                             scope: me,

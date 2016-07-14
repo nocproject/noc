@@ -33,19 +33,19 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                 {
                     xtype: "inv.objectmodel.LookupField",
                     name: "type",
-                    fieldLabel: "Type",
+                    fieldLabel: __("Type"),
                     allowBlank: false
                 },
                 {
                     xtype: "textfield",
                     name: "name",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     xtype: "textfield",
                     name: "serial",
-                    fieldLabel: "Serial",
+                    fieldLabel: __("Serial"),
                     allowBlank: true
                 }
             ]
@@ -60,13 +60,13 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                     dock: "top",
                     items: [
                         {
-                            text: "Close",
+                            text: __("Close"),
                             scope: me,
                             glyph: NOC.glyph.arrow_left,
                             handler: me.onPressClose
                         },
                         {
-                            text: "Save",
+                            text: __("Save"),
                             glyph: NOC.glyph.save,
                             scope: me,
                             handler: me.onPressAdd

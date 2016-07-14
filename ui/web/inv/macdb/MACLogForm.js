@@ -19,7 +19,7 @@ Ext.define("NOC.inv.macdb.MACLogForm", {
 
         me.closeButton = Ext.create("Ext.button.Button", {
             itemId: "close",
-            text: "Close",
+            text: __("Close"),
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.onClose
@@ -31,37 +31,37 @@ Ext.define("NOC.inv.macdb.MACLogForm", {
             layout: "fit",
             columns: [
                 {
-                    text: "Timestamp",
+                    text: __("Timestamp"),
                     dataIndex: "timestamp",
                     width: 160
                 },
                 {
-                    text: "Mac",
+                    text: __("Mac"),
                     dataIndex: "mac",
                     width: 110
                 },
                 {
-                    text: "VC Domain",
+                    text: __("VC Domain"),
                     dataIndex: "vc_domain",
                     flex: 1
                 },
                 {
-                    text: "Vlan",
+                    text: __("Vlan"),
                     dataIndex: "vlan",
                     width: 40
                 },
                 {
-                    text: "Managed Object",
+                    text: __("Managed Object"),
                     dataIndex: "managed_object_name",
                     flex: 2
                 },
                 {
-                    text: "Interface",
+                    text: __("Interface"),
                     dataIndex: "interface_name",
                     flex: 1
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }

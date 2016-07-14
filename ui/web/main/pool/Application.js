@@ -18,12 +18,12 @@ Ext.define("NOC.main.pool.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 100
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -33,7 +33,7 @@ Ext.define("NOC.main.pool.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     regex: /^[0-9a-zA-z]{1,16}$/,
                     allowBlank: false,
                     uiStyle: "medium"
@@ -41,7 +41,7 @@ Ext.define("NOC.main.pool.Application", {
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 }
             ]

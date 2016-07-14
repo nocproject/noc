@@ -16,23 +16,23 @@ Ext.define("NOC.peer.asset.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             flex: 1,
             dataIndex: "name"
         },
         {
-            text: "Description",
+            text: __("Description"),
             flex: 1,
             dataIndex: "description"
         },
         {
-            text: "Members",
+            text: __("Members"),
             flex: 1,
             dataIndex: "members",
             renderer: NOC.render.WrapColumn
         },
         {
-            text: "Tags",
+            text: __("Tags"),
             flex: 1,
             dataIndex: "tags",
             renderer: "NOC.render.Tags"
@@ -42,7 +42,7 @@ Ext.define("NOC.peer.asset.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             width: 400,
             allowBlank: false,
             plugins: [ 'ucfield' ],
@@ -51,14 +51,14 @@ Ext.define("NOC.peer.asset.Application", {
         {
             name: "description",     
             xtype: "textfield",
-            fieldLabel: "Description",     
+            fieldLabel: __("Description"),     
             width: 400,
             allowBlank: false
         },
         {
             name: "members",
             xtype: "textareafield",
-            fieldLabel: "members",
+            fieldLabel: __("members"),
             allowBlank: true,
             width: 600,
             height: 100,
@@ -71,7 +71,7 @@ Ext.define("NOC.peer.asset.Application", {
         {
             name: "rpsl_header",
             xtype: "textareafield",
-            fieldLabel: "RPSL Header",
+            fieldLabel: __("RPSL Header"),
             allowBlank: true,
             width: 600,
             height: 100,
@@ -82,7 +82,7 @@ Ext.define("NOC.peer.asset.Application", {
         {
             name: "rpsl_footer",
             xtype: "textareafield",
-            fieldLabel: "RPSL Footer",
+            fieldLabel: __("RPSL Footer"),
             allowBlank: true,
             width: 600,
             height: 100,
@@ -93,7 +93,7 @@ Ext.define("NOC.peer.asset.Application", {
         { 
             name: "tags",      
             xtype: "tagsfield",   
-            fieldLabel: "Tags",      
+            fieldLabel: __("Tags"),      
             width: 400,     
             allowBlank: true
         }

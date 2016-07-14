@@ -12,22 +12,22 @@ Ext.define("NOC.fm.ignoreeventrule.Application", {
     model: "NOC.fm.ignoreeventrule.Model",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Active",
+            text: __("Active"),
             dataIndex: "is_active",
             width: 50,
             renderer: NOC.render.Bool
         },
         {
-            text: "Left RE",
+            text: __("Left RE"),
             dataIndex: "left_re",
             flex: 1
         },
         {
-            text: "Right RE",
+            text: __("Right RE"),
             dataIndex: "right_re",
             flex: 1
         }
@@ -36,31 +36,31 @@ Ext.define("NOC.fm.ignoreeventrule.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Is Active",
+            boxLabel: __("Is Active"),
             allowBlank: false
         },
         {
             name: "left_re",
             xtype: "textfield",
-            fieldLabel: "Left RE",
+            fieldLabel: __("Left RE"),
             allowBlank: false
         },
         {
             name: "right_re",
             xtype: "textfield",
-            fieldLabel: "Right Re",
+            fieldLabel: __("Right Re"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         }
     ],

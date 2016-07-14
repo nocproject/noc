@@ -29,7 +29,7 @@ Ext.define("Ext.ux.form.ModelDataField", {
             store: me.store,
             columns: [
                 {
-                    text: "Interface",
+                    text: __("Interface"),
                     dataIndex: "interface",
                     editor: {
                         xtype: "inv.modelinterface.LookupField",
@@ -38,12 +38,12 @@ Ext.define("Ext.ux.form.ModelDataField", {
                     }
                 },
                 {
-                    text: "Key",
+                    text: __("Key"),
                     dataIndex: "key",
                     editor: "textfield"
                 },
                 {
-                    text: "Value",
+                    text: __("Value"),
                     dataIndex: "value",
                     editor: "textfield",
                     flex: 1
@@ -60,13 +60,13 @@ Ext.define("Ext.ux.form.ModelDataField", {
                     dock: "top",
                     items: [
                         {
-                            text: "Add",
+                            text: __("Add"),
                             glyph: NOC.glyph.plus,
                             scope: me,
                             handler: me.onAddRecord
                         },
                         {
-                            text: "Delete",
+                            text: __("Delete"),
                             glyph: NOC.glyph.minus,
                             scope: me,
                             handler: me.onDeleteRecord

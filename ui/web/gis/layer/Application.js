@@ -27,47 +27,47 @@ Ext.define("NOC.gis.layer.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Code",
+                    text: __("Code"),
                     dataIndex: "code",
                     width: 100
                 },
                 {
-                    text: "Builtin",
+                    text: __("Builtin"),
                     dataIndex: "is_builtin",
                     renderer: NOC.render.Bool,
                     width: 50
                 },
                 {
-                    text: "zIndex",
+                    text: __("zIndex"),
                     dataIndex: "zindex",
                     width: 50,
                     align: "right"
                 },
                 {
-                    text: "Min Zoom",
+                    text: __("Min Zoom"),
                     dataIndex: "min_zoom",
                     width: 50,
                     align: "right"
                 },
                 {
-                    text: "Max Zoom",
+                    text: __("Max Zoom"),
                     dataIndex: "max_zoom",
                     width: 50,
                     align: "right"
                 },
                 {
-                    text: "Def. Zoom",
+                    text: __("Def. Zoom"),
                     dataIndex: "default_zoom",
                     width: 50,
                     align: "right"
                 },
                 {
-                    text: "Color",
+                    text: __("Color"),
                     dataIndex: "stroke_color",
                     width: 50,
                     renderer: me.renderStyle
@@ -77,30 +77,30 @@ Ext.define("NOC.gis.layer.Application", {
                 {
                     xtype: "textfield",
                     name: "name",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     xtype: "textfield",
                     name: "code",
-                    fieldLabel: "Code",
+                    fieldLabel: __("Code"),
                     allowBlank: false
                 },
                 {
                     xtype: "displayfield",
                     name: "uuid",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     xtype: "textarea",
                     name: "description",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     xtype: "numberfield",
                     name: "zindex",
-                    fieldLabel: "zIndex",
+                    fieldLabel: __("zIndex"),
                     minValue: 0
                 },
                 {
@@ -111,21 +111,21 @@ Ext.define("NOC.gis.layer.Application", {
                         {
                             xtype: "numberfield",
                             name: "min_zoom",
-                            fieldLabel: "Min",
+                            fieldLabel: __("Min"),
                             minValue: 0,
                             maxValue: 19
                         },
                                                 {
                             xtype: "numberfield",
                             name: "max_zoom",
-                            fieldLabel: "Max",
+                            fieldLabel: __("Max"),
                             minValue: 0,
                             maxValue: 19
                         },
                         {
                             xtype: "numberfield",
                             name: "default_zoom",
-                            fieldLabel: "Default",
+                            fieldLabel: __("Default"),
                             minValue: 0,
                             maxValue: 19
                         }
@@ -138,19 +138,19 @@ Ext.define("NOC.gis.layer.Application", {
                         {
                             name: "stroke_color",
                             xtype: "colorfield",
-                            fieldLabel: "Stroke Color",
+                            fieldLabel: __("Stroke Color"),
                             allowBlank: false
                         },
                         {
                             name: "fill_color",
                             xtype: "colorfield",
-                            fieldLabel: "Fill Color",
+                            fieldLabel: __("Fill Color"),
                             allowBlank: false
                         },
                         {
                             name: "stroke_width",
                             xtype: "numberfield",
-                            fieldLabel: "Stroke Width",
+                            fieldLabel: __("Stroke Width"),
                             allowBlank: true
                         }
                     ]
@@ -162,14 +162,14 @@ Ext.define("NOC.gis.layer.Application", {
                         {
                             name: "point_radius",
                             xtype: "numberfield",
-                            fieldLabel: "Point Radius",
+                            fieldLabel: __("Point Radius"),
                             minValue: 0,
                             allowBlank: true
                         },
                         {
                             name: "point_graphic",
                             xtype: "combobox",
-                            fieldLabel: "Graphic",
+                            fieldLabel: __("Graphic"),
                             allowBlank: true,
                             store: [
                                 ["circle", "circle"],
@@ -192,7 +192,7 @@ Ext.define("NOC.gis.layer.Application", {
                         {
                             name: "stroke_dashstyle",
                             xtype: "combobox",
-                            fieldLabel: "Line Style",
+                            fieldLabel: __("Line Style"),
                             allowBlank: true,
                             store: [
                                 ["solid", "solid"],
@@ -211,14 +211,14 @@ Ext.define("NOC.gis.layer.Application", {
                         {
                             name: "show_labels",
                             xtype: "checkboxfield",
-                            boxLabel: "Show Labels"
+                            boxLabel: __("Show Labels")
                         }
                     ]
                 }
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),

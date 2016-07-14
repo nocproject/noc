@@ -17,7 +17,7 @@ Ext.define("NOC.inv.inv.Application", {
         me.invPlugins = {};
         // Navigation tree
         me.defaultRoot = {
-            text: ".",
+            text: __("."),
             children: []
         };
 

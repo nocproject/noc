@@ -16,17 +16,17 @@ Ext.define("NOC.main.style.Application", {
     rowClassField: "row_class",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Active",
+            text: __("Active"),
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
             width: 50
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }
@@ -35,49 +35,49 @@ Ext.define("NOC.main.style.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Is Active",
+            boxLabel: __("Is Active"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "font_color",
             xtype: "colorfield",
-            fieldLabel: "Font Color",
+            fieldLabel: __("Font Color"),
             allowBlank: false
         },
         {
             name: "background_color",
             xtype: "colorfield",
-            fieldLabel: "Background Color",
+            fieldLabel: __("Background Color"),
             allowBlank: false
         },
         {
             name: "bold",
             xtype: "checkboxfield",
-            boxLabel: "Bold",
+            boxLabel: __("Bold"),
             allowBlank: false
         },
         {
             name: "italic",
             xtype: "checkboxfield",
-            boxLabel: "Italic",
+            boxLabel: __("Italic"),
             allowBlank: false
         },
         {
             name: "underlined",
             xtype: "checkboxfield",
-            boxLabel: "Underlined",
+            boxLabel: __("Underlined"),
             allowBlank: false
         }
     ],

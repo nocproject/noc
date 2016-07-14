@@ -299,7 +299,7 @@ Ext.define("NOC.fm.alarm.Application", {
             ],
             columns: [
                 {
-                    text: "ID",
+                    text: __("ID"),
                     dataIndex: "id",
                     width: 150,
                     hidden: true

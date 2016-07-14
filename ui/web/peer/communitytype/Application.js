@@ -13,7 +13,7 @@ Ext.define("NOC.peer.communitytype.Application", {
     search: true,
     columns: [
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "name",
             flex: 1
         }
@@ -22,7 +22,7 @@ Ext.define("NOC.peer.communitytype.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             width: 400,
             allowBlank: false
         }

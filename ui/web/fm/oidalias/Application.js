@@ -25,24 +25,24 @@ Ext.define("NOC.fm.oidalias.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Rewrite OID",
+                    text: __("Rewrite OID"),
                     dataIndex: "rewrite_oid",
                     width: 200
                 },
                 {
-                    text: "To OID",
+                    text: __("To OID"),
                     dataIndex: "to_oid",
                     width: 200
                 },
                 {
-                    text: "Is Builtin",
+                    text: __("Is Builtin"),
                     dataIndex: "is_builtin",
                     renderer: NOC.render.Bool,
                     width: 50,
                     sortable: false
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -51,32 +51,32 @@ Ext.define("NOC.fm.oidalias.Application", {
                 {
                     name: "rewrite_oid",
                     xtype: "textfield",
-                    fieldLabel: "Rewrite OID",
+                    fieldLabel: __("Rewrite OID"),
                     allowBlank: false,
                     regex: /^[0-9]+(\.[0-9]+)+$/
                 },
                 {
                     name: "to_oid",
                     xtype: "textfield",
-                    fieldLabel: "To OID",
+                    fieldLabel: __("To OID"),
                     allowBlank: true,
                     regex: /^[0-9]+(\.[0-9]+)+$/
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    fieldLabel: "UUID"
+                    fieldLabel: __("UUID")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 }
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),

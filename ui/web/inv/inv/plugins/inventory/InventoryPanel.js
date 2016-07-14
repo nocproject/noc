@@ -22,7 +22,7 @@ Ext.define("NOC.inv.inv.plugins.inventory.InventoryPanel", {
 
         //
         me.defaultRoot = {
-            text: ".",
+            text: __("."),
             children: []
         };
 
@@ -41,26 +41,26 @@ Ext.define("NOC.inv.inv.plugins.inventory.InventoryPanel", {
                 {
                     xtype: "treecolumn",
                     dataIndex: "name",
-                    text: "Name",
+                    text: __("Name"),
                     width: 200
                 },
                 {
-                    text: "Model",
+                    text: __("Model"),
                     dataIndex: "model",
                     width: 300
                 },
                 {
-                    text: "Revision",
+                    text: __("Revision"),
                     dataIndex: "revision",
                     width: 100
                 },
                 {
-                    text: "Serial",
+                    text: __("Serial"),
                     dataIndex: "serial",
                     width: 150
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }

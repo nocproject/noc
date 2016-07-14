@@ -622,21 +622,21 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     fieldLabel: __("Metrics"),
                                     columns: [
                                         {
-                                            text: "Metric Type",
+                                            text: __("Metric Type"),
                                             dataIndex: "metric_type",
                                             width: 150,
                                             editor: "pm.metrictype.LookupField",
                                             renderer: NOC.render.Lookup("metric_type")
                                         },
                                         {
-                                            text: "Active",
+                                            text: __("Active"),
                                             dataIndex: "is_active",
                                             width: 50,
                                             renderer: NOC.render.Bool,
                                             editor: "checkbox"
                                         },
                                         {
-                                            text: "Low Error",
+                                            text: __("Low Error"),
                                             dataIndex: "low_error",
                                             width: 60,
                                             editor: "textfield",
@@ -644,7 +644,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             renderer: NOC.render.Size
                                         },
                                         {
-                                            text: "Low Warn",
+                                            text: __("Low Warn"),
                                             dataIndex: "low_warn",
                                             width: 60,
                                             editor: "textfield",
@@ -652,7 +652,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             renderer: NOC.render.Size
                                         },
                                         {
-                                            text: "High Warn",
+                                            text: __("High Warn"),
                                             dataIndex: "high_warn",
                                             width: 60,
                                             editor: "textfield",
@@ -660,7 +660,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             renderer: NOC.render.Size
                                         },
                                         {
-                                            text: "High Error",
+                                            text: __("High Error"),
                                             dataIndex: "high_error",
                                             width: 60,
                                             editor: "textfield",

@@ -48,33 +48,33 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
             },
             items: [
                 {
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     name: "name",
-                    emptyText: "Prefix list name ...",
+                    emptytext: __("Prefix list name ..."),
                     allowBlank: true,
                     regex: /^[0-9a-zA-Z_\-]*$/,
-                    invalidText: "Prefix list name must contains only 0-9,a-z,A-Z,-,_"
+                    invalidtext: __("Prefix list name must contains only 0-9,a-z,A-Z,-,_")
                 },
                 {
                     xtype: "peer.peeringpoint.LookupField",
-                    fieldLabel: "Peering Point",
+                    fieldLabel: __("Peering Point"),
                     name: "peering_point",
                     allowBlank: false
                 },
                 {
-                    fieldLabel: "AS-SET",
+                    fieldLabel: __("AS-SET"),
                     name: "as_set",
-                    emptyText: "AS or AS-set",
+                    emptytext: __("AS or AS-set"),
                     allowBlank: false,
                     regex: /^AS(\d+|-\w+)(-\w+)*(:\S+)?(\s+AS(\d+|-\w+)(:\S+)?)*$/,
-                    invalidText: "Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET, AS-MEGA-SET)",
+                    invalidtext: __("Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET, AS-MEGA-SET)"),
                     plugins: ["ucfield"]
                 }
             ],
             buttonAlign: "left",
             buttons: [
                 {
-                    text: "Build",
+                    text: __("Build"),
                     itemId: "build",
                     glyph: NOC.glyph.play,
                     formBind: true,
@@ -83,7 +83,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
                     handler: me.onBuild
                 },
                 {
-                    text: "Reset",
+                    text: __("Reset"),
                     itemId: "reset",
                     glyph: NOC.glyph.refresh,
                     disabled: false,

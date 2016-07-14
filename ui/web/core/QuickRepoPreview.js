@@ -20,7 +20,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
         me.currentTheme = "default";
 
         me.revCombo = Ext.create("Ext.form.ComboBox", {
-            fieldLabel: "Version",
+            fieldLabel: __("Version"),
             labelWidth: 45,
             labelAlign: "right",
             width: 210,
@@ -55,7 +55,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
         });
 
         me.diffCombo = Ext.create("Ext.form.ComboBox", {
-            fieldLabel: "Compare",
+            fieldLabel: __("Compare"),
             disabled: true,
             labelWidth: 45,
             labelAlign: "right",
@@ -92,7 +92,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
 
         me.reloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
-            text: "Reload",
+            text: __("Reload"),
             tooltip: "Reload",
             scope: me,
             handler: me.onReload
@@ -123,7 +123,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
         });
 
         me.lastDayButton = Ext.create("Ext.button.Button", {
-            text: "Day",
+            text: __("Day"),
             tooltip: "Last day's changes",
             toogleGroup: "diffrange",
             scope: me,
@@ -132,7 +132,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
         });
 
         me.lastWeekButton = Ext.create("Ext.button.Button", {
-            text: "Week",
+            text: __("Week"),
             tooltip: "Last week's changes",
             toogleGroup: "diffrange",
             scope: me,
@@ -141,7 +141,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
         });
 
         me.lastMonthButton = Ext.create("Ext.button.Button", {
-            text: "Month",
+            text: __("Month"),
             tooltip: "Last month's changes",
             toogleGroup: "diffrange",
             scope: me,
@@ -150,7 +150,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
         });
 
         me.themeField = Ext.create("NOC.main.ref.cmtheme.LookupField", {
-            fieldLabel: "Theme",
+            fieldLabel: __("Theme"),
             labelAlign: "right",
             stateful: true,
             stateId: "noc-repopreview-theme",

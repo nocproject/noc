@@ -10,12 +10,12 @@ Ext.define("NOC.sa.managedobject.scripts.ShowObjectStatus", {
     extend: "NOC.sa.managedobject.scripts.TablePreview",
     columns: [
         {
-            text: "Object Name",
+            text: __("Object Name"),
             dataIndex: "name",
             width: 120,
         },
         {
-            text: "Status",
+            text: __("Status"),
             dataIndex: "status",
             renderer: NOC.render.Bool,
             flex: 1

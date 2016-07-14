@@ -51,21 +51,21 @@ Ext.define("NOC.sa.managedobject.Application", {
         var me = this;
 
         me.configPreviewButton = Ext.create("Ext.button.Button", {
-            text: "Config",
+            text: __("Config"),
             glyph: NOC.glyph.file,
             scope: me,
             handler: me.onConfig
         });
 
         me.cardButton = Ext.create("Ext.button.Button", {
-            text: "Card",
+            text: __("Card"),
             glyph: NOC.glyph.eye,
             scope: me,
             handler: me.onCard
         });
 
         me.dashboardButton = Ext.create("Ext.button.Button", {
-            text: "Dashboard",
+            text: __("Dashboard"),
             glyph: NOC.glyph.line_chart,
             scope: me,
             tooltip: "Show dashboard",
@@ -73,21 +73,21 @@ Ext.define("NOC.sa.managedobject.Application", {
         });
 
         me.showMapButton = Ext.create("Ext.button.Button", {
-            text: "Show Map",
+            text: __("Show Map"),
             glyph: NOC.glyph.globe,
             scope: me,
             handler: me.onShowMap
         });
 
         me.consoleButton = Ext.create("Ext.button.Button", {
-            text: "Console",
+            text: __("Console"),
             glyph: NOC.glyph.terminal,
             scope: me,
             handler: me.onConsole
         });
 
         me.scriptsButton = Ext.create("Ext.button.Button", {
-            text: "Scripts",
+            text: __("Scripts"),
             glyph: NOC.glyph.play,
             disabled: true,
             scope: me,
@@ -95,49 +95,49 @@ Ext.define("NOC.sa.managedobject.Application", {
         });
 
         me.interfacesButton = Ext.create("Ext.button.Button", {
-            text: "Interfaces",
+            text: __("Interfaces"),
             glyph: NOC.glyph.reorder,
             scope: me,
             handler: me.onInterfaces
         });
 
         me.linksButton = Ext.create("Ext.button.Button", {
-            text: "Links",
+            text: __("Links"),
             glyph: NOC.glyph.link,
             scope: me,
             handler: me.onLinks
         });
 
         me.discoveryButton = Ext.create("Ext.button.Button", {
-            text: "Discovery",
+            text: __("Discovery"),
             glyph: NOC.glyph.search,
             scope: me,
             handler: me.onDiscovery
         });
 
         me.alarmsButton = Ext.create("Ext.button.Button", {
-            text: "Alarms",
+            text: __("Alarms"),
             glyph: NOC.glyph.exclamation_triangle,
             scope: me,
             handler: me.onAlarm
         });
 
         me.inventoryButton = Ext.create("Ext.button.Button", {
-            text: "Inventory",
+            text: __("Inventory"),
             glyph: NOC.glyph.list,
             scope: me,
             handler: me.onInventory
         });
 
         me.interactionsButton = Ext.create("Ext.button.Button", {
-            text: "Command Log",
+            text: __("Command Log"),
             glyph: NOC.glyph.film,
             scope: me,
             handler: me.onInteractions
         });
 
         me.validationSettingsButton = Ext.create("Ext.button.Button", {
-            text: "Validation",
+            text: __("Validation"),
             glyph: NOC.glyph.file,
             scope: me,
             handler: me.onValidationSettings
@@ -145,14 +145,14 @@ Ext.define("NOC.sa.managedobject.Application", {
 
 
         me.capsButton = Ext.create("Ext.button.Button", {
-            text: "Capabilities",
+            text: __("Capabilities"),
             glyph: NOC.glyph.file,
             scope: me,
             handler: me.onCaps
         });
 
         me.factsButton = Ext.create("Ext.button.Button", {
-            text: "Facts",
+            text: __("Facts"),
             glyph: NOC.glyph.file,
             scope: me,
             handler: me.onFacts
@@ -195,72 +195,72 @@ Ext.define("NOC.sa.managedobject.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 130
                 },
                 {
-                    text: "Managed",
+                    text: __("Managed"),
                     dataIndex: "is_managed",
                     width: 30,
                     renderer: NOC.render.Bool
                 },
                 {
-                    text: "Segment",
+                    text: __("Segment"),
                     dataIndex: "segment",
                     width: 150,
                     renderer: NOC.render.Lookup("segment")
                 },
                 {
-                    text: "Platform",
+                    text: __("Platform"),
                     dataIndex: "platform",
                     width: 150,
                     sortable: false
                 },
                 {
-                    text: "SA Profile",
+                    text: __("SA Profile"),
                     dataIndex: "profile_name"
                 },
                 {
-                    text: "Obj. Profile",
+                    text: __("Obj. Profile"),
                     dataIndex: "object_profile",
                     renderer: NOC.render.Lookup("object_profile")
                 },
                 {
-                    text: "Adm. Domain",
+                    text: __("Adm. Domain"),
                     dataIndex: "administrative_domain",
                     renderer: NOC.render.Lookup("administrative_domain"),
                     width: 100
                 },
                 {
-                    text: "Auth Profile",
+                    text: __("Auth Profile"),
                     dataIndex: "auth_profile",
                     renderer: NOC.render.Lookup("auth_profile"),
                     width: 100
                 },
                 {
-                    text: "VRF",
+                    text: __("VRF"),
                     dataIndex: "vrf",
                     renderer: NOC.render.Lookup("vrf"),
                     width: 100
                 },
                 {
-                    text: "Address",
+                    text: __("Address"),
                     dataIndex: "address"
                 },
                 {
-                    text: "Pool",
+                    text: __("Pool"),
                     dataIndex: "pool",
                     renderer: NOC.render.Lookup("pool"),
                     width: 100
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     width: 100
                 },
                 {
-                    text: "Interfaces",
+                    text: __("Interfaces"),
                     dataIndex: "interface_count",
                     width: 50,
                     sortable: false,
@@ -269,7 +269,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     onClick: me.onInterfaceClick
                 },
                 {
-                    text: "Links",
+                    text: __("Links"),
                     dataIndex: "link_count",
                     width: 50,
                     sortable: false,
@@ -278,7 +278,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                     onClick: me.onLinkClick
                 },
                 {
-                    text: "Tags",
+                    text: __("Tags"),
                     dataIndex: "tags",
                     renderer: NOC.render.Tags,
                     width: 100
@@ -294,14 +294,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "name",
                             xtype: "textfield",
-                            fieldLabel: "Name",
+                            fieldLabel: __("Name"),
                             allowBlank: false,
                             uiStyle: "large"
                         },
                         {
                             name: "is_managed",
                             xtype: "checkboxfield",
-                            boxLabel: "Is Managed?",
+                            boxLabel: __("Is Managed?"),
                             allowBlank: false,
                             groupEdit: true,
                             padding: "0px 0px 0px 4px"
@@ -333,7 +333,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true,
                     uiStyle: "extra"
                 },
@@ -348,7 +348,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "object_profile",
                             xtype: "sa.managedobjectprofile.LookupField",
-                            fieldLabel: "Object Profile",
+                            fieldLabel: __("Object Profile"),
                             labelWidth: 90,
                             itemId: "object_profile",
                             allowBlank: false,
@@ -357,7 +357,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "shape",
                             xtype: "main.ref.stencil.LookupField",
-                            fieldLabel: "Shape",
+                            fieldLabel: __("Shape"),
                             allowBlank: true,
                             groupEdit: true,
                             labelWidth: 40
@@ -376,7 +376,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "administrative_domain",
                             xtype: "sa.administrativedomain.LookupField",
-                            fieldLabel: "Administrative Domain",
+                            fieldLabel: __("Administrative Domain"),
                             width: 200,
                             allowBlank: false,
                             groupEdit: true
@@ -384,7 +384,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "segment",
                             xtype: "inv.networksegment.LookupField",
-                            fieldLabel: "Segment",
+                            fieldLabel: __("Segment"),
                             width: 200,
                             allowBlank: false,
                             groupEdit: true
@@ -392,7 +392,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "pool",
                             xtype: "main.pool.LookupField",
-                            fieldLabel: "Pool",
+                            fieldLabel: __("Pool"),
                             width: 100,
                             allowBlank: false,
                             groupEdit: true
@@ -400,14 +400,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "vrf",
                             xtype: "ip.vrf.LookupField",
-                            fieldLabel: "VRF",
+                            fieldLabel: __("VRF"),
                             allowBlank: true,
                             groupEdit: true
                         },
                         {
                             name: "vc_domain",
                             xtype: "vc.vcdomain.LookupField",
-                            fieldLabel: "VC Domain",
+                            fieldLabel: __("VC Domain"),
                             allowBlank: true,
                             groupEdit: true
                         }
@@ -428,14 +428,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 {
                                     name: "profile_name",
                                     xtype: "main.ref.profile.LookupField",
-                                    fieldLabel: "SA Profile",
+                                    fieldLabel: __("SA Profile"),
                                     allowBlank: false,
                                     groupEdit: true
                                 },
                                 {
                                     name: "scheme",
                                     xtype: "sa.managedobject.SchemeLookupField",
-                                    fieldLabel: "Scheme",
+                                    fieldLabel: __("Scheme"),
                                     allowBlank: false,
                                     uiStyle: "small",
                                     groupEdit: true
@@ -443,14 +443,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 {
                                     name: "address",
                                     xtype: "textfield",
-                                    fieldLabel: "Address",
+                                    fieldLabel: __("Address"),
                                     allowBlank: false,
                                     uiStyle: "medium"
                                 },
                                 {
                                     name: "port",
                                     xtype: "numberfield",
-                                    fieldLabel: "Port",
+                                    fieldLabel: __("Port"),
                                     allowBlank: true,
                                     uiStyle: "small",
                                     minValue: 0,
@@ -460,7 +460,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 {
                                     name: "max_scripts",
                                     xtype: "numberfield",
-                                    fieldLabel: "Max. Scripts",
+                                    fieldLabel: __("Max. Scripts"),
                                     allowBlank: true,
                                     uiStyle: "small",
                                     hideTrigger: true,
@@ -480,14 +480,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 {
                                     name: "auth_profile",
                                     xtype: "sa.authprofile.LookupField",
-                                    fieldLabel: "Auth Profile",
+                                    fieldLabel: __("Auth Profile"),
                                     allowBlank: true,
                                     groupEdit: true
                                 },
                                 {
                                     name: "user",
                                     xtype: "textfield",
-                                    fieldLabel: "User",
+                                    fieldLabel: __("User"),
                                     allowBlank: true,
                                     groupEdit: true,
                                     uiStyle: "medium"
@@ -495,7 +495,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 {
                                     name: "password",
                                     xtype: "textfield",
-                                    fieldLabel: "Password",
+                                    fieldLabel: __("Password"),
                                     allowBlank: true,
                                     inputType: "password",
                                     groupEdit: true,
@@ -504,7 +504,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 {
                                     name: "super_password",
                                     xtype: "textfield",
-                                    fieldLabel: "Super Password",
+                                    fieldLabel: __("Super Password"),
                                     allowBlank: true,
                                     inputType: "password",
                                     groupEdit: true,
@@ -513,7 +513,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                 {
                                     name: "remote_path",
                                     xtype: "textfield",
-                                    fieldLabel: "Path",
+                                    fieldLabel: __("Path"),
                                     allowBlank: true,
                                     uiStyle: "medium"
                                 }
@@ -533,14 +533,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "termination_group",
                             xtype: "sa.terminationgroup.LookupField",
-                            fieldLabel: "Termination Group",
+                            fieldLabel: __("Termination Group"),
                             allowBlank: true,
                             groupEdit: true
                         },
                         {
                             name: "service_terminator",
                             xtype: "sa.terminationgroup.LookupField",
-                            fieldLabel: "Service Terminator",
+                            fieldLabel: __("Service Terminator"),
                             allowBlank: true,
                             groupEdit: true
                         }
@@ -558,7 +558,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "trap_source_type",
                             xtype: "combobox",
-                            fieldLabel: "Trap Source",
+                            fieldLabel: __("Trap Source"),
                             store: [
                                 ["d", "Disable"],
                                 ["m", "Management Address"],
@@ -580,14 +580,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "trap_source_ip",
                             xtype: "textfield",
-                            fieldLabel: "Trap Source IP",
+                            fieldLabel: __("Trap Source IP"),
                             allowBlank: true,
                             uiStyle: "medium"
                         },
                         {
                             name: "syslog_source_type",
                             xtype: "combobox",
-                            fieldLabel: "Syslog Source",
+                            fieldLabel: __("Syslog Source"),
                             store: [
                                 ["d", "Disable"],
                                 ["m", "Management Address"],
@@ -609,7 +609,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "syslog_source_ip",
                             xtype: "textfield",
-                            fieldLabel: "Syslog Source IP",
+                            fieldLabel: __("Syslog Source IP"),
                             allowBlank: true,
                             uiStyle: "medium"
                         }
@@ -627,7 +627,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "trap_community",
                             xtype: "textfield",
-                            fieldLabel: "Trap Community",
+                            fieldLabel: __("Trap Community"),
                             allowBlank: true,
                             groupEdit: true,
                             uiStyle: "medium"
@@ -635,7 +635,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "snmp_ro",
                             xtype: "textfield",
-                            fieldLabel: "RO Community",
+                            fieldLabel: __("RO Community"),
                             allowBlank: true,
                             groupEdit: true,
                             uiStyle: "medium"
@@ -643,7 +643,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "snmp_rw",
                             xtype: "textfield",
-                            fieldLabel: "RW Community",
+                            fieldLabel: __("RW Community"),
                             allowBlank: true,
                             groupEdit: true,
                             uiStyle: "medium"
@@ -662,21 +662,21 @@ Ext.define("NOC.sa.managedobject.Application", {
                         {
                             name: "config_filter_rule",
                             xtype: "main.pyrule.LookupField",
-                            fieldLabel: "Config Filter pyRule",
+                            fieldLabel: __("Config Filter pyRule"),
                             allowBlank: true,
                             groupEdit: true
                         },
                         {
                             name: "config_diff_filter_rule",
                             xtype: "main.pyrule.LookupField",
-                            fieldLabel: "Config Diff Filter Rule",
+                            fieldLabel: __("Config Diff Filter Rule"),
                             allowBlank: true,
                             groupEdit: true
                         },
                         {
                             name: "config_validation_rule",
                             xtype: "main.pyrule.LookupField",
-                            fieldLabel: "Config Validation pyRule",
+                            fieldLabel: __("Config Validation pyRule"),
                             allowBlank: true,
                             groupEdit: true
                         }
@@ -685,7 +685,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     name: "tags",
                     xtype: "tagsfield",
-                    fieldLabel: "Tags",
+                    fieldLabel: __("Tags"),
                     allowBlank: true,
                     uiStyle: "extra"
                 }
@@ -789,13 +789,13 @@ Ext.define("NOC.sa.managedobject.Application", {
             model: "NOC.sa.managedobject.AttributesModel",
             columns: [
                 {
-                    text: "Key",
+                    text: __("Key"),
                     dataIndex: "key",
                     width: 100,
                     editor: "textfield"
                 },
                 {
-                    text: "Value",
+                    text: __("Value"),
                     dataIndex: "value",
                     editor: "textfield",
                     flex: 1

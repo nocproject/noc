@@ -50,7 +50,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         if(NOC.settings.gis.base.enable_osm) {
             // OpenStreetMap layer
             me.baseLayers.push({
-                text: "OpenStreetMap",
+                text: __("OpenStreetMap"),
                 layerType: "osm",
                 scope: me,
                 handler: me.onSelectBaseLayer
@@ -59,7 +59,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         if(NOC.settings.gis.base.enable_google_sat) {
             // Google sattelite layer
             me.baseLayers.push({
-                text: "Google Sattelite",
+                text: __("Google Sattelite"),
                 layerType: "google_sat",
                 scope: me,
                 handler: me.onSelectBaseLayer
@@ -69,7 +69,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         if(NOC.settings.gis.base.enable_google_roadmap) {
             // Google roadmap layer
             me.baseLayers.push({
-                text: "Google Roadmap",
+                text: __("Google Roadmap"),
                 layerType: "google_roadmap",
                 scope: me,
                 handler: me.onSelectBaseLayer
@@ -102,7 +102,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
         me.zoomLevelButton = Ext.create("Ext.button.Button", {
             tooltip: "Zoom to level",
-            text: "1:100 000",
+            text: __("1:100 000"),
             menu: {
                 items: me.zoomLevels.map(function(z, index) {
                     return {
@@ -127,7 +127,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
         me.layersButton = Ext.create("Ext.button.Button", {
             tooltip: "Setup layers",
-            text: "Layers",
+            text: __("Layers"),
             glyph: NOC.glyph.align_justify,
             menu: {
                 items: []
@@ -520,7 +520,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             renderTo: me.mapDom,
             items: [
                 {
-                    text: "Add",
+                    text: __("Add"),
                     menu: me.getContextMenuAddItems(me.contextMenuData)
                 }
             ]

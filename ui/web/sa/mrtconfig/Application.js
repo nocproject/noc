@@ -17,37 +17,37 @@ Ext.define("NOC.sa.mrtconfig.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
 
         {
-            text: "Active",
+            text: __("Active"),
             dataIndex: "is_active",
             renderer: NOC.render.Bool,
             width: 70
         },
 
         {
-            text: "Permission",
+            text: __("Permission"),
             dataIndex: "permission_name",
             width: 70
         },
 
         {
-            text: "Map Script",
+            text: __("Map Script"),
             dataIndex: "map_script"
         },
 
         {
-            text: "Reduce pyRule",
+            text: __("Reduce pyRule"),
             dataIndex: "reduce_pyrule",
             width: 100,
             renderer: NOC.render.Lookup("reduce_pyrule")
         },
 
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: true
         }
@@ -56,31 +56,31 @@ Ext.define("NOC.sa.mrtconfig.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textfield",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Is Active"
+            boxLabel: __("Is Active")
         },
         {
             name: "permission_name",
             xtype: "textfield",
-            fieldLabel: "Permission",
+            fieldLabel: __("Permission"),
             allowBlank: false,
             regex: /^[a-zA-Z0-9_]+$/
         },
         {
             name: "selector",
             xtype: "sa.managedobjectselector.LookupField",
-            fieldLabel: "Selector",
+            fieldLabel: __("Selector"),
             allowBlank: false,
             query: {
                 is_enabled: true
@@ -90,7 +90,7 @@ Ext.define("NOC.sa.mrtconfig.Application", {
         {
             name: "reduce_pyrule",
             xtype: "main.pyrule.LookupField",
-            fieldLabel: "Reduce pyRule",
+            fieldLabel: __("Reduce pyRule"),
             allowBlank: false,
             query: {
                 interface: "IReduceTask"
@@ -99,13 +99,13 @@ Ext.define("NOC.sa.mrtconfig.Application", {
         {
             name: "map_script",
             xtype: "textfield",
-            fieldLabel: "Map Script",
+            fieldLabel: __("Map Script"),
             allowBlank: false
         },
         {
             name: "timeout",
             xtype: "numberfield",
-            fieldLabel: "Timeout",
+            fieldLabel: __("Timeout"),
             allowBlank: true
         }
     ]

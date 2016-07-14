@@ -38,14 +38,14 @@ Ext.define("NOC.inv.interface.ChangeInterfaceProfileForm", {
                         {
                             xtype: "inv.interfaceprofile.LookupField",
                             name: "profile",
-                            fieldLabel: "Profile",
+                            fieldLabel: __("Profile"),
                             allowBlank: false
                         }
                     ],
                     buttonAlign: "center",
                     buttons: [
                         {
-                            text: "Change",
+                            text: __("Change"),
                             glyph: NOC.glyph.check,
                             formBind: true,
                             scope: me,

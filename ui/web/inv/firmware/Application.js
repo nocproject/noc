@@ -17,17 +17,17 @@ Ext.define("NOC.inv.firmware.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 150
                 },
                 {
-                    text: "Vendor",
+                    text: __("Vendor"),
                     dataIndex: "vendor",
                     width: 100
                 },
                 {
-                    text: "Version",
+                    text: __("Version"),
                     dataIndex: "version",
                     flex: 1
                 }
@@ -37,31 +37,31 @@ Ext.define("NOC.inv.firmware.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "vendor",
                     xtype: "textfield",
-                    fieldLabel: "Vendor",
+                    fieldLabel: __("Vendor"),
                     allowBlank: false
                 },
                 {
                     name: "version",
                     xtype: "textfield",
-                    fieldLabel: "Version",
+                    fieldLabel: __("Version"),
                     allowBlank: false
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "download_url",
                     xtype: "textfield",
-                    fieldLabel: "URL",
+                    fieldLabel: __("URL"),
                     allowBlank: true
                 }
             ]

@@ -15,7 +15,7 @@ Ext.define("NOC.main.tag.Application", {
     columns: [
         /*
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         }*/
     ],
@@ -23,7 +23,7 @@ Ext.define("NOC.main.tag.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "name",
+            fieldLabel: __("name"),
             allowBlank: false
         }
     ]

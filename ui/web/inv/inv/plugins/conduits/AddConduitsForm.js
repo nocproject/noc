@@ -28,7 +28,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.AddConduitsForm", {
 
         me.targetCombo = Ext.create("Ext.form.field.ComboBox", {
             name: "connect_to",
-            fieldLabel: "Connect to",
+            fieldLabel: __("Connect to"),
             allowBlank: false,
             store: me.store,
             displayField: "label",
@@ -38,7 +38,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.AddConduitsForm", {
 
         me.distanceField = Ext.create("Ext.form.field.Text", {
             name: "project_distance",
-            fieldLabel: "Project distance (m)",
+            fieldLabel: __("Project distance (m)"),
             allowBlank: true
         });
 
@@ -49,14 +49,14 @@ Ext.define("NOC.inv.inv.plugins.conduits.AddConduitsForm", {
             ],
             buttons: [
                 {
-                    text: "Connect",
+                    text: __("Connect"),
                     glyph: NOC.glyph.plus,
                     formBind: true,
                     scope: me,
                     handler: me.onConnect
                 },
                 {
-                    text: "Close",
+                    text: __("Close"),
                     glyph: NOC.glyph.times,
                     scope: me,
                     handler: me.onClose

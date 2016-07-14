@@ -20,7 +20,7 @@ Ext.define("NOC.fm.monitor.Application", {
         });
 
         me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             tooltip: "Refresh data",
             glyph: NOC.glyph.refresh,
             scope: me,
@@ -38,12 +38,12 @@ Ext.define("NOC.fm.monitor.Application", {
             ],
             columns: [
                 {
-                    text: "Key",
+                    text: __("Key"),
                     dataIndex: "key",
                     width: 100
                 },
                 {
-                    text: "Value",
+                    text: __("Value"),
                     dataIndex: "value",
                     flex: 1
                 }

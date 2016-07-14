@@ -15,12 +15,12 @@ Ext.define("NOC.main.customfieldenumgroup.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 200
         },
         {
-            text: "Act",
+            text: __("Act"),
             dataIndex: "is_active",
             width: 30,
             renderer: NOC.render.Bool
@@ -35,19 +35,19 @@ Ext.define("NOC.main.customfieldenumgroup.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "is_active",
             xtype: "checkboxfield",
-            boxLabel: "Is Active",
+            boxLabel: __("Is Active"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         }
     ],
@@ -61,14 +61,14 @@ Ext.define("NOC.main.customfieldenumgroup.Application", {
         model: "NOC.main.customfieldenumgroup.ValuesModel",
         columns: [
             {
-                text: "Act",
+                text: __("Act"),
                 dataIndex: "is_active",
                 renderer: NOC.render.Bool,
                 width: 30,
                 editor: "checkbox"
             },
             {
-                text: "Key",
+                text: __("Key"),
                 dataIndex: "key",
                 width: 150,
                 editor: {
@@ -77,7 +77,7 @@ Ext.define("NOC.main.customfieldenumgroup.Application", {
                 }
             },
             {
-                text: "Value",
+                text: __("Value"),
                 dataIndex: "value",
                 flex: 1,
                 editor: {

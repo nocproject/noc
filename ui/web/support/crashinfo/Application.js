@@ -33,7 +33,7 @@ Ext.define("NOC.support.crashinfo.Application", {
         me.tbField = null;
 
         me.buttonReport = Ext.create("Ext.button.Button", {
-            text: "Report",
+            text: __("Report"),
             glyph: NOC.glyph.share,
             disabled: true,
             scope: me,
@@ -43,23 +43,23 @@ Ext.define("NOC.support.crashinfo.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "UUID",
+                    text: __("UUID"),
                     dataIndex: "uuid",
                     width: 220
                 },
                 {
-                    text: "Timestamp",
+                    text: __("Timestamp"),
                     dataIndex: "timestamp",
                     width: 170
                 },
                 {
-                    text: "Status",
+                    text: __("Status"),
                     dataIndex: "status",
                     width: 50,
                     renderer: NOC.render.Choices(me.statuses)
                 },
                 {
-                    text: "Priority",
+                    text: __("Priority"),
                     dataIndex: "priority",
                     width: 70,
                     renderer: NOC.render.Choices({
@@ -71,17 +71,17 @@ Ext.define("NOC.support.crashinfo.Application", {
                     })
                 },
                 {
-                    text: "Branch",
+                    text: __("Branch"),
                     dataIndex: "branch",
                     width: 120  // @todo: bitbucket branch
                 },
                 {
-                    text: "Tip",
+                    text: __("Tip"),
                     dataIndex: "tip",
                     width: 150  // @todo: bitbucket renderer
                 },
                 {
-                    text: "Process",
+                    text: __("Process"),
                     dataIndex: "process",
                     flex: 1
                 }
@@ -97,12 +97,12 @@ Ext.define("NOC.support.crashinfo.Application", {
                     items: [
                         {
                             xtype: "displayfield",
-                            fieldLabel: "UUID",
+                            fieldLabel: __("UUID"),
                             name: "uuid"
                         },
                         {
                             xtype: "displayfield",
-                            fieldLabel: "Timestamp",
+                            fieldLabel: __("Timestamp"),
                             name: "timestamp"
                         }
                     ]
@@ -117,13 +117,13 @@ Ext.define("NOC.support.crashinfo.Application", {
                     items: [
                         {
                             xtype: "displayfield",
-                            fieldLabel: "Status",
+                            fieldLabel: __("Status"),
                             name: "status",
                             renderer: NOC.render.Choices(me.statuses)
                         },
                         {
                             xtype: "combobox",
-                            fieldLabel: "Priority",
+                            fieldLabel: __("Priority"),
                             name: "priority",
                             store: [
                                 ["I", "Info"],
@@ -146,24 +146,24 @@ Ext.define("NOC.support.crashinfo.Application", {
                     items: [
                         {
                             xtype: "displayfield",
-                            fieldLabel: "Branch",
+                            fieldLabel: __("Branch"),
                             name: "branch"
                         },
                         {
                             xtype: "displayfield",
-                            fieldLabel: "Changeset",
+                            fieldLabel: __("Changeset"),
                             name: "tip"
                         }
                     ]
                 },
                 {
                     xtype: "displayfield",
-                    fieldLabel: "Process",
+                    fieldLabel: __("Process"),
                     name: "process"
                 },
                 {
                     xtype: "textarea",
-                    fieldLabel: "Comment",
+                    fieldLabel: __("Comment"),
                     name: "comment"
                 },
                 {

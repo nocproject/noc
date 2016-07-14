@@ -21,7 +21,7 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
 
         me.cmdField = Ext.create("Ext.form.field.Text", {
             anchor: "100%",
-            fieldLabel: ">",
+            fieldLabel: __(">"),
             labelWidth: 16,
             itemId: "cmdfield",
             listeners: {
@@ -35,14 +35,14 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
         });
 
         me.closeButton = Ext.create("Ext.button.Button", {
-            text: "Close",
+            text: __("Close"),
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.onClose
         });
 
         me.clearButton = Ext.create("Ext.button.Button", {
-            text: "Clear",
+            text: __("Clear"),
             glyph: NOC.glyph.eraser,
             scope: me,
             handler: me.clearBody

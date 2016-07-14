@@ -116,7 +116,7 @@ Ext.define("NOC.core.ModelApplication", {
 
         me.createButton = Ext.create("Ext.button.Button", {
             itemId: "create",
-            text: "Add",
+            text: __("Add"),
             glyph: NOC.glyph.plus,
             tooltip: "Add new record",
             hasAccess: NOC.hasPermission("create"),
@@ -307,7 +307,7 @@ Ext.define("NOC.core.ModelApplication", {
                     stateId: "rowaction"
                 },
                 {
-                    text: "ID",
+                    text: __("ID"),
                     dataIndex: me.idField,
                     hidden: true
                 }
@@ -356,7 +356,7 @@ Ext.define("NOC.core.ModelApplication", {
         //
         me.saveButton = Ext.create("Ext.button.Button", {
             itemId: "save",
-            text: "Save",
+            text: __("Save"),
             tooltip: "Save changes",
             glyph: NOC.glyph.save,
             formBind: true,
@@ -368,7 +368,7 @@ Ext.define("NOC.core.ModelApplication", {
         //
         me.closeButton = Ext.create("Ext.button.Button", {
             itemId: "close",
-            text: "Close",
+            text: __("Close"),
             tooltip: "Close without saving",
             glyph: NOC.glyph.arrow_left,
             scope: me,
@@ -377,7 +377,7 @@ Ext.define("NOC.core.ModelApplication", {
         //
         me.resetButton = Ext.create("Ext.button.Button", {
             itemId: "reset",
-            text: "Reset",
+            text: __("Reset"),
             tooltip: "Reset to default values",
             glyph: NOC.glyph.undo,
             disabled: true,
@@ -387,7 +387,7 @@ Ext.define("NOC.core.ModelApplication", {
         //
         me.deleteButton = Ext.create("Ext.button.Button", {
             itemId: "delete",
-            text: "Delete",
+            text: __("Delete"),
             tooltip: "Delete object",
             glyph: NOC.glyph.times,
             disabled: true,
@@ -398,7 +398,7 @@ Ext.define("NOC.core.ModelApplication", {
         //
         me.cloneButton = Ext.create("Ext.button.Button", {
             itemId: "clone",
-            text: "Clone",
+            text: __("Clone"),
             tooltip: "Copy existing values to a new object",
             glyph: NOC.glyph.copy,
             disabled: true,
@@ -419,7 +419,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Add View button
         if(me.onPreview) {
             formToolbar.push({
-                text: "View",
+                text: __("View"),
                 tooltip: "Preview",
                 glyph: NOC.glyph.eye,
                 // hasAccess:
@@ -468,7 +468,7 @@ Ext.define("NOC.core.ModelApplication", {
                         ],
                         tbar: [
                             {
-                                text: "Add",
+                                text: __("Add"),
                                 glyph: NOC.glyph.plus,
                                 handler: function() {
                                     var grid = this.up("panel"),
@@ -479,7 +479,7 @@ Ext.define("NOC.core.ModelApplication", {
                                 }
                             },
                             {
-                                text: "Delete",
+                                text: __("Delete"),
                                 glyph: NOC.glyph.times,
                                 handler: function() {
                                     var grid = this.up("panel"),
@@ -1150,7 +1150,7 @@ Ext.define("NOC.core.ModelApplication", {
                 action.text,
                 records.length),
             buttons: [{
-                text: "Run",
+                text: __("Run"),
                 glyph: NOC.glyph.play,
                 handler: function() {
                     var form = w.items.first().getForm();
@@ -1345,7 +1345,7 @@ Ext.define("NOC.core.ModelApplication", {
                     dock: "top",
                     items: [
                         {
-                            text: "Save",
+                            text: __("Save"),
                             glyph: NOC.glyph.save,
                             // formBind: true,
                             // disabled: true,
@@ -1354,7 +1354,7 @@ Ext.define("NOC.core.ModelApplication", {
                             handler: me.onGroupSave
                         },
                         {
-                            text: "Close",
+                            text: __("Close"),
                             glyph: NOC.glyph.arrow_left,
                             scope: me,
                             handler: me.onGroupClose
@@ -1373,7 +1373,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Group edit
         if(me.hasGroupEdit) {
             items.push({
-                text: "Group Edit",
+                text: __("Group Edit"),
                 itemId: "group_edit",
                 glyph: NOC.glyph.edit
             });

@@ -17,12 +17,12 @@ Ext.define("NOC.main.prefixtable.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 200
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }
@@ -31,13 +31,13 @@ Ext.define("NOC.main.prefixtable.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         }
     ],
@@ -46,7 +46,7 @@ Ext.define("NOC.main.prefixtable.Application", {
         model: "NOC.main.prefixtable.PrefixModel",
         columns: [
             {
-                text: "Prefix",
+                text: __("Prefix"),
                 dataIndex: "prefix",
                 flex: 1,
                 editor: "textfield"
@@ -62,7 +62,7 @@ Ext.define("NOC.main.prefixtable.Application", {
                 {
                     name: "ip",
                     xtype: "textfield",
-                    fieldLabel: "IP",
+                    fieldLabel: __("IP"),
                     allowBlank: false
                 }
             ]

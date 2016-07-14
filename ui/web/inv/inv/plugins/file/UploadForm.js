@@ -22,16 +22,16 @@ Ext.define("NOC.inv.inv.plugins.file.UploadForm", {
             me.fields.push(
                 Ext.create("Ext.form.field.File", {
                     name: "file_" + i,
-                    fieldLabel: "File #" + i,
+                    fieldLabel: __("File #") + i,
                     labelWidth: 90,
                     width: 500,
-                    buttonText: "Select file..."
+                    buttontext: __("Select file...")
                 })
             );
             me.fields.push({
                 xtype: "textfield",
                 name: "description_" + i,
-                fieldLabel: "Description #" + i,
+                fieldLabel: __("Description #") + i,
                 labelWidth: 90,
                 width: 500
             });
@@ -45,7 +45,7 @@ Ext.define("NOC.inv.inv.plugins.file.UploadForm", {
                     dock: "bottom",
                     items: [
                         {
-                            text: "Upload",
+                            text: __("Upload"),
                             glyph: NOC.glyph.upload,
                             scope: me,
                             handler: me.onUpload

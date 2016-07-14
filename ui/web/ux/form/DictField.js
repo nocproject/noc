@@ -22,14 +22,14 @@ Ext.define("Ext.ux.form.DictField", {
         });
 
         me.addButton = Ext.create("Ext.button.Button", {
-            text: "Add",
+            text: __("Add"),
             glyph: NOC.glyph.plus,
             scope: me,
             handler: me.onAddRow
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
-            text: "Delete",
+            text: __("Delete"),
             glyph: NOC.glyph.minus,
             disabled: true,
             scope: me,
@@ -41,14 +41,14 @@ Ext.define("Ext.ux.form.DictField", {
             store: me.store,
             columns: [
                 {
-                    text: "Key",
+                    text: __("Key"),
                     dataIndex: "key",
                     width: 150,
                     editor: "textfield",
                     renderer: NOC.render.htmlEncode
                 },
                 {
-                    text: "Value",
+                    text: __("Value"),
                     dataIndex: "value",
                     flex: 1,
                     editor: "textfield",

@@ -22,7 +22,7 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Glyph",
+                    text: __("Glyph"),
                     data_index: "glyph",
                     width: 25,
                     renderer: function(v) {
@@ -35,12 +35,12 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                     }
                 },
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     flex: 1
                 },
                 {
-                    text: "Tags",
+                    text: __("Tags"),
                     dataIndex: "tags",
                     width: 150,
                     render: NOC.render.Tags
@@ -51,41 +51,41 @@ Ext.define("NOC.crm.subscriberprofile.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "medium"
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true,
                     uiStyle: "expand"
                 },
                 {
                     name: "style",
                     xtype: "main.style.LookupField",
-                    fieldLabel: "Style",
+                    fieldLabel: __("Style"),
                     allowBlank: true
                 },
                 {
                     name: "glyph",
                     xtype: "main.ref.glyph.LookupField",
-                    fieldLabel: "Icon",
+                    fieldLabel: __("Icon"),
                     allowBlank: true,
                     uiStyle: "large"
                 },
                 {
                     name: "weight",
                     xtype: "numberfield",
-                    fieldLabel: "Alarm weight",
+                    fieldLabel: __("Alarm weight"),
                     allowBlank: true,
                     uiStyle: "small"
                 },
                 {
                     name: "tags",
                     xtype: "tagsfield",
-                    fieldLabel: "Tags",
+                    fieldLabel: __("Tags"),
                     allowBlank: true
                 }
             ]

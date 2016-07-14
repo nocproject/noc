@@ -36,14 +36,14 @@ Ext.define("NOC.inv.interface.ChangeInterfaceVCDomainForm", {
                         {
                             xtype: "vc.vcdomain.LookupField",
                             name: "state",
-                            fieldLabel: "VCDomain",
+                            fieldLabel: __("VCDomain"),
                             allowBlank: true
                         }
                     ],
                     buttonAlign: "center",
                     buttons: [
                         {
-                            text: "Change",
+                            text: __("Change"),
                             glyph: NOC.glyph.check,
                             formBind: false,
                             scope: me,

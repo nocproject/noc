@@ -19,12 +19,12 @@ Ext.define("NOC.main.notificationgroup.Application", {
     search: true,
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 150
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }
@@ -33,13 +33,13 @@ Ext.define("NOC.main.notificationgroup.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         }
     ],
@@ -49,14 +49,14 @@ Ext.define("NOC.main.notificationgroup.Application", {
             model: "NOC.main.notificationgroup.UsersModel",
             columns: [
                 {
-                    text: "Time Pattern",
+                    text: __("Time Pattern"),
                     dataIndex: "time_pattern",
                     width: 150,
                     renderer: NOC.render.Lookup("time_pattern"),
                     editor: "main.timepattern.LookupField"
                 },
                 {
-                    text: "User",
+                    text: __("User"),
                     dataIndex: "user",
                     flex: 1,
                     renderer: NOC.render.Lookup("user"),
@@ -69,14 +69,14 @@ Ext.define("NOC.main.notificationgroup.Application", {
             model: "NOC.main.notificationgroup.OtherModel",
             columns: [
                 {
-                    text: "Time Pattern",
+                    text: __("Time Pattern"),
                     dataIndex: "time_pattern",
                     width: 150,
                     renderer: NOC.render.Lookup("time_pattern"),
                     editor: "main.timepattern.LookupField"
                 },
                 {
-                    text: "Method",
+                    text: __("Method"),
                     dataIndex: "notification_method",
                     width: 75,
                     editor: {
@@ -89,7 +89,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
                     }
                 },
                 {
-                    text: "Params",
+                    text: __("Params"),
                     dataIndex: "params",
                     flex: 1,
                     editor: "textfield"
@@ -105,14 +105,14 @@ Ext.define("NOC.main.notificationgroup.Application", {
                 {
                     name: "subject",
                     xtype: "textfield",
-                    fieldLabel: "Subject",
+                    fieldLabel: __("Subject"),
                     allowBlank: false,
                     width: 600
                 },
                 {
                     name: "body",
                     xtype: "textarea",
-                    fieldLabel: "Body",
+                    fieldLabel: __("Body"),
                     allowBlank: false,
                     width: 600
                 }

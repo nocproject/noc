@@ -46,25 +46,25 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                     store: me.store,
                     columns: [
                         {
-                            text: "Name",
+                            text: __("Name"),
                             dataIndex: "name"
                         },
                         {
-                            text: "Status",
+                            text: __("Status"),
                             dataIndex: "status",
                             width: 100
                         },
                         {
-                            text: "MAC",
+                            text: __("MAC"),
                             dataIndex: "mac",
                             width: 120
                         },
                         {
-                            text: "LAG",
+                            text: __("LAG"),
                             dataIndex: "lag"
                         },
                         {
-                            text: "Link",
+                            text: __("Link"),
                             dataIndex: "link",
                             renderer: function(value, meta, record) {
                                 var v = value ? value.label : "...";
@@ -73,40 +73,40 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                             onClick: me.onLinkClick
                         },
                         {
-                            text: "Profile",
+                            text: __("Profile"),
                             dataIndex: "profile",
                             renderer: NOC.render.Lookup("profile"),
                             editor: "inv.interfaceprofile.LookupField"
                         },
                         {
-                            text: "Project",
+                            text: __("Project"),
                             dataIndex: "project",
                             renderer: NOC.render.Lookup("project"),
                             editor: "project.project.LookupField"
                         },
                         {
-                            text: "State",
+                            text: __("State"),
                             dataIndex: "state",
                             renderer: NOC.render.Lookup("state"),
                             editor: "main.resourcestate.LookupField"
                         },
                         {
-                            text: "VC Domain",
+                            text: __("VC Domain"),
                             dataIndex: "vc_domain",
                             renderer: NOC.render.Lookup("vc_domain"),
                             editor: "vc.vcdomain.LookupField"
                         },
                         {
-                            text: "Protocols",
+                            text: __("Protocols"),
                             dataIndex: "enabled_protocols"
                         },
                         {
-                            text: "Description",
+                            text: __("Description"),
                             dataIndex: "description",
                             flex: 1
                         },
                         {
-                            text: "ifIndex",
+                            text: __("ifIndex"),
                             dataIndex: "ifindex",
                             hidden: true
                         }

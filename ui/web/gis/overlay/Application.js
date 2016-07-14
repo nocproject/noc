@@ -12,23 +12,23 @@ Ext.define("NOC.gis.overlay.Application", {
     model: "NOC.gis.overlay.Model",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name"
         },
         {
-            text: "Gate Id",
+            text: __("Gate Id"),
             dataIndex: "gate_id"
         },
         {
-            text: "Active",
+            text: __("Active"),
             dataIndex: "is_active"
         },
         {
-            text: "Plugin",
+            text: __("Plugin"),
             dataIndex: "plugin"
         },
         {
-            text: "Permission",
+            text: __("Permission"),
             dataIndex: "permission_name"
         }
     ],
@@ -36,31 +36,31 @@ Ext.define("NOC.gis.overlay.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "gate_id",
             xtype: "textfield",
-            fieldLabel: "Gate Id",
+            fieldLabel: __("Gate Id"),
             allowBlank: false,
             regex: /^[a-zA-Z0-9_\-]+$/
         },
         {
             name: "Active",
             xtype: "checkboxfield",
-            boxLabel: "is_active"
+            boxLabel: __("is_active")
         },
         {
             name: "Plugin",
             xtype: "textfield",
-            fieldLabel: "plugin",
+            fieldLabel: __("plugin"),
             allowBlank: false
         },
         {
             name: "Permission",
             xtype: "textfield",
-            fieldLabel: "permission_name",
+            fieldLabel: __("permission_name"),
             allowBlank: false
         }
     ]

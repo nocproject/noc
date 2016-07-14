@@ -37,7 +37,7 @@ Ext.define("NOC.inv.map.Application", {
             minWidth: 280,
             allowBlank: true,
             disabled: true,
-            emptyText: "Select segment...",
+            emptytext: __("Select segment..."),
             listeners: {
                 scope: me,
                 select: me.onSelectSegment

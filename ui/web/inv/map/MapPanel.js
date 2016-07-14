@@ -347,7 +347,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                     attrs: {
                         text: {
                             fill: "black",
-                            text: "\uf111",
+                            text: __("\uf111"),
                             "font-family": "FontAwesome",
                             "font-size": 5,
                             visibility: "hidden"

@@ -18,33 +18,33 @@ Ext.define("NOC.peer.peeringpoint.Application", {
     search: true,
     columns: [
         {
-            text: "FQDN",
+            text: __("FQDN"),
             flex: 1,
             dataIndex: "hostname"
         },
         {
-            text: "Location",
+            text: __("Location"),
             flex: 1,
             dataIndex: "location"
         },
         {
-            text: "Local AS",
+            text: __("Local AS"),
             flex: 1,
             dataIndex: "local_as",
             renderer: NOC.render.Lookup("local_as")
         },
         {
-            text: "Router-ID",
+            text: __("Router-ID"),
             flex: 1,
             dataIndex: "router_id"
         },
         {
-            text: "Profile",
+            text: __("Profile"),
             flex: 1,
             dataIndex: "profile_name"
         },
         {
-            text: "Import Communities",
+            text: __("Import Communities"),
             flex: 1,
             dataIndex: "communities"
         }
@@ -53,46 +53,46 @@ Ext.define("NOC.peer.peeringpoint.Application", {
         {
             name: "hostname",
             xtype: "textfield",
-            fieldLabel: "FQDN",
+            fieldLabel: __("FQDN"),
             allowBlank: false
         },
         {
             name: "location",
             xtype: "textfield",
-            fieldLabel: "Location"
+            fieldLabel: __("Location")
         },
         {
             name: "local_as",
             xtype: "peer.as.LookupField",
-            fieldLabel: "Local AS",
+            fieldLabel: __("Local AS"),
             allowBlank: false
         },
         {
             name: "router_id",
             xtype: "textfield",
-            fieldLabel: "Router-ID",
+            fieldLabel: __("Router-ID"),
             allowBlank: false
         },
         {
             name: "profile_name",
             xtype: "main.ref.profile.LookupField",
-            fieldLabel: "Profile",
+            fieldLabel: __("Profile"),
             allowBlank: false
         },
         {
             name: "communities",
             xtype: "textfield",
-            fieldLabel: "Import Communities"
+            fieldLabel: __("Import Communities")
         },
         {
             name: "enable_prefix_list_provisioning",
             xtype: "checkboxfield",
-            boxLabel: "Enable Prefix-List Provisioning"
+            boxLabel: __("Enable Prefix-List Provisioning")
         },
         {
             name: "prefix_list_notification_group",
             xtype: "main.notificationgroup.LookupField",
-            fieldLabel: "Prefix-List Notification Group"
+            fieldLabel: __("Prefix-List Notification Group")
         }
     ],
     filters: [

@@ -31,34 +31,34 @@ Ext.define("NOC.sa.monitor.ScriptsPanel", {
                     }],
                     columns: [
                         {
-                            text: "Instance",
+                            text: __("Instance"),
                             dataIndex: "instance"
                         },
                         {
-                            text: "Script",
+                            text: __("Script"),
                             dataIndex: "script"
                         },
                         {
-                            text: "Object",
+                            text: __("Object"),
                             dataIndex: "object_name"
                         },
                         {
-                            text: "Address",
+                            text: __("Address"),
                             dataIndex: "address"
                         },
                         {
-                            text: "Start",
+                            text: __("Start"),
                             dataIndex: "start_time",
                             xtype: "datecolumn",
                             format: "Y-m-d H:i:s"
                         },
                         {
-                            text: "Timeout",
+                            text: __("Timeout"),
                             dataIndex: "timeout",
                             align: "right"
                         },
                         {
-                            text: "Duration",
+                            text: __("Duration"),
                             dataIndex: "duration",
                             align: "right"
                         }
@@ -67,7 +67,7 @@ Ext.define("NOC.sa.monitor.ScriptsPanel", {
             ],
             tbar: [
                 {
-                    text: "Refresh",
+                    text: __("Refresh"),
                     glyph: NOC.glyph.refresh,
                     scope: me.app,
                     handler: me.app.refreshData

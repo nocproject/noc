@@ -25,14 +25,14 @@ Ext.define("NOC.inv.inv.plugins.file.FilePanel", {
         });
 
         me.uploadButton = Ext.create("Ext.button.Button", {
-            text: "Upload",
+            text: __("Upload"),
             glyph: NOC.glyph.upload,
             scope: me,
             handler: me.onUpload
         });
 
         me.deleteButton = Ext.create("Ext.button.Button", {
-            text: "Delete",
+            text: __("Delete"),
             glyph: NOC.glyph.times,
             scope: me,
             handler: me.onDelete
@@ -43,24 +43,24 @@ Ext.define("NOC.inv.inv.plugins.file.FilePanel", {
             autoScroll: true,
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
                 {
-                    text: "Date",
+                    text: __("Date"),
                     dataIndex: "ts",
                     width: 120,
                     renderer: NOC.render.DateTime
                 },
                 {
-                    text: "Size",
+                    text: __("Size"),
                     dataIndex: "size",
                     width: 50,
                     renderer: NOC.render.Size
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }

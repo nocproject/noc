@@ -23,41 +23,41 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 150
                 },
                 {
-                    text: "Active",
+                    text: __("Active"),
                     dataIndex: "is_active",
                     renderer: NOC.render.Bool,
                     width: 50
                 },
                 {
-                    text: "Order",
+                    text: __("Order"),
                     dataIndex: "order",
                     width: 50,
                     textAlign: "right"
                 },
                 {
-                    text: "Selector",
+                    text: __("Selector"),
                     dataIndex: "selector",
                     width: 150,
                     renderer: NOC.render.Lookup("selector")
                 },
                 {
-                    text: "Profile",
+                    text: __("Profile"),
                     dataIndex: "profile",
                     width: 150,
                     renderer: NOC.render.Lookup("profile")
                 },
                 {
-                    text: "Match",
+                    text: __("Match"),
                     dataIndex: "match_expr",
                     width: 200
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     dataIndex: "description",
                     flex: 1
                 }
@@ -66,46 +66,46 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "is_active",
                     xtype: "checkbox",
-                    boxLabel: "Active"
+                    boxLabel: __("Active")
                 },
                 {
                     name: "order",
                     xtype: "numberfield",
-                    fieldLabel: "Order",
+                    fieldLabel: __("Order"),
                     allowBlank: false,
                     value: 100
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: true
                 },
                 {
                     name: "selector",
                     xtype: "sa.managedobjectselector.LookupField",
-                    fieldLabel: "Selector",
+                    fieldLabel: __("Selector"),
                     allowBlank: false
                 },
                 {
                     name: "profile",
                     xtype: "inv.interfaceprofile.LookupField",
-                    fieldLabel: "Interface Profile",
+                    fieldLabel: __("Interface Profile"),
                     allowBlank: false
                 },
                 {
                     name: "match",
                     xtype: "gridfield",
-                    fieldLabel: "Match Rules",
+                    fieldLabel: __("Match Rules"),
                     columns: [
                         {
-                            text: "Field",
+                            text: __("Field"),
                             dataIndex: "field",
                             width: 100,
                             editor: {
@@ -120,7 +120,7 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
                             }
                         },
                         {
-                            text: "Operation",
+                            text: __("Operation"),
                             dataIndex: "op",
                             width: 75,
                             editor: {
@@ -133,13 +133,13 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
                             }
                         },
                         {
-                            text: "Value",
+                            text: __("Value"),
                             dataIndex: "value",
                             width: 150,
                             editor: "textfield"
                         },
                         {
-                            text: "Prefix",
+                            text: __("Prefix"),
                             dataIndex: "prefix_table",
                             editor: {
                                 xtype: "main.prefixtable.LookupField",
@@ -149,7 +149,7 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
                             width: 150
                         },
                         {
-                            text: "VC Filter",
+                            text: __("VC Filter"),
                             dataIndex: "vc_filter",
                             editor: {
                                 xtype: "vc.vcfilter.LookupField",
@@ -159,7 +159,7 @@ Ext.define("NOC.inv.interfaceclassificationrule.Application", {
                             width: 150
                         },
                         {
-                            text: "Description",
+                            text: __("Description"),
                             dataIndex: "description",
                             editor: {
                                 xtype: "textfield",

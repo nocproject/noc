@@ -18,17 +18,17 @@ Ext.define("NOC.peer.maintainer.Application", {
     search: true,
     columns: [
         {
-            text: "Maintainer",
+            text: __("Maintainer"),
             dataIndex: "maintainer",
             flex: 1
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         },
         {
-            text: "RIR",
+            text: __("RIR"),
             dataIndex: "rir",
             renderer: NOC.render.Lookup("rir"),
             flex: 1
@@ -38,25 +38,25 @@ Ext.define("NOC.peer.maintainer.Application", {
         {
             name: "maintainer",
             xtype: "textfield",
-            fieldLabel: "Maintainer",
+            fieldLabel: __("Maintainer"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textfield",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: false
         },
         {
             name: "password",
             xtype: "textfield",
-            fieldLabel: "Password",
+            fieldLabel: __("Password"),
             allowBlank: true
         },
         {
             name: "rir",
             xtype: "peer.rir.LookupField",
-            fieldLabel: "RIR",
+            fieldLabel: __("RIR"),
             allowBlank: false
         },
         {
@@ -64,14 +64,14 @@ Ext.define("NOC.peer.maintainer.Application", {
             name: "admins",
             height: 220,
             width: 600,
-            fieldLabel: "Admin-c",
+            fieldLabel: __("Admin-c"),
             buttons: ['add', 'remove'],
             allowBlank: false
         },
         {
             name: "extra",
             xtype: "textareafield",
-            fieldLabel: "Extra",
+            fieldLabel: __("Extra"),
             allowBlank: true,
             width: 600, 
             height: 100,

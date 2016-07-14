@@ -44,24 +44,24 @@ Ext.define("NOC.inv.connectiontype.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     width: 300,
                     dataIndex: "name"
                 },
                 {
-                    text: "Builtin",
+                    text: __("Builtin"),
                     width: 50,
                     dataIndex: "is_builtin",
                     renderer: NOC.render.Bool,
                     sortable: false
                 },
                 {
-                    text: "Genders",
+                    text: __("Genders"),
                     width: 50,
                     dataIndex: "genders"
                 },
                 {
-                    text: "Description",
+                    text: __("Description"),
                     flex: 1,
                     dataIndex: "description"
                 }
@@ -70,29 +70,29 @@ Ext.define("NOC.inv.connectiontype.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false
                 },
                 {
                     name: "uuid",
                     xtype: "displayfield",
-                    boxLabel: "UUID"
+                    boxLabel: __("UUID")
                 },
                 {
                     name: "description",
                     xtype: "textarea",
-                    fieldLabel: "Description"
+                    fieldLabel: __("Description")
                 },
                 {
                     name: "extend",
                     xtype: "inv.connectiontype.LookupField",
-                    fieldLabel: "Extend",
+                    fieldLabel: __("Extend"),
                     allowBlank: true
                 },
                 {
                     name: "genders",
                     xtype: "combobox",
-                    fieldLabel: "Genders",
+                    fieldLabel: __("Genders"),
                     store: [
                         ["s", "Genderless"],
                         ["ss", "Genderless, 2 or more"],
@@ -107,17 +107,17 @@ Ext.define("NOC.inv.connectiontype.Application", {
                 {
                     name: "data",
                     xtype: "modeldatafield",
-                    fieldLabel: "Model Data"
+                    fieldLabel: __("Model Data")
                 },
                 {
                     name: "c_group",
                     xtype: "stringlistfield",
-                    fieldLabel: "Compatible groups"
+                    fieldLabel: __("Compatible groups")
                 }
             ],
             formToolbar: [
                 {
-                    text: "JSON",
+                    text: __("JSON"),
                     glyph: NOC.glyph.file,
                     tooltip: "Show JSON",
                     hasAccess: NOC.hasPermission("read"),
@@ -125,7 +125,7 @@ Ext.define("NOC.inv.connectiontype.Application", {
                     handler: me.onJSON
                 },
                 {
-                    text: "Test",
+                    text: __("Test"),
                     glyph: NOC.glyph.question,
                     tooltip: "Test compatible types",
                     hasAccess: NOC.hasPermission("read"),

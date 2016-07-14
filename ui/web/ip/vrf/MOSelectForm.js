@@ -28,7 +28,7 @@ Ext.define("NOC.ip.vrf.MOSelectForm", {
                         {
                             xtype: "sa.managedobject.LookupField",
                             name: "managed_object",
-                            fieldLabel: "Managed Object",
+                            fieldLabel: __("Managed Object"),
                             allowBlank: false,
                             itemId: "managed_object"
                         }
@@ -37,7 +37,7 @@ Ext.define("NOC.ip.vrf.MOSelectForm", {
             ],
             buttons: [
                 {
-                    text: "Import",
+                    text: __("Import"),
                     itemId: "import",
                     glyph: NOC.hlyph.level_down,
                     /* formBind: true,

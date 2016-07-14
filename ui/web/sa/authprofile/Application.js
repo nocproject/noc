@@ -14,12 +14,12 @@ Ext.define("NOC.sa.authprofile.Application", {
     model: "NOC.sa.authprofile.Model",
     columns: [
         {
-            text: "Name",
+            text: __("Name"),
             dataIndex: "name",
             width: 200
         },
         {
-            text: "Type",
+            text: __("Type"),
             dataIndex: "type",
             width: 100,
             renderer: NOC.render.Choices({
@@ -30,12 +30,12 @@ Ext.define("NOC.sa.authprofile.Application", {
             })
         },
         {
-            text: "User",
+            text: __("User"),
             dataIndex: "user",
             width: 100
         },
         {
-            text: "Description",
+            text: __("Description"),
             dataIndex: "description",
             flex: 1
         }
@@ -44,19 +44,19 @@ Ext.define("NOC.sa.authprofile.Application", {
         {
             name: "name",
             xtype: "textfield",
-            fieldLabel: "Name",
+            fieldLabel: __("Name"),
             allowBlank: false
         },
         {
             name: "description",
             xtype: "textarea",
-            fieldLabel: "Description",
+            fieldLabel: __("Description"),
             allowBlank: true
         },
         {
             name: "type",
             xtype: "combobox",
-            fieldLabel: "Type",
+            fieldLabel: __("Type"),
             allowBlank: false,
             store: [
                 ["G", "Local Group"],
@@ -68,33 +68,33 @@ Ext.define("NOC.sa.authprofile.Application", {
         {
             name: "user",
             xtype: "textfield",
-            fieldLabel: "User",
+            fieldLabel: __("User"),
             allowBlank: true
         },
         {
             name: "password",
             xtype: "textfield",
             inputType: "password",
-            fieldLabel: "Password",
+            fieldLabel: __("Password"),
             allowBlank: true
         },
         {
             name: "super_password",
             xtype: "textfield",
             inputType: "password",
-            fieldLabel: "Super Password",
+            fieldLabel: __("Super Password"),
             allowBlank: true
         },
         {
             name: "snmp_ro",
             xtype: "textfield",
-            fieldLabel: "RO Community",
+            fieldLabel: __("RO Community"),
             allowBlank: true
         },
         {
             name: "snmp_rw",
             xtype: "textfield",
-            fieldLabel: "RW Community",
+            fieldLabel: __("RW Community"),
             allowBlank: true
         }
     ]

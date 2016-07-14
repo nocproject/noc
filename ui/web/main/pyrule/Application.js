@@ -23,18 +23,18 @@ Ext.define("NOC.main.pyrule.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: "Name",
+                    text: __("Name"),
                     dataIndex: "name",
                     width: 200
                 },
 
                 {
-                    text: "Interface",
+                    text: __("Interface"),
                     dataIndex: "interface",
                     width: 200
                 },
                 {
-                    text: "handler",
+                    text: __("handler"),
                     dataIndex: "handler",
                     flex: 1
                 }
@@ -43,27 +43,27 @@ Ext.define("NOC.main.pyrule.Application", {
                 {
                     name: "name",
                     xtype: "textfield",
-                    fieldLabel: "Name",
+                    fieldLabel: __("Name"),
                     allowBlank: false,
                     uiStyle: "medium",
                 },
                 {
                     name: "interface",
                     xtype: "main.ref.interface.LookupField",
-                    fieldLabel: "Interface",
+                    fieldLabel: __("Interface"),
                     allowBlank: false
                 },
                 {
                     name: "description",
                     xtype: "textareafield",
-                    fieldLabel: "Description",
+                    fieldLabel: __("Description"),
                     allowBlank: false,
                     uiStyle: "extra"
                 },
                 {
                     name: "handler",
                     xtype: "textfield",
-                    fieldLabel: "Handler",
+                    fieldLabel: __("Handler"),
                     allowBlank: true,
                     uiStyle: "large",
                     triggers: {
@@ -78,7 +78,7 @@ Ext.define("NOC.main.pyrule.Application", {
                 {
                     name: "text",
                     xtype: "cmtext",
-                    fieldLabel: "Text",
+                    fieldLabel: __("Text"),
                     allowBlank: true,
                     flex: 1,
                     mode: "python"

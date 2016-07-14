@@ -17,7 +17,7 @@ Ext.define("NOC.sa.managedobject.AlarmPanel", {
         var me = this;
 
         me.refreshButton = Ext.create("Ext.button.Button", {
-            text: "Refresh",
+            text: __("Refresh"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.onRefresh
@@ -34,42 +34,42 @@ Ext.define("NOC.sa.managedobject.AlarmPanel", {
             stateId: "sa.managedobject-alarm",
             columns: [
                 {
-                    text: "ID",
+                    text: __("ID"),
                     dataIndex: "id",
                     width: 150
                 },
                 {
-                    text: "Time",
+                    text: __("Time"),
                     dataIndex: "timestamp",
                     width: 100,
                     renderer: NOC.render.DateTime
                 },
                 {
-                    text: "Severity",
+                    text: __("Severity"),
                     dataIndex: "severity",
                     width: 70,
                     renderer: NOC.render.Lookup("severity")
                 },
                 {
-                    text: "Class",
+                    text: __("Class"),
                     dataIndex: "alarm_class",
                     width: 300,
                     renderer: NOC.render.Lookup("alarm_class")
                 },
                 {
-                    text: "Subject",
+                    text: __("Subject"),
                     dataIndex: "subject",
                     flex: 1
                 },
                 {
-                    text: "Duration",
+                    text: __("Duration"),
                     dataIndex: "duration",
                     width: 70,
                     align: "right",
                     renderer: NOC.render.Duration
                 },
                 {
-                    text: "Events",
+                    text: __("Events"),
                     dataIndex: "events",
                     width: 30,
                     align: "right"
