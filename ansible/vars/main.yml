@@ -96,6 +96,7 @@ alerta_deploy_finish:
     service:
       - NOC
     status: closed
+    text: "Deployment on {{noc_env}} finished with tags: {{ ansible_tags }}"
 
 alerta_blackout:
     environment: Production
