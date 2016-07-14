@@ -7,8 +7,8 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-07-14 08:44+0300",
-        "POT-Creation-Date": "2016-07-14 00:19+0300",
+        "PO-Revision-Date": "2016-07-14 10:07+0300",
+        "POT-Creation-Date": "2016-07-14 09:58+0300",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
@@ -17,6 +17,10 @@
     "About NOC ...": [
         null,
         "О программе ..."
+    ],
+    "Access": [
+        null,
+        "Доступ"
     ],
     "Action": [
         null,
@@ -46,6 +50,10 @@
         null,
         "Зона ответсвенности"
     ],
+    "Administrative Domain": [
+        null,
+        "Зона ответсвенности"
+    ],
     "Alarm Class": [
         null,
         "Класс аварии"
@@ -70,13 +78,25 @@
         null,
         "Все"
     ],
+    "Alrm.": [
+        null,
+        "Ав."
+    ],
     "Anonymous": [
         null,
         "Анонимный"
     ],
+    "Apply": [
+        null,
+        "Применить"
+    ],
     "Archive": [
         null,
         "Архив"
+    ],
+    "Auth Profile": [
+        null,
+        "Профиль авторизации"
     ],
     "Builtin": [
         null,
@@ -85,6 +105,14 @@
     "By Date": [
         null,
         "По дате"
+    ],
+    "Capabilities": [
+        null,
+        "Возможности"
+    ],
+    "Capability": [
+        null,
+        "Возможность"
     ],
     "Card": [
         null,
@@ -102,9 +130,21 @@
         null,
         "Смена пароля"
     ],
+    "Change password": [
+        null,
+        "Смена пароля"
+    ],
     "Change password ...": [
         null,
         "Смена пароля ..."
+    ],
+    "Changed": [
+        null,
+        "Изменение"
+    ],
+    "Changes": [
+        null,
+        "Изменения"
     ],
     "Changing language": [
         null,
@@ -138,6 +178,10 @@
         null,
         "Сброс линков"
     ],
+    "Clone": [
+        null,
+        "Клон"
+    ],
     "Close": [
         null,
         "Закрыть"
@@ -149,6 +193,22 @@
     "Collapse panels": [
         null,
         "Свернуть панели"
+    ],
+    "Command Log": [
+        null,
+        "Комманды"
+    ],
+    "Company": [
+        null,
+        "Компания"
+    ],
+    "Compare": [
+        null,
+        "Сравнить"
+    ],
+    "Completed": [
+        null,
+        "Завершен"
     ],
     "Condition": [
         null,
@@ -162,6 +222,22 @@
         null,
         "Соединить"
     ],
+    "Console": [
+        null,
+        "Консоль"
+    ],
+    "Contacts": [
+        null,
+        "Контакты"
+    ],
+    "Country": [
+        null,
+        "Страна"
+    ],
+    "Create Rule": [
+        null,
+        "Создать правило"
+    ],
     "Credentials has been changed": [
         null,
         "Пароль изменен"
@@ -170,6 +246,14 @@
         null,
         "Данные"
     ],
+    "Date": [
+        null,
+        "Дата"
+    ],
+    "Day": [
+        null,
+        "День"
+    ],
     "Delay": [
         null,
         "Задержка"
@@ -177,6 +261,10 @@
     "Delete": [
         null,
         "Удалить"
+    ],
+    "Deleted": [
+        null,
+        "Удаленный"
     ],
     "Description": [
         null,
@@ -198,6 +286,10 @@
         null,
         "Загрузить"
     ],
+    "Dur.": [
+        null,
+        "Дл."
+    ],
     "Edit": [
         null,
         "Редактировать"
@@ -214,6 +306,10 @@
         null,
         "Синхронизация с IPAM"
     ],
+    "Error Type": [
+        null,
+        "Тип ошибки"
+    ],
     "Escalations": [
         null,
         "Эскалации"
@@ -229,6 +325,10 @@
     "FQDN template": [
         null,
         "Шаблон FQDN"
+    ],
+    "Facts": [
+        null,
+        "Факты"
     ],
     "Failed to change credentials: ": [
         null,
@@ -310,6 +410,14 @@
         null,
         "Глобальный лимит"
     ],
+    "Glyph": [
+        null,
+        "Картинка"
+    ],
+    "Group Edit": [
+        null,
+        "Групповое редактирование"
+    ],
     "Handler": [
         null,
         "Обработчик"
@@ -338,6 +446,10 @@
         null,
         "Картинка"
     ],
+    "Install": [
+        null,
+        "Установить"
+    ],
     "Interface": [
         null,
         "Интерфейс"
@@ -350,9 +462,21 @@
         null,
         "Статус интерфейсов"
     ],
+    "Interval": [
+        null,
+        "Интервал"
+    ],
     "Interval, sec": [
         null,
         "Интервал, с"
+    ],
+    "Introduced": [
+        null,
+        "Появилась"
+    ],
+    "Is Managed?": [
+        null,
+        "Управляем?"
     ],
     "Job": [
         null,
@@ -390,6 +514,10 @@
         null,
         "Свойства линка"
     ],
+    "Links": [
+        null,
+        "Линки"
+    ],
     "Local Description": [
         null,
         "Локальное описание"
@@ -410,9 +538,17 @@
         null,
         "Выход"
     ],
+    "Mac Address": [
+        null,
+        "MAC Адрес"
+    ],
     "Mail": [
         null,
         "Почта"
+    ],
+    "Managed": [
+        null,
+        "Управляем"
     ],
     "Message": [
         null,
@@ -434,6 +570,14 @@
         null,
         "Мин. вес"
     ],
+    "Model": [
+        null,
+        "Модель"
+    ],
+    "Month": [
+        null,
+        "Месяц"
+    ],
     "Name": [
         null,
         "Имя"
@@ -449,6 +593,10 @@
     "Neighbor": [
         null,
         "Сосед"
+    ],
+    "New": [
+        null,
+        "Новый"
     ],
     "New layout": [
         null,
@@ -470,6 +618,10 @@
         null,
         "Группа рассылки"
     ],
+    "Obj. Profile": [
+        null,
+        "Профиль объекта"
+    ],
     "Object": [
         null,
         "Объект"
@@ -477,6 +629,10 @@
     "Object Inspector": [
         null,
         "Свойства объекта"
+    ],
+    "Object Profile": [
+        null,
+        "Профиль объекта"
     ],
     "Object/Segment": [
         null,
@@ -506,6 +662,14 @@
         null,
         "Параметры"
     ],
+    "Path": [
+        null,
+        "Путь"
+    ],
+    "Patterns": [
+        null,
+        "Маски"
+    ],
     "Platform": [
         null,
         "Платформа"
@@ -518,6 +682,14 @@
         null,
         "Пожалуйста, введите ID первопричины"
     ],
+    "Pool Name": [
+        null,
+        "Имя пула"
+    ],
+    "Port": [
+        null,
+        "Порт"
+    ],
     "Pre Reason": [
         null,
         "Предв. диагностика"
@@ -526,6 +698,18 @@
         null,
         "Предв. диагностика"
     ],
+    "Preferred Language": [
+        null,
+        "Язык"
+    ],
+    "Prefixes": [
+        null,
+        "Префиксы"
+    ],
+    "Probable Causes": [
+        null,
+        "Возможные причины"
+    ],
     "Profile": [
         null,
         "Профиль"
@@ -533,6 +717,14 @@
     "Profile saved": [
         null,
         "Профиль сохранен"
+    ],
+    "Protocol": [
+        null,
+        "Протокол"
+    ],
+    "Rack: ": [
+        null,
+        "Стойка:"
     ],
     "Refresh": [
         null,
@@ -554,6 +746,14 @@
         null,
         "Удалить"
     ],
+    "Rep.": [
+        null,
+        "Повт."
+    ],
+    "Report": [
+        null,
+        "Отчет"
+    ],
     "Report ping RTT": [
         null,
         "Собирать RTT при ping"
@@ -570,17 +770,37 @@
         null,
         "Результат"
     ],
+    "Retype password": [
+        null,
+        "Повтор пароля"
+    ],
+    "Revalidate": [
+        null,
+        "Перепроверить"
+    ],
     "Revert": [
         null,
         "Отменить"
+    ],
+    "Revision": [
+        null,
+        "Ревизия"
     ],
     "Root only": [
         null,
         "Первопричина"
     ],
+    "Rules": [
+        null,
+        "Правила"
+    ],
     "Run": [
         null,
         "Запуск"
+    ],
+    "SA Profile": [
+        null,
+        "Профиль SA"
     ],
     "Save": [
         null,
@@ -589,6 +809,18 @@
     "Saved": [
         null,
         "Сохранено"
+    ],
+    "Scheme": [
+        null,
+        "Схема"
+    ],
+    "Scope": [
+        null,
+        "Область"
+    ],
+    "Scripts": [
+        null,
+        "Скрипты"
     ],
     "Search": [
         null,
@@ -606,6 +838,10 @@
         null,
         "Свойства сегмента"
     ],
+    "Segments": [
+        null,
+        "Сегменты"
+    ],
     "Select managed object ...": [
         null,
         "Выберите объект"
@@ -613,6 +849,22 @@
     "Selector": [
         null,
         "Селектор"
+    ],
+    "Selectors": [
+        null,
+        "Селекторы"
+    ],
+    "Serial": [
+        null,
+        "Серийный №"
+    ],
+    "Serial No": [
+        null,
+        "Серийный №"
+    ],
+    "Service Terminator": [
+        null,
+        "Терминатор сервиса"
     ],
     "Set": [
         null,
@@ -702,9 +954,17 @@
         null,
         "Статичная карта"
     ],
+    "Size": [
+        null,
+        "Размер"
+    ],
     "Sound": [
         null,
         "Звук"
+    ],
+    "Start": [
+        null,
+        "Начало"
     ],
     "Starting search": [
         null,
@@ -742,9 +1002,25 @@
         null,
         "Затронуто/ТТ"
     ],
+    "Suppress Alarms": [
+        null,
+        "Подавлять аварии"
+    ],
+    "Suppress alarms": [
+        null,
+        "Подавлять аварии"
+    ],
     "Switch to breadcrumb view": [
         null,
         "Компактный режим"
+    ],
+    "Symptoms": [
+        null,
+        "Симптомы"
+    ],
+    "System": [
+        null,
+        "Система"
     ],
     "TT": [
         null,
@@ -754,9 +1030,25 @@
         null,
         "Система TT"
     ],
+    "Technologies": [
+        null,
+        "Технологии"
+    ],
+    "Termination Group": [
+        null,
+        "Терминатор"
+    ],
+    "Terminators": [
+        null,
+        "Терминаторы"
+    ],
     "Test Sound": [
         null,
         "Тест звука"
+    ],
+    "Theme": [
+        null,
+        "Тема"
     ],
     "Threshold": [
         null,
@@ -778,6 +1070,10 @@
         null,
         "Время/Длительность"
     ],
+    "Timestamp": [
+        null,
+        "Время"
+    ],
     "Title Template": [
         null,
         "Шаблон заголовка"
@@ -798,21 +1094,49 @@
         null,
         "Итог:"
     ],
+    "Type": [
+        null,
+        "Тип"
+    ],
+    "Unique": [
+        null,
+        "Уникальный"
+    ],
     "Unlink interface": [
         null,
         "Отсоединить интерфейс"
+    ],
+    "Upload": [
+        null,
+        "Загрузка"
     ],
     "User profile ...": [
         null,
         "Профиль пользователя ..."
     ],
+    "VC Filter": [
+        null,
+        "Фильтр VC"
+    ],
     "Validation": [
         null,
         "Проверка"
     ],
+    "Validation Rule": [
+        null,
+        "Правило валидации"
+    ],
     "Value": [
         null,
         "Значение"
+    ],
+    "Vars": [
+        null,
+        "Переменные"
+    ],
+    "Version Changed": [
+        null,
+        "Смена версии"
     ],
     "View Card": [
         null,
@@ -834,8 +1158,24 @@
         null,
         "Подписаться"
     ],
+    "Week": [
+        null,
+        "Неделя"
+    ],
     "Would you like to reset current layout and generate new?": [
         null,
         "Сбросить раскладку карты и перестроить заново?"
+    ],
+    "Zoom Actual": [
+        null,
+        "Ув. по размеру"
+    ],
+    "Zoom In": [
+        null,
+        "Увеличить"
+    ],
+    "Zoom Out": [
+        null,
+        "Уменьшить"
     ]
 }
