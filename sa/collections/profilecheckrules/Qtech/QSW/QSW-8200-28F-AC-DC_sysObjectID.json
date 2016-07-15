@@ -1,0 +1,13 @@
+{
+    "name": "Qtech | QSW | QSW-8200-28F-AC-DC sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "f5e8e051-7831-497a-b5c9-00e0cc39d27a",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.27514.1.1.2.59",
+    "action": "match",
+    "profile": "Qtech.QSW2800"
+}
