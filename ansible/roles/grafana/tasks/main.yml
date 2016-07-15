@@ -11,6 +11,8 @@
       owner: root
     - path: var/db/grafana
       owner: "{{ grafana_user }}"
+    - path: var/db/grafana_plugins
+      owner: "{{ grafana_user }}"
 
 - name: Create Grafana config
   template:
