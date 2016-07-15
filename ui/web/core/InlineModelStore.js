@@ -116,12 +116,10 @@ Ext.define("NOC.core.InlineModelStore", {
         Ext.callback(me.syncConfig.success,
             me.syncConfig.scope || me);
     },
-    onSyncException: function(proxy, response, op, opts) {
-        var me = this,
-            status = Ext.decode(response.responseText);
-        status.status = response.status;
+    onSyncException: function(proxy, request, op, opts) {
+        var me = this;
         Ext.callback(me.syncConfig.failure,
-            me.syncConfig.scope || me, [response, op, status]);
+            me.syncConfig.scope || me, [request, op, 500]);
     },
     setParent: function(parentId) {
         var me = this;
