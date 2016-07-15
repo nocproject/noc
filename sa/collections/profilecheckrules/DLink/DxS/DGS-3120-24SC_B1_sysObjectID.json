@@ -1,0 +1,13 @@
+{
+    "name": "DLink | DxS | DGS-3120-24SC/B1 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "425443a4-89b5-4f51-afa6-98132a1f2c71",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.171.10.117.4.1",
+    "action": "match",
+    "profile": "DLink.DxS"
+}
