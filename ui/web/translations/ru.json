@@ -34,6 +34,14 @@
         null,
         "Добавить"
     ],
+    "Add First Free": [
+        null,
+        "Добавить первый свободный"
+    ],
+    "Add Interfaces": [
+        null,
+        "Добавить интерфейс"
+    ],
     "Address": [
         null,
         "Адрес"
@@ -44,15 +52,31 @@
     ],
     "Adm. Domain": [
         null,
-        "Зона ответсвенности"
+        "Зона ответственности"
     ],
     "Adm. domain": [
         null,
-        "Зона ответсвенности"
+        "Зона ответственности"
+    ],
+    "Admin": [
+        null,
+        "Админ"
+    ],
+    "Administrative": [
+        null,
+        "Административный"
+    ],
+    "Administrative Division": [
+        null,
+        "Административное деление"
     ],
     "Administrative Domain": [
         null,
-        "Зона ответсвенности"
+        "Зона ответственности"
+    ],
+    "Alarm": [
+        null,
+        "Авария"
     ],
     "Alarm Class": [
         null,
@@ -62,9 +86,41 @@
         null,
         "Классы аварий"
     ],
+    "Alarm Cleared": [
+        null,
+        "Авария снята"
+    ],
+    "Alarm Commented": [
+        null,
+        "Авараия откомментирована"
+    ],
+    "Alarm Reopened": [
+        null,
+        "Авария открыта снова"
+    ],
+    "Alarm Risen": [
+        null,
+        "Авария создана"
+    ],
     "Alarm Weight": [
         null,
-        "Аварийный вес"
+        "Вес аварии"
+    ],
+    "Alarm cleared": [
+        null,
+        "Авария снята"
+    ],
+    "Alarm commented": [
+        null,
+        "Авария откомментирована"
+    ],
+    "Alarm reopened": [
+        null,
+        "Авария открыта снова"
+    ],
+    "Alarm risen": [
+        null,
+        "Авария создана"
     ],
     "Alarm weight": [
         null,
@@ -94,9 +150,45 @@
         null,
         "Архив"
     ],
+    "Attic": [
+        null,
+        "Чердак"
+    ],
+    "Attrs": [
+        null,
+        "Атриб."
+    ],
     "Auth Profile": [
         null,
         "Профиль авторизации"
+    ],
+    "Auto generated?": [
+        null,
+        "Автоматически?"
+    ],
+    "Background Color": [
+        null,
+        "Цвет фона"
+    ],
+    "Blt": [
+        null,
+        "Бит"
+    ],
+    "Body Template": [
+        null,
+        "Шаблон содерж."
+    ],
+    "Bold": [
+        null,
+        "Жирный"
+    ],
+    "Branch": [
+        null,
+        "Ветка"
+    ],
+    "Building": [
+        null,
+        "Здание"
     ],
     "Builtin": [
         null,
@@ -118,9 +210,17 @@
         null,
         "Карточка"
     ],
+    "Card Template": [
+        null,
+        "Шаблон карточки"
+    ],
     "Card Title Template": [
         null,
         "Шаблон заголовка карточки"
+    ],
+    "Cellar": [
+        null,
+        "Подвал"
     ],
     "Change": [
         null,
@@ -194,9 +294,25 @@
         null,
         "Свернуть панели"
     ],
+    "Color": [
+        null,
+        "Цвет"
+    ],
     "Command Log": [
         null,
         "Комманды"
+    ],
+    "Commands": [
+        null,
+        "Команды"
+    ],
+    "Comment": [
+        null,
+        "Комментарий"
+    ],
+    "Community": [
+        null,
+        "Сообщество"
     ],
     "Company": [
         null,
@@ -218,6 +334,14 @@
         null,
         "Конфиг"
     ],
+    "Config Changed": [
+        null,
+        "Конфиг изменён"
+    ],
+    "Config changed": [
+        null,
+        "Конфиг изменен"
+    ],
     "Connect": [
         null,
         "Соединить"
@@ -230,9 +354,21 @@
         null,
         "Контакты"
     ],
+    "Content": [
+        null,
+        "Содержимое"
+    ],
     "Country": [
         null,
         "Страна"
+    ],
+    "Create": [
+        null,
+        "Создать"
+    ],
+    "Create Ignore Pattern": [
+        null,
+        "Создать игнор. шаблон"
     ],
     "Create Rule": [
         null,
@@ -242,9 +378,25 @@
         null,
         "Пароль изменен"
     ],
+    "Current": [
+        null,
+        "Текущий"
+    ],
+    "Current, mA": [
+        null,
+        "Ток, мА"
+    ],
+    "Dashboard": [
+        null,
+        "График"
+    ],
     "Data": [
         null,
         "Данные"
+    ],
+    "Datasource": [
+        null,
+        "Источник данных"
     ],
     "Date": [
         null,
@@ -253,6 +405,14 @@
     "Day": [
         null,
         "День"
+    ],
+    "Def. Zoom": [
+        null,
+        "Увел.Умолч."
+    ],
+    "Default Severity": [
+        null,
+        "Severity по умолчанию"
     ],
     "Delay": [
         null,
@@ -270,6 +430,14 @@
         null,
         "Описание"
     ],
+    "Description #": [
+        null,
+        "№ описания"
+    ],
+    "Diameter (mm)": [
+        null,
+        "Диаметр (мм)"
+    ],
     "Disable": [
         null,
         "Отключить"
@@ -282,6 +450,10 @@
         null,
         "Отсоединить интерфейс {0}?"
     ],
+    "Domain": [
+        null,
+        "Зона"
+    ],
     "Download": [
         null,
         "Загрузить"
@@ -289,6 +461,10 @@
     "Dur.": [
         null,
         "Дл."
+    ],
+    "Duration": [
+        null,
+        "Продолж."
     ],
     "Edit": [
         null,
@@ -306,6 +482,14 @@
         null,
         "Синхронизация с IPAM"
     ],
+    "Entrance": [
+        null,
+        "Подъезд"
+    ],
+    "Entrances": [
+        null,
+        "Подъезды"
+    ],
     "Error Type": [
         null,
         "Тип ошибки"
@@ -313,6 +497,34 @@
     "Escalations": [
         null,
         "Эскалации"
+    ],
+    "Est. Letter": [
+        null,
+        "Буква владения"
+    ],
+    "Estate": [
+        null,
+        "Владение"
+    ],
+    "Estate2": [
+        null,
+        "Владение2"
+    ],
+    "Event Class": [
+        null,
+        "Класс события"
+    ],
+    "Event Class RE": [
+        null,
+        "RE класса события"
+    ],
+    "Event class RE": [
+        null,
+        "RE класса события"
+    ],
+    "Event id or JSON code": [
+        null,
+        "ID события или JSON"
     ],
     "Events": [
         null,
@@ -322,6 +534,10 @@
         null,
         "Развернуть панели"
     ],
+    "Expire": [
+        null,
+        "Истекает"
+    ],
     "FQDN template": [
         null,
         "Шаблон FQDN"
@@ -330,9 +546,13 @@
         null,
         "Факты"
     ],
+    "Failed": [
+        null,
+        "Ошибка"
+    ],
     "Failed to change credentials: ": [
         null,
-        "Не удалось сменить пароль"
+        "Не удалось сменить пароль: "
     ],
     "Failed to clear alarm": [
         null,
@@ -348,7 +568,7 @@
     ],
     "Failed to get STP status": [
         null,
-        "Не удалось получить данные"
+        "Ошибка получения статуса STP"
     ],
     "Failed to get alarm": [
         null,
@@ -356,7 +576,7 @@
     ],
     "Failed to get data": [
         null,
-        "Не удалось получить данные"
+        "Ошибка получения данных"
     ],
     "Failed to get interfaces list": [
         null,
@@ -390,21 +610,109 @@
         null,
         "Не удалось подписаться"
     ],
+    "Fax-no": [
+        null,
+        "Факс"
+    ],
+    "Field": [
+        null,
+        "Поле"
+    ],
+    "File #": [
+        null,
+        "№ файла"
+    ],
+    "Fill Color": [
+        null,
+        "Цвет фона"
+    ],
+    "Fill Entrances": [
+        null,
+        "Заполнить подъезды"
+    ],
     "Filter": [
         null,
         "Фильтр"
+    ],
+    "Filter By Tags": [
+        null,
+        "Фильтровать по тегам"
+    ],
+    "Filter by Address (REGEXP)": [
+        null,
+        "Фильтровать по адресу (REGEXP)"
+    ],
+    "Filter by Description (REGEXP)": [
+        null,
+        "Фильтровать по описанию (REGEXP)"
+    ],
+    "Filter by ID": [
+        null,
+        "Фильтровать по ID"
+    ],
+    "Filter by Name (REGEXP)": [
+        null,
+        "Фильтровать по имени (REGEXP)"
+    ],
+    "Filter by Object Profile": [
+        null,
+        "Фильтровать по профилю объекта"
+    ],
+    "Filter by Profile": [
+        null,
+        "Фильтровать по профилю"
+    ],
+    "Filter by User (REGEXP)": [
+        null,
+        "Фильтровать по пользователю (REGEXP)"
+    ],
+    "Filter by VRF": [
+        null,
+        "Фильтровать по VRF"
     ],
     "First Discovered": [
         null,
         "Первый раз"
     ],
+    "First Entrance": [
+        null,
+        "Первый подъезд"
+    ],
+    "First Floor": [
+        null,
+        "Первый этаж"
+    ],
+    "First Home": [
+        null,
+        "Первая квартира"
+    ],
+    "First Number": [
+        null,
+        "Первый номер"
+    ],
     "Fix": [
         null,
         "Исправить"
     ],
+    "Floors": [
+        null,
+        "Этажи"
+    ],
+    "Font Color": [
+        null,
+        "Цвет шрифта"
+    ],
     "From": [
         null,
         "С"
+    ],
+    "Full Number": [
+        null,
+        "Полный номер"
+    ],
+    "Full Path": [
+        null,
+        "Полный путь"
     ],
     "Global limit": [
         null,
@@ -418,9 +726,17 @@
         null,
         "Групповое редактирование"
     ],
+    "Habitated": [
+        null,
+        "Жилое"
+    ],
     "Handler": [
         null,
         "Обработчик"
+    ],
+    "Handlers": [
+        null,
+        "Обработчики"
     ],
     "Help": [
         null,
@@ -438,6 +754,14 @@
         null,
         "Срабатываний"
     ],
+    "Homes": [
+        null,
+        "Квартиры"
+    ],
+    "Homes per Entrance": [
+        null,
+        "Кв./подъезд"
+    ],
     "ID": [
         null,
         "ID"
@@ -445,6 +769,14 @@
     "Icon": [
         null,
         "Картинка"
+    ],
+    "Ignore CLI Errors": [
+        null,
+        "Игнорировать ошибки CLI"
+    ],
+    "In (kbit/s)": [
+        null,
+        "Вх (Кб/с)"
     ],
     "Install": [
         null,
@@ -458,13 +790,25 @@
         null,
         "Профиль интерфейса"
     ],
+    "Interface changed": [
+        null,
+        "Интерфейс изменён"
+    ],
     "Interface status": [
         null,
         "Статус интерфейсов"
     ],
+    "Interfaces": [
+        null,
+        "Интерфейсы"
+    ],
     "Interval": [
         null,
         "Интервал"
+    ],
+    "Interval (sec)": [
+        null,
+        "Интервал (с)"
     ],
     "Interval, sec": [
         null,
@@ -474,9 +818,17 @@
         null,
         "Появилась"
     ],
+    "Is Builtin": [
+        null,
+        "Встроен"
+    ],
     "Is Managed?": [
         null,
         "Управляем?"
+    ],
+    "Italic": [
+        null,
+        "Наклонный"
     ],
     "Job": [
         null,
@@ -490,9 +842,25 @@
         null,
         "Перейти в сегмент"
     ],
+    "Key (RE)": [
+        null,
+        "Ключ (REGEXP)"
+    ],
+    "Label": [
+        null,
+        "Метка"
+    ],
     "Language": [
         null,
         "Язык"
+    ],
+    "Last Floor": [
+        null,
+        "Последний этаж"
+    ],
+    "Last Home": [
+        null,
+        "Последняя квартира"
     ],
     "Last Run": [
         null,
@@ -506,9 +874,25 @@
         null,
         "Последний раз"
     ],
+    "Layers": [
+        null,
+        "Слои"
+    ],
+    "Left RE": [
+        null,
+        "Лев. RE"
+    ],
     "Level": [
         null,
         "Уровень"
+    ],
+    "Limit": [
+        null,
+        "Предел"
+    ],
+    "Line Style": [
+        null,
+        "Стиль линии"
     ],
     "Link Inspector": [
         null,
@@ -540,15 +924,51 @@
     ],
     "Mac Address": [
         null,
-        "MAC Адрес"
+        "MAC-адрес"
     ],
     "Mail": [
         null,
         "Почта"
     ],
+    "Maintainer": [
+        null,
+        "Разработчик"
+    ],
     "Managed": [
         null,
         "Управляем"
+    ],
+    "Management": [
+        null,
+        "Управление"
+    ],
+    "Masters": [
+        null,
+        "Основные"
+    ],
+    "Match Condition": [
+        null,
+        "Условие совпадения"
+    ],
+    "Max": [
+        null,
+        "Макс"
+    ],
+    "Max Zoom": [
+        null,
+        "Макс.Увел."
+    ],
+    "Max. Length": [
+        null,
+        "Макс. длина"
+    ],
+    "Max. Zoom": [
+        null,
+        "Макс.Увел."
+    ],
+    "Members": [
+        null,
+        "Члены"
     ],
     "Message": [
         null,
@@ -562,13 +982,29 @@
         null,
         "Метрика"
     ],
+    "Metric Type": [
+        null,
+        "Тип метрики"
+    ],
     "Metrics": [
         null,
         "Метрики"
     ],
+    "Min": [
+        null,
+        "Мин"
+    ],
+    "Min Zoom": [
+        null,
+        "Мин.Увел."
+    ],
     "Min. Weight": [
         null,
         "Мин. вес"
+    ],
+    "Min. Zoom": [
+        null,
+        "Мин.Увел."
     ],
     "Model": [
         null,
@@ -598,6 +1034,18 @@
         null,
         "Новый"
     ],
+    "New Homes": [
+        null,
+        "Новые квартиры"
+    ],
+    "New Password": [
+        null,
+        "Новый пароль"
+    ],
+    "New Password (Retype)": [
+        null,
+        "Новый пароль ещё раз"
+    ],
     "New layout": [
         null,
         "Новая раскладка"
@@ -610,13 +1058,41 @@
         null,
         "Следующий запуск"
     ],
+    "Notification": [
+        null,
+        "Уведомление"
+    ],
     "Notification Contacts": [
         null,
         "Контакты"
     ],
+    "Notification Delay": [
+        null,
+        "Задержка уведомления"
+    ],
+    "Notification Delay (s)": [
+        null,
+        "Заержка уведомления (с)"
+    ],
     "Notification Group": [
         null,
         "Группа рассылки"
+    ],
+    "Num": [
+        null,
+        "Номер"
+    ],
+    "Num Letter": [
+        null,
+        "Буква номера"
+    ],
+    "Num2": [
+        null,
+        "Номер2"
+    ],
+    "Number": [
+        null,
+        "Номер"
     ],
     "Obj. Profile": [
         null,
@@ -642,6 +1118,10 @@
         null,
         "Объекты"
     ],
+    "Old Password": [
+        null,
+        "Старый пароль"
+    ],
     "On platform change": [
         null,
         "При смене платформы"
@@ -654,21 +1134,77 @@
         null,
         "Шаблон открытия"
     ],
+    "Oper": [
+        null,
+        "Опер"
+    ],
+    "Optical Rx, bBm": [
+        null,
+        "Optical Rx, dBm"
+    ],
+    "Optical Tx, bBm": [
+        null,
+        "Optical Tx, dBm"
+    ],
+    "Org. Name": [
+        null,
+        "Назв. орг."
+    ],
+    "Org. Type": [
+        null,
+        "Тип орг."
+    ],
+    "Organisation": [
+        null,
+        "Организация"
+    ],
+    "Out (kbit/s)": [
+        null,
+        "Вых (Кб/с)"
+    ],
     "Overview": [
         null,
         "Обзор"
+    ],
+    "Paid Till": [
+        null,
+        "Оплачено до"
+    ],
+    "Parameter": [
+        null,
+        "Параметр"
     ],
     "Params": [
         null,
         "Параметры"
     ],
+    "Parent": [
+        null,
+        "Родитель"
+    ],
+    "Password": [
+        null,
+        "Пароль"
+    ],
     "Path": [
         null,
         "Путь"
     ],
+    "Pattern": [
+        null,
+        "Маска"
+    ],
+    "Pattern (RE)": [
+        null,
+        "Маска (RE)"
+    ],
     "Patterns": [
         null,
         "Маски"
+    ],
+    "Phone": [
+        null,
+        "Телефон"
     ],
     "Platform": [
         null,
@@ -682,6 +1218,22 @@
         null,
         "Пожалуйста, введите ID первопричины"
     ],
+    "Plugin": [
+        null,
+        "Плагин"
+    ],
+    "Plugins": [
+        null,
+        "Плагины"
+    ],
+    "Point Radius": [
+        null,
+        "Радиус точки"
+    ],
+    "Pool": [
+        null,
+        "Пул"
+    ],
     "Pool Name": [
         null,
         "Имя пула"
@@ -689,6 +1241,10 @@
     "Port": [
         null,
         "Порт"
+    ],
+    "Postal Code": [
+        null,
+        "Почтовый индекс"
     ],
     "Pre Reason": [
         null,
@@ -698,6 +1254,18 @@
         null,
         "Предв. диагностика"
     ],
+    "Pref": [
+        null,
+        "Предп."
+    ],
+    "Pref.": [
+        null,
+        "Предп."
+    ],
+    "Preference": [
+        null,
+        "Предпочтение"
+    ],
     "Preferred Language": [
         null,
         "Язык"
@@ -706,9 +1274,25 @@
         null,
         "Префиксы"
     ],
+    "Prio.": [
+        null,
+        "Прио."
+    ],
+    "Priority": [
+        null,
+        "Приоритет"
+    ],
     "Probable Causes": [
         null,
         "Возможные причины"
+    ],
+    "Process": [
+        null,
+        "Процесс"
+    ],
+    "Processed": [
+        null,
+        "Обработан"
     ],
     "Profile": [
         null,
@@ -725,6 +1309,10 @@
     "Rack: ": [
         null,
         "Стойка:"
+    ],
+    "Recommended Actions": [
+        null,
+        "Рекомендованные действия"
     ],
     "Refresh": [
         null,
@@ -750,6 +1338,10 @@
         null,
         "Повт."
     ],
+    "Repeat Suppression": [
+        null,
+        "Подавление повторов"
+    ],
     "Report": [
         null,
         "Отчет"
@@ -770,9 +1362,17 @@
         null,
         "Результат"
     ],
+    "Retry": [
+        null,
+        "Повтор"
+    ],
+    "Retype New Password": [
+        null,
+        "Новый пароль ещё раз"
+    ],
     "Retype password": [
         null,
-        "Повтор пароля"
+        "Пароль ещё раз"
     ],
     "Revalidate": [
         null,
@@ -786,6 +1386,18 @@
         null,
         "Ревизия"
     ],
+    "Rewrite OID": [
+        null,
+        "Переписать OID"
+    ],
+    "Right RE": [
+        null,
+        "Прав. RE"
+    ],
+    "Right Re": [
+        null,
+        "Прав. RE"
+    ],
     "Root only": [
         null,
         "Первопричина"
@@ -797,6 +1409,10 @@
     "Run": [
         null,
         "Запуск"
+    ],
+    "Running": [
+        null,
+        "Выполняется"
     ],
     "SA Profile": [
         null,
@@ -826,9 +1442,17 @@
         null,
         "Поиск"
     ],
+    "Search ...": [
+        null,
+        "Поиск..."
+    ],
     "Search complete": [
         null,
         "Поиск завершен"
+    ],
+    "Search...": [
+        null,
+        "Поиск..."
     ],
     "Segment": [
         null,
@@ -842,9 +1466,25 @@
         null,
         "Сегменты"
     ],
+    "Select Config ...": [
+        null,
+        "Выбрать конфиг..."
+    ],
+    "Select MIB...": [
+        null,
+        "Выбрать MIB..."
+    ],
+    "Select file...": [
+        null,
+        "Выберите файл..."
+    ],
     "Select managed object ...": [
         null,
         "Выберите объект"
+    ],
+    "Select segment...": [
+        null,
+        "Выберите сегмент..."
     ],
     "Selector": [
         null,
@@ -872,7 +1512,7 @@
     ],
     "Set Root Cause": [
         null,
-        "Установить причину"
+        "Установить Первопричину"
     ],
     "Set root cause": [
         null,
@@ -880,11 +1520,19 @@
     ],
     "Severity": [
         null,
-        "Серьезность"
+        "Серьёзность"
     ],
     "Shape": [
         null,
         "Форма"
+    ],
+    "Short": [
+        null,
+        "Кртк."
+    ],
+    "Short Name": [
+        null,
+        "Кртк. имя"
     ],
     "Show": [
         null,
@@ -893,6 +1541,10 @@
     "Show JSON": [
         null,
         "Показ JSON"
+    ],
+    "Show Labels": [
+        null,
+        "Показать метки"
     ],
     "Show Map": [
         null,
@@ -904,7 +1556,7 @@
     ],
     "Show STP topology": [
         null,
-        "Показ топологии STP"
+        "Топология STP"
     ],
     "Show active alarms": [
         null,
@@ -944,7 +1596,7 @@
     ],
     "Show only root causes": [
         null,
-        "Показывать только первопричину"
+        "Показывать только первопричины"
     ],
     "Show only waiting confirmantion": [
         null,
@@ -958,9 +1610,17 @@
         null,
         "Размер"
     ],
+    "Slaves": [
+        null,
+        "Дополн."
+    ],
     "Sound": [
         null,
         "Звук"
+    ],
+    "Source": [
+        null,
+        "Исходн."
     ],
     "Start": [
         null,
@@ -982,6 +1642,30 @@
         null,
         "Окончание"
     ],
+    "Street": [
+        null,
+        "Улица"
+    ],
+    "Stroke Color": [
+        null,
+        "Цвет линии"
+    ],
+    "Stroke Width": [
+        null,
+        "Ширина линии"
+    ],
+    "Struct": [
+        null,
+        "Строение"
+    ],
+    "Struct Letter": [
+        null,
+        "Буква строения"
+    ],
+    "Struct2": [
+        null,
+        "Строение2"
+    ],
     "Style": [
         null,
         "Стиль"
@@ -989,6 +1673,10 @@
     "Subject": [
         null,
         "Тема"
+    ],
+    "Subject Template": [
+        null,
+        "Шаблон темы"
     ],
     "Subject/Class": [
         null,
@@ -1001,6 +1689,10 @@
     "Summary/TT": [
         null,
         "Затронуто/ТТ"
+    ],
+    "Suppress": [
+        null,
+        "Подавление"
     ],
     "Suppress Alarms": [
         null,
@@ -1018,6 +1710,10 @@
         null,
         "Симптомы"
     ],
+    "Syntax": [
+        null,
+        "Синтаксис"
+    ],
     "System": [
         null,
         "Система"
@@ -1030,9 +1726,33 @@
         null,
         "Система TT"
     ],
+    "Table": [
+        null,
+        "Таблица"
+    ],
+    "Tagged": [
+        null,
+        "Помеч."
+    ],
+    "Tags": [
+        null,
+        "Теги"
+    ],
+    "Tasks": [
+        null,
+        "Задачи"
+    ],
     "Technologies": [
         null,
         "Технологии"
+    ],
+    "Temp, C": [
+        null,
+        "Темп, °C"
+    ],
+    "Template": [
+        null,
+        "Шаблон"
     ],
     "Termination Group": [
         null,
@@ -1041,6 +1761,10 @@
     "Terminators": [
         null,
         "Терминаторы"
+    ],
+    "Test": [
+        null,
+        "Тест"
     ],
     "Test Sound": [
         null,
@@ -1062,6 +1786,10 @@
         null,
         "Время"
     ],
+    "Time (sec)": [
+        null,
+        "Время (с)"
+    ],
     "Time Pattern": [
         null,
         "Маска времени"
@@ -1069,6 +1797,10 @@
     "Time/Duration": [
         null,
         "Время/Длительность"
+    ],
+    "Timeout(sec)": [
+        null,
+        "Таймаут (с)"
     ],
     "Timestamp": [
         null,
@@ -1082,6 +1814,10 @@
         null,
         "По"
     ],
+    "To OID": [
+        null,
+        "в OID"
+    ],
     "Toggle autoreload": [
         null,
         "Переключить автозагрузку"
@@ -1092,11 +1828,15 @@
     ],
     "Total: ": [
         null,
-        "Итог:"
+        "Итого:"
     ],
     "Type": [
         null,
         "Тип"
+    ],
+    "Underlined": [
+        null,
+        "Подчеркнутый"
     ],
     "Unique": [
         null,
@@ -1106,9 +1846,17 @@
         null,
         "Отсоединить интерфейс"
     ],
+    "Untag.": [
+        null,
+        "Непомеч."
+    ],
     "Upload": [
         null,
         "Загрузка"
+    ],
+    "User": [
+        null,
+        "Пользователь"
     ],
     "User profile ...": [
         null,
@@ -1130,13 +1878,29 @@
         null,
         "Значение"
     ],
+    "Value (RE)": [
+        null,
+        "Значение (REGEXP)"
+    ],
+    "Var.  Map.": [
+        null,
+        "Прив. перем."
+    ],
     "Vars": [
         null,
         "Переменные"
     ],
+    "Version": [
+        null,
+        "Версия"
+    ],
     "Version Changed": [
         null,
-        "Смена версии"
+        "Версия изменена"
+    ],
+    "Version changed": [
+        null,
+        "Версия изменена"
     ],
     "View Card": [
         null,
@@ -1145,6 +1909,10 @@
     "View card": [
         null,
         "Просмотр карточки"
+    ],
+    "Voltage, V": [
+        null,
+        "Напряжение, В"
     ],
     "Volume": [
         null,
@@ -1162,6 +1930,10 @@
         null,
         "Неделя"
     ],
+    "Window": [
+        null,
+        "Окно"
+    ],
     "Would you like to reset current layout and generate new?": [
         null,
         "Сбросить раскладку карты и перестроить заново?"
@@ -1177,5 +1949,21 @@
     "Zoom Out": [
         null,
         "Уменьшить"
+    ],
+    "members": [
+        null,
+        "члены"
+    ],
+    "name": [
+        null,
+        "имя"
+    ],
+    "plugin": [
+        null,
+        "плагин"
+    ],
+    "type": [
+        null,
+        "тип"
     ]
 }
