@@ -36,7 +36,9 @@ class ManagedObjectLoader(BaseLoader):
         "user",
         "password",
         "super_password",
-        "snmp_ro"
+        "snmp_ro",
+        "description",
+        "auth_profile"
     ]
 
     mapped_fields = {
@@ -45,7 +47,8 @@ class ManagedObjectLoader(BaseLoader):
         "segment": "networksegment",
         "termination_group": "terminationgroup",
         "service_terminator": "terminationgroup",
-        "container": "container"
+        "container": "container",
+        "auth_profile": "auth_profile"
     }
 
     def __init__(self, *args, **kwargs):
