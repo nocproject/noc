@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-06-30 19:09-0300\n"
-"PO-Revision-Date: 2016-07-04 09:17-0300\n"
+"POT-Creation-Date: 2016-07-15 09:59-0300\n"
+"PO-Revision-Date: 2016-07-15 10:06-0300\n"
 "Language: pt_BR\n"
 "Language-Team: pt_BR <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -34,7 +34,7 @@ msgstr ""
 
 #: ui/login/app/ui.js:29
 msgid "Username"
-msgstr "Nome do usuário"
+msgstr "Nome de usuário"
 
 #: ui/login/app/ui.js:30
 msgid "User"
@@ -42,7 +42,7 @@ msgstr "Usuário"
 
 #: ui/login/app/ui.js:32
 msgid "User name cannot be empty"
-msgstr "Usuário não pode ser vazio"
+msgstr "Usuário obrigatório"
 
 #: ui/login/app/ui.js:38 ui/login/app/ui.js:39
 msgid "Password"
@@ -50,7 +50,7 @@ msgstr "Senha"
 
 #: ui/login/app/ui.js:41
 msgid "Password cannot be empty"
-msgstr "Senha não pode ser vazia"
+msgstr "Senha obrigatória"
 
 #: ui/login/app/ui.js:48
 msgid "Login"
