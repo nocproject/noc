@@ -173,7 +173,7 @@ class Command(BaseCommand):
                 "simple": "simplereport"
             }[options["report"]]
         # Check templateset
-        ts_root = os.path.join("main", "templates", "newapp", templateset)
+        ts_root = os.path.join("templates", "newapp", templateset)
         if not os.path.isdir(ts_root):
             raise CommandError("Inconsistent template set %s" % templateset)
         # Get installed modules
@@ -291,7 +291,7 @@ class Command(BaseCommand):
                     form_fields += [ff]
                 tv["js_form_fields"] = self.to_js(form_fields, 1)
             # Check applications is not exists
-            app_root = os.path.join(m, "apps", a)
+            app_root = os.path.join("services", "web", "apps", m, a)
             if os.path.exists(app_root):
                 raise CommandError("Application %s is already exists" % app)
             # Create apps/__init__.py if missed
@@ -305,7 +305,7 @@ class Command(BaseCommand):
             self.create_dir(app_root)
             # Fill templates
             for dirpath, dirnames, files in os.walk(ts_root):
-                dp = dirpath.split(os.sep)[4:]  # strip main/templates/newapp/<ts>/
+                dp = dirpath.split(os.sep)[3:]  # strip templates/newapp/<ts>/
                 # Create directories
                 for d in dirnames:
                     p = [app_root] + dp + [d]
@@ -319,5 +319,5 @@ class Command(BaseCommand):
                     content = Template(template).render(Context(tv))
                     content = self.compact(content)
                     # Write template
-                    p = [app_root] + dp + [fn]
+                    p = [app_root] + dp + [fn[:-3]]  # Strip .j2
                     self.create_file(os.path.join(*p), content)
