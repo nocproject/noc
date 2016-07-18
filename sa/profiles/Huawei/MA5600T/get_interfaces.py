@@ -33,12 +33,12 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
     rx_tagged = re.compile("(?P<tagged>\d+)", re.MULTILINE)
     rx_ether = re.compile(
-        r"^\s*(?P<port>\d+)\s+GE\s+\S+\s+\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
+        r"^\s*(?P<port>\d+)\s+[GF]E\s+(\S+\s+)?\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
         r"(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n", re.MULTILINE)
     rx_adsl_state = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<oper_state>\S+)", re.MULTILINE)
     rx_pvc = re.compile(
-        r"^\s*\d+\s+p2p\s+lan\s+0/\d+\s*/(?P<vlan>\d+)\s+\S*\s+\S+\s+\S+\s+"
+        r"^\s*\d+\s+p2p\s+lan\s+[0\*]/[\d+\*]\s*/(?P<vlan>[\d+\*])\s+\S*\s+\S+\s+\S+\s+"
         r"adl\s+0/\d+\s*/(?P<port>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\d+\s+"
         r"(?P<admin_status>\S+)\s*\n", re.MULTILINE)
     rx_sp = re.compile(
@@ -51,19 +51,12 @@ class Script(BaseScript):
         vlans = []
         ports = self.profile.fill_ports(self)
         for i in range(len(ports)):
-            if ports[i]["t"] == "GE":
+            if ports[i]["t"] in ["GE", "FE"]:
                 v = self.cli("display board 0/%d" % i)
                 for match in self.rx_ether.finditer(v):
                     ifname = "0/%d/%d" % (i, int(match.group("port")))
                     admin_status = match.group("admin_status") == "active"
                     oper_status = match.group("oper_status") == "online"
-                    v = self.cli("display port vlan %s" % ifname)
-                    tagged = []
-                    m = self.rx_vlan.search(v)
-                    untagged = int(m.group("untagged"))
-                    for t in self.rx_tagged.finditer(m.group("tagged")):
-                        if int(t.group("tagged")) != untagged:
-                            tagged += [int(t.group("tagged"))]
                     iface = {
                         "name": ifname,
                         "type": "physical",
@@ -73,11 +66,19 @@ class Script(BaseScript):
                             "name": ifname,
                             "admin_status": admin_status,
                             "oper_status": oper_status,
-                            "enabled_afi": ["BRIDGE"],
-                            "untagged": untagged,
-                            "tagged": tagged
+                            "enabled_afi": ["BRIDGE"]
                         }]
                     }
+                    v = self.cli("display port vlan %s" % ifname)
+                    m = self.rx_vlan.search(v)
+                    if m:
+                        tagged = []
+                        untagged = int(m.group("untagged"))
+                        for t in self.rx_tagged.finditer(m.group("tagged")):
+                            if int(t.group("tagged")) != untagged:
+                                tagged += [int(t.group("tagged"))]
+                        iface["subinterfaces"][0]["untagged"] = untagged
+                        iface["subinterfaces"][0]["tagged"] = tagged
                     interfaces += [iface]
         for i in range(len(ports)):
             if ports[i]["t"] == "ADSL":
@@ -104,9 +105,10 @@ class Script(BaseScript):
                         "admin_status": match.group("admin_status") == "up",
                         "enabled_afi": ["BRIDGE", "ATM"],
                         "vpi": int(match.group("vpi")),
-                        "vci": int(match.group("vci")),
-                        "vlan_ids": int(match.group("vlan"))
+                        "vci": int(match.group("vci"))
                     }
+                    if match.group("vlan") != "*":
+                        sub["vlan_ids"] = int(match.group("vlan"))
                     found = False
                     for iface in interfaces:
                         if ifname == iface["name"]:
