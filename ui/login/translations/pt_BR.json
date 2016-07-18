@@ -7,8 +7,8 @@
         "Language-Team": "pt_BR <LL@li.org>",
         "Last-Translator": "Gabriela Todeschini <gabrielat@cpd.ufrgs.br>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-07-04 09:17-0300",
-        "POT-Creation-Date": "2016-06-30 19:09-0300",
+        "PO-Revision-Date": "2016-07-15 10:06-0300",
+        "POT-Creation-Date": "2016-07-15 09:59-0300",
         "Plural-Forms": "nplurals=2; plural=(n > 1);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
@@ -32,7 +32,7 @@
     ],
     "Password cannot be empty": [
         null,
-        "Senha não pode ser vazia"
+        "Senha obrigatória"
     ],
     "Reset": [
         null,
@@ -44,10 +44,10 @@
     ],
     "User name cannot be empty": [
         null,
-        "Usuário não pode ser vazio"
+        "Usuário obrigatório"
     ],
     "Username": [
         null,
-        "Nome do usuário"
+        "Nome de usuário"
     ]
 }
