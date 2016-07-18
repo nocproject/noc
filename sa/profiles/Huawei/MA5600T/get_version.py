@@ -22,7 +22,7 @@ class Script(BaseScript):
     rx_ver2 = re.compile(
         r"^\s*VERSION\s*:\s*MA\S+(?P<version>V\d+R\d+\S+)\s*\n"
         r".+?"
-        r"^\s*PRODUCT\s+(?P<platform>MA\S+)\s*\n",
+        r"^\s*PRODUCT\s+(\:\s*)?(?P<platform>MA\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
