@@ -169,8 +169,9 @@ class Collection(object):
                     )
         return items
 
-    def dereference(self,  d):
+    def dereference(self,  d, model=None):
         r = {}
+        model = model or self.model
         for k in d:
             v = d[k]
             if k.startswith("$"):
@@ -182,20 +183,20 @@ class Collection(object):
             if "__" in k:
                 # Lookup
                 k, f = k.split("__")
-                if k not in self.model._fields:
+                if k not in model._fields:
                     raise ValueError("Invalid lookup field: %s" % k)
-                ref = self.model._fields[k].document_type
+                ref = model._fields[k].document_type
                 v = self.lookup(ref, f, v)
             # Get field
             try:
-                field = self.model._fields[k]
+                field = model._fields[k]
             except KeyError:
                 continue  # Ignore unknown fields
             # Dereference ListFields
             if (type(field) == ListField and
                     isinstance(field.field, EmbeddedDocumentField)):
                 edoc = field.field.document_type
-                v = [edoc(**self.dereference(edoc, x)) for x in d[k]]
+                v = [edoc(**self.dereference(x, model=edoc)) for x in d[k]]
             r[str(k)] = v
         return r
 
@@ -276,11 +277,10 @@ class Collection(object):
                 changed = True
         # Resolve partials
         while partials:
-            pl = len(partials)
             np = []
             for u in partials:
                 if not self.update_item(cdata[u].data):
-                    np += u
+                    np += [u]
             if len(np) == len(partials):
                 # Cannot resolve partials
                 raise ValueError(
