@@ -49,14 +49,17 @@ class Registry(object):
         if self.is_registered:
             return
         logging.info("Loading %s" % self.name)
+        logging.info("Loading11111 %s" % self.name)
         if self.apps is None:
             from django.conf import settings
             apps = [a for a in settings.INSTALLED_APPS if a.startswith("noc.")]
         else:
             apps = self.apps
+        logging.info("Loading Apps %s app" % apps)
         for l in ["", "local"]:  # Look in the local/ directory too
             for app in apps:
                 pd = os.path.join("services", "web", "apps", l, app[4:], self.subdir)
+                logging.info("Paths %s" % pd)
                 if not os.path.isdir(pd):
                     continue
                 for dirpath, dirnames, filenames in os.walk(pd):
@@ -73,7 +76,9 @@ class Registry(object):
                             if not os.path.exists(i_path):
                                 open(i_path, "w").close()  # Create file
                     else:
-                        mb = app + "." + ".".join(dirpath.split(os.sep)[1:])
+                        # mb = app[4:] + "." + ".".join(dirpath.split(os.sep)[1:])
+                        mb = "services" + "." + ".".join(dirpath.split(os.sep)[1:])
+                        # mb = app + "." + ".".join(dirpath.split(os.sep)[4:])
                     for f in [f for f in filenames if not f.startswith(".") and f.endswith(".py")]:
                         if f == "__init__.py":
                             f = ""
@@ -82,7 +87,9 @@ class Registry(object):
                             if f in self.exclude:
                                 continue
                             f = "." + f
+                        logging.info("Path variables %s %s" % (mb, f))
                         __import__(mb + f, {}, {}, self.classname)
+                        logging.info("Loading classname %s" % self.classname)
         self.is_registered = True
 
     def __getitem__(self, name):

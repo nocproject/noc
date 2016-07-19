@@ -9,7 +9,7 @@
 # Django modules
 from django import forms
 # NOC modules
-from noc.main.apps.calculator.calculators import Calculator as CalculatorBase
+from services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
 from noc.sa.interfaces.base import *
 ##
 ## Calculator form
