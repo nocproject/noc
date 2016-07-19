@@ -28,13 +28,12 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"% Unknown command"
     command_more = " "
     config_volatile = ["^%.*?$"]
-    command_disable_pager="scroll 512"
+    command_disable_pager = "scroll 512"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "quit"
     command_save_config = "save\ny\n"
     command_exit = "quit\ny\n"
-
 
     rx_slots = re.compile("^\s*\d+", re.MULTILINE)
     rx_ports = re.compile(
