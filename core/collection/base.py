@@ -277,11 +277,10 @@ class Collection(object):
                 changed = True
         # Resolve partials
         while partials:
-            pl = len(partials)
             np = []
             for u in partials:
                 if not self.update_item(cdata[u].data):
-                    np += u
+                    np += [u]
             if len(np) == len(partials):
                 # Cannot resolve partials
                 raise ValueError(
