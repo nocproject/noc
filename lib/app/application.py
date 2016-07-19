@@ -28,12 +28,12 @@ from django.utils.datastructures import SortedDict
 from django.utils.timezone import get_current_timezone
 from django.views.static import serve as serve_static
 from django.http import Http404
+import ujson
 ## NOC modules
 from access import HasPerm, Permit, Deny
 from site import site
 from noc.lib.forms import NOCForm
 from noc import settings
-from noc.lib.serialize import json_encode, json_decode
 from noc.sa.interfaces.base import DictParameter
 from noc.lib.fileutils import safe_append
 
@@ -288,7 +288,7 @@ class Application(object):
         """
         Create serialized JSON-encoded response
         """
-        return HttpResponse(json_encode(obj),
+        return HttpResponse(ujson.dumps(obj),
                             mimetype="text/json", status=status)
 
     def render_success(self, request, subject=None, text=None):
@@ -608,7 +608,7 @@ class Application(object):
         if not self.check_mrt_access(request, name):
             return self.response_forbidden("Forbidden")
         #
-        data = json_decode(request.raw_post_data)
+        data = ujson.loads(request.raw_post_data)
         if "selector" not in data:
             return self.response_bad_request("'selector' is missed")
         # Run MRT
