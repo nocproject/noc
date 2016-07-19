@@ -38,7 +38,7 @@ class Script(BaseScript):
     rx_adsl_state = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<oper_state>\S+)", re.MULTILINE)
     rx_pvc = re.compile(
-        r"^\s*\d+\s+p2p\s+lan\s+[0\*]/[\d+\*]\s*/(?P<vlan>[\d+\*])\s+\S*\s+\S+\s+\S+\s+"
+        r"^\s*\d+\s+p2p\s+lan\s+[0\*]/(?:\d+|\*)\s*/(?P<vlan>(?:\d+|\*))\s+\S*\s+\S+\s+\S+\s+"
         r"adl\s+0/\d+\s*/(?P<port>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\d+\s+"
         r"(?P<admin_status>\S+)\s*\n", re.MULTILINE)
     rx_sp = re.compile(
