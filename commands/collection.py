@@ -14,6 +14,7 @@ import zlib
 import csv
 import shutil
 import uuid
+import argparse
 ## Third-party modules
 import ujson
 import bson
@@ -22,6 +23,7 @@ from mongoengine.fields import ListField, EmbeddedDocumentField
 from noc.core.management.base import BaseCommand
 from noc.models import get_model, COLLECTIONS
 from noc.lib.nosql import get_db
+from noc.lib.fileutils import safe_rewrite
 
 
 CollectionItem = namedtuple("CollectionItem", [
@@ -35,10 +37,26 @@ class Command(BaseCommand):
             dest="cmd",
             help="sub-commands help"
         )
-        # Search parameters
+        # sync
         sync_parser = subparsers.add_parser(
             "sync",
             help="Synchronize collections"
+        )
+        # install
+        install_parser = subparsers.add_parser(
+            "install",
+            help="Add collections to repository"
+        )
+        install_parser.add_argument(
+            "-r", "--remove",
+            dest="remove",
+            action="store_true",
+            help="Remove installed files"
+        )
+        install_parser.add_argument(
+            "install_files",
+            nargs=argparse.REMAINDER,
+            help="List of files"
         )
 
     def handle(self, cmd, *args, **options):
@@ -49,6 +67,9 @@ class Command(BaseCommand):
             cm = get_model(c)
             cn = cm._meta["json_collection"]
             yield cm, cn
+
+    def get_collection_path(self, name):
+        return os.path.join("collections", name)
 
     def get_collection(self, prefix):
         #
@@ -152,10 +173,9 @@ class Command(BaseCommand):
         self.state_collection = get_db()[STATE_COLLECTION]
         self.ref_cache = {}
         for cm, cn in self.iter_collections():
-            parts = cn.split(".")
             # Read collection from JSON files
             cdata = self.get_collection(
-                "%s/collections/%s" % (parts[0], parts[1])
+                self.get_collection_path(cn)
             )
             # Get previous state
             cs = self.get_collection_state(cn)
@@ -310,6 +330,33 @@ class Command(BaseCommand):
                 )
             self.ref_cache[ref][field][key] = v
             return v
+
+    def handle_install(self, install_files=None, remove=False):
+        install_files = install_files or []
+        cmap = {}
+        for cm, cn in self.iter_collections():
+            cmap[cn] = cm
+        for fp in install_files:
+            if not os.path.isfile(fp):
+                self.die("File not found: %s" % fp)
+            with open(fp) as f:
+                data = ujson.load(f)
+            cn = data["$collection"]
+            o = self.dereference(cmap[cn], data)
+            # Pretty format JSON
+            jd = o.to_json()
+            path = os.path.join(
+                self.get_collection_path(cn),
+                o.get_json_path()
+            )
+            self.stdout.write("[%s] Installing %s\n" % (cn, path))
+            safe_rewrite(
+                path,
+                jd,
+                mode=0o644
+            )
+            if remove:
+                os.unlink(fp)
 
 if __name__ == "__main__":
     Command().run()
