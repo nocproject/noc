@@ -5,9 +5,13 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.kb.parsers.macros import Macro as MacroBase
-from django.utils.dateformat import DateFormat
 import datetime
+
+from django.utils.dateformat import DateFormat
+
+from services.web.apps.kb.parsers.macros import Macro as MacroBase
+
+
 ##
 ## now macro
 ##     Returns current date and time
