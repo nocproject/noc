@@ -21,7 +21,7 @@
   changed_when: "'CHANGED' in result.stdout"
 
 - name: Synchronize collections
-  command: ./noc collection --sync
+  command: ./noc collection sync
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
