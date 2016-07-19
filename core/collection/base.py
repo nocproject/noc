@@ -37,6 +37,7 @@ class Collection(object):
         self.ref_cache = {}
         self._name_field = None
         self.stdout = stdout or sys.stdout
+        self.deref_errors = {}
 
     def get_path(self):
         path = [os.path.join(self.PREFIX, self.name)]
@@ -223,7 +224,8 @@ class Collection(object):
         o = self.model.objects.filter(uuid=data["uuid"]).first()
         try:
             d = self.dereference(data)
-        except ValueError:
+        except ValueError as e:
+            self.deref_errors[data["uuid"]] = str(e)
             return False  # Partials
         if o:
             self.stdout.write(
@@ -283,6 +285,10 @@ class Collection(object):
                     np += [u]
             if len(np) == len(partials):
                 # Cannot resolve partials
+                for u in np:
+                    self.stdout.write("[%s|%s] Error: %s\n" % (
+                        self.name, u, self.deref_errors[u]
+                    ))
                 raise ValueError(
                     "[%s] Cannot resolve references for %s" % (
                         self.name, ", ".join(partials))
