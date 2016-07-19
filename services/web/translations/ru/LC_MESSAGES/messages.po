@@ -142,11 +142,11 @@ msgstr "Дублирующиеся FQDN"
 
 #: services/web/apps/dns/reportexpiringdomains/views.py:21
 msgid "Expiring Domains"
-msgstr "Просроченные домены"
+msgstr "Просроченные зоны"
 
 #: services/web/apps/dns/reportexpiringdomains/views.py:26
 msgid "Domain"
-msgstr "Домен"
+msgstr "Зона"
 
 #: services/web/apps/dns/reportexpiringdomains/views.py:27
 msgid "Expired"
@@ -209,7 +209,7 @@ msgstr "Серьезность"
 #: services/web/apps/fm/alarmtrigger/views.py:19
 #: services/web/apps/fm/alarmtrigger/views.py:20
 msgid "Alarm Triggers"
-msgstr "Аварийные триггеры"
+msgstr "Триггеры аварий"
 
 #: services/web/apps/fm/classificationrule/views.py:27
 msgid "Classification Rule"
@@ -649,17 +649,17 @@ msgstr "Неверный адрес"
 #: services/web/apps/ip/ipam/views.py:409
 #, python-format
 msgid "Redirected to %(prefix)s"
-msgstr ""
+msgstr "Перенаправлено в %(prefix)s"
 
 #: services/web/apps/ip/ipam/views.py:430
 #, python-format
 msgid "Bookmark set to %(prefix)s"
-msgstr ""
+msgstr "Закладка сделана %(prefix)s"
 
 #: services/web/apps/ip/ipam/views.py:433
 #, python-format
 msgid "Bookmark removed from %(prefix)s"
-msgstr ""
+msgstr "Закладка удалена из %(prefix)s"
 
 #: services/web/apps/ip/ipam/views.py:446
 #, python-format
@@ -716,12 +716,12 @@ msgstr ""
 #: services/web/apps/ip/ipam/views.py:485
 #: services/web/apps/ip/ipam/views.py:678
 msgid "Enable IP Discovery"
-msgstr ""
+msgstr "Разрешить поиск IP"
 
 #: services/web/apps/ip/ipam/views.py:520
 #, python-format
 msgid "Prefix %s is already exists in vrf %s"
-msgstr ""
+msgstr "Префикс %s уже существует в VRF %s"
 
 #: services/web/apps/ip/ipam/views.py:534
 #: services/web/apps/ip/ipam/views.py:698
@@ -731,29 +731,29 @@ msgstr ""
 #: services/web/apps/ip/ipam/views.py:574
 #, python-format
 msgid "Prefix %(prefix)s has been created"
-msgstr ""
+msgstr "Префикс %(prefix)s создан"
 
 #: services/web/apps/ip/ipam/views.py:654
 msgid ""
 "VC Related with prefix. Adjust VC Bind Filters if you cannot see required VC"
-msgstr ""
+msgstr "VC соотносится с префиксом. Если не видно нужных VC, настройте фильтры привязки VC"
 
 #: services/web/apps/ip/ipam/views.py:729
 #, python-format
 msgid "Prefix %(prefix)s has been changed"
-msgstr ""
+msgstr "Префикс %(prefix)s изменён"
 
 #: services/web/apps/ip/ipam/views.py:785
 #: services/web/apps/ip/ipam/views.py:798
 #, python-format
 msgid "Prefix %(prefix)s has been successfully deleted"
-msgstr ""
+msgstr "Префикс %(prefix)s удалён"
 
 #: services/web/apps/ip/ipam/views.py:791
 #: services/web/apps/ip/ipam/views.py:804
 #, python-format
-msgid "Prefix %(prefix)s and all descendans have been successfully deleted"
-msgstr ""
+msgid "Prefix %(prefix)s and all descendants have been successfully deleted"
+msgstr "Префикс %(prefix)s и все его потомки удалены"
 
 #: services/web/apps/ip/ipam/views.py:818
 #, python-format
@@ -770,59 +770,59 @@ msgstr ""
 
 #: services/web/apps/ip/ipam/views.py:839
 msgid "Auto-update MAC"
-msgstr ""
+msgstr "Автообновление MAC"
 
 #: services/web/apps/ip/ipam/views.py:841
 msgid "Check to automatically fetch MAC from ARP cache"
-msgstr ""
+msgstr "Отметить для автоматического получения MAC из кэша ARP"
 
 #: services/web/apps/ip/ipam/views.py:846
 msgid "Set if address belong to managed object's interface"
-msgstr ""
+msgstr "Выбрать, если адрес принадлежит интерфейсу управляемого объекта"
 
 #: services/web/apps/ip/ipam/views.py:879
 msgid "Address is already exists"
-msgstr ""
+msgstr "Такой адрес уже есть"
 
 #: services/web/apps/ip/ipam/views.py:896
 msgid "Invalid Managed Object"
-msgstr ""
+msgstr "Неверный управляемый объект"
 
 #: services/web/apps/ip/ipam/views.py:925
 #: services/web/apps/ip/ipam/views.py:1042
 #: services/web/apps/ip/ipam/views.py:1124
 #, python-format
 msgid "Address %(address)s is in the locked range"
-msgstr ""
+msgstr "Адрес %(address)s в блокированном диапазоне"
 
 #: services/web/apps/ip/ipam/views.py:933
 #, python-format
 msgid "Address already present in VRF %(vrf)s"
-msgstr ""
+msgstr "Адрес уже есть в VRF %(vrf)s"
 
 #: services/web/apps/ip/ipam/views.py:960
 #, python-format
 msgid "Address %(address)s has been created"
-msgstr ""
+msgstr "Адрес %(address)s создан"
 
 #: services/web/apps/ip/ipam/views.py:1010
 msgid "No free addresses"
-msgstr ""
+msgstr "Нет свободных адресов"
 
 #: services/web/apps/ip/ipam/views.py:1071
 #, python-format
 msgid "Address %(address)s changed"
-msgstr ""
+msgstr "Адрес %(address)s изменён"
 
 #: services/web/apps/ip/ipam/views.py:1134
 #, python-format
 msgid "Address %(address)s deleted"
-msgstr ""
+msgstr "Адрес %(address)s удалён"
 
 #: services/web/apps/ip/ipam/views.py:1218
 #, python-format
 msgid "Prefix %(old_prefix)s is rebased to %(new_prefix)s"
-msgstr ""
+msgstr "Префикс %(old_prefix)s перегруппирован в %(new_prefix)s"
 
 #: services/web/apps/ip/ippool/views.py:21
 msgid "IP Pool"
@@ -844,7 +844,7 @@ msgstr "Выделенные блоки"
 #: services/web/apps/ip/reportallocated/views.py:86
 #, python-format
 msgid "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
-msgstr ""
+msgstr "Выделенные блоки в VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
 
 #: services/web/apps/dns/reportmissedp2p/views.py:23
 #: services/web/apps/ip/ipam/views.py:445
@@ -860,12 +860,12 @@ msgstr "Префикс"
 #: services/web/apps/ip/reportfree/views.py:41
 #: services/web/apps/ip/reportsummary/views.py:41
 msgid "Prefix not found"
-msgstr ""
+msgstr "Префикс не найден"
 
 #: services/web/apps/ip/reportexpanded/views.py:82
 #, python-format
 msgid "All allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
-msgstr ""
+msgstr "Все выделенные блоки в VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
 
 #: services/web/apps/ip/reportallocated/views.py:25
 #: services/web/apps/ip/reportexpanded/views.py:24
@@ -882,7 +882,7 @@ msgstr ""
 #: services/web/apps/ip/reportfree/views.py:24
 #: services/web/apps/ip/reportsummary/views.py:26
 msgid "Address Family"
-msgstr ""
+msgstr "Семейство адресов"
 
 #: services/web/apps/ip/reportallocated/views.py:29
 #: services/web/apps/ip/reportexpanded/views.py:28
@@ -934,12 +934,12 @@ msgstr "Свободные блоки"
 #: services/web/apps/ip/reportfree/views.py:50
 #, python-format
 msgid "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
-msgstr ""
+msgstr "Свободные блоки в VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
 
 #: services/web/apps/ip/reportsummary/views.py:78
 #, python-format
 msgid "Summary for VRF %(vrf)s (IPv%(afi)s): %(prefix)s"
-msgstr ""
+msgstr "Сводка для VRF %(vrf)s (IPv%(afi)s): %(prefix)s"
 
 #: services/web/apps/ip/reportsummary/views.py:84
 msgid "Size"
@@ -962,7 +962,7 @@ msgstr "Инструменты"
 #: services/web/apps/ip/tools/views.py:40
 #: services/web/apps/ip/tools/views.py:61
 msgid "Permission denied"
-msgstr ""
+msgstr "Доступ запрещён"
 
 #: services/web/apps/ip/tools/views.py:73
 msgid "NS"
@@ -970,7 +970,7 @@ msgstr ""
 
 #: services/web/apps/ip/tools/views.py:73
 msgid "Name server IP address. NS must have zone transfer enabled for NOC host"
-msgstr ""
+msgstr "IP-адрес сервера имён. Сервер должен позволять передачу зоны хостам NOC"
 
 #: services/web/apps/ip/tools/views.py:74
 msgid "Zone"
@@ -986,16 +986,16 @@ msgstr "Исходный адрес"
 
 #: services/web/apps/ip/tools/views.py:76
 msgid "Source address to issue zone transfer"
-msgstr ""
+msgstr "Исходный адрес для передачи зоны"
 
 #: services/web/apps/ip/tools/views.py:118
 msgid "Permission denined"
-msgstr ""
+msgstr "Доступ запрещён"
 
 #: services/web/apps/ip/tools/views.py:130
 #, python-format
 msgid "%(count)s IP addresses uploaded via zone transfer"
-msgstr ""
+msgstr "%(count)s IP-адресов загружено передачей зоны"
 
 #: services/web/apps/ip/vrfgroup/views.py:19
 #: services/web/apps/ip/vrfgroup/views.py:20
@@ -1004,7 +1004,7 @@ msgstr "Группы VRF"
 
 #: services/web/apps/kb/__init__.py:13
 msgid "Knowledge Base"
-msgstr ""
+msgstr "База знаний"
 
 #: services/web/apps/main/__init__.py:11
 msgid "Main"
@@ -1017,7 +1017,7 @@ msgstr "Аудит событий"
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:22
 msgid "CIR(bps). K, M and G suffixes can be used"
-msgstr ""
+msgstr "CIR(bps). Можно использовать множители K, M и G"
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:24
 msgid ""
@@ -1039,7 +1039,7 @@ msgstr ""
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:50
 msgid "Integer is required"
-msgstr ""
+msgstr "Целочисленное значение"
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:58
 msgid "CIR/CAR(bps) to Burst-rate"
@@ -1071,7 +1071,7 @@ msgstr ""
 
 #: services/web/apps/main/checkpoint/views.py:43
 msgid "Checkpoint has been set"
-msgstr ""
+msgstr "Контрольная точка установлена"
 
 #: services/web/apps/main/config/views.py:23
 #: services/web/apps/main/config/views.py:24
@@ -1095,7 +1095,7 @@ msgstr ""
 #: services/web/apps/main/dbtrigger/views.py:19
 #: services/web/apps/main/dbtrigger/views.py:20
 msgid "DB Triggers"
-msgstr "Триггеры DB"
+msgstr "Триггеры БД"
 
 #: services/web/apps/main/desktop/views.py:284
 msgid "Failed to change credentials"
@@ -1155,7 +1155,7 @@ msgstr "Статус backup"
 
 #: services/web/apps/main/reportdbsummary/views.py:14
 msgid "Database Summary"
-msgstr "Статус базы"
+msgstr "Статус БД"
 
 #: services/web/apps/main/reportloc/views.py:20
 msgid "Lines Of Code"
@@ -1232,11 +1232,11 @@ msgstr "Имя"
 
 #: services/web/apps/main/user/views.py:24
 msgid "Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"
-msgstr ""
+msgstr "Обязательное поле. Не более 75 символов. Только буквы, цифры и @/./+/-/_"
 
 #: services/web/apps/main/user/views.py:25
 msgid "This value must contain only letters, digits and @/./+/-/_."
-msgstr ""
+msgstr "Это значение должно состоять только из букв, цифр и @/./+/-/_."
 
 #: services/web/apps/main/user/views.py:26
 msgid "Password"
@@ -1304,7 +1304,7 @@ msgstr ""
 #: services/web/apps/peer/asset/views.py:21
 #: services/web/apps/peer/asset/views.py:22
 msgid "AS Sets"
-msgstr ""
+msgstr "Наборы AS"
 
 #: services/web/apps/peer/community/views.py:19
 #: services/web/apps/peer/community/views.py:20
@@ -1483,7 +1483,7 @@ msgstr "Типы метрик"
 
 #: services/web/apps/project/__init__.py:12
 msgid "Project Management"
-msgstr ""
+msgstr "Управление проектом"
 
 #: services/web/apps/ip/ipam/views.py:453
 #: services/web/apps/ip/ipam/views.py:455
@@ -1522,7 +1522,7 @@ msgstr "Комманды действий"
 #: services/web/apps/sa/administrativedomain/views.py:19
 #: services/web/apps/sa/administrativedomain/views.py:20
 msgid "Administrative Domains"
-msgstr "Зоны ответсвенности"
+msgstr "Зоны ответственности"
 
 #: services/web/apps/sa/authprofile/views.py:19
 msgid "Auth Profile"
@@ -1563,7 +1563,7 @@ msgstr "Профиль объекта"
 
 #: services/web/apps/sa/managedobjectprofile/views.py:20
 msgid "Managed Object Profiles"
-msgstr "Профили объектоы"
+msgstr "Профили объектов"
 
 #: services/web/apps/sa/managedobjectselector/views.py:21
 #: services/web/apps/sa/managedobjectselector/views.py:22
@@ -1590,7 +1590,7 @@ msgstr "Правила проверки профиля"
 
 #: services/web/apps/sa/reportfailedscript/views.py:16
 msgid "Failed Scripts"
-msgstr ""
+msgstr "Скрипты, которые не смогли"
 
 #: services/web/apps/fm/reporteventsummary/views.py:22
 #: services/web/apps/sa/reportobjectsummary/views.py:18
@@ -1599,11 +1599,11 @@ msgstr "По профилю"
 
 #: services/web/apps/sa/reportobjectsummary/views.py:19
 msgid "By Administrative Domain"
-msgstr "По З. О."
+msgstr "По З.О."
 
 #: services/web/apps/sa/reportobjectsummary/views.py:20
 msgid "By Administrative Domain and Profile"
-msgstr "По З. О и профилю"
+msgstr "По З.О. и профилю"
 
 #: services/web/apps/sa/reportobjectsummary/views.py:21
 msgid "By Tags"
@@ -1611,7 +1611,7 @@ msgstr "По тегам"
 
 #: services/web/apps/sa/reportobjectsummary/views.py:22
 msgid "By Platform"
-msgstr "По платфоме"
+msgstr "По платформе"
 
 #: services/web/apps/sa/reportobjectsummary/views.py:23
 msgid "By Version"
@@ -1624,7 +1624,7 @@ msgstr "Сводка по объектам"
 #: services/web/apps/sa/reportobjectsummary/views.py:40
 #: services/web/apps/sa/reportobjectsummary/views.py:47
 msgid "Administrative Domain"
-msgstr "Зона ответсвенности"
+msgstr "Зона ответственности"
 
 #: services/web/apps/main/tag/views.py:19
 #: services/web/apps/sa/reportobjectsummary/views.py:54
@@ -1653,7 +1653,7 @@ msgstr "Запуск комманд"
 
 #: services/web/apps/sa/runcommands/views.py:48
 msgid "Ignore CLI errors and continue execution"
-msgstr ""
+msgstr "Игнорировать ошибки CLI и продолжить выполнение"
 
 #: services/web/apps/sa/runsnippet/views.py:59
 msgid "Run Snippet"
@@ -1670,7 +1670,7 @@ msgstr "Профили сервиса"
 #: services/web/apps/sa/setuntagged/views.py:36
 #: services/web/apps/sa/setuntagged/views.py:37
 msgid "Set Untagged"
-msgstr ""
+msgstr "Удалить тег"
 
 #: services/web/apps/sa/macreport/views.py:89
 #: services/web/apps/sa/runcommands/views.py:39
@@ -1683,7 +1683,7 @@ msgstr "Задачи"
 
 #: services/web/apps/sa/setuntagged/views.py:44
 msgid "Comma-separated list of interfaces"
-msgstr ""
+msgstr "Список интерфейсов через запятую"
 
 #: services/web/apps/sa/showswitchports/views.py:46
 #: services/web/apps/sa/showswitchports/views.py:47
@@ -1742,15 +1742,15 @@ msgstr ""
 #: services/web/apps/vc/vcbindfilter/views.py:19
 #: services/web/apps/vc/vcbindfilter/views.py:20
 msgid "VC Bind Filters"
-msgstr ""
+msgstr "Фильтры привязки VC"
 
 #: services/web/apps/vc/vcdomain/views.py:19
 msgid "VC Domain"
-msgstr ""
+msgstr "Зона VC"
 
 #: services/web/apps/vc/vcdomain/views.py:20
 msgid "VC Domains"
-msgstr "Домены VC"
+msgstr "Зоны VC"
 
 #: services/web/apps/vc/vcfilter/views.py:20
 msgid "VC Filter"
@@ -1762,7 +1762,7 @@ msgstr "Фильтры VC"
 
 #: services/web/apps/vc/vctype/views.py:19
 msgid "VC Type"
-msgstr ""
+msgstr "Тип VC"
 
 #: services/web/apps/vc/vctype/views.py:20
 msgid "VC Types"
