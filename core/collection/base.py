@@ -37,7 +37,7 @@ class Collection(object):
         self.ref_cache = {}
         self._name_field = None
         self.stdout = stdout or sys.stdout
-        self.deref_errors = {}
+        self.partial_errors = {}
 
     def get_path(self):
         path = [os.path.join(self.PREFIX, self.name)]
@@ -197,7 +197,11 @@ class Collection(object):
             if (type(field) == ListField and
                     isinstance(field.field, EmbeddedDocumentField)):
                 edoc = field.field.document_type
-                v = [edoc(**self.dereference(x, model=edoc)) for x in d[k]]
+                try:
+                    v = [edoc(**self.dereference(x, model=edoc)) for x in d[k]]
+                except ValueError as e:
+                    v = []
+                    self.partial_errors[d["uuid"]] = str(e)
             r[str(k)] = v
         return r
 
@@ -221,11 +225,13 @@ class Collection(object):
             return v
 
     def update_item(self, data):
+        if data["uuid"] in self.partial_errors:
+            del self.partial_errors[data["uuid"]]
         o = self.model.objects.filter(uuid=data["uuid"]).first()
         try:
             d = self.dereference(data)
         except ValueError as e:
-            self.deref_errors[data["uuid"]] = str(e)
+            self.partial_errors[data["uuid"]] = str(e)
             return False  # Partials
         if o:
             self.stdout.write(
@@ -265,35 +271,30 @@ class Collection(object):
         changed = self.get_changed_status()
         #
         self.fix_uuids()
-        partials = []
         # New items
         for u in new_uuids - current_uuids:
-            if not self.update_item(cdata[u].data):
-                partials += [u]
+            self.update_item(cdata[u].data)
             changed = True
         # Changed items
         for u in new_uuids & current_uuids:
             if cs[u] != cdata[u].hash:
-                if not self.update_item(cdata[u].data):
-                    partials += [u]
+                self.update_item(cdata[u].data)
                 changed = True
         # Resolve partials
-        while partials:
-            np = []
-            for u in partials:
-                if not self.update_item(cdata[u].data):
-                    np += [u]
-            if len(np) == len(partials):
+        while self.partial_errors:
+            pl = len(self.partial_errors)
+            for u in self.partial_errors:
+                self.update_item(cdata[u].data)
+            if len(self.partial_errors) == pl:
                 # Cannot resolve partials
-                for u in np:
+                for u in self.partial_errors:
                     self.stdout.write("[%s|%s] Error: %s\n" % (
-                        self.name, u, self.deref_errors[u]
+                        self.name, u, self.partial_errors[u]
                     ))
                 raise ValueError(
                     "[%s] Cannot resolve references for %s" % (
-                        self.name, ", ".join(partials))
+                        self.name, ", ".join(self.partial_errors))
                 )
-            partials = np
         # Deleted items
         for u in current_uuids - new_uuids:
             self.delete_item(u)
