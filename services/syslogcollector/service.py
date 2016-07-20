@@ -107,6 +107,7 @@ class SyslogCollectorService(Service):
         """
         Spool message to be sent
         """
+        self.perf_metrics["events_out"] += 1
         self.messages += [{
             "ts": timestamp,
             "object": object,

@@ -21,8 +21,10 @@ class SyslogServer(UDPServer):
         self.service = service
 
     def on_read(self, data, address):
+        self.service.perf_metrics["syslog_msg_in"] += 1
         object = self.service.lookup_object(address[0])
         if not object:
+            self.service.perf_metrics["syslog_invalid_source"] += 1
             return  # Invalid event source
         # Convert data to valid UTF8
         data = unicode(data, "utf8", "ignore").encode("utf8")
