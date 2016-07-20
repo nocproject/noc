@@ -17,6 +17,30 @@ logger = logging.getLogger(__name__)
 E = os.environ.get
 
 
+def _get_seconds(v):
+    m = 1
+    if v.endswith("h"):
+        v = v[:-1]
+        m = 3600
+    elif v.endswith("d"):
+        v = v[:-1]
+        m = 24 * 3600
+    elif v.endswith("w"):
+        v = v[:-1]
+        m = 7 * 24 * 3600
+    elif v.endswith("m"):
+        v = v[:-1]
+        m = 30 * 24 * 3600
+    elif v.endswith("y"):
+        v = v[:-1]
+        m = 365 * 24 * 3600
+    try:
+        v = int(v)
+    except ValueError:
+        raise "Invalid expiration option in %s" % v
+    return v * m
+
+
 class BaseConfig(object):
     LOG_LEVELS = {
         "critical": logging.CRITICAL,
@@ -58,6 +82,11 @@ class BaseConfig(object):
     pg_password = E("NOC_PG_PASSWORD", "noc")
     # Pooled processes
     pool = E("NOC_POOL", "global")
+    #
+    audit_command_ttl = _get_seconds(E("NOC_AUDIT_COMMAND_TTL", "1m"))
+    audit_login_ttl = _get_seconds(E("NOC_AUDIT_LOGIN_TTL", "1m"))
+    audit_reboot_ttl = _get_seconds(E("NOC_AUDIT_REBOOT_TTL", "0"))
+    audit_config_ttl = _get_seconds(E("NOC_AUDIT_CONFIG_TTL", "1y"))
 
     def __init__(self):
         self.setup_logging()
