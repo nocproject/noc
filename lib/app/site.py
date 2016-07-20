@@ -103,10 +103,6 @@ class Site(object):
         self.reports = []  # app_id -> title
         self.views = ProxyNode()  # Named views proxy
         self.testing_mode = hasattr(settings, "IS_TEST")
-        self.log_api_calls = (config.has_option("main", "log_api_calls") and
-                              config.getboolean("main", "log_api_calls"))
-        self.log_sql_statements = config.getboolean("main",
-                                                    "log_sql_statements")
         self.app_contributors = defaultdict(set)
 
     @property
@@ -178,8 +174,6 @@ class Site(object):
                 return HttpResponseNotFound("No handler for '%s' method" % request.method)
             if not request.user or not v.access.check(app, request.user):
                 return HttpResponseForbidden()
-            to_log_api_call = (self.log_api_calls and
-                               hasattr(v, "api") and v.api)
             app_logger = v.im_self.logger
             try:
                 # Validate requests
@@ -213,9 +207,6 @@ class Site(object):
                             errors = dict([(f, "; ".join(e))
                                            for f, e in f.errors.items()])
                     if errors:
-                        #
-                        if to_log_api_call:
-                            app_logger.error("ERROR: %s", errors)
                         # Return error response
                         ext_format = ("__format=ext"
                                     in request.META["QUERY_STRING"].split("&"))
@@ -226,40 +217,8 @@ class Site(object):
                         status = 200 if ext_format else 400  # OK or BAD_REQUEST
                         return HttpResponse(r, status=status,
                                             mimetype="text/json; charset=utf-8")
-                # Log API call
-                if to_log_api_call:
-                    a = {}
-                    if request.method in ("POST", "PUT"):
-                        ct = request.META.get("CONTENT_TYPE")
-                        if ct and ("text/json" in ct or
-                                   "application/json" in ct):
-                            a = json.loads(request.raw_post_data)
-                        else:
-                            a = dict((k, v[0] if len(v) == 1 else v)
-                                     for k, v in request.POST.lists())
-                    elif request.method == "GET":
-                        a = dict((k, v[0] if len(v) == 1 else v)
-                                 for k, v in request.GET.lists())
-                    app_logger.debug("API %s %s %s",
-                                     request.method, request.path, a)
                 # Call handler
                 r = v(request, *args, **kwargs)
-                # Dump SQL statements
-                if self.log_sql_statements:
-                    from django.db import connections
-                    tsc = 0
-                    sc = defaultdict(int)
-                    for conn in connections.all():
-                        for q in conn.queries:
-                            stmt = q["sql"].strip().split(" ", 1)[0].upper()
-                            sc[stmt] += 1
-                            tsc += 1
-                            app_logger.debug("SQL %(sql)s %(time)ss" % q)
-                    x = ", ".join(["%s: %d" % (k, v)
-                                   for k, v in sc.iteritems()])
-                    if x:
-                        x = " (%s)" % x
-                    app_logger.debug("SQL statements: %d%s" % (tsc, x))
             except PermissionDenied as e:
                 return HttpResponseForbidden(e)
             except Http404 as e:
