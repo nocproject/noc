@@ -118,7 +118,7 @@ class BaseConfig(object):
         Mongo connection arguments. Suitable to pass to
         pymongo.connect and mongoengine.connect
         """
-        if not self._mongo_connection_args:
+        if not hasattr(self, "_mongo_connection_args"):
             self._mongo_connection_args = {
                 "db": self.mongo_db,
                 "username": self.mongo_user,
