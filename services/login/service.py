@@ -12,7 +12,7 @@ from noc.core.service.ui import UIService
 from auth import AuthRequestHandler
 from logout import LogoutRequestHandler
 from api.login import LoginAPI
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 
 
 class LoginService(UIService):
@@ -43,7 +43,7 @@ class LoginService(UIService):
         """
         method = self.config.method
         try:
-            backend = get_solution(method)(self)
+            backend = get_handler(method)(self)
         except Exception as e:
             self.logger.error(
                 "Failed to initialize '%s' backend: %s",
@@ -76,7 +76,7 @@ class LoginService(UIService):
         """
         method = self.config.method
         try:
-            backend = get_solution(method)(self)
+            backend = get_handler(method)(self)
         except Exception as e:
             self.logger.error(
                 "Failed to initialize '%s' backend: %s",

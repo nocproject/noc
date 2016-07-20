@@ -9,7 +9,6 @@
 ## Python modules
 import os
 ## NOC modules
-from noc.lib.solutions import solutions_roots
 from noc.cm.facts.error import Error
 
 
@@ -23,10 +22,8 @@ class ValidatorRegistry(object):
             return
         # Get all probes locations
         dirs = ["cm/validators"]
-        for r in solutions_roots():
-            d = os.path.join(r, "cm", "validators")
-            if os.path.isdir(d):
-                dirs += [d]
+        if os.path.isdir("custom/cm/validators"):
+            dirs += ["custom/cm/validators"]
         # Load all probes
         for root in dirs:
             for path, dirnames, filenames in os.walk(root):

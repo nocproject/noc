@@ -9,8 +9,6 @@
 ## Python modules
 import os
 import logging
-## NOC modules
-from noc.lib.solutions import solutions_roots
 
 logger = logging.getLogger(__name__)
 
@@ -32,10 +30,8 @@ class MIBRegistry(object):
 
     def load_mibs(self):
         dirs = ["cmibs"]
-        for r in solutions_roots():
-            d = os.path.join(r, "cmibs")
-            if os.path.isdir(d):
-                dirs += [d]
+        if os.path.isdir("custom/cmibs"):
+            dirs += ["custom/cmibs"]
         for root in dirs:
             logger.debug("Loading compiled MIBs from '%s'", root)
             for path, dirnames, filenames in os.walk(root):

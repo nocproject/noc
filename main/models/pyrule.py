@@ -14,7 +14,7 @@ import datetime
 from django.db import models
 ## NOC modules
 from noc.sa.interfaces.base import interface_registry
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 
 
 class NoPyRuleException(Exception):
@@ -114,7 +114,7 @@ class PyRule(models.Model):
         Call pyRule
         """
         if self.handler:
-            f = get_solution(self.handler)
+            f = get_handler(self.handler)
         else:
             t = datetime.datetime.now()
             # Try to get compiled rule from cache

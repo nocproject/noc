@@ -39,7 +39,7 @@ from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.textindex import full_text_search, TextIndex
 from noc.settings import config
 from noc.core.scheduler.job import Job
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 from noc.lib.debug import error_report
 from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
@@ -883,9 +883,9 @@ class ManagedObject(Model):
         v = self.version
         cls = self.profile.get_parser(v.vendor, v.platform, v.version)
         if cls:
-            return get_solution(cls)(self)
+            return get_handler(cls)(self)
         else:
-            return get_solution("noc.cm.parsers.base.BaseParser")(self)
+            return get_handler("noc.cm.parsers.base.BaseParser")(self)
 
     def get_interface(self, name):
         from noc.inv.models.interface import Interface

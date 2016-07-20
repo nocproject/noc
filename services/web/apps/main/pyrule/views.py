@@ -9,7 +9,7 @@
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
 from noc.main.models.pyrule import PyRule
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 from noc.core.translation import ugettext as _
 
 
@@ -27,7 +27,7 @@ class PyRuleApplication(ExtModelApplication):
         data = super(PyRuleApplication, self).clean(data)
         if data.get("handler"):
             try:
-                get_solution(data["handler"])
+                get_handler(data["handler"])
             except ImportError, why:
                 raise ValueError("Invalid handler: %s" % why)
         else:

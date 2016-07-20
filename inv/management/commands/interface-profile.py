@@ -17,7 +17,7 @@ from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.lib.text import split_alnum
 from noc.settings import config
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 
 
 class Command(BaseCommand):
@@ -90,7 +90,7 @@ class Command(BaseCommand):
         sol = config.get("interface_discovery", "get_interface_profile")
         get_profile = None
         if sol:
-            get_profile = get_solution(sol)
+            get_profile = get_handler(sol)
         if not get_profile:
             raise CommandError("No classification solution")
         pcache = {}
