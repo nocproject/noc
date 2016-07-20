@@ -12,7 +12,7 @@ import argparse
 import yaml
 ## NOC modules
 from noc.core.management.base import BaseCommand
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 
 
 class Command(BaseCommand):
@@ -67,7 +67,7 @@ class Command(BaseCommand):
                 config.update(x_config.get("config", {}))
                 if extractors and x_config["type"] not in extractors:
                     continue
-                xc = get_solution(x_config["extractor"])
+                xc = get_handler(x_config["extractor"])
                 extractor = xc(system["system"], config=config)
                 extractor.extract()
 
