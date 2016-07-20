@@ -18,8 +18,12 @@ from noc.settings import config
 ## Setup proxy
 PROXY = {}
 for proto in ["http", "https", "ftp"]:
-    p = config.get("proxy", "%s_proxy" % proto)
+    p = os.environ.get("%s_proxy" % proto)
     if p:
+        if "//" in p:
+            p = p.split("//", 1)[-1]
+            if p.endswith("/"):
+                p = p[:-1]
         PROXY[proto] = p
 if PROXY:
     ph = urllib2.ProxyHandler(PROXY)
