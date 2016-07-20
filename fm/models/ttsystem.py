@@ -13,7 +13,7 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
 import cachetools
 ## NOC modules
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 
 
 
@@ -50,7 +50,7 @@ class TTSystem(Document):
         """
         Return BaseTTSystem instance
         """
-        h = get_solution(self.handler)
+        h = get_handler(self.handler)
         if not h:
             raise ValueError
         return h(self.name, self.connection)

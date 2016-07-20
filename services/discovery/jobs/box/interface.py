@@ -15,7 +15,7 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
 from noc.settings import config
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 
 
 class InterfaceCheck(DiscoveryCheck):
@@ -33,7 +33,7 @@ class InterfaceCheck(DiscoveryCheck):
             self.logger.info("Using %s for interface classification",
                              sol)
             try:
-                self.get_interface_profile = get_solution(sol)
+                self.get_interface_profile = get_handler(sol)
                 self.interface_profile_cache = cachetools.LRUCache(
                     1000,
                     missing=lambda x: InterfaceProfile.objects.filter(name=x).first()

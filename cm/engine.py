@@ -24,7 +24,7 @@ from noc.cm.models.validationpolicysettings import ValidationPolicySettings
 from noc.inv.models.interface import Interface as InvInterface
 from noc.inv.models.subinterface import SubInterface as InvSubInterface
 from noc.lib.debug import error_report
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 from noc.cm.models.objectfact import ObjectFact
 from noc.lib.clipsenv import CLIPSEnv
 
@@ -229,7 +229,7 @@ class Engine(object):
                     continue
                 rule = ri.rule
                 if rule.is_active and rule.is_applicable_for(self.object):
-                    vc = get_solution(rule.handler)
+                    vc = get_handler(rule.handler)
                     if vc and bool(vc.SCOPE & scope):
                         r += [(vc, rule)]
         return r

@@ -32,7 +32,7 @@ import noc.inv.models.interface
 from noc.core.profile.loader import loader as profile_loader
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.version import get_version
-from noc.lib.debug import format_frames, get_traceback_frames, error_report
+from noc.lib.debug import error_report
 from noc.lib.escape import fm_unescape
 from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
                                     IPParameter, IPv4PrefixParameter,
@@ -43,7 +43,7 @@ from trigger import Trigger
 from exception import InvalidPatternException, EventProcessingFailed
 from cloningrule import CloningRule
 from rule import Rule
-from noc.lib.solutions import get_event_class_handlers, get_solution
+from noc.core.handler import get_handler
 
 ##
 ## Exceptions
@@ -111,7 +111,7 @@ class ClassifierService(Service):
         """
         self.logger.info("Using rule lookup solution: %s",
                          self.config.lookup_solution)
-        self.lookup_cls = get_solution(self.config.lookup_solution)
+        self.lookup_cls = get_handler(self.config.lookup_solution)
         self.load_enumerations()
         self.load_rules()
         self.load_triggers()
@@ -322,7 +322,7 @@ class ClassifierService(Service):
         self.alter_handlers = []
         # Load handlers
         for ec in EventClass.objects.filter():
-            handlers = get_event_class_handlers(ec) + enabled[ec.id]
+            handlers = (ec.handlers or []) + enabled[ec.id]
             if not handlers:
                 continue
             self.logger.debug("    <%s>: %s", ec.name, ", ".join(handlers))
