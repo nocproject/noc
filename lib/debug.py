@@ -20,7 +20,7 @@ import uuid
 ## Third-party modules
 import ujson
 ## NOC modules
-from noc.settings import TRACEBACK_REVERSE
+from noc.core.config.base import config
 from noc.lib.version import get_branch, get_tip
 from noc.lib.fileutils import safe_rewrite
 
@@ -39,7 +39,7 @@ if os.getuid() == 0:
 
 if not os.path.isdir(CP_NEW):
     try:
-        os.makedirs(CP_NEW, 0700)
+        os.makedirs(CP_NEW, 0o700)
     except OSError, why:
         logger.error("Cannot initialize CP reporting: %s", why)
         ENABLE_CP = False
@@ -172,7 +172,7 @@ def get_execution_frames(frame):
     return frames
 
 
-def format_frames(frames, reverse=TRACEBACK_REVERSE):
+def format_frames(frames, reverse=config.traceback_reverse):
     def format_source(lineno, lines):
         r = []
         for l in lines:
@@ -229,7 +229,7 @@ def check_fatal_errors(t, v):
         die("Improperly configured: %s", v)
 
 
-def get_traceback(reverse=TRACEBACK_REVERSE, fp=None):
+def get_traceback(reverse=config.traceback_reverse, fp=None):
     t, v, tb = sys.exc_info()
     try:
         check_fatal_errors(t, v)
@@ -277,7 +277,7 @@ def excepthook(t, v, tb):
     sys.stdout.flush()
 
 
-def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
+def error_report(reverse=config.traceback_reverse, logger=logger):
     fp = error_fingerprint()
     r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)
