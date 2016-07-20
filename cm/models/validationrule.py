@@ -17,7 +17,7 @@ from mongoengine.signals import pre_delete
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.lib.nosql import ForeignKeyField
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class ValidationRule(Document):
 
     def get_handler(self):
         if self.handler:
-            return get_solution(self.handler)
+            return get_handler(self.handler)
         else:
             return None
 

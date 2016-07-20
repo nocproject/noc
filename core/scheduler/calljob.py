@@ -8,7 +8,7 @@
 
 ## NOC modules
 from job import Job
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 
 
 class CallJob(Job):
@@ -23,5 +23,5 @@ class CallJob(Job):
         self.object(**kwargs)
 
     def dereference(self):
-        self.object = get_solution(self.attrs[self.ATTR_KEY])
+        self.object = get_handler(self.attrs[self.ATTR_KEY])
         return bool(self.object)

@@ -60,10 +60,10 @@ class ReduceTask(models.Model):
             # Reference to existing pyrule
             r = PyRule.objects.get(name=self.script[7:], interface="IReduceTask")
             if r.handler:
-                self.script = "from noc.lib.solutions import get_solution\n" \
+                self.script = "from noc.core.handler import get_handler\n" \
                               "@pyrule\n" \
                               "def rule(*args, **kwargs):\n" \
-                              "    return get_solution(\"%s\")(*args, **kwargs)\n" % r.handler
+                              "    return get_handler(\"%s\")(*args, **kwargs)\n" % r.handler
             else:
                 self.script = r.text
         # Check syntax

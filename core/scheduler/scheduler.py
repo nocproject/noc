@@ -18,7 +18,7 @@ from concurrent.futures import ThreadPoolExecutor
 ## NOC modules
 from job import Job
 from noc.lib.nosql import get_db
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 
 
 class Scheduler(object):
@@ -190,7 +190,7 @@ class Scheduler(object):
         try:
             for job in qs:
                 try:
-                    jcls = get_solution(job[Job.ATTR_CLASS])
+                    jcls = get_handler(job[Job.ATTR_CLASS])
                     yield jcls(self, job)
                 except ImportError as e:
                     self.logger.error("Invalid job class %s",

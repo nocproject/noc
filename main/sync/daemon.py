@@ -9,7 +9,7 @@
 ## Python modules
 import time
 ## NOC modules
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 from noc.lib.daemon.autoconf import AutoConfDaemon
 from noc.sa.interfaces.base import DictParameter, InterfaceTypeError
 
@@ -49,7 +49,7 @@ class SyncDaemon(AutoConfDaemon):
     def add_handler(self, name):
         self.logger.info("Initializing handler %s", name)
         h = self.config.get(name, "handler")
-        hcls = get_solution(h)
+        hcls = get_handler(h)
         handler = hcls(self, name)
         self.handlers[name] = handler
         self.tmap[handler.type] = handler
