@@ -29,28 +29,6 @@ if not logger.handlers:
     logging.basicConfig()
 
 
-# CP error reporting
-ENABLE_CP = True
-CP_NEW = "var/cp/crashinfo/new"
-CP_SET_UID = None
-
-if os.getuid() == 0:
-    CP_SET_UID = os.stat("var/log")[stat.ST_UID]
-
-if not os.path.isdir(CP_NEW):
-    try:
-        os.makedirs(CP_NEW, 0o700)
-    except OSError, why:
-        logger.error("Cannot initialize CP reporting: %s", why)
-        ENABLE_CP = False
-    if CP_SET_UID:
-        try:
-            os.chown(CP_NEW, CP_SET_UID, -1)
-        except OSError, why:
-            logger.error("Cannot initialize CP reporting: %s", why)
-            ENABLE_CP = False
-
-
 def get_lines_from_file(filename, lineno, context_lines,
                         loader=None, module_name=None):
     """
@@ -281,31 +259,6 @@ def error_report(reverse=config.traceback_reverse, logger=logger):
     fp = error_fingerprint()
     r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)
-    if ENABLE_CP:
-        fp = error_fingerprint()
-        path = os.path.join(CP_NEW, fp + ".json")
-        if os.path.exists(path):
-            # Touch file
-            os.utime(path, None)
-        else:
-            # @todo: TZ
-            # @todo: Installation ID
-            c = {
-                "ts": datetime.datetime.now().isoformat(),
-                "uuid": fp,
-                # "installation": None,
-                "process": os.path.relpath(sys.argv[0]),
-                "branch": get_branch(),
-                "tip": get_tip(),
-                "traceback": r
-            }
-            try:
-                safe_rewrite(path, ujson.dumps(c))
-                if CP_SET_UID:
-                    os.chown(path, CP_SET_UID, -1)
-                logger.error("Writing CP report to %s", path)
-            except OSError, why:
-                logger.error("Unable to write CP report: %s", why)
     return r
 
 
