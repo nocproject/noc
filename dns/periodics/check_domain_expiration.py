@@ -2,15 +2,17 @@
 ##----------------------------------------------------------------------
 ## dns.check_domain_expiration task
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
+
+## Python modules
+import datetime
+## NOC modules
 import noc.lib.periodic
 from noc.settings import config
 from django.utils.dateformat import DateFormat
-import datetime
+from noc.core.config.base import config
 
 class Task(noc.lib.periodic.Task):
     name="dns.check_domain_expiration"
@@ -26,7 +28,7 @@ class Task(noc.lib.periodic.Task):
             return "\n".join(out)
         #
         from noc.main.models import SystemNotification
-        from noc.dns.models import DNSZone
+        from noc.dns.models.dnszone import DNSZone
         
         date_format=config.get("main","date_format")
         now=datetime.date.today()
