@@ -27,6 +27,7 @@ class DiscoveryService(Service):
 
     def __init__(self):
         super(DiscoveryService, self).__init__()
+        self.config.use_pg_pool()
         self.scheduler = None
         self.send_callback = None
 

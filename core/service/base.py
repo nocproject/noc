@@ -31,7 +31,7 @@ import ujson
 import threading
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
-from .config import Config
+from noc.core.config.base import config
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -44,8 +44,6 @@ from noc.core.perf import metrics, apply_metrics
 class Service(object):
     """
     Basic service implementation.
-
-    * on_change_<var> - subscribed to changes of config variable <var>
     """
     # Service name
     name = None
@@ -71,16 +69,6 @@ class Service(object):
     ## Initialize jinja2 templating engine
     use_jinja = False
 
-    LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
-
-    LOG_LEVELS = {
-        "critical": logging.CRITICAL,
-        "error": logging.ERROR,
-        "warning": logging.WARNING,
-        "info": logging.INFO,
-        "debug": logging.DEBUG
-    }
-
     NSQ_PUB_RETRY_DELAY = 0.1
 
     def __init__(self):
@@ -89,7 +77,7 @@ class Service(object):
         tornado.ioloop.IOLoop.handle_callback_exception = self.handle_callback_exception
         self.ioloop = None
         self.logger = None
-        self.config = None
+        self.config = config
         self.service_id = str(uuid.uuid4())
         self.perf_metrics = metrics
         self.executors = {}
@@ -111,73 +99,7 @@ class Service(object):
         """
         Apply additional parser arguments
         """
-        parser.add_argument(
-            "--env",
-            action="store",
-            dest="env",
-            default=os.environ.get("NOC_ENV", ""),
-            help="NOC environment name"
-        )
-        parser.add_argument(
-            "--dc",
-            action="store",
-            dest="dc",
-            default=os.environ.get("NOC_DC", ""),
-            help="NOC datacenter name"
-        )
-        parser.add_argument(
-            "--node",
-            action="store",
-            dest="node",
-            default=os.environ.get("NOC_NODE", ""),
-            help="NOC node name"
-        )
-        parser.add_argument(
-            "--loglevel",
-            action="store",
-            choices=list(self.LOG_LEVELS),
-            dest="loglevel",
-            default=os.environ.get("NOC_LOGLEVEL", "info"),
-            help="Logging level"
-        )
-        parser.add_argument(
-            "--instance",
-            action="store",
-            dest="instance",
-            type=int,
-            default=0,
-            help="Instance number"
-        )
-        parser.add_argument(
-            "--numprocs",
-            action="store",
-            dest="numprocs",
-            type=int,
-            default=os.environ.get("NOC_NUMPROCS", "1"),
-            help="Total instances"
-        )
-        parser.add_argument(
-            "--debug",
-            action="store_true",
-            dest="debug",
-            default=False,
-            help="Dump additional debugging info"
-        )
-        parser.add_argument(
-            "--config",
-            action="store",
-            dest="config",
-            default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
-            help="Configuration path"
-        )
-        if self.pooled:
-            parser.add_argument(
-                "--pool",
-                action="store",
-                dest="pool",
-                default=os.environ.get("NOC_POOL", ""),
-                help="NOC pool name"
-            )
+        pass
 
     def handle_callback_exception(self, callback):
         sys.stdout.write("Exception in callback %r\n" % callback)
@@ -192,31 +114,6 @@ class Service(object):
         sys.stdout.flush()
         sys.exit(1)
 
-    def setup_logging(self, loglevel=None):
-        """
-        Create new or setup existing logger
-        """
-        if not loglevel:
-            loglevel = self.config.loglevel
-        logger = logging.getLogger()
-        if len(logger.handlers):
-            # Logger is already initialized
-            fmt = logging.Formatter(self.LOG_FORMAT, None)
-            for h in logging.root.handlers:
-                if isinstance(h, logging.StreamHandler):
-                    h.stream = sys.stdout
-                h.setFormatter(fmt)
-            logging.root.setLevel(self.LOG_LEVELS[loglevel])
-        else:
-            # Initialize logger
-            logging.basicConfig(
-                stream=sys.stdout,
-                format=self.LOG_FORMAT,
-                level=self.LOG_LEVELS[loglevel]
-            )
-        self.logger = logging.getLogger(self.name)
-        logging.captureWarnings(True)
-
     def setup_translation(self):
         from noc.core.translation import set_translation, ugettext
 
@@ -225,13 +122,6 @@ class Service(object):
             from jinja2.defaults import DEFAULT_NAMESPACE
             if "_" not in DEFAULT_NAMESPACE:
                 DEFAULT_NAMESPACE["_"] = ugettext
-
-    def on_change_loglevel(self, old_value, new_value):
-        if new_value not in self.LOG_LEVELS:
-            self.logger.error("Invalid loglevel '%s'. Ignoring", new_value)
-            return
-        self.logger.warn("Changing loglevel to %s", new_value)
-        logging.getLogger().setLevel(self.LOG_LEVELS[new_value])
 
     def log_separator(self, symbol="*", length=72):
         """
@@ -270,11 +160,9 @@ class Service(object):
         cmd_options = vars(options)
         args = cmd_options.pop("args", ())
         # Bootstrap logging with --loglevel
-        self.setup_logging(cmd_options["loglevel"])
         self.log_separator()
         # Read
-        self.config = Config(self, **cmd_options)
-        self.load_config()
+        self.config.apply(**cmd_options)
         # Setup title
         self.set_proc_title()
         # Setup signal handlers
@@ -303,22 +191,12 @@ class Service(object):
             self.deactivate()
         self.logger.warn("Service %s has been terminated", self.name)
 
-    def load_config(self):
-        """
-        Reload config
-        """
-        self.config.load(self.config.config)
-        self.setup_logging()
-        if self.use_translation:
-            self.setup_translation()
-
     def stop(self):
         self.logger.warn("Stopping")
         self.ioloop.add_callback(self.deactivate)
 
     def on_SIGHUP(self, signo, frame):
-        self.logger.warn("SIGHUP caught, rereading config")
-        self.ioloop.add_callback(self.load_config)
+        self.logger.warn("SIGHUP caught, not rereading config")
 
     def on_SIGTERM(self, signo, frame):
         self.logger.warn("SIGTERM caught, Stopping")
@@ -344,7 +222,7 @@ class Service(object):
         """
         return {
             "template_path": os.getcwd(),
-            "cookie_secret": "12345",
+            "cookie_secret": self.config.secret_key,
             "log_function": self.log_request
         }
 
