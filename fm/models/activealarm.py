@@ -228,7 +228,7 @@ class ActiveAlarm(nosql.Document):
                 tt_id=self.escalation_tt,
                 subject=subject,
                 body=body,
-                notification_group=self.clear_notification_group.id if self.clear_notification_group else None
+                notification_group_id=self.clear_notification_group.id if self.clear_notification_group else None
             )
         # Clear alarm
         self.delete()
