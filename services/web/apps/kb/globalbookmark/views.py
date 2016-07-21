@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.contrib import admin
-from noc.lib.app import ModelApplication
+from noc.lib.app.modelapplication import ModelApplication
 from noc.kb.models import KBGlobalBookmark
 ##
 ## KBGlobalBookmark admin

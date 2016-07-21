@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.main.models.pyrule import PyRule
 from noc.core.handler import get_handler
 from noc.core.translation import ugettext as _

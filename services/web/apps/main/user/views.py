@@ -13,7 +13,7 @@ from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.shortcuts import get_object_or_404
 ## NOC modules
-from noc.lib.app import ModelApplication, view
+from noc.lib.app.modelapplication import ModelApplication, view
 from noc.main.models.permission import Permission
 from widgets import AccessWidget
 from noc.core.translation import ugettext as _

@@ -8,7 +8,7 @@
 from django.contrib import admin
 from django import forms
 from django.shortcuts import get_object_or_404
-from noc.lib.app import ModelApplication,HasPerm
+from noc.lib.app.modelapplication import ModelApplication,HasPerm
 from noc.kb.models import KBEntry,KBEntryAttachment,KBEntryTemplate
 import re
 ##

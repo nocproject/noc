@@ -11,7 +11,7 @@
 from xml.dom.minidom import Document
 ## NOC modules
 from noc.lib.fileutils import read_file
-from noc.lib.app import ExtApplication, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.gis.models import TileCache, Map
 
 

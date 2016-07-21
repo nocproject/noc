@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.lib.app.docinline import DocInline
 from noc.gis.models.division import Division
 from noc.gis.models.building import Building

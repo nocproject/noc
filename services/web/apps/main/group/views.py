@@ -10,7 +10,7 @@
 from django.utils.translation import  ugettext_lazy as _
 from django import forms
 ## NOC modules
-from noc.lib.app import ModelApplication, view
+from noc.lib.app.modelapplication import ModelApplication, view
 from django.contrib.auth.models import Group
 from django.contrib import admin
 from noc.services.web.apps.main.user.widgets import AccessWidget

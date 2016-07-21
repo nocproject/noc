@@ -10,7 +10,7 @@
 import datetime
 import itertools
 ## NOC modules
-from noc.lib.app import ExtApplication, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.nosql import get_db
 from noc.lib.dateutils import humanize_timedelta
 from noc.core.translation import ugettext as _

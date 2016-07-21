@@ -9,7 +9,7 @@
 ## Python modules
 import datetime
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.timepatternterm import TimePatternTerm
 from noc.lib.app.modelinline import ModelInline

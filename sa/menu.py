@@ -8,7 +8,7 @@
 
 ## NOC Modules
 from noc.lib.app.site import DynamicMenu
-from noc.lib.app import HasPerm, PermitLogged, site
+from noc.lib.app.access import HasPerm, PermitLogged
 from noc.sa.models.commandsnippet import CommandSnippet
 
 

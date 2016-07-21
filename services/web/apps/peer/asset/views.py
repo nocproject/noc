@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.peer.models import ASSet
 from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
                                     StringParameter)
