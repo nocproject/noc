@@ -87,6 +87,7 @@ class BaseConfig(object):
     audit_login_ttl = _get_seconds(E("NOC_AUDIT_LOGIN_TTL", "1m"))
     audit_reboot_ttl = _get_seconds(E("NOC_AUDIT_REBOOT_TTL", "0"))
     audit_config_ttl = _get_seconds(E("NOC_AUDIT_CONFIG_TTL", "1y"))
+    audit_db_ttl = _get_seconds(E("NOC_AUDIT_DB_TTL", "5y"))
 
     def __init__(self):
         self.setup_logging()
