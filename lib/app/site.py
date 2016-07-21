@@ -102,7 +102,6 @@ class Site(object):
         self.menu_index = {}  # id -> menu item
         self.reports = []  # app_id -> title
         self.views = ProxyNode()  # Named views proxy
-        self.testing_mode = hasattr(settings, "IS_TEST")
         self.app_contributors = defaultdict(set)
 
     @property
