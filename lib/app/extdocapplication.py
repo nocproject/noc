@@ -87,12 +87,6 @@ class ExtDocApplication(ExtApplication):
                 self._api_to_json,
                 url="^(?P<id>[0-9a-f]{24})/json/$",
                 method=["GET"], access="read", api=True)
-            if self.json_collection and self.config.getboolean("develop", "install_collection"):
-                self.add_view(
-                    "api_install_json",
-                    self._api_install_json,
-                    url="^(?P<id>[0-9a-f]{24})/json/$",
-                    method=["POST"], access="create", api=True)
         if self.json_collection:
             self.field_is_builtin = self._field_is_builtin
         # Find field_* and populate custom fields
@@ -372,15 +366,6 @@ class ExtDocApplication(ExtApplication):
         """
         o = self.get_object_or_404(self.model, id=id)
         return o.to_json()
-
-    def _api_install_json(self, request, id):
-        """
-        Expose JSON collection item when available
-        """
-        from noc.core.collection.base import Collection
-        o = self.get_object_or_404(self.model, id=id)
-        Collection.install(o.to_json())
-        return True
 
     def _field_is_builtin(self, o):
         """

@@ -40,6 +40,9 @@ def _get_seconds(v):
         raise "Invalid expiration option in %s" % v
     return v * m
 
+def _get_bool(v):
+    v = v.lower()
+
 
 class BaseConfig(object):
     LOG_LEVELS = {
@@ -88,6 +91,8 @@ class BaseConfig(object):
     audit_reboot_ttl = _get_seconds(E("NOC_AUDIT_REBOOT_TTL", "0"))
     audit_config_ttl = _get_seconds(E("NOC_AUDIT_CONFIG_TTL", "1y"))
     audit_db_ttl = _get_seconds(E("NOC_AUDIT_DB_TTL", "5y"))
+    #
+    api_row_limit = int(E("NOC_API_ROW_LIMIT", 0))
 
     def __init__(self):
         self.setup_logging()

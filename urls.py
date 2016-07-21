@@ -8,10 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.site import site, patterns
-from noc.lib.solutions import init_solutions
 
-## Initialize custom fields and solutions
-init_solutions()
 ##
 ## Discover all applications
 ##
