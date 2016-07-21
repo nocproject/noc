@@ -18,7 +18,7 @@ from noc.main.models.style import Style
 from noc.main.models.resourcestate import ResourceState
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.fields import TagsField, INETField, MACField
-from noc.lib.app import site
+from noc.lib.app.site import site
 from noc.lib.validators import (
     ValidationError, check_fqdn, check_ipv4, check_ipv6)
 from noc.main.models.textindex import full_text_search

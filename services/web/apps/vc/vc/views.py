@@ -11,7 +11,7 @@ from collections import defaultdict
 ## Third-party modules
 from mongoengine import Q
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.vc.models import VC, VCDomain, VCFilter
 from noc.inv.models.subinterface import SubInterface
 from noc.sa.interfaces.base import DictParameter, ModelParameter, ListOfParameter,\

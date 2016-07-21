@@ -12,7 +12,7 @@ import datetime
 from django.contrib import admin
 from django import forms
 ## NOC modules
-from noc.lib.app import ModelApplication
+from noc.lib.app.modelapplication import ModelApplication
 from noc.main.models import Schedule, PyRule
 from noc.lib.periodic import periodic_registry
 from noc.core.translation import ugettext as _

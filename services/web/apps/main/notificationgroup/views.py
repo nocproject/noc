@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.main.models import (NotificationGroup, NotificationGroupUser,
                              NotificationGroupOther)
 from noc.lib.app.modelinline import ModelInline

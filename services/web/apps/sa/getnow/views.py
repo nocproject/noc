@@ -2,12 +2,12 @@
 ##----------------------------------------------------------------------
 ## sa.groupaccess application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 #  # NOC modules
-from noc.lib.app import view, ExtApplication
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.lib.dateutils import humanize_distance

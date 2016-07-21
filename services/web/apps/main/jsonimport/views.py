@@ -9,7 +9,7 @@
 ## Third-party modules
 import ujson
 ## NOC modules
-from noc.lib.app import ExtApplication, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.serialize import json_decode
 from noc.sa.interfaces.base import StringParameter
 from noc.core.collection.base import Collection

@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import Application, HasPerm, view
+from noc.lib.app.application import Application, HasPerm, view
 from noc.services.web.apps.main.calculator.calculators import calculator_registry
 from noc.core.translation import ugettext as _
 

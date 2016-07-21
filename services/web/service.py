@@ -39,7 +39,7 @@ class WebService(Service):
     def on_activate(self):
         # Initialize site
         self.logger.info("Registering web applications")
-        from noc.lib.app import site
+        from noc.lib.app.site import site
         site.service = self
         site.autodiscover()
 

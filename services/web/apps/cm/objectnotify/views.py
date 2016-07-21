@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from django.contrib import admin
-from noc.lib.app import ModelApplication
+from noc.lib.app.modelapplication import ModelApplication
 from noc.cm.models import ObjectNotify
 from noc.core.translation import ugettext as _
 ##

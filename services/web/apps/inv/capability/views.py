@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.capability import Capability
 from noc.main.models.doccategory import DocCategory
 from noc.core.translation import ugettext as _

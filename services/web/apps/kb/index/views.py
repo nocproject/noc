@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import Application, view
+from noc.lib.app.application import Application, view
 from noc.kb.models import *
 
 

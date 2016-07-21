@@ -9,7 +9,7 @@
 ## Third-party modules
 from mongoengine import Q
 ## NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.macdb import MACDB
 from noc.inv.models.maclog import MACLog

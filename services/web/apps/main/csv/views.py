@@ -15,7 +15,7 @@ from django.http import HttpResponse
 from django.db import transaction
 from django.db import models
 ## NOC modules
-from noc.lib.app import Application, view
+from noc.lib.app.application import Application, view
 from noc.lib.csvutils import csv_export, csv_import, get_model_fields,\
     IR_FAIL, IR_SKIP, IR_UPDATE
 from noc.core.translation import ugettext as _    
