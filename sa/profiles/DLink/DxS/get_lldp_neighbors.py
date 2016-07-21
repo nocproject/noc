@@ -27,7 +27,7 @@ class Script(BaseScript):
         r"(?P<entities>.+?)\n\n", re.MULTILINE | re.DOTALL)
     rx_entity = re.compile(
         r"^Entity \d+\s*\n"
-        r"^\s+Chassis ID Subtype\s+:(?P<chassis_id_sybtype>.+)\s*\n"
+        r"^\s+Chassis ID Subtype\s+:(?P<chassis_id_subtype>.+)\s*\n"
         r"^\s+Chassis ID\s+:(?P<chassis_id>.+)\s*\n"
         r"^\s+Port ID Subtype\s+:(?P<port_id_subtype>.+)\s*\n"
         r"^\s+Port ID\s+:(?P<port_id>.+)\s*\n"
@@ -59,7 +59,7 @@ class Script(BaseScript):
                     "network address": 5,
                     "interface name": 6,
                     "local": 7
-                }[m.group("chassis_id_sybtype").strip().lower()]
+                }[m.group("chassis_id_subtype").strip().lower()]
                 n["remote_chassis_id"] = m.group("chassis_id").strip()
                 remote_port_subtype = m.group("port_id_subtype")
                 remote_port_subtype.replace("_", " ")
