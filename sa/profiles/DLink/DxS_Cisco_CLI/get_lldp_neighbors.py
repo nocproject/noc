@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## DLink.DxS_Cisco_CLI.get_mac_address_table
+## DLink.DxS_Cisco_CLI..get_lldp_neighbors
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
