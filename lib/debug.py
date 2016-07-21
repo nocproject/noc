@@ -309,11 +309,13 @@ def error_fingerprint():
     return str(uuid.UUID(bytes=hash[:16], version=5))
 
 
-def dump_stacks():
+def dump_stacks(thread_id=None):
     """
-    Dump all active threads' stacks
+    Dump all or selected active threads' stacks
     """
     for tid, stack in sys._current_frames().items():
+        if thread_id and tid != thread_id:
+            continue
         print "[THREAD #%s]" % tid
         for filename, lineno, name, line in traceback.extract_stack(stack):
             print "File: '%s', line %d, in %s" % (filename, lineno, name)

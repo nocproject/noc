@@ -30,6 +30,8 @@ class Script(BaseScript):
     rx_ip = re.compile(r"IP\saddress\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\, "
                        r"subnet mask (?P<mask>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})",
                        re.MULTILINE | re.IGNORECASE)
+    rx_snmp_int = re.compile(r"Interface\snumber\sis\s(?P<ifindex>\w+)",
+                             re.MULTILINE | re.IGNORECASE)
 
     def get_ospfint(self):
         v = self.cli("show ospf interface")
@@ -54,14 +56,14 @@ class Script(BaseScript):
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
 
-        ifindex = self.get_ifindex_map()
+        # ifindex = self.get_ifindex_map()
 
-        v = self.cli("show interface")
+        v = self.cli("show interface detail")
         for s in v.split("\nInterface "):
             match = self.rx_int.search(s)
             if match:
                 ifname = match.group("interface")
-                if ifname.startswith("Virtual") or ifname.startswith("Tunnel"):
+                if ifname.startswith("Virtual") or ifname.startswith("Tunnel") or ifname.startswith("Internal-"):
                     continue
                 a_stat = match.group("admin_status").lower() == "up"
                 o_stat = match.group("oper_status").lower() == "up"
@@ -88,7 +90,15 @@ class Script(BaseScript):
                 match = self.rx_vlan.search(s)
                 if match:
                     vlan = match.group("vlan")
-                    sub["vlan_ids"] = [vlan]
+                    if vlan != 'none':
+                        sub["vlan_ids"] = [vlan]
+                    else:
+                        self.logger.error("Not configured VlanId on subinterfaces %s" % ifname)
+                match = self.rx_snmp_int.search(s)
+                if match:
+                    ifindex = match.group("ifindex")
+                    sub["snmp_ifindex"] = ifindex
+
                 if alias in ospfs:
                     sub["enabled_protocols"] += ["OSPF"]
                 phys = ifname.find(".") == -1
@@ -104,8 +114,9 @@ class Script(BaseScript):
                         "enabled_protocols": [],
                         "subinterfaces": [sub]
                     }
-                    if ifname in ifindex:
-                        iface["snmp_ifindex"] = ifindex[ifname]
+                    if ifindex:
+                        iface["snmp_ifindex"] = ifindex
+                    # if ifname in ifindex:
                     ifname2 = self.profile.convert_interface_name(ifname)
                     # Portchannel member
                     if ifname2 in portchannel_members:
