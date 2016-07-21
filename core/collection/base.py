@@ -342,7 +342,8 @@ class Collection(object):
         :return:
         """
         c = Collection(data["$collection"])
-        o = c.dereference(data)
+        data = c.dereference(data)
+        o = c.model(**data)
         # Format JSON
         json_data = o.to_json()
         # Write
