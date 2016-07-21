@@ -16,7 +16,11 @@ class Profile(BaseProfile):
     name = "Cisco.ASA"
     pattern_more = "^<--- More --->"
     pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
     command_super = "enable"
+    command_enter_config = "configure terminal"
+    command_leave_config = "end"
+    command_exit = "logout"
     pattern_prompt = r"^\S+?#"
     command_more = " "
     command_disable_pager = "terminal pager 0"
@@ -29,6 +33,7 @@ class Profile(BaseProfile):
 
     INTERFACE_TYPES = {
             "L": "loopback",
+            "I": "loopback",
             "E": "physical",
             "G": "physical",
             "T": "physical",
