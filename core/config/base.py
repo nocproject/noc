@@ -93,6 +93,8 @@ class BaseConfig(object):
     audit_db_ttl = _get_seconds(E("NOC_AUDIT_DB_TTL", "5y"))
     #
     api_row_limit = int(E("NOC_API_ROW_LIMIT", 0))
+    #
+    gis_ellipsoid = E("NOC_GIS_ELLIPSOID", "ПЗ-90")
 
     def __init__(self):
         self.setup_logging()
