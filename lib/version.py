@@ -183,17 +183,6 @@ def get_versions():
     return r
 
 
-def get_solutions():
-    """
-    Get installed solutions
-    """
-    r = []
-    for sn in settings.config.options("solutions"):
-        if settings.config.getboolean("solutions", sn):
-            r += [[sn, None]]
-    return r
-
-
 def get_brand():
     global BRAND
     if not BRAND:
