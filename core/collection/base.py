@@ -161,6 +161,8 @@ class Collection(object):
                     with open(fp) as f:
                         data = f.read()
                     jdata = ujson.loads(data)
+                    if "uuid" not in jdata:
+                        raise ValueError("Invalid JSON %s: No UUID" % fp)
                     csum = hashlib.sha256(data).hexdigest()
                     items[jdata["uuid"]] = self.Item(
                         uuid=jdata["uuid"],
