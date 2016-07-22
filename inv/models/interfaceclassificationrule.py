@@ -203,7 +203,10 @@ class InterfaceClassificationRule(Document):
 
     @classmethod
     def get_classificator_code(cls):
-        r = ["import re"]
+        r = [
+            "import re",
+            "import bson"
+        ]
         mf = [
             "gsc = {}",
             "def classify(interface):",
@@ -231,10 +234,10 @@ class InterfaceClassificationRule(Document):
             if lmn:
                 mf += [
                     "    if in_selector(mo, %d) and %s:" % (rule.selector.id, " and ".join(lmn)),
-                    "        return %r" % rule.profile.name
+                    "        return bson.ObjectId('%s')" % rule.profile.id
                 ]
             else:
-                mf += ["    return %r" % rule.profile.name]
+                mf += ["    return bson.ObjectId('%s')" % rule.profile.id]
         r += mf
         return "\n".join(r)
 
