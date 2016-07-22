@@ -69,10 +69,13 @@ class Command(BaseCommand):
                 self.die("File not found: %s" % fp)
             with open(fp) as f:
                 data = ujson.load(f)
-            Collection.install(data)
-            if load:
-                c = Collection(data["$collection"])
-                c.update_item(data)
+            try:
+                Collection.install(data)
+                if load:
+                    c = Collection(data["$collection"])
+                    c.update_item(data)
+            except ValueError as e:
+                self.die(str(e))
             if remove:
                 os.unlink(fp)
 
