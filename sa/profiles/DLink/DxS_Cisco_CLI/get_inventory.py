@@ -75,14 +75,14 @@ class Script(BaseScript):
                 if match.group("type") == "fiber":
                     if match.group("speed") == "1000M":
                         r += [{
-                            "type": "MODULE",
+                            "type": "XCVR",
                             "number": match.group("number"),
                             "vendor": "NONAME",
                             "part_no": ["NoName | Transceiver | 1G | SFP"]
                         }]
                     if match.group("speed") == "10000M":
                         r += [{
-                            "type": "MODULE",
+                            "type": "XCVR",
                             "number": match.group("number"),
                             "vendor": "NONAME",
                             "part_no": ["NoName | Transceiver | 10G | XFP"]
