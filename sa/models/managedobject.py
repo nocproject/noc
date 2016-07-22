@@ -47,11 +47,11 @@ from noc.core.model.decorator import on_save, on_init, on_delete
 from noc.inv.models.object import Object
 from credcache import CredentialsCache
 from noc.core.defer import call_later
+from noc.core.config.base import config
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
-CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
 Version = namedtuple("Version", ["profile", "vendor", "platform", "version"])
@@ -174,7 +174,7 @@ class ManagedObject(Model):
         null=True, blank=True
     )
     # CM
-    config = GridVCSField("config", mirror=CONFIG_MIRROR)
+    config = GridVCSField("config", mirror=config.config_mirron_path)
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
                             blank=True, null=True)

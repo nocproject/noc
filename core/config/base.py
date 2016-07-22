@@ -95,6 +95,8 @@ class BaseConfig(object):
     api_row_limit = int(E("NOC_API_ROW_LIMIT", 0))
     #
     gis_ellipsoid = E("NOC_GIS_ELLIPSOID", "ПЗ-90")
+    #
+    config_mirror_path = E("NOC_CONFIG_MIRROR_PATH")
 
     def __init__(self):
         self.setup_logging()
