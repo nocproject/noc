@@ -20,7 +20,6 @@ import tornado.httpclient
 import ujson
 import pycurl
 ## NOC modules
-from noc.core.service.catalog import ServiceCatalog
 
 
 # Connection time
@@ -95,7 +94,6 @@ class RPCClient(object):
                     c.setopt(c.HTTPHEADER, headers)
                 c.setopt(c.WRITEDATA, buff)
                 c.setopt(c.NOPROXY, "*")
-                c.setopt(c.RESOLVE, ["%s:%s" % (l, l.split(":")[0])])
                 c.setopt(c.TIMEOUT, REQUEST_TIMEOUT)
                 c.setopt(c.CONNECTTIMEOUT, CONNECT_TIMEOUT)
                 c.setopt(c.HEADERFUNCTION, process_headers)
@@ -138,25 +136,15 @@ class RPCClient(object):
             body = ujson.dumps(req)
             # Build service candidates
             if self.client._hints:
-                services = self.client._hints
-            else:
-                services = catalog.get_service(service).listen
-            if len(services) < RETRIES:
-                services *= RETRIES
+                service = random.choice(self.client._hints)
             # Call
-            last = None
             st = RETRY_TIMEOUT
             orig_body = None
-            for l in random.sample(services, RETRIES):
+            for nr in range(RETRIES):
                 # Sleep when trying same instance
-                if l == last:
-                    time.sleep(st + float(st) * (random.random() - 0.5) / 5)
-                    st += RETRY_DELTA
-                #
-                last = l
-                url = "http://%s/api/%s/" % (l, self.client._api)
+                url = "http://%s/api/%s/" % (service, self.client._api)
                 for nt in range(3):  # Limit redirects
-                    code, headers, data = make_call(url, l, body)
+                    code, headers, data = make_call(url, service, body)
                     if code == 200:
                         break
                     elif code is None:
@@ -201,6 +189,3 @@ class RPCClient(object):
             return self.__dict__[item]
         else:
             return self.CallProxy(self, item)
-
-
-catalog = ServiceCatalog()

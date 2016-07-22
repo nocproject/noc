@@ -54,15 +54,6 @@ class RPCProxy(object):
                 self._methods[item] = mw
             return mw
 
-    def _get_url(self):
-        s = self._service.config.get_service(
-            self._service_name
-        )
-        if not s:
-            raise ValueError("No active services '%s' configured" % self._service_name)
-        svc = random.choice(s)
-        return "http://%s/api/%s/" % (svc, self._api)
-
     @tornado.gen.coroutine
     def _call(self, method, *args, **kwargs):
         tid = self._tid.next()
@@ -74,29 +65,17 @@ class RPCProxy(object):
         if not is_notify:
             msg["id"] = tid
         body = ujson.dumps(msg)
-        # Get services
-        services = self._service.config.get_service(
-            self._service_name
-        )
         timeouts = list(self._service.iter_rpc_retry_timeout())
         retries = len(timeouts) + 1
-        if len(services) < retries:
-            services *= retries
         response = None
-        last = None
-        for svc in random.sample(services, retries):
+        for nr in range(retries):
             client = tornado.httpclient.AsyncHTTPClient(
                 force_instance=True,
                 max_clients=1
             )
-            # Sleep when trying same instance
-            if svc == last:
-                yield tornado.gen.sleep(timeouts.pop())
-            #
-            last = svc
             try:
                 response = yield client.fetch(
-                    "http://%s/api/%s/" % (svc, self._api),
+                    "http://%s/api/%s/" % (self._service_name, self._api),
                     method="POST",
                     body=body,
                     headers={
@@ -116,8 +95,8 @@ class RPCProxy(object):
                     logger.debug("Socket error: %s" % e)
                     continue
                 raise RPCException(str(e))
-            except Exception, why:
-                raise RPCException(why)
+            except Exception as e:
+                raise RPCException(str(e))
             finally:
                 client.close()
                 # Resolve CurlHTTPClient circular dependencies
