@@ -1,5 +1,5 @@
 #!/bin/sh
-if [ -x ./bin/ipython ]; then
-    exec ./bin/ipython
+if [ -x /usr/bin/ipython ]; then
+    exec /usr/bin/env ipython
 fi
-./bin/python
+/usr/bin/env python
