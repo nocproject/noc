@@ -130,6 +130,8 @@ class MetricsCheck(DiscoveryCheck):
             if "ifindex" in i:
                 hints["ifindexes"][i["name"]] = i["ifindex"]
             for metric in ipr:
+                if metrics[metric]["scope"] != "i":
+                    continue  # Ignore non-interface scoped metrics
                 if metric in metrics:
                     metrics[metric]["interfaces"] += [i["name"]]
                 else:
