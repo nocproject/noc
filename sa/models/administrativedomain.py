@@ -6,11 +6,17 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
+## Python modules
+from threading import RLock
+import operator
+## Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+import cachetools
 ## NOC modules
 from noc.core.model.fields import TagsField
+
+id_lock = RLock()
 
 
 class AdministrativeDomain(models.Model):
@@ -31,5 +37,27 @@ class AdministrativeDomain(models.Model):
         null=True, blank=True)
     tags = TagsField("Tags", null=True, blank=True)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        try:
+            return AdministrativeDomain.objects.get(id=id)
+        except AdministrativeDomain.DoesNotExist:
+            return None
+
+    @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
+    def get_path(self):
+        """
+        Returns list of parent segment ids
+        :return:
+        """
+        if self.parent:
+            return self.parent.get_path() + [self.id]
+        else:
+            return [self.id]
