@@ -7,9 +7,10 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import threading
+from threading import RLock
 import datetime
 from collections import defaultdict
+import operator
 ## Third-party modules
 import cachetools
 ## NOC modules
@@ -30,24 +31,7 @@ NS = 1000000000.0
 DEFAULT_THRESHOLDS = [None, None, None, None]
 
 
-def get_interface_profile_metrics(p_id):
-    with interface_profile_metrics_lock:
-        r = {}
-        ipr = InterfaceProfile.objects.filter(id=p_id).first()
-        if not ipr:
-            return None
-        for m in ipr.metrics:
-            if not m.is_active:
-                continue
-            r[m.metric_type.name] = [
-                m.low_error,
-                m.low_warn,
-                m.high_warn,
-                m.high_error
-            ]
-        return r
-
-interface_profile_metrics_lock = threading.Lock()
+metrics_lock = RLock()
 
 
 class MetricsCheck(DiscoveryCheck):
@@ -57,9 +41,7 @@ class MetricsCheck(DiscoveryCheck):
     name = "metrics"
     required_script = "get_metrics"
 
-    interface_profile_metrics_cache = cachetools.TTLCache(
-        1000, 60, missing=get_interface_profile_metrics
-    )
+    _profile_metrics = cachetools.TTLCache(1000, 60)
 
     S_OK = 0
     S_WARN = 1
@@ -77,6 +59,24 @@ class MetricsCheck(DiscoveryCheck):
     }
 
     AC_PM_THRESHOLDS = AlarmClass.objects.get(name="NOC | PM | Out of Thresholds")
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_profile_metrics"), lock=lambda _: metrics_lock)
+    def get_interface_profile_metrics(cls, p_id):
+        r = {}
+        ipr = InterfaceProfile.objects.filter(id=p_id).first()
+        if not ipr:
+            return None
+        for m in ipr.metrics:
+            if not m.is_active or m.metric_type.scope != "i":
+                continue
+            r[m.metric_type.name] = [
+                m.low_error,
+                m.low_warn,
+                m.high_warn,
+                m.high_error
+            ]
+        return r
 
     def handler(self):
         def q(s):
@@ -123,15 +123,13 @@ class MetricsCheck(DiscoveryCheck):
             "ifindex": 1,
             "profile": 1
         }):
-            ipr = self.interface_profile_metrics_cache[i["profile"]]
+            ipr = self.get_interface_profile_metrics(i["profile"])
             self.logger.debug("Interface %s. ipr=%s", i["name"], ipr)
             if not ipr:
                 continue
             if "ifindex" in i:
                 hints["ifindexes"][i["name"]] = i["ifindex"]
             for metric in ipr:
-                if ipr[metric]["scope"] != "i":
-                    continue  # Ignore non-interface scoped metrics
                 if metric in metrics:
                     metrics[metric]["interfaces"] += [i["name"]]
                 else:
