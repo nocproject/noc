@@ -45,7 +45,7 @@ class ContainerLoader(BaseLoader):
         if path not in self.containers:
             pp = path.split(" | ")
             # Find object
-            c = Object.get_path(pp)
+            c = Object.get_by_path(pp)
             if c:
                 self.containers[path] = c
             else:
