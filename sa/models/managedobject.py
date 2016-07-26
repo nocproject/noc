@@ -46,6 +46,7 @@ from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete
 from noc.inv.models.object import Object
 from credcache import CredentialsCache
+from objectpath import ObjectPath
 from noc.core.defer import call_later
 
 
@@ -445,6 +446,14 @@ class ManagedObject(Model):
             CredentialsCache.invalidate(self)
             if "profile_name" in self.changed_fields:
                 self.reset_platform()
+        # Rebuild paths
+        if (
+            self.initial_data["id"] is None or
+            "administrative_domain" in self.changed_fields or
+            "segment" in self.changed_fields or
+            "container" in self.changed_fields
+        ):
+            ObjectPath.refresh(self)
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache

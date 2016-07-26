@@ -9,6 +9,7 @@
 ## Python modules
 import datetime
 import operator
+from threading import RLock
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ObjectIdField,
@@ -26,6 +27,8 @@ from noc.lib.utils import deep_merge
 from noc.lib.middleware import get_user
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.defer import call_later
+
+id_lock = RLock()
 
 
 class Object(Document):
@@ -52,14 +55,26 @@ class Object(Document):
     tags = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _id_path = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return unicode(self.name or self.id)
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Object.objects.filter(id=id).first()
+
+    @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
+    def get_path(self):
+        """
+        Returns list of parent segment ids
+        :return:
+        """
+        if self.container:
+            return self.container.get_path() + [self.id]
+        else:
+            return [self.id]
 
     def get_data(self, interface, key):
         attr = ModelInterface.get_interface_attr(interface, key)
@@ -475,7 +490,7 @@ class Object(Document):
         return root
 
     @classmethod
-    def get_path(cls, path):
+    def get_by_path(cls, path):
         """
         Get object by given path.
         :param path: List of names following to path
