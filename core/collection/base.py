@@ -354,6 +354,8 @@ class Collection(object):
             c.name,
             o.get_json_path()
         )
+        if "uuid" not in data:
+            raise ValueError("Invalid JSON: No UUID")
         c.stdout.write("[%s|%s] Installing %s\n" % (
             c.name, data["uuid"], path))
         safe_rewrite(

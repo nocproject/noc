@@ -75,7 +75,7 @@ class Command(BaseCommand):
                     c = Collection(data["$collection"])
                     c.update_item(data)
             except ValueError as e:
-                self.die(str(e))
+                self.die("%s - %s" % (fp, (str(e))))
             if remove:
                 os.unlink(fp)
 
