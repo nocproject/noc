@@ -191,3 +191,11 @@ class BaseCard(object):
         if not path:
             return _("N/A")
         return ", ".join(reversed(path))
+
+    @staticmethod
+    def update_dict(s, d):
+        for k in d:
+            if k in s:
+                s[k] += d[k]
+            else:
+                s[k] = d[k]
