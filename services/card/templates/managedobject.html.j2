@@ -43,7 +43,7 @@
 </tr>
 <tr>
     <th scope="row">{{ _("Segment") }}</th>
-    <td>{% if segment %}{{ segment.name }}{% endif %}</td>
+    <td>{% if segment %}<a href="/api/card/view/segment/{{ segment.id }}/">{{ segment.name }}</a>{% endif %}</td>
 </tr>
 <tr>
     <th scope="row">{{ _("Model") }}</th>
