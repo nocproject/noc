@@ -285,7 +285,7 @@ class Collection(object):
         # Resolve partials
         while self.partial_errors:
             pl = len(self.partial_errors)
-            for u in self.partial_errors:
+            for u in list(self.partial_errors):  # may change size
                 self.update_item(cdata[u].data)
             if len(self.partial_errors) == pl:
                 # Cannot resolve partials
