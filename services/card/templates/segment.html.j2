@@ -2,7 +2,7 @@
 <tbody>
     <tr>
         <th colspan="2">
-            {{ object.name }}
+            {{ object.name }} {{ summary | glyph_summary }}
         </th>
     </tr>
     {% if parent %}
@@ -33,8 +33,9 @@
             <table>
                 <thead>
                     <th class="col-sm-6">{{ _("Name") }}</th>
-                    <th class="col-sm-3">{{ _("Address") }}</th>
-                    <th class="col-sm-3">{{ _("Model") }}</th>
+                    <th class="col-sm-2">{{ _("Address") }}</th>
+                    <th class="col-sm-2">{{ _("Model") }}</th>
+                    <th class="col-sm-2">{{ _("Summary") }}</th>
                 </thead>
                 <tbody>
                 {% for o in children %}
@@ -42,6 +43,7 @@
                     <td><a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.name | managed_object_title}}</a></td>
                     <td>{{ o.object.address }}</td>
                     <td>{{ o.object.platform }}</td>
+                    <td>{{ o.summary | glyph_summary }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
