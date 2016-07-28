@@ -5,14 +5,14 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
+from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
 from django import forms
-from noc.lib.convert import dbm2mw,mw2dbm
+from noc.lib.convert import dbm2mw, mw2dbm
 
 
 class CalculatorForm(forms.Form):
     value = forms.DecimalField(required=True)
-    measure = forms.ChoiceField(required=True,choices=[("dbm", "dBm"), ("mw", "mW")])
+    measure = forms.ChoiceField(required=True, choices=[("dbm", "dBm"), ("mw", "mW")])
 
 
 class Calculator(CalculatorBase):

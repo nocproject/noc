@@ -10,35 +10,35 @@
 """
 """
 from noc.lib.registry import Registry
-##
-## Downloader registry
-##
+
+
 class DownloaderRegistry(Registry):
-    name="DownloaderRegistry"
-    subdir="refbooks/downloaders"
-    classname="Downloader"
-    apps=["noc.main"]
-downloader_registry=DownloaderRegistry()
-##
-## Metaclass for refbook downloaders
-##
+    """Downloader registry"""
+    name = "DownloaderRegistry"
+    subdir = "refbooks/downloaders"
+    classname = "Downloader"
+    apps = ["noc.main"]
+downloader_registry = DownloaderRegistry()
+
+
 class DownloaderBase(type):
-    def __new__(cls,name,bases,attrs):
-        m=type.__new__(cls,name,bases,attrs)
-        m.scripts={}
-        downloader_registry.register(m.name,m)
+    """Metaclass for refbook downloaders"""
+    def __new__(cls, name, bases, attrs):
+        m = type.__new__(cls, name, bases, attrs)
+        m.scripts = {}
+        downloader_registry.register(m.name, m)
         return m
-##
-## Downloader base class
-##
+
+
 class Downloader(object):
-    __metaclass__=DownloaderBase
+    """Downloader base class"""
+    __metaclass__ = DownloaderBase
     # Profile name
-    name=None
+    name = None
     ##
     ## Abstract metrod returning a list of records
     ## Each record is a hash with field name -> value mapping
     ##
     @classmethod
-    def download(cls,ref_book):
+    def download(cls, ref_book):
         return []
