@@ -6,16 +6,22 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+from threading import RLock
+import operator
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField,
                                 ReferenceField, FloatField, ListField,
                                 EmbeddedDocumentField, IntField)
+import cachetools
 ## NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.pm.models.metrictype import MetricType
+
+id_lock = RLock()
 
 
 class InterfaceProfileMetrics(EmbeddedDocument):
@@ -70,14 +76,31 @@ class InterfaceProfile(Document):
     # Alarm weight
     weight = IntField(default=0)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        try:
+            return InterfaceProfile.objects.get(id=id)
+        except InterfaceProfile.DoesNotExist:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        try:
+            return InterfaceProfile.objects.get(name=name)
+        except InterfaceProfile.DoesNotExist:
+            return None
 
     @classmethod
     def get_default_profile(cls):
         try:
             return cls._default_profile
         except AttributeError:
-            cls._default_profile = cls.objects.filter(
-                name="default").first()
+            cls._default_profile = cls.get_by_name("default")
             return cls._default_profile

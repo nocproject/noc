@@ -21,7 +21,6 @@ from noc.core.scheduler.scheduler import Scheduler
 from rule import Rule
 from rcacondition import RCACondition
 from trigger import Trigger
-from joblauncher import JobLauncher
 from noc.fm.models import (ActiveEvent, EventClass,ActiveAlarm,
                            AlarmLog, AlarmTrigger, AlarmClass)
 from noc.fm.models.archivedalarm import ArchivedAlarm
@@ -29,7 +28,6 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
-from noc.lib.solutions import get_alarm_class_handlers, get_alarm_jobs
 import utils
 from noc.core.defer import call_later
 
@@ -83,7 +81,6 @@ class CorrelatorService(Service):
         self.load_triggers()
         self.load_rca_rules()
         self.load_escalation_rules()
-        self.load_alarm_jobs()
         self.load_handlers()
 
     def load_rules(self):
@@ -165,31 +162,11 @@ class CorrelatorService(Service):
                 n += 1
         self.logger.info("%d escalation rules have been loaded", n)
 
-    def load_alarm_jobs(self):
-        """
-        Load alarm jobs
-        :return:
-        """
-        self.logger.info("Loading alarm jobs")
-        n = 0
-        self.alarm_jobs = {}  # class id ->
-        for ac in AlarmClass.objects.all():
-            continue  # @todo: Port jobs properly
-            jobs = get_alarm_jobs(ac)
-            if not jobs:
-                continue
-            self.logger.debug("    <%s>: %s", ac.name, ", ".join(j.job for j in jobs))
-            self.alarm_jobs[ac.id] = [
-                JobLauncher(self.scheduler, j.job, j.interval, j.vars)
-                for j in jobs]
-            n += len(jobs)
-        self.logger.debug("%d alarm jobs have been loaded" % n)
-
     def load_handlers(self):
         self.logger.info("Loading handlers")
         self.handlers = {}
         for ac in AlarmClass.objects.filter():
-            handlers = get_alarm_class_handlers(ac)
+            handlers = ac.handlers
             if not handlers:
                 continue
             self.logger.debug("    <%s>: %s", ac.name, ", ".join(handlers))

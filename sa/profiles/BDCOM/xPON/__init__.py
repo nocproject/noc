@@ -29,4 +29,5 @@ class Profile(BaseProfile):
     command_enter_config = "config"
     command_leave_config = "exit"
     command_save_config = "write"
+    command_exit = "exit"
     config_volatile = ["^%.*?$"]

@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Various debugging and error logging utilities
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,11 +17,12 @@ import hashlib
 import pprint
 import traceback
 import uuid
+## Third-party modules
+import ujson
 ## NOC modules
 from noc.settings import TRACEBACK_REVERSE
 from noc.lib.version import get_branch, get_tip
 from noc.lib.fileutils import safe_rewrite
-from noc.lib.serialize import json_encode
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
@@ -299,7 +300,7 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
                 "traceback": r
             }
             try:
-                safe_rewrite(path, json_encode(c))
+                safe_rewrite(path, ujson.dumps(c))
                 if CP_SET_UID:
                     os.chown(path, CP_SET_UID, -1)
                 logger.error("Writing CP report to %s", path)
@@ -355,11 +356,13 @@ def error_fingerprint():
     return str(uuid.UUID(bytes=hash[:16], version=5))
 
 
-def dump_stacks():
+def dump_stacks(thread_id=None):
     """
-    Dump all active threads' stacks
+    Dump all or selected active threads' stacks
     """
     for tid, stack in sys._current_frames().items():
+        if thread_id and tid != thread_id:
+            continue
         print "[THREAD #%s]" % tid
         for filename, lineno, name, line in traceback.extract_stack(stack):
             print "File: '%s', line %d, in %s" % (filename, lineno, name)

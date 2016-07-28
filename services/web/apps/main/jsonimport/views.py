@@ -6,11 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+import ujson
 ## NOC modules
 from noc.lib.app import ExtApplication, view
 from noc.lib.serialize import json_decode
 from noc.sa.interfaces.base import StringParameter
-from noc.lib.collection import Collection
+from noc.core.collection.base import Collection
 from noc.core.translation import ugettext as _
 
 
@@ -28,30 +30,27 @@ class JSONImportApplication(ExtApplication):
           api=True)
     def api_import(self, request, json):
         try:
-            jdata = json_decode(json)
-        except Exception, why:
+            jdata = ujson.loads(json)
+        except Exception as e:
             return {
                 "status": False,
-                "error": "Invalid JSON: %s" % why
+                "error": "Invalid JSON: %s" % e
             }
         try:
             if isinstance(jdata, list):
                 for d in jdata:
-                    self.import_object(d)
+                    Collection.install(d)
+                    c = Collection(d["$collection"])
+                    c.update_item(d)
             else:
-                self.import_object(jdata)
-        except ValueError, why:
+                Collection.install(jdata)
+                c = Collection(jdata["$collection"])
+                c.update_item(jdata)
+        except ValueError as e:
             return {
                 "status": False,
-                "error": str(why)
+                "error": str(e)
             }
         return {
             "status": True
         }
-
-    def import_object(self, obj):
-        collection = obj.get("$collection")
-        if not collection:
-            raise ValueError("No $collection attribute")
-        c = Collection(collection, local=True)  # Can raise ValueError
-        c.upload_data(obj)

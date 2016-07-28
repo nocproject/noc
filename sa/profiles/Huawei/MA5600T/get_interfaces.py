@@ -16,6 +16,7 @@ import re
 class Script(BaseScript):
     name = "Huawei.MA5600T.get_interfaces"
     interface = IGetInterfaces
+    TIMEOUT = 240
 
     rx_if = re.compile(
         r"^\s*(?P<ifname>[a-zA-Z]+)(?P<ifnum>\d+) current state :\s*(?P<admin_status>UP|DOWN)\s*\n"
@@ -38,7 +39,7 @@ class Script(BaseScript):
     rx_adsl_state = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<oper_state>\S+)", re.MULTILINE)
     rx_pvc = re.compile(
-        r"^\s*\d+\s+p2p\s+lan\s+[0\*]/[\d+\*]\s*/(?P<vlan>[\d+\*])\s+\S*\s+\S+\s+\S+\s+"
+        r"^\s*\d+\s+p2p\s+lan\s+[0\*]/(?:\d+|\*)\s*/(?P<vlan>(?:\d+|\*))\s+\S*\s+\S+\s+\S+\s+"
         r"adl\s+0/\d+\s*/(?P<port>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\d+\s+"
         r"(?P<admin_status>\S+)\s*\n", re.MULTILINE)
     rx_sp = re.compile(
@@ -49,6 +50,8 @@ class Script(BaseScript):
     def execute(self):
         interfaces = []
         vlans = []
+        display_pvc = False
+        display_service_port = False
         ports = self.profile.fill_ports(self)
         for i in range(len(ports)):
             if ports[i]["t"] in ["GE", "FE"]:
@@ -80,7 +83,6 @@ class Script(BaseScript):
                         iface["subinterfaces"][0]["untagged"] = untagged
                         iface["subinterfaces"][0]["tagged"] = tagged
                     interfaces += [iface]
-        for i in range(len(ports)):
             if ports[i]["t"] == "ADSL":
                 oper_states = []
                 v = self.cli("display adsl port state 0/%d\r\n" % i)
@@ -89,12 +91,16 @@ class Script(BaseScript):
                         "name": "0/%d/%d" % (i, int(match.group("port"))),
                         "oper_state": match.group("oper_state") == "Activated"
                     }]
-                try:
-                    # Do not delete this line !!!
-                    v = self.cli("display pvc number")
+                if (not display_pvc) and (not display_service_port):
+                    try:
+                        self.cli("display pvc number")
+                        display_pvc = True
+                    except self.CLISyntaxError:
+                        display_service_port = True
+                if display_pvc:
                     v = self.cli("display pvc 0/%d\n" % i)
                     rx_adsl = self.rx_pvc
-                except self.CLISyntaxError:
+                if display_service_port:
                     v = self.cli("display service-port board 0/%d\n" % i)
                     rx_adsl = self.rx_sp
                 for match in rx_adsl.finditer(v):

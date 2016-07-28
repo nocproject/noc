@@ -10,7 +10,7 @@
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.fm.models import (AlarmClass, EventClass,
                            EventClassificationRule)
-from noc.lib.collection import Collection
+from noc.core.collection.base import Collection
 from noc.core.translation import ugettext as _
 
 
@@ -19,10 +19,9 @@ class ReportRulesetSummary(SimpleReport):
 
     def get_data(self, **kwargs):
         def get_count(cn, m):
-            collection = Collection(cn, m)
-            collection.load()
-            total = m.objects.count()
-            builtin = len(collection.items)
+            collection = Collection(cn)
+            total = collection.model.objects.count()
+            builtin = len(collection.get_items())
             local = total - builtin
             return [builtin, local, total]
 

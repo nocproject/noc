@@ -13,8 +13,7 @@ import uuid
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.lib.debug import error_report
-from noc.lib.collection import Collection
-from noc.main.management.commands.collection import Command as CollectionCommand
+from noc.core.collection.base import Collection
 
 
 class Command(BaseCommand):
@@ -50,31 +49,9 @@ class Command(BaseCommand):
         Fix collection uuids to binary format
         """
         self.info("Checking collections UUID")
-        for n in Collection.iter_collections():
-            c = Collection.COLLECTIONS[n]
-            if ("uuid" in c._fields and
-                    hasattr(c._fields["uuid"], "_binary") and
-                    c._fields["uuid"]._binary
-                ):
-                self.fix_collection_uuids(n, c)
+        for c in Collection.iter_collections():
+            c.fix_uuids()
         self.info("... done")
-
-    def fix_collection_uuids(self, name, collection):
-        c = collection._get_collection()
-        for doc in c.find({
-            "uuid": {
-                "$type": 2  # string type
-            }
-        }, {"uuid": 1}):
-            self.info("    Fix %s UUID %s", name, doc["uuid"])
-            c.update(
-                {"_id": doc["_id"]},
-                {
-                    "$set": {
-                        "uuid": uuid.UUID(doc["uuid"])
-                    }
-                }
-            )
 
     def fix_inv_root(self):
         from noc.inv.models.object import Object
