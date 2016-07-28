@@ -39,13 +39,14 @@ from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.textindex import full_text_search, TextIndex
 from noc.settings import config
 from noc.core.scheduler.job import Job
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 from noc.lib.debug import error_report
 from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete
 from noc.inv.models.object import Object
 from credcache import CredentialsCache
+from objectpath import ObjectPath
 from noc.core.defer import call_later
 
 
@@ -445,6 +446,14 @@ class ManagedObject(Model):
             CredentialsCache.invalidate(self)
             if "profile_name" in self.changed_fields:
                 self.reset_platform()
+        # Rebuild paths
+        if (
+            self.initial_data["id"] is None or
+            "administrative_domain" in self.changed_fields or
+            "segment" in self.changed_fields or
+            "container" in self.changed_fields
+        ):
+            ObjectPath.refresh(self)
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache
@@ -883,9 +892,9 @@ class ManagedObject(Model):
         v = self.version
         cls = self.profile.get_parser(v.vendor, v.platform, v.version)
         if cls:
-            return get_solution(cls)(self)
+            return get_handler(cls)(self)
         else:
-            return get_solution("noc.cm.parsers.base.BaseParser")(self)
+            return get_handler("noc.cm.parsers.base.BaseParser")(self)
 
     def get_interface(self, name):
         from noc.inv.models.interface import Interface

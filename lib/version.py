@@ -15,12 +15,15 @@ import platform
 from noc import settings
 from noc.core.config.base import config
 
+DEFAULT_BRAND = "NOC"
+BRAND_PATH = "custom/BRAND"
 
 ## Version cache
 _version = None
 BRANCH = None
 TIP = None
 OS_BRAND = None
+BRAND = None
 
 if hasattr(subprocess, "check_output"):
     check_output = subprocess.check_output
@@ -180,12 +183,12 @@ def get_versions():
     return r
 
 
-def get_solutions():
-    """
-    Get installed solutions
-    """
-    r = []
-    for sn in settings.config.options("solutions"):
-        if settings.config.getboolean("solutions", sn):
-            r += [[sn, None]]
-    return r
+def get_brand():
+    global BRAND
+    if not BRAND:
+        if os.path.exists(BRAND_PATH):
+            with open(BRAND_PATH) as f:
+                BRAND = f.read().strip()
+        else:
+            BRAND = DEFAULT_BRAND
+    return BRAND

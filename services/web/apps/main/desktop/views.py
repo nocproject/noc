@@ -14,7 +14,7 @@ from django.http import HttpResponse
 ## NOC modules
 from noc.settings import config
 from noc.lib.app import ExtApplication, ModelApplication, view, PermitLogged
-from noc.lib.version import get_version
+from noc.lib.version import get_version, get_brand
 from noc.main.models import Group
 from noc.main.models.usersession import UserSession
 from noc.main.models.userstate import UserState
@@ -105,11 +105,6 @@ class DesktopApplication(ExtApplication):
         else:
             favicon_mime = None
 
-        brand = "NOC"
-        if os.path.exists("custom/BRAND"):
-            with open("custom/BRAND") as f:
-                brand = f.read().strip()
-
         setup = {
             "system_uuid": cp.system_uuid,
             "installation_name": config.get("customization",
@@ -117,7 +112,7 @@ class DesktopApplication(ExtApplication):
             "logo_url": config.get("customization", "logo_url"),
             "logo_width": config.get("customization", "logo_width"),
             "logo_height": config.get("customization", "logo_height"),
-            "brand": brand,
+            "brand": get_brand(),
             "branding_color": config.get("customization", "branding_color"),
             "branding_background_color": config.get("customization", "branding_background_color"),
             "favicon_url": favicon_url,

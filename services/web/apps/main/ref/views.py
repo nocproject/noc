@@ -155,10 +155,6 @@ class RefAppplication(ExtApplication):
 
     def build_validator(self):
         def f(k, v):
-            solution = None
-            if k.startswith("noc.solutions."):
-                p = k.split(".")
-                solution = "%s.%s" % (p[2], p[3])
             tags = []
             if v.is_object():
                 tags += ["OBJECT"]
@@ -173,7 +169,7 @@ class RefAppplication(ExtApplication):
                 "label": v.TITLE if v.TITLE else k,
                 "description": v.DESCRIPTION if v.DESCRIPTION else None,
                 "form": v.CONFIG_FORM if v.CONFIG_FORM else None,
-                "solution": solution,
+                "solution": None,
                 "tags": tags
             }
             return r

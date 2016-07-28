@@ -10,7 +10,7 @@
 import argparse
 ## NOC modules
 from noc.core.management.base import BaseCommand
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
@@ -96,7 +96,7 @@ class Command(BaseCommand):
             })
             if d and d[Job.ATTR_CONTEXT]:
                 job_args[Job.ATTR_CONTEXT] = d[Job.ATTR_CONTEXT]
-        job = get_solution(self.jcls[job])(scheduler, job_args)
+        job = get_handler(self.jcls[job])(scheduler, job_args)
         job.dereference()
         job.handler()
         if scheduler.service.metrics:

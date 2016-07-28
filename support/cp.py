@@ -10,13 +10,13 @@
 import logging
 ## Third-party modules
 import requests
+import ujson
 ## Python modules
 import os
 import ConfigParser
-from noc.lib.serialize import json_encode
 from noc.lib.version import (get_branch, get_tip,
                              get_os_brand, get_os_version,
-                             get_versions, get_solutions)
+                             get_versions)
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +124,7 @@ class CPClient(object):
         auth = None
         if self.account_name and self.account_password:
             auth = (self.account_name, self.account_password)
-        r = json_encode(r)
+        r = ujson.dumps(r)
         logger.debug("JSON-RPC REQUEST: %s", r)
         try:
             req = requests.post(
@@ -259,7 +259,7 @@ class CPClient(object):
                          self.system_uuid,
                          get_os_brand(), get_os_version(),
                          get_branch(), get_tip(),
-                         get_versions(), get_solutions(), status, log)
+                         get_versions(), [], status, log)
 
     def report_crashinfo(self, crashinfo):
         if not self.has_system():

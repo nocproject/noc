@@ -9,6 +9,7 @@
 ## Python modules
 import os
 ## Third-party modules modules
+import six
 from tornado.iostream import IOStream
 import tornado.gen
 import libssh2
@@ -69,13 +70,17 @@ class SSHIOStream(IOStream):
     def read_from_fd(self):
         try:
             r = self.channel.read(self.read_chunk_size)
-            if isinstance(r, (int, long)):
-                if r == -37:  # LIBSSH2_ERROR_EAGAIN
-                    return None
-                else:
-                    raise self.cli.CLIError("SSH Error code %s" % r)
-            else:
+            if r is None:
+                if self.channel.eof():
+                    self.logger.info("SSH session reset")
+                    self.close()
+                return None
+            elif r == -37:  # LIBSSH2_ERROR_EAGAIN
+                return None  # blocking call
+            elif isinstance(r, six.string_types):
                 return r
+            else:
+                raise self.cli.CLIError("SSH Error code %s" % r)
         except _libssh2.Error as e:
             raise self.cli.CLIError("SSH Error: %s" % e)
 

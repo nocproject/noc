@@ -14,8 +14,7 @@ from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.subinterface import SubInterface
-from noc.settings import config
-from noc.lib.solutions import get_solution
+from noc.inv.models.interfaceclassificationrule import InterfaceClassificationRule
 
 
 class InterfaceCheck(DiscoveryCheck):
@@ -27,19 +26,7 @@ class InterfaceCheck(DiscoveryCheck):
 
     def __init__(self, *args, **kwargs):
         super(InterfaceCheck, self).__init__(*args, **kwargs)
-        self.get_interface_profile = None
-        sol = config.get("interface_discovery", "get_interface_profile")
-        if sol:
-            self.logger.info("Using %s for interface classification",
-                             sol)
-            try:
-                self.get_interface_profile = get_solution(sol)
-                self.interface_profile_cache = cachetools.LRUCache(
-                    1000,
-                    missing=lambda x: InterfaceProfile.objects.filter(name=x).first()
-                )
-            except Exception as e:
-                self.logger.error("Cannot compile interface classificator: %s", e)
+        self.get_interface_profile = InterfaceClassificationRule.get_classificator()
 
     def handler(self):
         self.logger.info("Checking interfaces")
@@ -311,23 +298,23 @@ class InterfaceCheck(DiscoveryCheck):
         :param iface: Interface instance
         :return:
         """
-        if not self.get_interface_profile or iface.profile_locked:
+        if iface.profile_locked:
             return
-        p_name = self.get_interface_profile(iface)
-        if p_name and p_name != iface.profile.name:
+        p_id = self.get_interface_profile(iface)
+        if p_id and p_id != iface.profile.id:
             # Change profile
-            profile = self.interface_profile_cache[p_name]
+            profile = InterfaceProfile.get_by_id(p_id)
             if not profile:
                 self.logger.error(
                     "Invalid interface profile '%s' for interface '%s'. "
                     "Skipping",
-                    p_name, iface.name
+                    p_id, iface.name
                 )
                 return
             elif profile != iface.profile:
                 self.logger.info(
                     "Interface %s has been classified as '%s'",
-                    iface.name, p_name
+                    iface.name, profile.name
                 )
                 iface.profile = profile
                 iface.save()

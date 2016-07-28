@@ -11,10 +11,10 @@ from __future__ import with_statement
 import os
 ## Django modules
 from django.http import HttpResponse
+import ujson
 ## NOC modules
 from application import Application, view
 from access import HasPerm, PermitLogged
-from noc.lib.serialize import json_decode, json_encode
 from noc.main.models.favorites import Favorites
 from noc.main.models.slowop import SlowOp
 
@@ -65,11 +65,11 @@ class ExtApplication(Application):
         return HasPerm("%s:%s:launch" % (m, a))
 
     def deserialize(self, data):
-        return json_decode(data)
+        return ujson.loads(data)
 
     def response(self, content="", status=200):
         if not isinstance(content, basestring):
-            return HttpResponse(json_encode(content),
+            return HttpResponse(ujson.dumps(content),
                 mimetype="text/json; charset=utf-8",
                 status=status)
         else:

@@ -24,7 +24,6 @@ from noc.sa.interfaces.base import (
     EmbeddedDocumentParameter, DictParameter,
     InterfaceTypeError, DocumentParameter)
 from noc.lib.validators import is_int, is_uuid
-from noc.lib.serialize import json_decode
 from noc.main.models.collectioncache import CollectionCache
 from noc.main.models.doccategory import DocCategory
 
@@ -378,13 +377,9 @@ class ExtDocApplication(ExtApplication):
         """
         Expose JSON collection item when available
         """
-        from noc.lib.collection import Collection
+        from noc.core.collection.base import Collection
         o = self.get_object_or_404(self.model, id=id)
-        data = json_decode(o.to_json())
-        dc = Collection(self.json_collection)
-        dc.load()
-        dc.install_item(data)
-        dc.save()
+        Collection.install(o.to_json())
         return True
 
     def _field_is_builtin(self, o):

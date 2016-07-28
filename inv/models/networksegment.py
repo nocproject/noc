@@ -6,12 +6,18 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import operator
+import cachetools
+from threading import RLock
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ReferenceField,
                                 ListField)
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
+
+id_lock = RLock()
 
 
 class NetworkSegment(Document):
@@ -32,8 +38,30 @@ class NetworkSegment(Document):
     # horizontal links
     sibling = ReferenceField("self")
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        try:
+            return NetworkSegment.objects.get(id=id)
+        except NetworkSegment.DoesNotExist:
+            return None
+
+    @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
+    def get_path(self):
+        """
+        Returns list of parent segment ids
+        :return:
+        """
+        if self.parent:
+            return self.parent.get_path() + [self.id]
+        else:
+            return [self.id]
 
     @property
     def effective_settings(self):
@@ -108,3 +136,4 @@ class NetworkSegment(Document):
         for o in self.managed_objects:
             if o.is_managed:
                 o.run_discovery()
+

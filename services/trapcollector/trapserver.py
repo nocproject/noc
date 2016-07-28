@@ -25,8 +25,10 @@ class TrapServer(UDPServer):
         self.service = service
 
     def on_read(self, data, address):
+        self.service.perf_metrics["trap_msg_in"] += 1
         object = self.service.lookup_object(address[0])
         if not object:
+            self.service.perf_metrics["trap_invalid_source"] += 1
             return  # Invalid event source
         try:
             community, varbinds = decode_trap(data)
