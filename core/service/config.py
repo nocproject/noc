@@ -63,7 +63,7 @@ class Config(object):
         # Build config paths
         paths = [
             "noc",
-            self._service,
+            self._service.name,
             "%s-global-%s" % (self._service.name,
                               self._defaults["node"])
         ]
