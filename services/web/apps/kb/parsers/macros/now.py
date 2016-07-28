@@ -9,7 +9,7 @@ import datetime
 
 from django.utils.dateformat import DateFormat
 
-from services.web.apps.kb.parsers.macros import Macro as MacroBase
+from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
 
 
 ##
@@ -20,12 +20,12 @@ from services.web.apps.kb.parsers.macros import Macro as MacroBase
 ##
 ##
 class Macro(MacroBase):
-    name="now"
+    name = "now"
     @classmethod
-    def handle(cls,args,text):
+    def handle(cls, args, text):
         if "format" in args:
-            format_string=args["format"]
+            format_string = args["format"]
         else:
-            format_string="Y.m.d H:i:s"
-        df=DateFormat(datetime.datetime.now())
+            format_string = "Y.m.d H:i:s"
+        df = DateFormat(datetime.datetime.now())
         return df.format(format_string)

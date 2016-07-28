@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.db.models import Q
 
-from services.web.apps.kb.parsers.macros import Macro as MacroBase
+from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
 from noc.lib.db import QTags
 
 
