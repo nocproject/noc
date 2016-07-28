@@ -10,20 +10,21 @@ import xml.parsers.expat
 import re
 from django.utils.html import escape
 
-from services.web.apps.kb.parsers.macros import Macro as MacroBase
+from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
 
-rx_link=re.compile(r"^(.*)\|(https?://.+)$")
+rx_link = re.compile(r"^(.*)\|(https?://.+)$")
+
 
 def unroll_link(s):
-    match=rx_link.match(s)
+    match = rx_link.match(s)
     if match:
-        return "<a href='%s'>%s</a>"%(match.group(2),escape(match.group(1)).replace(r"\n","<br/>"))
+        return "<a href='%s'>%s</a>" % (match.group(2), escape(match.group(1)).replace(r"\n", "<br/>"))
     else:
         return s
-##
-## RackSet representation
-##
+
+
 class RackSet(object):
+    """RackSet representation"""
     def __init__(self,id,label):
         self.id=id
         self.racks=[]
