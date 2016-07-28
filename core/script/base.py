@@ -21,7 +21,7 @@ from noc.lib.validators import is_int
 from context import (ConfigurationContextManager, CacheContextManager,
                      IgnoredExceptionsContextManager)
 from noc.core.profile.loader import loader as profile_loader
-from noc.lib.solutions import get_solution
+from noc.core.handler import get_handler
 from noc.lib.mac import MAC
 from beef import Beef
 
@@ -655,7 +655,7 @@ class BaseScript(object):
         if not self.cli_stream:
             protocol = self.credentials.get("cli_protocol", "telnet")
             self.logger.debug("Open %s CLI", protocol)
-            self.cli_stream = get_solution(
+            self.cli_stream = get_handler(
                 self.cli_protocols[protocol]
             )(self, tos=self.tos)
             # Run session setup

@@ -2,16 +2,13 @@
 ##----------------------------------------------------------------------
 ## Django URL dispatcher.
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.lib.app.site import site, patterns
-from noc.lib.solutions import init_solutions
 
-## Initialize custom fields and solutions
-init_solutions()
 ##
 ## Discover all applications
 ##
