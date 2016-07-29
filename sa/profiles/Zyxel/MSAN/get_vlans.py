@@ -35,13 +35,17 @@ class Script(BaseScript):
                 else:
                     r += [{"vlan_id": vid}]
         except self.CLISyntaxError:
-            for match in self.rx_vlan2.finditer(self.cli("switch vlan show *")):
-                vid = int(match.group("vlan_id"))
-                if vid == 1:
-                    continue
-                name = match.group("name")
-                if name != "-":
-                    r += [{"vlan_id": vid, "name": name}]
-                else:
-                    r += [{"vlan_id": vid}]
+            try:
+                for match in self.rx_vlan2.finditer(self.cli("switch vlan show *")):
+                    vid = int(match.group("vlan_id"))
+                    if vid == 1:
+                        continue
+                    name = match.group("name")
+                    if name != "-":
+                        r += [{"vlan_id": vid, "name": name}]
+                    else:
+                        r += [{"vlan_id": vid}]
+            except self.CLISyntaxError:
+                # XXX try to use "vlan1q vlan status"
+                pass
         return r
