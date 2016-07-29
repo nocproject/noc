@@ -69,7 +69,7 @@ class Script(BaseScript):
                 untagged = 0
                 tagged = []
                 admin_status = match.group("admin_status") == "V"
-                ifname = match.group("ifname")
+                ifname = self.profile.convert_interface_name(match.group("ifname"))
                 match1 = self.rx_enet_o.search(self.cli("show enet %s" % ifname))
                 if match1:
                     oper_status = match1.group("oper_status") != "down"
@@ -138,7 +138,7 @@ class Script(BaseScript):
             for match in self.rx_vlan3.finditer(self.cli("switch vlan portshow")):
                 untagged = 0
                 tagged = []
-                ifname = match.group("port")
+                ifname = self.profile.convert_interface_name(match.group("port"))
                 for v in vlans:
                     if v["ports"][port_num] == "F" \
                     and v["mode"][port_num] == "U":
@@ -151,7 +151,7 @@ class Script(BaseScript):
                     "type": "physical",
                     "subinterfaces": []
                 }
-                if ifname.startswith("enet"):
+                if ifname.startswith("Enet"):
                     iface["subinterfaces"] += [{
                         "name": ifname,
                         "enabled_afi": ["BRIDGE"]
