@@ -31,6 +31,11 @@ class Script(BaseScript):
         r"^\s*Hardware version\s*:\s+(?P<revision>\S+)\s*\n"
         r"^\s*Serial number\s*:\s+(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
+    rx_hw2 = re.compile(
+        r"^\s*Hardware Version: (?P<revision>\S+)\s*\n"
+        r"^\s*Serial Number: (?P<serial>\S+)\s*\n",
+        re.MULTILINE)
+    rx_chips = re.compile(r"^\s*(?P<platform>\S+)\s+")
 
     def execute(self):
         r = []
@@ -57,7 +62,12 @@ class Script(BaseScript):
                         })
         else:
             match = self.rx_hw.search(self.cli("sys info show"))
-            c = self.profile.get_platform(self, slots, match.group("part_no"))
+            if match:
+                c = self.profile.get_platform(self, slots, match.group("part_no"))
+            else:
+                match1 = self.rx_chips.search(self.cli("chips info"))
+                c = match1.group("platform")
+                match = self.rx_hw2.search(self.cli("sys info show"))
             return [{
                 "type": "CHASSIS",
                 "vendor": "ZYXEL",

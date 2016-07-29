@@ -19,5 +19,8 @@ class Script(BaseScript):
         try:
             config = self.cli("show config-0")
         except self.CLISyntaxError:
-            config = self.cli("config show all nopause")
+            try:
+                config = self.cli("config show all nopause")
+            except self.CLISyntaxError:
+                config = self.cli("config print")
         return self.cleaned_config(config)

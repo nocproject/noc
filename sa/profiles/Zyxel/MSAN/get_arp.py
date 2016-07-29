@@ -21,12 +21,15 @@ class Script(BaseScript):
         r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+\d+\s+(?P<mac>\S+)\s+"
         r"(?P<interface>\S+).*\n", re.MULTILINE)
     rx_arp2 = re.compile(
-        r"^(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s*\n",
-        re.MULTILINE)
+        r"^(arp add ether\s+)?(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+"
+        r"(?P<mac>\S+)(\s+#\s+\S+)?\s*\n", re.MULTILINE)
 
     def execute(self):
         r = []
-        v = self.cli("ip arp show")
+        try:
+            v = self.cli("ip arp show")
+        except self.CLISyntaxError:
+            v = self.cli("ip arp list")
         for match in self.rx_arp1.finditer(v):
             r += [match.groupdict()]
         if not r:
