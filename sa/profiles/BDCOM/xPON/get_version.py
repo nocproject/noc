@@ -15,18 +15,18 @@ class Script(BaseScript):
     name = "BDCOM.xPON.get_version"
     cache = True
     interface = IGetVersion
+
     rx_ver = re.compile(
-        r"BDCOM\(tm\)\s+(?P<platform>\S+)\s+\S+\s+Version\s+"
-        r"(?P<version>\d+.\d+.\S+)\sBuild\s(?P<build>\d+).+"
-        r"System Bootstrap,\sVersion\s(?P<boot>\d.\d.\d),\s"
-        r"Serial num:(?P<serial>\d+)",
+        r"BDCOM\S+\s+(?P<platform>\S+)\s+\S+\s+Version\s+(?P<version>\S+)\s"
+        r"Build\s(?P<build>\d+).+System Bootstrap,\s*Version\s(?P<boot>\S+),"
+        r"\s*Serial num:(?P<serial>\d+)",
         re.MULTILINE | re.DOTALL)
-    rx_snmp_ver = re.compile(
-        r"BDCOM\(tm\)\s+(?P<platform>\S+)\s+\S+\s+Version\s+"
-        r"(?P<version>\d+.\d+.\S+)\sBuild\s(?P<build>\d+).+"
-        r"System Bootstrap,Version\s(?P<boot>\d.\d.\d),"
-        r"Serial num:(?P<serial>\d+)",
-        re.MULTILINE | re.DOTALL)
+
+    rx_hver = re.compile(
+        r"^hardware version:(?:V|)(?P<hversion>\S+)",
+        re.MULTILINE)
+
+    # todo: add hardware ver for P3310C, P3608 (snmp output need)
 
     def execute(self):
         if self.has_snmp():
@@ -34,7 +34,7 @@ class Script(BaseScript):
                 # sysDescr.0
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 if v:
-                    match = self.re_search(self.rx_snmp_ver, v)
+                    match = self.re_search(self.rx_ver, v)
                     return {
                         "vendor": "BDCOM",
                         "platform": match.group("platform"),
@@ -61,4 +61,3 @@ class Script(BaseScript):
                 }
 
             }
-        return r
