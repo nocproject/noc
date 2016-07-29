@@ -50,12 +50,11 @@ class Script(BaseScript):
                     }]
                     c = self.profile.get_platform(self, slots, part_no)
                     if c:
-                        r += [{
+                        r.insert(0, {
                             "type": "CHASSIS",
-                            "number": 0,
                             "vendor": "ZYXEL",
                             "part_no": c,
-                        }]
+                        })
         else:
             match = self.rx_hw.search(self.cli("sys info show"))
             c = self.profile.get_platform(self, slots, match.group("part_no"))
