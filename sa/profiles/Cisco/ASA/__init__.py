@@ -24,6 +24,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?#"
     command_more = " "
     command_disable_pager = "terminal pager 0"
+    default_parser = "noc.cm.parsers.Cisco.ASA.base.BaseASAParser"
 
     def convert_interface_name(self, interface):
         il = interface.lower()
