@@ -23,7 +23,7 @@
                 </tr>
                 {% endfor %}
                 </tbody>
-            <table>
+            </table>
         </td>
     </tr>
     {% endif %}
@@ -38,9 +38,9 @@
                     <th class="col-sm-2">{{ _("Summary") }}</th>
                 </thead>
                 <tbody>
-                {% for o in children %}
+                {% for o in managed_objects %}
                 <tr>
-                    <td><a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.name | managed_object_title}}</a></td>
+                    <td><a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.object | managed_object_title}}</a></td>
                     <td>{{ o.object.address }}</td>
                     <td>{{ o.object.platform }}</td>
                     <td>{{ o.summary | glyph_summary }}</td>

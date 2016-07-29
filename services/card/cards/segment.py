@@ -38,7 +38,7 @@ class SegmentCard(BaseCard):
             self.update_dict(summary["subscriber"], ss.get("subscriber", {}))
         # Calculate children
         children = []
-        for ns in NetworkSegment.objects.find(parent=self.object.id):
+        for ns in NetworkSegment.objects.filter(parent=self.object.id):
             children += [{
                 "id": ns.id,
                 "name": ns.name,
