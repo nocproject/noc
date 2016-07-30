@@ -46,7 +46,8 @@ class UIHandler(tornado.web.RequestHandler):
             hashed=self.hashed,
             request=self.request,
             language=language,
-            name=self.name
+            name=self.name,
+            service=self.service
         )
 
     def mergecache(self, jslist):
