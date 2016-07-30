@@ -16,15 +16,6 @@ import inspect
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
 from noc.lib.debug import error_report
-from cards.managedobject import ManagedObjectCard
-from cards.alarm import AlarmCard
-from cards.service import ServiceCard
-from cards.tt import TTCard
-from cards.subscribersession import SubscriberSessionCard
-from cards.totaloutage import TotalOutageCard
-from cards.outage import OutageCard
-from cards.alarmheat import AlarmHeatCard
-from cards.maintainance import MaintainanceCard
 
 
 class CardRequestHandler(UIHandler):
