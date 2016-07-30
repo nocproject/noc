@@ -9,6 +9,8 @@
 ## Python modules
 import datetime
 import operator
+## Third-party modules
+from django.db.models import Q
 ## NOC modules
 from base import BaseCard
 from noc.sa.models.managedobject import ManagedObject
@@ -25,6 +27,7 @@ from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.lib.text import split_alnum, list_to_ranges
 from noc.maintainance.models.maintainance import Maintainance
+from noc.lib.validators import is_ipv4, is_int
 
 
 class ManagedObjectCard(BaseCard):
@@ -229,4 +232,20 @@ class ManagedObjectCard(BaseCard):
                 r += [(service.profile.name, service.profile.glyph)]
             for svc in Service.objects.filter(parent=service):
                 r += self.get_service_glyphs(svc)
+        return r
+
+    @classmethod
+    def search(cls, query):
+        q = Q(name__icontains=query)
+        if is_ipv4(query):
+            q |= Q(address=query)
+        if is_int(query):
+            q |= Q(id=int(query))
+        r = []
+        for mo in ManagedObject.objects.filter(q):
+            r += [{
+                "scope": "managedobject",
+                "id": mo.id,
+                "label": "%s (%s) [%s]" % (mo.name, mo.address, mo.platform)
+            }]
         return r

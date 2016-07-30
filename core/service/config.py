@@ -10,6 +10,8 @@
 import logging
 ## Third-party modules
 import yaml
+## NOC modules
+from noc.lib.version import get_brand
 
 
 class Config(object):
@@ -22,6 +24,7 @@ class Config(object):
         self._logger = logging.getLogger(__name__)
         self._defaults = self._get_defaults(kwargs)
         self._catalog = {}
+        self.brand = get_brand()
 
     def _get_defaults(self, defaults):
         def get_section(data, name):
