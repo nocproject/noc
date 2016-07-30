@@ -33,6 +33,17 @@
     </td>
 <tr>
 {% endif %}
+{% if container_path %}
+<tr>
+    <th scope="row" class="col-sm-1">{{ _("Container") }}</th>
+    <td>
+        {% for o in container_path %}
+        <a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a>
+        {% if not loop.last %} | {% endif %}
+        {% endfor %}
+    </td>
+</tr>
+{% endif %}
 <tr>
     <th scope="row" class="col-sm-1">{{ _("Location") }}</th>
     <td>{{ object | object_location }}</td>
