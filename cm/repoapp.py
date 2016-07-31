@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 from django.shortcuts import get_object_or_404
 from django.utils.html import escape
-from noc.lib.app.modelapplication import ModelApplication,URL,HasPerm,view
+from noc.lib.app.modelapplication import ModelApplication,HasPerm,view
+from noc.lib.app.site import URL
 from noc.cm.models import Object
 from noc.lib.highlight import NOCHtmlFormatter
 from pygments.lexers import DiffLexer
