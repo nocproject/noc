@@ -79,7 +79,7 @@ class PMWriterService(Service):
         data = metrics.splitlines()
         ld = len(data)
         self.perf_metrics["metrics_received"] += ld
-        if l < self.config.metrics_buffer:
+        if l < self.config.pm_metrics_buffer:
             if self.overrun_start:
                 dt = time.time() - self.overrun_start
                 self.logger.info(
@@ -94,7 +94,7 @@ class PMWriterService(Service):
                 self.logger.info(
                     "Temporary buffer overrun. "
                     "Suspending message reading (%s/%s)",
-                    l, self.config.metrics_buffer
+                    l, self.config.pm_metrics_buffer
                 )
                 self.overrun_start = time.time()
             self.perf_metrics["metrics_deferred"] += ld
@@ -104,10 +104,10 @@ class PMWriterService(Service):
     def write_metrics(self):
         self.logger.info(
             "Starting message sender. Batch size %d. Metrics buffer %d",
-            self.config.batch_size,
-            self.config.metrics_buffer
+            self.config.pm_batch_size,
+            self.config.pm_metrics_buffer
         )
-        bs = self.config.batch_size
+        bs = self.config.pm_batch_size
         while True:
             if not self.buffer:
                 yield tornado.gen.sleep(self.MAX_DELAY)
