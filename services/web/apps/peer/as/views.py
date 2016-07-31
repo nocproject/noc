@@ -9,7 +9,8 @@
 ## Django modules
 from django.contrib import admin
 ## NOC modules
-from noc.lib.app.modelapplication import ModelApplication, site
+from noc.lib.app.modelapplication import ModelApplication
+from noc.lib.app.site import site
 from noc.peer.models import AS
 from noc.ip.models import Prefix
 from noc.core.translation import ugettext as _
