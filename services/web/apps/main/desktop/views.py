@@ -13,7 +13,8 @@ import os
 from django.http import HttpResponse
 ## NOC modules
 from noc.settings import config
-from noc.lib.app.extapplication import ExtApplication, ModelApplication, view, PermitLogged
+from noc.lib.app.extapplication import ExtApplication, view, PermitLogged
+from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.version import get_version, get_brand
 from noc.main.models import Group
 from noc.main.models.usersession import UserSession
