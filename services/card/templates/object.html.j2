@@ -1,0 +1,35 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2">
+            {% for o in path %}
+                {% if o.id == object.id %}
+                    {{ o.name }}
+                {% else %}
+                    <a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a> |
+                {% endif %}
+            {% endfor %}
+        </th>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Model") }}</th>
+        <td>{{ object.model.name }}</td>
+    </tr>
+    {% if children %}
+    <tr>
+        <th scope="row">{{ _("Children") }}</th>
+        <td>
+            <table>
+                <tbody>
+                {% for o in children %}
+                <tr>
+                    <td><a href="/api/card/view/object/{{ o.id }}/">{{ o.name }}</a></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    {% endif %}
+</tbody>
+</table>

@@ -9,7 +9,6 @@
 """
 """
 from noc.core.profile.base import BaseProfile
-import re
 
 
 class Profile(BaseProfile):
@@ -24,9 +23,18 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<hostname>\S+)#"
     pattern_syntax_error = r"% Unknown command"
     command_more = " "
-    command_disable_pager="terminal length 0"
+    command_disable_pager = ["terminal length 0", "terminal width 0"]
     command_super = "enable"
     command_enter_config = "config"
     command_leave_config = "exit"
     command_save_config = "write"
+    command_exit = "exit"
     config_volatile = ["^%.*?$"]
+
+    def convert_interface_name(self, interface):
+        if interface.startswith("g"):
+            return "GigaEthernet" + interface[1:]
+        elif interface.startswith("epon"):
+            return "EPON" + interface[4:]
+        else:
+            return interface

@@ -667,8 +667,14 @@ class BaseScript(object):
             if self.to_disable_pager:
                 self.logger.debug("Disable paging")
                 self.to_disable_pager = False
-                self.cli(self.profile.command_disable_pager,
+                if isinstance(self.profile.command_disable_pager, basestring):
+                    self.cli(self.profile.command_disable_pager,
                          ignore_errors=True)
+                elif isinstance(self.profile.command_disable_pager, list):
+                    for cmd in self.profile.command_disable_pager:
+                        self.cli(cmd, ignore_errors=True)
+                else:
+                    raise self.UnexpectedResultError
         return self.cli_stream
 
     def close_cli_stream(self):

@@ -62,135 +62,168 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Name"),
                     allowBlank: false,
-                    uiStyle: "medium"
+                    uiStyle: "medium",
+                    labelWidth: 170
                 },
                 {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
-                    allowBlank: true
+                    allowBlank: true,
+                    labelWidth: 170
                 },
                 {
                     name: "is_enabled",
                     xtype: "checkboxfield",
                     boxLabel: __("Is Enabled"),
-                    allowBlank: false
+                    allowBlank: false,
+                    labelWidth: 170
                 },
                 {
                     name: "filter_id",
                     xtype: "numberfield",
                     fieldLabel: __("Filter by ID"),
                     allowBlank: true,
+                    hideTrigger: true,
                     uiStyle: "small",
-                    hideTrigger: true
+                    labelWidth: 170
                 },
                 {
                     name: "filter_name",
                     xtype: "textfield",
                     fieldLabel: __("Filter by Name (REGEXP)"),
                     allowBlank: true,
-                    uiStyle: "large"
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_managed",
                     xtype: "combobox",
                     fieldLabel: __("Filter by Is Managed"),
-                    allowBlank: true,
                     store: [
                         [null, "-"],
                         [true, "Yes"],
                         [false, "No"]
                     ],
-                    uiStyle: "small"
+                    allowBlank: true,
+                    uiStyle: "small",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_profile",
                     xtype: "main.ref.profile.LookupField",
                     fieldLabel: __("Filter by Profile"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_object_profile",
                     xtype: "sa.managedobjectprofile.LookupField",
                     fieldLabel: __("Filter by Object Profile"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_address",
                     xtype: "textfield",
                     fieldLabel: __("Filter by Address (REGEXP)"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_prefix",
                     xtype: "main.prefixtable.LookupField",
                     fieldLabel: __("Filter by Prefix Table"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_administrative_domain",
                     xtype: "sa.administrativedomain.LookupField",
                     fieldLabel: __("Filter by Administrative Domain"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_vrf",
                     xtype: "ip.vrf.LookupField",
                     fieldLabel: __("Filter by VRF"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_vc_domain",
                     xtype: "vc.vcdomain.LookupField",
                     fieldLabel: __("Filter by VC Domain"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_termination_group",
                     xtype: "sa.terminationgroup.LookupField",
                     fieldLabel: __("Filter by termination group"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_service_terminator",
                     xtype: "sa.terminationgroup.LookupField",
                     fieldLabel: __("Filter by service terminator"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_user",
                     xtype: "textfield",
                     fieldLabel: __("Filter by User (REGEXP)"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_remote_path",
                     xtype: "textfield",
                     fieldLabel: __("Filter by Remote Path (REGEXP)"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_description",
                     xtype: "textfield",
                     fieldLabel: __("Filter by Description (REGEXP)"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "filter_tags",
                     xtype: "textfield",
                     fieldLabel: __("Filter By Tags"),
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 },
                 {
                     name: "source_combine_method",
                     xtype: "combobox",
                     fieldLabel: __("Source Combine Method"),
-                    allowBlank: false,
                     store: [
                         ["O", "OR"],
                         ["A", "AND"]
                     ],
-                    uiStyle: "small"
+                    allowBlank: false,
+                    uiStyle: "small",
+                    labelWidth: 170
                 },
                 {
                     xtype: "sa.managedobjectselector.M2MField",
@@ -199,7 +232,9 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     width: 600,
                     fieldLabel: __("Sources"),
                     buttons: ["add", "remove"],
-                    allowBlank: true
+                    allowBlank: true,
+                    uiStyle: "large",
+                    labelWidth: 170
                 }
             ],
             inlines: [

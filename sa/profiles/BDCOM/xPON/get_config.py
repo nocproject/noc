@@ -16,5 +16,8 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self):
-        config = self.cli("show configuration")
+        try:
+            config = self.cli("show running-config")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
         return self.cleaned_config(config)

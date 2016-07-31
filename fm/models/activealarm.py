@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ActiveAlarm model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectpath import ObjectPath
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
@@ -34,7 +35,10 @@ class ActiveAlarm(nosql.Document):
             "alarm_class",
             ("timestamp", "managed_object"),
             "escalation_tt",
-            "escalation_ts"
+            "escalation_ts",
+            "adm_path",
+            "segment_path",
+            "container_path"
         ]
     }
     status = "A"
@@ -84,6 +88,10 @@ class ActiveAlarm(nosql.Document):
     # Template and notification group to send close notification
     clear_template = nosql.ForeignKeyField(Template, required=False)
     clear_notification_group = nosql.ForeignKeyField(NotificationGroup, required=False)
+    # Paths
+    adm_path = nosql.ListField(nosql.IntField())
+    segment_path = nosql.ListField(nosql.ObjectIdField())
+    container_path = nosql.ListField(nosql.ObjectIdField())
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -91,6 +99,11 @@ class ActiveAlarm(nosql.Document):
     def save(self, *args, **kwargs):
         if not self.last_update:
             self.last_update = self.timestamp
+        path = ObjectPath.get_path(self.managed_object)
+        if path:
+            self.adm_path = path.adm_path
+            self.segment_path = path.segment_path
+            self.container_path = self.container_path
         return super(ActiveAlarm, self).save(*args, **kwargs)
 
     def change_severity(self, user="", delta=None, severity=None):
@@ -193,7 +206,10 @@ class ActiveAlarm(nosql.Document):
             direct_subscribers=self.direct_subscribers,
             total_objects=self.total_objects,
             total_services=self.total_services,
-            total_subscribers=self.total_subscribers
+            total_subscribers=self.total_subscribers,
+            adm_path=self.adm_path,
+            segment_path=self.segment_path,
+            container_path=self.container_path
         )
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:

@@ -28,21 +28,24 @@ Ext.define("NOC.inv.interface.L1Panel", {
                     store: me.store,
                     columns: [
                         {
-                            xtype: "actioncolumn",
+                            xtype: "glyphactioncolumn",
                             width: 25,
+                            renderer: function (val, metadata, record) {
+                                if (record.get("link")) {
+                                    this.items[0].glyph = NOC.glyph.unlink;
+                                    this.items[0].tooltip = 'Unlink';
+                                } else {
+                                    this.items[0].glyph = NOC.glyph.link;
+                                    this.items[0].tooltip = 'Link';
+                                }
+                                metadata.style = 'cursor: pointer;';
+                                return val;
+                            },
                             items: [
                                 {
-                                    tooltip: "Link/Unlink",
                                     scope: me,
                                     handler: me.onLink,
-                                    disabled: !me.app.hasPermission("link"),
-                                    getClass: function(col, meta, r) {
-                                        if(r.get("link")) {
-                                            return "icon_disconnect";
-                                        } else {
-                                            return "icon_connect";
-                                        }
-                                    }
+                                    disabled: !me.app.hasPermission("link")
                                 }
                             ]
                         },

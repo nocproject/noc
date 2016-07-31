@@ -205,7 +205,7 @@ class NRICheck(DiscoveryCheck):
                 Link._get_collection().insert({
                     "interfaces": [nri_map[n]["_id"], ri["_id"]],
                     "discovery_method": "nri",
-                    "first_discovery": now,
+                    "first_discovered": now,
                     "last_seen": now
                 })
                 changed.add(self.object)

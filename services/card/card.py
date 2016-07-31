@@ -16,15 +16,6 @@ import inspect
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
 from noc.lib.debug import error_report
-from cards.managedobject import ManagedObjectCard
-from cards.alarm import AlarmCard
-from cards.service import ServiceCard
-from cards.tt import TTCard
-from cards.subscribersession import SubscriberSessionCard
-from cards.totaloutage import TotalOutageCard
-from cards.outage import OutageCard
-from cards.alarmheat import AlarmHeatCard
-from cards.maintainance import MaintainanceCard
 
 
 class CardRequestHandler(UIHandler):
@@ -36,27 +27,6 @@ class CardRequestHandler(UIHandler):
         if not self.CARD_TEMPLATE:
             with open(self.CARD_TEMPLATE_PATH) as f:
                 self.CARD_TEMPLATE = Template(f.read())
-        if not self.CARDS:
-            self.CARDS = {}
-            for r in ["custom/services/card/cards", "services/card/cards"]:
-                if not os.path.isdir(r):
-                    continue
-                for f in os.listdir(r):
-                    if not f.endswith(".py"):
-                        continue
-                    mn = "noc.%s.%s" % (
-                        r.replace("/", "."),
-                        f[:-3]
-                    )
-                    m = __import__(mn, {}, {}, "*")
-                    for d in dir(m):
-                        c = getattr(m, d)
-                        if (inspect.isclass(c) and
-                            issubclass(c, BaseCard) and
-                            c.__module__ == m.__name__ and
-                            getattr(c, "name", None)
-                        ):
-                            self.CARDS[c.name] = c
 
     def get(self, card_type, card_id, *args, **kwargs):
         is_ajax = card_id == "ajax"
@@ -102,3 +72,26 @@ class CardRequestHandler(UIHandler):
                 self.CARD_TEMPLATE = Template(f.read())
         return self.CARD_TEMPLATE
 
+    @classmethod
+    def load_cards(cls):
+        if not cls.CARDS:
+            cls.CARDS = {}
+            for r in ["custom/services/card/cards", "services/card/cards"]:
+                if not os.path.isdir(r):
+                    continue
+                for f in os.listdir(r):
+                    if not f.endswith(".py"):
+                        continue
+                    mn = "noc.%s.%s" % (
+                        r.replace("/", "."),
+                        f[:-3]
+                    )
+                    m = __import__(mn, {}, {}, "*")
+                    for d in dir(m):
+                        c = getattr(m, d)
+                        if (inspect.isclass(c) and
+                            issubclass(c, BaseCard) and
+                            c.__module__ == m.__name__ and
+                            getattr(c, "name", None)
+                        ):
+                            cls.CARDS[c.name] = c

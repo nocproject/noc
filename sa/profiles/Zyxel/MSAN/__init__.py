@@ -17,11 +17,20 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Zyxel.MSAN"
     pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\s]+)?>\s*"
-    pattern_syntax_error = "invalid (command|input)"
-    pattern_more = "Press any key to continue, 'n' to nopause,'e' to exit"
+    pattern_syntax_error = "((Unknown|invalid) (command|input)|Commands are:)"
+    pattern_more = [
+        (r"Press any key to continue, 'n' to nopause,'e' to exit", "n"),
+        (r"Press any key to continue, 'e' to exit, 'n' for nopause", "n")
+    ]
     config_volatile = [r"^time\s+(\d+|date).*?^"]
     command_more = "n"
     command_exit = "exit"
+
+    def convert_interface_name(self, interface):
+        if interface.startswith("enet"):
+            return "Enet" + interface[4:]
+        else:
+            return interface
 
     rx_slots = re.compile("slot number should between 1 to (?P<slot>\d+)")
 
