@@ -9,7 +9,7 @@
 ## Third-party modules
 from mongoengine import Q
 ## NOC modules
-from noc.settings import config
+from noc.core.config.base import config
 from noc.lib.cache import Cache
 from noc.inv.models.subinterface import SubInterface
 from noc.vc.models.vc import VC
@@ -18,7 +18,7 @@ from noc.lib.ip import IP
 
 class VCInterfacesCount(Cache):
     cache_id = "vc_vcinterfacescount"
-    ttl = config.getint("cache", "vc_vcinterfacescount")
+    ttl = config.vc_cache_vcinterfacescount
 
     @classmethod
     def get_key(cls, vc):
@@ -46,7 +46,7 @@ class VCInterfacesCount(Cache):
 
 class VCPrefixes(Cache):
     cache_id = "vc_vcprefixes"
-    ttl = config.getint("cache", "vc_vcprefixes")
+    ttl = config.vc_cache_vcprefixes
     @classmethod
     def get_key(cls, vc):
         if hasattr(vc, "id"):
