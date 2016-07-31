@@ -60,6 +60,7 @@ class BaseConfig(object):
                           "Unconfigured installation")
     language_code = E("NOC_LANGUAGE_CODE", "en-us")
     timezone = E("NOC_TIMEZONE", "Europe/Moscow")
+    language = E("NOC_LANGUAGE", "en")
     secret_key = E("NOC_SECRET_KEY", "12345")
     date_format = E("NOC_DATE_FORMAT", "d.m.Y")
     time_format = E("NOC_TIME_FORMAT", "H:i:s")
@@ -71,8 +72,13 @@ class BaseConfig(object):
     #
     crashinfo_limit = int(E("NOC_CRASHINFO_LIMIT", 1000000))
     traceback_reverse = E("NOC_TRACEBACK_ORDER", "reverse") == "reverse"
+    rpc_retry_timeout = E("NOC_RPC_RETRY_TIMEOUT", "0.1,0.5,1,3,10,30")
+    db_threads = E("NOC_DB_THREADS", 10)
+    discovery_max_threads = E("NOC_DISCOVERY_MAX_THREADS", 10)
+    scheduler_max_threads = E("NOC_SCHEDULER_MAX_THREADS", 10)
+    global_n_instances = E("NOC_global_n_instances", 1)
     # Mongo section
-    mongo_host = "mongo-master.%s" % env
+    mongo_host = E("NOC_MONGO_HOST", "mongo-master.%s" % env)
     mongo_db = E("NOC_MONGO_DB", "noc")
     mongo_user = E("NOC_MONGO_USER", "noc")
     mongo_password = E("NOC_MONGO_PASSWORD", "noc")
@@ -80,7 +86,7 @@ class BaseConfig(object):
     # Posgres section
     pg_db_engine = "django.db.backends.postgresql_psycopg2"
     pg_db_options = {}
-    pg_host = "postgres-master.%s" % env
+    pg_host = E("NOC_PG_HOST", "postgres-master.%s" % env)
     pg_port = 5432
     pg_db = E("NOC_PG_DB", "noc")
     pg_user = E("NOC_PG_USER", "noc")
@@ -117,6 +123,12 @@ class BaseConfig(object):
     # PMWRITER
     pm_batch_size = E("NOC_PM_BATCH_SIZE", 1000)
     pm_metrics_buffer = E("NOC_METRICS_BUFFER", pm_batch_size * 4)
+
+    # PING
+    tos = E("NOC_PING_TOS", 0)
+
+    # syslog
+    listen_syslog = E("NOC_LISTEN_SYSLOG", "0.0.0.0:514")
 
     def __init__(self):
         self.setup_logging()

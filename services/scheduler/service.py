@@ -28,7 +28,7 @@ class SchedulerService(Service):
         self.scheduler = Scheduler(
             "scheduler",
             reset_running=True,
-            max_threads=self.config.max_threads,
+            max_threads=self.config.scheduler_max_threads,
             ioloop=self.ioloop
         )
         self.scheduler.run()
