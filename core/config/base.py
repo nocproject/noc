@@ -66,6 +66,8 @@ class BaseConfig(object):
     month_day_format = E("NOC_MONTH_DAY_FORMAT", "F j")
     year_month_format = E("NOC_YEAR_MONTH_FORMAT", "F Y")
     datetime_format = E("NOC_DATETIME_FORMAT", "d.m.Y H:i:s")
+    listen = E("NOC_LISTEN", "0.0.0.0:1200")
+    instance = E("NOC_INSTANCE", 0)
     #
     crashinfo_limit = int(E("NOC_CRASHINFO_LIMIT", 1000000))
     traceback_reverse = E("NOC_TRACEBACK_ORDER", "reverse") == "reverse"
@@ -111,6 +113,10 @@ class BaseConfig(object):
 
     #DNS
     dns_warn_before_expired_days = E("NOC_DNS_WARN_BEFORE_EXPIRED_DAYS", 30)
+
+    # PMWRITER
+    pm_batch_size = E("NOC_PM_BATCH_SIZE", 1000)
+    pm_metrics_buffer = E("NOC_METRICS_BUFFER", pm_batch_size * 4)
 
     def __init__(self):
         self.setup_logging()
@@ -199,6 +205,21 @@ class BaseConfig(object):
         """
         for k in kwargs:
             setattr(self, k, kwargs[k])
+
+    def get_service(self, name):
+        """
+        Get service stub
+        :param name:
+        :return:
+        """
+        service = ""
+        if name == "influxdb":
+            service = "influxdb:8086"
+        elif name == "nsqd":
+            service = ["nsqd:4150"]
+        elif name == "nsqlookupd":
+            service = ["nsqlookupd:4161"]
+        return service
 
 # Config singleton
 config = BaseConfig()
