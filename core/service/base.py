@@ -25,7 +25,6 @@ import tornado.netutil
 import tornado.httpserver
 import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor
-import setproctitle
 import nsq
 import ujson
 import threading
@@ -40,16 +39,12 @@ from .rpc import RPCProxy
 from .ctl import CtlAPI
 from noc.core.perf import metrics, apply_metrics
 
-
 class Service(object):
     """
     Basic service implementation.
     """
     # Service name
     name = None
-    # Format string to set process name
-    # config variables can be expanded as %(name)s
-    process_name = "noc-%(name).10s"
     # Leader group name
     # Only one service in leader group can be running at a time
     # Config variables can be expanded as %(varname)s
@@ -136,20 +131,6 @@ class Service(object):
         signal.signal(signal.SIGTERM, self.on_SIGTERM)
         signal.signal(signal.SIGHUP, self.on_SIGHUP)
 
-    def set_proc_title(self):
-        """
-        Set process title
-        """
-        vars = {
-            "name": self.name,
-            "instance": self.config.instance or "",
-            "pool": self.config.pool or ""
-        }
-        vars.update(self.config._conf)
-        title = self.process_name % vars
-        self.logger.debug("Setting process title to: %s", title)
-        setproctitle.setproctitle(title)
-
     def start(self):
         """
         Run main server loop
@@ -163,8 +144,6 @@ class Service(object):
         self.log_separator()
         # Read
         self.config.apply(**cmd_options)
-        # Setup title
-        self.set_proc_title()
         # Setup signal handlers
         self.setup_signal_handlers()
         # Starting IOLoop
