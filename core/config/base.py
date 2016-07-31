@@ -109,6 +109,9 @@ class BaseConfig(object):
     vc_cache_vcinterfacescount = E("NOC_VC_CACHE_VCINTERFACESCOUNT", 3600)
     vc_cache_vcprefixes = E("NOC_VC_CACHE_VCPREFIXES", 3600)
 
+    #DNS
+    dns_warn_before_expired_days = E("NOC_DNS_WARN_BEFORE_EXPIRED_DAYS", 30)
+
     def __init__(self):
         self.setup_logging()
 

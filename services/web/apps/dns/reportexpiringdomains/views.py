@@ -7,13 +7,13 @@
 ##----------------------------------------------------------------------
 from noc.lib.app.simplereport import SimpleReport,TableColumn
 from django import forms
-from noc.settings import config
+from noc.core.config.base import config
 from noc.core.translation import ugettext as _
 ##
 ##
 ##
 class ReportForm(forms.Form):
-    days=forms.IntegerField(initial=config.getint("dns","warn_before_expired_days"))
+    days=forms.IntegerField(initial=config.dns_warn_before_expired_days)
 ##
 ##
 ##
