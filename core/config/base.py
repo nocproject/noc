@@ -105,6 +105,9 @@ class BaseConfig(object):
     sync_expired_refresh_chunk = E("NOC_SYNC_REFRESH_CHUNK", 100)
     # themes
     theme_default = E("NOC_THEME_DEFAULT", "gray")
+    #VC
+    vc_cache_vcinterfacescount = E("NOC_VC_CACHE_VCINTERFACESCOUNT", 3600)
+    vc_cache_vcprefixes = E("NOC_VC_CACHE_VCPREFIXES", 3600)
 
     def __init__(self):
         self.setup_logging()
