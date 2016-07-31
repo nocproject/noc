@@ -12,7 +12,6 @@ import os
 ## Django modules
 from django.http import HttpResponse
 ## NOC modules
-from noc.settings import config
 from noc.lib.app.extapplication import ExtApplication, view, PermitLogged
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.version import get_version, get_brand
@@ -23,6 +22,7 @@ from noc.main.models.favorites import Favorites
 from noc.support.cp import CPClient
 from noc.core.service.client import RPCClient, RPCError
 from noc.core.translation import ugettext as _
+from noc.core.config.base import config
 
 
 class DesktopApplication(ExtApplication):
@@ -33,22 +33,14 @@ class DesktopApplication(ExtApplication):
         ExtApplication.__init__(self, *args, **kwargs)
         #
         # Parse themes
-        self.default_theme = config.get("customization", "default_theme")
+        self.default_theme = config.theme_default
         self.themes = {}  # id -> {name: , css:}
-        for o in config.options("themes"):
-            if o.endswith(".name"):
-                theme_id = o[:-5]
-                nk = "%s.name" % theme_id
-                ek = "%s.enabled" % theme_id
-                if (config.has_option("themes", nk) and
-                    config.has_option("themes", ek) and
-                    config.getboolean("themes", ek)):
-                    self.themes[theme_id] = {
-                        "id": theme_id,
-                        "name": config.get("themes", nk).strip(),
-                        "css": "/static/pkg/extjs/packages/ext-theme-%s/build/resources/ext-theme-%s-all.css" % (theme_id, theme_id),
-                        "js": "/static/pkg/extjs/packages/ext-theme-%s/build/ext-theme-%s.js" % (theme_id, theme_id)
-                    }
+        self.themes[self.default_theme] = {
+            "id": self.default_theme,
+            "name": self.default_theme,
+            "css": "/static/pkg/extjs/packages/ext-theme-%s/build/resources/ext-theme-%s-all.css" % (self.default_theme, self.default_theme),
+            "js": "/static/pkg/extjs/packages/ext-theme-%s/build/ext-theme-%s.js" % (self.default_theme, self.default_theme)
+        }
         # Login restrictions
         self.restrict_to_group = self.get_group(
             config.get("authentication", "restrict_to_group"))
