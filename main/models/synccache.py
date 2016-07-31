@@ -19,7 +19,7 @@ from mongoengine.fields import (StringField, IntField,
                                 DateTimeField, DictField)
 from mongoengine.base import _document_registry
 ## NOC Modules
-from noc import settings
+from noc.core.config.base import config
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +53,8 @@ class SyncCache(Document):
 
     DELETE_DATE = datetime.datetime(2030, 1, 1)
 
-    TTL = settings.config.getint("sync", "config_ttl")
-    TTL_JITTER = settings.config.getfloat("sync", "config_ttl_jitter")
+    TTL = config.sync_config_ttl
+    TTL_JITTER = config.sync_ttl_jitter
     TJL = int(TTL - TTL_JITTER * TTL)
     TJH = int(TTL + TTL_JITTER * TTL)
 
