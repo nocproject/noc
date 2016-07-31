@@ -15,7 +15,7 @@ from django.db.models import Q
 from django import forms
 from django.utils.simplejson.encoder import JSONEncoder
 # NOC modules
-from noc.lib.app.application import lApplication, view
+from noc.lib.app.application import Application, view
 from noc.lib.validators import *
 from noc.lib.ip import *
 from noc.lib.forms import NOCForm
