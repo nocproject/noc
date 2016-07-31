@@ -98,6 +98,10 @@ class BaseConfig(object):
     #
     config_mirror_path = E("NOC_CONFIG_MIRROR_PATH")
 
+    # sync
+    sync_config_ttl = E("NOC_SYNC_CONFIG_TTL", 86400)
+    sync_ttl_jitter = E("NOC_SYNC_TTL_JITTER", 0.1)
+
     def __init__(self):
         self.setup_logging()
 
