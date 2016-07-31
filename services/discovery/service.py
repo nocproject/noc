@@ -59,7 +59,7 @@ class DiscoveryService(Service):
             "discovery",
             pool=self.config.pool,
             reset_running=True,
-            max_threads=self.config.max_threads,
+            max_threads=self.config.discovery_max_threads,
             ioloop=self.ioloop,
             filter=ifilter
         )
@@ -67,7 +67,7 @@ class DiscoveryService(Service):
         self.scheduler.run()
 
     def setup_pg_connection_pool(self):
-        max_conns = self.config.max_threads + 5
+        max_conns = self.config.discovery_max_threads + 5
         min_conns = max_conns // 2
         self.logger.info("Setting up postgresql connection pool: min=%d max=%d", min_conns, max_conns)
         opts = {
