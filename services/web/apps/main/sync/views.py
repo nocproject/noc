@@ -14,7 +14,7 @@ from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.main.models.sync import Sync
 from noc.main.models.synccache import SyncCache
 from noc.sa.interfaces.base import DateTimeParameter
-from noc.settings import config
+from noc.core.config.base import config
 from noc.core.translation import ugettext as _
 
 
@@ -28,8 +28,8 @@ class SyncApplication(ExtDocApplication):
     model = Sync
     query_fields = ["name"]
 
-    REFRESH_CHUNK = config.getint("sync", "expired_refresh_chunk")
-    REFRESH_TIMEOUT = config.getint("sync", "expired_refresh_timeout")
+    REFRESH_CHUNK = config.sync_expired_refresh_chunk
+    REFRESH_TIMEOUT = config.sync_expired_refresh_timeout
 
     @view(url="^(?P<name>[^/]+)/(?P<instance>\d+)/config/$", method=["GET"],
           validate={

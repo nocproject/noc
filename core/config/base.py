@@ -101,6 +101,8 @@ class BaseConfig(object):
     # sync
     sync_config_ttl = E("NOC_SYNC_CONFIG_TTL", 86400)
     sync_ttl_jitter = E("NOC_SYNC_TTL_JITTER", 0.1)
+    sync_expired_refresh_timeout = E("NOC_SYNC_REFRESH_TIMEOUT", 25)
+    sync_expired_refresh_chunk = E("NOC_SYNC_REFRESH_CHUNK", 100)
     # themes
     theme_default = E("NOC_THEME_DEFAULT", "gray")
 
