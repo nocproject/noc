@@ -71,7 +71,7 @@ class Service(object):
         # Monkeypatch error reporting
         tornado.ioloop.IOLoop.handle_callback_exception = self.handle_callback_exception
         self.ioloop = None
-        self.logger = None
+        self.logger = logging.getLogger(__name__)
         self.config = config
         self.service_id = str(uuid.uuid4())
         self.perf_metrics = metrics
