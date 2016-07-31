@@ -41,14 +41,6 @@ class DesktopApplication(ExtApplication):
             "css": "/static/pkg/extjs/packages/ext-theme-%s/build/resources/ext-theme-%s-all.css" % (self.default_theme, self.default_theme),
             "js": "/static/pkg/extjs/packages/ext-theme-%s/build/ext-theme-%s.js" % (self.default_theme, self.default_theme)
         }
-        # Login restrictions
-        self.restrict_to_group = self.get_group(
-            config.get("authentication", "restrict_to_group"))
-        self.single_session_group = self.get_group(
-            config.get("authentication", "single_session_group"))
-        self.mutual_exclusive_group = self.get_group(
-            config.get("authentication", "mutual_exclusive_group"))
-        self.idle_timeout = config.getint("authentication", "idle_timeout")
 
     def get_group(self, name):
         """
