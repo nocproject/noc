@@ -16,7 +16,7 @@ import os
 import ConfigParser
 from noc.lib.version import (get_branch, get_tip,
                              get_os_brand, get_os_version,
-                             get_versions, get_solutions)
+                             get_versions)
 
 logger = logging.getLogger(__name__)
 
@@ -259,7 +259,7 @@ class CPClient(object):
                          self.system_uuid,
                          get_os_brand(), get_os_version(),
                          get_branch(), get_tip(),
-                         get_versions(), get_solutions(), status, log)
+                         get_versions(), [], status, log)
 
     def report_crashinfo(self, crashinfo):
         if not self.has_system():

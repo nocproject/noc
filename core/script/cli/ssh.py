@@ -71,8 +71,9 @@ class SSHIOStream(IOStream):
         try:
             r = self.channel.read(self.read_chunk_size)
             if r is None:
-                self.logger.info("SSH session reset")
-                self.close()
+                if self.channel.eof():
+                    self.logger.info("SSH session reset")
+                    self.close()
                 return None
             elif r == -37:  # LIBSSH2_ERROR_EAGAIN
                 return None  # blocking call

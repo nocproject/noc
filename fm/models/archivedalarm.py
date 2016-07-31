@@ -67,7 +67,10 @@ class ArchivedAlarm(nosql.Document):
     total_objects = nosql.ListField(nosql.EmbeddedDocumentField(ObjectSummaryItem))
     total_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
     total_subscribers = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
-
+    # Paths
+    adm_path = nosql.ListField(nosql.IntField())
+    segment_path = nosql.ListField(nosql.ObjectIdField())
+    container_path = nosql.ListField(nosql.ObjectIdField())
 
     def __unicode__(self):
         return u"%s" % self.id

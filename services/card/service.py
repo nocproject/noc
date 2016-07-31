@@ -10,6 +10,7 @@
 ## NOC modules
 from noc.core.service.ui import UIService
 from card import CardRequestHandler
+from search import SearchRequestHandler
 
 
 class CardService(UIService):
@@ -18,7 +19,9 @@ class CardService(UIService):
     use_jinja = True
 
     def get_handlers(self):
+        CardRequestHandler.load_cards()
         return super(CardService, self).get_handlers() + [
+            ("^/search/$", SearchRequestHandler),
             ("^/view/(\S+)/(\S+)/$", CardRequestHandler)
         ]
 

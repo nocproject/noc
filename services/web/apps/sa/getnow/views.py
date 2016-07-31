@@ -9,6 +9,7 @@
 #  # NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.lib.dateutils import humanize_distance
 from noc.sa.interfaces.base import ModelParameter
@@ -39,7 +40,11 @@ class GetNowApplication(ExtApplication):
         Filter records for lookup
         """
         get_request_data = request.GET
-        qs = ManagedObject.objects.filter(is_managed=True).exclude(name="SAE")
+        qs = ManagedObject.objects
+        if not request.user.is_superuser:
+            qs = ManagedObject.objects.filter(UserAccess.Q(request.user))
+        # qs = qs.exclude(name__startswith="wiping-")
+        qs = qs.filter(is_managed=True).exclude(name="SAE").exclude(name__startswith="wiping-")
         mop = ManagedObjectProfile.objects.filter(enable_box_discovery_config=True)
         qs = qs.filter(object_profile__in=mop)
         if 'managed_object' in get_request_data:

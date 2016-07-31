@@ -161,6 +161,8 @@ class Collection(object):
                     with open(fp) as f:
                         data = f.read()
                     jdata = ujson.loads(data)
+                    if "uuid" not in jdata:
+                        raise ValueError("Invalid JSON %s: No UUID" % fp)
                     csum = hashlib.sha256(data).hexdigest()
                     items[jdata["uuid"]] = self.Item(
                         uuid=jdata["uuid"],
@@ -283,7 +285,7 @@ class Collection(object):
         # Resolve partials
         while self.partial_errors:
             pl = len(self.partial_errors)
-            for u in self.partial_errors:
+            for u in list(self.partial_errors):  # may change size
                 self.update_item(cdata[u].data)
             if len(self.partial_errors) == pl:
                 # Cannot resolve partials
@@ -352,6 +354,8 @@ class Collection(object):
             c.name,
             o.get_json_path()
         )
+        if "uuid" not in data:
+            raise ValueError("Invalid JSON: No UUID")
         c.stdout.write("[%s|%s] Installing %s\n" % (
             c.name, data["uuid"], path))
         safe_rewrite(

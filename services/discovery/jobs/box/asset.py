@@ -19,7 +19,6 @@ from noc.inv.models.unknownmodel import UnknownModel
 from noc.inv.models.modelmapping import ModelMapping
 from noc.inv.models.error import ConnectionError
 from noc.lib.text import str_dict
-from noc.lib.solutions import get_solution_from_config
 
 
 class AssetCheck(DiscoveryCheck):
@@ -42,7 +41,6 @@ class AssetCheck(DiscoveryCheck):
         self.managed = set()  # Object ids
         self.unk_model = {}  # name -> model
         self.lost_and_found = self.get_lost_and_found(self.object)
-        self.get_name = get_solution_from_config("asset_discovery", "get_name")
 
     def handler(self):
         self.logger.info("Checking assets")
@@ -646,3 +644,17 @@ class AssetCheck(DiscoveryCheck):
             seed += [k, str(self.ctx[k])]
         h = hashlib.sha256(":".join(seed))
         return "NOC%s" % base64.b32encode(h.digest())[:7]
+
+    @staticmethod
+    def get_name(obj, managed_object=None):
+        """
+        Generate discovered object's name
+        """
+        name = None
+        if managed_object:
+            name = managed_object.name
+            sm = obj.get_data("stack", "member")
+            if sm is not None:
+                # Stack member
+                name += "#%s" % sm
+        return name
