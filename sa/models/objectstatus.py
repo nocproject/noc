@@ -3,12 +3,13 @@
 ## ObjectStatus
 ## Updated by SAE according to ping check changes
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## NOC modules
-from noc.lib.nosql import Document, IntField, BooleanField
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import IntField, BooleanField
 
 
 class ObjectStatus(Document):
