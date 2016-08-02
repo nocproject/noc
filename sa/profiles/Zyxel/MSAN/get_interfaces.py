@@ -39,6 +39,10 @@ class Script(BaseScript):
     rx_ipif = re.compile(
         r"^\s*(?P<ifname>\S+)\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
         r"(?P<mask>\d+\.\d+\.\d+\.\d+)\s*(?P<vid>\d+|\-)?\s*$", re.MULTILINE)
+    rx_ipif1 = re.compile(
+        r"^\s*device\s+(?P<ifname>\S+)\s+\S+\s+\S+\s+mtu\s+(?P<mtu>\d+)\s+"
+        r"(?P<ip>\d+\.\d+\.\d+\.\d+)\s+(?P<mask>\d+\.\d+\.\d+\.\d+)\s*$",
+        re.MULTILINE)
     rx_ipif_mac = re.compile(
         r"^\s*(?P<ifname>\S+) mac\s+: (?P<mac>\S+)\s*\n", re.MULTILINE)
     rx_ipif_vlan = re.compile(
@@ -52,6 +56,10 @@ class Script(BaseScript):
         r"^\s*(?P<mode>\S+) (?P<emode>\S+)\s*\n", re.MULTILINE)
     rx_vlan3 = re.compile(
         r"^\s*(?P<port>\S*\d+)\s+(?P<pvid>\d+)\s+.+\n", re.MULTILINE)
+    rx_vlan4 = re.compile(
+        r"^\s*(?P<vlan_id>\d+)\s+\-\s+(?P<tagged>v)\s+.+\n", re.MULTILINE)
+    rx_vlan5 = re.compile(
+        r"^\s*Port\s+0:\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
     rx_mac = re.compile(
         r"^\s*mac address\s*: (?P<mac>\S+)\s*\n", re.MULTILINE | re.IGNORECASE)
     rx_ports = re.compile(
@@ -193,6 +201,21 @@ class Script(BaseScript):
                         "type": "physical",
                         "subinterfaces": []
                     }
+                    if ifname.startswith("ethernet"):
+                        sub = {
+                                "name": ifname,
+                                "admin_status": True,
+                                "enabled_afi": ["BRIDGE"],
+                                "tagged_vlans": []
+                            }
+                        v = self.cli("vlan1q vlan status")
+                        for match in self.rx_vlan4.finditer(v):
+                            vid = int(match.group("vlan_id"))
+                            if vid == 1:
+                                continue
+                            sub["tagged_vlans"] += [vid]
+                        iface["subinterfaces"] += [sub]
+                        interfaces += [iface]
                     if ifname.startswith("adsl"):
                         for match in self.rx_sub_o2.finditer(adsl):
                             if match.group("sub") == ifname[4:]:
@@ -209,6 +232,37 @@ class Script(BaseScript):
                                 "vci": int(match.group("vci"))
                             }]
                         interfaces += [iface]
+                c = self.cli("ip device list")
+                for match in self.rx_ipif1.finditer(c):
+                    ifname = match.group("ifname")
+                    addr = match.group("ip")
+                    mask = match.group("mask")
+                    ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
+                    iface = {
+                        "name": ifname,
+                        "type": "SVI",
+                        "admin_status": True,  # always True, since inactive
+                        "oper_status": True,   # SVIs aren't shown at all
+                        "subinterfaces": [{
+                            "name": ifname,
+                            "admin_status": True,
+                            "oper_status": True,
+                            "mtu": int(match.group("mtu")),
+                            "enabled_afi": ["IPv4"],
+                            "ipv4_addresses": [ip_address],
+                        }]
+                    }
+                    v = self.cli("vlan1q vlan status")
+                    match1 = self.rx_vlan5.search(v)
+                    vid = int(match1.group("vlan_id"))
+                    iface["subinterfaces"][0]["vlan_ids"] = [vid]
+                    ch_id = self.scripts.get_chassis_id()
+                    mac = ch_id[0]["first_chassis_mac"]
+                    iface["mac"] = mac
+                    iface["subinterfaces"][0]["mac"] = mac
+                    interfaces += [iface]
+                return [{"interfaces": interfaces}]
+
         c = self.cli("ip show")
         for match in self.rx_ipif.finditer(c):
             ifname = match.group("ifname")
