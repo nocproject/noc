@@ -239,6 +239,8 @@ class ManagedObjectCard(BaseCard):
         q = Q(name__icontains=query)
         if is_ipv4(query):
             q |= Q(address=query)
+        if ".*" in query and is_ipv4(query.replace(".*", ".1")):
+            q |= Q(address__regex=query.replace(".", "\\.").replace("*", "[0-9]+"))
         if is_int(query):
             q |= Q(id=int(query))
         r = []

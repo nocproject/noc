@@ -12,7 +12,6 @@ import sys
 import subprocess
 import platform
 ## NOC modules
-from noc import settings
 from noc.core.config.base import config
 
 DEFAULT_BRAND = "NOC"

@@ -63,7 +63,7 @@ class Profile(BaseProfile):
         n = self.get_slots_n(script)
         r = []
         i = 0
-        while i < n:
+        while i <= n:
             r += [self.get_ports_n(script, i)]
             i += 1
         return r

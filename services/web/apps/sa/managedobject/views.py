@@ -109,7 +109,9 @@ class ManagedObjectApplication(ExtModelApplication):
         q = super(ManagedObjectApplication, self).get_Q(request, query)
         query = query.strip()
         if query:
-            if set("+*[]()") & set(query):
+            if ".*" in query and is_ipv4(query.replace(".*", ".1")):
+                q |= Q(address__regex=query.replace(".", "\\.").replace("*", "[0-9]+"))
+            elif set("+*[]()") & set(query):
                 # Maybe regular expression
                 try:
                     # Check syntax

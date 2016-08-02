@@ -13,9 +13,10 @@ import re
 
 
 class Script(BaseScript):
-    name = "Zyxel.MSAN.DxS.ping"
+    name = "Zyxel.MSAN.ping"
     interface = IPing
-    rx_result = re.compile(r"^\s*reply from", re.MULTILINE)
+    rx_result = re.compile(
+        r"^\s*(ip: ping - )?reply (received )?from", re.MULTILINE)
 
     def execute(self, address, count=None, source_address=None, size=None,
     df=None):
