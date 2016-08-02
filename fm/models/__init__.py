@@ -9,15 +9,10 @@
 ## Python modules
 from __future__ import with_statement
 import re
-## Django modules
-from django.utils.translation import ugettext_lazy as _
 from django.db import models
 ## NOC modules
 from error import (MIBRequiredException, MIBNotFoundException,
                    InvalidTypedef, OIDCollision)
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.main.models import TimePattern, NotificationGroup, PyRule
-from noc.main.models.template import Template as NOCTemplate
 
 ##
 ## Regular expressions
