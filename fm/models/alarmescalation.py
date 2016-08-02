@@ -39,6 +39,7 @@ class EscalationItem(EmbeddedDocument):
     administrative_domain = ForeignKeyField(AdministrativeDomain)
     selector = ForeignKeyField(ManagedObjectSelector)
     time_pattern = ForeignKeyField(TimePattern)
+    min_severity = IntField(default=0)
     # Action part
     notification_group = ForeignKeyField(NotificationGroup)
     template = ForeignKeyField(Template)
