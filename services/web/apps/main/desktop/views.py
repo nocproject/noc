@@ -82,7 +82,7 @@ class DesktopApplication(ExtApplication):
                     isinstance(self.site.apps[a], ModelApplication)]
         apps = [a.split(".") for a in sorted(ext_apps)]
         # Prepare settings
-        favicon_url = config.get("customization", "favicon_url")
+        favicon_url = config.customization_favicon
         if favicon_url.endswith(".png"):
             favicon_mime = "image/png"
         elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
@@ -92,22 +92,21 @@ class DesktopApplication(ExtApplication):
 
         setup = {
             "system_uuid": cp.system_uuid,
-            "installation_name": config.get("customization",
-                                            "installation_name"),
-            "logo_url": config.get("customization", "logo_url"),
-            "logo_width": config.get("customization", "logo_width"),
-            "logo_height": config.get("customization", "logo_height"),
+            "installation_name": config.installation_name,
+            "logo_url": config.customization_logo_url,
+            "logo_width": config.customization_logo_width,
+            "logo_height": config.customization_logo_height,
             "brand": get_brand(),
-            "branding_color": config.get("customization", "branding_color"),
-            "branding_background_color": config.get("customization", "branding_background_color"),
+            "branding_color": config.customization_branding_color,
+            "branding_background_color": config.customization_branding_background_color,
             "favicon_url": favicon_url,
             "favicon_mime": favicon_mime,
-            "debug_js": config.getboolean("main", "debug_js"),
-            "install_collection": config.getboolean("develop", "install_collection"),
-            "enable_gis_base_osm": config.getboolean("gis", "enable_osm"),
-            "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
-            "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap"),
-            "trace_extjs_events": config.getboolean("main", "trace_extjs_events"),
+            "debug_js": config.main_debug_js,
+            "install_collection": config.develop_install_collection,
+            "enable_gis_base_osm": config.gis_enable_osm,
+            "enable_gis_base_google_sat": config.gis_enable_google_sat,
+            "enable_gis_base_google_roadmap": config.gis_enable_google_roadmap,
+            "trace_extjs_events": config.main_trace_extjs_events,
             "preview_theme": "midnight"
 
         }
@@ -168,7 +167,7 @@ class DesktopApplication(ExtApplication):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "can_change_credentials": True,
-            "idle_timeout": self.idle_timeout,
+            "idle_timeout": config.login_session_ttl,
             "navigation": {
                 "id": "root",
                 "iconCls": "fa fa-globe",

@@ -41,7 +41,7 @@ class LoginService(UIService):
         """
         Authenticate user. Returns True when user is authenticated
         """
-        method = self.config.method
+        method = self.config.login_method
         try:
             backend = get_handler(method)(self)
         except Exception as e:
@@ -66,7 +66,7 @@ class LoginService(UIService):
         handler.set_secure_cookie(
             "noc_user",
             credentials.get("user"),
-            expires_days=self.config.session_ttl
+            expires_days=self.config.login_session_ttl
         )
         return True
 
