@@ -61,6 +61,16 @@ class BaseConfig(object):
     language_code = E("NOC_LANGUAGE_CODE", "en-us")
     timezone = E("NOC_TIMEZONE", "Europe/Moscow")
     language = E("NOC_LANGUAGE", "en")
+    customization_favicon = E("NOC_CUSTOMIZATION_FAVICON", "/static/img/logo_24x24_deep_azure.png")
+    customization_logo_url = E("NOC_CUSTOMIZATION_LOGO_URL", "/static/img/logo_white.svg")
+    customization_logo_width = E("NOC_CUSTOMIZATION_LOGO_WIDTH", 24)
+    customization_logo_height = E("NOC_CUSTOMIZATION_LOGO_HEIGHT", 24)
+    customization_branding_color = E("NOC_CUSTOMIZATION_BRANDING_COLOR", "#ffffff")
+    customization_branding_background_color = E("NOC_CUSTOMIZATION_BRANDING_BACKGROUND_COLOR", "#34495e")
+    main_debug_js = E("NOC_MAIN_DEBUG_JS", False)
+    develop_install_collection = E("NOC_DEVELOP_INSTALL_COLLECTION", False)
+
+    main_trace_extjs_events = E("NOC_MAIN_TRACE_EXTJS_EVENTS", False)
     secret_key = E("NOC_SECRET_KEY", "12345")
     date_format = E("NOC_DATE_FORMAT", "d.m.Y")
     time_format = E("NOC_TIME_FORMAT", "H:i:s")
@@ -103,6 +113,9 @@ class BaseConfig(object):
     api_row_limit = int(E("NOC_API_ROW_LIMIT", 0))
     #
     gis_ellipsoid = E("NOC_GIS_ELLIPSOID", "ПЗ-90")
+    gis_enable_osm = E("NOC_GIS_ENABLE_OSM", True)
+    gis_enable_google_sat = E("NOC_GIS_ENABLE_GOOGLE_SAT", False)
+    gis_enable_google_roadmap = E("NOC_GIS_ENABLE_GOOGLE_ROADMAP", False)
     #
     config_mirror_path = E("NOC_CONFIG_MIRROR_PATH")
 
@@ -129,6 +142,11 @@ class BaseConfig(object):
 
     # syslog
     listen_syslog = E("NOC_LISTEN_SYSLOG", "0.0.0.0:514")
+
+    # Login
+    login_method = E("NOC_LOGIN_METHOD", "noc.services.login.backends.local.LocalBackend")
+    login_session_ttl = _get_seconds(E("NOC_LOGIN_SESSION_TTL", "7d"))
+
 
     def __init__(self):
         self.setup_logging()
