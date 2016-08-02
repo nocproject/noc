@@ -22,7 +22,8 @@ from rule import Rule
 from rcacondition import RCACondition
 from trigger import Trigger
 from noc.fm.models import (ActiveEvent, EventClass,ActiveAlarm,
-                           AlarmLog, AlarmTrigger, AlarmClass)
+                           AlarmLog, AlarmClass)
+from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem

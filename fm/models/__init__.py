@@ -104,66 +104,6 @@ class IgnoreEventRules(models.Model):
         return u"%s (%s, %s)" % (self.name, self.left_re, self.right_re)
 
 
-class EventTrigger(models.Model):
-    class Meta:
-        verbose_name = _("Event Trigger")
-        verbose_name_plural = _("Event Triggers")
-
-    name = models.CharField(_("Name"), max_length=64, unique=True)
-    is_enabled = models.BooleanField(_("Is Enabled"), default=True)
-    event_class_re = models.CharField(_("Event class RE"), max_length=256)
-    condition = models.CharField(_("Condition"), max_length=256, default="True")
-    time_pattern = models.ForeignKey(TimePattern,
-                                     verbose_name=_("Time Pattern"),
-                                     null=True, blank=True)
-    selector = models.ForeignKey(ManagedObjectSelector,
-                                 verbose_name=_("Managed Object Selector"),
-                                 null=True, blank=True)
-    notification_group = models.ForeignKey(NotificationGroup,
-                                           verbose_name=_("Notification Group"),
-                                           null=True, blank=True)
-    template = models.ForeignKey(NOCTemplate,
-                                 verbose_name=_("Template"),
-                                 null=True, blank=True)
-    pyrule = models.ForeignKey(PyRule,
-                               verbose_name=_("pyRule"),
-                               null=True, blank=True,
-                               limit_choices_to={"interface": "IEventTrigger"})
-    handler = models.CharField(_("Handler"),
-                               max_length=128, null=True, blank=True)
-    
-    def __unicode__(self):
-        return "%s <<<%s>>>" % (self.event_class_re, self.condition)
-
-
-class AlarmTrigger(models.Model):
-    class Meta:
-        verbose_name = _("Alarm Trigger")
-        verbose_name_plural = _("Alarm Triggers")
-
-    name = models.CharField(_("Name"), max_length=64, unique=True)
-    is_enabled = models.BooleanField(_("Is Enabled"), default=True)
-    alarm_class_re = models.CharField(_("Alarm class RE"), max_length=256)
-    condition = models.CharField(_("Condition"), max_length=256, default="True")
-    time_pattern = models.ForeignKey(TimePattern,
-                                     verbose_name=_("Time Pattern"),
-                                     null=True, blank=True)
-    selector = models.ForeignKey(ManagedObjectSelector,
-                                 verbose_name=_("Managed Object Selector"),
-                                 null=True, blank=True)
-    notification_group = models.ForeignKey(NotificationGroup,
-                                           verbose_name=_("Notification Group"),
-                                           null=True, blank=True)
-    template = models.ForeignKey(NOCTemplate,
-                                 verbose_name=_("Template"),
-                                 null=True, blank=True)
-    pyrule = models.ForeignKey(PyRule,
-                               verbose_name=_("pyRule"),
-                               null=True, blank=True,
-                               limit_choices_to={"interface": "IAlarmTrigger"})
-    
-    def __unicode__(self):
-        return "%s <<<%s>>>" % (self.alarm_class_re, self.condition)
 
 from enumeration import Enumeration
 
