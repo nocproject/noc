@@ -109,7 +109,7 @@ class BaseTTSystem(object):
         """
         raise NotImplementedError()
 
-    def create_group_tt(self, tt_id):
+    def create_group_tt(self, tt_id, timestamp=None):
         """
         Promote tt as the group tt.
         Called only when promote_group_tt is set
