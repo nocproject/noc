@@ -11,4 +11,3 @@ from vcfilter import VCFilter
 from vcdomain import VCDomain
 from vc import VC
 from vcbindfilter import VCBindFilter
-from vcdomainprovisioningconfig import VCDomainProvisioningConfig
