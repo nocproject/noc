@@ -380,7 +380,7 @@ class Service(object):
     def get_nsq_writer(self):
         if not self.nsq_writer:
             self.logger.info("Opening NSQ Writer")
-            self.nsq_writer = nsq.Writer(["127.0.0.1:4150"])
+            self.nsq_writer = nsq.Writer(config.get_service("nsqd"))
         return self.nsq_writer
 
     def pub(self, topic, data):
