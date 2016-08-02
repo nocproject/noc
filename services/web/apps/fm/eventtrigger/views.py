@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtModelApplication, view
-from noc.fm.models import EventTrigger
+from noc.fm.models.eventtrigger import EventTrigger
 from noc.core.translation import ugettext as _
 
 
