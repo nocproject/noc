@@ -32,13 +32,17 @@ class Script(BaseScript):
         for i in range(len(ports)):
             p = 0
             while p <= int(ports[i]["n"]):
-                if (ports[i]["t"] == "ADSL") and ports[i]["s"][p]:
+                if not ports[i]["s"][p]:
+                    # Skip not running interface
+                    p += 1
+                    continue
+                if (ports[i]["t"] == "ADSL"):
                     try:
                         v = self.cli("display mac-address %s 0/%d/%d" % (adsl_port, i, p))
                     except self.CLISyntaxError:
                         v = self.cli("display mac-address port 0/%d/%d" % (i, p))
                         adsl_port = "port"
-                if (ports[i]["t"] in ["GE", "FE"]) and ports[i]["s"][p]:
+                if (ports[i]["t"] in ["GE", "FE"]):
                     try:
                         v = self.cli("display mac-address %s 0/%d/%d" % (ethernet_port, i, p))
                     except self.CLISyntaxError:

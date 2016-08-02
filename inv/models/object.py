@@ -55,7 +55,7 @@ class Object(Document):
     tags = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
-    _id_path = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return unicode(self.name or self.id)
@@ -72,9 +72,10 @@ class Object(Document):
         :return:
         """
         if self.container:
-            return self.container.get_path() + [self.id]
-        else:
-            return [self.id]
+            c = Object.get_by_id(self.container)
+            if c:
+                return c.get_path() + [self.id]
+        return [self.id]
 
     def get_data(self, interface, key):
         attr = ModelInterface.get_interface_attr(interface, key)

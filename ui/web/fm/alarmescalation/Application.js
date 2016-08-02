@@ -116,6 +116,12 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                             renderer: NOC.render.Lookup("time_pattern")
                         },
                         {
+                            text: __("Severity"),
+                            dataIndex: "min_severity",
+                            editor: "numberfield",
+                            width: 70
+                        },
+                        {
                             text: __("Notification Group"),
                             dataIndex: "notification_group",
                             editor: "main.notificationgroup.LookupField",

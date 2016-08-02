@@ -75,8 +75,14 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
             mo.administrative_domain.id != a.administrative_domain.id
         ):
             continue
+        # Check severity
+        if a.min_severity and alarm.severity < a.min_severity:
+            continue
         # Check selector
         if a.selector and not SelectorCache.is_in_selector(mo, a.selector):
+            continue
+        # Check time pattern
+        if a.time_pattern and not a.time_pattern.match(alarm.timestamp):
             continue
         # Render escalation message
         if not a.template:
@@ -154,7 +160,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                                 if tts.promote_group_tt:
                                     # Greate group TT
                                     log("Promoting to group tt")
-                                    gtt = tts.create_group_tt(tt_id)
+                                    gtt = tts.create_group_tt(tt_id, alarm.timestamp)
                                     # Add objects
                                     objects = dict(
                                         (o.id, o.name)

@@ -26,7 +26,8 @@ from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models import (EventClassificationRule,
                            EventClass, MIB, EventLog, CloneClassificationRule,
-                           ActiveEvent, EventTrigger, Enumeration)
+                           ActiveEvent, Enumeration)
+from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
 import noc.inv.models.interface
 from noc.core.profile.loader import loader as profile_loader
