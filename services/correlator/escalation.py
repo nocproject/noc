@@ -160,7 +160,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                                 if tts.promote_group_tt:
                                     # Greate group TT
                                     log("Promoting to group tt")
-                                    gtt = tts.create_group_tt(tt_id)
+                                    gtt = tts.create_group_tt(tt_id, alarm.timestamp)
                                     # Add objects
                                     objects = dict(
                                         (o.id, o.name)
