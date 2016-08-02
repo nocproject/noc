@@ -3,7 +3,7 @@
 ## Vendor: Zyxel
 ## OS:     MSAN
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -31,6 +31,10 @@ class Profile(BaseProfile):
             return "Enet" + interface[4:]
         else:
             return interface
+
+    def setup_session(self, script):
+        # Useful only on IES-1000
+        script.cli("home", ignore_errors=True)
 
     rx_slots = re.compile("slot number should between 1 to (?P<slot>\d+)")
 
