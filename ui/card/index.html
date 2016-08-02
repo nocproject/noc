@@ -33,6 +33,11 @@
 <ul id="result">
 </ul>
 <script type="text/javascript">
+    $("#query").bind("keyup", function(e) {
+        if(e.keyCode == 13) {
+            search();
+        }
+    });
     function search() {
         var query = $("#query").val(),
             scope = $("input[type=radio][name=scope]:checked").val();
