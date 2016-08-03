@@ -2,15 +2,16 @@
 ##----------------------------------------------------------------------
 ## Uptime report
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import datetime
 import logging
-## NOC modules
-from noc.lib.nosql import (Document, IntField, DateTimeField)
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import IntField, DateTimeField
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 class Reboot(Document):
     meta = {
         "collection": "noc.fm.reboots",
-        "indexes": ["object", ("object", "ts")]
+        "indexes": ["ts", "object", ("object", "ts")]
     }
 
     object = IntField()
