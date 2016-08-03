@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
-from noc.fm.models import OIDAlias
+from noc.fm.models.oidalias import OIDAlias
 from noc.main.models.collectioncache import CollectionCache
 from noc.core.translation import ugettext as _
 
