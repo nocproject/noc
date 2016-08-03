@@ -44,6 +44,10 @@
     {
       "name": "handlebars",
       "version": "4.0.5"
+    },
+    {
+      "name": "openlayers",
+      "version": "2.13"
     }
   ]
 }
