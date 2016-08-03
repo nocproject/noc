@@ -48,7 +48,7 @@ class ManagedObjectLoader(BaseLoader):
         "termination_group": "terminationgroup",
         "service_terminator": "terminationgroup",
         "container": "container",
-        "auth_profile": "auth_profile"
+        "auth_profile": "authprofile"
     }
 
     def __init__(self, *args, **kwargs):
