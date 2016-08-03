@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.peer.models import PeeringPoint
 from noc.core.translation import ugettext as _
 

@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.peer.models import Peer
 from noc.lib.tt import admin_tt_url
 from noc.lib.validators import *    

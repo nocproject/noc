@@ -11,7 +11,7 @@ import re
 ## Django modules
 from django.template import Template, Context
 ## NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.fm.models.eventclassificationrule import EventClassificationRule, EventClassificationRuleCategory
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB

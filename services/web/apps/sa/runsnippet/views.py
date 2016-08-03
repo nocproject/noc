@@ -12,7 +12,7 @@ import new
 from django import forms
 from django.utils.datastructures import SortedDict
 ## NOC modules
-from noc.lib.app import Application, view, NOCForm
+from noc.lib.app.application import Application, view, NOCForm
 from noc.sa.models.commandsnippet import CommandSnippet
 from noc.sa.models.reducetask import ReduceTask
 from noc.sa.models.managedobject import ManagedObject

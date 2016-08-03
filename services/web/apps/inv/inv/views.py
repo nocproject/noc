@@ -10,7 +10,7 @@
 import inspect
 import os
 ## NOC modules
-from noc.lib.app import ExtApplication, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.objectmodel import ObjectModel
 from noc.lib.validators import is_objectid

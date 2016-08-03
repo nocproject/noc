@@ -5,7 +5,7 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.lib.app import Application,PermitLogged
+from noc.lib.app.application import Application,PermitLogged
 
 class MessageApplication(Application):
     title="Message"

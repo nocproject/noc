@@ -9,7 +9,7 @@
 ## Python modules
 import datetime
 ## NOC modules
-from noc.lib.app import ExtApplication, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.reducetask import ReduceTask

@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.dns.models.dnszoneprofile import DNSZoneProfile
 from noc.core.translation import ugettext as _
 

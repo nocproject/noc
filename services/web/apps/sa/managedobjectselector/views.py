@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.lib.app.modelinline import ModelInline
 from noc.sa.models.managedobjectselector import (
     ManagedObjectSelector, ManagedObjectSelectorByAttribute)

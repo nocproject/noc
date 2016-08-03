@@ -10,7 +10,7 @@
 import datetime
 import itertools
 ## NOC modules
-from noc.lib.app import ExtApplication, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job

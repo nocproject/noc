@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.project.models.project import Project
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface

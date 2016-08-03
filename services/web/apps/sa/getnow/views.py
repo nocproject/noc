@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 #  # NOC modules
-from noc.lib.app import view, ExtApplication
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile

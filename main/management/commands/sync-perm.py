@@ -9,7 +9,7 @@
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.lib.app import site
+from noc.lib.app.site import site
 from noc.main.models.permission import Permission
 
 

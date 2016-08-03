@@ -152,7 +152,7 @@ class Permission(models.Model):
 
     @classmethod
     def sync(cls):
-        from noc.lib.app import site
+        from noc.lib.app.site import site
 
         def normalize(app, perm):
             if ":" in perm:

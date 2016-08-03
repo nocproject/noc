@@ -14,7 +14,7 @@ import subprocess
 # Django Modules
 from django import forms
 # NOC Modules
-from noc.lib.app import Application,HasPerm,view
+from noc.lib.app.application import Application,HasPerm,view
 from noc.lib.ip import *
 from noc.ip.models import *
 from noc.lib.validators import *
