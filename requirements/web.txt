@@ -1,3 +1,2 @@
-noc-pkg-openlayers==2.13
 noc-pkg-stacktrace==1.0.0
 noc-pkg-pyclips==1.0.7
