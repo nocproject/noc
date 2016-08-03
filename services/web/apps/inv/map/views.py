@@ -14,7 +14,7 @@ import json
 import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor, as_completed
 ## NOC modules
-from noc.lib.app import ExtApplication, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface
 from noc.sa.models.managedobject import ManagedObject

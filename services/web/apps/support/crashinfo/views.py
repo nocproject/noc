@@ -9,7 +9,7 @@
 ## Python modules
 import uuid
 ## NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.support.models.crashinfo import Crashinfo
 from noc.core.translation import ugettext as _
 

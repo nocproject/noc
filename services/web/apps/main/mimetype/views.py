@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtModelApplication
+from noc.lib.app.extmodelapplication import ExtModelApplication
 from noc.main.models import MIMEType
 from noc.core.translation import ugettext as _
 

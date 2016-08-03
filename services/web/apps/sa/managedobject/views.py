@@ -16,7 +16,7 @@ from django.db.models import Q
 ## Third-party modules
 import gridfs
 ## NOC modules
-from noc.lib.app import ExtModelApplication, view
+from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.managedobject import (ManagedObject,
                                          ManagedObjectAttribute)
 from noc.sa.models.useraccess import UserAccess

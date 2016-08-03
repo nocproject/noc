@@ -9,7 +9,7 @@
 ## Python modules
 from mercurial import ui, localrepo
 ## NOC modules
-from noc.lib.app import ExtApplication, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.core.translation import ugettext as _
 
 

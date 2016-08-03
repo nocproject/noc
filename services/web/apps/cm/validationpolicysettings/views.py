@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.lib.app import ExtDocApplication, view
+from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.cm.models.validationpolicysettings import (
     ValidationPolicySettings, ValidationPolicyItem)
 from noc.cm.models.validationpolicy import ValidationPolicy

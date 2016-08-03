@@ -11,7 +11,7 @@ from __future__ import with_statement
 import ConfigParser
 import hashlib
 ## NOC modules
-from noc.lib.app import ExtApplication, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.serialize import json_decode
 from noc.core.translation import ugettext as _
 

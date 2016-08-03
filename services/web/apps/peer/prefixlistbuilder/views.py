@@ -10,7 +10,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 ## NOC modules
-from noc.lib.app import ExtApplication, view
+from noc.lib.app.extapplication import ExtApplication, view
 from noc.peer.models import PeeringPoint, WhoisCache
 from noc.sa.interfaces.base import UnicodeParameter, ModelParameter
 from noc.core.translation import ugettext as _
