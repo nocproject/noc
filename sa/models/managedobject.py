@@ -611,6 +611,10 @@ class ManagedObject(Model):
         else:
             return None
 
+    @property
+    def vendor(self):
+        return self.get_attr("vendor")
+
     def is_ignored_interface(self, interface):
         interface = self.profile.convert_interface_name(interface)
         rx = self.get_attr("ignored_interfaces")
@@ -969,6 +973,25 @@ class ManagedObject(Model):
                     20,
                     pop_id=pop.id
                 )
+
+    def get_coordinates(self):
+        """
+        Get managed object's coordinates
+        :returns: x (lon), y (lat)
+        """
+        c = self.container
+        while c:
+            x = c.get_data("geopoint", "x")
+            y = c.get_data("geopoint", "y")
+            if x and y:
+                return x, y
+            if c.container:
+                c = Object.get_by_id(c.container)
+                if not c:
+                    break
+            else:
+                break
+        return None, None
 
 
 @on_save

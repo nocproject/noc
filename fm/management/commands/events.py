@@ -11,13 +11,13 @@ from optparse import OptionParser, make_option
 import re
 import hashlib
 from htmlentitydefs import name2codepoint
-## Django modules
+## Third-party modules
 from django.core.management.base import BaseCommand, CommandError
+from bson import ObjectId
 ## NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.fm.models import ActiveEvent, EventClass, MIB
-from noc.lib.nosql import ObjectId
 from noc.lib.validators import is_oid
 from noc.lib.escape import json_escape, fm_escape
 
