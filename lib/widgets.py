@@ -2,20 +2,16 @@
 ##----------------------------------------------------------------------
 ## Form widgets
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Django modules
-from django import forms
 from django.forms.widgets import Input, PasswordInput
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
-from django.utils.html import escape
-from django.core.validators import EMPTY_VALUES
-# NOC modules
-from lib.nosql import Document, ObjectId
-from noc.lib.serialize import json_encode
+# Third-party modules
+import ujson
 
 ##
 ##
@@ -51,7 +47,7 @@ class AutoCompleteTags(Input):
                 v=v.strip()
                 if v:
                     initial+=[{"id":v,"name":v}]
-        initial=json_encode(initial)
+        initial=ujson.dumps(initial)
         html=super(AutoCompleteTags,self).render(name,value,attrs)
         js="""<script type="text/javascript">
         $(document).ready(function() {
@@ -98,6 +94,3 @@ def tags_list(o):
     s = (["<ul class='tags-list'>"] +
          ["<li>%s</li>" % t for t in tags] + ["</ul>"])
     return "".join(s)
-
-## Load at the end to prevent circular dependencies
-from noc.lib.app.site import site
