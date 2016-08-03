@@ -15,6 +15,7 @@ from django.http import HttpResponse
 from django.db.models import Q
 ## Third-party modules
 import gridfs
+import ujson
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.managedobject import (ManagedObject,
@@ -33,7 +34,6 @@ from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
 from sa.models.objectcapabilities import ObjectCapabilities
 from mongoengine.queryset import Q as MQ
-from noc.lib.serialize import json_decode
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.cm.models.objectfact import ObjectFact
@@ -259,7 +259,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        r = json_decode(request.raw_post_data).get("names", [])
+        r = ujson.loads(request.raw_post_data).get("names", [])
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
@@ -282,7 +282,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=id)
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        r = json_decode(request.raw_post_data).get("names", [])
+        r = ujson.loads(request.raw_post_data).get("names", [])
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
@@ -440,7 +440,7 @@ class ManagedObjectApplication(ExtModelApplication):
         o = self.get_object_or_404(ManagedObject, id=int(id))
         if not o.has_access(request.user):
             return self.response_forbidden("Access denied")
-        d = json_decode(request.raw_post_data)
+        d = ujson.loads(request.raw_post_data)
         if "id" in d:
             i = self.get_object_or_404(Interface, id=d["id"])
             if i.managed_object.id != o.id:
@@ -713,7 +713,7 @@ class ManagedObjectApplication(ExtModelApplication):
         # @todo: Check access
         body = request.raw_post_data
         if body:
-            args = json_decode(body)
+            args = ujson.loads(body)
         else:
             args = {}
         return self.submit_slow_op(request, execute, o, a, args)

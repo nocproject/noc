@@ -17,7 +17,6 @@ import bson
 import pymongo.errors
 ## NOC modules
 from noc.lib.nosql import get_db
-from noc.lib.serialize import pickle
 
 
 class Cache(object):
@@ -124,7 +123,7 @@ class MongoDBCache(BaseDatabaseCache):
             return document
         pickled_obj = document.get("p")
         if pickled_obj is not None:
-            return pickle.loads(pickled_obj)
+            return cPickle.loads(pickled_obj)
         else:
             return document["v"]
 
@@ -156,7 +155,7 @@ class MongoDBCache(BaseDatabaseCache):
             # value can't be serialized to BSON, fall back to pickle.
             # TODO: Suppress PyMongo warning here by writing a PyMongo patch
             # that allows BSON to be passed as document to .save
-            pickle_blob = pickle.dumps(new_document.pop("v"), protocol=2)
+            pickle_blob = cPickle.dumps(new_document.pop("v"), protocol=cPickle.HIGHEST_PROTOCOL)
             new_document["p"] = bson.binary.Binary(pickle_blob)
             collection.save(new_document)
         return True
