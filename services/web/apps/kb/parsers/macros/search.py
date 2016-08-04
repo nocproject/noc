@@ -5,9 +5,12 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.kb.parsers.macros import Macro as MacroBase
 from django.db.models import Q
+
+from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
 from noc.lib.db import QTags
+
+
 ##
 ## "search" macro
 ## USAGE:

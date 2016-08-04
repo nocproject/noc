@@ -6,13 +6,13 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import noc.kb.parsers
+from noc.services.web.apps.kb.parsers import Parser
 
-##
-## Creole Parser
-##
-class Parser(noc.kb.parsers.Parser):
-    name="Plain Text"
+
+class Parser(Parser):
+    """Creole Parser"""
+    name = "Plain Text"
+
     @classmethod
-    def to_html(cls,kb_entry):
-        return u"<pre>%s</pre>"%kb_entry.body
+    def to_html(cls, kb_entry):
+        return u"<pre>%s</pre>" % kb_entry.body
