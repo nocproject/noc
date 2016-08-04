@@ -73,7 +73,7 @@ class Registry(object):
                             if not os.path.exists(i_path):
                                 open(i_path, "w").close()  # Create file
                     else:
-                        mb = app + "." + ".".join(dirpath.split(os.sep)[1:])
+                        mb = "services" + "." + ".".join(dirpath.split(os.sep)[1:])
                     for f in [f for f in filenames if not f.startswith(".") and f.endswith(".py")]:
                         if f == "__init__.py":
                             f = ""
