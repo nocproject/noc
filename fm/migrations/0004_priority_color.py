@@ -6,7 +6,8 @@
 """
 """
 from south.db import db
-from noc.fm.models import *
+from django.db import models
+
 
 class Migration:
     

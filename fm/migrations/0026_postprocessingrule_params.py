@@ -2,12 +2,13 @@
 
 from south.db import db
 from django.db import models
-from noc.fm.models import *
+
 
 class Migration:
     depends_on=(
         ("main","0015_notification_link"),
     )
+
     def forwards(self):
         ManagedObjectSelector = db.mock_model(model_name='ManagedObjectSelector', db_table='sa_managedobjectselector', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         TimePattern = db.mock_model(model_name='TimePattern', db_table='main_timepattern', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
