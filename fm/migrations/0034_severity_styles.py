@@ -9,7 +9,6 @@ import re
 ## Third-party modules
 from south.db import db
 ## Python modules
-from noc.fm.models import *
 
 
 class Migration:    

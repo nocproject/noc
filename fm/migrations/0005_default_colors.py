@@ -6,9 +6,8 @@
 """
 """
 from south.db import db
-from noc.fm.models import *
 
-COLORS={
+COLORS = {
     "CRITICAL":("#BB0000","#FFDDCC"),
     "MAJOR"   :("#BB0000","#FFEEDD"),
     "MINOR"   :("#BB0000","#FFFFBB"),
@@ -18,8 +17,9 @@ COLORS={
     "DEFAULT" :("#FFFF00","#643200"),
 }
 
+
 class Migration:
-    
+
     def forwards(self):
         for p,colors in COLORS.items():
             font,bg=colors

@@ -1,12 +1,12 @@
 
 from south.db import db
-from noc.fm.models import *
+from django.db import models
+
 
 class Migration:
     
     def forwards(self):
-        
-        
+
         # Mock Models
         EventClass = db.mock_model(model_name='EventClass', db_table='fm_eventclass', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         EventPriority = db.mock_model(model_name='EventPriority', db_table='fm_eventpriority', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
@@ -41,4 +41,3 @@ class Migration:
     def backwards(self):
         db.delete_table('fm_eventpostprocessingre')
         db.delete_table('fm_eventpostprocessingrule')
-        
