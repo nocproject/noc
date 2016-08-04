@@ -6,10 +6,11 @@
 """
 """
 from south.db import db
-from noc.fm.models import *
+from django.db import models
+
 
 class Migration:
-    
+
     def forwards(self):
         
         # Model 'MIB'
@@ -38,4 +39,3 @@ class Migration:
     def backwards(self):
         db.delete_table('fm_mibdata')
         db.delete_table('fm_mib')
-        

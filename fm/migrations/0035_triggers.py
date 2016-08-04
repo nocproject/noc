@@ -6,7 +6,9 @@
 """
 """
 from south.db import db
-from noc.fm.models import *
+from django.db import models
+from noc.main.models import TimePattern
+from noc.main.models import Template as NOCTemplate
 
 class Migration:
     depends_on = (
