@@ -8,11 +8,11 @@
 ## Python modules
 import re
 ## NOC modules
-import noc.kb.parsers
+import services.web.apps.kb.parsers
 ##
 ## MediaWiki parser
 ##
-class Parser(noc.kb.parsers.Parser):
+class Parser(services.web.apps.kb.parsers.Parser):
     name="MediaWiki"
     css=["mediawiki/shared.css", "mediawiki/main.css"]
     

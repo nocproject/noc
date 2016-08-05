@@ -2,21 +2,20 @@
 ##----------------------------------------------------------------------
 ## Compile loaded MIB to the compact JSON representation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 import sys
 import os
 from optparse import make_option
 import gzip
-## Django modules
+## Third-party modules
 from django.core.management.base import BaseCommand, CommandError
+import ujson
 ## NOC modules
 from noc.fm.models import MIB, MIBData
-from noc.lib.serialize import json_encode
 
 
 class Command(BaseCommand):
@@ -105,6 +104,6 @@ class Command(BaseCommand):
             "data": mib_data
         }
         # Serialize
-        out.write(json_encode(data))
+        out.write(ujson.dumps(data))
         if out_path:
             out.close()

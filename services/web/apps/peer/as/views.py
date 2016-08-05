@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## AS Manager
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ from django.contrib import admin
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.site import site
 from noc.peer.models import AS
-from noc.ip.models import Prefix
+from noc.ip.models.prefix import Prefix
 from noc.core.translation import ugettext as _
 
 

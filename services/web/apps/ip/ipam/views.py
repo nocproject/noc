@@ -17,6 +17,7 @@ from django.utils.simplejson.encoder import JSONEncoder
 # NOC modules
 from noc.lib.app.application import Application, view
 from noc.lib.validators import *
+from noc.ip.models.vrf import VRF
 from noc.lib.ip import *
 from noc.lib.forms import NOCForm
 from noc.lib.widgets import *

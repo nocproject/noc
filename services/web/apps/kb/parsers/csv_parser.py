@@ -6,12 +6,14 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import csv
-import noc.kb.parsers
+
+import services.web.apps.kb.parsers
+
 
 ##
 ## Creole Parser
 ##
-class Parser(noc.kb.parsers.Parser):
+class Parser(services.web.apps.kb.parsers.Parser):
     name="CSV"
     @classmethod
     def to_html(cls,kb_entry):

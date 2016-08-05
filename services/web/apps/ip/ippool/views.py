@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.ip.models import IPPool
+from noc.ip.models.ippool import IPPool
 from noc.inv.models.technology import Technology
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.translation import ugettext as _

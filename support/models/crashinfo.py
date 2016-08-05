@@ -15,8 +15,8 @@ from mongoengine.document import Document
 from mongoengine.fields import (UUIDField, DateTimeField, StringField)
 import mongoengine.signals
 import dateutil.parser
+import ujson
 ## NOC modules
-from noc.lib.serialize import json_decode
 from noc.support.cp import CPClient
 
 logger = logging.getLogger(__name__)
@@ -78,7 +78,7 @@ class Crashinfo(Document):
             logger.info("New crashinfo found: %s", u)
             try:
                 with open(os.path.join(cls.NEW_ROOT, f)) as f:
-                    ci = json_decode(f.read())
+                    ci = ujson.loads(f.read())
             except Exception, why:
                 logger.error(
                     "Unable to load and decode crashinfo %s: %s",
@@ -105,7 +105,7 @@ class Crashinfo(Document):
         if os.path.exists(path):
             try:
                 with open(path) as f:
-                    return json_decode(f.read())
+                    return ujson.loads(f.read())
             except Exception, why:
                 logger.error(
                     "Unable to load and decode crashinfo %s: %s",

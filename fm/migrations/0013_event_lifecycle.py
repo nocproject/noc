@@ -1,6 +1,7 @@
 
 from south.db import db
-from noc.fm.models import *
+from django.db import models
+
 
 class Migration:
     
@@ -15,4 +16,4 @@ class Migration:
         db.delete_column("fm_event","status")
         db.delete_column("fm_event","active_till")
         db.delete_column("fm_event","close_timestamp")
-        dv.delete_column("fm_event","root")
+        db.delete_column("fm_event","root")

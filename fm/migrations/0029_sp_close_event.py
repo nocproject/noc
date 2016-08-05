@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from south.db import db
-from django.db import models
-from noc.fm.models import *
+
 
 class Migration:
     
     def forwards(self):
         db.execute(SQL_PROC)
-    
-    
+
     def backwards(self):
         db.execute("DROP FUNCTION close_event(INTEGER,TEXT)")
 

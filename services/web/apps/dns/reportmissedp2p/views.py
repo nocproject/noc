@@ -10,7 +10,7 @@
 from django.utils.translation import ugettext_lazy as _
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport
-from noc.ip.models import VRF
+from noc.ip.models.vrf import VRF
 from noc.core.translation import ugettext as _
 ##
 ##

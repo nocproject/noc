@@ -5,11 +5,14 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from noc.kb.parsers.macros import Macro as MacroBase
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
+
+from noc.services.web.apps.kb.parsers.macros import Macro as MacroBase
 from noc.lib.highlight import NOCHtmlFormatter
 from noc.core.profile.loader import loader as profile_loader
+
+
 ##
 ## Format macro:
 ## Formats and highlights text
@@ -17,25 +20,25 @@ from noc.core.profile.loader import loader as profile_loader
 ##     syntax - name of the syntax.
 ##
 class Macro(MacroBase):
-    name="format"
+    name = "format"
     @classmethod
-    def handle(cls,args,text):
+    def handle(cls, args, text):
         if "syntax" in args:
-            format=args["syntax"]
+            format = args["syntax"]
         else:
-            format="text"
+            format = "text"
         if format.startswith("noc."):
-            profile_name=format[4:]
+            profile_name = format[4:]
             try:
-                profile=profile_loader.get_profile(profile_name)
+                profile = profile_loader.get_profile(profile_name)
             except:
-                profile=None
-                format="text"
+                profile = None
+                format = "text"
             if profile:
                 return profile().highlight_config(text)
         try:
-            lexer=get_lexer_by_name(format)
+            lexer = get_lexer_by_name(format)
         except:
-            lexer=get_lexer_by_name("text")
-        return highlight(text,lexer,NOCHtmlFormatter())
+            lexer = get_lexer_by_name("text")
+        return highlight(text, lexer, NOCHtmlFormatter())
 

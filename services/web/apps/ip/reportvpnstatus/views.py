@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow
-from noc.ip.models import VRF
+from noc.ip.models.vrf import VRF
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.subinterface import SubInterface
 

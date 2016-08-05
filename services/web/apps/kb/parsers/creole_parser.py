@@ -6,19 +6,19 @@
 ## Copyright (C) 2007-2009 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-import noc.kb.parsers
+import services.web.apps.kb.parsers
 
 ##
 ## Macro wrapper
 ##
 class MacroWrapper(object): pass
 macro_wrapper=MacroWrapper()
-for n,c in noc.kb.parsers.macro_registry.classes.items():
+for n,c in services.web.apps.kb.parsers.macro_registry.classes.items():
     setattr(macro_wrapper,n,c.expand)
 ##
 ## Creole Parser
 ##
-class Parser(noc.kb.parsers.Parser):
+class Parser(services.web.apps.kb.parsers.Parser):
     name="Creole"
     @classmethod
     def to_html(cls,kb_entry):
