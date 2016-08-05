@@ -40,6 +40,7 @@ dump CDP traffic
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcdpneighbors import IGetCDPNeighbors
 import re
+import logging
 
 
 class Script(BaseScript):
@@ -96,8 +97,31 @@ class Script(BaseScript):
         device_id = self.scripts.get_fqdn()
         # Get neighbors
         neighbors = []
-                
+
+        map = {"INTERFACE": "local_interface",
+               "HOSTNAME": "device_id",
+               "PORTNAME": "remote_interface"
+               }
         # try ladvdc
+        id_last = 999
+        v = self.cli("ladvdc -b -C")
+        if "please add yourself to the ladvd group" in v:
+            logging.error("Add User to ladvd group")
+        else:
+            for l in v.splitlines():
+                name, value = l.split('=')
+                id = int(name.split('_')[-1])
+                name2 = ''.join(name.split('_')[:-1])
+                if name2 not in map:
+                    continue
+                if id != id_last:
+                    neighbors += [{map[name2]: value.strip("'")}]
+                else:
+                    neighbors[id][map[name2]] = value.strip("'")
+                id_last = id
+
+        """
+        # Regexp block
         for match in self.rx_ladvdc.finditer(self.cli("ladvdc -C")):
             # ladvdc show remote CISCO(!!!) interface ->  "Gi1/0/4"
             # but cisco.iso profile need remote interface -> "Gi 1/0/4" !!!
@@ -112,7 +136,7 @@ class Script(BaseScript):
                 "local_interface": match.group("local_interface"),
                 "remote_interface": remote_if,
             }]
-        
+        """
         # try lldpd
         for match in self.rx_lldpd.finditer(self.cli("lldpcli show neighbors summary")):
             if re.match(check_ifcfg, match.group("remote_interface")):
