@@ -29,10 +29,12 @@ from noc.lib.utils import deep_merge
 from noc.lib.middleware import get_user
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.defer import call_later
+from noc.core.model.decorator import on_save
 
 id_lock = RLock()
 
 
+@on_save
 class Object(Document):
     """
     Inventory object
@@ -62,6 +64,11 @@ class Object(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
+    REBUILD_CONNECTIONS = [
+        "links",
+        "conduits"
+    ]
 
     def __unicode__(self):
         return unicode(self.name or self.id)
@@ -94,7 +101,14 @@ class Object(Document):
         if x and y:
             self.layer = layer
             self.point = map.get_db_point(x, y, srid=srid)
-        # @todo: Adjust connections when necessary
+
+    def on_save(self):
+        geo = self.data.get("geopoint")
+        if geo.get("x") and geo.get("y"):
+            # Rebuild connection layers
+            for ct in self.REBUILD_CONNECTIONS:
+                for c, _, _ in self.get_genderless_connections(ct):
+                    c.save()  # set_line(
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
     def get_path(self):
