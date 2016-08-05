@@ -26,12 +26,15 @@ def _get_point(p):
     """
     Convert to geopy Point
     """
+    print "_get_point", p
     if isinstance(p, GPoint):
         return p
+    elif isinstance(p, list):
+        return GPoint(p[1], p[0])
     elif isinstance(p, geojson.Point):
-        return GPoint(p.coordinates[1], p.coordinates[1])
+        return GPoint(p.coordinates[1], p.coordinates[0])
     elif isinstance(p, dict) and "coordinates" in p:
-        return GPoint(p["coordinates"][1], p["coordinates"][1])
+        return GPoint(p["coordinates"][1], p["coordinates"][0])
     else:
         return GPoint(p.y, p.x)
 
