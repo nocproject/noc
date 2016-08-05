@@ -9,7 +9,7 @@
 
 ## NOC modules
 from noc.gis.overlays.base import *
-from noc.lib.nosql import *
+from noc.lib.nosql import get_db
 
 
 class PointsOverlay(OverlayHandler):

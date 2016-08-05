@@ -6,27 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-from __future__ import with_statement
-import re
-from django.db import models
 ## NOC modules
 from error import (MIBRequiredException, MIBNotFoundException,
                    InvalidTypedef, OIDCollision)
 
 ##
-## Regular expressions
-##
-rx_py_id = re.compile("[^0-9a-zA-Z]+")
-rx_mibentry = re.compile(r"^((\d+\.){5,}\d+)|(\S+::\S+)$")
-rx_mib_name = re.compile(r"^(\S+::\S+?)(.\d+)?$")
-
-
-##
 ## MIB Processing
 ##
-from oidalias import OIDAlias
-from syntaxalias import SyntaxAlias
 from mibpreference import MIBPreference
 from mib import MIB
 from mibdata import MIBData
@@ -73,20 +59,16 @@ EVENT_STATUS_NAME = {
     "S": "Archived"
 }
 
-class IgnoreEventRules(models.Model):
-    class Meta:
-        verbose_name = "Ignore Event Rule"
-        verbose_name_plural = "Ignore Event Rules"
-        unique_together = [("left_re", "right_re")]
+from eventlog import EventLog
+from newevent import NewEvent
+from failedevent import FailedEvent
+from activeevent import ActiveEvent
+from archivedevent import ArchivedEvent
+from alarmlog import AlarmLog
+from activealarm import ActiveAlarm
+from archivedalarm import ArchivedAlarm
 
-    name = models.CharField("Name", max_length=64, unique=True)
-    left_re = models.CharField("Left RE", max_length=256)
-    right_re = models.CharField("Right Re", max_length=256)
-    is_active = models.BooleanField("Is Active", default=True)
-    description = models.TextField("Description", null=True, blank=True)
 
-    def __unicode__(self):
-        return u"%s (%s, %s)" % (self.name, self.left_re, self.right_re)
 
 
 
@@ -95,6 +77,7 @@ from enumeration import Enumeration
 ##
 ## Event/Alarm text decoder
 ##
+from utils import get_alarm, get_event
 
 
 def get_object_status(managed_object):

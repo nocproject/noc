@@ -8,10 +8,12 @@
 
 ## Third-party modules
 from mongoengine.queryset import DoesNotExist
+## Third-party modules
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (StringField, ListField,
+                                EmbeddedDocumentField)
 ## NOC modules
-from noc.lib.nosql import (Document, EmbeddedDocument,
-                           StringField, ListField,
-                           ForeignKeyField, EmbeddedDocumentField)
+from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
