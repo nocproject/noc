@@ -8,9 +8,9 @@
 
 ## Python modules
 import datetime
-## NOC modules
-from noc.lib.nosql import (Document, IntField, DateTimeField,
-                           BooleanField)
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import IntField, DateTimeField
 
 
 class Outage(Document):

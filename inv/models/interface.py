@@ -2,17 +2,19 @@
 ##----------------------------------------------------------------------
 ## Interface model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import datetime
 import logging
+## Third-party modules
+from mongoengine.document import Document
+from mongoengine.fields import (StringField, IntField, BooleanField,
+                                ListField, DateTimeField, ReferenceField)
 ## NOC Modules
-from noc.lib.nosql import (Document, ForeignKeyField, StringField,
-    IntField, BooleanField, PlainReferenceField, ListField,
-    DateTimeField, ReferenceField)
+from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from interfaceprofile import InterfaceProfile
 from coverage import Coverage
 from noc.sa.models.managedobject import ManagedObject

@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.fm.models import IgnoreEventRules
+from noc.fm.models.ignoreeventrules import IgnoreEventRules
 from noc.sa.interfaces.base import REParameter
 from noc.core.translation import ugettext as _
 
