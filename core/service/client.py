@@ -143,7 +143,8 @@ class RPCClient(object):
             orig_body = None
             for nr in range(RETRIES):
                 # Sleep when trying same instance
-                url = "http://%s/api/%s/" % (service, self.client._api)
+                url = "http://%s:1200/api/%s/" % (service, self.client._api)
+                logger.info("Will connect to %s", url)
                 for nt in range(3):  # Limit redirects
                     code, headers, data = make_call(url, service, body)
                     if code == 200:
