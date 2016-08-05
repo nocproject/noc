@@ -11,7 +11,8 @@ from django.db import connection
 ## NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.main.models import CustomField
-from noc.ip.models import VRFGroup, Prefix
+from noc.ip.models.vrfgroup import VRFGroup
+from noc.ip.models.prefix import Prefix
 from noc.lib.ip import IP
 
 prefix_fields = [f for f in CustomField.table_fields("ip_prefix")

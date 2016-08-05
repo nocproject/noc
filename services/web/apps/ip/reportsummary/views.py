@@ -13,7 +13,8 @@ from django.utils.translation import ugettext_lazy as _
 from django import forms
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.ip.models import VRF, Prefix
+from noc.ip.models.vrf import VRF
+from noc.ip.models.prefix import Prefix
 from noc.lib.validators import *
 from noc.lib.ip import *
 

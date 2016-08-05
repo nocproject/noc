@@ -6,7 +6,7 @@
 """
 """
 from south.db import db
-from noc.fm.models import *
+
 
 class Migration:
     

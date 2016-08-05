@@ -6,7 +6,8 @@
 """
 """
 from south.db import db
-from noc.fm.models import *
+from django.db import models
+
 
 class Migration:
     
@@ -48,4 +49,3 @@ class Migration:
         db.delete_column('fm_eventclass','repeat_suppression')
         db.delete_column('fm_eventclass','repeat_suppression_interval')
         db.delete_table('fm_eventclassvar')
-        

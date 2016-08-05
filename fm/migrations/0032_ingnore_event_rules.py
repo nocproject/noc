@@ -1,7 +1,7 @@
 # encoding: utf-8
-import datetime
 from south.db import db
-from noc.fm.models import *
+from django.db import models
+
 
 class Migration:
     def forwards(self):
@@ -16,7 +16,6 @@ class Migration:
             ('description', models.TextField(null=True, blank=True)),
         ))
         db.send_create_signal('fm', ['IgnoreEventRules'])
-
 
     def backwards(self):
         # Deleting model 'IgnoreEvents'

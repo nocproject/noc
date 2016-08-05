@@ -8,7 +8,8 @@
 
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.ip.models import VRF, VRFGroup
+from noc.ip.models.vrf import VRF
+from noc.ip.models.vrfgroup import VRFGroup
 from noc.sa.interfaces.base import StringParameter, BooleanParameter,\
     ModelParameter, RDParameter, ListOfParameter, DictParameter
 from noc.core.translation import ugettext as _

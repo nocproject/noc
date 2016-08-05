@@ -18,6 +18,7 @@ from noc.lib.ip import IPv4
 class Script(BaseScript):
     name = "Iskratel.MSAN.get_interfaces"
     interface = IGetInterfaces
+    TIMEOUT = 240
 
     rx_if_pvc = re.compile(
         r"^Interface\.+ (?P<port>\S+).+?"
@@ -27,6 +28,8 @@ class Script(BaseScript):
         r"^(?P<pvcs>(\d+/\d+\s+\d+\n)+)", re.MULTILINE | re.DOTALL)
     rx_pvc = re.compile(
         r"^(?P<vpi>\d+)/(?P<vci>\d+)\s+(?P<vlan>\d+)$", re.MULTILINE)
+    rx_pvc1 = re.compile(
+        r"^(?P<port>\d+/\d+/\d+)\s+(?P<vpi>\d+)/(?P<vci>\d+)$", re.MULTILINE)
     rx_svi = re.compile(
         r"^IP Address\.+ (?P<ip>\S+)\n"
         r"^Subnet Mask\.+ (?P<mask>\S+)\n"
@@ -40,19 +43,42 @@ class Script(BaseScript):
         r"(?:Auto|1000 Full)\s+"
         r"(?P<oper_status>Up|Down)\s+(?:Enable|Disable)\s+"
         r"(?:Enable|Disable)(?P<descr>.*?)?\n", re.MULTILINE)
+    rx_port1 = re.compile(r"(?P<port>\d+/\d+)/\d+")
+    rx_vlan = re.compile(
+        r"^(?P<port>\d+/\d+/\d+)\s+(?P<vlan>\d+)\s+", re.MULTILINE)
+    rx_vlan1 = re.compile(
+        r"^(?P<port>\d+/\d+)\s+Include\s+Include\s+(?P<type>\S+)\s*\n",
+        re.MULTILINE)
 
     def execute(self):
         pch = self.scripts.get_portchannel()
         pvc = []
-        c = self.cli("show interface all pvc")
-        for match in self.rx_if_pvc.finditer(c):
-            for match1 in self.rx_pvc.finditer(match.group("pvcs")):
+        try:
+            c = self.cli("show interface all pvc")
+            for match in self.rx_if_pvc.finditer(c):
+                for match1 in self.rx_pvc.finditer(match.group("pvcs")):
+                    pvc += [{
+                        "port":match.group("port"),
+                        "vpi": int(match1.group("vpi")),
+                        "vci": int(match1.group("vci")),
+                        "vlan": int(match1.group("vlan"))
+                    }]
+        except self.CLISyntaxError:
+            c = self.cli("\x08" * 22)
+            c = self.cli("show pvc all")
+            for match in self.rx_pvc1.finditer(c):
                 pvc += [{
                     "port":match.group("port"),
-                    "vpi": int(match1.group("vpi")),
-                    "vci": int(match1.group("vci")),
-                    "vlan": int(match1.group("vlan"))
+                    "vpi": int(match.group("vpi")),
+                    "vci": int(match.group("vci"))
                 }]
+            c = self.cli("show vlan port all")
+            for match in self.rx_vlan.finditer(c):
+                ifname = match.group("port")
+                for p in pvc:
+                    if p["port"] == ifname:
+                        p["vlan"] = int(match.group("vlan"))
+                        break
         interfaces = []
         for match in self.rx_port.finditer(self.cli("show port all")):
             ifname = match.group('port')
@@ -67,16 +93,19 @@ class Script(BaseScript):
             if pch and (ifname == pch[0]["interface"]):
                 i["type"] = "aggregated"
             for p in pvc:
-                if p["port"] == ifname:
+                match1 = self.rx_port1.search(p["port"])
+                if p["port"] == ifname \
+                or (match1 and match1.group("port") == ifname):
                     s = {
-                        "name": ifname,
+                        "name": p["port"],
                         "admin_status": match.group('admin_status') == "Enable",
                         "oper_status": match.group('oper_status') == "Enable",
-                        "tagged_vlans": [p["vlan"]],
                         "vpi": p["vpi"],
                         "vci": p["vci"],
                         "enabled_afi": ["BRIDGE", 'ATM']
                     }
+                    if "vlan" in p:
+                        s["vlan_ids"] = p["vlan"]
                     i["subinterfaces"] += [s]
             if not i["subinterfaces"]:
                 s = {
@@ -89,6 +118,20 @@ class Script(BaseScript):
                     s["aggregated_interface"] = pch[0]["interface"]
                 i["subinterfaces"] = [s]
             interfaces += [i]
+        for v in self.scripts.get_vlans():
+            c = self.cli("show vlan %s" % v["vlan_id"])
+            for match in self.rx_vlan1.finditer(c):
+                ifname = match.group("port")
+                for i in interfaces:
+                    if i["name"] == ifname \
+                    and len(i["subinterfaces"]) == 1:
+                        if match.group("type") == "Untagged":
+                            i["subinterfaces"][0]["untagged"] = v["vlan_id"]
+                        if match.group("type") == "Tagged":
+                            if "tagged" in i["subinterfaces"][0]:
+                                i["subinterfaces"][0]["tagged"] += [v["vlan_id"]]
+                            else:
+                                i["subinterfaces"][0]["tagged"] = [v["vlan_id"]]
         match = self.rx_svi.search(self.cli("show network"))
         if match:
             i = {

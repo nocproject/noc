@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.ip.models import AddressRange
+from noc.ip.models.addressrange import AddressRange
 from noc.lib.ip import *
 from noc.lib.validators import *
 from noc.core.translation import ugettext as _

@@ -13,7 +13,7 @@ from noc.lib.registry import Registry
 
 class CalculatorRegistry(Registry):
     name = "CalculatorRegistry"
-    subdir = "apps/calculator/calculators"
+    subdir = "calculator/calculators"
     classname = "Calculator"
     apps = ["noc.main"]
 

@@ -17,10 +17,14 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Iskratel.MSAN"
-    pattern_prompt = r"^\S+?>"
-    pattern_more = "Press any key to continue or ESC to stop scrolling."
+    # Iskratel do not have "enable_super" command
+    #pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_prompt = r"^\S+?#"
+    pattern_more = [
+        (r"Press any key to continue or ESC to stop scrolling.", " "),
+        (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t")
+    ]
     pattern_syntax_error = r"% Invalid input detected at"
-    command_more = " "
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
@@ -34,7 +38,7 @@ class Profile(BaseProfile):
         r"Burned In MAC Address\.+ (?P<mac>\S+)\n"
         r"Board Serial Number\.+ (?P<serial>\S+)\n"
         r"Board Part Number\.+ (?P<part_no>\S+)\n"
-        r"My board Position\.+ \d+\n"
+        r"My board Position\.+ (?P<number>\S+)\n"
         r"IPMI version\.+ (?P<ipmi_ver>\S+)\n"
         r"Puma API Version\.+ (?P<api_ver>\S+)\n"
         r"Puma Microcode Version\.+ (?P<micr_ver>\S+)\n",

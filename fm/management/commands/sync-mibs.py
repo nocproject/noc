@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Upload bundled MIBs
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -14,11 +14,11 @@ import gzip
 import re
 import datetime
 import time
-## Django modules
+## Third-party modules
 from django.core.management.base import BaseCommand, CommandError
+import ujson
 ## NOC modules
-from noc.fm.models import MIB, MIBData
-from noc.lib.serialize import json_decode
+from noc.fm.models import MIB
 
 
 class Command(BaseCommand):
@@ -101,7 +101,7 @@ class Command(BaseCommand):
 
     def update_mib(self, mib, data, version=None):
         # Deserealize
-        d = json_decode(data)
+        d = ujson.loads(data)
         # Update timestamp
         mib.last_updated = self.decode_date(d["last_updated"])
         # Update version
@@ -115,7 +115,7 @@ class Command(BaseCommand):
 
     def create_mib(self, data):
         # Deserialze
-        d = json_decode(data)
+        d = ujson.loads(data)
         # Create MIB
         mib = MIB(name=d["name"], description=d["description"],
                   last_updated=self.decode_date(d["last_updated"]),

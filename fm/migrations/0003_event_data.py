@@ -6,7 +6,7 @@
 """
 """
 from south.db import db
-from noc.fm.models import *
+
 
 EVENT_PRIORITY=[
     (0,    "DEFAULT",  "Unclassified event"),
@@ -25,6 +25,7 @@ EVENT_CATEGORY=[
     ("SECURITY", "Security Event"),
     ("SERVICE",  "Service Event"),
 ]
+
 
 class Migration:
     

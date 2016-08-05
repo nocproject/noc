@@ -18,6 +18,16 @@ def percent(value, total):
         return 100.0
 
 
+def percent_usage(value, total):
+    """
+    Convert usage and total values to percent
+    """
+    if total:
+        return float(value) * 100.0 / (float(total) + float(value))
+    else:
+        return 100.0
+
+
 def sum(*args):
     """
     Returns sum of all arguments

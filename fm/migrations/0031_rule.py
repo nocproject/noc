@@ -1,11 +1,14 @@
+# -*- coding: utf-8 -*-
 
 from south.db import db
-from noc.fm.models import *
+from django.db import models
+
 
 class Migration:
     depends_on=(
         ("main","0022_pyrule_is_builtin"),
     )
+
     def forwards(self):
         PyRule=db.mock_model(model_name="PyRule",db_table="main_pyrule")
         db.add_column("fm_eventclass","rule",models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True))

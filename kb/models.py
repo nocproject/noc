@@ -8,7 +8,9 @@
 
 ## Python modules
 import difflib
+
 import re
+
 ## Django modules
 from django.db import models
 from django.db.models import Q
@@ -16,8 +18,7 @@ from django.contrib.auth.models import User
 ## NOC modules
 from noc.main.models.language import Language
 from noc.main.models.databasestorage import database_storage
-from noc.kb.parsers import parser_registry
-from noc.lib.validators import is_int
+from noc.services.web.apps.kb.parsers import parser_registry
 from noc.lib.app.site import site
 from noc.core.model.fields import AutoCompleteTagsField
 

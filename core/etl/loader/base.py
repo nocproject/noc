@@ -100,11 +100,28 @@ class BaseLoader(object):
         self.pending_deletes = []  # (id, string)
         self.tags = []
         if self.is_document:
+            import mongoengine.errors
             if "tags" in self.model._fields:
                 self.tags += ["src:%s" % self.system]
+            unique_fields = [
+                f.name
+                for f in self.model._fields.itervalues()
+                if f.unique]
+            self.integrity_exception = mongoengine.errors.NotUniqueError
         else:
+            ## Third-party modules
+            import django.db.utils
             if any(f for f in self.model._meta.fields if f.name == "tags"):
                 self.tags += ["src:%s" % self.system]
+            unique_fields = [
+                f.name for f in self.model._meta.fields
+                if f.unique and
+                f.name != self.model._meta.pk.name]
+            self.integrity_exception = django.db.utils.IntegrityError
+        if unique_fields:
+            self.unique_field = unique_fields[0]
+        else:
+            self.unique_field = None
 
     @property
     def is_document(self):
@@ -270,7 +287,18 @@ class BaseLoader(object):
         if self.tags:
             t = o.tags or []
             o.tags = t + self.tags
-        o.save()
+        try:
+            o.save()
+        except self.integrity_exception:
+            assert self.unique_field
+            if not self.is_document:
+                from django.db import connection
+                connection._rollback()
+            # Fallback to change object
+            o = self.model.objects.get(**{self.unique_field: v[self.unique_field]})
+            for k, nv in v.iteritems():
+                setattr(o, k, nv)
+            o.save()
         return o
 
     def change_object(self, object_id, v):
@@ -554,6 +582,7 @@ class BaseLoader(object):
         # Process data
         n_errors = 0
         for row in new_state:
+            lr = len(row)
             # Check required fields
             for i in r_index:
                 if not row[i]:
@@ -576,6 +605,8 @@ class BaseLoader(object):
                     uv.add((i, v))
             # Check mapped fields
             for i in m_index:
+                if i >= lr:
+                    continue
                 v = row[i]
                 if v and v not in m_data[i]:
                     self.logger.error(

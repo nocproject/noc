@@ -1,6 +1,7 @@
 
 from south.db import db
-from noc.fm.models import *
+from django.db import models
+
 
 class Migration:
     
@@ -30,8 +31,7 @@ class Migration:
             ('event_class', models.ForeignKey(EventClass,verbose_name="Event Class"))
         ))
         db.create_index('fm_eventcorrelationmatchedclass', ['rule_id','event_class_id'], unique=True, db_tablespace='')
-        
-        
+
         # Mock Models
         EventCorrelationRule = db.mock_model(model_name='EventCorrelationRule', db_table='fm_eventcorrelationrule', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         
@@ -50,4 +50,3 @@ class Migration:
         db.delete_table('fm_eventcorrelationmatchedvar')
         db.delete_table('fm_eventcorrelationmatchedclass')
         db.delete_table('fm_eventcorrelationrule')
-        
