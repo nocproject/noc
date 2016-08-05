@@ -160,7 +160,7 @@ class MapPlugin(InvPlugin):
     def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
         l = Layer.get_by_code("conduits")
         return map.get_connection_layer(
-            l, x0, y0, x1, y1, srid, srid
+            l, x0, y0, x1, y1, srid
         )
 
     def get_pop_links_layer(self, layer, x0, y0, x1, y1, srid):
