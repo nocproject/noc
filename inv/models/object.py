@@ -104,7 +104,7 @@ class Object(Document):
 
     def on_save(self):
         geo = self.data.get("geopoint")
-        if geo.get("x") and geo.get("y"):
+        if geo and geo.get("x") and geo.get("y"):
             # Rebuild connection layers
             for ct in self.REBUILD_CONNECTIONS:
                 for c, _, _ in self.get_genderless_connections(ct):
