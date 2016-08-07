@@ -12,7 +12,6 @@ from collections import defaultdict
 from django.contrib.gis.measure import D
 ## NOC modules
 from base import InvPlugin
-from noc.gis.models.geodata import GeoData
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object
 from noc.lib.geo import distance, bearing, bearing_sym
@@ -62,11 +61,6 @@ class ConduitsPlugin(InvPlugin):
 
     def get_data(self, request, object):
         ducts = []
-        # Get spatial object
-        try:
-            gd = GeoData.objects.get(object=str(object.id))
-        except GeoData.DoesNotExist:
-            gd = None
         # Get all conduits
         conduits = defaultdict(list)
         for c, remote, _ in object.get_genderless_connections("conduits"):
@@ -86,14 +80,10 @@ class ConduitsPlugin(InvPlugin):
             map_distance = None
             br = None
             sbr = None
-            if gd:
-                try:
-                    rgd = GeoData.objects.get(object=str(remote.id))
-                    map_distance = distance(gd.data, rgd.data)
-                    br = bearing(gd.data, rgd.data)
-                    sbr = bearing_sym(gd.data, rgd.data)
-                except GeoData.DoesNotExist:
-                    pass
+            if object.point and remote.point:
+                map_distance = distance(object.point, remote.point)
+                br = bearing(object.point, remote.point)
+                sbr = bearing_sym(object.data, remote.data)
             cd = conduits[remote]
             ducts += [{
                 "connection_id": str(c.id),
@@ -118,9 +108,7 @@ class ConduitsPlugin(InvPlugin):
 
     def api_get_neighbors(self, request, id):
         o = self.app.get_object_or_404(Object, id=id)
-        try:
-            og = GeoData.objects.get(object=str(o.id))
-        except GeoData.DoesNotExist:
+        if not o.point:
             return []
         layers = map.get_conduits_layers()
         connected = set(
@@ -129,24 +117,21 @@ class ConduitsPlugin(InvPlugin):
             # Connection limits exceed
             return []
         r = []
-        for g in GeoData.objects.filter(
+        for ro in Object.objects.filter(
                 layer__in=layers,
                 data__distance_lte=(
-                    og.data, D(m=self.MAX_CONDUIT_LENGTH)
-                )).exclude(object=id).distance(og.data).order_by("distance"):
+                    o.point, D(m=self.MAX_CONDUIT_LENGTH)
+                )).exclude(object=id).distance(o.point).order_by("distance"):
             # Check object has no connection with this one
-            if g.object in connected:
-                continue
-            ro = Object.objects.filter(id=g.object).first()
-            if not ro:
+            if ro in connected:
                 continue
             # Exclude already connected cable entries
             if (self.is_single_connection(ro) and
                     len(ro.get_genderless_connections("ducts"))):
                 continue
             # Feed data
-            d = distance(og.data, g.data)
-            sbr = bearing_sym(og.data, g.data)
+            d = distance(o.point, ro.point)
+            sbr = bearing_sym(o.point, ro.point)
             r += [{
                 "id": str(g.object),
                 "label": "%s (%s, %dm)" % (ro.name, sbr, d),
@@ -206,7 +191,8 @@ class ConduitsPlugin(InvPlugin):
                                 "y": cc["y"]
                             }
                         },
-                        type="conduits"
+                        type="conduits",
+                        layer="conduits"
                     )
                     target.connect_genderless(
                         "conduits", conduit, "conduits",
@@ -218,7 +204,8 @@ class ConduitsPlugin(InvPlugin):
                                 "y": cc["y"]
                             }
                         },
-                        type="conduits"
+                        type="conduits",
+                        layer="conduits"
                     )
                 else:
                     # Change.

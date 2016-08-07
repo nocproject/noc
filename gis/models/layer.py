@@ -2,19 +2,24 @@
 ##----------------------------------------------------------------------
 ## Map Layer
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import os
+from threading import RLock
+import operator
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, IntField,
                                 BooleanField)
+import cachetools
 ## NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+
+id_lock = RLock()
 
 
 class Layer(Document):
@@ -52,8 +57,27 @@ class Layer(Document):
     # Text symbolizers
     show_labels = BooleanField(default=True)
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _code_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        try:
+            return Layer.objects.get(id=id)
+        except Layer.DoesNotExist:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
+    def get_by_code(cls, code):
+        try:
+            return Layer.objects.get(code=code)
+        except Layer.DoesNotExist:
+            return None
 
     @property
     def json_data(self):

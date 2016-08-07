@@ -158,20 +158,15 @@ class MapPlugin(InvPlugin):
         }
 
     def get_conduits_layer(self, layer, x0, y0, x1, y1, srid):
-        layers = map.get_conduits_layers()
-        if not layers:
-            return {}
+        l = Layer.get_by_code("conduits")
         return map.get_connection_layer(
-            layers, x0, y0, x1, y1, srid, "ducts")
+            l, x0, y0, x1, y1, srid
+        )
 
     def get_pop_links_layer(self, layer, x0, y0, x1, y1, srid):
-        layers = map.get_pop_layers()
-        if not layers:
-            return {}
-        level = int(layer[9:])
+        l = Layer.get_by_code(layer)
         return map.get_connection_layer(
-            layers, x0, y0, x1, y1, srid, "links",
-            cfilter=lambda c: c.data.get("level") == level
+            l, x0, y0, x1, y1, srid
         )
 
     def api_set_layer_visibility(self, request, layer, status):
@@ -233,9 +228,9 @@ class MapPlugin(InvPlugin):
             np, npd = ap, apd
         # Get best nearest container
         if to_pop and np.layer.code.startswith("pop_"):
-            container = np.object.id
+            container = np.id
         else:
-            container = np.object.container
+            container = np.container
         # Create object
         o = Object(
             name=name,

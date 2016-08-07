@@ -13,24 +13,28 @@ from threading import RLock
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ObjectIdField,
-                                ListField)
+                                ListField, PointField, ReferenceField)
 from mongoengine import signals
 import cachetools
+import six
 ## NOC modules
 from connectiontype import ConnectionType
 from objectmodel import ObjectModel
 from modelinterface import ModelInterface
 from objectlog import ObjectLog
+from noc.gis.models.layer import Layer
 from error import ConnectionError, ModelDataError
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.utils import deep_merge
 from noc.lib.middleware import get_user
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.defer import call_later
+from noc.core.model.decorator import on_save
 
 id_lock = RLock()
 
 
+@on_save
 class Object(Document):
     """
     Inventory object
@@ -52,10 +56,19 @@ class Object(Document):
     data = DictField()
     container = ObjectIdField(required=False)
     comment = GridVCSField("object_comment")
+    # Map
+    layer = ReferenceField(Layer)
+    point = PointField(auto_index=True)
+    #
     tags = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
+    REBUILD_CONNECTIONS = [
+        "links",
+        "conduits"
+    ]
 
     def __unicode__(self):
         return unicode(self.name or self.id)
@@ -64,6 +77,38 @@ class Object(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return Object.objects.filter(id=id).first()
+
+    def clean(self):
+        self.set_point()
+
+    def set_point(self):
+        from noc.gis.map import map
+
+        self.layer = None
+        self.point = None
+        geo = self.data.get("geopoint")
+        if not geo:
+            return
+        layer_code = self.model.get_data("geopoint", "layer")
+        if not layer_code:
+            return
+        layer = Layer.get_by_code(layer_code)
+        if not layer:
+            return
+        x = geo.get("x")
+        y = geo.get("y")
+        srid = geo.get("srid")
+        if x and y:
+            self.layer = layer
+            self.point = map.get_db_point(x, y, srid=srid)
+
+    def on_save(self):
+        geo = self.data.get("geopoint")
+        if geo and geo.get("x") and geo.get("y"):
+            # Rebuild connection layers
+            for ct in self.REBUILD_CONNECTIONS:
+                for c, _, _ in self.get_genderless_connections(ct):
+                    c.save()  # set_line(
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
     def get_path(self):
@@ -222,7 +267,7 @@ class Object(Document):
         return c
 
     def connect_genderless(self, name, remote_object, remote_name,
-                           data=None, type=None):
+                           data=None, type=None, layer=None):
         """
         Connect two genderless connections
         """
@@ -244,6 +289,9 @@ class Object(Document):
                 c.data = data or {}
                 c.save()
                 return
+        # Normalize layer
+        if layer and isinstance(layer, six.string_types):
+            layer = Layer.get_by_code(layer)
         # Create connection
         ObjectConnection(
             connection=[
@@ -252,7 +300,8 @@ class Object(Document):
                                      name=remote_name)
             ],
             data=data or {},
-            type=type or None
+            type=type or None,
+            layer=layer
         ).save()
         self.log(u"%s:%s -> %s:%s" % (self, name, remote_object, remote_name),
                  system="CORE", op="CONNECT")
@@ -415,33 +464,6 @@ class Object(Document):
         return list(self.iter_outer_connections())
 
     @classmethod
-    def set_geo_point(cls, sender, document, target=None, **kwargs):
-        """
-        Update map point
-        """
-        from noc.gis.map import map
-        # Check geopoint interface is supported
-        layer = document.get_data("geopoint", "layer")
-        if not layer:
-            return
-        x = document.get_data("geopoint", "x")
-        y = document.get_data("geopoint", "y")
-        srid = document.get_data("geopoint", "srid")
-        if not x or not y:
-            map.delete_point(document.id, layer)
-        else:
-            map.set_point(document, layer, x, y, srid=srid, label=document.name)
-
-    @classmethod
-    def delete_geo_point(cls, sender, document, target=None):
-        # Check geopoint interface is supported
-        from noc.gis.map import map
-        layer = document.get_data("geopoint", "layer")
-        if not layer:
-            return
-        map.delete_point(document)
-
-    @classmethod
     def delete_disconnect(cls, sender, document, target=None):
         for c in ObjectConnection.objects.filter(
                 connection__object=document.id):
@@ -562,10 +584,8 @@ class Object(Document):
             document._cache_container = values["container"]
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)
-signals.pre_delete.connect(Object.delete_geo_point, sender=Object)
 signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
 signals.post_save.connect(Object.change_container, sender=Object)
-signals.post_save.connect(Object.set_geo_point, sender=Object)
 signals.pre_init.connect(Object._pre_init, sender=Object)
 
 ## Avoid circular references
