@@ -103,7 +103,6 @@ class DataPlugin(InvPlugin):
                 o.name = value.split("|")[-1].strip()
             elif key == "Model":
                 m = self.app.get_object_or_404(ObjectModel, id=value)
-                map.delete_point(o)
                 o.model = m
                 o.log(message="Changing model to %s" % m.name,
                       user=request.user, system="WEB")

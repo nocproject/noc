@@ -91,14 +91,15 @@ class LinkedPoP(object):
                 c.delete()
         # New links
         for pop in linked:
-            r_level = min(level, pop.get_data("pop", "level"))
+            r_level = min(level, pop.get_data("pop", "level")) // 10
             logger.info(
                 "%s - %s. Linking with level %d",
                 self.pop, pop, r_level
             )
             self.pop.connect_genderless(
                 "links", pop, "links",
-                {"level": r_level}, type="pop_link"
+                type="pop_link",
+                layer="pop_links%d" % r_level
             )
 
 
