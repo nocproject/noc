@@ -16,7 +16,9 @@ from django import forms
 # NOC Modules
 from noc.lib.app.application import Application,HasPerm,view
 from noc.lib.ip import *
-from noc.ip.models import *
+from noc.ip.models.address import Address
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
 from noc.lib.validators import *
 from noc.lib.forms import *
 from noc.settings import config

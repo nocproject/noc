@@ -27,7 +27,8 @@ def reduce_route(task):
     :param task:
     :return:
     """
-    from noc.ip.models import VRF, Prefix
+    from noc.ip.models.prefix import Prefix
+    from noc.ip.models.vrf import VRF
     from noc.lib.ip import IP
 
     vrf = VRF.get_global()
