@@ -16,7 +16,7 @@ class ReportBackups(SimpleReport):
     title = _("Backup Status")
     def get_data(self,**kwargs):
         data=[]
-        bd=config.get("path","backup_dir")
+        bd = config.path_backup_dir
         if os.path.isdir(bd):
             r=[]
             for f in [f for f in os.listdir(bd) if f.startswith("noc-") and (f.endswith(".dump") or f.endswith(".tar.gz"))]:

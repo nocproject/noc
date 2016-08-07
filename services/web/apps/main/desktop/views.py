@@ -12,7 +12,7 @@ import os
 ## Django modules
 from django.http import HttpResponse
 ## NOC modules
-from noc.settings import config
+from noc.core.config.base import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.access import PermitLogged
@@ -383,8 +383,7 @@ class DesktopApplication(ExtApplication):
         cp = CPClient()
         return {
             "version": get_version(),
-            "installation": config.get("customization",
-                                       "installation_name"),
+            "installation": config.installation_name,
             "system_id": cp.system_uuid,
             "copyright": "2007-%d, The NOC Project" % datetime.date.today().year
         }
