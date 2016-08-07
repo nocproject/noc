@@ -23,7 +23,9 @@ from noc.lib.forms import NOCForm
 from noc.lib.widgets import *
 from noc.lib.colors import *
 from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
-from noc.ip.models import *
+from noc.ip.models.address import Address
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.prefixbookmark import PrefixBookmark
 from noc.main.models.permission import Permission
 from noc.main.models.style import Style
 from noc.main.models.customfield import CustomField
