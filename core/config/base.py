@@ -69,6 +69,7 @@ class BaseConfig(object):
     customization_branding_background_color = E("NOC_CUSTOMIZATION_BRANDING_BACKGROUND_COLOR", "#34495e")
     main_debug_js = E("NOC_MAIN_DEBUG_JS", False)
     develop_install_collection = E("NOC_DEVELOP_INSTALL_COLLECTION", False)
+    tt_url = E("NOC_TT_URL", "http://example.com/ticket=%%(tt)s")
 
     main_trace_extjs_events = E("NOC_MAIN_TRACE_EXTJS_EVENTS", False)
     secret_key = E("NOC_SECRET_KEY", "12345")
@@ -86,7 +87,8 @@ class BaseConfig(object):
     db_threads = E("NOC_DB_THREADS", 10)
     discovery_max_threads = E("NOC_DISCOVERY_MAX_THREADS", 10)
     scheduler_max_threads = E("NOC_SCHEDULER_MAX_THREADS", 10)
-    global_n_instances = E("NOC_global_n_instances", 1)
+    global_n_instances = E("NOC_GLOBAL_N_INSTANCES", 1)
+    path_backup_dir = E("NOC_path_backup_dir", "/var/backup")
     # Mongo section
     mongo_host = E("NOC_MONGO_HOST", "mongo-master.%s" % env)
     mongo_db = E("NOC_MONGO_DB", "noc")

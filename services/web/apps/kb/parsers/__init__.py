@@ -68,7 +68,7 @@ class Parser(object):
             return u"<a href='/kb/view/%s/'>%s</a>" % (link[2:], text)
         elif link.startswith("TT"):
             tt = {"tt": link[2:]}
-            tt_url = config.get("tt", "url", tt) % tt
+            tt_url = config.tt_url % tt
             return u"<a href='%s'>%s</a>" % (tt_url, text)
         elif link.startswith("attach:"):
             if text == link:
