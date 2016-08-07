@@ -25,8 +25,11 @@ from noc.lib.colors import *
 from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
+from noc.ip.models.addressrange import AddressRange
+from noc.ip.models.prefixaccess import PrefixAccess
 from noc.ip.models.prefixbookmark import PrefixBookmark
 from noc.main.models.permission import Permission
+from noc.ip.models.vrfgroup import VRFGroup
 from noc.main.models.style import Style
 from noc.main.models.customfield import CustomField
 from noc.main.models.resourcestate import ResourceState

@@ -36,13 +36,14 @@ class DesktopApplication(ExtApplication):
         #
         # Parse themes
         self.default_theme = config.theme_default
-        self.themes = {}  # id -> {name: , css:}
-        self.themes[self.default_theme] = {
+        self.themes = {self.default_theme: {
             "id": self.default_theme,
             "name": self.default_theme,
-            "css": "/static/pkg/extjs/packages/ext-theme-%s/build/resources/ext-theme-%s-all.css" % (self.default_theme, self.default_theme),
-            "js": "/static/pkg/extjs/packages/ext-theme-%s/build/ext-theme-%s.js" % (self.default_theme, self.default_theme)
-        }
+            "css": "/static/pkg/extjs/packages/ext-theme-%s/build/resources/ext-theme-%s-all.css" % (
+                self.default_theme, self.default_theme),
+            "js": "/static/pkg/extjs/packages/ext-theme-%s/build/ext-theme-%s.js" % (
+                self.default_theme, self.default_theme)
+        }}  # id -> {name: , css:}
 
     def get_group(self, name):
         """
