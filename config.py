@@ -14,7 +14,8 @@ import sys
 from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (StringParameter, MapParameter,
                                     IntParameter, BooleanParameter,
-                                    HandlerParameter, SecondsParameter)
+                                    HandlerParameter, SecondsParameter,
+                                    FloatParameter)
 
 
 class Config(BaseConfig):
@@ -138,6 +139,12 @@ class Config(BaseConfig):
             min=0, max=255,
             default=0
         )
+
+    class sync(ConfigSection):
+        config_ttl = SecondsParameter(default="1d")
+        ttl_jitter = FloatParameter(default=0.1)
+        expired_refresh_timeout = IntParameter(default=25)
+        expired_refresh_chunk = IntParameter(default=100)
 
     class pmwriter(ConfigSection):
         batch_size = IntParameter(default=1000)

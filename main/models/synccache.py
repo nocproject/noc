@@ -53,8 +53,8 @@ class SyncCache(Document):
 
     DELETE_DATE = datetime.datetime(2030, 1, 1)
 
-    TTL = config.sync_config_ttl
-    TTL_JITTER = config.sync_ttl_jitter
+    TTL = config.sync.config_ttl
+    TTL_JITTER = config.sync.ttl_jitter
     TJL = int(TTL - TTL_JITTER * TTL)
     TJH = int(TTL + TTL_JITTER * TTL)
 
