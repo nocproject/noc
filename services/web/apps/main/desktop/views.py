@@ -168,7 +168,7 @@ class DesktopApplication(ExtApplication):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "can_change_credentials": True,
-            "idle_timeout": config.login_session_ttl,
+            "idle_timeout": config.login.session_ttl,
             "navigation": {
                 "id": "root",
                 "iconCls": "fa fa-globe",
