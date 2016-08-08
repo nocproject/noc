@@ -75,7 +75,7 @@ class AuditTrail(Document):
         "sa.reducetask",
     ])
 
-    DEFAULT_TTL = datetime.timedelta(seconds=config.audit_db_ttl)
+    DEFAULT_TTL = datetime.timedelta(seconds=config.audit.db_ttl)
 
     @classmethod
     def log(cls, sender, instance, op, changes):
