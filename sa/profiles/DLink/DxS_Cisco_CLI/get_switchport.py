@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS_Cisco_CLI.get_switchport
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -15,14 +15,17 @@ import re
 class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_switchport"
     interface = IGetSwitchport
+    rx_cont = re.compile(r"$\s+(?=\d+)", re.MULTILINE)
     rx_line = re.compile(
         r"^(?P<interface>\S*\s*\d+(\/\d+)?)\s+(?P<status>\S+)\s+"
         r"(?P<mode>ACCESS|TRUNK)\s+(?P<access_vlan>\d+)\s+"
-        r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\d+\S+)?\n", re.MULTILINE)
+        r"(?P<untagged>\d+)\s+\S+\s+(?P<vlans>\S+)?\n", re.MULTILINE)
 
     def execute(self):
         r = []
         c = self.cli("show interfaces switchport")
+        c = self.rx_cont.sub("," , c)  # Unwind continuation lines
+
         for match in self.rx_line.finditer(c):
             trunk = match.group("mode") == "TRUNK"
             pvid = None
