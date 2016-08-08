@@ -70,21 +70,21 @@ class Script(BaseScript):
                     "part_no": [part_no]
                 }
             r += [p]
-            s = self.cli("show interfaces status")
-            for match in self.rx_status.finditer(s):
-                if match.group("type") == "fiber":
-                    if match.group("speed") == "1000M":
-                        r += [{
-                            "type": "XCVR",
-                            "number": match.group("number"),
-                            "vendor": "NONAME",
-                            "part_no": ["NoName | Transceiver | 1G | SFP"]
-                        }]
-                    if match.group("speed") == "10000M":
-                        r += [{
-                            "type": "XCVR",
-                            "number": match.group("number"),
-                            "vendor": "NONAME",
-                            "part_no": ["NoName | Transceiver | 10G | XFP"]
-                        }]
+        s = self.cli("show interfaces status")
+        for match in self.rx_status.finditer(s):
+            if match.group("type") == "fiber":
+                if match.group("speed") == "1000M":
+                    r += [{
+                        "type": "XCVR",
+                        "number": match.group("number"),
+                        "vendor": "NONAME",
+                        "part_no": ["NoName | Transceiver | 1G | SFP"]
+                    }]
+                if match.group("speed") == "10000M":
+                    r += [{
+                        "type": "XCVR",
+                        "number": match.group("number"),
+                        "vendor": "NONAME",
+                        "part_no": ["NoName | Transceiver | 10G | XFP"]
+                    }]
         return r
