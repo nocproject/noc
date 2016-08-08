@@ -16,7 +16,6 @@ from django import forms
 from django.utils.simplejson.encoder import JSONEncoder
 # NOC modules
 from noc.lib.app.application import Application, view
-from noc.lib.validators import *
 from noc.lib.ip import *
 from noc.lib.forms import NOCForm
 from noc.lib.widgets import *
@@ -24,6 +23,7 @@ from noc.lib.colors import *
 from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
 from noc.ip.models.addressrange import AddressRange
 from noc.ip.models.prefixaccess import PrefixAccess
 from noc.ip.models.prefixbookmark import PrefixBookmark
