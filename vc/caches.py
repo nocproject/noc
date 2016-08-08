@@ -18,7 +18,7 @@ from noc.lib.ip import IP
 
 class VCInterfacesCount(Cache):
     cache_id = "vc_vcinterfacescount"
-    ttl = config.vc_cache_vcinterfacescount
+    ttl = config.cache.vcinterfacescount
 
     @classmethod
     def get_key(cls, vc):
@@ -46,7 +46,7 @@ class VCInterfacesCount(Cache):
 
 class VCPrefixes(Cache):
     cache_id = "vc_vcprefixes"
-    ttl = config.vc_cache_vcprefixes
+    ttl = config.cache.vcprefixes
     @classmethod
     def get_key(cls, vc):
         if hasattr(vc, "id"):
