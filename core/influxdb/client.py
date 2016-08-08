@@ -13,7 +13,7 @@ import cStringIO
 import ujson
 import pycurl
 ## NOC modules
-from noc.core.config.base import config
+from noc.config import config
 
 
 class InfluxDBClient(object):

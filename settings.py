@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.core.config.base import config
+from noc.config import config
 
 DEBUG = False
 TEMPLATE_DEBUG = False

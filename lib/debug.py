@@ -20,7 +20,7 @@ import uuid
 ## Third-party modules
 import ujson
 ## NOC modules
-from noc.core.config.base import config
+from noc.config import config
 from noc.lib.version import get_branch, get_tip
 from noc.lib.fileutils import safe_rewrite
 
@@ -150,7 +150,7 @@ def get_execution_frames(frame):
     return frames
 
 
-def format_frames(frames, reverse=config.traceback_reverse):
+def format_frames(frames, reverse=False):
     def format_source(lineno, lines):
         r = []
         for l in lines:
@@ -207,7 +207,7 @@ def check_fatal_errors(t, v):
         die("Improperly configured: %s", v)
 
 
-def get_traceback(reverse=config.traceback_reverse, fp=None):
+def get_traceback(reverse=False, fp=None):
     t, v, tb = sys.exc_info()
     try:
         check_fatal_errors(t, v)
@@ -255,7 +255,7 @@ def excepthook(t, v, tb):
     sys.stdout.flush()
 
 
-def error_report(reverse=config.traceback_reverse, logger=logger):
+def error_report(reverse=False, logger=logger):
     fp = error_fingerprint()
     r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)

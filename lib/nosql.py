@@ -20,7 +20,7 @@ from mongoengine.base import *
 from mongoengine import *
 import mongoengine
 ## NOC modules
-from noc.core.config.base import config
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 

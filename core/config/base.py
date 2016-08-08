@@ -8,250 +8,127 @@
 
 ## Python modules
 import os
-import logging
-import urllib
-import sys
-
-logger = logging.getLogger(__name__)
-
-E = os.environ.get
-
-
-def _get_seconds(v):
-    m = 1
-    if v.endswith("h"):
-        v = v[:-1]
-        m = 3600
-    elif v.endswith("d"):
-        v = v[:-1]
-        m = 24 * 3600
-    elif v.endswith("w"):
-        v = v[:-1]
-        m = 7 * 24 * 3600
-    elif v.endswith("m"):
-        v = v[:-1]
-        m = 30 * 24 * 3600
-    elif v.endswith("y"):
-        v = v[:-1]
-        m = 365 * 24 * 3600
-    try:
-        v = int(v)
-    except ValueError:
-        raise "Invalid expiration option in %s" % v
-    return v * m
-
-def _get_bool(v):
-    v = v.lower()
+import inspect
+import re
+# Third-party modules
+import six
+## NOC modules
+from params import BaseParameter
+from noc.core.handler import get_handler
 
 
-class BaseConfig(object):
-    LOG_LEVELS = {
-        "critical": logging.CRITICAL,
-        "error": logging.ERROR,
-        "warning": logging.WARNING,
-        "info": logging.INFO,
-        "debug": logging.DEBUG
+class ConfigSectionBase(type):
+    def __new__(mcs, name, bases, attrs):
+        cls = type.__new__(mcs, name, bases, attrs)
+        cls._params = {}
+        for k in attrs:
+            if isinstance(attrs[k], BaseParameter):
+                cls._params[k] = attrs[k]
+                cls._params[k].name = k
+        return cls
+
+
+class ConfigSection(six.with_metaclass(ConfigSectionBase)):
+    pass
+
+
+class ConfigBase(type):
+    def __new__(mcs, name, bases, attrs):
+        cls = type.__new__(mcs, name, bases, attrs)
+        cls._params = {}
+        for k in attrs:
+            if isinstance(attrs[k], BaseParameter):
+                cls._params[k] = attrs[k]
+                cls._params[k].name = k
+            elif inspect.isclass(attrs[k]) and issubclass(attrs[k], ConfigSection):
+                for kk in attrs[k]._params:
+                    sn = "%s.%s" % (k, kk)
+                    cls._params[sn] = attrs[k]._params[kk]
+        cls._params_order = sorted(cls._params, key=lambda x: cls._params[x].param_number)
+        return cls
+
+
+class BaseConfig(six.with_metaclass(ConfigBase)):
+    DEFAULT_CONFIG = "env:///NOC"
+
+    PROTOCOLS = {
+        "env": "noc.core.config.proto.env_proto.EnvProtocol",
+        "yaml": "noc.core.config.proto.yaml_proto.YAMLProtocol"
     }
 
-    env = E("NOC_ENV", "test")
-    loglevel = E("NOC_LOGLEVEL", "info")
-    log_format = E("NOC_LOG_FORMAT", "%(asctime)s [%(name)s] %(message)s")
-    installation_name = E("NOC_INSTALLATION_NAME",
-                          "Unconfigured installation")
-    language_code = E("NOC_LANGUAGE_CODE", "en-us")
-    timezone = E("NOC_TIMEZONE", "Europe/Moscow")
-    language = E("NOC_LANGUAGE", "en")
-    customization_favicon = E("NOC_CUSTOMIZATION_FAVICON", "/static/img/logo_24x24_deep_azure.png")
-    customization_logo_url = E("NOC_CUSTOMIZATION_LOGO_URL", "/static/img/logo_white.svg")
-    customization_logo_width = E("NOC_CUSTOMIZATION_LOGO_WIDTH", 24)
-    customization_logo_height = E("NOC_CUSTOMIZATION_LOGO_HEIGHT", 24)
-    customization_branding_color = E("NOC_CUSTOMIZATION_BRANDING_COLOR", "#ffffff")
-    customization_branding_background_color = E("NOC_CUSTOMIZATION_BRANDING_BACKGROUND_COLOR", "#34495e")
-    main_debug_js = E("NOC_MAIN_DEBUG_JS", False)
-    develop_install_collection = E("NOC_DEVELOP_INSTALL_COLLECTION", False)
-    tt_url = E("NOC_TT_URL", "http://example.com/ticket=%%(tt)s")
+    _rx_env_sh = re.compile(r"\${([^:}]+)(:-[^}]+)?}")
 
-    main_trace_extjs_events = E("NOC_MAIN_TRACE_EXTJS_EVENTS", False)
-    secret_key = E("NOC_SECRET_KEY", "12345")
-    date_format = E("NOC_DATE_FORMAT", "d.m.Y")
-    time_format = E("NOC_TIME_FORMAT", "H:i:s")
-    month_day_format = E("NOC_MONTH_DAY_FORMAT", "F j")
-    year_month_format = E("NOC_YEAR_MONTH_FORMAT", "F Y")
-    datetime_format = E("NOC_DATETIME_FORMAT", "d.m.Y H:i:s")
-    listen = E("NOC_LISTEN", "0.0.0.0:1200")
-    instance = E("NOC_INSTANCE", 0)
-    #
-    crashinfo_limit = int(E("NOC_CRASHINFO_LIMIT", 1000000))
-    traceback_reverse = E("NOC_TRACEBACK_ORDER", "reverse") == "reverse"
-    rpc_retry_timeout = E("NOC_RPC_RETRY_TIMEOUT", "0.1,0.5,1,3,10,30")
-    db_threads = E("NOC_DB_THREADS", 10)
-    discovery_max_threads = E("NOC_DISCOVERY_MAX_THREADS", 10)
-    scheduler_max_threads = E("NOC_SCHEDULER_MAX_THREADS", 10)
-    global_n_instances = E("NOC_GLOBAL_N_INSTANCES", 1)
-    path_backup_dir = E("NOC_path_backup_dir", "/var/backup")
-    # Mongo section
-    mongo_host = E("NOC_MONGO_HOST", "mongo-master.%s" % env)
-    mongo_db = E("NOC_MONGO_DB", "noc")
-    mongo_user = E("NOC_MONGO_USER", "noc")
-    mongo_password = E("NOC_MONGO_PASSWORD", "noc")
-    mongo_rs = E("NOC_MONGO_RS", None)
-    # Posgres section
-    pg_db_engine = "django.db.backends.postgresql_psycopg2"
-    pg_db_options = {}
-    pg_host = E("NOC_PG_HOST", "postgres-master.%s" % env)
-    pg_port = 5432
-    pg_db = E("NOC_PG_DB", "noc")
-    pg_user = E("NOC_PG_USER", "noc")
-    pg_password = E("NOC_PG_PASSWORD", "noc")
-    # Pooled processes
-    pool = E("NOC_POOL", "global")
-    #
-    audit_command_ttl = _get_seconds(E("NOC_AUDIT_COMMAND_TTL", "1m"))
-    audit_login_ttl = _get_seconds(E("NOC_AUDIT_LOGIN_TTL", "1m"))
-    audit_reboot_ttl = _get_seconds(E("NOC_AUDIT_REBOOT_TTL", "0"))
-    audit_config_ttl = _get_seconds(E("NOC_AUDIT_CONFIG_TTL", "1y"))
-    audit_db_ttl = _get_seconds(E("NOC_AUDIT_DB_TTL", "5y"))
-    #
-    api_row_limit = int(E("NOC_API_ROW_LIMIT", 0))
-    #
-    gis_ellipsoid = E("NOC_GIS_ELLIPSOID", "ПЗ-90")
-    gis_enable_osm = E("NOC_GIS_ENABLE_OSM", True)
-    gis_enable_google_sat = E("NOC_GIS_ENABLE_GOOGLE_SAT", False)
-    gis_enable_google_roadmap = E("NOC_GIS_ENABLE_GOOGLE_ROADMAP", False)
-    #
-    config_mirror_path = E("NOC_CONFIG_MIRROR_PATH")
+    def __iter__(self):
+        for k in self._params_order:
+            yield k
 
-    # sync
-    sync_config_ttl = E("NOC_SYNC_CONFIG_TTL", 86400)
-    sync_ttl_jitter = E("NOC_SYNC_TTL_JITTER", 0.1)
-    sync_expired_refresh_timeout = E("NOC_SYNC_REFRESH_TIMEOUT", 25)
-    sync_expired_refresh_chunk = E("NOC_SYNC_REFRESH_CHUNK", 100)
-    # themes
-    theme_default = E("NOC_THEME_DEFAULT", "gray")
-    #VC
-    vc_cache_vcinterfacescount = E("NOC_VC_CACHE_VCINTERFACESCOUNT", 3600)
-    vc_cache_vcprefixes = E("NOC_VC_CACHE_VCPREFIXES", 3600)
+    @classmethod
+    def expand(cls, value):
+        def env_repl(match):
+            name, default = match.groups()
+            if default is None:
+                default = ""
+            ev = os.environ.get(name)
+            if ev is None:
+                return default
+            else:
+                return ev
 
-    #DNS
-    dns_warn_before_expired_days = E("NOC_DNS_WARN_BEFORE_EXPIRED_DAYS", 30)
-
-    # PMWRITER
-    pm_batch_size = E("NOC_PM_BATCH_SIZE", 1000)
-    pm_metrics_buffer = E("NOC_METRICS_BUFFER", pm_batch_size * 4)
-
-    # PING
-    tos = E("NOC_PING_TOS", 0)
-
-    # syslog
-    listen_syslog = E("NOC_LISTEN_SYSLOG", "0.0.0.0:514")
-
-    # Login
-    login_method = E("NOC_LOGIN_METHOD", "noc.services.login.backends.local.LocalBackend")
-    login_session_ttl = _get_seconds(E("NOC_LOGIN_SESSION_TTL", "7d"))
-
-
-    def __init__(self):
-        self.setup_logging()
-
-    def use_pg_pool(self):
-        self.pg_db_engine = "dbpool.db.backends.postgresql_psycopg2"
-        self.pg_db_options.update({
-            "MAX_CONNS": 1,
-            "MIN_CONNS": 1
-        })
-
-    @property
-    def pg_connection_args(self):
-        """
-        PostgreSQL database connection arguments
-        suitable to pass to psycopg2.connect
-        """
-        return {
-            "host": self.pg_host,
-            "port": self.pg_port,
-            "database": self.pg_db,
-            "user": self.pg_user,
-            "password": self.pg_password
-        }
-
-    @property
-    def mongo_connection_args(self):
-        """
-        Mongo connection arguments. Suitable to pass to
-        pymongo.connect and mongoengine.connect
-        """
-        if not hasattr(self, "_mongo_connection_args"):
-            self._mongo_connection_args = {
-                "db": self.mongo_db,
-                "username": self.mongo_user,
-                "password": self.mongo_password,
-                "socketKeepAlive": True
-            }
-            has_credentials = self.mongo_user or self.mongo_password
-            if has_credentials:
-                self._mongo_connection_args["authentication_source"] = self.mongo_db
-            hosts = [self.mongo_host]
-            if self.mongo_rs:
-                self._mongo_connection_args["replicaSet"] = self.mongo_rs
-                self._mongo_connection_args["slave_okay"] = True
-            elif len(hosts) > 1:
-                raise ValueError("Replica set name must be set")
-            url = ["mongodb://"]
-            if has_credentials:
-                url += ["%s:%s@" % (urllib.quote(self.mongo_user),
-                                    urllib.quote(self.mongo_password))]
-            url += [",".join(hosts)]
-            url += ["/%s" % self.mongo_db]
-            self._mongo_connection_args["host"] = "".join(url)
-        return self._mongo_connection_args
-
-    def setup_logging(self, loglevel=None):
-        """
-        Create new or setup existing logger
-        """
-        if not loglevel:
-            loglevel = self.loglevel
-        logger = logging.getLogger()
-        if len(logger.handlers):
-            # Logger is already initialized
-            fmt = logging.Formatter(self.log_format, None)
-            for h in logging.root.handlers:
-                if isinstance(h, logging.StreamHandler):
-                    h.stream = sys.stdout
-                h.setFormatter(fmt)
-            logging.root.setLevel(self.LOG_LEVELS[loglevel])
+        if value.startswith("_env:"):
+            # Perform registry like environment expansion
+            # _env:VAR, _env:VAR:default
+            parts = value[5:].split(":", 1)
+            name = parts[0]
+            if len(parts) == 1:
+                default = ""
+            else:
+                default = parts[1]
+            value = os.environ.get(name)
+            if value is None:
+                value = default
+            return value
         else:
-            # Initialize logger
-            logging.basicConfig(
-                stream=sys.stdout,
-                format=self.log_format,
-                level=self.LOG_LEVELS[loglevel]
-            )
-        logging.captureWarnings(True)
+            # Perform shell-style environment expansion
+            # ${VAR}, ${VAR:-default}
+            return cls._rx_env_sh.sub(env_repl, value)
 
-    def apply(self, **kwargs):
-        """
-        Apply additional parameters
-        :param kwargs:
-        :return:
-        """
-        for k in kwargs:
-            setattr(self, k, kwargs[k])
+    def set_parameter(self, path, value):
+        if isinstance(value, six.string_types):
+            value = self.expand(value)
+        c = self
+        parts = path.split(".")
+        for n in parts[:-1]:
+            c = getattr(c, n)
+        setattr(c, parts[-1], value)
 
-    def get_service(self, name):
-        """
-        Get service stub
-        :param name:
-        :return:
-        """
-        service = ""
-        if name == "influxdb":
-            service = "influxdb:8086"
-        elif name == "nsqd":
-            service = ["nsqd:4150"]
-        elif name == "nsqlookupd":
-            service = ["nsqlookupd:4161"]
-        return service
+    def get_parameter(self, path):
+        v = self._params[path].orig_value
+        if v is not None:
+            return v
+        c = self
+        parts = path.split(".")
+        for n in parts[:-1]:
+            c = getattr(c, n)
+        return getattr(c, parts[-1])
 
-# Config singleton
-config = BaseConfig()
+    @classmethod
+    def get_protocol(cls, url):
+        p = url.split(":", 1)[0]
+        h = cls.PROTOCOLS.get(p)
+        if h:
+            return get_handler(h)
+        else:
+            raise ValueError("Invalid protocol %s" % p)
+
+    def load(self):
+        paths = os.environ.get("NOC_CONFIG", self.DEFAULT_CONFIG)
+        for p in paths.split(","):
+            p = p.strip()
+            pcls = self.get_protocol(p)
+            proto = pcls(self, p)
+            proto.load()
+
+    def dump(self, url=DEFAULT_CONFIG):
+        pcls = self.get_protocol(url)
+        proto = pcls(self, url)
+        proto.dump()

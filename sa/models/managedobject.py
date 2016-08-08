@@ -48,7 +48,7 @@ from noc.inv.models.object import Object
 from credcache import CredentialsCache
 from objectpath import ObjectPath
 from noc.core.defer import call_later
-from noc.core.config.base import config
+from noc.config import config
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]

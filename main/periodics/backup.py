@@ -18,7 +18,7 @@ from noc.lib.periodic import Task as PeriodicTask
 from noc.settings import config
 from noc import settings
 from noc.lib.fileutils import safe_rewrite
-from noc.core.config.base import config as cfg
+from noc.config import config as cfg
 
 
 class Task(PeriodicTask):

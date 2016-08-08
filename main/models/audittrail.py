@@ -18,7 +18,7 @@ from mongoengine.fields import (StringField, DateTimeField,
                                 ListField, EmbeddedDocumentField)
 ## NOC modules
 from noc.lib.middleware import get_user
-from noc.core.config.base import config
+from noc.config import config
 from noc import settings
 from noc.lib.utils import get_model_id
 from noc.lib.text import to_seconds
