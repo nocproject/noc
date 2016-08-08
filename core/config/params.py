@@ -96,10 +96,11 @@ class MapParameter(BaseParameter):
 
 class HandlerParameter(BaseParameter):
     def clean(self, v):
-        h = get_handler(v)
-        if not h:
-            raise ValueError("Invalid handler: %s" % v)
-        return h
+        # h = get_handler(v)
+        # if not h:
+        #     raise ValueError("Invalid handler: %s" % v)
+        # return h
+        return v
 
 
 class SecondsParameter(BaseParameter):
