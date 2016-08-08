@@ -14,7 +14,7 @@ from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.main.models.sync import Sync
 from noc.main.models.synccache import SyncCache
 from noc.sa.interfaces.base import DateTimeParameter
-from noc.core.config.base import config
+from noc.config import config
 from noc.core.translation import ugettext as _
 
 

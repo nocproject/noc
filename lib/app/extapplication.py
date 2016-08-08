@@ -17,7 +17,7 @@ from application import Application, view
 from access import HasPerm, PermitLogged
 from noc.main.models.favorites import Favorites
 from noc.main.models.slowop import SlowOp
-from noc.core.config.base import config
+from noc.config import config
 
 
 class ExtApplication(Application):

@@ -9,7 +9,7 @@
 ## Third-party modules
 from mongoengine import Q
 ## NOC modules
-from noc.core.config.base import config
+from noc.config import config
 from noc.lib.cache import Cache
 from noc.inv.models.subinterface import SubInterface
 from noc.vc.models.vc import VC

@@ -10,7 +10,7 @@
 import datetime
 ## NOC modules
 from noc.sa.models.interactionlog import InteractionLog
-from noc.core.config.base import config
+from noc.config import config
 
 
 def log_cmd(event):
@@ -19,7 +19,7 @@ def log_cmd(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        expire=event.timestamp + datetime.timedelta(seconds=config.audit_command_ttl),
+        expire=event.timestamp + datetime.timedelta(seconds=config.audit.command_ttl),
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_COMMAND,
@@ -33,7 +33,7 @@ def log_login(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        expire=event.timestamp + datetime.timedelta(seconds=config.audit_login_ttl),
+        expire=event.timestamp + datetime.timedelta(seconds=config.audit.login_ttl),
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_LOGIN,
@@ -47,7 +47,7 @@ def log_logout(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        expire=event.timestamp + datetime.timedelta(seconds=config.audit_login_ttl),
+        expire=event.timestamp + datetime.timedelta(seconds=config.audit.login_ttl),
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_LOGOUT,
@@ -61,7 +61,7 @@ def log_reboot(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        expire=event.timestamp + datetime.timedelta(seconds=config.audit_reboot_ttl),
+        expire=event.timestamp + datetime.timedelta(seconds=config.audit.reboot_ttl),
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_REBOOT,
@@ -75,7 +75,7 @@ def log_started(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        expire=event.timestamp + datetime.timedelta(seconds=config.audit_reboot_ttl),
+        expire=event.timestamp + datetime.timedelta(seconds=config.audit.reboot_ttl),
         object=event.managed_object.id,
         user=None,
         op=InteractionLog.OP_STARTED,
@@ -89,7 +89,7 @@ def log_halted(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        expire=event.timestamp + datetime.timedelta(seconds=config.audit_reboot_ttl),
+        expire=event.timestamp + datetime.timedelta(seconds=config.audit.reboot_ttl),
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_HALTED,
@@ -103,7 +103,7 @@ def log_config_changed(event):
     """
     InteractionLog(
         timestamp=event.timestamp,
-        expire=event.timestamp + datetime.timedelta(seconds=config.audit_config_ttl),
+        expire=event.timestamp + datetime.timedelta(seconds=config.audit.config_ttl),
         object=event.managed_object.id,
         user=event.vars.get("user"),
         op=InteractionLog.OP_CONFIG_CHANGED,
