@@ -175,7 +175,7 @@ class ManagedObject(Model):
         null=True, blank=True
     )
     # CM
-    config = GridVCSField("config", mirror=config.config_mirror_path)
+    config = GridVCSField("config", mirror=config.mirror_path)
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
                             blank=True, null=True)
