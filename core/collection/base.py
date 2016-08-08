@@ -253,12 +253,12 @@ class Collection(object):
         o.save()
         return True
 
-    def delete_item(self, name, model, uuid):
-        o = model.objects.filter(uuid=uuid).first()
+    def delete_item(self, uuid):
+        o = self.model.objects.filter(uuid=uuid).first()
         if not o:
             return
         self.stdout.write("[%s|%s] Deleting %s\n" % (
-            name, uuid, getattr(o, self.name_field)
+            self.name, uuid, getattr(o, self.name_field)
         ))
         o.delete()
 
