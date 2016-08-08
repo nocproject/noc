@@ -12,7 +12,7 @@ import datetime
 import noc.lib.periodic
 from noc.settings import config
 from django.utils.dateformat import DateFormat
-from noc.core.config.base import config
+from noc.config import config
 
 class Task(noc.lib.periodic.Task):
     name="dns.check_domain_expiration"

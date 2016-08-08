@@ -30,7 +30,7 @@ import ujson
 import threading
 ## NOC modules
 from noc.lib.debug import excepthook, error_report
-from noc.core.config.base import config
+from noc.config import config
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler

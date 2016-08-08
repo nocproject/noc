@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from noc.lib.app.simplereport import SimpleReport,TableColumn
 from django import forms
-from noc.core.config.base import config
+from noc.config import config
 from noc.core.translation import ugettext as _
 ##
 ##

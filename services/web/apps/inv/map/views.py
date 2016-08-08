@@ -30,7 +30,7 @@ from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
 from noc.core.influxdb.client import InfluxDBClient
 from noc.inv.caches.interface.tagstoid import interface_tags_to_id
-from noc.core.config.base import config
+from noc.config import config
 from noc.core.translation import ugettext as _
 
 
