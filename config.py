@@ -56,6 +56,8 @@ class Config(BaseConfig):
     )
     secret_key = StringParameter(default="12345")
 
+    mirror_path = StringParameter(default="/opt/noc/var/config_mirror")
+
     class mongo(ConfigSection):
         host = StringParameter(default="mongo-master")
         port = IntParameter(
