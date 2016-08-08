@@ -13,7 +13,7 @@ import contextlib
 from noc.core.service.base import Service
 from noc.main.models.pool import Pool
 from api.sae import SAEAPI
-from noc.core.config.base import config
+from noc.config import config
 from pgpool import PreparedConnectionPool
 
 

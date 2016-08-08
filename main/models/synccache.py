@@ -19,7 +19,7 @@ from mongoengine.fields import (StringField, IntField,
                                 DateTimeField, DictField)
 from mongoengine.base import _document_registry
 ## NOC Modules
-from noc.core.config.base import config
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
