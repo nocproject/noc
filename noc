@@ -31,7 +31,7 @@ fi
 
 if [ -f "./commands/$CMD.py" ]; then
     shift
-    exec ./bin/python ./commands/$CMD.py "$@"
+    exec /usr/bin/env python ./commands/$CMD.py "$@"
 fi
 
 case "$1" in
