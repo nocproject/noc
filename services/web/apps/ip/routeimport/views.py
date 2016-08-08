@@ -3,7 +3,7 @@
 ## Import Prefixes from routing tables
 ## @todo: VRF-aware
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -13,7 +13,8 @@ from django.forms.formsets import formset_factory
 ## NOC modules
 from noc.lib.app.saapplication import SAApplication, HasPerm, view
 from noc.peer.models import AS
-from noc.ip.models import Prefix, VRF
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.vrf import VRF
 from noc.lib.widgets import LabelWidget
 from noc.lib.validators import check_prefix
 from noc.lib.ip import IP
