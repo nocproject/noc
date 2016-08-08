@@ -68,7 +68,7 @@ class Config(BaseConfig):
         rs = StringParameter()
 
     class pg(ConfigSection):
-        pg_db_engine = StringParameter(
+        db_engine = StringParameter(
             default="django.db.backends.postgresql_psycopg2"
         )
         host = StringParameter(default="pg-master")
@@ -79,7 +79,7 @@ class Config(BaseConfig):
         db = StringParameter(default="noc")
         user = StringParameter()
         password = StringParameter()
-        pg_db_options = {}
+        db_options = {}
 
     class clickhouse(ConfigSection):
         host = StringParameter(default="clickhouse-master")

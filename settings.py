@@ -16,17 +16,17 @@ MANAGERS = ADMINS
 SERVER_EMAIL = None
 
 # Postgres settings
-DATABASE_ENGINE = config.pg_db_engine
+DATABASE_ENGINE = config.pg.db_engine
 DATABASES = {
     "default": {
-        "ENGINE": config.pg_db_engine,
-        "NAME": config.pg_db,
-        "USER": config.pg_user,
-        "PASSWORD": config.pg_password,
-        "HOST": config.pg_host,
-        "PORT": config.pg_port,
-        "TEST_NAME": "test_" + config.pg_db,
-        "OPTIONS": config.pg_db_options
+        "ENGINE": config.pg.db_engine,
+        "NAME": config.pg.db,
+        "USER": config.pg.user,
+        "PASSWORD": config.pg.password,
+        "HOST": config.pg.host,
+        "PORT": config.pg.port,
+        "TEST_NAME": "test_" + config.pg.db,
+        "OPTIONS": config.pg.db_options
     }
 }
 DATABASE_SUPPORTS_TRANSACTIONS = True
