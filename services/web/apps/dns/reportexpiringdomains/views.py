@@ -13,7 +13,7 @@ from noc.core.translation import ugettext as _
 ##
 ##
 class ReportForm(forms.Form):
-    days=forms.IntegerField(initial=config.dns_warn_before_expired_days)
+    days = forms.IntegerField(initial=config.dns.warn_before_expired * 86400)
 ##
 ##
 ##

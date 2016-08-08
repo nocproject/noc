@@ -12,7 +12,7 @@ import os
 ## Django modules
 from django.http import HttpResponse
 ## NOC modules
-from noc.core.config.base import config
+from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.access import PermitLogged

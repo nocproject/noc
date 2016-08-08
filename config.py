@@ -150,6 +150,17 @@ class Config(BaseConfig):
         batch_size = IntParameter(default=1000)
         metrics_buffer = IntParameter(default=4000)
 
+    class web(ConfigSection):
+        api_row_limit = IntParameter(default=0)
+
+    class cache(ConfigSection):
+        vcinterfacescount = SecondsParameter(default="1h")
+        vcprefixes = SecondsParameter(default="1h")
+
+    class dns(ConfigSection):
+        warn_before_expired = SecondsParameter(default="30d")
+
+
     def __init__(self):
         self.setup_logging()
 

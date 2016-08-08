@@ -28,8 +28,8 @@ class SyncApplication(ExtDocApplication):
     model = Sync
     query_fields = ["name"]
 
-    REFRESH_CHUNK = config.sync_expired_refresh_chunk
-    REFRESH_TIMEOUT = config.sync_expired_refresh_timeout
+    REFRESH_CHUNK = config.sync.expired_refresh_chunk
+    REFRESH_TIMEOUT = config.sync.expired_refresh_timeout
 
     @view(url="^(?P<name>[^/]+)/(?P<instance>\d+)/config/$", method=["GET"],
           validate={
