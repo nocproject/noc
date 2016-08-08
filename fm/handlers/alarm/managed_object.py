@@ -42,11 +42,6 @@ def topology_rca(alarm, seen=None):
         # Correlate with the first one (shortest path)
         alarm.set_root(na[uplinks[0]])
         metrics["alarm_correlated_topology"] += 1
-        # Perform correlation of uplink's alarms
-        for u in uplinks:
-            topology_rca(na[u], seen)
-    # Correlate downlinks
+    # Correlate neighbors' alarms
     for d in na:
-        if d in uplinks:
-            continue
         topology_rca(na[d], seen)
