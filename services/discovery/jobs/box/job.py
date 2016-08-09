@@ -11,7 +11,9 @@
 import random
 ## NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
+from suggestsnmp import SuggestSNMPCheck
 from profile import ProfileCheck
+from suggestcli import SuggestCLICheck
 from version import VersionCheck
 from caps import CapsCheck
 from interface import InterfaceCheck
@@ -40,8 +42,12 @@ class BoxDiscoveryJob(MODiscoveryJob):
     TOPOLOGY_NAMES = [m.name for m in TOPOLOGY_METHODS]
 
     def handler(self, **kwargs):
+        if self.object.auth_profile and self.object.auth_profile.enable_suggest:
+            SuggestSNMPCheck(self).run()
         if self.object.object_profile.enable_box_discovery_profile:
             ProfileCheck(self).run()
+        if self.object.auth_profile and self.object.auth_profile.enable_suggest:
+            SuggestCLICheck(self).run()
         if self.object.object_profile.enable_box_discovery_version:
             VersionCheck(self).run()
         if self.object.object_profile.enable_box_discovery_caps:

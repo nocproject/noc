@@ -25,7 +25,7 @@ CACHED_RULE_TTL = 60  # Recompile every minute
 
 class ProfileCheck(DiscoveryCheck):
     """
-    Version discovery
+    Profile discovery
     """
     name = "profile"
 
