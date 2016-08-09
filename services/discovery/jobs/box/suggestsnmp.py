@@ -20,7 +20,7 @@ class SuggestSNMPCheck(DiscoveryCheck):
 
     CHECK_OIDS = [
         mib["SNMPv2-MIB::sysObjectID"],
-        mib["SNMPv2-MIB::sysUptime"],
+        mib["SNMPv2-MIB::sysUpTime"],
         mib["SNMPv2-MIB::sysDescr"]
     ]
 
