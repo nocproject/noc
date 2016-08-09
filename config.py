@@ -37,6 +37,7 @@ class Config(BaseConfig):
     language_code = StringParameter(
         default="en-us"
     )
+    language = StringParameter(default="en")
     timezone = StringParameter(
         default="Europe/Moscow"
     )
@@ -58,6 +59,9 @@ class Config(BaseConfig):
     secret_key = StringParameter(default="12345")
 
     mirror_path = StringParameter(default="/opt/noc/var/config_mirror")
+
+    instance = IntParameter(default=0)
+    listen = StringParameter(default="0.0.0.0:1200")
 
     class mongo(ConfigSection):
         host = StringParameter(default="mongo-master")
@@ -152,6 +156,8 @@ class Config(BaseConfig):
 
     class web(ConfigSection):
         api_row_limit = IntParameter(default=0)
+        language = StringParameter(default="en")
+        install_collection = BooleanParameter(default=False)
 
     class cache(ConfigSection):
         vcinterfacescount = SecondsParameter(default="1h")
