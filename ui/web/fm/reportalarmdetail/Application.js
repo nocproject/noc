@@ -15,10 +15,12 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             items: [
                 {
                     text: __("CSV"),
-                    pressed: true
+                    pressed: true,
+                    width: 70
                 },
                 {
-                    text: __("Excel")
+                    text: __("Excel"),
+                    width: 70
                 }
             ],
             anchor: null
@@ -26,7 +28,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         
         me.formPanel = Ext.create("Ext.form.Panel", {
             defaults: {
-                labelWidth: 40
+                labelWidth: 60
             },
             items: [
                 {
@@ -35,7 +37,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                     fieldLabel: __("From"),
                     allowBlank: false,
                     format: "d.m.Y",
-                    width: 135
+                    width: 150
                 },
                 {
                     name: "to_date",
@@ -43,7 +45,15 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                     fieldLabel: __("To"),
                     allowBlank: false,
                     format: "d.m.Y",
-                    width: 135
+                    width: 150
+                },
+                {
+                    name: "min_duration",
+                    xtype: "numberfield",
+                    fieldLabel: __("Min. Duration"),
+                    allowBlank: false,
+                    value: 300,
+                    uiStyle: "small"
                 },
                 me.formatButton
             ],
@@ -79,7 +89,9 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         }
 
         window.open(
-            "/fm/reportalarmdetail/download/?from_date=" + v.from_date + "&to_date=" + v.to_date + "&format=" + format
+            "/fm/reportalarmdetail/download/?from_date="
+            + v.from_date + "&to_date=" + v.to_date
+            + "&format=" + format + "&min_duration=" + v.min_duration
         );
     }
 });
