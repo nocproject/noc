@@ -12,21 +12,22 @@ import re
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-##
-## Juniper.JUNOSe.get_version
-##
+
+
 class Script(BaseScript):
-    name="Juniper.JUNOSe.get_version"
-    cache=True
+    name = "Juniper.JUNOSe.get_version"
+    cache = True
     interface = IGetVersion
-    
-    rx_ver=re.compile(r"Juniper\s+(Edge Routing Switch )?(?P<platform>.+?)$.+Version\s+(?P<version>.+?)\s*\[",re.MULTILINE|re.DOTALL)
+
+    rx_ver = re.compile(
+        r"Juniper\s+(Edge Routing Switch )?(?P<platform>.+?)$.+"
+        r"Version\s+(?P<version>.+?)\s*\[", re.MULTILINE | re.DOTALL)
+
     def execute(self):
-        v=self.cli("show version")
-        match=self.re_search(self.rx_ver, v.replace(":", ""))
+        v = self.cli("show version")
+        match = self.re_search(self.rx_ver, v.replace(":", ""))
         return {
-            "vendor"    : "Juniper",
-            "platform"  : match.group("platform"),
-            "version"   : match.group("version"),
+            "vendor": "Juniper",
+            "platform": match.group("platform"),
+            "version": match.group("version")
         }
-    
