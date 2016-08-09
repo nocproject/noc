@@ -3,7 +3,7 @@
 ## Vendor: Alcatel
 ## OS:     TIMOS
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import re
@@ -26,3 +26,8 @@ class Profile(BaseProfile):
         re.compile(r"\r\s+\r"),
         "\r"
     ]
+
+    def convert_interface_name(self, s):
+        if "," in s:
+            s = s.split(",", 1)[0].strip()
+        return s
