@@ -1,4 +1,4 @@
-# Translations template for The NOC Project.
+# Portuguese (Brazil) translations for The NOC Project.
 # Copyright (C) 2016 The NOC Project
 # This file is distributed under the same license as the The NOC Project
 # project.
@@ -8,16 +8,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-04 11:02-0300\n"
+"POT-Creation-Date: 2016-08-09 09:19+0300\n"
 "PO-Revision-Date: 2016-07-14 17:40-0300\n"
+"Last-Translator: Gabriela Todeschini <gabrielat@cpd.ufrgs.br>\n"
+"Language: pt_BR\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
-"Last-Translator: Gabriela Todeschini <gabrielat@cpd.ufrgs.br>\n"
-"Language-Team: \n"
-"Language: pt_BR\n"
-"X-Generator: Poedit 1.8.8\n"
 
 #: services/card/cards/base.py:178 services/card/cards/base.py:192
 msgid "N/A"
@@ -75,14 +75,14 @@ msgstr "Data"
 #: services/card/templates/alarm.html.j2:76
 #: services/card/templates/maintainance.html.j2:17
 #: services/card/templates/maintainance.html.j2:36
-#: services/card/templates/managedobject.html.j2:54
+#: services/card/templates/managedobject.html.j2:65
 #: services/card/templates/service.html.j2:72
 #: services/card/templates/tt.html.j2:34
 msgid "Services"
 msgstr "Serviços"
 
 #: services/card/templates/maintainance.html.j2:21
-#: services/card/templates/managedobject.html.j2:78
+#: services/card/templates/managedobject.html.j2:89
 #: services/card/templates/tt.html.j2:65
 msgid "Description"
 msgstr "Descrição"
@@ -103,95 +103,125 @@ msgstr "Objetos afetados"
 msgid "Object"
 msgstr "Objeto"
 
-#: services/card/templates/maintainance.html.j2:34
-#: services/card/templates/managedobject.html.j2:49
-#: services/card/templates/managedobject.html.j2:93
-msgid "Model"
-msgstr "Modelo"
-
 #: services/card/templates/maintainance.html.j2:35
-#: services/card/templates/managedobject.html.j2:61
+#: services/card/templates/managedobject.html.j2:72
 msgid "IP"
 msgstr ""
 
+#: services/card/templates/managedobject.html.j2:38
+msgid "Container"
+msgstr ""
+
 #: services/card/templates/alarm.html.j2:28
-#: services/card/templates/managedobject.html.j2:37
+#: services/card/templates/managedobject.html.j2:48
 msgid "Location"
 msgstr "Localização"
 
 #: services/card/templates/alarm.html.j2:41
-#: services/card/templates/managedobject.html.j2:41
+#: services/card/templates/managedobject.html.j2:52
 msgid "Administrative Domain"
 msgstr "Domínio Administrativo"
 
 #: services/card/templates/alarm.html.j2:37
-#: services/card/templates/managedobject.html.j2:45
+#: services/card/templates/managedobject.html.j2:56
 msgid "Segment"
 msgstr "Segmento"
 
-#: services/card/templates/managedobject.html.j2:69
+#: services/card/templates/managedobject.html.j2:80
 msgid "Version"
 msgstr "Versão"
 
-#: services/card/templates/managedobject.html.j2:72
+#: services/card/templates/managedobject.html.j2:83
 msgid "Recommended"
 msgstr "Recomendado"
 
-#: services/card/templates/managedobject.html.j2:82
+#: services/card/templates/managedobject.html.j2:93
 msgid "Service Range"
 msgstr "Intervalo de Serviço"
 
-#: services/card/templates/managedobject.html.j2:86
+#: services/card/templates/managedobject.html.j2:97
 msgid "L2 Terminator"
 msgstr "Terminador L2"
 
-#: services/card/templates/managedobject.html.j2:91
-msgid "Name"
-msgstr "Nome"
-
-#: services/card/templates/managedobject.html.j2:109
+#: services/card/templates/managedobject.html.j2:120
 msgid "L3 Terminator"
 msgstr "Terminador L3"
 
-#: services/card/templates/managedobject.html.j2:113
+#: services/card/templates/managedobject.html.j2:124
 msgid "Neighbors"
 msgstr "Vizinho"
 
-#: services/card/templates/managedobject.html.j2:118
+#: services/card/templates/managedobject.html.j2:129
 msgid "Local port"
 msgstr "Porta local"
 
-#: services/card/templates/managedobject.html.j2:119
+#: services/card/templates/managedobject.html.j2:130
 msgid "Remote object"
 msgstr "Objeto remoto"
 
-#: services/card/templates/managedobject.html.j2:120
+#: services/card/templates/managedobject.html.j2:131
 msgid "Remote port"
 msgstr "Porta remota"
 
-#: services/card/templates/managedobject.html.j2:186
+#: services/card/templates/managedobject.html.j2:197
 msgid "Admin"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:186
+#: services/card/templates/managedobject.html.j2:197
 msgid "Oper"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:187
+#: services/card/templates/managedobject.html.j2:198
 msgid "Speed"
 msgstr "Velocidade"
 
-#: services/card/templates/managedobject.html.j2:187
+#: services/card/templates/managedobject.html.j2:198
 msgid "Duplex"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:189
+#: services/card/templates/managedobject.html.j2:200
 msgid "Errors"
 msgstr "Erros"
+
+#: services/card/templates/maintainance.html.j2:34
+#: services/card/templates/managedobject.html.j2:60
+#: services/card/templates/managedobject.html.j2:104
+#: services/card/templates/object.html.j2:15
+#: services/card/templates/segment.html.j2:37
+msgid "Model"
+msgstr "Modelo"
+
+#: services/card/templates/object.html.j2:20
+#: services/card/templates/segment.html.j2:16
+msgid "Children"
+msgstr ""
 
 #: services/card/templates/outage.html.j2:2
 msgid "Outages Summary"
 msgstr "Resumo de Interrupções"
+
+#: services/card/templates/segment.html.j2:10
+msgid "Parent"
+msgstr ""
+
+#: services/card/templates/segment.html.j2:31
+msgid "Objects"
+msgstr ""
+
+#: services/card/templates/managedobject.html.j2:102
+#: services/card/templates/segment.html.j2:35
+msgid "Name"
+msgstr "Nome"
+
+#: services/card/templates/managedobject.html.j2:103
+#: services/card/templates/segment.html.j2:36
+#: services/card/templates/service.html.j2:97
+msgid "Address"
+msgstr "IP"
+
+#: services/card/templates/segment.html.j2:38
+msgid "Summary"
+msgstr ""
 
 #: services/card/templates/managedobject.html.j2:13
 #: services/card/templates/service.html.j2:48
@@ -208,20 +238,15 @@ msgstr "Iniciar"
 msgid "Stop"
 msgstr "Parar"
 
-#: services/card/templates/managedobject.html.j2:191
+#: services/card/templates/managedobject.html.j2:202
 #: services/card/templates/service.html.j2:78
 msgid "Service"
 msgstr "Serviço"
 
-#: services/card/templates/managedobject.html.j2:190
+#: services/card/templates/managedobject.html.j2:201
 #: services/card/templates/service.html.j2:79
 msgid "Status"
 msgstr ""
-
-#: services/card/templates/managedobject.html.j2:92
-#: services/card/templates/service.html.j2:97
-msgid "Address"
-msgstr "IP"
 
 #: services/card/templates/service.html.j2:101
 msgid "Subscriber"
@@ -235,7 +260,7 @@ msgstr "Comentário"
 msgid "Connection"
 msgstr "Conexão"
 
-#: services/card/templates/managedobject.html.j2:185
+#: services/card/templates/managedobject.html.j2:196
 #: services/card/templates/service.html.j2:152
 msgid "Port"
 msgstr "Porta"
@@ -252,12 +277,12 @@ msgstr "Terminador"
 msgid "Session"
 msgstr "Sessão"
 
-#: services/card/templates/managedobject.html.j2:188
+#: services/card/templates/managedobject.html.j2:199
 #: services/card/templates/subscribersession.html.j2:5
 msgid "VLAN"
 msgstr ""
 
-#: services/card/templates/managedobject.html.j2:65
+#: services/card/templates/managedobject.html.j2:76
 #: services/card/templates/subscribersession.html.j2:6
 msgid "MAC"
 msgstr ""
@@ -270,7 +295,7 @@ msgstr "Fabricante"
 msgid "No outages detected"
 msgstr "Nenhuma interrupção detectada"
 
-#: services/card/templates/managedobject.html.j2:153
+#: services/card/templates/managedobject.html.j2:164
 #: services/card/templates/service.html.j2:178
 #: services/card/templates/tt.html.j2:5
 msgid "TT"
@@ -281,20 +306,20 @@ msgid "Stage"
 msgstr "Estágio"
 
 #: services/card/templates/alarm.html.j2:69
-#: services/card/templates/managedobject.html.j2:158
+#: services/card/templates/managedobject.html.j2:169
 #: services/card/templates/tt.html.j2:25
 msgid "Alarms"
 msgstr "Alerta"
 
 #: services/card/templates/alarm.html.j2:75
-#: services/card/templates/managedobject.html.j2:163
+#: services/card/templates/managedobject.html.j2:174
 #: services/card/templates/service.html.j2:133
 #: services/card/templates/tt.html.j2:30
 msgid "Timestamp"
 msgstr ""
 
 #: services/card/templates/alarm.html.j2:77
-#: services/card/templates/managedobject.html.j2:164
+#: services/card/templates/managedobject.html.j2:175
 #: services/card/templates/service.html.j2:134
 #: services/card/templates/tt.html.j2:32
 msgid "Duration"
@@ -302,7 +327,7 @@ msgstr "Duração"
 
 #: services/card/templates/alarm.html.j2:80
 #: services/card/templates/managedobject.html.j2:18
-#: services/card/templates/managedobject.html.j2:165
+#: services/card/templates/managedobject.html.j2:176
 #: services/card/templates/service.html.j2:53
 #: services/card/templates/service.html.j2:135
 #: services/card/templates/tt.html.j2:33
@@ -320,3 +345,4 @@ msgstr "Razão final"
 #: services/card/templates/tt.html.j2:81
 msgid "Comments"
 msgstr "Comentários "
+
