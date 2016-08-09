@@ -19,9 +19,9 @@ class SuggestSNMPCheck(DiscoveryCheck):
     name = "suggest_snmp"
 
     CHECK_OIDS = [
-        mib["SNMPv2-MIB::sysObjectID"],
-        mib["SNMPv2-MIB::sysUpTime"],
-        mib["SNMPv2-MIB::sysDescr"]
+        mib["SNMPv2-MIB::sysObjectID.0"],
+        mib["SNMPv2-MIB::sysUpTime.0"],
+        mib["SNMPv2-MIB::sysDescr.0"]
     ]
 
     def handler(self):
