@@ -37,6 +37,7 @@ class SuggestCLICheck(DiscoveryCheck):
                     snmp_ro=ro,
                     snmp_rw=rw
                 )
+                return
         self.logger.info("Failed to guess CLI credentials")
 
     def check_login(self, user, password, super_password):
