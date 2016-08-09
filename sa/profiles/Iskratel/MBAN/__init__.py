@@ -21,11 +21,9 @@ class Profile(BaseProfile):
     #pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_username = r"^user id :"
     pattern_prompt = r"^\S+?>"
-    pattern_more = [
-        (r"Press any key to continue or ESC to stop scrolling.", " "),
-        (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t")
-    ]
+    pattern_more = r"^Press any key"
     pattern_syntax_error = r"Illegal command name"
+    command_more = " "
     command_exit = "exit"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
