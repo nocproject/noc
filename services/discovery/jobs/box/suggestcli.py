@@ -11,7 +11,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.service.client import RPCClient, RPCError
 
 
-class SuggestSNMPCheck(DiscoveryCheck):
+class SuggestCLICheck(DiscoveryCheck):
     """
     Version discovery
     """
