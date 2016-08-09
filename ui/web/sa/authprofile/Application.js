@@ -26,7 +26,8 @@ Ext.define("NOC.sa.authprofile.Application", {
                 G: "Local Group",
                 R: "RADIUS",
                 T: "TACACS+",
-                L: "LDAP"
+                L: "LDAP",
+                S: "Suggest"
             })
         },
         {
@@ -62,7 +63,8 @@ Ext.define("NOC.sa.authprofile.Application", {
                 ["G", "Local Group"],
                 ["R", "RADIUS"],
                 ["T", "TACACS+"],
-                ["L", "LDAP"]
+                ["L", "LDAP"],
+                ["S", "Suggest"]
             ]
         },
         {
@@ -96,6 +98,50 @@ Ext.define("NOC.sa.authprofile.Application", {
             xtype: "textfield",
             fieldLabel: __("RW Community"),
             allowBlank: true
+        }
+    ],
+    inlines: [
+        {
+            title: "Suggest SNMP",
+            model: "NOC.sa.authprofile.SuggestSNMPModel",
+            columns: [
+                {
+                    text: __("SNMP RO"),
+                    dataIndex: "snmp_ro",
+                    width: 200,
+                    editor: "textfield"
+                },
+                {
+                    text: __("SNMP RW"),
+                    dataIndex: "snmp_rw",
+                    editor: "textfield",
+                    flex: 1
+                }
+            ]
+        },
+        {
+            title: "Suggest CLI",
+            model: "NOC.sa.authprofile.SuggestCLIModel",
+            columns: [
+                {
+                    text: __("User"),
+                    dataIndex: "user",
+                    width: 200,
+                    editor: "textfield"
+                },
+                {
+                    text: __("Password"),
+                    dataIndex: "password",
+                    width: 200,
+                    editor: "textfield"
+                },
+                {
+                    text: __("Super Password"),
+                    dataIndex: "super_password",
+                    flex: 1,
+                    editor: "textfield"
+                }
+            ]
         }
     ]
 });
