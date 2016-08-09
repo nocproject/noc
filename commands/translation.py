@@ -33,7 +33,10 @@ class Command(BaseCommand):
             "messages_js": ["ui/login/**.js"]
         },
         "web": {
-            "messages": ["services/web/apps/**.py"],
+            "messages": [
+                "services/web/apps/**.py",
+                "lib/app/**.py"
+            ],
             "messages_js": ["ui/web/**.js"]
         }
     }
