@@ -1,2 +1,2 @@
-xslxwriter==0.9.3
+xlsxwriter==0.9.3
 noc-pkg-pyclips==1.0.7
