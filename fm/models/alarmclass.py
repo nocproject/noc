@@ -9,8 +9,11 @@
 ## Python modules
 import hashlib
 import os
+from threading import RLock
+import operator
 ## Third-party modules
 from mongoengine import fields
+import cachetools
 ## NOC modules
 import noc.lib.nosql as nosql
 from alarmseverity import AlarmSeverity
@@ -22,6 +25,8 @@ from alarmclassjob import AlarmClassJob
 from alarmplugin import AlarmPlugin
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
+
+id_lock = RLock()
 
 
 class AlarmClass(nosql.Document):
@@ -87,8 +92,15 @@ class AlarmClass(nosql.Document):
     #
     category = nosql.ObjectIdField()
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    def get_by_id(cls, id):
+        return AlarmClass.objects.filter(id=id).first()
 
     def save(self, *args, **kwargs):
         c_name = " | ".join(self.name.split(" | ")[:-1])
