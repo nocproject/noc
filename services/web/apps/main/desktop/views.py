@@ -104,7 +104,7 @@ class DesktopApplication(ExtApplication):
             "branding_background_color": config.customization.branding_background_color,
             "favicon_url": favicon_url,
             "favicon_mime": favicon_mime,
-            "install_collection": config.develop_install_collection,
+            "install_collection": config.web.install_collection,
             "enable_gis_base_osm": config.gis.enable_osm,
             "enable_gis_base_google_sat": config.gis.enable_google_sat,
             "enable_gis_base_google_roadmap": config.gis.enable_google_roadmap,

@@ -142,8 +142,6 @@ class Service(object):
         args = cmd_options.pop("args", ())
         # Bootstrap logging with --loglevel
         self.log_separator()
-        # Read
-        self.config.apply(**cmd_options)
         # Setup signal handlers
         self.setup_signal_handlers()
         # Starting IOLoop

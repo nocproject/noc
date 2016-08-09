@@ -22,7 +22,7 @@ class Command(BaseCommand):
         getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def handle_dump(self):
-        config.dump()
+        config.dump(url="yaml://")
 
 
 if __name__ == "__main__":
