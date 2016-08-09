@@ -33,7 +33,6 @@ class Script(BaseScript):
         v = self.cli("show hardware | begin Adapters")
         for match in self.rx_slot.finditer(v):
             slots += [match.groupdict()]
-            print "================================================\n"
         for match in self.rx_mac.finditer(v):
             slot = match.group("slot")
             for s in slots:

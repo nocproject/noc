@@ -22,4 +22,4 @@ class Script(BaseScript):
         r"(?P<interface>\S+)")
 
     def execute(self):
-        return self.cli("show arp",  list_re=self.rx_line)
+        return self.cli("show arp", list_re=self.rx_line)
