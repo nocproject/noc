@@ -124,7 +124,7 @@ class ProfileCheck(DiscoveryCheck):
         """
         Perform SNMP v2c GET. Param is OID or symbolic name
         """
-        if hasattr(self.object, "_suggest_snmp"):
+        if hasattr(self.object, "_suggest_snmp") and self.object._suggest_snmp:
             # Use guessed community
             # as defined one may be invalid
             snmp_ro = self.object._suggest_snmp[0]
