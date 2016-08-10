@@ -1,0 +1,79 @@
+{
+    "name": "DLink | DGS | DGS-1100-06/ME",
+    "$collection": "inv.objectmodels",
+    "uuid": "1becf042-0332-4cdc-a43b-8d250c4cd0e3",
+    "vendor__code": "DLINK",
+    "description": "DGS-1100-06/ME Gigabit Ethernet Switch",
+    "connection_rule__name": "DLink | DxS",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "1",
+            "direction": "s",
+            "gender": "f",
+            "name": "1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "2",
+            "direction": "s",
+            "gender": "f",
+            "name": "2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "3",
+            "direction": "s",
+            "gender": "f",
+            "name": "3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "4",
+            "direction": "s",
+            "gender": "f",
+            "name": "4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "5",
+            "direction": "s",
+            "gender": "f",
+            "name": "5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "9",
+            "direction": "i",
+            "gender": "f",
+            "name": "sfp9",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "IPWR",
+            "protocols": [">12VDC"],
+            "type__name": "Power | IEC 60130-10"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["DGS-1100-06/ME"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
