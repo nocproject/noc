@@ -1,9 +1,9 @@
 {
-    "name": "NoName | Transceiver | 10G | XFP ER",
+    "name": "NoName | Transceiver | 10G | XFP",
     "$collection": "inv.objectmodels",
-    "uuid": "1ede79eb-43a5-4d20-9452-d208402286d9",
+    "uuid": "54efd4b1-b5ac-46f8-9f79-28e304d912bd",
     "vendor__code": "NONAME",
-    "description": "NoName XFP ER transceiver",
+    "description": "Unknown XFP transceiver. Replace with real type manually",
     "cr_context": "XCVR",
     "connections": [
         {
