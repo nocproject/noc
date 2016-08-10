@@ -41,6 +41,8 @@ class Command(BaseCommand):
         }
         for m in ObjectModel.objects.all():
             self.errors = []
+            if not m.cr_context:
+                self.errors += ["Missing 'cr_context' field"]
             for c in m.connections:
                 self.common_check(c)
                 check = CHECK_MAP.get(c.type.name)
@@ -67,49 +69,56 @@ class Command(BaseCommand):
                     return
         self.e(c, "Must have one of protocols: %s" % ", ".join(protocols))
 
+    def check_direction(self, c, directions):
+        if (c.direction) and (c.direction in directions):
+            return
+        self.e(c, "'%s' must have direction %s (has '%s')" % (
+            c.type.name, directions, c.direction
+        ))
+
     def check_ct_db9(self, c):
-        if c.direction != "s":
-            self.e(c, "DB9 must have direction 's' (has '%s')" % c.direction)
+        self.check_direction(c, ["s"])
         self.check_protocols(c, [
             ">RS232"
         ])
 
     def check_ct_rj45(self, c):
-        if c.direction != "s":
-            self.e(c, "RJ45 must have direction 's' (has '%s')" % c.direction)
+        self.check_direction(c, ["s"])
         if not c.protocols:
             self.e(c, "RJ45 must have at least one protocol")
 
     def check_ct_c14(self, c):
-        if c.direction != "s":
-            self.e(c, "C14 must have direction 's' (has '%s')" % c.direction)
+        self.check_direction(c, ["s"])
         self.check_protocols(c, [
             ">220VAC", "<220VAC", ">110VAC", "<110VAC"
         ])
 
     def check_ct_sff8470(self, c):
-        if c.direction != "s":
-            self.e(c, "SFF-8470 must have direction 's' (has '%s')" % c.direction)
+        self.check_direction(c, ["s"])
         self.check_protocols(c, [
             "10GBASECX4"
         ])
 
     def check_ct_sfp(self, c):
+        self.check_direction(c, ["i", "o"])
         self.check_protocols(c, [
             "TransEth100M", "TransEth1G", "TransEth10G", "TransEth40G"
         ])
 
     def check_ct_sfp_plus(self, c):
+        self.check_direction(c, ["i", "o"])
         self.check_protocols(c, [
             "TransEth1G", "TransEth10G"
         ])
 
     def check_ct_qsfp_plus(self, c):
+        self.check_direction(c, ["i", "o"])
         self.check_protocols(c, [
             "TransEth1G", "TransEth10G", "TransEth40G"
         ])
 
     def check_ct_xfp(self, c):
+        self.check_direction(c, ["i", "o"])
         # TODO: Add "TransEth10G" protocol to models
         return
         self.check_protocols(c, [
@@ -117,11 +126,13 @@ class Command(BaseCommand):
         ])
 
     def check_ct_gbic(self, c):
+        self.check_direction(c, ["i", "o"])
         self.check_protocols(c, [
             "TransEth100M", "TransEth1G", "TransEth10G", "TransEth40G"
         ])
 
     def check_ct_xenpak(self, c):
+        self.check_direction(c, ["i", "o"])
         self.check_protocols(c, [
             "TransEth10G"
         ])
