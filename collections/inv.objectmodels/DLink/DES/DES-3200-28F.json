@@ -193,7 +193,7 @@
         },
         {
             "description": "24",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "24",
             "protocols": ["TransEth100M"],

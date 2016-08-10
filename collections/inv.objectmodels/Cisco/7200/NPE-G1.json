@@ -25,7 +25,7 @@
         },
         {
             "description": "Gi 0/1 port (GBIC)",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "group": "1",
             "name": "Gi0/1_gbic",
@@ -43,7 +43,7 @@
         },
         {
             "description": "Gi 0/2 port (GBIC)",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "group": "2",
             "name": "Gi0/2_gbic",
@@ -61,7 +61,7 @@
         },
         {
             "description": "Gi 0/3 port (GBIC)",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "group": "3",
             "name": "Gi0/3_gbic",
