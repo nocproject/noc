@@ -16,7 +16,7 @@
         },
         {
             "description": "1",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp1",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -24,7 +24,7 @@
         },
         {
             "description": "2",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp2",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -32,7 +32,7 @@
         },
         {
             "description": "3",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp3",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -40,7 +40,7 @@
         },
         {
             "description": "4",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp4",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -48,7 +48,7 @@
         },
         {
             "description": "5",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp5",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -56,7 +56,7 @@
         },
         {
             "description": "6",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp6",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -64,7 +64,7 @@
         },
         {
             "description": "7",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp7",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -72,7 +72,7 @@
         },
         {
             "description": "8",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp8",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -80,7 +80,7 @@
         },
         {
             "description": "9",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp9",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -88,7 +88,7 @@
         },
         {
             "description": "10",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp10",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -96,7 +96,7 @@
         },
         {
             "description": "11",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp11",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -104,7 +104,7 @@
         },
         {
             "description": "12",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp12",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -112,7 +112,7 @@
         },
         {
             "description": "13",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp13",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -120,7 +120,7 @@
         },
         {
             "description": "14",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp14",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -128,7 +128,7 @@
         },
         {
             "description": "15",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp15",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -136,7 +136,7 @@
         },
         {
             "description": "16",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp16",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -144,7 +144,7 @@
         },
         {
             "description": "17",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp17",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -152,7 +152,7 @@
         },
         {
             "description": "18",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp18",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -160,7 +160,7 @@
         },
         {
             "description": "19",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp19",
             "protocols": ["TransEth100M", "TransEth1G"],
@@ -168,7 +168,7 @@
         },
         {
             "description": "20",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "sfp20",
             "protocols": ["TransEth100M", "TransEth1G"],
