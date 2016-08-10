@@ -398,7 +398,7 @@ class Script(BaseScript):
             ^(?P<name>\d+/\d+/\d+)\s+
             (?P<admin_status>\S*)\s+
             (?P<bad_stat>\S*)\s+
-            (?P<oper_status>\S*)\s+
+            (?:Link\s)?(?P<oper_status>\S*)\s+
             (?P<mtu>\d*)\s+
             (?P<oper_mtu>\d*)\s+
             (?P<aggregated_interface>\d*)\s
@@ -463,7 +463,8 @@ class Script(BaseScript):
                 my_dict = match.groupdict()
                 my_dict.update(match_detail.groupdict())
                 if 'aggregated_interface' in my_dict:
-                    my_dict['aggregated_interface'] = "-".join(["lag", my_dict['aggregated_interface']])
+                    if my_dict['aggregated_interface'] != '':
+                        my_dict['aggregated_interface'] = "-".join(["lag", my_dict['aggregated_interface']])
                 my_dict['type'] = 'physical'
                 my_dict['subinterfaces'] = []
                 my_dict.pop('bad_stat')
