@@ -33,15 +33,20 @@ class Command(BaseCommand):
             "Electrical | Power | IEC 60320 C14": self.check_ct_c14,
             "Electrical | SFF-8470": self.check_ct_sff8470,
             "Transceiver | SFP": self.check_ct_sfp,
+            "Transceiver | SFP | Cisco": self.check_ct_sfp,
             "Transceiver | SFP+": self.check_ct_sfp_plus,
+            "Transceiver | SFP+ | Cisco": self.check_ct_sfp_plus,
+            "Transceiver | SFP+ | Force10": self.check_ct_sfp_plus,
+            "Transceiver | SFP+ | Juniper": self.check_ct_sfp_plus,
             "Transceiver | QSFP+": self.check_ct_qsfp_plus,
             "Transceiver | XFP": self.check_ct_xfp,
+            "Transceiver | XFP | Cisco": self.check_ct_xfp,
             "Transceiver | GBIC": self.check_ct_gbic,
             "Transceiver | XENPAK | Cisco": self.check_ct_xenpak
         }
         for m in ObjectModel.objects.all():
             self.errors = []
-            if not m.cr_context:
+            if (m.connection_rule is not None) and (not m.cr_context):
                 self.errors += ["Missing 'cr_context' field"]
             for c in m.connections:
                 self.common_check(c)
