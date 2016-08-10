@@ -124,7 +124,12 @@ class ProfileCheck(DiscoveryCheck):
         """
         Perform SNMP v2c GET. Param is OID or symbolic name
         """
-        snmp_ro = self.object.credentials.snmp_ro
+        if hasattr(self.object, "_suggest_snmp"):
+            # Use guessed community
+            # as defined one may be invalid
+            snmp_ro = self.object._suggest_snmp[0]
+        else:
+            snmp_ro = self.object.credentials.snmp_ro
         if not snmp_ro:
             self.logger.error("No SNMP credentials. Ignoring")
             return None
