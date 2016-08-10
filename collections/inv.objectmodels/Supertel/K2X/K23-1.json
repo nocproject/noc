@@ -230,7 +230,7 @@
         {
             "description": "Power inlet",
             "direction": "s",
-            "gender": "m",
+            "gender": "f",
             "name": "power",
             "protocols": [">220VAC", ">110VAC"],
             "type__name": "Power | IEC 60320 C14"

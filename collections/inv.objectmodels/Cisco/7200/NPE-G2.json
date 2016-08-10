@@ -24,10 +24,11 @@
         },
         {
             "description": "Gi 0/1 port (SFP)",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Gi0/1_sfp",
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP | Cisco",
+            "protocols": ["TransEth1G"]
         },
         {
             "description": "Gi 0/2 port",
@@ -39,10 +40,11 @@
         },
         {
             "description": "Gi 0/2 port (SFP)",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Gi0/2_sfp",
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP | Cisco",
+            "protocols": ["TransEth1G"]
         },
         {
             "description": "Gi 0/3 port",
@@ -54,10 +56,11 @@
         },
         {
             "description": "Gi 0/3 port (SFP)",
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "name": "Gi0/3_sfp",
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP | Cisco",
+            "protocols": ["TransEth1G"]
         },
         {
             "description": "Console port",
