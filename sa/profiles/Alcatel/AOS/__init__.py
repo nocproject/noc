@@ -8,6 +8,9 @@
 ##----------------------------------------------------------------------
 """
 """
+## Python modules
+import re
+## NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -19,6 +22,12 @@ class Profile(BaseProfile):
     pattern_syntax_error = "ERROR: Invalid entry:"
     command_save_config = "write memory\r\ncopy working certified"
     command_exit = "exit"
+
+    rx_ver = re.compile(r"\d+")
+
+    def cmp_version(self, x, y):
+        return cmp([int(z) for z in self.rx_ver.findall(x)],
+            [int(z) for z in self.rx_ver.findall(y)])
 
     def convert_interface_name(self, s):
         if s.startswith("Alcatel ") or s.startswith("Alcatel-Lucent "):
