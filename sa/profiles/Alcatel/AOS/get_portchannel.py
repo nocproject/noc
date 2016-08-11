@@ -28,15 +28,17 @@ class Script(BaseScript):
     def execute(self):
         r = []
         data = self.cli("show linkagg")
+        data1 = ""
         for match in self.rx_line.finditer(data):
             port = int(match.group("port"))
             members = []
-            try:
+            if self.match_version(version__gte="6.3.4"):
                 data1 = self.cli("show linkagg %i port" % port)
                 for match1 in self.rx_line1.finditer(data1):
                     members += [match1.group("interface")]
-            except self.CLISyntaxError:
-                data1 = self.cli("show linkagg port")
+            else:
+                if not data1:
+                    data1 = self.cli("show linkagg port")
                 for match1 in self.rx_line2.finditer(data1):
                     if int(match1.group("port")) == port:
                         members += [match1.group("interface")]
