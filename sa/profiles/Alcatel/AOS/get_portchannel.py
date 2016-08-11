@@ -28,8 +28,12 @@ class Script(BaseScript):
         for match in self.rx_line.finditer(data):
             port = int(match.group("port"))
             members = []
-            data1 = self.cli(
-                "show linkagg %i port" % port)
+            try:
+                data1 = self.cli(
+                    "show linkagg %i port" % port)
+            except self.CLISyntaxError:
+                data1 = self.cli(
+                    "show linkagg %i" % port)
             for match1 in self.rx_line1.finditer(data1):
                 members += [match1.group("interface")]
             r += [{
