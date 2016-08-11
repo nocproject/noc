@@ -1,20 +1,36 @@
 //---------------------------------------------------------------------
 // sa.administrativedomain application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2016 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.administrativedomain.Application");
 
 Ext.define("NOC.sa.administrativedomain.Application", {
     extend: "NOC.core.ModelApplication",
-    uses: ["NOC.sa.administrativedomain.Model"],
+    requires: [
+        "NOC.sa.administrativedomain.Model",
+        "NOC.sa.administrativedomain.LookupField",
+        "NOC.main.pool.LookupField"
+    ],
     model: "NOC.sa.administrativedomain.Model",
     search: true,
     columns: [
         {
             text: __("Name"),
             dataIndex: "name",
+            width: 150
+        },
+        {
+            text: __("Parent"),
+            dataIndex: "parent",
+            renderer: NOC.render.Lookup("parent"),
+            width: 150
+        },
+        {
+            text: __("Pool"),
+            dataIndex: "default_pool",
+            renderer: NOC.render.Lookup("default_pool"),
             width: 150
         },
         {
@@ -38,9 +54,21 @@ Ext.define("NOC.sa.administrativedomain.Application", {
             allowBlank: false
         },
         {
+            name: "parent",
+            xtype: "sa.administrativedomain.LookupField",
+            fieldLabel: __("Parent"),
+            allowBlank: true
+        },
+        {
             name: "description",
             xtype: "textfield",
             fieldLabel: __("Description"),
+            allowBlank: true
+        },
+        {
+            name: "default_pool",
+            xtype: "main.pool.LookupField",
+            fieldLabel: __("Pool"),
             allowBlank: true
         }
     ]
