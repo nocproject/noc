@@ -25,6 +25,24 @@ Ext.define("NOC.sa.administrativedomain.Model", {
             type: "string"
         },
         {
+            name: "parent",
+            type: "string"
+        },
+        {
+            name: "parent__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "default_pool",
+            type: "string"
+        },
+        {
+            name: "default_pool__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "object_count",
             type: "int",
             persist: false
