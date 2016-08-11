@@ -28,6 +28,7 @@ from noc.sa.models.servicesummary import ServiceSummary
 from noc.lib.text import split_alnum, list_to_ranges
 from noc.maintainance.models.maintainance import Maintainance
 from noc.lib.validators import is_ipv4, is_int
+from noc.lib.mac import MAC
 
 
 class ManagedObjectCard(BaseCard):
@@ -243,6 +244,13 @@ class ManagedObjectCard(BaseCard):
             q |= Q(address__regex=query.replace(".", "\\.").replace("*", "[0-9]+"))
         if is_int(query):
             q |= Q(id=int(query))
+        try:
+            mac = MAC(query)
+            mo = DiscoveryID.find_object(mac=str(mac))
+            if mo:
+                q = Q(id=mo.id)
+        except ValueError:
+            pass
         r = []
         for mo in ManagedObject.objects.filter(q):
             r += [{
