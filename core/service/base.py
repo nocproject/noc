@@ -83,6 +83,7 @@ class Service(object):
         self._metrics = []
         self.metrics_lock = threading.Lock()
         self.metrics_callback = None
+        self.setup_translation()
 
     def create_parser(self):
         """
