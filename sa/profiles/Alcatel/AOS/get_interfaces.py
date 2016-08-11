@@ -166,7 +166,8 @@ class Script(BaseScript):
                 isis += [match.group("ipif")]
 
         lldp = []
-        if self.has_capability("Network | LLDP"):
+        if "Network | LLDP" in self.scripts.get_capabilities():
+        #if self.has_capability("Network | LLDP"):
             try:
                 c = self.cli("show lldp local-system")
             except self.CLISyntaxError:
@@ -183,7 +184,8 @@ class Script(BaseScript):
             lldp_enable = False
 
         udld = []
-        if self.has_capability("Network | UDLD"):
+        if "Network | UDLD" in self.scripts.get_capabilities():
+        #if self.has_capability("Network | UDLD"):
             try:
                 c = self.cli("show udld configuration")
             except self.CLISyntaxError:
