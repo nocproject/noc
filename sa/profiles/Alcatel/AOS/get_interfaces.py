@@ -167,10 +167,10 @@ class Script(BaseScript):
 
         lldp = []
         try:
-            lld_enable = self.has_capability("Network | LLDP")
+            lldp_enable = self.has_capability("Network | LLDP")
         except:
-            lld_enable = bool("Network | LLDP" in self.scripts.get_capabilities())
-        if lld_enable:
+            lldp_enable = bool("Network | LLDP" in self.scripts.get_capabilities())
+        if lldp_enable:
             try:
                 c = self.cli("show lldp local-system")
             except self.CLISyntaxError:
@@ -183,8 +183,6 @@ class Script(BaseScript):
                     c = ""
                 for match in self.rx_lldp.finditer(c):
                     lldp += [match.group("port")]
-        else:
-            lldp_enable = False
 
         udld = []
         try:
@@ -204,8 +202,6 @@ class Script(BaseScript):
                     c = ""
                 for match in self.rx_udld.finditer(c):
                     udld += [match.group("port")]
-        else:
-            udld_enable = False
 
         r = []
         try:
