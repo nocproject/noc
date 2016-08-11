@@ -461,6 +461,8 @@ class AssetCheck(DiscoveryCheck):
         # Temporary fix
         if v == "D-LINK":
             v = "DLINK"
+        if v == "Intel Corp":
+            v = "INTEL"
         o = Vendor.objects.filter(code=v).first()
         if o:
             self.vendors[v] = o
