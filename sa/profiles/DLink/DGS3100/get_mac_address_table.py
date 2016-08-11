@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DGS3100.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -51,7 +51,7 @@ class Script(BaseScript):
                     if not v[2] or int(v[2]) > 3 or int(v[2]) < 1:
                         continue
                     iface = self.snmp.get(
-                        "1.3.6.1.2.1.31.1.1.1.1." + v[1],
+                        "1.3.6.1.2.1.31.1.1.1.1." + str(v[1]),
                         cached=True)  # IF-MIB
                     if interface is not None:
                         if iface == interface:
