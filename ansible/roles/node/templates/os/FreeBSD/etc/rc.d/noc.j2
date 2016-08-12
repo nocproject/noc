@@ -28,7 +28,7 @@ export PATH=$PATH:/usr/local/bin
 
 noc_chdir={{ noc_root }}
 command={{ noc_root }}/bin/supervisord
-command_interpreter=./bin/python
+command_interpreter=`/bin/realpath {{ noc_root }}/bin/python`
 pidfile=/var/run/$name.pid
 required_files=${noc_config}
 
