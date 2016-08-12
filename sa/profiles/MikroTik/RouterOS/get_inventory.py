@@ -21,7 +21,7 @@ class Script(BaseScript):
     def execute(self):
         v = self.scripts.get_version()
         platform = v["platform"]
-        if platform != "x86":
+        if platform not in ["x86", "CHR"]:
             return [{
                 "type": "CHASSIS",
                 "vendor": "MikroTik",
