@@ -17,8 +17,9 @@ class Script(BaseScript):
 
     def execute(self):
         try:
-            v = self.cli_detail("interface ethernet switch vlan print detail")
+            v = self.cli_detail(
+                "interface ethernet switch vlan print detail without-paging")
         except self.CLISyntaxError:
-            raise self.NotSupportedError()
+            return []
 
-        return  [{"vlan_id": d["vlan-id"]} for n, f, d in v if not f]
+        return [{"vlan_id": d["vlan-id"]} for n, f, d in v if not f]
