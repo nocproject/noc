@@ -57,7 +57,7 @@ class IntParameter(BaseParameter):
     def __init__(self, default=None, help=None, min=None, max=None):
         self.min = min
         self.max = max
-        super(IntParameter, self).__init__(default=None, help=None)
+        super(IntParameter, self).__init__(default=default, help=None)
 
     def clean(self, v):
         v = int(v)
