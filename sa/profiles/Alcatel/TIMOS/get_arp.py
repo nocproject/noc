@@ -24,7 +24,7 @@ class Script(BaseScript):
         else:
             s = self.cli('show service service-using vprn')
             vrfs = self.rx_vrfs.findall(s)
-            s = ''
+            s = self.cli('show router arp')
             for vrf in vrfs:
                 s += self.cli('show router %s arp' % vrf)
         r = []
