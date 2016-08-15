@@ -1,0 +1,8 @@
+{
+    "name": "Alcatel | 7x50 | IO",
+    "$collection": "inv.connectiontypes",
+    "uuid": "e0e9b894-58d9-44f7-9882-ecc0d8d150e5",
+    "description": "Alcatel 7450, 7750 IO Slot",
+    "c_group": [],
+    "genders": "mf"
+}
