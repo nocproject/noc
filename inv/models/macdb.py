@@ -43,7 +43,10 @@ class MACDB(Document):
         self.mac = MAC(self.mac)
         if not self.last_changed:
             self.last_changed = datetime.datetime.now()
-        super(MACDB, self).save()
+        try:
+            super(MACDB, self).save()
+        except Exception as e:
+            raise ValueError("%s: %s" % (e.__doc__, e.message))
 
     @classmethod
     def submit(cls, mac, vc_domain, vlan, interface, timestamp=None):
