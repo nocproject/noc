@@ -160,7 +160,10 @@ class Collection(object):
                     fp = os.path.join(root, cf)
                     with open(fp) as f:
                         data = f.read()
-                    jdata = ujson.loads(data)
+                    try:
+                        jdata = ujson.loads(data)
+                    except ValueError, why:
+                        raise ValueError("Error load %s: %s" % (fp, why))
                     if "uuid" not in jdata:
                         raise ValueError("Invalid JSON %s: No UUID" % fp)
                     csum = hashlib.sha256(data).hexdigest()
