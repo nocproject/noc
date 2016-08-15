@@ -15,7 +15,7 @@ from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (StringParameter, MapParameter,
                                     IntParameter, BooleanParameter,
                                     HandlerParameter, SecondsParameter,
-                                    FloatParameter)
+                                    FloatParameter, ListParameter)
 
 
 class Config(BaseConfig):
@@ -98,6 +98,21 @@ class Config(BaseConfig):
         user = StringParameter()
         password = StringParameter()
 
+    class nsqlookupd(ConfigSection):
+        host = StringParameter(default="nsqlookupd")
+        port = IntParameter(
+            min=1, max=65535,
+            default=4161
+        )
+        hosts = ListParameter(default=[":".join([host.value, str(port.value)])])
+
+    class nsqd(ConfigSection):
+        host = StringParameter(default="nsqd")
+        port = IntParameter(
+            min=1, max=65535,
+            default=4151
+        )
+
     class customization(ConfigSection):
         favicon = StringParameter(
             default="/static/img/logo_24x24_deep_azure.png"
@@ -166,6 +181,16 @@ class Config(BaseConfig):
     class dns(ConfigSection):
         warn_before_expired = SecondsParameter(default="30d")
 
+    class scheduler(ConfigSection):
+        max_threads = IntParameter(default=20)
+
+    class sae(ConfigSection):
+        db_threads = IntParameter(default=20)
+
+    class classifier(ConfigSection):
+        lookup = HandlerParameter(
+            default="noc.services.classifier.rulelookup.RuleLookup")
+        default_interface_profile = StringParameter(default="default")
 
     def __init__(self):
         self.setup_logging()
@@ -188,7 +213,7 @@ class Config(BaseConfig):
             "port": self.pg.port,
             "database": self.pg.db,
             "user": self.pg.user,
-            "password": self.pg_password
+            "password": self.pg.password
         }
 
     @property
