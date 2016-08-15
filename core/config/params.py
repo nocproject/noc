@@ -126,3 +126,10 @@ class SecondsParameter(BaseParameter):
         except ValueError:
             raise ValueError("Invalid value: %s" % v)
         return v * m
+
+
+class ListParameter(BaseParameter):
+    def __init__(self, default=None, help=None, lists=None):
+        self.list = lists or []
+        super(ListParameter, self).__init__(default=default, help=help)
+        # @todo add clean method

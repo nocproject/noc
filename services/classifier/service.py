@@ -111,8 +111,8 @@ class ClassifierService(Service):
         Load rules from database after loading config
         """
         self.logger.info("Using rule lookup solution: %s",
-                         self.config.lookup_solution)
-        self.lookup_cls = get_handler(self.config.lookup_solution)
+                         self.config.classifier.lookup)
+        self.lookup_cls = get_handler(self.config.classifier.lookup)
         self.load_enumerations()
         self.load_rules()
         self.load_triggers()
@@ -296,9 +296,9 @@ class ClassifierService(Service):
 
     def load_link_action(self):
         self.default_link_action = None
-        if self.config.default_interface_profile:
+        if self.config.classifier.default_interface_profile:
             p = InterfaceProfile.objects.filter(
-                name=self.config.default_interface_profile).first()
+                name=self.config.classifier.default_interface_profile).first()
             if p:
                 self.logger.info("Setting default link event action to %s", p.link_events)
                 self.default_link_action = p.link_events

@@ -37,7 +37,7 @@ class SAEService(Service):
         self.load_pools()
         self.pg_pool = PreparedConnectionPool(
             1,
-            self.config.db_threads,
+            self.config.sae.db_threads,
             **config.pg_connection_args
         )
 

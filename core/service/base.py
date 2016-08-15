@@ -365,7 +365,7 @@ class Service(object):
         metric_decode_fail = "nsq_msg_decode_fail_%s" % t
         metric_processed = "nsq_msg_processed_%s" % t
         metric_deferred = "nsq_msg_deferred_%s" % t
-        lookupd = self.config.get_service("nsqlookupd")
+        lookupd = self.config.nsqlookupd.hosts
         self.logger.info("Subscribing to %s/%s (lookupd: %s)",
                          topic, channel, ", ".join(lookupd))
         self.nsq_readers[handler] = nsq.Reader(
