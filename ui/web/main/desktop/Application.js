@@ -361,7 +361,7 @@ Ext.define("NOC.main.desktop.Application", {
         }
     },
     //
-    onUnload: function(e) {
+    onUnload: function (e) {
         var me = this,
             msg = "You're trying to close NOC application. Unsaved changes may be lost.";
         if(me.restartReason) {
