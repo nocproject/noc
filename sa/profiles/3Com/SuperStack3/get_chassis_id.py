@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## 3Com.SuperStack3.get_version
+## 3Com.SuperStack3.get_chassis_id
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
@@ -8,23 +8,17 @@
 """
 """
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetversion import IGetVersion
+from noc.sa.interfaces.igetchassisid import IGetChassisID
 
 
 class Script(BaseScript):
-    name = "3Com.SuperStack3.get_version"
+    name = "3Com.SuperStack3.get_chassis_id"
     cache = True
-    interface = IGetVersion
+    interface = IGetChassisID
 
     def execute(self):
         v = self.profile.get_hardware(self)
         return {
-            "vendor": "3Com",
-            "platform": v["platform"],
-            "version": v["version"],
-            "attributes": {
-                "Boot PROM": v["bootprom"],
-                "HW version": v["hardware"],
-                "Serial Number": v["serial"]
-            }
+            "first_chassis_mac": v["mac"],
+            "last_chassis_mac": v["mac"]
         }
