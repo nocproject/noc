@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "Chart.js",
+  "sourceRoot": "",
+  "sources": [
+    "Chart.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA,GAAG,CAAC,MAAJ,CAAW,uBAAX,EACC;IAAA,MAAA,EAAQ,0BAAR;IACA,KAAA,EAAO,eADP;GADD;AAAA"
+}

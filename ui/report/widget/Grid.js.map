@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "Grid.js",
+  "sourceRoot": "",
+  "sources": [
+    "Grid.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA,GAAG,CAAC,MAAJ,CAAW,oBAAX,EACC;IAAA,MAAA,EAAQ,wBAAR;IACA,KAAA,EAAO,YADP;IAGA,YAAA,EAAc,cAHd;GADD;AAAA"
+}
