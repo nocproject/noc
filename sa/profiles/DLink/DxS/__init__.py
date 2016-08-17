@@ -4,7 +4,7 @@
 ## OS:     DxS
 ## Compatible:
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -152,7 +152,7 @@ class Profile(BaseProfile):
     def get_ports(self, script, interface=None):
         if ((script.match_version(DES3200, version__gte="1.70.B007") \
         and script.match_version(DES3200, version__lte="3.00.B000"))
-        or script.match_version(DES3200, version__gte="4.20.B000") \
+        or script.match_version(DES3200, version__gte="4.38.B000") \
         or script.match_version(DES3028, version__gte="2.90.B10") \
         or script.match_version(DGS3120, version__gte="3.00.B022") \
         or script.match_version(DGS3620, version__gte="2.50.017")) \
