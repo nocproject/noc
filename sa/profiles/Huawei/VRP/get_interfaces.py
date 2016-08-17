@@ -26,7 +26,7 @@ class Script(BaseScript):
         re.IGNORECASE
     )
     rx_mac = re.compile(
-        "Hardware address is (?P<mac>[0-9af]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
+        "Hardware address is (?P<mac>[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
     )
     rx_ipv4 = re.compile(
         r"Internet Address is (?P<ip>\d{1,2}\.\d{1,2}\.\d{1,2}\.\d{1,2}/\d{1,2})",
