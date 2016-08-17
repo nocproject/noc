@@ -31,16 +31,10 @@ class Script(BaseScript):
         r"^\d+\s+(?P<name>\S+)\s+(?P<ip>\S+)\s+(?P<mask>\S+)\s+(?P<status>\S+)\s+"
         r"(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
 
-    rx_mv = re.compile(r"MANAGEMENT VLAN:\s+(?P<mv>\d+)", re.IGNORECASE)
-
     def execute(self):
         interfaces = []
         ports = []
-        v = self.scripts.get_capabilities()
-        if "Network | STP" in v:
-            gstp = True
-        else:
-            gstp = False
+        gstp = bool("Network | STP" in self.scripts.get_capabilities())
         v = self.profile.get_hardware(self)
         mac = v["mac"]
         v = self.cli("bridge port summary all")
@@ -78,17 +72,18 @@ class Script(BaseScript):
             interfaces += [i]
         v = self.cli("protocol ip interface summary all")
         for match in self.rx_ipif.finditer(v):
+            status = bool(match.group("status") == "Up")
             i = {
                 "name": match.group("name"),
                 "type": "SVI",
-                "admin_status": match.group("status") == "Up",
-                "oper_status": match.group("status") == "Up",
+                "admin_status": status,
+                "oper_status": status,
                 "enabled_protocols": [],
                 "mac": mac,
                 "subinterfaces": [{
                     "name": match.group("name"),
-                    "admin_status": match.group("status") == "Up",
-                    "oper_status": match.group("status") == "Up",
+                    "admin_status": status,
+                    "oper_status": status,
                     "mac": mac,
                     "vlan_ids": [int(match.group("vlan_id"))],
                     "enabled_afi": ["IPv4"]
