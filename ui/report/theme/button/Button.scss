@@ -2,19 +2,19 @@ $button-small-border-radius: $border-radius;
 $button-toolbar-background-color-focus: transparent;
 $button-default-body-outline-color-focus: transparent;
 
-.#{$prefix}toolbar-item.#{$prefix}btn-default-toolbar-small {
+.x-toolbar-item.x-btn-default-toolbar-small {
 	&,
-	&.#{$prefix}btn-focus.#{$prefix}btn-over {
+	&.x-btn-focus.x-btn-over {
 		@include background-gradient(darken($color-white, 10%), matte, top);
 		box-shadow: 0 0 2px $color-midnight-blue;
 		margin: 2px;
 
-		.#{$prefix}btn-button {
+		.x-btn-button {
 			font-size: $font-size-base;
 			padding: 5px;
 		}
 
-		&.#{$prefix}btn-pressed {
+		&.x-btn-pressed {
 			@include background-gradient(darken($color-white, 10%), matte-reverse, top);
 		}
 	}

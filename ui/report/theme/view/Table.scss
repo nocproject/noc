@@ -7,15 +7,15 @@ $grid-row-cell-over-border-color: $grid-row-cell-border-color;
 $grid-row-cell-focus-border-color: $grid-row-cell-border-color;
 $grid-row-cell-selected-border-color: $grid-row-cell-border-color;
 
-.#{$prefix}grid-with-row-lines {
+.x-grid-with-row-lines {
 	border-top: 1px solid $color-silver;
 
-	&.#{$prefix}grid-body {
+	&.x-grid-body {
 		border-top: 0;
 	}
 }
 
-.#{$prefix}focus .#{$prefix}column-header-inner.#{$prefix}leaf-column-header::after,
-.#{$prefix}grid-item-focused .#{$prefix}grid-cell-inner::before {
+.x-focus .x-column-header-inner.x-leaf-column-header::after,
+.x-grid-item-focused .x-grid-cell-inner::before {
 	border: none;
 }

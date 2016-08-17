@@ -2,7 +2,7 @@ $menu-item-active-background-color: $color-concrete;
 $menu-border-style: dashed;
 $menu-border-width: 0;
 
-.#{$prefix}menu.#{$prefix}menu-default,
-.#{$prefix}menu-body.#{$prefix}menu-body-default {
+.x-menu.x-menu-default,
+.x-menu-body.x-menu-body-default {
 	border-radius: $border-radius;
 }

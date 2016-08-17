@@ -1,6 +1,7 @@
 Ext.define 'Report.NocMenu',
 	extend: 'Ext.toolbar.Toolbar'
 	xtype: 'nocMenu'
+	cls: 'noc-menu'
 
 	items: [
 		{

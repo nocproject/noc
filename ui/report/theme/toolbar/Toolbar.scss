@@ -1,31 +1,31 @@
-.#{$prefix}toolbar-default {
+.x-toolbar-default {
 	@include background-gradient($color-concrete, matte, top);
 	padding: 12px;
 }
 
-.#{$prefix}toolbar-text-default {
+.x-toolbar-text-default {
 	font-size: $font-size-header;
 	font-weight: $font-weight-header;
 	color: $color-clouds;
 	text-shadow: 0 0 2px $color-midnight-blue;
 }
 
-.noc-global-header.#{$prefix}toolbar-default {
+.noc-menu.x-toolbar-default {
 	background-color: $color-midnight-blue;
 	background-image: none;
 	color: $color-clouds;
 
-	.#{$prefix}toolbar-item.#{$prefix}btn-default-toolbar-small {
+	.x-toolbar-item.x-btn-default-toolbar-small {
 		background: transparent;
 		border: 0;
 
-		.#{$prefix}btn-inner {
+		.x-btn-inner {
 			font-size: $font-size-main-menu;
 			color: $color-silver;
 		}
 	}
 
-	.#{$prefix}form-trigger-wrap {
+	.x-form-trigger-wrap {
 		border: 0;
 
 		input {
@@ -34,7 +34,7 @@
 		}
 	}
 
-	.#{$prefix}form-text-wrap {
+	.x-form-text-wrap {
 
 		&::before {
 			content: "\f002";
@@ -51,11 +51,11 @@
 		}
 	}
 
-	.#{$prefix}form-text-wrap.#{$prefix}form-text-wrap-toolbar {
+	.x-form-text-wrap.x-form-text-wrap-toolbar {
 		border-radius: $border-radius;
 	}
 
-	.#{$prefix}fa:before {
+	.x-fa:before {
 		font-size: $font-size-header;
 	}
 }
