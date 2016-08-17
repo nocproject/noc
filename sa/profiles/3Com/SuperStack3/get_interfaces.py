@@ -1,0 +1,102 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## 3Com.SuperStack3.get_interfaces
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2016 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+"""
+"""
+## Python modules
+import re
+## NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.ip import IPv4
+
+
+class Script(BaseScript):
+    name = "3Com.SuperStack3.get_interfaces"
+    interface = IGetInterfaces
+
+    rx_port = re.compile(
+        r"^(?P<port>\d+\:\d+)\s+(?P<status>Active|Inactive)\s+"
+        r"(?P<stp>\S+)", re.MULTILINE)
+    rx_stp = re.compile(r"^StpState:\s+Enabled", re.MULTILINE)
+    rx_lacp = re.compile(r"^LACP State:\s+Disabled", re.MULTILINE)
+    rx_vlan = re.compile(
+        r"^(?P<vlan_id>\d+)\s+.+\s+(?P<mode>\S+)\s+\S+\s*\n",
+        re.MULTILINE)
+    rx_ipif = re.compile(
+        r"^\d+\s+(?P<name>\S+)\s+(?P<ip>\S+)\s+(?P<mask>\S+)\s+(?P<status>\S+)\s+"
+        r"(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
+
+    rx_mv = re.compile(r"MANAGEMENT VLAN:\s+(?P<mv>\d+)", re.IGNORECASE)
+
+    def execute(self):
+        interfaces = []
+        ports = []
+        v = self.scripts.get_capabilities()
+        if "Network | STP" in v:
+            gstp = True
+        else:
+            gstp = False
+        v = self.profile.get_hardware(self)
+        mac = v["mac"]
+        v = self.cli("bridge port summary all")
+        for match in self.rx_port.finditer(v):
+            ports += [{
+                "name": match.group("port"),
+                "status": match.group("status") == "Active"
+            }]
+        for p in ports:
+            i = {
+                "name": p['name'],
+                "type": "physical",
+                "oper_status": p['status'],
+                "enabled_protocols": [],
+                "subinterfaces": [{
+                    "name": p['name'],
+                    "oper_status": p['status'],
+                    "enabled_afi": ['BRIDGE']
+                }]
+            }
+            v = self.cli("bridge port detail %s" % p['name'])
+            if gstp and self.rx_stp.search(v):
+                i["enabled_protocols"] += ["STP"]
+            if not self.rx_lacp.search(v):
+                i["enabled_protocols"] += ["LACP"]
+            for match in self.rx_vlan.finditer(v):
+                vlan_id = int(match.group("vlan_id"))
+                if match.group("mode") == "Untagged":
+                    i['subinterfaces'][0]['untagged_vlan'] = vlan_id
+                else:
+                    if "tagged_vlans" in i['subinterfaces'][0]:
+                        i['subinterfaces'][0]['tagged_vlans'] += [vlan_id]
+                    else:
+                        i['subinterfaces'][0]['tagged_vlans'] = [vlan_id]
+            interfaces += [i]
+        v = self.cli("protocol ip interface summary all")
+        for match in self.rx_ipif.finditer(v):
+            i = {
+                "name": match.group("name"),
+                "type": "SVI",
+                "admin_status": match.group("status") == "Up",
+                "oper_status": match.group("status") == "Up",
+                "enabled_protocols": [],
+                "mac": mac,
+                "subinterfaces": [{
+                    "name": match.group("name"),
+                    "admin_status": match.group("status") == "Up",
+                    "oper_status": match.group("status") == "Up",
+                    "mac": mac,
+                    "vlan_ids": [int(match.group("vlan_id"))],
+                    "enabled_afi": ["IPv4"]
+                }]
+            }
+            addr = match.group("ip")
+            mask = match.group("mask")
+            ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
+            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            interfaces += [i]
+        return [{"interfaces": interfaces}]
