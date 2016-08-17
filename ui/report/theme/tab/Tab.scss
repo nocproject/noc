@@ -1,0 +1,10 @@
+$tab-color: $color;
+$tab-color-active: $color-clouds;
+
+.#{$prefix}tab.#{$prefix}tab-active.#{$prefix}tab-default {
+	background-color: $color-piter-river;
+}
+
+.#{$prefix}tab-focus.x-tab-default {
+	outline-color: transparent;
+}
