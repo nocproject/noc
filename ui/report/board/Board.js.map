@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "Board.js",
+  "sourceRoot": "",
+  "sources": [
+    "Board.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA,GAAG,CAAC,MAAJ,CAAW,oBAAX,EACC;IAAA,MAAA,EAAQ,yBAAR;IACA,KAAA,EAAO,OADP;GADD,EAGI;IAAA,QAAA,EAAU,CACT,mBADS,CAAV;GAHJ,EAOC;IAAA,IAAA,EACC;MAAA,KAAA,EAAO,WAAP;KADD;GAPD;AAAA"
+}

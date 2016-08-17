@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "Socket.js",
+  "sourceRoot": "",
+  "sources": [
+    "Socket.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;EAAA,GAAG,CAAC,MAAJ,CAAW,oBAAX;AAAA"
+}
