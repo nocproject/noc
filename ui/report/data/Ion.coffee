@@ -4,9 +4,3 @@ Ext.define 'Report.data.Ion',
 	config:
 		method: ''
 		data: null
-		autoDestroy: true
-
-	callAlways: () ->
-        @callParent arguments
-
-        if @getAutoDestroy() then @destroy()
