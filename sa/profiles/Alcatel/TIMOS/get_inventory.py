@@ -24,7 +24,7 @@ class Script(BaseScript):
     rx_imm = re.compile(
         r"^(?P<number>\d+)\s+(?P<name>imm\d+\S+)\s+(?:up|down)\s+(?:up|down)")
     rx_mda = re.compile(
-        r"^(?P<slot>\d+)/(?P<number>\d+)\s+(?P<name>m\d+\S+)\s+(?:up|down)\s+(?:up|down)")
+        r"^(?P<slot>\d+)/(?P<number>\d+)\s+(?P<name>(?:m|imm)\d+\S+)\s+(?:up|down)\s+(?:up|down)")
     rx_cfm = re.compile(
         r"^(?P<number>A|B)\s+(?P<name>sfm\d+\S+)\s+(?:up|down)\s+(?:up|down)")
     rx_ch = re.compile(
@@ -62,7 +62,10 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        v = self.cli("show chassis detail")
+        try:
+            v = self.cli("show chassis detail")
+        except self.CLISyntaxError:
+            v = self.cli("show chassis")
         match = self.rx_ch.search(v)
         p = {
             "type": "CHASSIS",

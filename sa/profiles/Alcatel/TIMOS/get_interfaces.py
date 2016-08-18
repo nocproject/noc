@@ -8,6 +8,8 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.validators import is_int
+
 
 class Script(BaseScript):
     name = "Alcatel.TIMOS.get_interfaces"
@@ -25,6 +27,12 @@ class Script(BaseScript):
             proto += ["OSPF"]
         if 'OSPFv3' in protocols:
             proto += ["OSPFv3"]
+        if 'PIM' in protocols:
+            proto += ["PIM"]
+        if 'IGMP' in protocols:
+            proto += ["IGMP"]
+        if 'RSVP' in protocols:
+            proto += ["RSVP"]
         return proto
 
     @staticmethod
@@ -61,7 +69,7 @@ class Script(BaseScript):
             result['enabled_afi'] += ['IPv6']
         return result
 
-    def parse_interfaces(self, data):
+    def parse_interfaces(self, data, vrf):
         re_int = re.compile(r'-{79}\nInterface\n-{79}', re.MULTILINE)
         re_int_desc_vprn = re.compile(r"""
             If\sName\s*?:\s(?P<name>.*?)\n
@@ -114,6 +122,7 @@ class Script(BaseScript):
             IP\sOper\sMTU\s*?:\s(?P<mtu>.*?)\s
             .*?
         """, re.VERBOSE | re.MULTILINE | re.DOTALL)
+        re_iface = re.compile(r"^(?P<iface>\d+/\d+/\d+|lag-\d+)")
         ifaces = re.split(re_int, data)
         result = []
         iftypeVPRN = ': VPRN'
@@ -121,8 +130,10 @@ class Script(BaseScript):
         iftypeSubsc = ': VPRN Sub'
         iftypeGroup = ': VPRN Grp'
         iftypeRed = ': VPRN Red'
+        iftypeIES = ': IES'
 
         for iface in ifaces[1:]:
+            parent_iface = ''
             my_dict = {}
             if iftypeGroup in iface:
                 match_obj = re.search(re_int_desc_group, iface)
@@ -165,7 +176,8 @@ class Script(BaseScript):
                     ]
                 my_dict['type'] = 'tunnel'
 
-            elif iftypeNetwork in iface or iftypeVPRN in iface:
+            elif iftypeNetwork in iface or iftypeVPRN in iface \
+            or iftypeIES in iface:
                 match_obj = re.search(re_int_desc_vprn, iface)
                 if match_obj:
                     my_dict = match_obj.groupdict()
@@ -174,16 +186,19 @@ class Script(BaseScript):
                             my_dict['type'] = 'tunnel'
                         elif my_dict['subinterfaces'].startswith('loopback'):
                             my_dict['type'] = 'loopback'
-                        if my_dict['subinterfaces'].startswith('lag-'):
-                            vlans = my_dict['subinterfaces'].split(":")[1]
-                            if "." in vlans and "*" not in vlans:
-                                up_tag, down_tag = vlans.split(".")
+                        match = re_iface.search(my_dict['subinterfaces'])
+                        if match:
+                            parent_iface = match.group("iface")
+                            if ":" in my_dict['subinterfaces']:
+                                vlans = my_dict['subinterfaces'].split(":")[1]
+                                if "." in vlans and "*" not in vlans:
+                                    up_tag, down_tag = vlans.split(".")
 
-                                my_dict['vlan_ids'] = [int(up_tag), int(down_tag)]
-                            elif "*" in vlans:
-                                my_dict['vlan_ids'] = []
-                            else:
-                                my_dict['vlan_ids'] = [int(vlans)]
+                                    my_dict['vlan_ids'] = [int(up_tag), int(down_tag)]
+                                elif "*" in vlans:
+                                    my_dict['vlan_ids'] = []
+                                else:
+                                    my_dict['vlan_ids'] = [int(vlans)]
 
                         my_dict['subinterfaces'] = [
                             {
@@ -196,7 +211,7 @@ class Script(BaseScript):
                 continue
             if my_dict['description'] == '(Not Specified)':
                 my_dict.pop('description')
-
+            proto = my_dict['protocols']
             my_dict['protocols'] = self.fix_protocols(my_dict['protocols'])
             if 'srrp' in my_dict:
                 my_dict['protocols'] += ['SRRP']
@@ -207,7 +222,6 @@ class Script(BaseScript):
             if 'ipaddr_section' in my_dict:
                 my_dict.update(self.fix_ip_addr(my_dict['ipaddr_section']))
                 my_dict.pop('ipaddr_section')
-
             if 'subinterfaces' in my_dict:
                 if type(my_dict['subinterfaces']) != list and \
                                 type(my_dict['subinterfaces']) != dict:
@@ -216,7 +230,9 @@ class Script(BaseScript):
                     my_sub = {
                         'oper_status': my_dict['oper_status'],
                         'admin_status': my_dict['admin_status'],
+                        'protocols':my_dict['protocols']
                     }
+                    my_dict.pop('protocols')
                     if 'enabled_afi' in my_dict:
                         my_sub['enabled_afi'] = my_dict['enabled_afi']
                         my_dict.pop('enabled_afi')
@@ -229,7 +245,27 @@ class Script(BaseScript):
                     if 'vlan_ids' in my_dict:
                         my_sub['vlan_ids'] = my_dict['vlan_ids']
                         my_dict.pop('vlan_ids')
+                    if 'MPLS' in proto:
+                        if 'enabled_afi' in my_sub:
+                            my_sub['enabled_afi'] += ['MPLS']
+                        else:
+                            my_sub['enabled_afi'] = ['MPLS']
+                    if 'mac' in my_dict:
+                            my_sub['mac'] = my_dict['mac']
+                    if 'mtu' in my_dict:
+                            my_sub['mtu'] = my_dict['mtu']
+                            my_dict.pop('mtu')
                     my_dict['subinterfaces'][0].update(my_sub)
+                    if vrf:
+                        found = False
+                        for i in vrf:
+                            if i['name'] == parent_iface:
+                                my_sub['name'] = my_dict['name']
+                                i['subinterfaces'] += [my_sub]
+                                found = True
+                                break
+                        if found:
+                            continue
 
             if 'type' not in my_dict:
                 my_dict['type'] = 'unknown'
@@ -350,13 +386,10 @@ class Script(BaseScript):
                     fi["rd"] = mo2.group('rd')
                     if fi["rd"] == 'None':
                         fi.pop('rd')
-                    if fi["forwarding_instance"] != "333100":
-                        intf = self.cli('show router %s interface detail' % fi["forwarding_instance"])
-                        fi['interfaces'] = self.parse_interfaces(intf)
-                    if fi["forwarding_instance"] in ["100", "120"]:
-                        fi["forwarding_instance"] = "default"
-                    else:
-                        fi['interfaces'] = []
+
+                    intf = self.cli('show router %s interface detail' % fi["forwarding_instance"])
+                    fi['interfaces'] = self.parse_interfaces(intf, '')
+
                 elif fi["type"] == 'bridge':
                     fi.update(self.get_vpls(fi['forwarding_instance']))
                     fi.pop('id')
@@ -388,7 +421,7 @@ class Script(BaseScript):
                 'protocols': [],
                 'mac': card[3],
                 'type': 'physical',
-                'subinterfaces': self.parse_interfaces(sub_iface),
+                'subinterfaces': self.parse_interfaces(sub_iface, ''),
             })
 
         return fi
@@ -448,7 +481,7 @@ class Script(BaseScript):
             (?P<oper_status>.+?)\s+
             """, re.VERBOSE | re.MULTILINE | re.DOTALL)
         fi = {
-            'forwarding_instance': 'base',
+            'forwarding_instance': 'default',
             'type': 'ip',
             'interfaces': []
         }
@@ -463,13 +496,16 @@ class Script(BaseScript):
                 my_dict = match.groupdict()
                 my_dict.update(match_detail.groupdict())
                 if 'aggregated_interface' in my_dict:
-                    if my_dict['aggregated_interface'] != '':
+                    if is_int(my_dict['aggregated_interface']):
                         my_dict['aggregated_interface'] = "-".join(["lag", my_dict['aggregated_interface']])
+                    else:
+                        del my_dict['aggregated_interface']
                 my_dict['type'] = 'physical'
                 my_dict['subinterfaces'] = []
                 my_dict.pop('bad_stat')
                 my_dict['description'] = my_dict['description'].replace("\n", "")
                 fi['interfaces'].append(my_dict)
+
 
         lag_info = self.cli('show lag detail')
 
@@ -495,23 +531,28 @@ class Script(BaseScript):
                             })
                 my_dict['oper_status'] = self.fix_status(my_dict['oper_status'])
                 my_dict['admin_status'] = self.fix_status(my_dict['admin_status'])
-                if my_dict['protocols'] == 'Enabled':
+                if my_dict['protocols'].lower() == 'enabled':
                     my_dict['protocols'] = ['LACP']
                 else:
                     my_dict['protocols'] = []
                 my_dict['description'] = my_dict['description'].replace("\n", "")
                 fi['interfaces'].append(my_dict)
 
+        intf = self.cli('show router "Base" interface detail')
+        fi['interfaces'] += self.parse_interfaces(intf, fi['interfaces'])
+
         return fi
 
     def execute(self):
         result = []
+
         fi = self.get_forwarding_instance()
         for forw_instance in fi:
             result.append(forw_instance)
 
         fi = self.get_managment_router()
         result.append(fi)
+
         fi = self.get_base_router()
         result.append(fi)
 

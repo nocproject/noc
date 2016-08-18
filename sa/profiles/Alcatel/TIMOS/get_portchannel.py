@@ -20,7 +20,7 @@ class Script(BaseScript):
         r"^(?P<number>\d+)\s+up\s+(?P<opr>up|down)\s+",
         re.MULTILINE)
     rx_port = re.compile(
-        r"^(\d+\(e\))?\s+(?P<port>\d+\d+\d+)\s+(?P<adm>up|down)",
+        r"^(\d+\(e\))?\s+(?P<port>\d+/\d+/\d+)\s+(?P<adm>up|down)",
         re.MULTILINE)
 
     def execute(self):
