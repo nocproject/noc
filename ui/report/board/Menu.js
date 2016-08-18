@@ -47,9 +47,9 @@
       }
     ],
     currentDay: function() {
-      this.sliceTo(new Date({
-        yesterday: function() {}
-      }));
+      return this.sliceTo(new Date);
+    },
+    yesterday: function() {
       return this.sliceToMargin('DAY', 1);
     },
     week: function() {

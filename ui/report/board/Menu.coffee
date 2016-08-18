@@ -56,7 +56,7 @@ Ext.define 'Report.board.Menu',
 	currentDay: () ->
 		@sliceTo new Date
 
-    yesterday: () ->
+	yesterday: () ->
 		@sliceToMargin 'DAY', 1
 
 	week: () ->
