@@ -84,7 +84,7 @@ Ext.define 'Report.library.Library',
 			model: 'Report.model.Library'
 
 	addWidget: () ->
-        @fireEvent 'addWidget', @, @getSelected()
+		@fireEvent 'addWidget', @, @getSelected()
 
 	getSelected: () ->
-        @down('#widgets').getSelection()
+		@down('#widgets').getSelection()

@@ -19,11 +19,11 @@ Ext.define 'Report.data.AsyncInterface',
 		@getSuccess().apply scope, arguments
 		@callAlways.apply scope, arguments
 
-    callFailure: () ->
+	callFailure: () ->
 		scope = @getScope()
 
 		@getFailure().apply scope, arguments
 		@callAlways.apply scope, arguments
 
-    callAlways: () ->
+	callAlways: () ->
 		@getAlways().apply @getScope(), arguments
