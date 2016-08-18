@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "f39b7695-5a61-4a9b-adf7-785d4b395798",
     "vendor__code": "ALU",
-    "description": "Alcatel 7450, 7550 20 port 1-Gigabit Ethernet",
+    "description": "Alcatel 7450, 7750 20 port 1-Gigabit Ethernet",
     "cr_context": "MDA",
     "connections": [
         {

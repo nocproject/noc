@@ -1,7 +1,7 @@
 {
-    "name": "Alcatel | 7750 | IMM5-10GB-XFP",
+    "name": "Alcatel | 7750 | IMM12-10GB-SF+",
     "$collection": "inv.objectmodels",
-    "uuid": "3f06f36d-1f34-492e-95b5-31d59a1035c2",
+    "uuid": "e5f43066-9e63-47b7-aff2-f02c902a3697",
     "vendor__code": "ALU",
     "description": "Alcatel 7750 Integrated Media Module (IMM)",
     "cr_context": "IOM",
@@ -23,7 +23,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["3HE04741AAAA01"]
+            "part_no": ["3HE04743AAAB01"]
         }
     }
 }
