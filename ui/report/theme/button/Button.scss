@@ -5,7 +5,9 @@ $button-default-body-outline-color-focus: transparent;
 .x-toolbar-item.x-btn-default-toolbar-small {
 	&,
 	&.x-btn-focus.x-btn-over {
-		@include background-gradient(darken($color-white, 10%), matte, top);
+		$darken-white: darken($color-white, 10%);
+
+		@include background-gradient($darken-white, matte, top);
 		box-shadow: 0 0 2px $color-midnight-blue;
 		margin: 2px;
 
@@ -15,7 +17,7 @@ $button-default-body-outline-color-focus: transparent;
 		}
 
 		&.x-btn-pressed {
-			@include background-gradient(darken($color-white, 10%), matte-reverse, top);
+			@include background-gradient($darken-white, matte-reverse, top);
 		}
 	}
 }
