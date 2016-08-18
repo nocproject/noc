@@ -29,7 +29,7 @@ class Profile(BaseProfile):
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
     command_submit = "\r"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
 
     rx_ifname = re.compile(r"^(?P<number>\d+)$")
 
