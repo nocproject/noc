@@ -6,6 +6,7 @@ Ext.application(
 		'Report.Viewport'
 		'Report.data.Socket'
 		'Report.data.Mediator'
+		'Report.data.Ion'
 	]
 
 	mainView: 'Report.Viewport'
