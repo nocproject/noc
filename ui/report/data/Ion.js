@@ -4,7 +4,14 @@
     extend: 'Report.data.AsyncInterface',
     config: {
       method: '',
-      data: null
+      data: null,
+      autoDestroy: true
+    },
+    callAlways: function() {
+      this.callParent(arguments);
+      if (this.getAutoDestroy()) {
+        return this.destroy();
+      }
     }
   });
 
