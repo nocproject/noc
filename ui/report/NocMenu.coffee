@@ -16,4 +16,4 @@ Ext.define 'Report.NocMenu',
 	],
 
     setUserName: (name) ->
-        this.up('#userButton').setText(name)
+        @up('#userButton').setText(name)
