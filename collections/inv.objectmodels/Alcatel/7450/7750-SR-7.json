@@ -1,9 +1,9 @@
 {
-    "name": "Alcatel | 7450 | 7450-ESS-7",
+    "name": "Alcatel | 7750 | 7750-SR-7",
     "$collection": "inv.objectmodels",
-    "uuid": "6fb714a8-4025-4dfe-8d51-08177860630b",
+    "uuid": "8610619a-e7b6-4f0d-ad0c-2be6ffac1dcf",
     "vendor__code": "ALU",
-    "description": "7450 ESS-7 7 ports commutator",
+    "description": "7750 SR-7 7 ports router",
     "connection_rule__name": "Alcatel | 7450",
     "cr_context": "CHASSIS",
     "connections": [
@@ -92,7 +92,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["3HE00245AAAA01"]
+            "part_no": ["3HE00186AAAB02"]
         }
     }
 }
