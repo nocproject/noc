@@ -5,8 +5,31 @@
     xtype: 'board',
     requires: ['Report.board.Menu'],
     tbar: {
-      xtype: 'boardMenu'
-    }
+      xtype: 'boardMenu',
+      listeners: {
+        addWidget: 'showWidgetLibrary'
+      }
+    },
+    config: {
+      widgetLibraryWindow: null
+    },
+    showWidgetLibrary: function() {
+      var library;
+      library = this.getWidgetLibraryWindow();
+      if (!library) {
+        library = this.createWidgetLibrary();
+        this.setWidgetLibraryWindow(library);
+      }
+      return library.show();
+    },
+    createWidgetLibrary: function() {
+      return Ext.create('Report.library.Library', {
+        listeners: {
+          addWidget: 'addWidget'
+        }
+      });
+    },
+    addWidget: function(library, model) {}
   });
 
 }).call(this);

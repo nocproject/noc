@@ -50,6 +50,7 @@ Ext.define 'Report.board.Menu',
 		{
 			xtype: 'button'
 			text: 'Добавить виджет'
+			handler: 'addWidget'
 		}
 	]
 
@@ -76,6 +77,9 @@ Ext.define 'Report.board.Menu',
 
 	dateTo: (widget, value) ->
 		@slice @fromFieldValue(), value
+
+	addWidget: () ->
+		@fireEvent 'addWidget', @
 
 	privates:
 

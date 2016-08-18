@@ -43,7 +43,8 @@
         }
       }, '->', {
         xtype: 'button',
-        text: 'Добавить виджет'
+        text: 'Добавить виджет',
+        handler: 'addWidget'
       }
     ],
     currentDay: function() {
@@ -69,6 +70,9 @@
     },
     dateTo: function(widget, value) {
       return this.slice(this.fromFieldValue(), value);
+    },
+    addWidget: function() {
+      return this.fireEvent('addWidget', this);
     },
     privates: {
       sliceDateToMargin: function(type, count) {
