@@ -74,7 +74,7 @@ class Script(BaseScript):
                 "interfaces": [match.group("port")],
                 "type": {
                     "Dynamic": "D",
-                    "Other": "D"
+                    "Other": "S"
                 }[match.group("type")]
             }]
         return r
