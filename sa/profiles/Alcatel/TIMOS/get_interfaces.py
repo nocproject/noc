@@ -524,11 +524,20 @@ class Script(BaseScript):
                     sap = re.match(re_lag_subs, sapline)
                     if sap:
                         if sap.group('physname'):
-                            my_dict['subinterfaces'].append({
-                                'name': ":".join([sap.group('physname'), sap.group('sapname')]),
+                            vlans = sap.group('sapname')
+                            s = {
+                                'name': ":".join([sap.group('physname'), vlans]),
                                 'admin_status': self.fix_status(sap.group('admin_status')),
                                 'oper_status': self.fix_status(sap.group('admin_status')),
-                            })
+                            }
+                            if "." in vlans and "*" not in vlans:
+                                up_tag, down_tag = vlans.split(".")
+                                s['vlan_ids'] = [int(up_tag), int(down_tag)]
+                            elif "*" in vlans:
+                                s['vlan_ids'] = []
+                            else:
+                                s['vlan_ids'] = [int(vlans)]
+                            my_dict['subinterfaces'].append(s)
                 my_dict['oper_status'] = self.fix_status(my_dict['oper_status'])
                 my_dict['admin_status'] = self.fix_status(my_dict['admin_status'])
                 if my_dict['protocols'].lower() == 'enabled':
