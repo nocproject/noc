@@ -60,14 +60,6 @@ EVENT_STATUS_NAME = {
 }
 
 from eventlog import EventLog
-from newevent import NewEvent
-from failedevent import FailedEvent
-from activeevent import ActiveEvent
-from archivedevent import ArchivedEvent
-from alarmlog import AlarmLog
-from activealarm import ActiveAlarm
-from archivedalarm import ArchivedAlarm
-
 
 
 
@@ -77,7 +69,6 @@ from enumeration import Enumeration
 ##
 ## Event/Alarm text decoder
 ##
-from utils import get_alarm, get_event
 
 
 def get_object_status(managed_object):
