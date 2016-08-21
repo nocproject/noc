@@ -46,6 +46,7 @@ class Script(BaseScript):
                 "type": {
                     "L": "D",  # Learned
                     "O": "D",  # OAM
+                    "D": "D",  # Dhcp
                     "P": "S",  # Protected
                     "C": "S",  # Conditional
                     "S": "S",  # Static
