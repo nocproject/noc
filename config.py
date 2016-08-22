@@ -112,6 +112,7 @@ class Config(BaseConfig):
             min=1, max=65535,
             default=4151
         )
+        hosts = ListParameter(default=[":".join([host.value, str(port.value)])])
 
     class customization(ConfigSection):
         favicon = StringParameter(
@@ -192,15 +193,20 @@ class Config(BaseConfig):
             default="noc.services.classifier.rulelookup.RuleLookup")
         default_interface_profile = StringParameter(default="default")
 
+    class discovery(ConfigSection):
+        max_threads = IntParameter(default=20)
+        global_n_instances = IntParameter(default=1)
+
     def __init__(self):
         self.setup_logging()
 
     def use_pg_pool(self):
         self.pg.db_engine = "dbpool.db.backends.postgresql_psycopg2"
-        self.pg.db_options.update({
-            "MAX_CONNS": 1,
-            "MIN_CONNS": 1
-        })
+
+    #        self.pg.db_options.update({
+    #            "MAX_CONNS": 1,
+    #            "MIN_CONNS": 1
+    #        })
 
     @property
     def pg_connection_args(self):

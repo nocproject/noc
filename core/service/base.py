@@ -379,7 +379,7 @@ class Service(object):
     def get_nsq_writer(self):
         if not self.nsq_writer:
             self.logger.info("Opening NSQ Writer")
-            self.nsq_writer = nsq.Writer(config.get_service("nsqd"))
+            self.nsq_writer = nsq.Writer(config.nsqd.hosts)
         return self.nsq_writer
 
     def pub(self, topic, data):
@@ -431,7 +431,7 @@ class Service(object):
         executor = self.executors.get(name)
         if not executor:
             xt = "%s_threads" % name
-            executor = ThreadPoolExecutor(self.config[xt])
+            executor = ThreadPoolExecutor(self.config.sae.db_threads)
             self.executors[name] = executor
         return executor
 
