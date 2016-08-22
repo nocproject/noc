@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+import re
 ## NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -13,6 +14,9 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 
 class Script(BaseScript):
     name = "Qtech.QSW2800.get_capabilities"
+
+    rx_iface = re.compile(
+        "^\s*(?P<ifname>Ethernet\d+/\d+)\s+is\s+(?:up|down)", re.MULTILINE)
 
     @false_on_cli_error
     def has_lldp(self):
@@ -29,4 +33,19 @@ class Script(BaseScript):
         """
         # Spanning Tree Enabled/Disabled : Enabled
         cmd = self.cli("show spanning-tree")
-        return "Global MSTP is disabled" not in cmd
+        return "STP is disabled" not in cmd
+
+    @false_on_cli_error
+    def has_oam(self):
+        """
+        Check box has OAM enabled
+        """
+        v = self.cli("show interface | include Ethernet")
+        for match in self.rx_iface.finditer(v):
+            try:
+                cmd = self.cli("show ethernet-oam local interface %s" % match.group("ifname"))
+                if not ("Doesn't enable EFMOAM!" in cmd):
+                    return True
+            except self.CLISyntaxError:
+                return False
+        return False
