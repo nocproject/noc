@@ -72,7 +72,7 @@ class SAEAPI(API):
             raise APIError("Invalid script")
         #
         try:
-            url = activator._get_url()
+            url = "http://activator.%s:1200" % pool
         except ValueError:
             raise APIError("No activators configured for pool '%s'" % pool)
         self.redirect(

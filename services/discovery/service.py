@@ -34,13 +34,13 @@ class DiscoveryService(Service):
     @tornado.gen.coroutine
     def on_activate(self):
         #
-        self.setup_pg_connection_pool()
+        # self.setup_pg_connection_pool()
         #
-        if self.config.global_n_instances > 1:
+        if self.config.discovery.global_n_instances > 1:
             self.logger.info(
                 "Enabling distributed mode: Slot %d of %d",
                 self.config.instance + self.config.global_offset,
-                self.config.global_n_instances
+                self.config.discovery.global_n_instances
             )
             ifilter = {
                 "key": {
@@ -59,25 +59,12 @@ class DiscoveryService(Service):
             "discovery",
             pool=self.config.pool,
             reset_running=True,
-            max_threads=self.config.discovery_max_threads,
+            max_threads=self.config.discovery.max_threads,
             ioloop=self.ioloop,
             filter=ifilter
         )
         self.scheduler.service = self
         self.scheduler.run()
-
-    def setup_pg_connection_pool(self):
-        max_conns = self.config.discovery_max_threads + 5
-        min_conns = max_conns // 2
-        self.logger.info("Setting up postgresql connection pool: min=%d max=%d", min_conns, max_conns)
-        opts = {
-            "MIN_CONNS": min_conns,
-            "MAX_CONNS": max_conns
-        }
-        import settings
-        settings.DATABASES["default"]["OPTIONS"].update(opts)
-        from django.db import connections
-        connections.databases = settings.DATABASES
 
 
 if __name__ == "__main__":
