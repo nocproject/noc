@@ -41,6 +41,15 @@ class Script(BaseScript):
 
     rx_ospf = re.compile(r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+", re.MULTILINE)
 
+    rx_ndp = re.compile(
+        r"^\s*Interface: (?P<name>\S+)\s*\n"
+        r"^\s*Status: Enabled", re.MULTILINE)
+
+    rx_ifindex = re.compile(
+        r"^Name: (?P<name>\S+)\s*\n"
+        r"^Physical IF Info:\s*\n"
+        r"^\s*IfnetIndex: 0x(?P<ifindex>[0-9A-F]+)\s*\n", re.MULTILINE)
+
     types = {
         "Aux": "physical",
         "Cellular": "physical",
@@ -73,6 +82,26 @@ class Script(BaseScript):
             if match:
                 ospfs += [match.group("name")]
         return ospfs
+
+    def get_ndpint(self):
+        try:
+            v = self.cli("display ndp")
+        except self.CLISyntaxError:
+            return []
+        ndp = []
+        for match in self.rx_ndp.finditer(v):
+            ndp += [match.group("name")]
+        return ndp
+
+    def get_ifindex(self):
+        try:
+            v = self.cli("display rm interface")
+        except self.CLISyntaxError:
+            return {}
+        ifindex = {}
+        for match in self.rx_ifindex.finditer(v):
+            ifindex[match.group("name")] = match.group("ifindex")
+        return ifindex
 
     def execute(self):
         # Get switchports and fill tagged/untagged lists if they are not empty
@@ -110,6 +139,10 @@ class Script(BaseScript):
         interfaces = []
         # Get OSPF interfaces
         ospfs = self.get_ospfint()
+        # Get NDP interfaces
+        ndps = self.get_ndpint()
+        # Get ifindexes
+        ifindexes = self.get_ifindex()
 
         v = self.cli("display interface")
         il = self.rx_iface_sep.split(v)[1:]
@@ -144,6 +177,9 @@ class Script(BaseScript):
             if ifname in ospfs:
                 # OSPF
                 sub["enabled_protocols"] += ["OSPF"]
+            if ifname in ndps:
+                # NDP
+                sub["enabled_protocols"] += ["NDP"]
             if ifname.lower().startswith("vlanif"):
                 # SVI
                 sub["vlan_ids"] = [int(ifname[6:].strip())]
@@ -191,6 +227,8 @@ class Script(BaseScript):
                     "enabled_protocols": [],
                     "subinterfaces": [sub]
                 }
+                if ifname in ifindexes:
+                    iface["snmp_ifindex"] = int(ifindexes[ifname], 16)
                 if "mac" in sub:
                     iface["mac"] = sub["mac"]
                 if "description" in sub:

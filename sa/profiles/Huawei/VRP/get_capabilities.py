@@ -25,7 +25,23 @@ class Script(BaseScript):
     @false_on_cli_error
     def has_lldp(self):
         """
-        Check box has lldp enabled
+        Check box has LLDP enabled
         """
         r = self.cli("display lldp local | include enabled")
         return "enabled" in r
+
+    @false_on_cli_error
+    def has_bfd(self):
+        """
+        Check box has BFD enabled
+        """
+        r = self.cli("display bfd configuration all")
+        return not "Please enable BFD in global mode first" in r
+
+    @false_on_cli_error
+    def has_udld(self):
+        """
+        Check box has UDLD enabled
+        """
+        r = self.cli("display dldp")
+        return not "Global DLDP is not enabled" in r
