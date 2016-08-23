@@ -64,6 +64,9 @@ class Script(BaseScript):
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
         re.MULTILINE | re.DOTALL)
+    rx_gvtp = re.compile("VTP Operating Mode\s+: Off", re.MULTILINE)
+    rx_vtp = re.compile("^\s*(?P<iface>(?:Fa|Gi|Te)[^:]+?)\s+enabled",
+        re.MULTILINE)
 
     def get_lldp_interfaces(self):
         """
@@ -80,6 +83,25 @@ class Script(BaseScript):
             if match:
                 if match.group("rx_state").lower() == "enabled":
                     ports.add(self.profile.convert_interface_name(match.group("iface")))
+        return ports
+
+    def get_vtp_interfaces(self):
+        """
+        Returns a set of normalized VTP interface names
+        :return:
+        """
+        try:
+            v = self.cli("show vtp status")
+        except self.CLISyntaxError:
+            return set()
+        if self.rx_gvtp.search(v):
+            return set()
+        ports = set()
+        v = self.cli("show vtp interface")
+        for s in v.strip().split("\n"):
+            match = self.rx_vtp.search(s)
+            if match:
+                ports.add(self.profile.convert_interface_name(match.group("iface")))
         return ports
 
     def get_ospfint(self):
@@ -156,6 +178,8 @@ class Script(BaseScript):
                 portchannel_members[m] = (i, t)
         # Get LLDP interfaces
         lldp = self.get_lldp_interfaces()
+        # Get VTP interfaces
+        vtp = self.get_vtp_interfaces()
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
         c_iface = None
@@ -228,6 +252,8 @@ class Script(BaseScript):
                     }
                     if inm in lldp:
                         iface["enabled_protocols"] += ["LLDP"]
+                    if inm in vtp:
+                        iface["enabled_protocols"] += ["VTP"]
                     interfaces += [iface]
             a_stat = match.group("admin_status").lower() == "up"
             o_stat = match.group("oper_status").lower() == "up"
@@ -259,7 +285,6 @@ class Script(BaseScript):
                 encaps = match.group("encaps")
                 if encaps[:6] == "802.1Q":
                     sub["vlan_ids"] = [encaps.split(",")[1].split()[2][:-1]]
-            # vtp
             # uBR ?
             if ifname in pvm:
                 sub["vlan_ids"] = pvm[ifname]
@@ -299,6 +324,8 @@ class Script(BaseScript):
                 }
                 if ifname in lldp:
                     iface["enabled_protocols"] += ["LLDP"]
+                if ifname in vtp:
+                    iface["enabled_protocols"] += ["VTP"]
                 match1 = self.rx_ctp.search(v)
                 if match1:
                     iface["enabled_protocols"] += ["CTP"]
