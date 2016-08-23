@@ -97,6 +97,7 @@ class Script(BaseScript):
     rx_pim_gs = re.compile(r"PIM Global State\s+: Enabled")
     rx_gvrp_gs = re.compile(r"Global GVRP\s+: Enabled")
     rx_stp_gs = re.compile(r"STP Status\s+: Enabled")
+    rx_dvmrp_gs = re.compile(r"DVMRP Global State\s+: Enabled")
 
     rx_rip = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+(?:Disabled|Enabled)\s+"
@@ -137,6 +138,9 @@ class Script(BaseScript):
     rx_igmp = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+Enabled\s+")
 
+    rx_dvmrp = re.compile(
+        r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+Enabled\s+")
+
     rx_gvrp = re.compile(
         r"^ (?P<port>\d+(?:[:/]\d+)?)\s+\d+\s+Enabled")
 
@@ -155,6 +159,7 @@ class Script(BaseScript):
     rx_oam = re.compile(
         r"^Port (?P<port>\d+(?:[:/]\d+)?)\s*\n\-+\s*\nOAM\s+:\s+Enabled\s*\n",
         re.MULTILINE)
+
 
     def parse_ctp(self, s):
         match = self.rx_ctp.search(s)
@@ -214,6 +219,14 @@ class Script(BaseScript):
                 c = self.cli("show pim")
                 if self.rx_pim_gs.search(c) is not None:
                     pim = self.rx_pim.findall(c)
+            except self.CLISyntaxError:
+                pass
+
+            dvmrp = []
+            try:
+                c = self.cli("show dvmrp")
+                if self.rx_dvmrp_gs.search(c) is not None:
+                    dvmrp = self.rx_dvmrp.findall(c)
             except self.CLISyntaxError:
                 pass
 
@@ -490,6 +503,8 @@ class Script(BaseScript):
                     enabled_protocols += ["OSPFv3"]
                 if ifname in pim:
                     enabled_protocols += ["PIM"]
+                if ifname in dvmrp:
+                    enabled_protocols += ["DVMRP"]
                 if ifname in igmp:
                     enabled_protocols += ["IGMP"]
                 i['subinterfaces'][0]["enabled_protocols"] = enabled_protocols
