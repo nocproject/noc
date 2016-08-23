@@ -34,6 +34,8 @@
   when: "alerta_notified.changed"
   register: blackout
   changed_when: "blackout.status == 201"
+  environment:
+    https_proxy: "{{http_proxy}}"
   run_once: true
   tags:
     - always
@@ -81,5 +83,7 @@
     status_code: 201, 202
   when: "alerta_notified.changed"
   run_once: true
+  environment:
+    https_proxy: "{{http_proxy}}"
   tags:
     - always
