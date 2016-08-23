@@ -52,6 +52,16 @@ class Script(BaseScript):
             for m in pc["members"]:
                 pc_members[m] = (i,t)
 
+        # global GVRP status
+        try:
+            v = self.cli("show gvrp active port-member")
+            if "GVRP global function is disable" in v:
+                ggvrp = False
+            else:
+                ggvrp = True
+        except self.CLISyntaxError:
+            ggvrp = False
+
         # process all interfaces and form result
         r = []
         cmd = self.cli("show interface")
@@ -83,6 +93,13 @@ class Script(BaseScript):
                     iface["aggregated_interface"] = pc_members[ifname][0]
                     if pc_members[ifname][1]:
                         iface["enabled_protocols"] += ["LACP"]
+                try:
+                    if ifname.startswith("Ethernet"):
+                        v = self.cli("show ethernet-oam local interface %s" % ifname )
+                        if not "Doesn't enable EFMOAM!" in v:
+                            iface["enabled_protocols"] += ["OAM"]
+                except self.CLISyntaxError:
+                    pass
                 # process subinterfaces
                 if "aggregated_interface" not in iface:
                     sub = {
