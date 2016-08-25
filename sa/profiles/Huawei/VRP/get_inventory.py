@@ -70,7 +70,7 @@ class Script(BaseScript):
         part_no = match_body.group("board_type")
         desc = match_body.group("desc")
         manufactured = match_body.group("mnf_date")
-        if manufactured:
+        if manufactured and part_no:
             manufactured = self.normalize_date(manufactured)
         if part_no == "":
             return None
