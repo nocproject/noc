@@ -52,8 +52,7 @@ class Script(BaseScript):
         r"IssueNumber=(?P<issue_number>.*?)\n"
         r"CLEICode=(?P<code>.*?)\n", re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE)
 
-    @staticmethod
-    def parse_item_content(rx_match, number, type, prefix_number=''):
+    def parse_item_content(self, rx_match, number, type, prefix_number=''):
         rx_item_content = re.compile(
             r"Board Type=(?P<board_type>.*?)\n"
             r"BarCode=(?P<bar_code>.*?)\n"
@@ -80,9 +79,9 @@ class Script(BaseScript):
         serial = match_body.group("bar_code").strip()
         part_no = match_body.group("board_type")
         desc = match_body.group("desc")
-        # manufactured = match_body.group("mnf_date")
-        # if manufactured:
-        #     manufactured = self.normalize_date(manufactured)
+        manufactured = match_body.group("mnf_date")
+        if manufactured:
+             manufactured = self.normalize_date(manufactured)
         if part_no == "":
             return None
         return {
@@ -91,8 +90,9 @@ class Script(BaseScript):
             "vendor": vendor.upper(),
             "serial": serial,
             "description": desc,
-            "part_no": [part_no]
-            # "mfg_date": manufactured if manufactured else None}]
+            "part_no": [part_no],
+            "revision": None,
+            "mfg_date": manufactured if manufactured else None
         }
 
         # return None
@@ -119,7 +119,6 @@ class Script(BaseScript):
 
     def get_inv(self):
         inv = []
-        stack = True
         v = self.cli("display device")
         s = self.parse_table(v)
         for i in s:
@@ -185,6 +184,9 @@ class Script(BaseScript):
             need_edit = True
         if day < 10:
             day = '0' + str(day)
+            need_edit = True
+        if len(str(year)) < 4:
+            year = "2" + "0" * (3-len(str(year))) + str(year)
             need_edit = True
         if need_edit:
             parts = [year, month, day]
