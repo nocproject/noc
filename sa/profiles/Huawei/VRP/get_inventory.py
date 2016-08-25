@@ -53,7 +53,7 @@ class Script(BaseScript):
         r"CLEICode=(?P<code>.*?)\n", re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE)
 
     rx_item_content2 = re.compile(
-        r"Board Type=(?P<board_type>.*?)\n"
+        r"Board(\s|)Type=(?P<board_type>.*?)\n"
         r"BarCode=(?P<bar_code>.*?)\n"
         r"Item=(?P<item>.*?)\n"
         r"Description=(?P<desc>.*?)\n"
@@ -170,12 +170,13 @@ class Script(BaseScript):
     @staticmethod
     def normalize_date(date):
         """Normalize date in input to YYYY-MM-DD"""
+        d = re.compile("\d+")
         result = date
         need_edit = False
         parts = date.split('-')
         year = int(parts[0])
         month = int(parts[1])
-        day = int(parts[2])
+        day = int(d.search(parts[2]).group(0))
         if month < 10:
             month = '0' + str(month)
             need_edit = True
