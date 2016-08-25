@@ -74,6 +74,8 @@ class Script(BaseScript):
             manufactured = self.normalize_date(manufactured)
         if part_no == "":
             return None
+        if vendor == "":
+            vendor = "NONAME"
 
         return {
             "type": item_type,
