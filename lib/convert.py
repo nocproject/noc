@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import math
+
 ##
 ## dBm to mW
 ## mW = 10^(dBm/10)
@@ -17,7 +18,8 @@ def dbm2mw(v):
     >>> dbm2mw(10)
     10.0
     """
-    return math.pow(10,v/10)
+    return math.pow(10, v/10)
+
 ##
 ## mW to dBm
 ## dBm = 10 log10 (mW) 
@@ -29,4 +31,4 @@ def mw2dbm(v):
     >>> mw2dbm(10)
     10.0
     """
-    return 10*math.log(v,10)
+    return 10 * math.log10(float(v))
