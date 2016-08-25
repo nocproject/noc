@@ -52,40 +52,31 @@ class Script(BaseScript):
         r"IssueNumber=(?P<issue_number>.*?)\n"
         r"CLEICode=(?P<code>.*?)\n", re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE)
 
-    def parse_item_content(self, rx_match, number, type, prefix_number=''):
-        rx_item_content = re.compile(
-            r"Board Type=(?P<board_type>.*?)\n"
-            r"BarCode=(?P<bar_code>.*?)\n"
-            r"Item=(?P<item>.*?)\n"
-            r"Description=(?P<desc>.*?)\n"
-            r"Manufactured=(?P<mnf_date>.*?)\n"
-            r"^.*?VendorName=(?P<vendor>.*?)\n"
-            r"IssueNumber=(?P<issue_number>.*?)\n"
-            r"CLEICode=(?P<code>.*?)\n", re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE)
+    rx_item_content2 = re.compile(
+        r"Board Type=(?P<board_type>.*?)\n"
+        r"BarCode=(?P<bar_code>.*?)\n"
+        r"Item=(?P<item>.*?)\n"
+        r"Description=(?P<desc>.*?)\n"
+        r"Manufactured=(?P<mnf_date>.*?)\n"
+        r"^.*?VendorName=(?P<vendor>.*?)\n"
+        r"IssueNumber=(?P<issue_number>.*?)\n"
+        r"CLEICode=(?P<code>.*?)\n", re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE)
 
-        # type = rx_match.group("type")
-        # number = rx_match.group("number")
-        match_body = rx_item_content.search(rx_match)
-        # board_type = match_body.group("board_type")
-
-        # if board_type:
-        #     if type == "Daughter_Board":
-        #         number = ''.join([prefix_number, '/', number])
-        #     elif type == "Port":
-        #         number = ''.join([prefix_number, '/0/', number])
-
-            # type = ' '.join([type, board_type])
+    def parse_item_content(self, item, number, item_type):
+        """Parse display elabel block"""
+        match_body = self.rx_item_content2.search(item)
         vendor = match_body.group("vendor").strip()
         serial = match_body.group("bar_code").strip()
         part_no = match_body.group("board_type")
         desc = match_body.group("desc")
         manufactured = match_body.group("mnf_date")
         if manufactured:
-             manufactured = self.normalize_date(manufactured)
+            manufactured = self.normalize_date(manufactured)
         if part_no == "":
             return None
+
         return {
-            "type": type,
+            "type": item_type,
             "number": number,
             "vendor": vendor.upper(),
             "serial": serial,
@@ -95,16 +86,13 @@ class Script(BaseScript):
             "mfg_date": manufactured if manufactured else None
         }
 
-        # return None
-
-    def sfp_parse(self, type, slot_num, subcard_num=""):
+    def part_parse(self, type, slot_num, subcard_num=""):
         v = self.cli("display elabel slot %s %s" % (slot_num or "", subcard_num))
         r = []
 
         if type == "CHASSIS":
             f = re.search(self.rx_mainboard, v)
             sh = self.parse_item_content(f.group("body"), slot_num, "CHASSIS")
-            # sh["number"] = None
             r.append(sh)
         elif type == "XCVR":
             for f in re.finditer(self.rx_port, v):
@@ -118,22 +106,25 @@ class Script(BaseScript):
         return r
 
     def get_inv(self):
+        """Get inventory table"""
         inv = []
         v = self.cli("display device")
         s = self.parse_table(v)
         for i in s:
-            if i["Type"] == "-":
-                continue
-            if i["Slot"] != "-":
+            type = i["Type"]
+            if i["Slot"] == "0" and i["Sub"] == "-":
                 num = i["Slot"]
+                type = "CHASSIS"
             elif i["Slot"] == "-":
                 num = i["Sub"]
+            elif i["Slot"] != "-":
+                num = i["Slot"]
+            elif self.rx_slot_key.match(i["Slot"]):
+                num = i["Slot"][3:]
+                type = i["Slot"][0:3]
             else:
+                self.logger("Not response number place")
                 continue
-            if i["Sub"] == "-":
-                type = "CHASSIS"
-            else:
-                type = i["Type"]
             inv.append(
                 {
                     "type": type,
@@ -146,33 +137,37 @@ class Script(BaseScript):
 
     @staticmethod
     def parse_table(s):
+        """List of Dict [{column1: row1, column2: row2}, ...]"""
         rx_header_start = re.compile(r"^\s*[-=]+\s+[-=]+")
-        rx_col = re.compile(r"^(\s*)([\-]+|[=]+)")
 
-        columns = None
         r = []
-        r2 = []
         columns = []
+        chassis = False
         for l in s.splitlines():
             if not l.strip():
-                # columns = []
                 continue
-
-            if rx_header_start.match(l): # Column delimiters found. try to determine column's width
+            if rx_header_start.match(l):
                 columns = l_old.split()
-
-            elif columns: # Fetch cells
+            elif columns:
+                """Fetch cells"""
                 row = l.strip().split()
-                r.append(row)
                 if len(l.strip().split()) != len(columns):
+                    """First column is empty"""
                     row.insert(0, "-")
-                r2.append(dict(zip(columns, row)))
-                #r.append([l[f:t].strip() for f,t in columns])
+                    if chassis:
+                        # @todo Make algoritm to response chassis
+                        r[-1]["Type"] = "CHASSIS"
+                        chassis = False
+                else:
+                    chassis = True
+                r.append(dict(zip(columns, row)))
+                # r.append([l[f:t].strip() for f,t in columns])
             l_old = l
-        return r2
+        return r
 
     @staticmethod
     def normalize_date(date):
+        """Normalize date in input to YYYY-MM-DD"""
         result = date
         need_edit = False
         parts = date.split('-')
@@ -200,39 +195,11 @@ class Script(BaseScript):
         items = self.get_inv()
         for i in items:
             if i["type"] == "CHASSIS":
-                objects.extend(self.sfp_parse(i["type"], i["number"]))
-                for si in self.sfp_parse("XCVR", i["number"]):
+                objects.extend(self.part_parse(i["type"], i["number"]))
+                for si in self.part_parse("XCVR", i["number"]):
                     objects.append(si)
                 slot_num = i["number"]
             else:
-                objects.extend(self.sfp_parse(i["type"], slot_num, i["number"]))
-        # items2 = self.sfp_parse(0)
-        """
-        try:
-            cmd_result = self.cli("display elabel")
-        except self.CLISyntaxError:
-           raise self.NotSupportedError()
-
-
-        backplane_regexp = self.rx_backplane.search(cmd_result)
-        if backplane_regexp:
-           objects += self.parse_item_content(backplane_regexp)
-
-        # parse slots using device table
-        cmd_result = self.cli("display device")
-        for item in self.rx_slot_key.finditer(cmd_result):
-            cmd_result = self.cli("display elabel 1/%s" % (item.group(0)))
-            slot_regexp = self.rx_slot.search(cmd_result)
-            if slot_regexp:
-                add_item = self.parse_item_content(slot_regexp)
-                if add_item:
-                    objects += add_item
-
-                slot_number = slot_regexp.group("number")
-                for subitem in self.rx_subitem.finditer(cmd_result):
-                    add_item = self.parse_item_content(subitem, slot_number)
-                    if add_item:
-                        objects += add_item
-        """
+                objects.extend(self.part_parse(i["type"], slot_num, i["number"]))
 
         return objects
