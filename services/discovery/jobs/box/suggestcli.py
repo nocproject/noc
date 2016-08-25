@@ -57,7 +57,7 @@ class SuggestCLICheck(DiscoveryCheck):
                 }
             )
             self.logger.info("Result: %s", r)
-            return r is not False  # RPCClient returns False if credentials are invalid or connect is failed.
+            return bool(r)  # bool(False) == bool(None)
         except RPCError as e:
             self.logger.debug("RPC Error: %s", e)
             return False
