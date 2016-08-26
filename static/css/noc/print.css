@@ -1,0 +1,28 @@
+@media print {
+    body {
+        margin: 0.5in;
+        font-family: times
+    }
+
+    * {
+        background: #ffffff !important;
+        color: #000000 !important;
+        float: none !important;
+        width: auto !important;
+        height: auto !important;
+    }
+
+    #context {
+        margin: 0 !important;
+        padding: 0
+    }
+
+    form, div.breadcrumbs {
+        display: none
+    }
+
+    #zag h1 span {
+        font-size: small;
+        display: block
+    }
+}
