@@ -453,7 +453,7 @@ class AssetCheck(DiscoveryCheck):
         """
         Get vendor instance or None
         """
-        if v is None:
+        if v is None or v == "OEM":
             v = "NONAME"
         v = v.upper()
         if v in self.vendors:
