@@ -103,6 +103,17 @@ class Script(BaseScript):
             ifindex[match.group("name")] = match.group("ifindex")
         return ifindex
 
+    def get_stpint(self):
+        try:
+            v = self.cli("display stp brief")
+        except self.CLISyntaxError:
+            return {}
+        stp = []
+        for l in v.splitlines():
+            stp += [l.split()[1]]
+        stp.pop(0)
+        return stp
+
     def execute(self):
         # Get switchports and fill tagged/untagged lists if they are not empty
         switchports = {}
@@ -143,6 +154,8 @@ class Script(BaseScript):
         ndps = self.get_ndpint()
         # Get ifindexes
         ifindexes = self.get_ifindex()
+        # Get STP interfaces
+        stps = self.get_stpint()
 
         v = self.cli("display interface")
         il = self.rx_iface_sep.split(v)[1:]
@@ -177,9 +190,6 @@ class Script(BaseScript):
             if ifname in ospfs:
                 # OSPF
                 sub["enabled_protocols"] += ["OSPF"]
-            if ifname in ndps:
-                # NDP
-                sub["enabled_protocols"] += ["NDP"]
             if ifname.lower().startswith("vlanif"):
                 # SVI
                 sub["vlan_ids"] = [int(ifname[6:].strip())]
@@ -233,6 +243,13 @@ class Script(BaseScript):
                     iface["mac"] = sub["mac"]
                 if "description" in sub:
                     iface["description"] = sub["description"]
+                if ifname in ndps:
+                    # NDP
+                    iface["enabled_protocols"] += ["NDP"]
+                if ifname in stps:
+                    # STP
+                    iface["enabled_protocols"] += ["STP"]
+
                 # Portchannel member
                 if ifname in portchannel_members:
                     ai, is_lacp = portchannel_members[ifname]
