@@ -98,6 +98,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def process_mstp(self):
+        check_d = re.compile("\s*\d+\s*")
         # Save port attributes
         ports = self.get_ports_attrs()
         #
@@ -115,13 +116,22 @@ class Script(BaseScript):
             }
         }
         iv = {}  # instance -> vlans
-        for instance, vlans in self.rx_mstp_instance.findall(v):
-            if vlans == "none":
-                vlans = ""
-            if "to" in vlans:
-                vlans = vlans.replace(" to ", "-")
+        instance_table = v.splitlines()[6:]
+        sline = False
+        vlans = ""
+        for row in instance_table:
+            s = row[0:13]
+            if check_d.match(row[0:13]):
+                instance = int(row[0:13].strip())
+                vlans = row[14:]
+                iv[int(instance)] = vlans
+            else:
+                iv[int(instance)] += row[14:]
+        iv[int(instance)] = vlans
+        for x in iv:
+            print iv[x]
+            iv[x] = iv[x].replace(" to ", "-")
 
-            iv[int(instance)] = vlans
         #
         interfaces = {}
         for instance_id in iv:
@@ -167,8 +177,8 @@ class Script(BaseScript):
                         "point_to_point": ptop,
                         "edge": edge
                         }]
-        for I in r["instances"]:
-            I["interfaces"] = interfaces[I["id"]]
+        for st in r["instances"]:
+            st["interfaces"] = interfaces[st["id"]]
         return r
 
     def execute(self):
