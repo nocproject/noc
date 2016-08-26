@@ -46,43 +46,6 @@ def main():
                 timeout=124,
                 tags=[headers['ver'], event]
             )
-        else:
-            if event.endswith('FATAL'):
-                severity = 'critical'
-            elif event.endswith('BACKOFF'):
-                severity = 'warning'
-            elif event.endswith('EXITED'):
-                severity = 'minor'
-            elif event.endswith('STATE_STOPPING'):
-                listener.send_cmd('RESULT 2\nOK')
-                continue
-            elif event.endswith('STATE_STARTING'):
-                listener.send_cmd('RESULT 2\nOK')
-                continue
-            else:
-                severity = 'normal'
-
-            supervisorAlert = Alert(
-                resource='%s:%s' % (platform.uname()[1], body['processname']),
-                environment='Production',
-                service=['supervisord'],
-                event=event,
-                correlate=[
-                    'PROCESS_STATE_STARTING',
-                    'PROCESS_STATE_RUNNING',
-                    'PROCESS_STATE_BACKOFF',
-                    'PROCESS_STATE_STOPPING',
-                    'PROCESS_STATE_EXITED',
-                    'PROCESS_STATE_STOPPED',
-                    'PROCESS_STATE_FATAL',
-                    'PROCESS_STATE_UNKNOWN'
-                ],
-                value='serial=%s' % headers['serial'],
-                severity=severity,
-                origin=headers['server'],
-                text='State changed from %s to %s.' % (body['from_state'], event),
-                raw_data='%s\n\n%s' % (json.dumps(headers), json.dumps(body))
-            )
         try:
             api.send(supervisorAlert)
         except Exception as e:
