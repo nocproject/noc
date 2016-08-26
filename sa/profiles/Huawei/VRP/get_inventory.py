@@ -64,18 +64,21 @@ class Script(BaseScript):
 
     def parse_item_content(self, item, number, item_type):
         """Parse display elabel block"""
+        date_check = re.compile("\d+-\d+-\d+")
         match_body = self.rx_item_content2.search(item)
         vendor = match_body.group("vendor").strip()
         serial = match_body.group("bar_code").strip()
         part_no = match_body.group("board_type")
         desc = match_body.group("desc")
         manufactured = match_body.group("mnf_date")
-        if manufactured and part_no:
-            manufactured = self.normalize_date(manufactured)
         if part_no == "":
             return None
         if vendor == "":
             vendor = "NONAME"
+        if manufactured and part_no and date_check.match(manufactured):
+            manufactured = self.normalize_date(manufactured)
+        else:
+            manufactured = None
 
         return {
             "type": item_type,
@@ -85,7 +88,7 @@ class Script(BaseScript):
             "description": desc,
             "part_no": [part_no],
             "revision": None,
-            "mfg_date": manufactured if manufactured else None
+            "mfg_date": manufactured
         }
 
     def part_parse(self, type, slot_num, subcard_num=""):
