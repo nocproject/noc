@@ -18,6 +18,13 @@ class Script(BaseScript):
     cache = True
     interface = IGetInterfaces
 
+    IFINDEX = {
+        "host": 1,
+        "eth0": 2,
+        "eth1": 3,
+        "eth2": 4
+    }
+
     rx_ecfg = re.compile(
         r"^(?P<cmd>\S+)\s+(?P<name>\S+)\s+(?P<key>\S+)\s*:(?P<value>.*?)$",
         re.MULTILINE)
@@ -53,9 +60,12 @@ class Script(BaseScript):
                     "description": cfg["description"],
                     "admin_status": cfg["admin"] == "up",
                     "oper_status": cfg["operational"] == "up",
+                    "enabled_afi": ["BRIDGE"],
                     "tagged_vlans": []
                 }]
             }
+            if name in self.IFINDEX:
+                i["snmp_ifindex"] = self.IFINDEX[name]
             ifaces += [i]
         c = self.cli("show vlan")
         for match in self.rx_vlan.finditer(c):

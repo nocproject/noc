@@ -39,10 +39,10 @@ class Script(BaseScript):
     rx_port = re.compile(
         r"^(?P<port>\d+/\d+)\s+(?:\s+|PC|PC Mbr)\s+"
         r"(?P<admin_status>Enable|Disable)\s+"
-        r"(?:Auto|1000 Full)\s+"
-        r"(?:Auto|1000 Full)\s+"
+        r"(?:Auto|1000 Full|100 Full|100 Half|10 Full|10 Half)\s+"
+        r"(?:Auto|1000 Full|100 Full|100 Half|10 Full|10 Half)\s+"
         r"(?P<oper_status>Up|Down)\s+(?:Enable|Disable)\s+"
-        r"(?:Enable|Disable)(?P<descr>.*?)?\n", re.MULTILINE)
+        r"(?:Enable|Disable)(?P<descr>.*?)\n", re.MULTILINE)
     rx_port1 = re.compile(r"(?P<port>\d+/\d+)/\d+")
     rx_vlan = re.compile(
         r"^(?P<port>\d+/\d+/\d+)\s+(?P<vlan>\d+)\s+", re.MULTILINE)
@@ -86,12 +86,20 @@ class Script(BaseScript):
                 "name": ifname,
                 "type": "physical",
                 "admin_status": match.group('admin_status') == "Enable",
-                "oper_status": match.group('oper_status') == "Enable",
+                "oper_status": match.group('oper_status') == "Up",
                 "enabled_protocols": [],
                 "subinterfaces": []
             }
-            if pch and (ifname == pch[0]["interface"]):
-                i["type"] = "aggregated"
+            if match.group('descr').strip():
+                i["description"] = match.group('descr').strip()
+            if pch:
+                for p in pch:
+                    if ifname == p["interface"]:
+                        i["type"] = "aggregated"
+                        break
+                    if ifname in p["members"]:
+                        i["aggregated_interface"] = p["interface"]
+                        break
             for p in pvc:
                 match1 = self.rx_port1.search(p["port"])
                 if p["port"] == ifname \
@@ -108,15 +116,12 @@ class Script(BaseScript):
                         s["vlan_ids"] = p["vlan"]
                     i["subinterfaces"] += [s]
             if not i["subinterfaces"]:
-                s = {
+                i["subinterfaces"] = [{
                     "name": ifname,
                     "admin_status": match.group('admin_status') == "Enable",
-                    "oper_status": match.group('oper_status') == "Enable",
+                    "oper_status": match.group('oper_status') == "Up",
                     "enabled_afi": ['BRIDGE']
-                }
-                if pch  and (ifname in pch[0]["members"]):
-                    s["aggregated_interface"] = pch[0]["interface"]
-                i["subinterfaces"] = [s]
+                }]
             interfaces += [i]
         for v in self.scripts.get_vlans():
             c = self.cli("show vlan %s" % v["vlan_id"])

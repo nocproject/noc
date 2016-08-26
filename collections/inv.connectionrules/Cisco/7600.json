@@ -9,7 +9,7 @@
             "type": "CHASSIS"
         },
         {
-            "reset_scopes": [],
+            "reset_scopes": ["sup"],
             "scope": "linecard",
             "type": "LINECARD"
         },

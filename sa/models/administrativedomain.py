@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## AdministrativeDomain
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -14,7 +14,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
 ## NOC modules
-from noc.core.model.fields import TagsField
+from noc.main.models.pool import Pool
+from noc.core.model.fields import TagsField, DocumentReferenceField
+
 
 id_lock = RLock()
 
@@ -35,6 +37,10 @@ class AdministrativeDomain(models.Model):
     description = models.TextField(
         _("Description"),
         null=True, blank=True)
+    default_pool = DocumentReferenceField(
+        Pool,
+        null=True, blank=True
+    )
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -61,3 +67,10 @@ class AdministrativeDomain(models.Model):
             return self.parent.get_path() + [self.id]
         else:
             return [self.id]
+
+    def get_default_pool(self):
+        if self.default_pool:
+            return self.default_pool
+        if self.parent:
+            return self.parent.get_default_pool()
+        return None

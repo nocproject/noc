@@ -7,8 +7,8 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-07-14 10:07+0300",
-        "POT-Creation-Date": "2016-07-14 09:58+0300",
+        "PO-Revision-Date": "2016-08-09 09:25+0300",
+        "POT-Creation-Date": "2016-08-09 09:19+0300",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
@@ -133,6 +133,10 @@
     "All": [
         null,
         "Все"
+    ],
+    "Alrm Status": [
+        null,
+        "Статус"
     ],
     "Alrm.": [
         null,
@@ -298,6 +302,10 @@
         null,
         "Цвет"
     ],
+    "Columns": [
+        null,
+        "Столбцы"
+    ],
     "Command Log": [
         null,
         "Комманды"
@@ -350,6 +358,10 @@
         null,
         "Консоль"
     ],
+    "Contact": [
+        null,
+        "Контакт"
+    ],
     "Contacts": [
         null,
         "Контакты"
@@ -357,6 +369,10 @@
     "Content": [
         null,
         "Содержимое"
+    ],
+    "Count": [
+        null,
+        "Кол-во"
     ],
     "Country": [
         null,
@@ -373,6 +389,10 @@
     "Create Rule": [
         null,
         "Создать правило"
+    ],
+    "Credentials": [
+        null,
+        "Пароли"
     ],
     "Credentials has been changed": [
         null,
@@ -870,6 +890,10 @@
         null,
         "Последний статус"
     ],
+    "Last Updated": [
+        null,
+        "Изменен"
+    ],
     "Last seen": [
         null,
         "Последний раз"
@@ -893,6 +917,10 @@
     "Line Style": [
         null,
         "Стиль линии"
+    ],
+    "Link": [
+        null,
+        "Линк"
     ],
     "Link Inspector": [
         null,
@@ -1138,6 +1166,10 @@
         null,
         "Опер"
     ],
+    "Operation": [
+        null,
+        "Действие"
+    ],
     "Optical Rx, bBm": [
         null,
         "Optical Rx, dBm"
@@ -1274,6 +1306,14 @@
         null,
         "Префиксы"
     ],
+    "Preview": [
+        null,
+        "Просмотр"
+    ],
+    "Primary": [
+        null,
+        "Основной"
+    ],
     "Prio.": [
         null,
         "Прио."
@@ -1301,6 +1341,10 @@
     "Profile saved": [
         null,
         "Профиль сохранен"
+    ],
+    "Project": [
+        null,
+        "Проект"
     ],
     "Protocol": [
         null,
@@ -1822,6 +1866,10 @@
         null,
         "Переключить автозагрузку"
     ],
+    "Toggle sound": [
+        null,
+        "Отключить звук"
+    ],
     "Topology": [
         null,
         "Топология"
@@ -1890,6 +1938,10 @@
         null,
         "Переменные"
     ],
+    "Vendor": [
+        null,
+        "Производитель"
+    ],
     "Version": [
         null,
         "Версия"
@@ -1901,6 +1953,10 @@
     "Version changed": [
         null,
         "Версия изменена"
+    ],
+    "View": [
+        null,
+        "Просмотр"
     ],
     "View Card": [
         null,

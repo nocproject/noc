@@ -100,7 +100,10 @@ class Interface(Document):
             self.name = self.managed_object.profile.convert_interface_name(self.name)
         if (not hasattr(self, "_changed_fields") or "mac" in self._changed_fields) and self.mac:
             self.mac = MACAddressParameter().clean(self.mac)
-        super(Interface, self).save(*args, **kwargs)
+        try:
+            super(Interface, self).save(*args, **kwargs)
+        except Exception as e:
+            raise ValueError("%s: %s" % (e.__doc__, e.message))
         if  not hasattr(self, "_changed_fields") or "service" in self._changed_fields:
             ServiceSummary.refresh_object(self.managed_object)
 

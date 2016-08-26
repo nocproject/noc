@@ -20,7 +20,7 @@ class RefBookAppplication(Application):
     title = _("Reference Books")
 
     @view(url=r"^$", url_name="index",
-        menu="Reference Books", access="view")
+        menu=[_("Setup"), _("Reference Books")], access="view")
     def view_index(self, request):
         """
         Render list of refbooks

@@ -1,0 +1,98 @@
+{
+    "name": "Alcatel | 7750 | 7750-SR-7",
+    "$collection": "inv.objectmodels",
+    "uuid": "8610619a-e7b6-4f0d-ad0c-2be6ffac1dcf",
+    "vendor__code": "ALU",
+    "description": "7750 SR-7 7 ports router",
+    "connection_rule__name": "Alcatel | 7450",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "IO slot 1",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "imm1",
+            "name": "iom1",
+            "type__name": "Alcatel | 7x50 | IO"
+        },
+        {
+            "description": "IO slot 2",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "imm2",
+            "name": "iom2",
+            "type__name": "Alcatel | 7x50 | IO"
+        },
+        {
+            "description": "IO slot 2",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "imm2",
+            "name": "iom2",
+            "type__name": "Alcatel | 7x50 | IO"
+        },
+        {
+            "description": "IO slot 3",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "imm3",
+            "name": "iom3",
+            "type__name": "Alcatel | 7x50 | IO"
+        },
+        {
+            "description": "IO slot 4",
+            "direction": "i",
+            "gender": "f",
+            "internal_name": "imm4",
+            "name": "iom4",
+            "type__name": "Alcatel | 7x50 | IO"
+        },
+        {
+            "description": "CFM slot A",
+            "direction": "i",
+            "gender": "f",
+            "name": "cfmA",
+            "type__name": "Alcatel | 7450 | CFM"
+        },
+        {
+            "description": "CFM slot B",
+            "direction": "i",
+            "gender": "f",
+            "name": "cfmB",
+            "type__name": "Alcatel | 7450 | CFM"
+        },
+        {
+            "description": "Fan slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan1",
+            "type__name": "Alcatel | 7450 | FAN"
+        },
+        {
+            "description": "Fan slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "fan2",
+            "type__name": "Alcatel | 7450 | FAN"
+        },
+        {
+            "description": "Power Supply slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Alcatel | 7450 | PSU"
+        },
+        {
+            "description": "Power Supply slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Alcatel | 7450 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["3HE00186AAAB02"]
+        }
+    }
+}

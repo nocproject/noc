@@ -160,7 +160,10 @@ class Collection(object):
                     fp = os.path.join(root, cf)
                     with open(fp) as f:
                         data = f.read()
-                    jdata = ujson.loads(data)
+                    try:
+                        jdata = ujson.loads(data)
+                    except ValueError, why:
+                        raise ValueError("Error load %s: %s" % (fp, why))
                     if "uuid" not in jdata:
                         raise ValueError("Invalid JSON %s: No UUID" % fp)
                     csum = hashlib.sha256(data).hexdigest()
@@ -253,12 +256,12 @@ class Collection(object):
         o.save()
         return True
 
-    def delete_item(self, name, model, uuid):
-        o = model.objects.filter(uuid=uuid).first()
+    def delete_item(self, uuid):
+        o = self.model.objects.filter(uuid=uuid).first()
         if not o:
             return
         self.stdout.write("[%s|%s] Deleting %s\n" % (
-            name, uuid, getattr(o, self.name_field)
+            self.name, uuid, getattr(o, self.name_field)
         ))
         o.delete()
 

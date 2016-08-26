@@ -358,13 +358,13 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
                 if remote_interface:
                     confirmed.add((remote_interface, li))
-            for l, r in candidates[remote_object] & confirmed:
-                self.confirm_link(
+            for l, r in candidates[remote_object] - confirmed:
+                self.reject_link(
                     self.object, l,
                     remote_object, r
                 )
-            for l, r in candidates[remote_object] - confirmed:
-                self.reject_link(
+            for l, r in candidates[remote_object] & confirmed:
+                self.confirm_link(
                     self.object, l,
                     remote_object, r
                 )
@@ -546,10 +546,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     rlink.discovery_method, self.name
                 )
                 return
-        self.logger.info(
-            "Interface linking policy: %s/%s",
-            li.profile.discovery_policy, ri.profile.discovery_policy
-        )
         # Get interface discovery policies
         # Possible values are:
         # * I - Ignore links, all discovered links rejected
@@ -558,6 +554,40 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         # * C - Link will be attached to cloud
         lpolicy = li.profile.discovery_policy
         rpolicy = ri.profile.discovery_policy
+        self.logger.info(
+            "Interface linking policy: %s/%s",
+            lpolicy, rpolicy
+        )
+        # Check if either policy set to ignore
+        if lpolicy == "I" or rpolicy == "I":
+            self.logger.info(
+                "Not linking: %s:%s -- %s:%s. "
+                "'Ignore' interface discovery policy set",
+                local_object.name, local_interface,
+                remote_object.name, remote_interface
+            )
+            return
+        # Check if either side has *Create new* policy and
+        # already linked
+        if (lpolicy == "O" and llink) or (lpolicy == "O" and llink):
+            self.logger.info(
+                "Not linking: %s:%s -- %s:%s. "
+                "'Create new' interface discovery policy set and "
+                "interface is already linked",
+                local_object.name, local_interface,
+                remote_object.name, remote_interface
+            )
+            return
+        # Do not allow merging clouds
+        if lpolicy == "C" and rpolicy == "C":
+            self.logger.info(
+                "Not linking: %s:%s -- %s:%s. "
+                "Cloud merging is forbidden",
+                local_object.name, local_interface,
+                remote_object.name, remote_interface
+            )
+            return
+        # Get currently linked ends policies
         if llink:
             rri = [i for i in llink.interfaces if i.id != li.id][0]
             lrpolicy = rri.profile.discovery_policy
@@ -568,29 +598,11 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             rrpolicy = rri.profile.discovery_policy
         else:
             rrpolicy = None
+        # *Create new* policy blocks other side relinking
         if lrpolicy == "O" or rrpolicy == "O":
             self.logger.info(
                 "Not linking: %s:%s -- %s:%s. "
                 "Blocked by 'Create new' policy on existing link",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface
-            )
-            return
-        #
-        if lpolicy == "I" or rpolicy == "I":
-            self.logger.info(
-                "Not linking: %s:%s -- %s:%s. "
-                "'Ignore' interface discovery policy set",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface
-            )
-            return
-        #
-        if (lpolicy == "O" and llink) or (lpolicy == "O" and llink):
-            self.logger.info(
-                "Not linking: %s:%s -- %s:%s. "
-                "'Create new' interface discovery policy set and "
-                "interface is already linked",
                 local_object.name, local_interface,
                 remote_object.name, remote_interface
             )
@@ -611,15 +623,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     remote_object.name, remote_interface,
                     e
                 )
-            return
-        #
-        if lpolicy == "C" and rpolicy == "C":
-            self.logger.info(
-                "Not linking: %s:%s -- %s:%s. "
-                "Cloud merging is forbidden",
-                local_object.name, local_interface,
-                remote_object.name, remote_interface
-            )
             return
         #
         if lpolicy == "C":

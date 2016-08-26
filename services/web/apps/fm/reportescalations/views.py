@@ -70,13 +70,15 @@ class ReportEscalationsApplication(SimpleReport):
             for d in ac._get_collection().find(q):
                 mo = ManagedObject.get_by_id(d["managed_object"])
                 data += [(
-                    d["timestamp"],
-                    d["escalation_ts"],
-                    mo.name,
-                    mo.segment.name,
-                    mo.platform,
+                    d["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
+                    d["escalation_ts"].strftime("%Y-%m-%d %H:%M:%S"),
+                    mo.name.split("#", 1)[0],
                     mo.address,
-                    d["escalation_tt"]
+                    mo.platform,
+                    mo.segment.name,
+                    d["escalation_tt"],
+                    sum(ss["summary"] for ss in d["total_objects"]),
+                    sum(ss["summary"] for ss in d["total_subscribers"])
                 )]
         data = sorted(data, key=operator.itemgetter(0))
         return self.from_dataset(
@@ -85,10 +87,12 @@ class ReportEscalationsApplication(SimpleReport):
                 _("Timestamp"),
                 _("Escalation Timestamp"),
                 _("Managed Object"),
-                _("Segment"),
-                _("Platform"),
                 _("Address"),
-                _("TT")
+                _("Platform"),
+                _("Segment"),
+                _("TT"),
+                _("Objects"),
+                _("Subscribers")
             ],
             data=data,
             enumerate=True

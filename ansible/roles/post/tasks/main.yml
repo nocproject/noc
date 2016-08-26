@@ -31,9 +31,12 @@
     body: "{{ alerta_blackout | to_json }}"
     body_format: json
     status_code: 201
+    validate_certs: no
   when: "alerta_notified.changed"
   register: blackout
   changed_when: "blackout.status == 201"
+  environment:
+    https_proxy: "{{http_proxy}}"
   run_once: true
   tags:
     - always
@@ -79,7 +82,10 @@
     body: "{{ alerta_deploy_finish | to_json }}"
     body_format: json
     status_code: 201, 202
+    validate_certs: no
   when: "alerta_notified.changed"
   run_once: true
+  environment:
+    https_proxy: "{{http_proxy}}"
   tags:
     - always

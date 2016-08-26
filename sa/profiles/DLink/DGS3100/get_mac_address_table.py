@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DGS3100.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -51,7 +51,7 @@ class Script(BaseScript):
                     if not v[2] or int(v[2]) > 3 or int(v[2]) < 1:
                         continue
                     iface = self.snmp.get(
-                        "1.3.6.1.2.1.31.1.1.1.1." + v[1],
+                        "1.3.6.1.2.1.31.1.1.1.1." + str(v[1]),
                         cached=True)  # IF-MIB
                     if interface is not None:
                         if iface == interface:
@@ -71,7 +71,7 @@ class Script(BaseScript):
                     r.append({
                         "interfaces": [iface],
                         "mac": chassis,
-                        "type": {"3": "D", "2": "S", "1": "S"}[v[2]],
+                        "type": {"3": "D", "2": "S", "1": "S"}[str(v[2])],
                         "vlan_id": vlan_id,
                     })
                 return r

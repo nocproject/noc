@@ -3,7 +3,7 @@
 ## Import Prefixes from routing tables
 ## @todo: VRF-aware
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
