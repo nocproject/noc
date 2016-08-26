@@ -32,14 +32,59 @@ class Script(BaseScript):
         r"^\s+(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+"
         r"(?P<membership>\S+)\s*\n", re.MULTILINE)
     rx_vlan_ipif = re.compile(
-        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+(?:Static|DHCP)\s+Valid")
+        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+"
+        r"(?:Static|DHCP)\s+Valid")
     rx_mac = re.compile(
         r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
+    rx_enabled = re.compile(
+        r"^\s*(?P<port>(?:Gi|Te|Po)\S+)\s+Enabled",
+        re.MULTILINE | re.IGNORECASE)
+    rx_lldp = re.compile(
+        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+(?:Rx|Tx)",
+        re.MULTILINE | re.IGNORECASE)
+
+    def get_gvrp(self):
+        try:
+            v = self.cli("show gvrp configuration")
+            if "GVRP Feature is currently Disabled" not in v:
+                return self.rx_enabled.findall(v)
+        except self.CLISyntaxError:
+            return []
+        return []
+
+    def get_stp(self):
+        try:
+            v = self.cli("show spanning-tree")
+            return self.rx_enabled.findall(v)
+        except self.CLISyntaxError:
+            return []
+
+    def get_ctp(self):
+        try:
+            v = self.cli("show loopback-detection")
+            if "Loopback detection: Disabled" not in v:
+                return self.rx_enabled.findall(v)
+        except self.CLISyntaxError:
+            return []
+        return []
+
+    def get_lldp(self):
+        try:
+            v = self.cli("show lldp configuration")
+            if "LLDP state: Enabled" in v:
+                return self.rx_lldp.findall(v)
+        except self.CLISyntaxError:
+            return []
+        return []
 
     def execute(self):
         interfaces = []
         descr = []
         adm_status = []
+        gvrp = self.get_gvrp()
+        stp = self.get_stp()
+        ctp = self.get_ctp()
+        lldp = self.get_lldp()
         for l in self.cli("show interfaces description").split("\n"):
             match = self.rx_descr.match(l.strip())
             if match:
@@ -65,8 +110,17 @@ class Script(BaseScript):
                 "type": iftype,
                 "admin_status": st,
                 "oper_status": match.group("oper_status") == "Up",
+                "enabled_protocols": [],
                 "subinterfaces": []
             }
+            if ifname in gvrp:
+                iface["enabled_protocols"] += ["GVRP"]
+            if ifname in stp:
+                iface["enabled_protocols"] += ["STP"]
+            if ifname in ctp:
+                iface["enabled_protocols"] += ["CTP"]
+            if ifname in lldp:
+                iface["enabled_protocols"] += ["LLDP"]
             sub = {
                 "name": ifname,
                 "admin_status": st,
