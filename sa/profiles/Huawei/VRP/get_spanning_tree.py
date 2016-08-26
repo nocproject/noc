@@ -102,7 +102,6 @@ class Script(BaseScript):
         # Save port attributes
         ports = self.get_ports_attrs()
         #
-
         v = self.cli("display stp region-configuration")
         match = self.rx_mstp_region.search(v)
         r = {
@@ -129,7 +128,6 @@ class Script(BaseScript):
                 iv[int(instance)] += row[14:]
         iv[int(instance)] = vlans
         for x in iv:
-            print iv[x]
             iv[x] = iv[x].replace(" to ", "-")
 
         #
@@ -151,9 +149,9 @@ class Script(BaseScript):
                     "bridge_id": match.group("bridge_id"),
                     "bridge_priority": match.group("bridge_priority"),
                     }]
+                if instance_id not in interfaces:
+                    interfaces[instance_id] = []
                 for match in v2:
-                    if instance_id not in interfaces:
-                        interfaces[instance_id] = []
                     interface = self.profile.convert_interface_name(
                         match.group("interface"))
                     if interface not in ports[instance_id]:
