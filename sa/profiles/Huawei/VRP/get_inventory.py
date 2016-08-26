@@ -54,11 +54,11 @@ class Script(BaseScript):
 
     rx_item_content2 = re.compile(
         r"Board(\s|)Type=(?P<board_type>.*?)\n"
-        r"BarCode=(?P<bar_code>.*?)\n"
-        r"Item=(?P<item>.*?)\n"
+        r"BarCode=(?P<bar_code>.*?)(\n|)"
+        r"\s*Item=(?P<item>.*?)\n"
         r"Description=(?P<desc>.*?)\n"
-        r"Manufactured=(?P<mnf_date>.*?)\n"
-        r"^.*?VendorName=(?P<vendor>.*?)\n"
+        r"Manufactured=(?P<mnf_date>.*?)(\n|)"
+        r".*?VendorName=(?P<vendor>.*?)(\n|)"
         r"IssueNumber=(?P<issue_number>.*?)\n"
         r"CLEICode=(?P<code>.*?)\n", re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE)
 
@@ -66,6 +66,8 @@ class Script(BaseScript):
         """Parse display elabel block"""
         date_check = re.compile("\d+-\d+-\d+")
         match_body = self.rx_item_content2.search(item)
+        if not match_body or match_body is None:
+            print 1
         vendor = match_body.group("vendor").strip()
         serial = match_body.group("bar_code").strip()
         part_no = match_body.group("board_type")
@@ -75,6 +77,8 @@ class Script(BaseScript):
             return None
         if vendor == "":
             vendor = "NONAME"
+        if " " in serial:
+            serial = serial.split()[0]
         if manufactured and part_no and date_check.match(manufactured):
             manufactured = self.normalize_date(manufactured)
         else:
