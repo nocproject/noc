@@ -75,7 +75,6 @@ class Script(BaseScript):
                     if not vendor and not pn and not sn:
                         continue
                     if vendor == "OEM":
-                        vendor = "NoName"
                         if pn in self.trans_map:
                             pn = self.trans_map[pn]
                         else:
