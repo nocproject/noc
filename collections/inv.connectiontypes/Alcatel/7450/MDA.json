@@ -1,0 +1,8 @@
+{
+    "name": "Alcatel | 7x50 | MDA",
+    "$collection": "inv.connectiontypes",
+    "uuid": "4fcbaeba-998b-4f31-b3ea-20e769c9d4d2",
+    "description": "Alcatel 7450, 7750 MDA Slot",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -91,6 +91,8 @@ Ext.define("NOC.inv.map.MapPanel", {
     LINK_OPER_DOWN: 2,
     LINK_STP_BLOCKED: 3,
 
+    resizeHandles: 'onResize',
+
     initComponent: function () {
         var me = this;
 
@@ -250,7 +252,10 @@ Ext.define("NOC.inv.map.MapPanel", {
             cells.push(me.createLink(link));
         });
         me.graph.addCells(cells);
-        me.paper.fitToContent();
+        me.paper.fitToContent({
+            gridHeight: me.getHeight(),
+            gridWidth: me.getWidth()
+        });
         // Run status polling
         if(me.statusPollingTaskId) {
             me.getObjectStatus();
@@ -263,6 +268,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         }
         me.hasStp = data.caps.indexOf("Network | STP") !== -1;
         me.app.viewStpButton.setDisabled(!me.hasStp);
+        me.setPaperDimension();
     },
 
     //
@@ -530,9 +536,9 @@ Ext.define("NOC.inv.map.MapPanel", {
         Ext.each(me.graph.getLinks(), function(link) {
             link.attr({
                 ".connection": {
-                    filter: "none",
                     stroke: "black"
-                }
+                },
+                '.': {filter: 'none'}
             });
 
             link.label(0, {
@@ -574,7 +580,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                             Ext.decode(response.responseText)
                         );
                     },
-                    failure: function() {}
+                    failure: Ext.emptyFn
                 });
                 break;
         }
@@ -716,13 +722,12 @@ Ext.define("NOC.inv.map.MapPanel", {
                         var t = me.luStyle[i][0],
                             style = me.luStyle[i][1];
                         if (lu >= t) {
-                            cfg = {
-                                filter: "url(#glow)"
-                            };
+                            cfg = {};
                             cfg = Ext.apply(cfg, style);
                             luStyle = cfg;
                             link.attr({
-                                ".connection": cfg
+                                ".connection": cfg,
+                                '.': { filter: { name: 'dropShadow', args: { dx: 1, dy: 1, blur: 2 } } }
                             });
                             break;
                         }
@@ -777,7 +782,12 @@ Ext.define("NOC.inv.map.MapPanel", {
     setZoom: function(zoom) {
         var me = this;
         me.paper.scale(zoom, zoom);
-        me.paper.fitToContent();
+        me.paper.fitToContent({
+                gridHeight: me.getHeight(),
+                gridWidth: me.getWidth()
+            }
+        );
+        me.setPaperDimension();
     },
 
     onNodeMenuViewCard: function() {
@@ -914,5 +924,32 @@ Ext.define("NOC.inv.map.MapPanel", {
         luStyle["font-size"] = fontSize;
         link.label(0, {attrs: {text: luStyle}});
         link.label(0, {position: 0.5});
+    },
+
+    onResize: function(width, height) {
+        var me = this;
+        me.setPaperDimension();
+        if('paper' in me) {
+            me.paper.fitToContent({
+                gridHeight: height,
+                gridWidth: width
+            });
+        }
+        me.setPaperDimension();
+    },
+
+    setPaperDimension: function() {
+        var me = this,
+            w = me.getWidth(),
+            h = me.getHeight();
+
+        if(me.paper) {
+            var contentBB = me.paper.getContentBBox();
+            if(contentBB !== undefined) {
+                w = Ext.Array.max([contentBB.width, me.getWidth()]);
+                h = Ext.Array.max([contentBB.height, me.getHeight()]);
+            }
+            me.paper.setDimensions(w, h);
+        }
     }
 });

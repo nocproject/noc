@@ -1,0 +1,40 @@
+{
+    "name": "Intel | Transceiver | 10G | SFP-10G-LR",
+    "$collection": "inv.objectmodels",
+    "uuid": "2453ae59-6e17-4d29-b0c7-093eb1a39124",
+    "vendor__code": "INTEL",
+    "description": "Intel SFP+ 10G LR transceiver",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">10GBASELR-1310"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<10GBASELR-1310"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["E10GSFPLR"],
+            "part_no": ["FTLX1471D3BCV-IT"]
+        }
+    }
+}

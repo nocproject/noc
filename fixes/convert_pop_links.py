@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
+from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
 from noc.gis.models.layer import Layer
 

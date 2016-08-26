@@ -33,7 +33,7 @@ class Script(BaseScript):
             "platform": match.group("platform"),
             "version": match.group("version"),
         }
-        if r["platform"] != "x86":
+        if r["platform"] not in ["x86", "CHR"]:
             v = self.cli("system routerboard print")
             rb = self.re_search(self.rx_rb, v)
             if rb:

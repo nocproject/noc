@@ -60,6 +60,7 @@ class Script(BaseScript):
             i = {
                 "name": int(line[:8]),
                 "type": "physical",
+                "snmp_ifindex": int(line[:8]),
                 "subinterfaces": []
             }
             if str(line[8:]) != "-":

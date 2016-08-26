@@ -483,6 +483,7 @@ class TableSection(ReportSection):
             "<input type='hidden' name='filename' value='report.csv'>",
             "<input type='hidden' name='data' id='csv_data'>",
             "<input type='submit' value='CSV' onclick='getCSVData(\".report-table\");'>",
+            "<input type='button' value='Print' onclick='window.print()'>",
             "</form>",
             "<table class='report-table' summary='%s'>" % self.quote(self.name)
         ]

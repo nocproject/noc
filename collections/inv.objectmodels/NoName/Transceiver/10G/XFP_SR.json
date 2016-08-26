@@ -11,6 +11,7 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
+            "protocols": ["TransEth10G"],
             "type__name": "Transceiver | XFP"
         },
         {

@@ -181,9 +181,6 @@ class Script(BaseScript):
                     and "CISCO" in match.group("t_vendor").upper()):
                         # Different variations of "CISCO@/-/_SYSTEMS" vendor
                         t_vendor = "CISCO"
-                elif "OEM" in match.group("t_vendor").upper():
-                    # China noname products with "OEM" vendor
-                    t_vendor = "NONAME"
                 else:
                     # Others vendors
                     t_vendor = match.group("t_vendor").upper().strip()

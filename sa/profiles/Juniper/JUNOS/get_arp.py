@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Juniper.JUNOS.get_arp
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -26,6 +26,6 @@ class Script(BaseScript):
         if not vrf:
             vrf = "default"
         return self.cli(
-            "show arp no-resolve vpn %s" % vrf,
+            "show arp no-resolve vpn %s | except demux" % vrf,
             list_re=self.rx_line
         )

@@ -19,19 +19,26 @@ class Script(BaseScript):
     cache = True
     interface = IGetLicense
     rx_lic = re.compile(
-        r"^\s*software-id: (?P<sid>\S+)\n"
+        r"^\s*(?:software|system)-id: (?P<sid>\S+)\n"
         r"(^\s*upgradable-to: (?P<upto>\S+)\n)?"
-        r"^\s*nlevel: (?P<nlevel>\d+)\n"
+        r"(^\s*nlevel: (?P<nlevel>\d+)\n)?"
+        r"(^\s*level: (?P<level>\S+)\n)?"
         r"(^\s*features:.*(?P<features>\.*)$)?",
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
         v = self.cli("system license print")
         match = self.re_search(self.rx_lic, v)
+        if match.group("nlevel"):
+            level = int(match.group("nlevel"))
+        if match.group("level"):
+            level = {
+                "free": 1, "p1": 2, "p2": 3, "p-unlimited": 4
+            }[match.group("level").lower()]
         r = {
             "software-id": match.group("sid"),
             "upgradable-to": match.group("upto"),
-            "nlevel": int(match.group("nlevel")),
+            "nlevel": level,
         }
         features = match.group("features").strip()
         if features:

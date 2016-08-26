@@ -24,7 +24,8 @@ from noc.core.translation import ugettext as _
 class CSVApplication(Application):
     title = _("CSV Export/Import")
 
-    @view(url="^$", url_name="index", menu="Setup | CSV Export/Import",
+    @view(url="^$", url_name="index",
+          menu=[_("Setup"), _("CSV Export/Import")],
         access="import")
     def view_index(self, request):
         class ModelForm(forms.Form):

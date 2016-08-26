@@ -8,6 +8,14 @@
   tags:
     - always
 
+- name: set proxy
+  set_fact:
+    http_proxy: "{{ proxy }}"
+  when: "proxy is defined"
+  tags:
+    - config
+    - always
+
 - name: notify alerta of deployment start
   uri:
     url: "{{alerta_url}}/api/alert?api-key={{alerta_token}}"
@@ -20,19 +28,13 @@
   register: alerta_notified
   changed_when: "alerta_notified.status == 201"
   run_once: true
+  environment:
+    https_proxy: "{{http_proxy}}"
   tags:
     - always
 
 - name: "Loading system-dependend settings"
   include_vars: "os/{{ ansible_distribution }}.yml"
-  tags:
-    - config
-    - always
-
-- name: set proxy
-  set_fact:
-    http_proxy: "{{ proxy }}"
-  when: "proxy is defined"
   tags:
     - config
     - always

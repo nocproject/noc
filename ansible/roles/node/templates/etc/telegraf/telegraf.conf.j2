@@ -105,7 +105,7 @@ env = "{{noc_env_type}}"
 
   # Ignore some mountpoints by filesystem type. For example (dev)tmpfs (usually
   # present on /run, /var/run, /dev/shm or /dev).
-  ignore_fs = ["tmpfs", "devtmpfs"]
+  ignore_fs = ["tmpfs", "devtmpfs", "overlay", "rootfs"]
 
 # Read metrics about disk IO by device
 [[inputs.diskio]]

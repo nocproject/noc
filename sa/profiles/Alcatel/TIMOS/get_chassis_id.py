@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Alcatel.TIMOS.get_chassis_id
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -23,11 +23,20 @@ class Script(BaseScript):
                        re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
+        r = []
         v = self.cli("show chassis")
         match = self.re_search(self.rx_id, v)
-        base = match.group("id")
-
-        return {
-            "first_chassis_mac": base,
-            "last_chassis_mac": base
-        }
+        r += [{
+            "first_chassis_mac": match.group("id"),
+            "last_chassis_mac": match.group("id")
+        }]
+        try:
+            v = self.cli("show card detail")
+            for match in self.rx_id.finditer(v):
+                r += [{
+                    "first_chassis_mac": match.group("id"),
+                    "last_chassis_mac": match.group("id")
+                }]
+        except self.CLISyntaxError:
+            pass
+        return r

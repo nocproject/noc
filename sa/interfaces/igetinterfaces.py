@@ -216,7 +216,7 @@ class IGetInterfaces(Interface):
             "enabled_protocols": ListOfParameter(
                 element=StringParameter(choices=[
                     "LACP", "LLDP", "CDP", "UDLD", "CTP", "GVRP", "VTP", "STP",
-                    "BFD"
+                    "BFD", "OAM"
                 ]), required=False),
             "description": StringParameter(required=False),
             "mac": MACAddressParameter(required=False),

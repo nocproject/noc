@@ -20,7 +20,8 @@ class AdminitstrativeDomainLoader(BaseLoader):
     fields = [
         "id",
         "name",
-        "parent"
+        "parent",
+        "default_pool"
     ]
     mapped_fields = {
         "parent": "administrativedomain"

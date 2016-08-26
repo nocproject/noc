@@ -123,7 +123,10 @@ class ObjectModel(Document):
         return v.get(key)
 
     def save(self, *args, **kwargs):
-        super(ObjectModel, self).save(*args, **kwargs)
+        try:
+            super(ObjectModel, self).save(*args, **kwargs)
+        except Exception as e:
+            raise ValueError("%s: %s" % (e.__doc__, e.message))
         # Update connection cache
         # @todo: Move to signal
         s = ObjectModel.objects.filter(id=self.id).first()

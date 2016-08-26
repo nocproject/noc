@@ -57,13 +57,24 @@ class Script(BaseScript):
     rx_vlan_line_cont = re.compile(r"^\s{10,}(?P<ports>[\w\/\s\,\.]+)$",
         re.MULTILINE)
     rx_ospf = re.compile(r"^(?P<name>\S+)\s+\d", re.MULTILINE)
+    rx_pim = re.compile(r"^\S+\s+(?P<name>\S+)\s+v\d+/\S+\s+\d+")
+    rx_igmp = re.compile(r"^(?P<name>\S+) is ")
     rx_cisco_interface_name = re.compile(
         r"^(?P<type>[a-z]{2})[a-z\-]*\s*(?P<number>\d+(/\d+(/\d+)?)?([.:]\d+(\.\d+)?)?(A|B)?)$",
         re.IGNORECASE)
     rx_cisco_interface_sonet = re.compile(r"^(?P<type>Se)\s+(?P<number>\d+\S+)$")
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
+    rx_cdp = re.compile(r"^(?P<iface>\S+) is ")
     rx_lldp = re.compile("^(?P<iface>(?:Fa|Gi|Te)[^:]+?):.+Rx: (?P<rx_state>\S+)",
         re.MULTILINE | re.DOTALL)
+    rx_gvtp = re.compile("VTP Operating Mode\s+: Off", re.MULTILINE)
+    rx_vtp = re.compile("^\s*(?P<iface>(?:Fa|Gi|Te)[^:]+?)\s+enabled",
+        re.MULTILINE)
+    rx_vtp1 = re.compile(
+        "^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te)[^:]+?)\s+",
+        re.MULTILINE)
+    rx_oam = re.compile(
+        r"^\s*(?P<iface>(?:Fa|Gi|Te)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
 
     def get_lldp_interfaces(self):
         """
@@ -73,26 +84,109 @@ class Script(BaseScript):
         try:
             v = self.cli("show lldp interface")
         except self.CLISyntaxError:
-            return set()
-        ports = set()
+            return []
+        r = []
         for s in v.strip().split("\n\n"):
             match = self.rx_lldp.search(s)
             if match:
                 if match.group("rx_state").lower() == "enabled":
-                    ports.add(self.profile.convert_interface_name(match.group("iface")))
-        return ports
+                    r += [self.profile.convert_interface_name(match.group("iface"))]
+        return r
+
+    def get_oam_interfaces(self):
+        """
+        Returns a set of normalized OAM interface names
+        :return:
+        """
+        try:
+            v = self.cli("show ethernet oam summary")
+        except self.CLISyntaxError:
+            return []
+        r = []
+        for s in v.strip().split("\n"):
+            match = self.rx_oam.search(s)
+            if match:
+                r += [self.profile.convert_interface_name(match.group("iface"))]
+        return r
+
+    def get_cdp_interfaces(self):
+        """
+        Returns a set of normalized CDP interface names
+        :return:
+        """
+        try:
+            v = self.cli("show cdp interface")
+        except self.CLISyntaxError:
+            return []
+        r = []
+        for s in v.split("\n"):
+            match = self.rx_cdp.search(s)
+            if match:
+                r += [self.profile.convert_interface_name(match.group("iface"))]
+        return r
+
+    def get_vtp_interfaces(self):
+        """
+        Returns a set of normalized VTP interface names
+        :return:
+        """
+        if self.match_version(version__lte="12.2(25)"):
+            return set()
+        try:
+            v = self.cli("show vtp status")
+        except self.CLISyntaxError:
+            return []
+        if self.rx_gvtp.search(v):
+            return []
+        r = []
+        try:
+            v1 = self.cli("show vtp interface")
+        except self.CLISyntaxError:
+            v1 = v
+        for s in v1.strip().split("\n"):
+            match = self.rx_vtp.search(s)
+            if match:
+                r += [self.profile.convert_interface_name(match.group("iface"))]
+            match = self.rx_vtp1.search(s)
+            if match:
+                r += [self.profile.convert_interface_name(match.group("iface"))]
+        return r
 
     def get_ospfint(self):
         try:
             v = self.cli("show ip ospf interface brief")
         except self.CLISyntaxError:
             return []
-        ospfs = []
+        r = []
         for s in v.split("\n"):
             match = self.rx_ospf.search(s)
             if match:
-                ospfs += [match.group("name")]
-        return ospfs
+                r += [match.group("name")]
+        return r
+
+    def get_pimint(self):
+        try:
+            v = self.cli("show ip pim interface")
+        except self.CLISyntaxError:
+            return []
+        r = []
+        for s in v.split("\n"):
+            match = self.rx_pim.search(s)
+            if match:
+                r += [self.profile.convert_interface_name(match.group("name"))]
+        return r
+
+    def get_igmpint(self):
+        try:
+            v = self.cli("show ip igmp interface")
+        except self.CLISyntaxError:
+            return []
+        r = []
+        for s in v.split("\n"):
+            match = self.rx_igmp.search(s)
+            if match:
+                r += [self.profile.convert_interface_name(match.group("name"))]
+        return r
 
     rx_ifindex = re.compile(
         r"^(?P<interface>\S+): Ifindex = (?P<ifindex>\d+)")
@@ -156,6 +250,12 @@ class Script(BaseScript):
                 portchannel_members[m] = (i, t)
         # Get LLDP interfaces
         lldp = self.get_lldp_interfaces()
+        # Get VTP interfaces
+        vtp = self.get_vtp_interfaces()
+        # Get OAM interfaces
+        oam = self.get_oam_interfaces()
+        # Get CDP interfaces
+        cdp = self.get_cdp_interfaces()
         # Get IPv4 interfaces
         ipv4_interfaces = defaultdict(list)  # interface -> [ipv4 addresses]
         c_iface = None
@@ -203,6 +303,10 @@ class Script(BaseScript):
         interfaces = []
         # Get OSPF interfaces
         ospfs = self.get_ospfint()
+        # Get PIM interfaces
+        pims = self.get_pimint()
+        # Get IGMP interfaces
+        igmps = self.get_igmpint()
         # Get interfaces SNMP ifIndex
         ifindex = self.get_ifindex()
 
@@ -228,6 +332,12 @@ class Script(BaseScript):
                     }
                     if inm in lldp:
                         iface["enabled_protocols"] += ["LLDP"]
+                    if inm in vtp:
+                        iface["enabled_protocols"] += ["VTP"]
+                    if inm in oam:
+                        iface["enabled_protocols"] += ["OAM"]
+                    if inm in cdp:
+                        iface["enabled_protocols"] += ["CDP"]
                     interfaces += [iface]
             a_stat = match.group("admin_status").lower() == "up"
             o_stat = match.group("oper_status").lower() == "up"
@@ -259,7 +369,6 @@ class Script(BaseScript):
                 encaps = match.group("encaps")
                 if encaps[:6] == "802.1Q":
                     sub["vlan_ids"] = [encaps.split(",")[1].split()[2][:-1]]
-            # vtp
             # uBR ?
             if ifname in pvm:
                 sub["vlan_ids"] = pvm[ifname]
@@ -278,6 +387,10 @@ class Script(BaseScript):
                      matchifn.group("number"))
             if shotn in ospfs:
                 sub["enabled_protocols"] += ["OSPF"]
+            if ifname in pims:
+                sub["enabled_protocols"] += ["PIM"]
+            if ifname in igmps:
+                sub["enabled_protocols"] += ["IGMP"]
 
             if full_ifname in ifindex:
                 sub["snmp_ifindex"] = ifindex[full_ifname]
@@ -299,6 +412,12 @@ class Script(BaseScript):
                 }
                 if ifname in lldp:
                     iface["enabled_protocols"] += ["LLDP"]
+                if ifname in vtp:
+                    iface["enabled_protocols"] += ["VTP"]
+                if ifname in oam:
+                    iface["enabled_protocols"] += ["OAM"]
+                if ifname in cdp:
+                    iface["enabled_protocols"] += ["CDP"]
                 match1 = self.rx_ctp.search(v)
                 if match1:
                     iface["enabled_protocols"] += ["CTP"]

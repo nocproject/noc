@@ -126,10 +126,13 @@ class Script(BaseScript):
 
         # Get loopguard
         ctp = {}
-        cmd = self.cli("show loopguard")
-        if "LoopGuard Status: Enable" in cmd:
-            for match in self.rx_ctp.finditer(cmd):
-                ctp[match.group("interface")] = match.group("state")
+        try:
+            cmd = self.cli("show loopguard")
+            if "LoopGuard Status: Enable" in cmd:
+                for match in self.rx_ctp.finditer(cmd):
+                    ctp[match.group("interface")] = match.group("state")
+        except self.CLISyntaxError:
+            pass
 
         # Get gvrp
         gvrp = []

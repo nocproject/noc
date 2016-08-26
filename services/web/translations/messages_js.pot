@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-07-14 09:58+0300\n"
+"POT-Creation-Date: 2016-08-09 09:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -127,7 +127,7 @@ msgstr ""
 
 #: ui/web/dns/dnszone/Application.js:50 ui/web/dns/dnszone/Application.js:114
 #: ui/web/inv/interface/ChangeInterfaceProjectForm.js:41
-#: ui/web/inv/interface/L1Panel.js:79 ui/web/inv/interface/LAGPanel.js:55
+#: ui/web/inv/interface/L1Panel.js:82 ui/web/inv/interface/LAGPanel.js:55
 #: ui/web/ip/vrf/Application.js:37 ui/web/ip/vrf/Application.js:91
 #: ui/web/peer/peer/Application.js:34 ui/web/peer/peer/Application.js:130
 #: ui/web/sa/managedobject/L1Panel.js:82 ui/web/vc/vc/Application.js:79
@@ -252,92 +252,96 @@ msgstr ""
 msgid "Failed to set root cause"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:55
+#: ui/web/fm/alarm/Application.js:56
 msgid "Toggle autoreload"
 msgstr ""
 
 #: ui/web/fm/alarm/Application.js:67
+msgid "Toggle sound"
+msgstr ""
+
+#: ui/web/fm/alarm/Application.js:79
 msgid "Show active alarms"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:71
+#: ui/web/fm/alarm/Application.js:83
 msgid "Archive"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:72
+#: ui/web/fm/alarm/Application.js:84
 msgid "Show archived alarms"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:155
+#: ui/web/fm/alarm/Application.js:167
 msgid "Root only"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:157
+#: ui/web/fm/alarm/Application.js:169
 msgid "Show only root causes"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:162 ui/web/fm/alarm/Application.js:181
-#: ui/web/fm/alarm/Application.js:200
+#: ui/web/fm/alarm/Application.js:174 ui/web/fm/alarm/Application.js:193
+#: ui/web/fm/alarm/Application.js:212
 msgid "Show all alarms"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:175
+#: ui/web/fm/alarm/Application.js:187
 msgid "Show only waiting confirmantion"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:193
+#: ui/web/fm/alarm/Application.js:205
 msgid "Hide maintainance"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:194
+#: ui/web/fm/alarm/Application.js:206
 msgid "Hide alarms covered by maintainance"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:199
+#: ui/web/fm/alarm/Application.js:211
 msgid "Show"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:204
+#: ui/web/fm/alarm/Application.js:216
 msgid "Only"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:205
+#: ui/web/fm/alarm/Application.js:217
 msgid "Show only alarms covered by maintainance"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:224 ui/web/fm/alarm/Application.js:269
+#: ui/web/fm/alarm/Application.js:236 ui/web/fm/alarm/Application.js:281
 msgid "Filter"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:291
+#: ui/web/fm/alarm/Application.js:304
 msgid "By Date"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:314
+#: ui/web/fm/alarm/Application.js:327
 msgid "Show map"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:320
+#: ui/web/fm/alarm/Application.js:333
 msgid "Show object"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:334
+#: ui/web/fm/alarm/Application.js:347
 msgid "Time/Duration"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:344
+#: ui/web/fm/alarm/Application.js:357
 msgid "Object/Segment"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:354
+#: ui/web/fm/alarm/Application.js:367
 msgid "Address/Platform"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:374
+#: ui/web/fm/alarm/Application.js:387
 msgid "Subject/Class"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:385
+#: ui/web/fm/alarm/Application.js:398
 msgid "Summary/TT"
 msgstr ""
 
@@ -347,6 +351,12 @@ msgstr ""
 
 #: ui/web/fm/alarm/plugins/Thresholds.js:32
 msgid "Metric"
+msgstr ""
+
+#: ui/web/fm/alarm/plugins/Thresholds.js:42
+#: ui/web/sa/managedobjectprofile/Application.js:47
+#: ui/web/sa/managedobjectprofile/Application.js:147
+msgid "Level"
 msgstr ""
 
 #: ui/web/fm/alarm/plugins/Thresholds.js:58
@@ -479,19 +489,19 @@ msgid "Delay"
 msgstr ""
 
 #: ui/web/fm/alarmescalation/Application.js:99
-#: ui/web/sa/managedobjectselector/ObjectsPanel.js:46
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:48
 msgid "Adm. domain"
 msgstr ""
 
 #: ui/web/cm/validationrule/Application.js:124
-#: ui/web/fm/alarm/Application.js:103
+#: ui/web/fm/alarm/Application.js:115
 #: ui/web/fm/alarmescalation/Application.js:106
 #: ui/web/fm/alarmtrigger/Application.js:45 ui/web/fm/event/Application.js:79
 #: ui/web/fm/eventtrigger/Application.js:45
 #: ui/web/inv/interfaceclassificationrule/Application.js:43
 #: ui/web/inv/interfaceclassificationrule/Application.js:93
-#: ui/web/inv/networksegment/Application.js:60
-#: ui/web/inv/networksegment/Application.js:112
+#: ui/web/inv/networksegment/Application.js:67
+#: ui/web/inv/networksegment/Application.js:119
 #: ui/web/sa/groupaccess/Application.js:24
 #: ui/web/sa/mrtconfig/Application.js:83
 #: ui/web/sa/objectnotification/Application.js:19
@@ -500,10 +510,18 @@ msgstr ""
 msgid "Selector"
 msgstr ""
 
+#: ui/web/fm/alarm/Application.js:377
+#: ui/web/fm/alarmescalation/Application.js:119
+#: ui/web/fm/alarmseverity/Application.js:31
+#: ui/web/fm/alarmseverity/Application.js:69
+#: ui/web/sa/managedobject/AlarmPanel.js:48
+msgid "Severity"
+msgstr ""
+
 #: ui/web/dns/dnszone/Application.js:120
 #: ui/web/dns/dnszoneprofile/Application.js:31
 #: ui/web/dns/dnszoneprofile/Application.js:123
-#: ui/web/fm/alarmescalation/Application.js:119
+#: ui/web/fm/alarmescalation/Application.js:125
 #: ui/web/fm/alarmtrigger/Application.js:50
 #: ui/web/fm/alarmtrigger/Application.js:105
 #: ui/web/fm/eventtrigger/Application.js:50
@@ -514,15 +532,15 @@ msgstr ""
 msgid "Notification Group"
 msgstr ""
 
-#: ui/web/fm/alarmescalation/Application.js:126
+#: ui/web/fm/alarmescalation/Application.js:132
 msgid "Open Template"
 msgstr ""
 
-#: ui/web/fm/alarmescalation/Application.js:133
+#: ui/web/fm/alarmescalation/Application.js:139
 msgid "Clear Template"
 msgstr ""
 
-#: ui/web/fm/alarmescalation/Application.js:140
+#: ui/web/fm/alarmescalation/Application.js:146
 #: ui/web/ip/address/Application.js:92
 #: ui/web/ip/addressrange/Application.js:158 ui/web/ip/prefix/Application.js:81
 #: ui/web/ip/vrf/Application.js:122 ui/web/peer/peer/Application.js:79
@@ -530,15 +548,9 @@ msgstr ""
 msgid "TT"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:174
-#: ui/web/fm/alarmescalation/Application.js:147
+#: ui/web/fm/alarm/Application.js:186
+#: ui/web/fm/alarmescalation/Application.js:153
 msgid "Wait TT"
-msgstr ""
-
-#: ui/web/fm/alarm/Application.js:364 ui/web/fm/alarmseverity/Application.js:31
-#: ui/web/fm/alarmseverity/Application.js:69
-#: ui/web/sa/managedobject/AlarmPanel.js:48
-msgid "Severity"
 msgstr ""
 
 #: ui/web/fm/alarmseverity/Application.js:37
@@ -606,7 +618,7 @@ msgstr ""
 msgid "Event id or JSON code"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:82 ui/web/fm/event/Application.js:90
+#: ui/web/fm/alarm/Application.js:94 ui/web/fm/event/Application.js:90
 #: ui/web/sa/managedobject/Application.js:230
 msgid "Adm. Domain"
 msgstr ""
@@ -808,7 +820,7 @@ msgstr ""
 
 #: ui/web/core/ModelApplication.js:310 ui/web/fm/alarm/AlarmPanel.js:26
 #: ui/web/fm/alarm/AlarmPanel.js:126 ui/web/fm/alarm/AlarmPanel.js:167
-#: ui/web/fm/alarm/Application.js:302 ui/web/fm/event/Application.js:166
+#: ui/web/fm/alarm/Application.js:315 ui/web/fm/event/Application.js:166
 #: ui/web/fm/event/EventPanel.js:24 ui/web/fm/event/EventPanel.js:134
 #: ui/web/fm/mib/Application.js:37 ui/web/sa/getnow/Application.js:161
 #: ui/web/sa/managedobject/AlarmPanel.js:37
@@ -1122,22 +1134,6 @@ msgstr ""
 msgid "Card Template"
 msgstr ""
 
-#: ui/web/fm/alarmclass/Application.js:41
-#: ui/web/fm/alarmseverity/Application.js:24
-#: ui/web/fm/classificationrule/Application.js:26
-#: ui/web/fm/eventclass/Application.js:41
-#: ui/web/fm/mibpreference/Application.js:39 ui/web/gis/layer/Application.js:40
-#: ui/web/inv/capability/Application.js:37
-#: ui/web/inv/connectionrule/Application.js:46
-#: ui/web/inv/connectiontype/Application.js:52
-#: ui/web/inv/modelinterface/Application.js:32
-#: ui/web/inv/objectmodel/Application.js:72 ui/web/inv/vendor/Application.js:27
-#: ui/web/pm/metrictype/Application.js:36 ui/web/sa/action/Application.js:40
-#: ui/web/sa/actioncommands/Application.js:36
-#: ui/web/sa/managedobject/scripts/ShowInventory.js:23
-msgid "Builtin"
-msgstr ""
-
 #: ui/web/cm/errortype/Application.js:51 ui/web/fm/alarmclass/Application.js:67
 #: ui/web/fm/alarmseverity/Application.js:58
 #: ui/web/fm/classificationrule/Application.js:85
@@ -1260,7 +1256,7 @@ msgstr ""
 #: ui/web/inv/firmwarepolicy/Application.js:22
 #: ui/web/inv/firmwarepolicy/Application.js:63
 #: ui/web/inv/interface/ChangeInterfaceProfileForm.js:41
-#: ui/web/inv/interface/L1Panel.js:73 ui/web/inv/interface/LAGPanel.js:43
+#: ui/web/inv/interface/L1Panel.js:76 ui/web/inv/interface/LAGPanel.js:43
 #: ui/web/inv/interface/LAGPanel.js:49
 #: ui/web/inv/interfaceclassificationrule/Application.js:49
 #: ui/web/peer/peeringpoint/Application.js:42
@@ -1270,7 +1266,7 @@ msgstr ""
 #: ui/web/sa/managedobject/DiscoveryPanel.js:95
 #: ui/web/sa/managedobject/L1Panel.js:76 ui/web/sa/managedobject/LAGPanel.js:43
 #: ui/web/sa/managedobjectprofile/Application.js:414
-#: ui/web/sa/managedobjectselector/ObjectsPanel.js:50
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:52
 #: ui/web/sa/profilecheckrule/Application.js:76
 #: ui/web/sa/profilecheckrule/Application.js:183
 msgid "Profile"
@@ -1282,7 +1278,7 @@ msgstr ""
 #: ui/web/inv/unknownmodel/Application.js:23
 #: ui/web/sa/managedobject/Application.js:215
 #: ui/web/sa/managedobject/Application.js:320
-#: ui/web/sa/managedobjectselector/ObjectsPanel.js:55
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:57
 msgid "Platform"
 msgstr ""
 
@@ -1291,7 +1287,7 @@ msgstr ""
 msgid "Firmware"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:327 ui/web/fm/event/Application.js:171
+#: ui/web/fm/alarm/Application.js:340 ui/web/fm/event/Application.js:171
 #: ui/web/gis/building/Application.js:57
 #: ui/web/inv/firmwarepolicy/Application.js:39
 #: ui/web/inv/firmwarepolicy/Application.js:81
@@ -1443,7 +1439,7 @@ msgstr ""
 #: ui/web/cm/validationpolicy/Application.js:64
 #: ui/web/cm/validationpolicysettings/ValidationSettingsPanel.js:41
 #: ui/web/cm/validationrule/Application.js:63
-#: ui/web/cm/validationrule/Application.js:91 ui/web/fm/alarm/Application.js:65
+#: ui/web/cm/validationrule/Application.js:91 ui/web/fm/alarm/Application.js:77
 #: ui/web/fm/ignoreeventrule/Application.js:19
 #: ui/web/fm/ignorepattern/Application.js:27
 #: ui/web/fm/ignorepattern/Application.js:52 ui/web/gis/area/Application.js:23
@@ -1452,7 +1448,7 @@ msgstr ""
 #: ui/web/gis/street/Application.js:35 ui/web/gis/street/Application.js:73
 #: ui/web/inv/interfaceclassificationrule/Application.js:31
 #: ui/web/inv/interfaceclassificationrule/Application.js:75
-#: ui/web/inv/interfaceprofile/Application.js:181
+#: ui/web/inv/interfaceprofile/Application.js:186
 #: ui/web/inv/modelmapping/Application.js:44
 #: ui/web/inv/modelmapping/Application.js:89
 #: ui/web/main/customfield/Application.js:28
@@ -1463,29 +1459,29 @@ msgstr ""
 #: ui/web/main/style/Application.js:23 ui/web/main/sync/Application.js:28
 #: ui/web/main/sync/Application.js:62
 #: ui/web/sa/managedobject/scripts/ShowLocalUsers.js:23
-#: ui/web/sa/managedobjectprofile/Application.js:632
+#: ui/web/sa/managedobjectprofile/Application.js:637
 #: ui/web/sa/mrtconfig/Application.js:25 ui/web/wf/solution/Application.js:55
 #: ui/web/wf/workflow/Application.js:86
 msgid "Active"
 msgstr ""
 
-#: ui/web/inv/interfaceprofile/Application.js:188
-#: ui/web/sa/managedobjectprofile/Application.js:639
+#: ui/web/inv/interfaceprofile/Application.js:193
+#: ui/web/sa/managedobjectprofile/Application.js:644
 msgid "Low Error"
 msgstr ""
 
-#: ui/web/inv/interfaceprofile/Application.js:196
-#: ui/web/sa/managedobjectprofile/Application.js:647
+#: ui/web/inv/interfaceprofile/Application.js:201
+#: ui/web/sa/managedobjectprofile/Application.js:652
 msgid "Low Warn"
 msgstr ""
 
-#: ui/web/inv/interfaceprofile/Application.js:204
-#: ui/web/sa/managedobjectprofile/Application.js:655
+#: ui/web/inv/interfaceprofile/Application.js:209
+#: ui/web/sa/managedobjectprofile/Application.js:660
 msgid "High Warn"
 msgstr ""
 
-#: ui/web/inv/interfaceprofile/Application.js:212
-#: ui/web/sa/managedobjectprofile/Application.js:663
+#: ui/web/inv/interfaceprofile/Application.js:217
+#: ui/web/sa/managedobjectprofile/Application.js:668
 msgid "High Error"
 msgstr ""
 
@@ -1661,7 +1657,7 @@ msgstr ""
 #: ui/web/inv/connectiontype/Application.js:73
 #: ui/web/inv/coverage/Application.js:20 ui/web/inv/coverage/Application.js:33
 #: ui/web/inv/firmware/Application.js:20 ui/web/inv/firmware/Application.js:40
-#: ui/web/inv/interface/L1Panel.js:50 ui/web/inv/interface/L2Panel.js:43
+#: ui/web/inv/interface/L1Panel.js:53 ui/web/inv/interface/L2Panel.js:43
 #: ui/web/inv/interface/L3Panel.js:30 ui/web/inv/interface/LAGPanel.js:31
 #: ui/web/inv/interfaceclassificationrule/Application.js:26
 #: ui/web/inv/interfaceclassificationrule/Application.js:69
@@ -1676,8 +1672,8 @@ msgstr ""
 #: ui/web/inv/modelinterface/Application.js:27
 #: ui/web/inv/modelinterface/Application.js:48
 #: ui/web/inv/modelinterface/Application.js:67
-#: ui/web/inv/networksegment/Application.js:44
-#: ui/web/inv/networksegment/Application.js:79
+#: ui/web/inv/networksegment/Application.js:51
+#: ui/web/inv/networksegment/Application.js:86
 #: ui/web/inv/objectmodel/Application.js:67
 #: ui/web/inv/objectmodel/Application.js:105
 #: ui/web/inv/objectmodel/Application.js:157
@@ -1743,7 +1739,7 @@ msgstr ""
 #: ui/web/sa/managedobjectprofile/Application.js:120
 #: ui/web/sa/managedobjectselector/Application.js:43
 #: ui/web/sa/managedobjectselector/Application.js:63
-#: ui/web/sa/managedobjectselector/ObjectsPanel.js:35
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:37
 #: ui/web/sa/mrtconfig/Application.js:20 ui/web/sa/mrtconfig/Application.js:59
 #: ui/web/sa/profilecheckrule/Application.js:87
 #: ui/web/sa/serviceprofile/Application.js:38
@@ -1868,7 +1864,7 @@ msgstr ""
 msgid "Mac"
 msgstr ""
 
-#: ui/web/inv/interface/L1Panel.js:91 ui/web/inv/interface/LAGPanel.js:67
+#: ui/web/inv/interface/L1Panel.js:94 ui/web/inv/interface/LAGPanel.js:67
 #: ui/web/inv/macdb/Application.js:36 ui/web/inv/macdb/MACLogForm.js:44
 #: ui/web/sa/managedobject/Application.js:410
 #: ui/web/sa/managedobject/L1Panel.js:94 ui/web/vc/vc/AddFirstFreeForm.js:34
@@ -1909,6 +1905,11 @@ msgstr ""
 
 #: ui/web/inv/map/Application.js:160
 msgid "Show interface load"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:170
+#: ui/web/sa/managedobjectprofile/Application.js:504
+msgid "STP"
 msgstr ""
 
 #: ui/web/inv/map/Application.js:173
@@ -2024,10 +2025,16 @@ msgstr ""
 msgid "Effective Settings"
 msgstr ""
 
+#: ui/web/fm/alarm/AlarmPanel.js:236 ui/web/fm/event/EventPanel.js:194
+#: ui/web/inv/networksegment/Application.js:36
+#: ui/web/sa/managedobject/Application.js:76
+msgid "Show Map"
+msgstr ""
+
 #: ui/web/gis/division/Application.js:48 ui/web/gis/division/Application.js:73
 #: ui/web/gis/street/Application.js:41 ui/web/gis/street/Application.js:56
-#: ui/web/inv/networksegment/Application.js:38
-#: ui/web/inv/networksegment/Application.js:86
+#: ui/web/inv/networksegment/Application.js:45
+#: ui/web/inv/networksegment/Application.js:93
 #: ui/web/ip/prefix/Application.js:33
 msgid "Parent"
 msgstr ""
@@ -2041,8 +2048,8 @@ msgstr ""
 #: ui/web/crm/supplierprofile/Application.js:60
 #: ui/web/dns/dnszone/Application.js:75 ui/web/dns/dnszone/Application.js:132
 #: ui/web/dns/dnszone/Application.js:183
-#: ui/web/inv/networksegment/Application.js:54
-#: ui/web/inv/networksegment/Application.js:118
+#: ui/web/inv/networksegment/Application.js:61
+#: ui/web/inv/networksegment/Application.js:125
 #: ui/web/ip/address/Application.js:86 ui/web/ip/addressrange/Application.js:71
 #: ui/web/ip/addressrange/Application.js:151 ui/web/ip/prefix/Application.js:75
 #: ui/web/ip/vrf/Application.js:64 ui/web/ip/vrf/Application.js:128
@@ -2053,20 +2060,20 @@ msgstr ""
 #: ui/web/sa/commandsnippet/Application.js:134
 #: ui/web/sa/managedobject/Application.js:281
 #: ui/web/sa/managedobject/Application.js:688
-#: ui/web/sa/managedobjectselector/ObjectsPanel.js:70
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:72
 #: ui/web/vc/vc/Application.js:122 ui/web/vc/vc/Application.js:180
 msgid "Tags"
 msgstr ""
 
-#: ui/web/inv/networksegment/Application.js:66
+#: ui/web/inv/networksegment/Application.js:73
 msgid "Obj."
 msgstr ""
 
-#: ui/web/inv/networksegment/Application.js:100
+#: ui/web/inv/networksegment/Application.js:107
 msgid "Sibling"
 msgstr ""
 
-#: ui/web/inv/networksegment/Application.js:107
+#: ui/web/inv/networksegment/Application.js:114
 msgid "Settings"
 msgstr ""
 
@@ -2108,7 +2115,7 @@ msgstr ""
 msgid "Cross"
 msgstr ""
 
-#: ui/web/inv/interface/L1Panel.js:97 ui/web/inv/interface/L3Panel.js:52
+#: ui/web/inv/interface/L1Panel.js:100 ui/web/inv/interface/L3Panel.js:52
 #: ui/web/inv/interface/LAGPanel.js:73
 #: ui/web/inv/objectmodel/Application.js:208
 #: ui/web/sa/managedobject/L1Panel.js:100 ui/web/sa/managedobject/L3Panel.js:52
@@ -2171,7 +2178,7 @@ msgstr ""
 #: ui/web/peer/person/Application.js:71
 #: ui/web/sa/managedobject/Application.js:248
 #: ui/web/sa/managedobject/Application.js:446
-#: ui/web/sa/managedobjectselector/ObjectsPanel.js:60
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:62
 #: ui/web/sa/monitor/ScriptsPanel.js:46
 msgid "Address"
 msgstr ""
@@ -2188,7 +2195,7 @@ msgstr ""
 
 #: ui/web/fm/event/Application.js:43
 #: ui/web/inv/interface/ChangeInterfaceStateForm.js:41
-#: ui/web/inv/interface/L1Panel.js:85 ui/web/inv/interface/LAGPanel.js:61
+#: ui/web/inv/interface/L1Panel.js:88 ui/web/inv/interface/LAGPanel.js:61
 #: ui/web/ip/address/Application.js:104 ui/web/ip/prefix/Application.js:93
 #: ui/web/ip/vrf/Application.js:27 ui/web/ip/vrf/Application.js:79
 #: ui/web/sa/managedobject/L1Panel.js:88 ui/web/sa/monitor/PoolsPanel.js:38
@@ -2288,14 +2295,14 @@ msgstr ""
 msgid "AFI"
 msgstr ""
 
-#: ui/web/fm/alarm/AlarmPanel.js:93 ui/web/fm/alarm/Application.js:133
+#: ui/web/fm/alarm/AlarmPanel.js:93 ui/web/fm/alarm/Application.js:145
 #: ui/web/fm/event/Application.js:112 ui/web/fm/event/EventPanel.js:91
 #: ui/web/fm/reportalarmdetail/Application.js:35
 #: ui/web/ip/ippool/Application.js:57
 msgid "From"
 msgstr ""
 
-#: ui/web/fm/alarm/AlarmPanel.js:99 ui/web/fm/alarm/Application.js:143
+#: ui/web/fm/alarm/AlarmPanel.js:99 ui/web/fm/alarm/Application.js:155
 #: ui/web/fm/event/Application.js:123 ui/web/fm/event/EventPanel.js:97
 #: ui/web/fm/reportalarmdetail/Application.js:43
 #: ui/web/ip/ippool/Application.js:62
@@ -2581,7 +2588,7 @@ msgstr ""
 msgid "Post-Delete Rule"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:161 ui/web/fm/alarm/Application.js:179
+#: ui/web/fm/alarm/Application.js:173 ui/web/fm/alarm/Application.js:191
 #: ui/web/main/desktop/Application.js:38
 msgid "All"
 msgstr ""
@@ -2758,8 +2765,9 @@ msgstr ""
 msgid "Failed to search"
 msgstr ""
 
-#: ui/web/core/ModelApplication.js:1218 ui/web/fm/alarm/Application.js:631
+#: ui/web/core/ModelApplication.js:1218 ui/web/fm/alarm/Application.js:653
 #: ui/web/main/search/Application.js:106
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:108
 msgid "Total: "
 msgstr ""
 
@@ -2880,7 +2888,7 @@ msgstr ""
 msgid "Start"
 msgstr ""
 
-#: ui/web/fm/alarmescalation/Application.js:154
+#: ui/web/fm/alarmescalation/Application.js:160
 #: ui/web/fm/eventclass/Application.js:234
 #: ui/web/maintainance/maintainance/Application.js:42
 #: ui/web/maintainance/maintainance/Application.js:103
@@ -2941,7 +2949,7 @@ msgstr ""
 #: ui/web/inv/coverage/Application.js:24 ui/web/inv/coverage/Application.js:39
 #: ui/web/inv/firmware/Application.js:58
 #: ui/web/inv/firmwarepolicy/Application.js:93
-#: ui/web/inv/interface/L1Panel.js:101 ui/web/inv/interface/L2Panel.js:61
+#: ui/web/inv/interface/L1Panel.js:104 ui/web/inv/interface/L2Panel.js:61
 #: ui/web/inv/interface/L3Panel.js:60 ui/web/inv/interface/LAGPanel.js:77
 #: ui/web/inv/interfaceclassificationrule/Application.js:60
 #: ui/web/inv/interfaceclassificationrule/Application.js:87
@@ -2957,8 +2965,8 @@ msgstr ""
 #: ui/web/inv/modelinterface/Application.js:85
 #: ui/web/inv/modelmapping/Application.js:50
 #: ui/web/inv/modelmapping/Application.js:94
-#: ui/web/inv/networksegment/Application.js:49
-#: ui/web/inv/networksegment/Application.js:93
+#: ui/web/inv/networksegment/Application.js:56
+#: ui/web/inv/networksegment/Application.js:100
 #: ui/web/inv/objectmodel/Application.js:96
 #: ui/web/inv/objectmodel/Application.js:117
 #: ui/web/inv/objectmodel/Application.js:221
@@ -3018,8 +3026,8 @@ msgstr ""
 #: ui/web/sa/managedobject/scripts/ShowInventory.js:49
 #: ui/web/sa/managedobject/scripts/ShowMPLSVPN.js:40
 #: ui/web/sa/managedobjectprofile/Application.js:140
-#: ui/web/sa/managedobjectselector/Application.js:70
-#: ui/web/sa/managedobjectselector/ObjectsPanel.js:65
+#: ui/web/sa/managedobjectselector/Application.js:71
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:67
 #: ui/web/sa/mrtconfig/Application.js:50 ui/web/sa/mrtconfig/Application.js:65
 #: ui/web/sa/profilecheckrule/Application.js:99
 #: ui/web/sa/serviceprofile/Application.js:54
@@ -3051,7 +3059,7 @@ msgstr ""
 
 #: ui/web/cm/validationrule/Application.js:148
 #: ui/web/cm/validationrule/HitsPanel.js:70 ui/web/fm/alarm/AlarmPanel.js:178
-#: ui/web/fm/alarm/Application.js:93 ui/web/fm/alarm/Application.js:228
+#: ui/web/fm/alarm/Application.js:105 ui/web/fm/alarm/Application.js:240
 #: ui/web/fm/event/Application.js:68 ui/web/fm/event/Application.js:190
 #: ui/web/inv/coverage/Application.js:79 ui/web/inv/interface/LinkForm.js:41
 #: ui/web/inv/inv/plugins/log/LogPanel.js:58
@@ -3065,7 +3073,7 @@ msgstr ""
 msgid "Segments"
 msgstr ""
 
-#: ui/web/fm/alarm/Application.js:113 ui/web/fm/alarm/Application.js:234
+#: ui/web/fm/alarm/Application.js:125 ui/web/fm/alarm/Application.js:246
 #: ui/web/inv/map/Application.js:35
 #: ui/web/maintainance/maintainance/Application.js:162
 #: ui/web/sa/managedobject/Application.js:209
@@ -3102,14 +3110,6 @@ msgstr ""
 #: ui/web/peer/maintainer/Application.js:21
 #: ui/web/peer/maintainer/Application.js:41
 msgid "Maintainer"
-msgstr ""
-
-#: ui/web/peer/maintainer/Application.js:53
-#: ui/web/sa/authprofile/Application.js:78
-#: ui/web/sa/managedobject/Application.js:498
-#: ui/web/support/account/AccountPanel.js:126
-#: ui/web/support/account/AttachAccountPanel.js:45
-msgid "Password"
 msgstr ""
 
 #: ui/web/peer/maintainer/Application.js:67
@@ -3356,11 +3356,6 @@ msgstr ""
 msgid "Config. Mode"
 msgstr ""
 
-#: ui/web/sa/actioncommands/Application.js:101
-#: ui/web/sa/monitor/ScriptsPanel.js:56 ui/web/sa/mrtconfig/Application.js:108
-msgid "Timeout"
-msgstr ""
-
 #: ui/web/sa/actioncommands/Application.js:110
 msgid "Platform (Regex)"
 msgstr ""
@@ -3371,6 +3366,14 @@ msgstr ""
 
 #: ui/web/sa/actioncommands/Application.js:124
 msgid "Commands"
+msgstr ""
+
+#: ui/web/peer/maintainer/Application.js:53
+#: ui/web/sa/authprofile/Application.js:78
+#: ui/web/sa/managedobject/Application.js:498
+#: ui/web/support/account/AccountPanel.js:126
+#: ui/web/support/account/AttachAccountPanel.js:45
+msgid "Password"
 msgstr ""
 
 #: ui/web/sa/authprofile/Application.js:85
@@ -3434,7 +3437,7 @@ msgstr ""
 #: ui/web/fm/alarmtrigger/Application.js:75
 #: ui/web/fm/eventtrigger/Application.js:79
 #: ui/web/sa/commandsnippet/Application.js:103
-#: ui/web/sa/managedobjectselector/Application.js:76
+#: ui/web/sa/managedobjectselector/Application.js:78
 msgid "Is Enabled"
 msgstr ""
 
@@ -3480,7 +3483,7 @@ msgid "Time"
 msgstr ""
 
 #: ui/web/fm/alarm/AlarmPanel.js:137 ui/web/fm/alarm/AlarmPanel.js:184
-#: ui/web/fm/alarm/Application.js:123 ui/web/fm/alarm/Application.js:240
+#: ui/web/fm/alarm/Application.js:135 ui/web/fm/alarm/Application.js:252
 #: ui/web/fm/event/Application.js:101 ui/web/fm/event/Application.js:196
 #: ui/web/fm/event/EventPanel.js:163 ui/web/sa/managedobject/AlarmPanel.js:54
 #: ui/web/sa/managedobject/FactsPanel.js:46
@@ -3493,18 +3496,13 @@ msgstr ""
 msgid "Duration"
 msgstr ""
 
-#: ui/web/fm/alarm/AlarmPanel.js:120 ui/web/fm/alarm/Application.js:398
+#: ui/web/fm/alarm/AlarmPanel.js:120 ui/web/fm/alarm/Application.js:411
 #: ui/web/sa/managedobject/AlarmPanel.js:72
 msgid "Events"
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:68
 msgid "Dashboard"
-msgstr ""
-
-#: ui/web/fm/alarm/AlarmPanel.js:236 ui/web/fm/event/EventPanel.js:194
-#: ui/web/sa/managedobject/Application.js:76
-msgid "Show Map"
 msgstr ""
 
 #: ui/web/sa/managedobject/Application.js:83
@@ -3540,13 +3538,8 @@ msgstr ""
 msgid "Capabilities"
 msgstr ""
 
-#: ui/web/sa/managedobject/Application.js:155
-#: ui/web/sa/managedobject/FactsPanel.js:51
-msgid "Facts"
-msgstr ""
-
 #: ui/web/sa/managedobject/Application.js:203
-#: ui/web/sa/managedobjectselector/ObjectsPanel.js:40
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:42
 msgid "Managed"
 msgstr ""
 
@@ -3637,7 +3630,7 @@ msgid "Clear"
 msgstr ""
 
 #: ui/web/dns/dnszoneprofile/Application.js:83
-#: ui/web/fm/alarm/AlarmPanel.js:269 ui/web/fm/alarm/Application.js:218
+#: ui/web/fm/alarm/AlarmPanel.js:269 ui/web/fm/alarm/Application.js:230
 #: ui/web/fm/event/EventPanel.js:213 ui/web/fm/monitor/Application.js:23
 #: ui/web/inv/monitor/Application.js:22
 #: ui/web/inv/networksegment/EffectiveSettingsPanel.js:21
@@ -3693,15 +3686,20 @@ msgstr ""
 msgid "Revalidate"
 msgstr ""
 
-#: ui/web/inv/interface/L1Panel.js:58 ui/web/sa/managedobject/L1Panel.js:63
+#: ui/web/sa/managedobject/Application.js:155
+#: ui/web/sa/managedobject/FactsPanel.js:51
+msgid "Facts"
+msgstr ""
+
+#: ui/web/inv/interface/L1Panel.js:61 ui/web/sa/managedobject/L1Panel.js:63
 msgid "LAG"
 msgstr ""
 
-#: ui/web/inv/interface/L1Panel.js:62 ui/web/sa/managedobject/L1Panel.js:67
+#: ui/web/inv/interface/L1Panel.js:65 ui/web/sa/managedobject/L1Panel.js:67
 msgid "Link"
 msgstr ""
 
-#: ui/web/inv/interface/L1Panel.js:106 ui/web/sa/managedobject/L1Panel.js:109
+#: ui/web/inv/interface/L1Panel.js:109 ui/web/sa/managedobject/L1Panel.js:109
 msgid "ifIndex"
 msgstr ""
 
@@ -3785,7 +3783,7 @@ msgstr ""
 msgid "IP"
 msgstr ""
 
-#: ui/web/inv/interface/L1Panel.js:54 ui/web/inv/interface/MACForm.js:40
+#: ui/web/inv/interface/L1Panel.js:57 ui/web/inv/interface/MACForm.js:40
 #: ui/web/inv/interfaceprofile/Application.js:73
 #: ui/web/ip/address/Application.js:62 ui/web/sa/managedobject/L1Panel.js:58
 #: ui/web/sa/managedobject/L3Panel.js:60
@@ -3859,6 +3857,22 @@ msgstr ""
 msgid "Number"
 msgstr ""
 
+#: ui/web/fm/alarmclass/Application.js:41
+#: ui/web/fm/alarmseverity/Application.js:24
+#: ui/web/fm/classificationrule/Application.js:26
+#: ui/web/fm/eventclass/Application.js:41
+#: ui/web/fm/mibpreference/Application.js:39 ui/web/gis/layer/Application.js:40
+#: ui/web/inv/capability/Application.js:37
+#: ui/web/inv/connectionrule/Application.js:46
+#: ui/web/inv/connectiontype/Application.js:52
+#: ui/web/inv/modelinterface/Application.js:32
+#: ui/web/inv/objectmodel/Application.js:72 ui/web/inv/vendor/Application.js:27
+#: ui/web/pm/metrictype/Application.js:36 ui/web/sa/action/Application.js:40
+#: ui/web/sa/actioncommands/Application.js:36
+#: ui/web/sa/managedobject/scripts/ShowInventory.js:23
+msgid "Builtin"
+msgstr ""
+
 #: ui/web/sa/managedobject/scripts/ShowInventory.js:44
 msgid "Serial No"
 msgstr ""
@@ -3888,12 +3902,6 @@ msgstr ""
 
 #: ui/web/sa/managedobject/scripts/ShowObjectStatus.js:13
 msgid "Object Name"
-msgstr ""
-
-#: ui/web/fm/alarm/plugins/Thresholds.js:42
-#: ui/web/sa/managedobjectprofile/Application.js:47
-#: ui/web/sa/managedobjectprofile/Application.js:147
-msgid "Level"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:53
@@ -4004,11 +4012,6 @@ msgstr ""
 msgid "REP"
 msgstr ""
 
-#: ui/web/inv/map/Application.js:170
-#: ui/web/sa/managedobjectprofile/Application.js:504
-msgid "STP"
-msgstr ""
-
 #: ui/web/sa/managedobjectprofile/Application.js:509
 msgid "UDLD"
 msgstr ""
@@ -4038,83 +4041,83 @@ msgstr ""
 msgid "Expression"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:82
+#: ui/web/sa/managedobjectselector/Application.js:85
 msgid "Filter by ID"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:90
+#: ui/web/sa/managedobjectselector/Application.js:94
 msgid "Filter by Name (REGEXP)"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:97
+#: ui/web/sa/managedobjectselector/Application.js:102
 msgid "Filter by Is Managed"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:109
+#: ui/web/sa/managedobjectselector/Application.js:115
 msgid "Filter by Profile"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:115
+#: ui/web/sa/managedobjectselector/Application.js:123
 msgid "Filter by Object Profile"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:121
+#: ui/web/sa/managedobjectselector/Application.js:131
 msgid "Filter by Address (REGEXP)"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:127
+#: ui/web/sa/managedobjectselector/Application.js:139
 msgid "Filter by Prefix Table"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:133
+#: ui/web/sa/managedobjectselector/Application.js:147
 msgid "Filter by Administrative Domain"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:139
+#: ui/web/sa/managedobjectselector/Application.js:155
 msgid "Filter by VRF"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:145
+#: ui/web/sa/managedobjectselector/Application.js:163
 msgid "Filter by VC Domain"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:151
+#: ui/web/sa/managedobjectselector/Application.js:171
 msgid "Filter by termination group"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:157
+#: ui/web/sa/managedobjectselector/Application.js:179
 msgid "Filter by service terminator"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:163
+#: ui/web/sa/managedobjectselector/Application.js:187
 msgid "Filter by User (REGEXP)"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:169
+#: ui/web/sa/managedobjectselector/Application.js:195
 msgid "Filter by Remote Path (REGEXP)"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:175
+#: ui/web/sa/managedobjectselector/Application.js:203
 msgid "Filter by Description (REGEXP)"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:181
+#: ui/web/sa/managedobjectselector/Application.js:211
 msgid "Filter By Tags"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:187
+#: ui/web/sa/managedobjectselector/Application.js:219
 msgid "Source Combine Method"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:200
+#: ui/web/sa/managedobjectselector/Application.js:233
 msgid "Sources"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:211
+#: ui/web/sa/managedobjectselector/Application.js:246
 msgid "Key (RE)"
 msgstr ""
 
-#: ui/web/sa/managedobjectselector/Application.js:217
+#: ui/web/sa/managedobjectselector/Application.js:252
 msgid "Value (RE)"
 msgstr ""
 
@@ -4144,6 +4147,11 @@ msgstr ""
 
 #: ui/web/sa/mrtconfig/Application.js:43 ui/web/sa/mrtconfig/Application.js:93
 msgid "Reduce pyRule"
+msgstr ""
+
+#: ui/web/sa/actioncommands/Application.js:101
+#: ui/web/sa/monitor/ScriptsPanel.js:56 ui/web/sa/mrtconfig/Application.js:108
+msgid "Timeout"
 msgstr ""
 
 #: ui/web/sa/objectnotification/Application.js:31

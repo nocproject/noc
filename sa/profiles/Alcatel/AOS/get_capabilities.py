@@ -15,6 +15,7 @@ from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 
 class Script(BaseScript):
     name = "Alcatel.AOS.get_capabilities"
+    cache = True
 
     rx_lldp = re.compile(r"^\s*\d+/\d+\s+Rx \+ Tx\s+", re.MULTILINE)
     rx_udld = re.compile("Global UDLD Status\s*:\s*(?P<status>\S+)")
