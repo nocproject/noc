@@ -117,7 +117,7 @@ class Script(BaseScript):
         }
         iv = {}  # instance -> vlans
         instance_table = v.splitlines()[6:]
-        sline = False
+
         vlans = ""
         for row in instance_table:
             s = row[0:13]
