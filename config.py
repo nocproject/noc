@@ -200,6 +200,12 @@ class Config(BaseConfig):
     class correlator(ConfigSection):
         max_threads = IntParameter(default=20)
 
+    class syslogcollector(ConfigSection):
+        listen = StringParameter(default="0.0.0.0:514")
+
+    class trapcollector(ConfigSection):
+        listen = StringParameter(default="0.0.0.0:162")
+
     def __init__(self):
         self.setup_logging()
 

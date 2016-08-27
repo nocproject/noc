@@ -159,6 +159,33 @@ services:
     environment:
       NOC_POOL: default
 
+  syslogcollector.default:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/syslogcollector/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+
+  trapcollector.default:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/trapcollector/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+
+
   classifier:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
     restart: always

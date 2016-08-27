@@ -26,8 +26,8 @@ start_sae() {
                          scheduler \
                          omap \
                          ping.default \
-                         syslogcollector \
-                         trapcollector
+                         syslogcollector.default \
+                         trapcollector.default
 }
 
 start_web() {
