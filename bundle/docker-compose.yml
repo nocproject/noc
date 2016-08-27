@@ -171,7 +171,7 @@ services:
     depends_on:
       - web
       - login
-      - card 
+      - card
       - grafana
     ports:
       - "4443:4443"
@@ -199,7 +199,7 @@ services:
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
       - ./config/postgres/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
-      - ./config/postgres/postgres.conf:/var/lib/postgresql/data/postgres.conf
+      - ./config/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
     networks:
       backend: 
         aliases:
@@ -225,7 +225,7 @@ services:
       - backend
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:3.1.1
     restart: always
     volumes:
       - ./config/grafana:/etc/grafana
@@ -234,7 +234,8 @@ services:
       - influxdb
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
-      GF_SERVER_ROOT_URL: https://vm-00.nocproject.org/grafana/
+      GF_PATHS_DATA: /var/lib/grafana
+      GF_PATHS_PLUGINS: /var/lib/grafana/plugins
     networks:
       - backend
 
