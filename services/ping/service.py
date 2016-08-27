@@ -53,7 +53,7 @@ class PingService(Service):
         except OSError as e:
             self.logger.info("Cannot set nice level to -20: %s", e)
         # Open ping sockets
-        self.ping = Ping(self.ioloop, tos=self.config.tos)
+        self.ping = Ping(self.ioloop, tos=self.config.ping.tos)
         # Register RPC aliases
         self.omap = self.open_rpc("omap")
         # Set event listeners
