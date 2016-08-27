@@ -25,7 +25,7 @@ start_sae() {
                          activator.default \
                          scheduler \
                          omap \
-                         ping \
+                         ping.default \
                          syslogcollector \
                          trapcollector
 }
