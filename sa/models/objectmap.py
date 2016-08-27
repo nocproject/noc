@@ -134,8 +134,11 @@ class ObjectMap(Document):
         Returns a dict of IP -> object id for syslog sources
         """
         om = cls.get_object_mappings(pool)
-        return dict((k.replace("_", "."), om["syslog_sources"][k])
+        if om and om.has_attribute("syslog_sources"):
+            return dict((k.replace("_", "."), om["syslog_sources"][k])
                     for k in om["syslog_sources"])
+        else:
+            return []
 
     @classmethod
     def get_trap_sources(cls, pool):
