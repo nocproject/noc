@@ -75,7 +75,8 @@ class RPCProxy(object):
             )
             try:
                 response = yield client.fetch(
-                    "http://%s/api/%s/" % (self._service_name, self._api),
+                    # @todo use dynamic port from SD
+                    "http://%s:1200/api/%s/" % (self._service_name, self._api),
                     method="POST",
                     body=body,
                     headers={
