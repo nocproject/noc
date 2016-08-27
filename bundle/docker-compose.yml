@@ -1,0 +1,312 @@
+version: '2'
+services:
+  web:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/web/service.py
+    depends_on:
+      - postgres
+      - mongo
+    networks:
+      - backend
+    volumes:
+      - ../:/opt/noc
+    env_file:
+      - .env
+
+  login:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    command: python ./services/login/service.py
+    networks:
+      - backend
+    volumes:
+      - ../:/opt/noc
+    env_file:
+      - .env
+
+  omap:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    command: python ./services/omap/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+
+  card:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    command: python ./services/card/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+
+  sae:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+      - activator.default
+    command: python ./services/sae/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+
+  discovery:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+      - nsqlookupd
+      - nsqd
+      - sae
+      - activator.default
+      - scheduler
+    command: python ./services/discovery/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+
+  mailsender:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - nsqlookupd
+      - nsqd
+    command: python ./services/mailsender/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+
+
+  scheduler:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - mongo
+    command: python ./services/scheduler/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+
+  test:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - mongo
+    command: top
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+
+  activator.default:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/activator/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+
+  classifier:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    command: python ./services/classifier/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default  
+
+  front:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    networks:
+      - backend
+      - frontend
+    depends_on:
+      - web
+      - login
+      - card 
+      - grafana
+    ports:
+      - "4443:4443"
+    volumes:
+      - ./config/nginx:/etc/nginx/
+      - ../:/opt/noc
+    volumes_from:
+      - web
+
+  mongo:
+    image: mongo:3.2.7
+    restart: always
+    command: --storageEngine wiredTiger --wiredTigerDirectoryForIndexes
+    networks:
+      backend: 
+        aliases:
+          - mongo-master.docker
+    volumes:
+      - ./data/mongo:/data/db
+      - ./config/mongo:/data/configdb
+
+  postgres:
+    image: "postgres:9.4"
+    restart: always
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./config/postgres/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
+      - ./config/postgres/postgres.conf:/var/lib/postgresql/data/postgres.conf
+    networks:
+      backend: 
+        aliases:
+          - postgres-master.docker
+    environment:
+      LC_ALL: C.UTF-8
+
+  clickhouse:
+    image: yandex/clickhouse-server
+    command: /usr/bin/clickhouse-server --config=/etc/clickhouse-server/config.xml
+    volumes:
+      - ./config/clickhouse:/etc/clickhouse-server
+      - ./data/clickhouse:/opt/clickhouse/data
+    ports: 
+      - "8123:8123"
+      - "9000:9000"
+    ulimits:
+       nproc: 65535
+       nofile:
+         soft: 262144
+         hard: 262144
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana
+    restart: always
+    volumes:
+      - ./config/grafana:/etc/grafana
+      - ./data/grafana:/var/lib/grafana
+    depends_on:
+      - influxdb
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SERVER_ROOT_URL: https://vm-00.nocproject.org/grafana/
+    networks:
+      - backend
+
+  pmwriter:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/pmwriter/service.py
+    depends_on:
+      - nsqd
+      - influxdb
+    networks:
+      - backend
+    volumes:
+      - ../:/opt/noc
+    env_file:
+      - .env
+
+  influxdb:
+    image: influxdb:1.0.0-beta3-alpine
+    restart: always
+    networks:
+      - backend
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+    volumes:
+      - ./config/influxdb:/etc/influxdb
+      - ./data/influxdb:/data
+    command: influxd -config /etc/influxdb/config.toml
+
+  nsqlookupd:
+    image: nsqio/nsq
+    command: /nsqlookupd
+    restart: always
+    volumes:
+      - ./config/nsqlookupd:/etc/nsqlookupd
+      - ./data/nsqlookupd:/data
+    depends_on:
+      - nsqd
+    ports:
+      - "4160"
+      - "4161"
+    networks:
+      - backend
+
+  nsqd:
+    image: nsqio/nsq
+    restart: always
+    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160
+    volumes:
+      - ./config/nsqd:/etc/nsqd
+      - ./data/nsqd:/data
+    networks:
+      - backend
+    ports:
+      - "4150"
+      - "4151"
+
+  nsqadmin:
+    image: nsqio/nsq
+    restart: always
+    volumes:
+      - ./config/nsqadmind:/etc/nsqadmin
+      - ./data/nsqadmind:/data
+    networks:
+      - backend
+    depends_on:
+      - nsqlookupd
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+    ports:
+      - "4171:4171"
+
+networks:
+  backend:
+  frontend:
