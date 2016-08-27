@@ -1,0 +1,40 @@
+{
+  "": {
+    "Content-Transfer-Encoding": "8bit",
+    "Content-Type": "text/plain; charset=utf-8",
+    "Generated-By": "Babel 2.3.4",
+    "Language": "pt_BR",
+    "Language-Team": "pt_BR <LL@li.org>",
+    "Last-Translator": "Gabriela Todeschini <gabrielat@cpd.ufrgs.br>",
+    "MIME-Version": "1.0",
+    "PO-Revision-Date": "2016-07-15 10:06-0300",
+    "POT-Creation-Date": "2016-08-10 15:15+0300",
+    "Plural-Forms": "nplurals=2; plural=(n > 1)",
+    "Project-Id-Version": "The NOC Project VERSION",
+    "Report-Msgid-Bugs-To": "EMAIL@ADDRESS"
+  },
+  "Failed to log in": [
+    null,
+    "Falha no login"
+  ],
+  "Login": [
+    null,
+    "Entrar"
+  ],
+  "Password": [
+    null,
+    "Senha"
+  ],
+  "Password cannot be empty": [
+    null,
+    "Senha obrigatória"
+  ],
+  "User": [
+    null,
+    "Usuário"
+  ],
+  "User name cannot be empty": [
+    null,
+    "Usuário obrigatório"
+  ]
+}

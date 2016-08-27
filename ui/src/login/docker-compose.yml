@@ -1,0 +1,18 @@
+version: '2'
+services:
+  build:
+    image: freeseacher/sencha:6.1.3.42
+    command: app build production
+    working_dir: /code
+    volumes:
+      - ./workspace:/code
+      - ../../login:/code/build/production/NOC.login/
+      - ./src/app:/code/app
+      - ./src/app.js:/code/app.js
+      - ./src/app.json:/code/app.json
+    volumes_from:
+      - ext
+
+  ext:
+    image: freeseacher/ext:6.0.1
+    command: test
