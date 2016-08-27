@@ -16,7 +16,8 @@ start_dbs() {
                          nsqd \
                          nsqlookupd \
                          clickhouse
-    sleep 2
+    echo "Seeping a while to db start"
+    sleep 6
 }
 
 start_sae() {
