@@ -471,5 +471,5 @@ class ActiveAlarm(nosql.Document):
                 yield a
 
 ## Avoid circular references
+# from noc.fm.models.utils import get_alarm
 from archivedalarm import ArchivedAlarm
-from utils import get_alarm
