@@ -48,7 +48,7 @@ class TrapCollectorService(Service):
         #                self.on_object_map_change)
         # Listen sockets
         server = TrapServer(service=self)
-        for l in [self.config.listen_traps]:
+        for l in [self.config.trapcollector.listen]:
             if ":" in l:
                 addr, port = l.split(":")
             else:

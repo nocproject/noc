@@ -48,7 +48,7 @@ class SyslogCollectorService(Service):
         #                self.on_object_map_change)
         # Listen sockets
         server = SyslogServer(service=self)
-        for l in [self.config.listen_syslog]:
+        for l in [self.config.syslogcollector.listen]:
             if ":" in l:
                 addr, port = l.split(":")
             else:
