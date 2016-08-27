@@ -83,11 +83,11 @@ class RPCClient(object):
                     if ":" not in l:
                         return
                     name, value = l.split(":", 1)
-                    headers[name.strip().lower()] = value.strip()
+                    response_headers[name.strip().lower()] = value.strip()
 
                 logger.debug("[%s] Sending request", l)
                 buff = cStringIO.StringIO()
-                headers = {}
+                response_headers = {}
                 c = pycurl.Curl()
                 c.setopt(c.URL, url)
                 c.setopt(c.POST, 1)
@@ -117,7 +117,7 @@ class RPCClient(object):
                     c.close()
                 return (
                     code,
-                    headers,
+                    response_headers,
                     buff.getvalue()
                 )
 
