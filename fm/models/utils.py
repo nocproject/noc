@@ -9,12 +9,12 @@
 # Third-party modules
 from bson import ObjectId
 # NOC modules
-from activeevent import ActiveEvent
-from archivedevent import ArchivedEvent
-from failedevent import FailedEvent
-from newevent import NewEvent
-from activealarm import ActiveAlarm
-from archivedalarm import ArchivedAlarm
+from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.archivedevent import ArchivedEvent
+from noc.fm.models.failedevent import FailedEvent
+from noc.fm.models.newevent import NewEvent
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.archivedalarm import ArchivedAlarm
 
 
 def get_event(event_id):
