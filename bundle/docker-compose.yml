@@ -120,18 +120,18 @@ services:
     env_file:
       - .env
 
-#  test:
-#    image: registry.gitlab.com/nocproject/docker-noc:upstream
-#    restart: always
-#    depends_on:
-#      - mongo
-#    command: top
-#    volumes:
-#      - ../:/opt/noc
-#    networks:
-#      - backend
-#    env_file:
-#      - .env
+  test:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - mongo
+    command: sleep 3600
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
 
   ping.default:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
