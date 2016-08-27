@@ -133,6 +133,19 @@ services:
     env_file:
       - .env
 
+  ping.default:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/ping/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+
   activator.default:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
     restart: always
