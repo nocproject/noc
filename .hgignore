@@ -46,11 +46,11 @@ scripts/custom/*
 django/*
 ui/pkg/
 ui/login/*
+ui/src/login/workspace/sass/example/*
+ui/src/login/workspace/app.*
+ui/src/login/workspace/bootstrap.*
 ansible/vars/local.yml
 etc/etl.yml
 speedup/**.c
 speedup/**.so
 bundle/data/*
-ui/src/login/workspace/sass/example/*.*
-ui/src/login/workspace/app.*
-ui/src/login/workspace/bootstrap.*
