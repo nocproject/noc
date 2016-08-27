@@ -21,7 +21,7 @@ fi
 
 if [ -f "./custom/commands/$CMD.py" ]; then
     shift
-    exec ./bin/python ./custom/commands/$CMD.py "$@"
+    exec /usr/bin/env python ./custom/commands/$CMD.py "$@"
 fi
 
 if [ -f "./commands/$CMD.sh" ]; then
@@ -40,6 +40,6 @@ case "$1" in
         exec ./scripts/paste.py "$@"
         ;;
     *)
-        exec ./bin/python manage.py "$@"
+        exec /usr/bin/env python manage.py "$@"
         ;;
 esac
