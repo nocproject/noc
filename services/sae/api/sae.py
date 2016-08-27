@@ -72,6 +72,7 @@ class SAEAPI(API):
             raise APIError("Invalid script")
         #
         try:
+            # @todo fix static port
             url = "http://activator.%s:1200" % pool
         except ValueError:
             raise APIError("No activators configured for pool '%s'" % pool)
