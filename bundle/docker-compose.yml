@@ -175,6 +175,22 @@ services:
     environment:
       NOC_POOL: default  
 
+  correlator:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    command: python ./services/correlator/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+
   front:
     image: nginx:alpine
     container_name: nginx-proxy

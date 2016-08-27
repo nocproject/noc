@@ -197,6 +197,9 @@ class Config(BaseConfig):
         max_threads = IntParameter(default=20)
         global_n_instances = IntParameter(default=1)
 
+    class correlator(ConfigSection):
+        max_threads = IntParameter(default=20)
+
     def __init__(self):
         self.setup_logging()
 
