@@ -216,7 +216,7 @@ class IGetInterfaces(Interface):
             "enabled_protocols": ListOfParameter(
                 element=StringParameter(choices=[
                     "LACP", "LLDP", "CDP", "UDLD", "CTP", "GVRP", "VTP", "STP",
-                    "BFD", "OAM"
+                    "BFD", "OAM", "NDP"
                 ]), required=False),
             "description": StringParameter(required=False),
             "mac": MACAddressParameter(required=False),
@@ -245,7 +245,7 @@ class IGetInterfaces(Interface):
                                 element=StringParameter(choices=[
                                     "ISIS", "OSPF", "RIP", "EIGRP", "OSPFv3",
                                     "BGP",
-                                    "LDP", "RSVP", "NDP",
+                                    "LDP", "RSVP",
                                     "PIM", "DVMRP", "IGMP", "VRRP", "SRRP"
                                 ]), required=False),
                 "untagged_vlan": VLANIDParameter(required=False),  # enabled_afi = [BRIDGE]
