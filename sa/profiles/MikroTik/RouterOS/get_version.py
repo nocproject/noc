@@ -19,7 +19,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
     rx_ver = re.compile(
-        r"version: (?P<version>\d+\.\d+(\.\d+)?).+board-name: (?P<platform>\D+.\S+)",
+        r"version: (?P<version>\d+\.\d+(\.\d+)?).+board-name: (?P<platform>\D+?.\S+?)\n",
         re.MULTILINE | re.DOTALL)
     rx_rb = re.compile(
         r"serial-number: (?P<serial>\S+).+current-firmware: "
