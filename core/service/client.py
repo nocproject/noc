@@ -157,13 +157,13 @@ class RPCClient(object):
                 last = l
                 url = "http://%s/api/%s/" % (l, self.client._api)
                 for nt in range(3):  # Limit redirects
-                    code, headers, data = make_call(url, l, body)
+                    code, response_headers, data = make_call(url, l, body)
                     if code == 200:
                         break
                     elif code is None:
                         break
                     elif code == 307:
-                        url = headers.get("location")
+                        url = response_headers.get("location")
                         ol = l
                         l = url.split("://", 1)[1].split("/")[0]
                         orig_body = body
