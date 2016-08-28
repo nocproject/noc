@@ -144,14 +144,14 @@ class RPCClient(object):
                 url = "http://%s:1200/api/%s/" % (service, self.client._api)
                 logger.info("Will connect to %s", url)
                 for nt in range(3):  # Limit redirects
-                    code, headers, data = make_call(url, service, body)
+                    code, response_headers, data = make_call(url, service, body)
                     if code == 200:
                         break
                     elif code is None:
                         break
                     elif code == 307:
                         ol = url
-                        url = headers.get("location")
+                        url = response_headers.get("location")
                         orig_body = body
                         body = data
                         logger.debug("[%s] Redirecting to %s", ol, url)
