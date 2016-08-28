@@ -139,10 +139,8 @@ class RPCClient(object):
             if self.client._hints:
                 service = random.choice(self.client._hints)
             # Call
-            st = RETRY_TIMEOUT
             orig_body = None
             for nr in range(RETRIES):
-                # Sleep when trying same instance
                 url = "http://%s:1200/api/%s/" % (service, self.client._api)
                 logger.info("Will connect to %s", url)
                 for nt in range(3):  # Limit redirects
@@ -152,9 +150,8 @@ class RPCClient(object):
                     elif code is None:
                         break
                     elif code == 307:
+                        ol = url
                         url = headers.get("location")
-                        ol = l
-                        l = url.split("://", 1)[1].split("/")[0]
                         orig_body = body
                         body = data
                         logger.debug("[%s] Redirecting to %s", ol, url)
