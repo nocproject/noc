@@ -99,7 +99,7 @@ class BaseScript(object):
                  version=None, parent=None, timeout=None,
                  name=None, collect_beef=False):
         self.service = service
-        self.tos = self.service.config.tos
+        self.tos = self.service.config.activator.tos
         self.pool = self.service.config.pool
         self.parent = parent
         self._motd = None

@@ -285,12 +285,12 @@ class Service(object):
         """
         Returns monitoring data
         """
+        import os
         r = {
             "status": self.get_mon_status(),
             "service": self.name,
             "instance": str(self.config.instance),
-            "node": self.config.node,
-            "dc": self.config.dc,
+            "node": os.environ.get("HOSTNAME"),
             "pid": self.pid,
             # Current process uptime
             "uptime": time.time() - self.start_time
