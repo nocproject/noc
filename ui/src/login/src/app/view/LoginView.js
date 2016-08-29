@@ -82,7 +82,7 @@ Ext.define('NOC.login.view.LoginView', {
             });
         if (params !== undefined) {
             Ext.Ajax.request({
-                url: '/ap/login/api/login/'
+                url: '/api/login/api/login/'
                 , params: params
                 , method: 'POST'
                 , success: me.onLoginSuccess
