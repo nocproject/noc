@@ -159,6 +159,11 @@ class Config(BaseConfig):
             min=0, max=255,
             default=0
         )
+    class activator(ConfigSection):
+        tos = IntParameter(
+            min=0, max=255,
+            default=0
+        )
 
     class sync(ConfigSection):
         config_ttl = SecondsParameter(default="1d")
