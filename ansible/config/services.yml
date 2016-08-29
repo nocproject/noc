@@ -130,6 +130,10 @@ services:
     level: global
     port: 6379
 
+  bi:
+    description: Reports
+    level: global
+
 config:
   noc:
     installation_name:
@@ -385,3 +389,5 @@ config:
       type: int
       label: Keep max messanges in memory
       default: 10000
+
+  bi:
