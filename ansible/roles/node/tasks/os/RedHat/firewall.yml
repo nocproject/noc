@@ -1,15 +1,17 @@
+---
+- name: check if firewalld state
+  shell: systemctl is-active firewalld
+  register: firewalld_state
+
 - name: Add firewall permissions for nodes
   firewalld:
     rich_rule: "rule family='ipv4' source address={{ item.value.address }} accept"
     permanent: true
     state: enabled
+    immediate: true
   with_dict: "{{ noc_config.nodes }}"
+  when: firewalld_state.stdout == "active"
   tags:
     - config
   ignore_errors: yes
 
-- name: Reload firewalld service
-  command: firewall-cmd --reload
-  tags:
-    - config
-  ignore_errors: yes

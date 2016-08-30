@@ -76,6 +76,8 @@
 - include: "telegraf.yml"
 
 - include: "firewall.yml"
+  tags:
+    - firewall
 
 - name: Install supervisord init script
   template:
