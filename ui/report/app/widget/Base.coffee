@@ -1,13 +1,17 @@
 Ext.define 'Report.widget.Base',
 	extend: 'Ext.panel.Panel'
+	xtype: 'widgetBase'
 
-	config:
-		settingsType: ''
+	title: 'Виджет'
+	cls: 'widget-base'
+	shadow: true
+	draggable: true
+	bodyPadding: 12
 
 	tools: [
 		{
 			type: 'gear',
-			callback: 'showSettings'
+			# TODO callback: 'showSettings'
 		}
 	]
 

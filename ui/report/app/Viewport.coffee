@@ -1,8 +1,7 @@
 Ext.define 'Report.Viewport',
 	extend: 'Ext.container.Viewport'
-	requires: [
-		'Report.NocMenu'
-	]
+
+	layout: 'fit'
 
 	items:
 		xtype: 'panel'
