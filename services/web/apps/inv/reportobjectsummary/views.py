@@ -14,7 +14,7 @@ from noc.core.translation import ugettext as _
 
 
 class ReportObjectSummaryApplication(SimpleReport):
-    title = _("Object Summary")
+    title = _("Inventory Object Summary")
 
     def get_data(self, **kwargs):
         self.model_name = {}  # oid -> name
