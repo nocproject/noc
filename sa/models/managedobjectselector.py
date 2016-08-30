@@ -19,12 +19,14 @@ import six
 from administrativedomain import AdministrativeDomain
 from managedobjectprofile import ManagedObjectProfile
 from terminationgroup import TerminationGroup
+from noc.main.models.pool import Pool
 from noc.main.models.prefixtable import PrefixTable
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import TagsField
 from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL, QTags
 from noc.core.model.decorator import on_delete, on_save
+from noc.core.model.fields import DocumentReferenceField
 
 
 @on_save
@@ -46,6 +48,7 @@ class ManagedObjectSelector(models.Model):
     filter_managed = models.NullBooleanField(
         _("Filter by Is Managed"),
         null=True, blank=True, default=True)
+    filter_pool = DocumentReferenceField(Pool, null=True, blank=True)
     filter_profile = models.CharField(_("Filter by Profile"),
             max_length=64, null=True, blank=True,
             choices=profile_loader.choices())
@@ -123,6 +126,9 @@ class ManagedObjectSelector(models.Model):
         # Filter by ID
         if self.filter_id:
             q &= Q(id=self.filter_id)
+        # Filter by pool
+        if self.filter_pool:
+            q &= Q(pool=self.filter_pool)
         # Filter by name (regex)
         if self.filter_name:
             q &= Q(name__regex=self.filter_name)
@@ -144,7 +150,11 @@ class ManagedObjectSelector(models.Model):
                         AND address::inet <<= p.prefix)""" % self.filter_prefix.id)
         # Filter by administrative domain
         if self.filter_administrative_domain:
-            q &= Q(administrative_domain=self.filter_administrative_domain)
+            dl = self.filter_administrative_domain.get_nested()
+            if len(dl) == 1:
+                q &= Q(administrative_domain=dl[0])
+            else:
+                q &= Q(administrative_domain__in=dl)
         # Filter by VRF
         if self.filter_vrf:
             q &= Q(vrf=self.filter_vrf)
@@ -201,11 +211,12 @@ class ManagedObjectSelector(models.Model):
         # Field, var, op
         ["filter_id", "id", "=="],
         ["filter_name", "name", "~"],
+        ["filter_pool", "pool", "=="],
         ["filter_profile", "profile", "=="],
         ["filter_object_profile", "object_profile", "=="],
         ["filter_address", "address", "~"],
         ["filter_prefix", "address", "IN"],
-        ["filter_administrative_domain", "administrative_domain", "=="],
+        ["filter_administrative_domain", "administrative_domain", "IN"],
         ["filter_vrf", "vrf", "=="],
         ["filter_vc_domain", "vc_domain", "=="],
         ["filter_termination_group", "termination_group", "=="],

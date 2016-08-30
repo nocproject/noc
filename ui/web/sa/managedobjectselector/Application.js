@@ -20,7 +20,8 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
         "NOC.vc.vcdomain.LookupField",
         "NOC.sa.terminationgroup.LookupField",
         "NOC.sa.terminationgroup.LookupField",
-        "NOC.main.ref.profile.LookupField"
+        "NOC.main.ref.profile.LookupField",
+        "NOC.main.pool.LookupField"
     ],
     model: "NOC.sa.managedobjectselector.Model",
     search: true,
@@ -107,6 +108,13 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
                     ],
                     allowBlank: true,
                     uiStyle: "small",
+                    labelWidth: 170
+                },
+                {
+                    name: "filter_pool",
+                    xtype: "main.pool.LookupField",
+                    fieldLabel: __("Filter by Pool"),
+                    allowBlank: true,
                     labelWidth: 170
                 },
                 {
