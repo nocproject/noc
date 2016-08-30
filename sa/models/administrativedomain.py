@@ -74,3 +74,13 @@ class AdministrativeDomain(models.Model):
         if self.parent:
             return self.parent.get_default_pool()
         return None
+
+    def get_nested(self):
+        """
+        Returns list of nested administrative domains
+        :return:
+        """
+        r = [self]
+        for d in AdministrativeDomain.objects.filter(parent=self):
+            r += d.get_nested()
+        return r
