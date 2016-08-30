@@ -29,8 +29,6 @@
     state: absent
   notify: restart nginx
 
-- include: "firewall.yml"
-
 - name: Enable Nginx system service
   service:
     name: "{{ nginx_system_service }}"

@@ -37,6 +37,8 @@
     mode: "a+rx"
 
 - include: "firewall.yml"
+  tags:
+    - firewall
 
 - include: "telegraf.yml"
 
