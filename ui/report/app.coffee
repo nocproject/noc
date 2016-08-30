@@ -1,8 +1,9 @@
 Ext.application(
-	extend: 'Report.Application'
+	extend: 'Ext.app.Application'
 	name: 'Report'
 
 	requires: [
+		'Report.NocMenu'
 		'Report.Viewport'
 		'Report.data.Socket'
 		'Report.data.Mediator'

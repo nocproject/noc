@@ -11,9 +11,11 @@ Ext.define 'Report.NocMenu',
 		'->'
 		{
 			itemId: 'userButton'
-			xtype: 'button'
+			xtype: 'button',
+			iconCls: 'x-fa fa-user'
+			text: 'admin'
 		}
-	],
+	]
 
-    setUserName: (name) ->
+	setUserName: (name) ->
         @up('#userButton').setText(name)
