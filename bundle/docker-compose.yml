@@ -246,14 +246,14 @@ services:
         aliases:
           - mongo-master.docker
     volumes:
-      - ./data/mongo:/data/db
+      - ../../noc_data/mongo:/data/db
       - ./config/mongo:/data/configdb
 
   postgres:
     image: "postgres:9.4"
     restart: always
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - ../../noc_data/postgres:/var/lib/postgresql/data
       - ./config/postgres/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
       - ./config/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
     networks:
@@ -268,7 +268,7 @@ services:
     command: /usr/bin/clickhouse-server --config=/etc/clickhouse-server/config.xml
     volumes:
       - ./config/clickhouse:/etc/clickhouse-server
-      - ./data/clickhouse:/opt/clickhouse/data
+      - ../../noc_data/clickhouse:/opt/clickhouse/data
     ports: 
       - "8123:8123"
       - "9000:9000"
@@ -285,7 +285,7 @@ services:
     restart: always
     volumes:
       - ./config/grafana:/etc/grafana
-      - ./data/grafana:/var/lib/grafana
+      - ../../noc_data/grafana:/var/lib/grafana
     depends_on:
       - influxdb
     environment:
@@ -319,7 +319,7 @@ services:
       - "8086:8086"
     volumes:
       - ./config/influxdb:/etc/influxdb
-      - ./data/influxdb:/data
+      - ../../noc_data/influxdb:/data
     command: influxd -config /etc/influxdb/config.toml
 
   nsqlookupd:
@@ -328,7 +328,7 @@ services:
     restart: always
     volumes:
       - ./config/nsqlookupd:/etc/nsqlookupd
-      - ./data/nsqlookupd:/data
+      - ../../noc_data/nsqlookupd:/data
     depends_on:
       - nsqd
     ports:
@@ -343,7 +343,7 @@ services:
     command: /nsqd --lookupd-tcp-address=nsqlookupd:4160
     volumes:
       - ./config/nsqd:/etc/nsqd
-      - ./data/nsqd:/data
+      - ../../noc_data/nsqd:/data
     networks:
       - backend
     ports:
@@ -355,7 +355,7 @@ services:
     restart: always
     volumes:
       - ./config/nsqadmind:/etc/nsqadmin
-      - ./data/nsqadmind:/data
+      - ../../noc_data/nsqadmind:/data
     networks:
       - backend
     depends_on:
