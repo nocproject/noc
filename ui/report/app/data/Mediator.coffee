@@ -2,49 +2,52 @@ Ext.define 'Report.data.Mediator',
 	singleton: true
 
 	sliceDateStream: (from, to) ->
+		return
 		ion = Ext.create 'Report.data.Ion',
 			method: 'sliceDateStream'
-			data: {
-				from
-				to
-			}
-			failure: @standardErrorWindow
+			params: [from, to]
+			failure: @showStandardErrorWindow
 			scope: @
 
 		Report.data.Socket.send ion
 
-	bindModel: (model, ionConfig) ->
-		@bindAnyStorage(
+	updateModel: (model, ion) ->
+		@updateAnyStorage(
 			(data) -> model.set data
-			ionConfig
+			ion
 		)
 
-	bindStore: (store, ionConfig) ->
-		@bindAnyStorage(
+	updateStore: (store, ion) ->
+		@updateAnyStorage(
 			(data) -> store.loadData data
-			ionConfig
+			ion
 		)
 
-	connectToWellspring: (ionConfig) ->
-		ion = Ext.create 'Report.data.Ion', ionConfig
-
-		Report.data.Socket.send ion
-
-	standardErrorWindow: (error) ->
+	showStandardErrorWindow: (error) ->
 		Ext.Msg.show {
 			icon: Ext.Msg.ERROR
 			title: 'Ошибка'
-			message: error.toString()
+			message: error
 			buttons: Ext.Msg.OK
 		}
 
 	privates:
 
-		bindAnyStorage: (bindFn, ionConfig) ->
-			originSuccess = ionConfig.success
+		updateAnyStorage: (fn, ion) ->
+			ion = @prepareIon ion
+			originSuccess = ion.success
 
-			ionConfig.success = (data) ->
-				bindFn data
+			ion.success = (data) ->
+				fn data
 				originSuccess?.apply @, arguments
 
-			@connectToWellspring ionConfig
+			Report.data.Socket.send ion
+
+		prepareIon: (ion) ->
+			unless ion instanceof Report.data.Ion
+				ion = Ext.create 'Report.data.Ion', ion
+
+			unless ion.failure
+				ion.failure = @showStandardErrorWindow
+
+			ion
