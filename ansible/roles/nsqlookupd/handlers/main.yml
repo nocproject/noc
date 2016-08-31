@@ -1,3 +1,0 @@
----
-- name: restart nsqlookupd
-  service: name=nsqlookupd state=restarted
