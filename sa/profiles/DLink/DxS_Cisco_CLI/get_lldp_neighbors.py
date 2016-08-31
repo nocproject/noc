@@ -25,7 +25,7 @@ class Script(BaseScript):
         r"^Lldp neighbor-information of port \[(?P<port>.+?)\]\s*\n"
         r"^-+\s*\n"
         r"(?P<entities>.+?)\n"
-        r"^\s+Maximum frame Size\s+:\s+\d+\s*",
+        r"^\s+Maximum frame Size\s+:(\s+\d+)?\s*",
         re.MULTILINE | re.DOTALL)
     rx_entity = re.compile(
         r"^\s+Chassis ID type\s+:(?P<chassis_id_type>.+)\s*\n"
