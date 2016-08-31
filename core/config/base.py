@@ -35,7 +35,8 @@ class BaseConfig(object):
         "pg_user": "noc",
         "pg_password": "noc",
         # InfluxDB section
-        "influx_db": "noc"
+        "influx_db": "noc",
+        "topology_rca_window": 0
     }
 
     def __init__(self):
@@ -59,6 +60,8 @@ class BaseConfig(object):
         # Cached values
         self._mongo_connection_args = None
         self._pg_connection_args = None
+        #
+        self.topology_rca_window = 0
         #
         self.load()
 
