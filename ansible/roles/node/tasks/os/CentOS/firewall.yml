@@ -3,6 +3,9 @@
   shell: systemctl is-active firewalld
   register: firewalld_state
   changed_when: false
+  tags:
+    - config
+
 
 - name: Add firewall permissions for nodes
   firewalld:
