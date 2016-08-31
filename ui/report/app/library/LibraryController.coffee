@@ -2,7 +2,7 @@ Ext.define 'Report.library.LibraryController',
 	extend: 'Ext.app.ViewController'
 	alias: 'controller.library'
 	requires: [
-		'Report.data.MemoryStore'
+		'Report.data.Store'
 	]
 
 	config:
@@ -36,7 +36,7 @@ Ext.define 'Report.library.LibraryController',
 		@setLoading false
 
 	makeLibraryStore: () ->
-		Ext.create 'Report.data.MemoryStore',
+		Ext.create 'Report.data.Store',
 			model: 'Report.model.Library'
 
 	addWidget: () ->

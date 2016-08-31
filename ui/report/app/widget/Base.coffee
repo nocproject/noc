@@ -7,6 +7,8 @@ Ext.define 'Report.widget.Base',
 	shadow: true
 	draggable: true
 	bodyPadding: 12
+	width: 0
+	height: 0
 
 	tools: [
 		{

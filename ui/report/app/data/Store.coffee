@@ -1,4 +1,4 @@
-Ext.define 'Report.data.MemoryStore',
+Ext.define 'Report.data.Store',
 	extend: 'Ext.data.Store'
 
 	proxy: 'memory'

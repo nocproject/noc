@@ -1,29 +1,24 @@
 Ext.define 'Report.data.AsyncInterface',
 
-	config:
-		success: Ext.emptyFn
+	success: null
 
-		failure: Ext.emptyFn
+	failure: null
 
-		always: Ext.emptyFn
+	always: null
 
-		scope: null
+	scope: null
 
 	constructor: (config) ->
 		this.initConfig config
-		@setScope @getScope or @
+		@scope ?= @
 
-	callSuccess: () ->
-		scope = @getScope()
+	callSuccess: (error, data) ->
+		@success?.call @scope, data
+		@callAlways.call @scope, error, data
 
-		@getSuccess().apply scope, arguments
-		@callAlways.apply scope, arguments
+	callFailure: (error, data) ->
+		@failure?.call @scope, error
+		@callAlways.call @scope, error, data
 
-	callFailure: () ->
-		scope = @getScope()
-
-		@getFailure().apply scope, arguments
-		@callAlways.apply scope, arguments
-
-	callAlways: () ->
-		@getAlways().apply @getScope(), arguments
+	callAlways: (error, data) ->
+		@always?.call @scope, error, data

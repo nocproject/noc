@@ -10,19 +10,6 @@ Ext.define 'Report.board.BoardController',
 		headerHeight: 56
 		firstCall: true
 
-		cursorSign: null
-		matrix: null
-		cursorMover: null
-		filler: null
-
-	constructor: () ->
-		@callParent arguments
-
-		@setCursorSign @makeNewCursor()
-		@setMatrix @generateEmptyMatrix()
-		@setCursorMover @makeCursorToFreeMover()
-		@setFiller @makeFiller()
-
 	showWidgetLibrary: () ->
 		library = @getWidgetLibraryWindow()
 
@@ -60,6 +47,8 @@ Ext.define 'Report.board.BoardController',
 				@positioning cursor, width
 				item
 			)
+
+		console.table matrix
 
 	privates:
 
@@ -103,13 +92,13 @@ Ext.define 'Report.board.BoardController',
 			setTimeout fn, 0
 
 		calcX: (col, width) ->
-			@getColWidth() * (col - width) + @getPadding()
+			@getColWidth() * col + width + @getPadding()
 
 		calcY: (row) ->
 			@getCellHeight() * row - @getHeaderHeight() * row + @getDoublePadding()
 
 		dottingAgainIfFirstCall: () ->
-			if @getFirstCall
+			if @getFirstCall()
 				@setFirstCall false
 				@dotting()
 
@@ -145,18 +134,17 @@ Ext.define 'Report.board.BoardController',
 
 			total - header - padding
 
-		makeCursorToFreeMover: () -> (width) ->
-			matrix = @getMatrix()
-			cursor = @getCursorSign()
-
+		makeCursorToFreeMover: (matrix, cursor) -> (width) =>
 			loop
-				overflow = @isOverflow cursor, width
-				engaged = @isEngaged matrix, cursor
-
-				if overflow or engaged
+				if @isOverflow cursor, width
 					@nextRow cursor
-				else
-					break
+					continue
+
+				if @isEngaged matrix, cursor
+					@nextCol cursor
+					continue
+
+				break
 
 		isOverflow: (cursor, width) ->
 			cursor.col + width > @getColumns()
@@ -168,10 +156,10 @@ Ext.define 'Report.board.BoardController',
 			cursor.col = 0
 			cursor.row = cursor.row + 1
 
-		makeFiller: (А) -> (width, height) =>
-			matrix = @getMatrix()
-			cursor = @getCursorSign()
+		nextCol: (cursor) ->
+			cursor.col = ++cursor.col
 
+		makeFiller: (matrix, cursor) -> (width, height) =>
 			for colIndex in [0...width]
 				col = cursor.col + colIndex
 				row = cursor.row
