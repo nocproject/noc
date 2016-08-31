@@ -7,6 +7,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+import re
 ## NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -22,6 +23,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<prompt>\S+?)(?::\S+?)?#"
     pattern_more = r"^ --More-- "
     command_more = " "
+    command_exit = "exit"
     pattern_syntax_error = r"% Invalid input detected at"
     config_volatile = [
         r"^! Configuration script being generated on.*?^",
@@ -62,3 +64,22 @@ class Profile(BaseProfile):
             else:
                 r += [mne % (prefix, max_len)]
         return "\n".join(r)
+
+    rx_adapter = re.compile(
+        r"^(?P<slot>\d+/\d+)\s+(?P<name>\S+(?: \S+)+?)\s+"
+        r"\d{10}\s+\d{10}\s+\S{3}\s+\d+\s*$")
+
+    def get_interfaces_list(self, script):
+        r = []
+        v = script.cli("show hardware")
+        for l in v.split("\n"):
+            match = self.rx_adapter.search(l)
+            if match:
+                if match.group("name") == "10GE PR IOA":
+                    r += ["TenGigabitEthernet%s/0" % match.group("slot")]
+                elif match.group("name") == "GE-4 IOA":
+                    for i in range(0, 4):
+                        r += ["GigabitEthernet%s/%s" % (match.group("slot"), i)]
+                elif match.group("name") == "SRP IOA":
+                    r += ["FastEthernet%s/0" % match.group("slot")]
+        return r
