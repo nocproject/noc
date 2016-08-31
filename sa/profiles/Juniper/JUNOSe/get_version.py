@@ -21,7 +21,8 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"Juniper\s+(Edge Routing Switch )?(?P<platform>.+?)$.+"
-        r"Version\s+(?P<version>.+?)\s*\[", re.MULTILINE | re.DOTALL)
+        r"Version\s+(?P<version>.+?)\s*\[BuildId (?P<build>\d+)",
+        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         v = self.cli("show version")
@@ -29,5 +30,8 @@ class Script(BaseScript):
         return {
             "vendor": "Juniper",
             "platform": match.group("platform"),
-            "version": match.group("version")
+            "version": match.group("version"),
+            "attributes": {
+                "Build": match.group("build"),
+            }
         }

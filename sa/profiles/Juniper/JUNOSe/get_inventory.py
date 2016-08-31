@@ -22,14 +22,18 @@ class Script(BaseScript):
         r"^Chassis\s+(?P<serial>\d{10})\s+(?P<part_no>\d{10})\s+"
         r"(?P<assembly_rev>\S{3})\s+(?P<revision>\d+\.\d+)\s*$")
     rx_module = re.compile(
-        r"^(?P<slot>\d+)\s+(?P<name>\S+(?: \S+)+?)\s+"
+        r"^(?P<slot>\d+)\s+(?P<name>\S+(?: \S+)*)\s+"
         r"(?P<serial>\d{10})?\s+(?P<part_no>\d{10})\s+"
         r"(?P<assembly_rev>\S{3})\s+(?P<ram>\d+|---)\s+"
         r"(?P<revision>\d+\.\d+)\s*$")
     rx_adapter = re.compile(
-        r"^(?P<slot>\d+/\d+)\s+(?P<name>\S+(?: \S+)+?)\s+"
+        r"^(?P<slot>\d+)/(?P<adapter>\d+)\s+(?P<name>\S+(?: \S+)+?)\s+"
         r"(?P<serial>\d{10})?\s+(?P<part_no>\d{10})\s+"
         r"(?P<assembly_rev>\S{3})\s+(?P<mac>\d+)\s*$")
+    rx_mac = re.compile(
+        r"^(?P<slot>\d+/\d+)\s+"
+        r"(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+"
+        r"(?P<revision>\d+\.\d+)\s*$", re.MULTILINE)
     rx_fan = re.compile(
         r"^(?P<slot>\d+)\s+(?P<name>\S+ FAN)\s+"
         r"(?P<serial>\d{10})\s+(?P<part_no>\d{10})\s+"
@@ -37,7 +41,8 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-        for l in self.cli("show hardware").split("\n"):
+        v = self.cli("show hardware")
+        for l in v.split("\n"):
             match = self.rx_chassis.search(l)
             if match:
                 r += [{
@@ -58,19 +63,6 @@ class Script(BaseScript):
                     "revision": match.group("revision"),
                     "description": match.group("name")
                 }]
-            """
-            match = self.rx_adapter.search(l)
-            if match:
-                r += [{
-                    "type": "SUB",
-                    "number": match.group("slot"),
-                    "vendor": "JUNIPER",
-                    "part_no": match.group("part_no"),
-                    "serial": match.group("serial"),
-                    "revision": match.group("revision"),
-                    "description": match.group("name")
-                }]
-            """
             match = self.rx_fan.search(l)
             if match:
                 r += [{
@@ -82,4 +74,29 @@ class Script(BaseScript):
                     "revision": match.group("revision"),
                     "description": match.group("name")
                 }]
+        for l in v.split("\n"):
+            match = self.rx_adapter.search(l)
+            if match:
+                i = 1
+                for p in r:
+                    if p["type"] == "MODULE" \
+                    and p["number"] == match.group("slot"):
+                        a = {
+                            "type": "ADAPTER",
+                            "number": match.group("adapter"),
+                            "vendor": "JUNIPER",
+                            "part_no": match.group("part_no"),
+                            "serial": match.group("serial"),
+                            "description": match.group("name")
+                        }
+                        for m in v.split("\n"):
+                            match1 = self.rx_mac.search(m)
+                            if match1 \
+                            and match1.group("slot") == \
+                            match.group("slot") + "/" + match.group("adapter"):
+                                a["revision"] = match1.group("revision")
+                                break
+                        r.insert(i, a)
+                        break
+                    i += 1
         return r
