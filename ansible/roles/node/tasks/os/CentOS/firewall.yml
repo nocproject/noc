@@ -2,6 +2,7 @@
 - name: check if firewalld state
   shell: systemctl is-active firewalld
   register: firewalld_state
+  changed_when: false
 
 - name: Add firewall permissions for nodes
   firewalld:
@@ -13,5 +14,4 @@
   when: firewalld_state.stdout == "active"
   tags:
     - config
-  ignore_errors: yes
 
