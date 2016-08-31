@@ -8,8 +8,14 @@ compile_login () {
         echo "Compiling login ..."
         docker-compose up
         cd ${currrent_dir}
+    else
+       echo "../ui/src/login/index.html exists. skipping build"
     fi
 }
+pull () {
+    docker-compose pull test
+}
+
 start_dbs() {
     docker-compose up -d mongo \
                          postgres \
@@ -45,6 +51,7 @@ start_fm() {
                          mailsender
 }
 compile_login
+pull
 start_dbs
 start_sae
 start_web
