@@ -1,6 +1,0 @@
-db = connect("{{ noc_config.services.mongod | join(',')}}/{{noc_mongo_db}}")
-var master = db.isMaster()
-if(!master.ismaster) {
-    db = connect(master.primary + "/{{noc_mongo_db}}")
-}
-db.auth("{{noc_mongo_user}}", "{{noc_mongo_admin_password}}")

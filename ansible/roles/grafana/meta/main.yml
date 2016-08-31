@@ -1,4 +1,0 @@
----
-dependencies:
-  - { role: nginx }
-  - { role: influxdb }

@@ -1,9 +1,0 @@
----
-- name: Install InfluxDB
-  pkgng: name="influxdb" state=present
-
-- name: Create InfluxDB directories
-  file: path={{item}} state=directory owner={{influxdb_user}} mode=0755
-  with_items:
-    - /var/run/influxdb
-    - /var/log/influxdb

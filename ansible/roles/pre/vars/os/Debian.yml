@@ -1,6 +1,0 @@
-# Debian settings
----
-mongo_arbiter_pid: " "
-mongo_db_path: /var/lib/mongodb/
-mongo_pid: " "
-nginx_user: www-data

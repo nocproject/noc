@@ -1,6 +1,0 @@
----
-- name: Install FreeBSD system packages
-  pkgng: name="telegraf" state=present
-
-- name: Enable telegraf system service
-  service: name="telegraf" enabled=yes state=started
