@@ -156,7 +156,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                                     login="correlator"
                                 )
                                 ctx["tt"] = "%s:%s" % (tt_system.name, tt_id)
-                                alarm.escalate(ctx["tt"])
+                                alarm.escalate(ctx["tt"], close_tt=a.close_tt)
                                 if tts.promote_group_tt:
                                     # Greate group TT
                                     log("Promoting to group tt")
@@ -236,7 +236,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
             break
 
 
-def notify_close(alarm_id, tt_id, subject, body, notification_group_id):
+def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt=False):
     def log(message, *args):
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
@@ -246,19 +246,36 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id):
         cts = tt_system_id_cache[c_tt_name]
         if cts:
             tts = cts.get_system()
-            try:
-                log("Appending comment to TT %s", tt_id)
-                tts.add_comment(
-                    c_tt_id,
-                    subject=subject,
-                    body=body,
-                    login="correlator"
-                )
-                metrics["escalation_tt_comment"] += 1
-            except tts.TTError as e:
-                log("Failed to add comment to %s: %s",
-                    tt_id, e)
-                metrics["escalation_tt_comment_fail"] += 1
+            if close_tt:
+                # Close tt
+                try:
+                    log("Closing TT %s", tt_id)
+                    tts.close_tt(
+                        c_tt_id,
+                        subject=subject,
+                        body=body,
+                        login="correlator"
+                    )
+                    metrics["escalation_tt_close"] += 1
+                except tts.TTError as e:
+                    log("Failed to close tt %s: %s",
+                        tt_id, e)
+                    metrics["escalation_tt_close_fail"] += 1
+            else:
+                # Append comment to tt
+                try:
+                    log("Appending comment to TT %s", tt_id)
+                    tts.add_comment(
+                        c_tt_id,
+                        subject=subject,
+                        body=body,
+                        login="correlator"
+                    )
+                    metrics["escalation_tt_comment"] += 1
+                except tts.TTError as e:
+                    log("Failed to add comment to %s: %s",
+                        tt_id, e)
+                    metrics["escalation_tt_comment_fail"] += 1
         else:
             log("Failed to add comment to %s: Invalid TT system",
                 tt_id)
