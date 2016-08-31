@@ -18,7 +18,8 @@ Ext.define('NOC.login.view.LoginView', {
     , defaultFocus: 'user'
     , referenceHolder: true
     , requires: [
-        'Ext.form.Panel'
+        'Ext.form.Panel',
+        'Ext.window.Toast'
     ]
     , viewModel: 'default'
     , items: [{
@@ -78,41 +79,45 @@ Ext.define('NOC.login.view.LoginView', {
                 jsonrpc: '2.0',
                 method: 'login',
                 params: [me.getViewModel().getData()]
-            })
-            , onLoginFailure = function () {
-                Ext.toast({
-                    html: __('Failed to log in'),
-                    align: 't',
-                    spacing: 0,
-                    paddingY: 0,
-                    width: '100%'
-                });
-            }
-            , onLoginSuccess = function (response) {
-                try {
-                    var o = Ext.decode(response.responseText);
-                    if (true !== o.result) {
-                        onLoginFailure();
-                    } else {
-                        var param = Ext.urlDecode(location.search);
-                        if (param.hasOwnProperty('uri')) {
-                            document.location = param.uri;
-                        } else {
-                            document.location = '/';
-                        }
-                    }
-                } catch (e) {
-                    onLoginFailure();
-                }
-            };
+            });
         if (params !== undefined) {
             Ext.Ajax.request({
                 url: '/api/login/api/login/'
                 , params: params
                 , method: 'POST'
-                , success: onLoginSuccess()
-                , failure: onLoginFailure()
+                , success: me.onLoginSuccess
+                , failure: function(response) {
+                    Ext.toast({
+                        html: 'server-side failure with status code ' + response.status,
+                        align: 't',
+                        spacing: 0,
+                        paddingY: 0,
+                        width: '100%'
+                    });
+                }
             });
+        }
+    }
+    , onLoginSuccess: function(response) {
+        var o = Ext.decode(response.responseText);
+
+        if(true !== o.result) {
+            Ext.toast({
+                html: __('Failed to log in'),
+                align: 't',
+                spacing: 0,
+                paddingY: 0,
+                width: '100%'
+            });
+        } else {
+            var param = Ext.urlDecode(location.search);
+
+            if('uri' in param) {
+                console.log(param.uri);
+                document.location = param.uri;
+            } else {
+                document.location = '/';
+            }
         }
     }
 // , afterRender: function(cmp) {
