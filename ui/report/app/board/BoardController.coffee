@@ -27,6 +27,14 @@ Ext.define 'Report.board.BoardController',
 	addWidget: (library, model) ->
 		#TODO
 
+	fixScrollOnResize: do () ->
+		browserCall = false
+		(view) ->
+			browserCall = !browserCall
+
+			if browserCall
+				view.setHeight view.getHeight() + @getQuadPadding()
+
 	dotting: () ->
 		items = @getItems()
 		cursor = @makeNewCursor()
@@ -108,6 +116,9 @@ Ext.define 'Report.board.BoardController',
 
 		getDoublePadding: () ->
 			@getPadding() * 2
+
+		getQuadPadding: () ->
+			@getDoublePadding() * 2
 
 		getMagicHeightPadding: () ->
 			@getPadding() * 7.5
