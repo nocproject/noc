@@ -9,8 +9,15 @@ Ext.define 'Report.data.AsyncInterface',
 	scope: null
 
 	constructor: (config) ->
-		this.initConfig config
-		@scope ?= @
+		scope = config.scope or @
+		delete config.scope
+
+		Ext.apply @, config
+
+		setTimeout(
+			() => @scope = scope
+			0
+		)
 
 	callSuccess: (error, data) ->
 		@success?.call @scope, data

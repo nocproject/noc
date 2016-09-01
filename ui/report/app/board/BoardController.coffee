@@ -48,8 +48,6 @@ Ext.define 'Report.board.BoardController',
 				item
 			)
 
-		console.table matrix
-
 	privates:
 
 		generateEmptyMatrix: () ->
