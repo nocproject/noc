@@ -5,7 +5,7 @@ Ext.define 'Report.widget.Base',
 	title: 'Виджет'
 	cls: 'widget-base'
 	shadow: true
-	# draggable: true TODO ждем момента старта полной разработки
+	# draggable: true TODO Wait for full version
 	bodyPadding: 12
 	width: 0
 	height: 0
@@ -13,7 +13,7 @@ Ext.define 'Report.widget.Base',
 	tools: [
 		{
 			type: 'gear',
-			# TODO callback: 'showSettings'
+			# callback: 'showSettings' TODO Wait settings
 		}
 	]
 

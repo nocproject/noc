@@ -3,7 +3,7 @@ Ext.define 'Report.board.Board',
 	xtype: 'board'
 	controller: 'board'
 	requires: [
-	    'Report.board.Menu'
+		'Report.board.Menu'
 		'Report.board.BoardController',
 		'Report.widget.Base'
 

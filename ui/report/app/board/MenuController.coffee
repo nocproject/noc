@@ -40,8 +40,8 @@ Ext.define 'Report.board.MenuController',
 		slice: (from, to) ->
 			Report.data.Mediator.sliceDateStream from, to
 
-			@fromField().setValue(from)
-			@toField().setValue(to)
+			@fromField().setValue from
+			@toField().setValue to
 
 		fromFieldValue: () ->
 			@fromField().getValue() or new Date
@@ -50,10 +50,10 @@ Ext.define 'Report.board.MenuController',
 			@toField().getValue() or new Date
 
 		fromField: () ->
-			@getView().down('#from')
+			@getView().down '#from'
 
 		toField: () ->
-			@getView().down('#to')
+			@getView().down '#to'
 
 		dateMargin: (type, count) ->
 			Ext.Date.add new Date, Ext.Date[type], -count

@@ -89,7 +89,7 @@ Ext.define 'Report.board.BoardController',
 			y = @calcY cursor.row
 
 			@toEndOfTurn () =>
-				item.setLocalXY(x, y)
+				item.setLocalXY x, y
 				item.on 'move', @dotting, @, {single: true}
 
 				@dottingAgainIfFirstCall()
