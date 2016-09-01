@@ -114,6 +114,10 @@ class Config(BaseConfig):
         )
         hosts = ListParameter(default=[":".join([host.value, str(port.value)])])
 
+    class cm(ConfigSection):
+        vcs_path = StringParameter(default="/usr/local/bin/hg")
+        repo = StringParameter(default="/var/repo")
+
     class customization(ConfigSection):
         favicon = StringParameter(
             default="/static/img/logo_24x24_deep_azure.png"
