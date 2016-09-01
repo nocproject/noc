@@ -609,8 +609,8 @@ msgid "No uplinks"
 msgstr "Nenhum uplink"
 
 #: services/web/apps/inv/reportobjectsummary/views.py:17
-msgid "Object Summary"
-msgstr "Resumo de Objeto"
+msgid "Inventory Object Summary"
+msgstr "Resumo de Inventário Objeto"
 
 #: services/web/apps/inv/reportpartnumbers/views.py:17
 msgid "Part Numbers"

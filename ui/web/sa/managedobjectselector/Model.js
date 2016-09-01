@@ -44,6 +44,10 @@ Ext.define("NOC.sa.managedobjectselector.Model", {
             type: "string"
         },
         {
+            name: "filter_pool",
+            type: "string"
+        },
+        {
             name: "filter_object_profile",
             type: "int"
         },

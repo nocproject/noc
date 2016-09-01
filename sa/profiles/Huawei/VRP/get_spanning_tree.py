@@ -78,24 +78,24 @@ class Script(BaseScript):
 
     rx_mstp0_interfaces = re.compile(
         r"^----\[Port(?P<port_id>\d+)\((?P<interface>\S+)\)\]\[(?P<state>\S+)\].+?"
-        r"Port\sProtocol\s+:(?P<status>\S+).+?"
-        r"Port\sRole\s+:(?P<role>[\S\s]+?$).+?"
-        r"Port\sPriority\s+:(?P<priority>\d+).+?"
-        r"Port\sCost\(Dot1T \)\s+:.+?Active=(?P<cost>\d+).+?"
-        r"Desg\.\sBridge/Port\s+:(?P<designated_bridge_priority>\d+)\."
+        r"\s+Port\sProtocol\s+:(?P<status>\S+).+?"
+        r"\s+Port\sRole\s+:(?P<role>\S+).+?"
+        r"\s+Port\sPriority\s+:(?P<priority>\d+).+?"
+        r"\s+Port\sCost\(Dot1T \)\s+:.+?Active=(?P<cost>\d+).+?"
+        r"\s+(Desg\.|Designated)\sBridge/Port\s+:(?P<designated_bridge_priority>\d+)\."
         r"(?P<designated_bridge_id>\S+)\s/\s(?P<designated_port_id>\S+).+?"
-        r"Port\sEdged\s+:Config=(?P<edge_config>\S+)\s/\sActive=(?P<edge_status>\S+).+?"
-        r"Point-to-point\s+:Config=(?P<ptop_config>\S+)\s/\sActive=(?P<ptop_status>\S+)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        r"\s+Port\sEdged\s+:Config=(?P<edge_config>\S+)\s/\sActive=(?P<edge_status>\S+).+?"
+        r"\s+Point-to-point\s+:Config=(?P<ptop_config>\S+)\s/\sActive=(?P<ptop_status>\S+)",
+        re.MULTILINE | re.IGNORECASE)
 
     rx_mstp_interfaces = re.compile(
         r"----\[Port(?P<port_id>\d+)\((?P<interface>\S+)\)\]\[(?P<state>\S+)\].+?"
-        r"Port\sRole\s+:(?P<role>[\S\s]+?$).+?"
-        r"Port\sPriority\s+:(?P<priority>\d+).+?"
-        r"Port\sCost\(Dot1T \)\s+:.+?Active=(?P<cost>\d+).+?"
-        r"Desg\.\sBridge/Port\s+:(?P<designated_bridge_priority>\d+)\."
+        r"\s+Port\sRole\s+:(?P<role>\S+).+?"
+        r"\s+Port\sPriority\s+:(?P<priority>\d+).+?"
+        r"\s+Port\sCost\(Dot1T \)\s+:.+?Active=(?P<cost>\d+).+?"
+        r"\s+(Desg\.|Designated)\sBridge/Port\s+:(?P<designated_bridge_priority>\d+)\."
         r"(?P<designated_bridge_id>\S+)\s/\s(?P<designated_port_id>\S+).+?",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE)
+        re.MULTILINE | re.IGNORECASE)
 
     def process_mstp(self):
         check_d = re.compile("\s*\d+\s*")

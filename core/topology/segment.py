@@ -240,7 +240,7 @@ class SegmentTopology(BaseTopology):
         pos = dict((o, pos[o]) for o in pos if o in self.G.node)
         width, height, pos = self.normalize_pos(pos)
         # Place isolated nodes
-        isolated = sorted((o for o in self.get_isolated()),
+        isolated = sorted((o for o in self.G if o not in pos),
                           key=lambda x: self.G.node[x]["name"])
         y = height + self.ISOLATED_PADDING
         x = 0

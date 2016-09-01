@@ -93,6 +93,7 @@ class SSHIOStream(IOStream):
     def close(self, exc_info=False):
         if not self.closed():
             if self.channel:
+                self.channel.setblocking(1)
                 self.logger.debug("Closing channel")
                 try:
                     self.channel.close()
@@ -160,7 +161,6 @@ class SSHIOStream(IOStream):
 
             self.logger.debug("Failed: %s (Code: %s)", msg, code)
             return False
-
 
     def auth_password(self):
         """

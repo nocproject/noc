@@ -610,8 +610,8 @@ msgid "No uplinks"
 msgstr "Нет аплинков"
 
 #: services/web/apps/inv/reportobjectsummary/views.py:17
-msgid "Object Summary"
-msgstr "Сводка по объектам"
+msgid "Inventory Object Summary"
+msgstr "Сводка по инвернаризации объектов"
 
 #: services/web/apps/inv/reportpartnumbers/views.py:17
 msgid "Part Numbers"
