@@ -315,8 +315,8 @@ class CLI(object):
         self.expect({
             "username": self.on_failure,
             "password": self.on_password,
-            "prompt": self.on_prompt,
-            "unprivileged_prompt": self.on_unprivileged_prompt
+            "unprivileged_prompt": self.on_unprivileged_prompt,
+            "prompt": self.on_prompt
         })
 
     def on_password(self, data, match):
@@ -370,8 +370,8 @@ class CLI(object):
         self.expect({
             "username": self.on_failure,
             "password": self.on_super_password,
-            "prompt": self.on_prompt,
             "unprivileged_prompt": self.on_unprivileged_prompt,
+            "prompt": self.on_prompt,
             "pager": self.send_pager_reply
         })
 

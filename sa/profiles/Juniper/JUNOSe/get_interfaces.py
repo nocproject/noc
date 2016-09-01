@@ -55,7 +55,7 @@ class Script(BaseScript):
     logical_interfaces = []
 
     def get_ifaces(self, vrf):
-        ifaces = copy.copy(self.phys_interfaces)
+        ifaces = copy.deepcopy(self.phys_interfaces)
         changed = False
         for l_iface in self.logical_interfaces:
             if vrf == "default":
@@ -112,6 +112,7 @@ class Script(BaseScript):
                         ip_address, IPv4.netmask_to_len(ip_subnet))
                         sub["ipv4_addresses"] += [ip_address]
                 if ", " in match.group("n_proto"):
+                    # Need more examples
                     n_proto = match.group("n_proto").split(", ")
                     if "ISIS" in n_proto:
                         sub["enabled_protocols"] += ["ISIS"]
@@ -159,7 +160,7 @@ class Script(BaseScript):
                 ifaces += [iface]
                 changed = True
             else:
-                continue
+                #continue
                 if "." in l_iface:
                     v = self.cli("show interface %s" % l_iface)
                     match = self.rx_iface1.search(v)
@@ -226,21 +227,16 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["description"] = descr
             self.phys_interfaces += [iface]
 
-        interfaces = self.get_ifaces("default")
         r = [{
             'forwarding_instance': 'default',
             'type': 'ip',
-            'interfaces': interfaces
+            'interfaces': self.get_ifaces("default")
         }]
-        """
         for match in self.rx_vrfs.finditer(self.cli("show ip vrf")):
-            interfaces = self.get_ifaces(match.group("vrf"))
-            fi = {
+            r += [{
                 'forwarding_instance': match.group("vrf"),
                 'type': 'ip',
                 'rd': match.group("rd"),
-                'interfaces': [interfaces]
-            }
-            r += [fi]
-        """
+                'interfaces': self.get_ifaces(match.group("vrf"))
+            }]
         return r
