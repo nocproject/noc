@@ -19,8 +19,8 @@ Ext.define 'Report.data.Ion',
 	# Находится ли ион в процессе ожидания ответа сервера
 	pending: false
 
-	# Поле для особых параметров, добавляются поверх параметров из params
-	extraParams: null
+	# Поле для особых параметров, добавляются в тело запроса на сервер
+	body: null
 
 	callSuccess: () ->
 		@callParent [@error, @result]

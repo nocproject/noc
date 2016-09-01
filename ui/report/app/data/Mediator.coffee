@@ -2,7 +2,6 @@ Ext.define 'Report.data.Mediator',
 	singleton: true
 
 	sliceDateStream: (from, to) ->
-		return
 		ion = Ext.create 'Report.data.Ion',
 			method: 'sliceDateStream'
 			params: [from, to]

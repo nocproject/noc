@@ -16,7 +16,9 @@ Ext.define 'Report.data.Socket',
 	privates:
 
 		prepareIon: (ion) ->
-			ion.extraParams = {
+			ion.body ?= {}
+
+			ion.body = Ext.apply ion.body, {
 				id: @getId()
 				jsonrpc: '2.0'
 			}
@@ -24,13 +26,15 @@ Ext.define 'Report.data.Socket',
 		sendRequest: (ion) ->
 			ion.pending = true
 
-			url = @url
-			jsonData = Ext.apply {}, ion.params, ion.extraParams
+			data = Ext.clone ion.body
+			data.params = ion.params
 
-			Ext.create 'Ext.data.Connection',
-				url
-				jsonData
-				callback: (opt, success, response) => @handleResponse ion, success, response
+			Ext.create('Ext.data.Connection').request {
+				url: @url
+				jsonData: data
+				callback: (opt, success, response) =>
+					@handleResponse ion, success, response
+			}
 
 		handleResponse: (ion, success, response) ->
 			return if ion.destroyed
