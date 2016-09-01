@@ -15,7 +15,9 @@ from noc.core.clickhouse.engines import MergeTree
 
 
 class Reboots(Model):
-    db_table = "reboots"
+    class Meta:
+        db_table = "reboots"
+        engine = MergeTree("date", ("ts", "object_id"))
 
     date = DateField()
     ts = DateTimeField()
@@ -35,5 +37,3 @@ class Reboots(Model):
     # Coordinates
     x = Float64Field()
     y = Float64Field()
-
-    engine = MergeTree("date", ("ts", "object_id"))

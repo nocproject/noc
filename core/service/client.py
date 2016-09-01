@@ -22,7 +22,6 @@ import json
 import pycurl
 ## NOC modules
 
-
 # Connection time
 CONNECT_TIMEOUT = 20
 # Total request time
@@ -96,6 +95,7 @@ class RPCClient(object):
                     c.setopt(c.HTTPHEADER, headers)
                 c.setopt(c.WRITEDATA, buff)
                 c.setopt(c.NOPROXY, "*")
+                c.setopt(c.RESOLVE, ["%s:%s" % (l, l.split(":")[0])])
                 c.setopt(c.TIMEOUT, REQUEST_TIMEOUT)
                 c.setopt(c.CONNECTTIMEOUT, CONNECT_TIMEOUT)
                 c.setopt(c.HEADERFUNCTION, process_headers)
@@ -167,16 +167,10 @@ class RPCClient(object):
                 if code != 200:
                     raise RPCException("Redirects limit exceeded")
                 try:
-#                    import binascii
-#                    logger.info("after code check1 %r", binascii.hexlify(data))
-                    data= """{"result":{"platform":"hAP ac"},"id":0,"error":null}"""
                     data = ujson.loads(data)
                 except ValueError as e:
                     raise RPCRemoteError("Failed to decode JSON: %s" % e)
-                logger.info("after code check2 %r", data)
-
                 if data.get("error"):
-                    logger.info("after code error")
                     raise RPCRemoteError(data["error"])
                 t = time.time() - t0
                 logger.debug("[<CALL] %s (%.2fms)", self.method, t * 1000)

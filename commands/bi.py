@@ -16,6 +16,7 @@ from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.clickhouse.connect import connection
+from noc.core.clickhouse.model import Model
 
 
 class Command(BaseCommand):
@@ -89,13 +90,7 @@ class Command(BaseCommand):
             files[x] += [os.path.join(self.PREFIX, f)]
         for mn in files:
             self.stdout.write("Loading %s\n" % mn)
-            m = __import__("noc.core.bi.models.%s" % mn, {}, {}, "*")
-            model = None
-            for a in dir(m):
-                o = getattr(m, a)
-                if getattr(o, "db_table", None) == mn:
-                    model = o
-                    break
+            model = Model.get_model_class(mn)
             if not model:
                 self.die("Cannot get model")
             model.ensure_table()
