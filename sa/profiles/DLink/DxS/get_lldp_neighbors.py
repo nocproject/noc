@@ -72,6 +72,7 @@ class Script(BaseScript):
                     "macaddress": 3,
                     "network address": 4,
                     "interface name": 5,
+                    "interface_name": 5,
                     "agent circuit id": 6,
                     "locally assigned": 7,
                     "local": 7
