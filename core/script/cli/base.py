@@ -335,6 +335,8 @@ class CLI(object):
 
     def on_unprivileged_prompt(self, data, match):
         self.logger.debug("State: <UNPRIVILEGED_PROMPT>")
+        if not self.profile.command_super:
+            self.on_failure(data, match)
         self.send(
             self.profile.command_super +
             (self.profile.command_submit or "\n")
@@ -347,7 +349,7 @@ class CLI(object):
 
     def on_failure(self, data, match):
         self.logger.debug("State: <FAILURE>")
-        raise self.CLIError()
+        raise self.CLIError(self.buffer or None)
 
     def on_prompt(self, data, match):
         self.logger.debug("State: <PROMT>")
