@@ -5,7 +5,7 @@ Ext.define 'Report.widget.Base',
 	title: 'Виджет'
 	cls: 'widget-base'
 	shadow: true
-	draggable: true
+	# draggable: true TODO ждем момента старта полной разработки
 	bodyPadding: 12
 	width: 0
 	height: 0
