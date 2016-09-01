@@ -7,8 +7,8 @@
 """
 from south.db import db
 from django.db import models
-from noc.main.models import TimePattern
-from noc.main.models import Template as NOCTemplate
+from noc.main.models.timepattern import TimePattern
+from noc.main.models.template import Template as NOCTemplate
 
 class Migration:
     depends_on = (
