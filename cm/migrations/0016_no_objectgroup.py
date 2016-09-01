@@ -8,7 +8,11 @@ class Migration:
         # Update content types to last actual state
         update_contenttypes(noc.cm.models,None)
         # Convert groups to tags
-        ctype_id=db.execute("SELECT id FROM django_content_type WHERE model='objectnotify' AND app_label='cm'")[0][0]
+        ctype_id_result = db.execute("SELECT id FROM django_content_type WHERE model='objectnotify' AND app_label='cm'")
+        if not ctype_id_result:
+            return
+        else:
+            ctype_id = ctype_id_result[0][0]
         for category,entry_id in db.execute("SELECT g.name,o.managedobject_id FROM sa_objectgroup g JOIN sa_managedobject_groups o ON (g.id=o.objectgroup_id)"):
             if db.execute("SELECT COUNT(*) FROM tagging_tag WHERE name=%s",[category])[0][0]==0:
                 db.execute("INSERT INTO tagging_tag(name) VALUES(%s)",[category])
