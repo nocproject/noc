@@ -1,25 +1,25 @@
 Ext.define 'Report.data.Ion',
 	extend: 'Report.data.AsyncInterface'
 
-	# Строковый идентификатор того что мы хотим от сервера
+	# Server method to call
 	method: ''
 
-	# Массив параметров для сервера
+	# Params for server
 	params: null
 
-	# Какой-либо результат, либо null если ошибка
+	# Result data or null if error
 	result: null
 
-	# Текст ошибки в случае если ошибка произошла
+	# Error text or null
 	error: ''
 
-	# Успешность или не успешность запроса
+	# Success request flag
 	isSuccess: false
 
-	# Находится ли ион в процессе ожидания ответа сервера
+	# Pending flag
 	pending: false
 
-	# Поле для особых параметров, добавляются в тело запроса на сервер
+	# Request body params
 	body: null
 
 	callSuccess: () ->
