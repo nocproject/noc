@@ -97,6 +97,8 @@ class Script(BaseScript):
                 caps = 0
                 for c in m.group("system_capabilities").split(","):
                     c = c.strip()
+                    if not c:
+                        break
                     caps |= {
                         "Other": 1,
                         "Repeater": 2,
