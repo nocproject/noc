@@ -454,7 +454,7 @@ class ManagedObject(Model):
             "container" in self.changed_fields
         ):
             ObjectPath.refresh(self)
-        if self.initial_data["id"] and "container" in self.changed_field:
+        if self.initial_data["id"] and "container" in self.changed_fields:
             # Move object to another container
             c = Object.get_by_id(self.container)
             if c:
