@@ -301,9 +301,9 @@ class CLI(object):
         self.expect({
             "username": self.on_username,
             "password": self.on_password,
+            "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt,
-            "pager": self.send_pager_reply,
-            "unprivileged_prompt": self.on_unprivileged_prompt
+            "pager": self.send_pager_reply
         })
 
     def on_username(self, data, match):
