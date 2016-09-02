@@ -88,7 +88,7 @@ class GeocoderCache(Document):
         r = c.find_one({"_id": hash})
         if r:
             # Found
-            if r["error"]:
+            if r.get("error"):
                 return None
             return GeoCoderResult(
                 exact=True,
