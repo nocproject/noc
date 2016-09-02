@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from noc.cm.repoapp import RepoApplication
-from noc.cm.models import RPSL
+from noc.cm.models.rpsl import RPSL
 from noc.core.translation import ugettext as _
 ##
 ## RPSL admin

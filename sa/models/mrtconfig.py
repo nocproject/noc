@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.main.models import PyRule
+from noc.main.models.pyrule import PyRule
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.lib.nosql import Document, StringField, BooleanField,\
     IntField, ForeignKeyField

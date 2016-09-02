@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from noc.cm.repoapp import RepoApplication
-from noc.cm.models import PrefixList
+from noc.cm.models.prefixlist import PrefixList
 from noc.core.translation import ugettext as _
 ##
 ## PrefixList admin

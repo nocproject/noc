@@ -28,7 +28,7 @@ from objectstatus import ObjectStatus
 from objectmap import ObjectMap
 from terminationgroup import TerminationGroup
 from noc.main.models.pool import Pool
-from noc.main.models import PyRule
+from noc.main.models.pyrule import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.networksegment import NetworkSegment
 from noc.core.profile.loader import loader as profile_loader

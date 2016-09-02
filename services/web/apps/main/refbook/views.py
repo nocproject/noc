@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 ## NOC modules
 from noc.lib.app.application import Application, view, HasPerm
 from noc.main.models.permission import Permission
-from noc.main.models import RefBook, RefBookData
+from noc.main.models.refbook import RefBook, RefBookData
 from noc.core.translation import ugettext as _
 
 

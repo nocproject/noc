@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.main.models import ResourceState
+from noc.main.models.resourcestate import ResourceState
 from noc.core.translation import ugettext as _
 
 

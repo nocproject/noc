@@ -13,7 +13,7 @@ from django import forms
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
-from noc.main.models import CustomField
+from noc.main.models.customfield import CustomField
 from noc.lib.validators import *
 
 

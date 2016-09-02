@@ -13,6 +13,7 @@ from vcdomain import VCDomain
 from vcfilter import VCFilter
 from vc import VC
 from noc.ip.models.afi import AFI_CHOICES
+from noc.ip.models.vrf import VRF
 from noc.core.model.fields import CIDRField
 
 
@@ -24,7 +25,7 @@ class VCBindFilter(models.Model):
         app_label = "vc"
 
     vc_domain = models.ForeignKey(VCDomain, verbose_name="VC Domain")
-    vrf = models.ForeignKey("ip.VRF", verbose_name="VRF")
+    vrf = models.ForeignKey(VRF, verbose_name="VRF")
     afi = models.CharField("Address Family", max_length=1,
                            choices=AFI_CHOICES, default="4")
     prefix = CIDRField("Prefix")

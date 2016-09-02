@@ -13,7 +13,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 ## NOC modules
 from dnsserver import DNSServer
-from noc.main.models import NotificationGroup
+from noc.main.models.notificationgroup import NotificationGroup
 
 
 class DNSZoneProfile(models.Model):

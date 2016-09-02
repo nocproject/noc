@@ -19,8 +19,9 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 ## NOC modules
 from dnszoneprofile import DNSZoneProfile
-from noc.main.models import (NotificationGroup, SystemNotification,
-                             SystemTemplate)
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.systemnotification import SystemNotification
+from noc.main.models.systemtemtemplate import SystemTemplate
 from noc.project.models.project import Project
 from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
