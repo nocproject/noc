@@ -25,6 +25,9 @@ start_dbs() {
     echo "Seeping a while to db start"
     sleep 6
 }
+migrate() {
+    docker-compose run migrate
+}
 
 start_sae() {
     docker-compose up -d sae \
@@ -53,6 +56,7 @@ start_fm() {
 compile_login
 pull
 start_dbs
+migrate
 start_sae
 start_web
 start_pm
