@@ -57,11 +57,19 @@ class GeocoderCache(Document):
     ]
 
     @classmethod
+    def clean_query(cls, query):
+        return cls.rx_sep.sub(" ", query.strip().upper()).strip()
+
+    @classmethod
+    def get_hash(cls, query):
+        return base64.b64encode(hashlib.sha256(query).digest())[:12]
+
+    @classmethod
     def forward(cls, query):
         # Clean query
-        query = cls.rx_sep.sub(" ", query.strip().upper()).strip()
+        query = cls.clean_query(query)
         # Calculate hash
-        hash = base64.b64encode(hashlib.sha256(query).digest())[:12]
+        hash = cls.get_hash(query)
         # Search data
         c = cls._get_collection()
         #
