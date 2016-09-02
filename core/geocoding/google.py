@@ -11,14 +11,16 @@ import urllib
 ## Third-party modules
 import ujson
 ## NOC modules
-from base import (BaseGeocoder, GeoCoderError, GeoCoderLimitExceeded,
-                  GeoCoderResult)
+from base import (BaseGeocoder, GeoCoderError, GeoCoderResult)
+from noc.core.config.base import config
 
 
 class GoogleGeocoder(BaseGeocoder):
     name = "google"
 
-    def __init__(self, key=None, language=None, *args, **kwargs):
+    def __init__(self, key=config.geocoding_google_key,
+                 language=config.geocoding_google_language,
+                 *args, **kwargs):
         super(GoogleGeocoder, self).__init__(*args, **kwargs)
         self.key = key
         self.language = language
