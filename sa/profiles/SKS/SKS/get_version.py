@@ -40,7 +40,12 @@ class Script(BaseScript):
         }
         v = self.cli("show system", cached=True)
         match = self.re_search(self.rx_platform, v)
-        r["platform"] = match.group("platform")
+        platform = match.group("platform")
+        if platform == "SKS 10G":
+            platform = "SKS-16E1-IP-1U"
+        elif platform.startswith("SKS"):
+            platform = "SW-24"
+        r["platform"] = platform
         v = self.cli("show system id", cached=True)
         match = self.re_search(self.rx_serial, v)
         r["attributes"]["Serial Number"] = match.group("serial")

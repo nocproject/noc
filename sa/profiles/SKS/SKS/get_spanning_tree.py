@@ -33,6 +33,11 @@ class Script(BaseScript):
         "(^\s*.+\n)?"
         "^\s*Bridge ID\s+Priority\s+(?P<bridge_priority>\d+)\s*\n"
         "^\s*Address\s+(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
+    rx_inst1 = re.compile(
+        "^\s*Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
+        "^\s*Address\s+(?P<root_id>\S+)\s*\n"
+        "^\s*This switch is the root\s*\n", re.MULTILINE)
+    rx_vlans = re.compile("^0\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
     rx_port = re.compile(
         "^\s*Port (?P<interface>\S+) (?:enabled|disabled)\s*\n"
         "^\s*State: (?P<state>\S+)\s+Role: (?P<role>\S+)\s*\n"
@@ -61,19 +66,46 @@ class Script(BaseScript):
                 stp["configuration"]["MSTP"] = match.groupdict()
             except self.CLISyntaxError:
                 pass
-        for instanses in v.split("######"):
-            match = self.rx_inst.search(instanses)
+            for instanses in v.split("######"):
+                match = self.rx_inst.search(instanses)
+                if match:
+                    inst = match.groupdict()
+                    inst["interfaces"] = []
+                    for port in instanses.split("\n\n"):
+                        match = self.rx_port.search(port)
+                        if match:
+                            iface = match.groupdict()
+                            iface["point_to_point"] = "Type: P2P" in port
+                            iface["priority"] = \
+                                match.group("port_id").split(".")[0]
+                            iface["edge"] = False
+                            inst["interfaces"] += [iface]
+                    stp["instances"] += [inst]
+        else:
+            match = self.rx_inst.search(v)
             if match:
                 inst = match.groupdict()
+            else:
+                match = self.rx_inst1.search(v)
+                inst = match.groupdict()
+                inst["id"] = 1
+                inst["bridge_priority"] = inst["root_priority"]
+                inst["bridge_id"] = inst["root_id"]
                 inst["interfaces"] = []
-                for port in instanses.split("\n\n"):
-                    match = self.rx_port.search(port)
-                    if match:
-                        iface = match.groupdict()
-                        iface["point_to_point"] = "Type: P2P" in port
-                        iface["priority"] = \
-                            match.group("port_id").split(".")[0]
-                        iface["edge"] = False
-                        inst["interfaces"] += [iface]
-                stp["instances"] += [inst]
+                try:
+                    c = self.cli("show spanning-tree mst-configuration")
+                    match = self.rx_vlans.search(c)
+                    inst["vlans"] = match.group("vlans")
+                except:
+                    inst["vlans"] = "1-4094"
+            for port in v.split("\n\n"):
+                match = self.rx_port.search(port)
+                if match:
+                    iface = match.groupdict()
+                    iface["point_to_point"] = "Type: P2P" in port
+                    iface["priority"] = \
+                        match.group("port_id").split(".")[0]
+                    iface["edge"] = False
+                    inst["interfaces"] += [iface]
+            stp["instances"] = [inst]
         return stp
