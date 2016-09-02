@@ -36,7 +36,11 @@ class BaseConfig(object):
         "pg_password": "noc",
         # InfluxDB section
         "influx_db": "noc",
-        "topology_rca_window": 0
+        "topology_rca_window": 0,
+        "geocoding_order": "yandex,google",
+        "geocoding_yandex_key": 0,
+        "geocoding_google_key": 0,
+        "geocoding_google_language": "en"
     }
 
     def __init__(self):
@@ -62,6 +66,11 @@ class BaseConfig(object):
         self._pg_connection_args = None
         #
         self.topology_rca_window = 0
+        #
+        self.geocoding_order = None
+        self.geocoding_yandex_key = None
+        self.geocoding_google_key = None
+        self.geocoding_google_language = None
         #
         self.load()
 
