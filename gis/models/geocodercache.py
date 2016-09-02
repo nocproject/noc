@@ -49,7 +49,11 @@ class GeocoderCache(Document):
     expires = DateTimeField()
 
     NEGATIVE_TTL = 86400
-    rx_sep = re.compile("[ \t;:]+")
+    rx_slash = re.compile(r"\s+/")
+    rx_dots = re.compile(r"\.\.+")
+    rx_sep = re.compile(r"[ \t;:!]+")
+    rx_comma = re.compile("(\s*,)+")
+    rx_dotcomma = re.compile(r",\s*\.,")
 
     # @todo: Configurable order
     geocoders = [
@@ -58,7 +62,15 @@ class GeocoderCache(Document):
 
     @classmethod
     def clean_query(cls, query):
-        return cls.rx_sep.sub(" ", query.strip().upper()).strip()
+        if type(query) == str:
+            query = unicode(query, "utf-8")
+        query = query.upper().encode("utf-8")
+        query = cls.rx_slash.sub("/", query)
+        query = cls.rx_dots.sub(" ", query)
+        query = cls.rx_comma.sub(", ", query)
+        query = cls.rx_dotcomma.sub(",", query)
+        query = cls.rx_sep.sub(" ", query)
+        return query.strip()
 
     @classmethod
     def get_hash(cls, query):
@@ -94,7 +106,7 @@ class GeocoderCache(Document):
             gsys = g.name
             try:
                 r = g.forward(query)
-                if r.exact:
+                if r and r.exact:
                     error = None
                     break
                 else:
