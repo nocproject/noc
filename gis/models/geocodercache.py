@@ -18,7 +18,8 @@ from mongoengine.fields import (StringField, FloatField, ListField,
                                 DateTimeField)
 ## NOC modules
 from noc.core.geocoding.base import GeoCoderError, GeoCoderResult
-from noc.core.geocoding.yandex import YandexGeocoder
+from noc.core.config.base import config
+from noc.core.handler import get_handler
 
 
 class GeocoderCache(Document):
@@ -55,10 +56,24 @@ class GeocoderCache(Document):
     rx_comma = re.compile("(\s*,)+")
     rx_dotcomma = re.compile(r",\s*\.,")
 
-    # @todo: Configurable order
-    geocoders = [
-        YandexGeocoder
-    ]
+    geocoders = []
+
+    gcls = {
+        "yandex": "noc.core.geocoding.yandex.YandexGeocoder",
+        "google": "noc.core.geocoding.google.GoogleGeocoder"
+    }
+
+    @classmethod
+    def iter_geocoders(cls):
+        if not cls.geocoders:
+            for gc in config.geocoding_order.split(","):
+                gc = gc.strip()
+                if gc in cls.gcls:
+                    h = get_handler(cls.gcls[gc])
+                    if h:
+                        cls.geocoders += [h]
+        for h in cls.geocoders:
+            yield h
 
     @classmethod
     def clean_query(cls, query):
@@ -101,7 +116,7 @@ class GeocoderCache(Document):
         r = None
         error = "Not found"
         gsys = None
-        for gcls in cls.geocoders:
+        for gcls in cls.iter_geocoders():
             g = gcls()
             gsys = g.name
             try:

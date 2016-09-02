@@ -13,12 +13,14 @@ import ujson
 ## NOC modules
 from base import (BaseGeocoder, GeoCoderError, GeoCoderLimitExceeded,
                   GeoCoderResult)
+from noc.core.config.base import config
 
 
 class YandexGeocoder(BaseGeocoder):
     name = "yandex"
 
-    def __init__(self, key=None, apikey=None, *args, **kwargs):
+    def __init__(self, key=config.geocoding_yandex_key,
+                 apikey=None, *args, **kwargs):
         super(BaseGeocoder, self).__init__(*args, **kwargs)
         self.key = key
         self.apikey = apikey

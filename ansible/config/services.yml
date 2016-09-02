@@ -161,6 +161,26 @@ config:
       type: int
       default: 0
 
+    geocoding_order:
+      label: List of geocoding methods
+      type: str
+      default: yandex,google
+
+    geocoding_yandex_key:
+      label: Yandex API key
+      type: str
+      default:
+
+    geocoding_google_key:
+      label: Google API key
+      type: str
+      default:
+
+    geocoding_google_language:
+      label: Google response language
+      type: str
+      default: en
+
   correlator:
     tt_escalation_limit:
       label: TT escalation limin (tt/minute)
