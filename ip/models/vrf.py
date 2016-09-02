@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 ## NOC modules
 from noc.main.models.style import Style
-from noc.main.models import ResourceState
+from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.peer.models.asn import AS
 from vrfgroup import VRFGroup

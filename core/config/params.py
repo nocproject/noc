@@ -10,9 +10,6 @@
 import itertools
 ## Third-party modules
 import six
-## NOC modules
-from noc.core.handler import get_handler
-
 
 class BaseParameter(object):
     PARAM_NUMBER = itertools.count()

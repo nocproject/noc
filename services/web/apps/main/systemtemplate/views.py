@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.main.models import SystemTemplate
+from noc.main.models.systemtemtemplate import SystemTemplate
 from noc.core.translation import ugettext as _
 
 

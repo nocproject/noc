@@ -13,7 +13,7 @@ from django import forms
 ## NOC modules
 from noc.lib.app.application import Application, view, HasPerm
 from noc.lib.forms import NOCForm
-from noc.main.models import Checkpoint
+from noc.main.models.checkpoint import Checkpoint
 from noc.core.translation import ugettext as _
 
 

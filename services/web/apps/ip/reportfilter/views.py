@@ -12,7 +12,7 @@ from django import forms
 from django.db.models import Q
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.main.models import CustomField
+from noc.main.models.customfield import CustomField
 from noc.ip.models.vrf import VRF
 from noc.ip.models.prefix import Prefix
 from noc.peer.models import AS

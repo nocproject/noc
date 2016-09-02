@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view, PermitLogged
-from noc.main.models import UserProfile
+from noc.main.models.userprofile import UserProfile
 from noc.sa.interfaces.base import (StringParameter, ListOfParameter,
                                     DictParameter, ModelParameter)
 from noc.settings import LANGUAGES

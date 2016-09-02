@@ -8,7 +8,7 @@
 from django.shortcuts import get_object_or_404
 from noc.lib.app.application import Application,HasPerm
 from noc.kb.models import KBEntry,KBEntryAttachment
-from noc.main.models import MIMEType
+from noc.main.models.mimetype import MIMEType
 ##
 ## View application
 ##

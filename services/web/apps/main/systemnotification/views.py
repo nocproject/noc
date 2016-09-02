@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.main.models import SystemNotification
+from noc.main.models.systemnotification import SystemNotification
 from noc.core.translation import ugettext as _
 
 

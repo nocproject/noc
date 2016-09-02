@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from noc.lib.app.simplereport import SimpleReport,TableColumn
-from noc.cm.models import Object
+from noc.cm.models.object import Object
 from django import forms
 import datetime
 from noc.core.translation import ugettext as _

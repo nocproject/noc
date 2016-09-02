@@ -13,7 +13,7 @@ from noc.lib.nosql import (Document, EmbeddedDocument, StringField,
     ListField, EmbeddedDocumentField, BooleanField, ForeignKeyField,
     IntField, PlainReferenceField)
 from noc.lib.ip import IP
-from noc.main.models import PrefixTable
+from noc.main.models.prefixtable import PrefixTable
 from interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.vc.models.vcfilter import VCFilter

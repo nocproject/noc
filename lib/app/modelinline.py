@@ -124,7 +124,7 @@ class ModelInline(object):
             del self.clean_fields[self.parent_rel]
 
     def get_custom_fields(self):
-        from noc.main.models import CustomField
+        from noc.main.models.customfield import CustomField
         return list(CustomField.table_fields(self.model._meta.db_table))
 
     def get_validator(self, field):

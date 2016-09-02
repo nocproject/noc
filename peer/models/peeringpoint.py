@@ -9,7 +9,7 @@
 ## Django modules
 from django.db import models
 ## NOC modules
-from noc.main.models import NotificationGroup
+from noc.main.models.notificationgroup import NotificationGroup
 from asn import AS
 from noc.core.profile.loader import loader as profile_loader
 from noc.lib.rpsl import rpsl_format

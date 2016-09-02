@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.main.models import CustomField
+from noc.main.models.customfield import CustomField
 from noc.core.translation import ugettext as _
 
 

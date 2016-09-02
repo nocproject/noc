@@ -14,7 +14,7 @@ import re
 import six
 ## NOC modules
 from params import BaseParameter
-from noc.core.handler import get_handler
+
 
 
 class ConfigSectionBase(type):
@@ -116,6 +116,7 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
         p = url.split(":", 1)[0]
         h = cls.PROTOCOLS.get(p)
         if h:
+            from noc.core.handler import get_handler
             return get_handler(h)
         else:
             raise ValueError("Invalid protocol %s" % p)
