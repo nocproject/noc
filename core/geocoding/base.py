@@ -26,6 +26,8 @@ class GeoCoderLimitExceeded(GeoCoderError):
 
 
 class BaseGeocoder(object):
+    name = None
+
     def __init__(self, *args, **kwargs):
         pass
 
