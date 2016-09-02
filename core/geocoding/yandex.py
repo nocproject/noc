@@ -16,6 +16,8 @@ from base import (BaseGeocoder, GeoCoderError, GeoCoderLimitExceeded,
 
 
 class YandexGeocoder(BaseGeocoder):
+    name = "yandex"
+
     def __init__(self, key=None, apikey=None, *args, **kwargs):
         super(BaseGeocoder, self).__init__(*args, **kwargs)
         self.key = key
@@ -62,6 +64,7 @@ class YandexGeocoder(BaseGeocoder):
                 self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.ThoroughfareName"),
                 self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.Premise.PremiseNumber")
             ]
+            path = [p for p in path if p]
             is_exact = self.get_path(rr, "GeoObject.metaDataProperty.GeocoderMetaData.precision") == "exact"
             return GeoCoderResult(
                 exact=is_exact,
