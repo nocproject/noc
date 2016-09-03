@@ -3,6 +3,7 @@
   yum:
     name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-centos94-9.4-2.noarch.rpm"
     state: present
+    validate_certs: no
   environment:
     https_proxy: "{{http_proxy}}"
 
