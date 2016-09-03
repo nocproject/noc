@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Report" default=".help">
+    <import file="${basedir}/.sencha/package/build-impl.xml"/>
+</project>
