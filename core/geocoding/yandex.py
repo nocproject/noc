@@ -26,9 +26,6 @@ class YandexGeocoder(BaseGeocoder):
         self.apikey = apikey
 
     def forward(self, query):
-        query = query.lower().strip()
-        if not query:
-            return None
         url = [
             "https://geocode-maps.yandex.ru/1.x/?",
             "format=json",
