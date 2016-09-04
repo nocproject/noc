@@ -95,6 +95,8 @@ class GeocoderCache(Document):
     def forward(cls, query):
         # Clean query
         query = cls.clean_query(query)
+        if not query:
+            return None
         # Calculate hash
         hash = cls.get_hash(query)
         # Search data
