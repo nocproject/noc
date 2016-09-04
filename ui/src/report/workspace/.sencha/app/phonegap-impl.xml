@@ -41,19 +41,16 @@
                 <available file="${app.phonegap.config.path}" type="dir"/>
             </not>
             <then>
-                <phonegap-echo
-                        message="Creating Phonegap Application with ID &quot;${app.phonegap.config.id}&quot; and Name &quot;${app.phonegap.config.name}&quot;"/>
+                <phonegap-echo message="Creating Phonegap Application with ID &quot;${app.phonegap.config.id}&quot; and Name &quot;${app.phonegap.config.name}&quot;"/>
                 <x-shell reloadprofile="true" dir="${app.dir}">
-                    phonegap ${phonegap.cli.options} create "${app.phonegap.config.path}" ${app.phonegap.config.id}
-                    ${app.phonegap.config.name}
+                    phonegap ${phonegap.cli.options} create "${app.phonegap.config.path}" ${app.phonegap.config.id} ${app.phonegap.config.name}
                 </x-shell>
                 <!--
                 Phonegap puts config.xml in the www root folder, this is dangerous due to how we clean this folder out
                 we will move it up to the phonegap root in order to keep parity with cordova.
                 Later we will copy this file back into www during remote builds
                 -->
-                <move file="${build.out.base.path}/config.xml" todir="${app.phonegap.config.path}" failonerror="false"
-                      overwrite="false"/>
+                <move file="${build.out.base.path}/config.xml" todir="${app.phonegap.config.path}" failonerror="false" overwrite="false" />
             </then>
         </if>
     </target>
@@ -61,12 +58,10 @@
     <!-- Prepares application for specified platform -->
     <target name="-before-phonegap-prepare"/>
     <target name="-phonegap-prepare" if="args.prepare">
-        <fail status="0"
-              message="Phonegap does not currently support prepare command, if this is required for your workflow please try Apache Cordova "/>
+        <fail status="0" message="Phonegap does not currently support prepare command, if this is required for your workflow please try Apache Cordova "/>
     </target>
     <target name="-after-phonegap-prepare"/>
-    <target name="phonegap-prepare"
-            depends="phonegap-init, -before-phonegap-prepare, -phonegap-prepare, -after-phonegap-prepare"/>
+    <target name="phonegap-prepare" depends="phonegap-init, -before-phonegap-prepare, -phonegap-prepare, -after-phonegap-prepare"/>
 
     <!-- Emulates application for the specified platform -->
     <target name="-before-phonegap-emulate"/>
@@ -82,8 +77,7 @@
         </if>
     </target>
     <target name="-after-phonegap-emulate"/>
-    <target name="phonegap-emulate"
-            depends="phonegap-init, -before-phonegap-emulate, -phonegap-emulate, -after-phonegap-emulate"/>
+    <target name="phonegap-emulate" depends="phonegap-init, -before-phonegap-emulate, -phonegap-emulate, -after-phonegap-emulate"/>
 
 
     <!-- Runs application on a device for the specified platform -->
@@ -105,8 +99,7 @@
 
     <!-- Overall Phonegap Build Target. Determines type of build to use -->
     <target name="-before-phonegap-build"/>
-    <target name="-phonegap-build" depends="-phonegap-check-platform, -phonegap-check-config-xml"
-            unless="phonegap.skip.build">
+    <target name="-phonegap-build" depends="-phonegap-check-platform, -phonegap-check-config-xml" unless="phonegap.skip.build">
         <if>
             <x-is-true value="${phonegap.build.remote}"/>
             <then>
@@ -118,13 +111,11 @@
         </if>
     </target>
     <target name="-after-phonegap-build"/>
-    <target name="phonegap-build"
-            depends="phonegap-init, -before-phonegap-build, -phonegap-build, -after-phonegap-build"/>
+    <target name="phonegap-build" depends="phonegap-init, -before-phonegap-build, -phonegap-build, -after-phonegap-build" />
 
     <!-- Private Utility Target to make sure users have declared a platform to take action on -->
     <target name="-phonegap-check-platform">
-        <fail status="0"
-              message="No platforms were specified, add a platform to ${build.name}'s -> phonegap -> config -> platform property in app.json">
+        <fail status="0" message="No platforms were specified, add a platform to ${build.name}'s -> phonegap -> config -> platform property in app.json">
             <condition>
                 <or>
                     <not>
@@ -136,12 +127,12 @@
         </fail>
 
 
+
     </target>
 
     <!-- Private Utility target to copy the config.xml file back into the WWW folder -->
     <target name="-phonegap-check-config-xml">
-        <copy todir="${build.out.base.path}" file="${app.phonegap.config.path}/config.xml" failonerror="false"
-              overwrite="true" quiet="true"/>
+        <copy todir="${build.out.base.path}" file="${app.phonegap.config.path}/config.xml" failonerror="false" overwrite="true" quiet="true"/>
     </target>
 
     <!-- Private Remote Build Targets-->
@@ -156,17 +147,14 @@
             </not>
             <then>
                 <phonegap-echo level="warning">
-                    Phonegap Build login credentials were was not found. If you have not logged in prior to running this
-                    command.
-                    Please either login via &quot;phonegap remote login&quot; or edit your [APP_ROOT]/local.properties
-                    and set &quot;phonegap.username&quot; and &quot;phonegap.password&quot; appropriately
+                    Phonegap Build login credentials were was not found. If you have not logged in prior to running this command.
+                    Please either login via &quot;phonegap remote login&quot; or edit your [APP_ROOT]/local.properties and set &quot;phonegap.username&quot; and &quot;phonegap.password&quot; appropriately
                 </phonegap-echo>
             </then>
         </if>
 
         <x-shell reloadprofile="true" dir="${app.phonegap.config.path}">
-            phonegap ${phonegap.cli.options} remote login --username="${phonegap.build.remote.username}"
-            --password="${phonegap.build.remote.password}"
+            phonegap ${phonegap.cli.options} remote login --username="${phonegap.build.remote.username}" --password="${phonegap.build.remote.password}"
         </x-shell>
     </target>
 
@@ -217,14 +205,12 @@
     <target name="-before-phonegap-init-native-package"/>
     <target name="-phonegap-init-native-package" depends="phonegap-init, phonegap-create"/>
     <target name="-after-phonegap-init-native-package"/>
-    <target name="phonegap-init-native-package"
-            depends="-before-phonegap-init-native-package, -phonegap-init-native-package, -after-phonegap-init-native-package"/>
+    <target name="phonegap-init-native-package" depends="-before-phonegap-init-native-package, -phonegap-init-native-package, -after-phonegap-init-native-package"/>
 
     <target name="-before-phonegap-native-package"/>
     <target name="-phonegap-native-package" depends="phonegap-build, phonegap-emulate, phonegap-run"/>
     <target name="-after-phonegap-native-package"/>
-    <target name="phonegap-native-package"
-            depends="phonegap-init, -before-phonegap-native-package, -phonegap-native-package, -after-phonegap-native-package"/>
+    <target name="phonegap-native-package" depends="phonegap-init, -before-phonegap-native-package, -phonegap-native-package, -after-phonegap-native-package"/>
 
     <macrodef name="phonegap-echo">
         <text name="text" optional="true"/>

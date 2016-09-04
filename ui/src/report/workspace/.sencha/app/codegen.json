@@ -1,157 +1,269 @@
 {
   "sources": {
-    "config.rb.tpl.merge": {
-      "33f446bd02c3fd24eb27891582eff6a2e789796b": "eJxLLi2KT8ksUrBVcMvMSdUDMvMSc1M14uPdPH1c4+M1ufJLSwpKS+KLSypzUoGqrPJSi0tSU7gALskTcA\u003d\u003d"
-    },
-    "all.scss.merge": {
-      "da39a3ee5e6b4b0d3255bfef95601890afd80709": "eJwDAAAAAAE\u003d"
-    },
-    "custom.js.merge": {
-      "199e99bbd15c3c0415569425cb21e77c95e9042a": "eJxlj0FOxDAMRfdziq9ZwUjTHIAlYslquIAncdtA4lSxC8PtSdoREmIV6f/4+dmdDjjhbY6KMSZGeycWrmQcQAqCGlWLMmEpUQzXb1xY/Ex4zgFnRMNXTAlSWseovCTybbbUDl6XsJHa1FH3sYX8B03cqqlS4OPQ//2V8CQ7K5fPriEBNjPU17gYjCZE6UnmYbacfj/GsaUNslUIhbVzu5lwq/2qVjIohGixCCVkkjiyWrOFzqWaXw0sViPr0IRYGVQ7yq+55X2HdObg7meo45udt4XnKyk7Je0Z5SWxqyyB6/Cu/Uh3ODj3crNhN28ar/f1D49P/7rLXUd7+QPuPI9g"
-    },
-    "fashion.html.tpl.merge": {
-      "5117b27d384b8c5ae0bd4aafdb1fad14eaddcc62": "eJytVE2P0zAQvfdXzOYEq7ppFw6om/RSFgFCAmnLgePUmTbedWxjT9NWiP3tOE6hH8AF4UOsmeeZ9+xnp7h6/XG++PLpDmpu9GxQXAkxAIC5dXuv1jXDM/kcbsaTGxE/L0ZwT0bWCO+MHA2EiAWHupqwmnWVULBiTbO7HcP7e1jU1BC8RW8ohCLvsX5dQ4yRlp2grxvVltncGibDYrF3lIHsozJj2nHe0dxCpPaBuPy8eCNeZad9DDZUZq2irbOeT6q3quK6rKhVkkQKhqCMYoVaBImayskQGtypZtMcE5tAPkW4jAljI1dPdjgf+GCxAtQafCfeUwVamccAaCoI0ivHIa3rzigV9knguLfDlh6wxT6bQfCyzPIn2VR5hMgEZU3IQzpsscJQxzi/mEcPIZsVed/i/7EEDEFI2zilyf8jx9JaDuzRXdQfGvD+5yXoxii6siYWnWWoDHn49gvrRoN+rcwUJmO3uz1Dkp1TeDn+DXE2RIttrPKkkVVL57htya+03U6hVUFFj4/w98FR2U4EHe+NFxw1EA//isD1hWjrUCreR9V/7JxfQzz+jSdY2moPlaUAxnLSpdEB1wTebkwVL5a08fH4AHYFKx+veQUODel8q0xlt7CtyUAnRpk1XOenEtM60TGcKe8LU/5C9RLl4zrxTiHaZ4JDH1/R6RaSg/nBwiI/efddv+h1mjok/Rh+ACC6Vqw\u003d"
-    },
-    "theme.html.tpl.merge": {
-      "2c775eb1b3eb10df6efa0743d8aa426af3f9a562": "eJx1U8GO0zAQvfcrZnOCqm7ahQPqJr2URYCQQNpy4Og608a7jm3saZIK8e/YTqHpAj4k8rx5855n7OLm7efN9tuXe6ipUetJccPYBAA2xp6cPNQEL8RLuF0sb1n4vJrDA2pRc/igxXzCWCCceTXyah2ZUJAkhev7nuDjA2xrbBDec6fR+yIfsCGvQeJBlizD70fZltnGaEJNbHuymIEYdmVG2FMeZe4gSDuPVH7dvmNvsnEdzRsss1ZiZ42jEbuTFdVlha0UyNJmBlJLklwxL7jCcjmDhveyOTaXwNGjSzu+CwFtgtYgdu4PfDK8Aq4UuGjeYQVK6icPXFfghZOWfMqLPUrECIdkVWaeTgp9jRhsUjjq+YTC+wxqh/syw543VuE8hfJzgaHqmPHIWz5EM/BOlNnOGPLkuJ0/+mxd5AP423rSHYrFNQ/NOCCx2CkuNTr48QeLq+HuIPUKlgvb310hqYsreL34C7HGh86awAon5SRbvMZNi26vTLeCVnoZWnuBf04uznrmVRiXYxQ8IM3+i8D0mWljuZB0Cq7/WTmfAmp/dAg7U52gMuhBG0q+FLdANYIzR12FeQoT7qzzYPawd+F2VWC5RpV3Ulemg65GDdGM1AeY5mOLKY9FhSvnAzHFn7necfF0SLorCOPT3nIXLu/4CGmC+XmERT56brFemHX6RSS9x1+JIiOn"
-    },
     "build.properties.merge": {
-      "8b81315dbe73ce9c08478f4c1d2df84f456efcf5": "eJytkEtOxEAMRPdzipKyhbkBCzQrFnzE5AKetJNYdOzI3UnE7XGA3GC8K5f9/GnwdM84NWhHKeglM2a3VRIXkMJWdg+B2UQrenMk7mnJFSu50C1HXWREOUEUAfr3yzk4M3sVLudTE8bL68f7Z/v81uIRV9ZuJFymhE1yxsQ+ML5tcUReh6BuUkdILbBNkRYXHbDMg1P6BaI10GqSYrXKWoUOSmfaZ+mi88+f6GvvzRTmA8rGPO/6mFMtYPW4fiff97U/al6C1w\u003d\u003d"
+      "d4613dc19be3ddb60e7ff5716e28c8b15d954f3a": "eJytUstOw0AMvPMVI/WGoB+AxAFx4sBD0B9ws05idbOOdp2E/j1OH6pEEKfuzR57POP1Co/XfDcrbFopqCUy+qyjBC6gBB05Zw/QqyRDrRmBaxqiYaQstI1e5xlJHCAJ1nJhZ4s6cXYm0Sy2P/CWh5uVI8A9+NvWPqXnbMLllLxdn5jLEvsTmUXrRSHhBO6xpeJyNGE7SAxrTqNkTR27A0nFmAIoBFzIYOpsmhhaHz2glab9x4L3hqEy0bRUa1xMUrMEEpmMvMz3VO2o4d/uXl4/3j83T28bL/niVLWE5y5gkhjRcW4Yex0yPJ8a9zCJtRAr0CkhDNklYOibTP6X6+OyaFRx32q+CqEzS6WpjlJ55xHvaDf3RnLwDmVi7uf4POewKzufy8x83Vv8AQy16fs\u003d"
+    },
+    "development.properties.merge": {
+      "c45c602c9b6f6f73cace183e9f0bf09c00a3ccf6": "eJytkUuOAjEMBfec4one9w24wyy4QFDc0xbBjhyTEbcfp0F89mRny6l6liccvvl2E44rNyxcCNW0c6aGJNBOZlGgKotjUUOmJV2LoyfjdCoxFx0WymBBgJyas/zOj7k2B6+SOVObw0JtMzw6SEZQKTfwpap5UP5WEpyuXHJQgjecvhL2mToVrRcS34Oks6mMYt5NMfbzYr7l8edWns5DzGrst22vu+QtXjR8BAraFqloyoEZAT7l28cW3i9f4R+b7pUs"
+    },
+    "native.properties.merge": {
+      "2c8c063f9588eecff09624782d7369a8a000d61c": "eJytkEsOwjAMRPecYkT3vQF3YMEFguJSi2BXjgni9rgfFQ5AdrEm743T4fTPc+hwGbli4EKYTBtnqkgCbWQWF0zK4hjUkGlIz+JoyThdS+RiwkIZLAiQJOdG/RarfeAmMmeqfUioLoJtgmQElfIGPyY1D8hrJMH1ySWz3AI3K30kHFfuESSNTeVB4v2hi8T5i/tp4vs+nu6zk9XY38tGK/+nWQx87hK0pU3RlAMzu3fv8qaG8s9f/wFV3ZB9"
+    },
+    "package.properties.merge": {
+      "c6c1fb2fb1dda28480ad0f6e5caffc9b97d196ae": "eJytkUFygzAMRfc5hSZsOxygM11223aRCwgsQBNH8tiCTG5fGWjDAcLOsnjvS27g45XfqYHLxAUGjgQp68KBCqCALpSzHyApi8GgGQINOEeDBTNjF73PKywUgAUclLC/4kjt3lda5yXKxlRat1BZDXsFMBOoxAfwLWk2p9wnEuhmjoFldF512kRw3sFnIFk4q9xIrD013vLz5B2y2P9EhtcqZc1sj3WmTXCI5gWrYZy2xomKwTFV/hSvP5XN+fV9+Xzftjb7SDoc+jClWJmmIGi80N9SwnbVe1HlDUTdWfNvt1togpGEMkYoLP1K7tVfIHKXfeVU/S9+/V9rlbyW"
+    },
+    "production.properties.merge": {
+      "cbdf9712e9b5d37cecb4d0530ba1fccd0ed004a3": "eJytkUEOwjAMBO+8YkXv/QF/4MAHAnGpRbArxy3i97gFQbk3t6ycmbXS4LDl2TU49VzRcSEMphNnqkgCncgsLhiUxdGpIVOXxuKYknE6l5iLhIUyWBCgeJ7Hi7NK+xmtbWQDmTPVNkRUF8knQTKCSnmC74OaB+jRk+A8csks10DOWu8J+x97D5KJTeVO4u2uianjD7lq5N+9PN1mL6uxP5fN3o5Vuwh87hO0pVHRlAMz+//cy7sa2o2/4QV6LJW9"
     },
     "sencha.cfg.tpl.merge": {
-      "057f5f361104adf05c1c49b01b08cd389b3822b2": "eJytkDFyw0AIRfs9BWOlteLOlRvnAHGRMg1eIYnRatGwSBpnxnc3TqIbmPJ/PvCo4KsnaCU1pGA9GkTJhpwLlPm6nzAO2FEBad3lAv9CDZ853WDBxI2nFXat4kir6LAL1dYFdpuoDlXYUj5yGrpSN6ynt+/5cDieN8ul+/u2LoTq9NLymz7mYjLCRWUiNXamPVwSRoL46/APGotzXynJ+kebODuEAC7inCNpRz7JP9QmjlZgZesh0+q/W0jLMx4e5yNt/w\u003d\u003d"
+      "37e77998d0cc69cbe4c0c2d4481f2e6c43b55a8f": "eJytkMENwkAMBP9XxUp5Qwe8aIAWzMUhli7nk+0Qheq5gOgAf/xY72rHA2IWRzNtbLHDG2eZhB2ErMtCcG5kFDyiiAd0QqOYvas1SKrURxpg7Lpa7rbQrrT92DEz7quUEaMY51DbE7V2/h2fP0GXlIbLX6f3ua4euuD2xTpwTrgVyoz8UeRFIVoddy66fX9QpPJRm54qIxa2B/ekjjkVyeHYJGZU3tjwZPPDnt66VmnK"
     },
     "testing.properties.merge": {
-      "e65f969c42eb4f355c850fc58fea852582f20db8": "eJyVkUFywyAQBO9+xVb5oIutH/gX+QCCkbUOAooFOf59FsmqpHKKOFEwOzM0Z7r9f53O9DGx0Mge5DBygFDKMSEX1m0VOBpepLqhsndXnpPvv2Z/oefEdiKdLRNoMAJqdyqMI5lAJiXP1hSOQbbZ5msh0mskmuOvnDHHWY32JjbmDEkxOCqxBai6K5DC4d693RAWzjHMCOVCkmB5ZLhW9EWdINjJtBJv9T7cU0vXsk/2rWwxn9AisHA6AooLcgNhqi8riYXdimAn0P+07vXsCOuD8rNimLWaiDKkmBrK7UOUyR0B2RRQdzXedyp+CMVaUi0rQn3ninMxvurPspjBQ/54jjHvYLbHycGKG5Fm2SIf0u/ut9M3l43NIg\u003d\u003d"
+      "360e715956c81757e53736789fe20be045acb544": "eJytkMENwjAMRe+d4oveuwE7cGCBoLjUItiVY4q6PW6pKAM0t1g/732nxfnI07S4DlzRcyGMphNnqkgCncgsLhiVxdGrIVOfXsUxJeN0K5GLCQtlsCBATtVZ7t2Wq13wRjJnql1YqK6GbYJkBJUyg5+jmgflPZDg9uKSgxK8xekD4bSBTyCZ2FSeJN41bUQuO++vi/828vRYpKzGPq87fQV/1WLgS5mgrXWKphyYRb6L10c1nAf//gdqIpHi"
+    },
+    "config.rb.tpl.merge": {
+      "33f446bd02c3fd24eb27891582eff6a2e789796b": "eJxLLi2KT8ksUrBVcMvMSdUDMvMSc1M14uPdPH1c4+M1ufJLSwpKS+KLSypzUoGqrPJSi0tSU7gALskTcA\u003d\u003d"
     }
   },
   "targets": {
+    ".sencha/app/build.properties": {
+      "source": "build.properties.merge",
+      "version": "d4613dc19be3ddb60e7ff5716e28c8b15d954f3a",
+      "parameters": {
+        "appControllers": "",
+        "appModels": "",
+        "appName": "Report",
+        "appStores": "",
+        "appViews": "",
+        "classic": false,
+        "controllerFileName": "Main",
+        "controllerName": "Main",
+        "controllerNamespace": "Report.controller",
+        "frameworkKey": "ext",
+        "frameworkName": "ext",
+        "frameworkPath": "ext",
+        "modelNamespace": "Report.model",
+        "modern": false,
+        "name": "Report",
+        "packagesRelPath": "ext/packages/,/Users/oleg/SOVA/noc3/ui/report/ext/${toolkit.name}",
+        "senchadir": ".sencha",
+        "themeName": "default",
+        "toolkit": "",
+        "uniqueId": "a74a1d35-aabf-46df-9701-54f99dcd1e24",
+        "universal": true,
+        "viewFileName": "Main",
+        "viewName": "Main",
+        "viewNamespace": "Report.view"
+      }
+    },
+    ".sencha/app/development.properties": {
+      "source": "development.properties.merge",
+      "version": "c45c602c9b6f6f73cace183e9f0bf09c00a3ccf6",
+      "parameters": {
+        "appControllers": "",
+        "appModels": "",
+        "appName": "Report",
+        "appStores": "",
+        "appViews": "",
+        "classic": false,
+        "controllerFileName": "Main",
+        "controllerName": "Main",
+        "controllerNamespace": "Report.controller",
+        "frameworkKey": "ext",
+        "frameworkName": "ext",
+        "frameworkPath": "ext",
+        "modelNamespace": "Report.model",
+        "modern": false,
+        "name": "Report",
+        "packagesRelPath": "ext/packages/,/Users/oleg/SOVA/noc3/ui/report/ext/${toolkit.name}",
+        "senchadir": ".sencha",
+        "themeName": "default",
+        "toolkit": "",
+        "uniqueId": "a74a1d35-aabf-46df-9701-54f99dcd1e24",
+        "universal": true,
+        "viewFileName": "Main",
+        "viewName": "Main",
+        "viewNamespace": "Report.view"
+      }
+    },
+    ".sencha/app/native.properties": {
+      "source": "native.properties.merge",
+      "version": "2c8c063f9588eecff09624782d7369a8a000d61c",
+      "parameters": {
+        "appControllers": "",
+        "appModels": "",
+        "appName": "Report",
+        "appStores": "",
+        "appViews": "",
+        "classic": false,
+        "controllerFileName": "Main",
+        "controllerName": "Main",
+        "controllerNamespace": "Report.controller",
+        "frameworkKey": "ext",
+        "frameworkName": "ext",
+        "frameworkPath": "ext",
+        "modelNamespace": "Report.model",
+        "modern": false,
+        "name": "Report",
+        "packagesRelPath": "ext/packages/,/Users/oleg/SOVA/noc3/ui/report/ext/${toolkit.name}",
+        "senchadir": ".sencha",
+        "themeName": "default",
+        "toolkit": "",
+        "uniqueId": "a74a1d35-aabf-46df-9701-54f99dcd1e24",
+        "universal": true,
+        "viewFileName": "Main",
+        "viewName": "Main",
+        "viewNamespace": "Report.view"
+      }
+    },
+    ".sencha/app/package.properties": {
+      "source": "package.properties.merge",
+      "version": "c6c1fb2fb1dda28480ad0f6e5caffc9b97d196ae",
+      "parameters": {
+        "appControllers": "",
+        "appModels": "",
+        "appName": "Report",
+        "appStores": "",
+        "appViews": "",
+        "classic": false,
+        "controllerFileName": "Main",
+        "controllerName": "Main",
+        "controllerNamespace": "Report.controller",
+        "frameworkKey": "ext",
+        "frameworkName": "ext",
+        "frameworkPath": "ext",
+        "modelNamespace": "Report.model",
+        "modern": false,
+        "name": "Report",
+        "packagesRelPath": "ext/packages/,/Users/oleg/SOVA/noc3/ui/report/ext/${toolkit.name}",
+        "senchadir": ".sencha",
+        "themeName": "default",
+        "toolkit": "",
+        "uniqueId": "a74a1d35-aabf-46df-9701-54f99dcd1e24",
+        "universal": true,
+        "viewFileName": "Main",
+        "viewName": "Main",
+        "viewNamespace": "Report.view"
+      }
+    },
+    ".sencha/app/production.properties": {
+      "source": "production.properties.merge",
+      "version": "cbdf9712e9b5d37cecb4d0530ba1fccd0ed004a3",
+      "parameters": {
+        "appControllers": "",
+        "appModels": "",
+        "appName": "Report",
+        "appStores": "",
+        "appViews": "",
+        "classic": false,
+        "controllerFileName": "Main",
+        "controllerName": "Main",
+        "controllerNamespace": "Report.controller",
+        "frameworkKey": "ext",
+        "frameworkName": "ext",
+        "frameworkPath": "ext",
+        "modelNamespace": "Report.model",
+        "modern": false,
+        "name": "Report",
+        "packagesRelPath": "ext/packages/,/Users/oleg/SOVA/noc3/ui/report/ext/${toolkit.name}",
+        "senchadir": ".sencha",
+        "themeName": "default",
+        "toolkit": "",
+        "uniqueId": "a74a1d35-aabf-46df-9701-54f99dcd1e24",
+        "universal": true,
+        "viewFileName": "Main",
+        "viewName": "Main",
+        "viewNamespace": "Report.view"
+      }
+    },
+    ".sencha/app/sencha.cfg": {
+      "source": "sencha.cfg.tpl.merge",
+      "version": "37e77998d0cc69cbe4c0c2d4481f2e6c43b55a8f",
+      "parameters": {
+        "appControllers": "",
+        "appModels": "",
+        "appName": "Report",
+        "appStores": "",
+        "appViews": "",
+        "classic": false,
+        "controllerFileName": "Main",
+        "controllerName": "Main",
+        "controllerNamespace": "Report.controller",
+        "frameworkKey": "ext",
+        "frameworkName": "ext",
+        "frameworkPath": "ext",
+        "modelNamespace": "Report.model",
+        "modern": false,
+        "name": "Report",
+        "packagesRelPath": "ext/packages/,/Users/oleg/SOVA/noc3/ui/report/ext/${toolkit.name}",
+        "senchadir": ".sencha",
+        "themeName": "default",
+        "toolkit": "",
+        "uniqueId": "a74a1d35-aabf-46df-9701-54f99dcd1e24",
+        "universal": true,
+        "viewFileName": "Main",
+        "viewName": "Main",
+        "viewNamespace": "Report.view"
+      }
+    },
+    ".sencha/app/testing.properties": {
+      "source": "testing.properties.merge",
+      "version": "360e715956c81757e53736789fe20be045acb544",
+      "parameters": {
+        "appControllers": "",
+        "appModels": "",
+        "appName": "Report",
+        "appStores": "",
+        "appViews": "",
+        "classic": false,
+        "controllerFileName": "Main",
+        "controllerName": "Main",
+        "controllerNamespace": "Report.controller",
+        "frameworkKey": "ext",
+        "frameworkName": "ext",
+        "frameworkPath": "ext",
+        "modelNamespace": "Report.model",
+        "modern": false,
+        "name": "Report",
+        "packagesRelPath": "ext/packages/,/Users/oleg/SOVA/noc3/ui/report/ext/${toolkit.name}",
+        "senchadir": ".sencha",
+        "themeName": "default",
+        "toolkit": "",
+        "uniqueId": "a74a1d35-aabf-46df-9701-54f99dcd1e24",
+        "universal": true,
+        "viewFileName": "Main",
+        "viewName": "Main",
+        "viewNamespace": "Report.view"
+      }
+    },
     "sass/config.rb": {
       "source": "config.rb.tpl.merge",
       "version": "33f446bd02c3fd24eb27891582eff6a2e789796b",
       "parameters": {
-        "extRelPath": "../../ext",
-        "pkgExtend": "theme-neptune",
-        "pkgFramework": "ext",
-        "pkgName": "Report",
-        "pkgNamespace": "Ext",
-        "pkgTheme": "",
-        "pkgToolkit": "classic",
-        "pkgType": "theme",
+        "appControllers": "",
+        "appModels": "",
+        "appName": "Report",
+        "appStores": "",
+        "appViews": "",
+        "classic": false,
+        "controllerFileName": "Main",
+        "controllerName": "Main",
+        "controllerNamespace": "Report.controller",
+        "frameworkKey": "ext",
+        "frameworkName": "ext",
+        "frameworkPath": "ext",
+        "modelNamespace": "Report.model",
+        "modern": false,
+        "name": "Report",
+        "packagesRelPath": "ext/packages/,/Users/oleg/SOVA/noc3/ui/report/ext/${toolkit.name}",
         "senchadir": ".sencha",
-        "touchRelPath": "../../${touch.dir}"
-      }
-    },
-    "sass/etc/all.scss": {
-      "source": "all.scss.merge",
-      "version": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-      "parameters": {
-        "extRelPath": "../../ext",
-        "pkgExtend": "theme-neptune",
-        "pkgFramework": "ext",
-        "pkgName": "Report",
-        "pkgNamespace": "Ext",
-        "pkgTheme": "",
-        "pkgToolkit": "classic",
-        "pkgType": "theme",
-        "senchadir": ".sencha",
-        "touchRelPath": "../../${touch.dir}"
-      }
-    },
-    "sass/example/custom.js": {
-      "source": "custom.js.merge",
-      "version": "199e99bbd15c3c0415569425cb21e77c95e9042a",
-      "parameters": {
-        "extRelPath": "../../ext",
-        "pkgExtend": "theme-neptune",
-        "pkgFramework": "ext",
-        "pkgName": "Report",
-        "pkgNamespace": "Ext",
-        "pkgTheme": "",
-        "pkgToolkit": "classic",
-        "pkgType": "theme",
-        "senchadir": ".sencha",
-        "touchRelPath": "../../${touch.dir}"
-      }
-    },
-    "sass/example/fashion.html": {
-      "source": "fashion.html.tpl.merge",
-      "version": "5117b27d384b8c5ae0bd4aafdb1fad14eaddcc62",
-      "parameters": {
-        "extRelPath": "../../ext",
-        "pkgExtend": "theme-neptune",
-        "pkgFramework": "ext",
-        "pkgName": "Report",
-        "pkgNamespace": "Ext",
-        "pkgTheme": "",
-        "pkgToolkit": "classic",
-        "pkgType": "theme",
-        "senchadir": ".sencha",
-        "touchRelPath": "../../${touch.dir}"
-      }
-    },
-    "sass/example/theme.html": {
-      "source": "theme.html.tpl.merge",
-      "version": "2c775eb1b3eb10df6efa0743d8aa426af3f9a562",
-      "parameters": {
-        "extRelPath": "../../ext",
-        "pkgExtend": "theme-neptune",
-        "pkgFramework": "ext",
-        "pkgName": "Report",
-        "pkgNamespace": "Ext",
-        "pkgTheme": "",
-        "pkgToolkit": "classic",
-        "pkgType": "theme",
-        "senchadir": ".sencha",
-        "touchRelPath": "../../${touch.dir}"
-      }
-    },
-    ".sencha/package/build.properties": {
-      "source": "build.properties.merge",
-      "version": "8b81315dbe73ce9c08478f4c1d2df84f456efcf5",
-      "parameters": {
-        "extRelPath": "../../ext",
-        "pkgExtend": "theme-neptune",
-        "pkgFramework": "ext",
-        "pkgName": "Report",
-        "pkgNamespace": "Ext",
-        "pkgTheme": "",
-        "pkgToolkit": "classic",
-        "pkgType": "theme",
-        "senchadir": ".sencha",
-        "touchRelPath": "../../${touch.dir}"
-      }
-    },
-    ".sencha/package/sencha.cfg": {
-      "source": "sencha.cfg.tpl.merge",
-      "version": "057f5f361104adf05c1c49b01b08cd389b3822b2",
-      "parameters": {
-        "extRelPath": "../../ext",
-        "pkgExtend": "theme-neptune",
-        "pkgFramework": "ext",
-        "pkgName": "Report",
-        "pkgNamespace": "Ext",
-        "pkgTheme": "",
-        "pkgToolkit": "classic",
-        "pkgType": "theme",
-        "senchadir": ".sencha",
-        "touchRelPath": "../../${touch.dir}"
-      }
-    },
-    ".sencha/package/testing.properties": {
-      "source": "testing.properties.merge",
-      "version": "e65f969c42eb4f355c850fc58fea852582f20db8",
-      "parameters": {
-        "extRelPath": "../../ext",
-        "pkgExtend": "theme-neptune",
-        "pkgFramework": "ext",
-        "pkgName": "Report",
-        "pkgNamespace": "Ext",
-        "pkgTheme": "",
-        "pkgToolkit": "classic",
-        "pkgType": "theme",
-        "senchadir": ".sencha",
-        "touchRelPath": "../../${touch.dir}"
+        "themeName": "default",
+        "toolkit": "",
+        "uniqueId": "a74a1d35-aabf-46df-9701-54f99dcd1e24",
+        "universal": true,
+        "viewFileName": "Main",
+        "viewName": "Main",
+        "viewNamespace": "Report.view"
       }
     }
   }
