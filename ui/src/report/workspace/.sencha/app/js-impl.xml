@@ -1,71 +1,111 @@
 <project name="x-js-impl">
-    <target name="-init-compile-js" depends="-init-compiler">
+    <!--
+    this target extracts split mode information from the compiler's app
+    processor to determine various pieces of information
+    -->
+    <target name="-detect-app-build-properties" 
+            depends="-init-app-js-files">
+        <x-load-app-builder-properties
+            refid="${compiler.ref.id}"
+            splitModePropName="enable.split.mode"
+            pageModePropName="app.page.mode"
+            hasJsSdkPropName="app.has.js.sdk"
+            hasCssSdkPropName="app.has.css.sdk"/>
+    </target>
+
+    <!--    
+    this is the standard js compile target that builds the output js file(s)
+    -->
+    <target name="-compile-js" depends="-detect-app-build-properties">
         <if>
-            <equals arg1="theme" arg2="${package.type}"/>
+            <x-is-true value="${enable.split.mode}"/>
             <then>
-                <property name="build.compile.js.filter">
+                <property name="app.output.framework.include"
+                          value="package-sencha-core,framework,toolkit,package-core"/>
+
+                <x-compile refid="${compiler.ref.id}">
                     <![CDATA[
-                        union
-                            -tag=package-${package.name}
+                        # build a separate sdk-only js file
+                        restore
+                            page
+                        and
+                        ${build.optimize}
+                        and
+                        exclude
+                            -all
                         and
                         include
-                            -tag=package-${package.name}-base
+                            -tag=${app.output.framework.include}
                         and
-                        ${build.operations}
+                        save
+                            allframework
+                        and
+                        intersect
+                            -set=page,allframework
+                        and
+                        save
+                            frameworkdeps
+                        and
+                        include
+                            -tag=Ext.cmd.derive
+                        and
+                        concat
+                            -remove-text-references=${build.remove.references}
+                            -optimize-string-references=${build.optimize.string.references}
+                            -remove-requirement-nodes=${build.remove.requirement.nodes}
+                            ${build.compression}
+                            -out=${build.framework.file}
+                            ${build.concat.options}
+                        
+                        # now build the all-classes file, without
+                        # the framework code included
+                        and
+                        restore
+                            page
+                        and
+                        exclude
+                            -set=frameworkdeps
+                        and
+                        exclude
+                            -tag=Ext.cmd.derive,derive
+                        and
+                        concat
+                            -remove-text-references=${build.remove.references}
+                            -optimize-string-references=${build.optimize.string.references}
+                            -remove-requirement-nodes=${build.remove.requirement.nodes}
+                            ${build.compression}
+                            -out=${build.classes.file}
+                            ${build.concat.options}
                     ]]>
-                </property>
+                </x-compile>
             </then>
             <else>
-                <property name="build.compile.js.filter">
+                <x-compile refid="${compiler.ref.id}">
                     <![CDATA[
-                    union
-                        -tag=package-${package.name}
-                    and
-                    ${build.operations}
+                        # build an all-classes.js file that contains
+                        # all code needed by the app
+                        restore
+                            page
+                        and
+                        ${build.optimize}
+                        and
+                        concat
+                            -remove-text-references=${build.remove.references}
+                            -optimize-string-references=${build.optimize.string.references}
+                            -remove-requirement-nodes=${build.remove.requirement.nodes}
+                            ${build.compression}
+                            -out=${build.classes.file}
+                            ${build.concat.options}
                     ]]>
-                </property>
+                </x-compile>
             </else>
         </if>
     </target>
-
-    <target name="-compile-js-debug" depends="-init-compile-js">
-        <x-compile refid="${compiler.ref.id}">
-            <![CDATA[
-                restore
-                    package-${package.name}-all
-                and
-            -options=${build.compile.js.debug.options}
-                ${build.compile.js.filter}
-                and
-                concatenate
-                    -remove-text-references=${build.remove.references}
-                    -output-file=${build.all.debug.js}
-                    ${build.concat.debug.options}
-            ]]>
-        </x-compile>
-    </target>
-
-    <target name="-compile-js-non-debug" depends="-init-compile-js">
-        <x-compile refid="${compiler.ref.id}">
-            <![CDATA[
-                restore 
-                    package-${package.name}-all
-                and
-            -options=${build.compile.js.options}
-                ${build.compile.js.filter}
-                and
-                concatenate
-                    -remove-text-references=${build.remove.references}
-                    ${build.compile.js.compress}
-                    -output-file=${build.all.js}
-                    ${build.concat.options}
-            ]]>
-        </x-compile>
-    </target>
-
+    
+    <!--    
+    Build javascript
+    -->
     <target name="-before-js"/>
+    <target name="-js" depends="-compile-js"/>
     <target name="-after-js"/>
-    <target name="-js"
-            depends="-compile-js-debug,-compile-js-non-debug"/>
-
 </project>

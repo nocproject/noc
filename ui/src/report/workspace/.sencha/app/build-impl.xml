@@ -14,7 +14,112 @@ the target provided here. Doing that can create problems for upgrading to newer
 versions of Cmd so it is not recommended but it will be easier to manage than editing
 this file in most cases.
 -->
-<project name="x-pkg-build-impl">
+<project name="x-app-build-impl" default=".help">
+    <!--
+    ===============================================================
+    helper targets for ant integrations with IDE's 
+    (human readable target names)
+    ===============================================================
+    -->
+    <target name="-before-build-testing"/>
+    <target name="-build-testing" depends="testing,build"/>
+    <target name="-after-build-testing"/>
+    <target name="build-testing" 
+            depends="-before-build-testing,
+                     -build-testing,
+                     -after-build-testing"/>
+    
+    <target name="Build - Testing" 
+            description="Create a Testing build of this project" 
+            depends="build-testing"/>
+
+    <target name="-before-build-production"/>
+    <target name="-build-production" depends="production,build"/>
+    <target name="-after-build-production"/>
+    <target name="build-production" 
+            depends="-before-build-production,
+                     -build-production,
+                     -after-build-production"/>
+    
+    <target name="Build - Production" 
+            description="Create a Production build of this project" 
+            depends="build-production"/>
+
+    <target name="-before-build-native"/>
+    <target name="-build-native" depends="native,build"/>
+    <target name="-after-build-native"/>
+    <target name="build-native"
+            depends="-before-build-native,
+                     -build-native,
+                     -after-build-native"/>
+
+    <target name="Build - Native" 
+            description="Create a Native build of this project" 
+            depends="build-native"/>
+    
+    <target name="-before-start-local-webserver"/>
+    <target name="-start-local-webserver" depends="init">
+        <x-launch-terminal>
+            <![CDATA[
+            ${cmd.dir}/sencha fs web -port=${build.web.port} start -map=${build.web.root}
+            ]]>
+        </x-launch-terminal>
+    </target>
+    <target name="-after-start-local-webserver"/>
+    <target name="start-local-webserver" 
+            depends="-before-start-local-webserver,
+                     -start-local-webserver,
+                     -after-start-local-webserver"/>
+
+    <target name="WebServer - Start Local" 
+            description="Starts a local webserver for this project" 
+            depends="start-local-webserver"/>
+
+    <target name="-before-compass-watch"/>
+    <target name="-compass-watch" depends="init">
+        <x-launch-terminal>
+            compass watch ${app.sass.dir}
+        </x-launch-terminal>
+    </target>
+    <target name="-after-compass-watch"/>
+    <target name="compass-watch" 
+            depends="-before-compass-watch,
+                     -compass-watch,
+                     -after-compass-watch"/>
+
+    <target name="Compass - Watch" 
+            description="Opens terminal and watches for SASS updates" 
+            depends="compass-watch"/>
+    
+    <!--
+    ===============================================================
+    environment setters
+    ===============================================================
+    -->
+    <target name="production" 
+            description="Sets the build environment to production.">
+        <property name="build.environment" value="production"/>
+    </target>
+
+    <target name="testing"
+            description="Sets the build environment to testing.">
+        <property name="build.environment" value="testing"/>
+    </target>
+
+    <target name="native"
+            description="Sets the build environment to native.">
+        <property name="build.environment" value="native"/>
+    </target>
+
+    <target name="package"
+            description="Sets the build environment to package.">
+        <property name="build.environment" value="package"/>
+    </target>
+
+    <target name="development"
+            description="Sets the build environment to development.">
+        <property name="build.environment" value="development"/>
+    </target>
 
     <!--
     ===============================================================
@@ -23,8 +128,8 @@ this file in most cases.
     install of Sencha Cmd
     ===============================================================
     -->
-    <import file="${basedir}/.sencha/package/find-cmd-impl.xml"/>
-    <target name="init-cmd"
+    <import file="${basedir}/.sencha/app/find-cmd-impl.xml"/>
+    <target name="init-cmd" 
             depends="find-cmd-in-path,
                      find-cmd-in-environment,
                      find-cmd-in-shell">
@@ -45,10 +150,10 @@ this file in most cases.
         'inheritrefs' to true, may be used in place of antcall in 
         build process customizations.
         -->
-        <taskdef resource="com/sencha/ant/antlib.xml"
+        <taskdef resource="com/sencha/ant/antlib.xml" 
                  classpath="${cmd.dir}/sencha.jar"
                  loaderref="senchaloader"/>
-
+        
         <!-- 
         Some operations require sencha.jar in the current java classpath, 
         so this will extend the java.lang.Thread#contextClassLoader with the 
@@ -66,8 +171,8 @@ this file in most cases.
     system properties and ant task definitions
     ===============================================================
     -->
-    <import file="${basedir}/.sencha/package/refresh-impl.xml"/>
-    <import file="${basedir}/.sencha/package/init-impl.xml"/>
+    <import file="${basedir}/.sencha/app/init-impl.xml"/>
+    <import file="${basedir}/.sencha/app/resolve-impl.xml"/>
     <target name="init"
             depends="init-local,
                      init-cmd,
@@ -78,8 +183,8 @@ this file in most cases.
                      -init-defaults,
                      -after-init-defaults,
                      -init-compiler,
-                     -init-web-server"/>
-
+                     -init-native-package"/>
+    
     <!--
     ===============================================================
     Build
@@ -89,19 +194,19 @@ this file in most cases.
     ===============================================================
     -->
     <target name="-before-build"/>
-    <target name="-build"
-            depends="js,
-                     inherit-resources,
-                     copy-resources,
+    <target name="-build" 
+            depends="refresh,
+                     resolve,
+                     js,
+                     resources,
                      slice,
                      sass,
-                     subpkgs,
-                     examples,
-                     pkg"/>
+                     page,
+                     native-package"/>
     <target name="-after-build"/>
     <target name="build"
             depends="init,-before-build,-build,-after-build"
-            description="Builds the package"/>
+            description="Builds the application"/>
 
     <!--
     ===============================================================
@@ -110,100 +215,122 @@ this file in most cases.
     ===============================================================
     -->
     <target name="-before-clean"/>
-    <target name="-after-clean"/>
     <target name="-clean">
-        <delete dir="${package.output.base}"/>
+        <delete dir="${app.output.base}"/>
         <delete dir="${build.temp.dir}"/>
     </target>
+    <target name="-after-clean"/>
     <target name="clean"
             depends="init"
             description="Removes all build output produced by the 'build' target">
-        <x-ant-call>
+        <x-ant-call unless="skip.clean">
             <target name="-before-clean"/>
             <target name="-clean"/>
-            <target name="clean-subpkgs"/>
-            <target name="clean-examples"/>
             <target name="-after-clean"/>
         </x-ant-call>
     </target>
 
     <!--
     ===============================================================
-    JS
-    uses targets from js-impl.xml to produce the output js files
-    containing package js classes
+    Watch
+    uses targets from watch-impl.xml to initiate the application
+    watch process using instrumented state from the compiler
     ===============================================================
     -->
-    <import file="${basedir}/.sencha/package/js-impl.xml"/>
+    <import file="${basedir}/.sencha/app/watch-impl.xml"/>
+    <target name="-watch-init">
+        <property name="app.watch.enabled" value="true"/>
+    </target>
+    <target name="watch"
+            depends="-watch-init,development,init"
+            description="Starts Watch to keep your app ready for dev mode">
+        <x-ant-call>
+            <param name="build.id" value="${build.id}"/>
+            <param name="build.name" value="${build.name}"/>
+            <target name="-before-watch"/>
+            <target name="-watch"/>
+            <target name="-after-watch"/>
+        </x-ant-call>
+    </target>
+    
+    <!--
+    ===============================================================
+    JS
+    uses targets from js-impl.xml to produce the output js files
+    containing needed application and framework js classes
+    ===============================================================
+    -->
+    <import file="${basedir}/.sencha/app/js-impl.xml"/>
     <target name="js"
             depends="init"
-            description="Builds the JS files">
+            description="Builds the output javascript file(s)">
         <x-ant-call unless="skip.js">
             <target name="-before-js"/>
             <target name="-js"/>
             <target name="-after-js"/>
         </x-ant-call>
     </target>
-
-    <!--
-    ===============================================================
-    Resources
-    uses targets from resources-impl.xml the package's resources 
-    to the output directory
-    ===============================================================
-    -->
-    <import file="${basedir}/.sencha/package/resources-impl.xml"/>
-
-    <target name="inherit-resources"
-            depends="init"
-            description="Performs the resource folder inheritance from base theme(s)">
-        <x-ant-call unless="skip.inherit">
-            <target name="-before-inherit-resources"/>
-            <target name="-inherit-resources"/>
-            <target name="-after-inherit-resources"/>
-        </x-ant-call>
-    </target>
-
-    <target name="copy-resources"
-            depends="init"
-            description="Copy theme resources to folder">
-        <x-ant-call unless="skip.resources">
-            <target name="-before-copy-resources"/>
-            <target name="-copy-resources"/>
-            <target name="-after-copy-resources"/>
-        </x-ant-call>
-    </target>
-
+        
     <!--
     ===============================================================
     Sass
     uses targets from sass-impl.xml to produce the output css
-    files for the package's styling
+    files for the application's styling
     ===============================================================
     -->
-    <import file="${basedir}/.sencha/package/sass-impl.xml"/>
-    <target name="sass"
-            depends="init"
-            description="Builds the SASS files using Compass">
+    <import file="${basedir}/.sencha/app/sass-impl.xml"/>
+    <target name="sass" 
+            depends="init" 
+            description="Builds the Sass files using Compass.">
         <x-ant-call unless="skip.sass">
             <target name="-before-sass"/>
             <target name="-sass"/>
             <target name="-after-sass"/>
+            <target name="refresh"/>
         </x-ant-call>
     </target>
 
     <!--
     ===============================================================
+    Resources
+    uses targets from resources-impl.xml to copy resources from 
+    the application and required packages to the output directory
+    ===============================================================
+    -->
+    <import file="${basedir}/.sencha/app/resources-impl.xml"/>
+    <target name="resources" 
+            depends="init"
+            description="Copy resources to build folder.">
+        <x-ant-call unless="skip.resources">
+            <target name="-before-resources"/>
+
+            <!-- Legacy targets: -->
+            <target name="-before-inherit-resources"/>
+            <target name="-before-copy-resources"/>
+
+            <target name="-resources"/>
+           
+            <!-- Legacy targets: -->
+            <target name="-after-copy-resources"/>
+            <target name="-after-inherit-resources"/>
+
+            <target name="-after-resources"/>
+        </x-ant-call>
+    </target>
+    
+    
+    <!--
+    ===============================================================
     Slice
     uses targets from slice-impl.xml to extract theme images from
-    the package's styling for use with older browsers that don't 
+    the application for use with older browsers that don't 
     support modern css features
     ===============================================================
     -->
-    <import file="${basedir}/.sencha/package/slice-impl.xml"/>
-    <target name="slice"
-            depends="init"
-            description="Slices CSS3 theme to produce non-CSS3 images and sprites">
+    <import file="${basedir}/.sencha/app/slice-impl.xml"/>
+    <target name="slice" 
+            depends="init" 
+            description="Slices CSS3 theme to produce non-CSS3 images and sprites.">
         <x-ant-call unless="skip.slice">
             <target name="-before-slice"/>
             <target name="-slice"/>
@@ -211,104 +338,131 @@ this file in most cases.
         </x-ant-call>
     </target>
 
+    <!--
+    Theme - this is a legacy support target for extjs 4.1 apps. It redirects
+    to the "slice" ant target
+    -->
+    <target name="theme" 
+            depends="init" 
+            description="Builds the application's theme(s) images using the slicer (Ext JS 4.1 only).">
+        <x-ant-call unless="skip.theme">
+            <target name="-before-theme"/>
+            <target name="slice"/>
+            <target name="-after-theme"/>
+        </x-ant-call>
+    </target>
+                
+    <!--
+    Refresh Theme - uses targets from refresh-impl.xml to rebuild the current
+    theme
+    -->
+    <target name="refresh-theme" 
+            depends="init" 
+            description="Rebuilds the currently enabled app theme (Ext JS 4.1 only).">
+        <x-ant-call unless="skip.theme">
+            <target name="-before-refresh-theme"/>
+            <target name="-refresh-theme"/>
+            <target name="-after-refresh-theme"/>
+        </x-ant-call>
+    </target>
+
+    <!--
+    ===============================================================
+    Refresh
+    uses targets from refresh-impl.xml to generate bootstrapping
+    information for the application
+    ===============================================================
+    -->
+    <import file="${basedir}/.sencha/app/refresh-impl.xml"/>
+    <target name="refresh"
+            depends="init"
+            description="Refreshes the application bootstrap data.">
+        <x-ant-call unless="skip.refresh">
+            <target name="-before-refresh"/>
+            <target name="-refresh"/>
+            <target name="-after-refresh"/>
+        </x-ant-call>
+    </target>
 
     <!--
     ===============================================================
-    Sub Builds
-    uses targets from sub-builds.xml to process other packages
-    and example applications contained within this package.
-    Only the "subpkgs" and "examples" targets are part of the 
-    main build sequence.
+    Page
+    uses targets from page-impl.xml to generate the output markup
+    file and associated microloader / app manifest
     ===============================================================
     -->
-    <import file="sub-builds.xml"/>
-
-    <!--
-    sub packages
-    -->
-    <target name="subpkgs"
-            depends="init"
-            description="Builds all sub-packages">
-        <x-ant-call unless="skip.subpkgs">
-            <target name="-before-subpkgs"/>
-            <target name="-subpkgs"/>
-            <target name="-after-subpkgs"/>
-        </x-ant-call>
-    </target>
-
-    <target name="clean-subpkgs"
-            depends="init"
-            description="Cleans all sub-packages">
-        <x-ant-call unless="skip.clean.subpkgs">
-            <target name="-before-clean-subpkgs"/>
-            <target name="-clean-subpkgs"/>
-            <target name="-after-clean-subpkgs"/>
-        </x-ant-call>
-    </target>
-
-    <target name="upgrade-subpkgs"
-            depends="init"
-            description="Upgrades all sub-packages">
-        <x-ant-call unless="skip.upgrade.subpkgs">
-            <target name="-before-upgrade-subpkgs"/>
-            <target name="-upgrade-subpkgs"/>
-            <target name="-after-upgrade-subpkgs"/>
+    <import file="${basedir}/.sencha/app/page-impl.xml"/>
+    <target name="page" 
+            depends="init" 
+            description="Builds the application's HTML page.">
+        <x-ant-call unless="skip.page">
+            <target name="-before-page"/>
+            <target name="-page"/>
+            <target name="-after-page"/>
         </x-ant-call>
     </target>
 
     <!--
-    example applications
+    ===============================================================
+    Resolve
+    uses targets from resolve-impl.xml to detect dynamic app 
+    dependencies using phantomjs
+    ===============================================================
     -->
-    <target name="examples"
+    <target name="resolve"
             depends="init"
-            description="Builds all examples">
-        <x-ant-call unless="skip.examples">
-            <target name="-before-examples"/>
-            <target name="-examples"/>
-            <target name="-after-examples"/>
-        </x-ant-call>
-    </target>
-
-    <target name="clean-examples"
-            depends="init"
-            description="Upgrades all examples">
-        <x-ant-call unless="skip.clean.examples">
-            <target name="-before-clean-examples"/>
-            <target name="-clean-examples"/>
-            <target name="-after-clean-examples"/>
-        </x-ant-call>
-    </target>
-
-    <target name="upgrade-examples"
-            depends="init"
-            description="Upgrades all examples">
-        <x-ant-call unless="skip.upgrade.examples">
-            <target name="-before-upgrade-examples"/>
-            <target name="-upgrade-examples"/>
-            <target name="-after-upgrade-examples"/>
+            description="Resolve application dependencies dynamically.">
+        <x-ant-call unless="skip.resolve">
+            <target name="-before-resolve"/>
+            <target name="-resolve"/>
+            <target name="-after-resolve"/>
         </x-ant-call>
     </target>
 
     <!--
-    Build PKG
+    ===============================================================
+    Native Package
+    uses targets from packager-impl.xml to run native packager
+    applications to produce stand-alone installable web apps from
+    this built Cmd application
+    ===============================================================
     -->
-    <target name="-before-pkg"/>
-    <target name="-after-pkg"/>
-    <target name="-pkg">
-        <x-make-pkg dir="${package.dir}"
-                    files="${build.pkg.manifest}"
-                    pkg="${pkg.build.dir}/${pkg.file.name}"
-                    temp="${build.temp.dir}"/>
-    </target>
-    <target name="pkg"
+    <import file="${basedir}/.sencha/app/packager-impl.xml"/>
+    <import file="${basedir}/.sencha/app/cordova-impl.xml"/>
+    <import file="${basedir}/.sencha/app/phonegap-impl.xml"/>
+    <target name="native-package"
             depends="init"
-            description="Builds the PKG file">
-        <x-ant-call unless="skip.pkg">
-            <target name="-before-pkg"/>
-            <target name="-pkg"/>
-            <target name="-after-pkg"/>
+            description="Builds native packages of the application">
+        <x-ant-call unless="skip.native-package">
+            <target name="-before-native-package"/>
+            <target name="-native-package"/>
+            <target name="-after-native-package"/>
         </x-ant-call>
     </target>
+
+
+    <target name="-before-publish"/>
+    <target name="-after-publish"/>
+    <target name="-publish">
+        <property name="app.manager.file" value="${app.output.base}"/>
+        <x-sencha-command>
+            <![CDATA[
+            manager
+                version
+                    create
+                        -id=${app.manager.id}
+                        -name=${app.version}
+                        -host=${app.manager.host}
+                        -secret=${app.manager.secret}
+                        -apiKey=${app.manager.apiKey}
+                        -file=${app.manager.file}
+            ]]>
+        </x-sencha-command>
+    </target>
+    <target name="publish"
+            depends="init,-before-publish,-publish,-after-publish"
+            description="Publish app to Sencha Web Application Manager"/>
+
 
     <!--
     ===============================================================
@@ -329,33 +483,43 @@ this file in most cases.
     -->
     <target name=".help" depends="init"
             description="Provides help on the build script">
-
         <x-get-project-targets property="help.message"/>
 
         <echo><![CDATA[${help.message}
-This is the main build script for your package.
+This is the main build script for your application.
 
 The following properties can be used to disable certain steps in the build
 process.
 
- * skip.pkg         Do not build the PKG file
+ * skip.page        Do not build the HTML page.
+ * skip.js          Do not build the output js code file(s)
+ * skip.resources   Do not copy resources to the build directory
  * skip.sass        Do not build the SASS.
- * skip.js          Do not build the JS files.
+ * skip.slice       Do not build the theme image slicer.
+            
+Most build options are controlled by the app manifest. For details see:
+    
+    ${basedir}/app.json
 
+For more specific controls over the build process, see:
+
+    ${basedir}/.sencha/app/defaults.properties
+            
 For details about how these options affect your build, see
 
-    ${basedir}/.sencha/package/build-impl.xml
-
+    ${basedir}/.sencha/app/build-impl.xml
+    
 These options can be stored in a local.properties file in this folder or in the
-local.properties file in the workspace.
+local.properties file in the workspace. This file should not be included in 
+source control.
 
 Alternatively, these can be supplied on the command line. For example:
 
-    sencha ant -Dskip.sass=1 build
+    ant -Dskip.sass=1 build
 
 To see all currently defined properties, do this:
 
-    sencha ant .props
+    ant .props
         ]]></echo>
     </target>
 

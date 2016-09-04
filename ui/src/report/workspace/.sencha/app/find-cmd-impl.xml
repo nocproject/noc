@@ -1,13 +1,13 @@
-<project name="x-find-cmd-impl">
+<project name="find-cmd-impl">
     <!--
     Run "sencha which" to find the Sencha Cmd basedir and get "cmd.dir" setup. We
     need to execute the command with curdir set properly for Cmd to pick up that we
     are running for an application.
     -->
     <target name="find-cmd-in-path" unless="cmd.dir">
-        <exec executable="sencha"
-              dir="${basedir}"
-              failifexecutionfails="false"
+        <exec executable="sencha" 
+              dir="${basedir}" 
+              failifexecutionfails="false" 
               outputproperty="exec.error">
             <arg value="which"/>
             <arg value="-p=cmd.dir"/>
@@ -25,7 +25,7 @@
     cmd isn't on the current path settings for the user
     -->
     <target name="find-cmd-in-environment" unless="cmd.dir">
-        <exec executable="${env.SENCHA_CMD}/sencha"
+        <exec executable="${env.SENCHA_CMD}/sencha" 
               dir="${basedir}"
               failifexecutionfails="false">
             <arg value="which"/>
@@ -49,10 +49,8 @@
     -->
     <target name="find-cmd-in-shell" unless="cmd.dir">
         <delete quiet="true" file="$cmddir$"/>
-        <echo file="tmp.sh">source ~/.bash_profile; sencha which -p cmd.dir -o '$cmddir$'</echo>
-        <exec executable="/bin/sh">
-            <arg value="tmp.sh"/>
-        </exec>
+        <echo file="tmp.sh"> source ~/.bash_profile; sencha which -p cmd.dir -o '$cmddir$'</echo>
+        <exec executable="/bin/sh"><arg value="tmp.sh"/></exec>
         <property file="$cmddir$"/>
         <delete file="tmp.sh"/>
         <delete file="$cmddir$"/>

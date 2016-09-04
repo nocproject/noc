@@ -29,11 +29,9 @@
                 <available file="${app.cordova.config.path}" type="dir"/>
             </not>
             <then>
-                <cordova-echo
-                        message="Creating Cordova Application with ID &quot;${app.cordova.config.id}&quot; and Name &quot;${app.cordova.config.name}&quot;"/>
+                <cordova-echo message="Creating Cordova Application with ID &quot;${app.cordova.config.id}&quot; and Name &quot;${app.cordova.config.name}&quot;"/>
                 <x-shell reloadprofile="true" dir="${app.dir}">
-                    cordova ${cordova.cli.options} create "${app.cordova.config.path}" ${app.cordova.config.id}
-                    "${app.cordova.config.name}"
+                    cordova ${cordova.cli.options} create "${app.cordova.config.path}" ${app.cordova.config.id} "${app.cordova.config.name}"
                 </x-shell>
             </then>
         </if>
@@ -48,8 +46,7 @@
         </x-shell>
     </target>
     <target name="-after-cordova-prepare"/>
-    <target name="cordova-prepare"
-            depends="cordova-init, -before-cordova-prepare, -cordova-prepare, -after-cordova-prepare"/>
+    <target name="cordova-prepare" depends="cordova-init, -before-cordova-prepare, -cordova-prepare, -after-cordova-prepare"/>
 
     <!-- Emulates application on all platforms -->
     <target name="-before-cordova-emulate"/>
@@ -60,8 +57,7 @@
         </x-shell>
     </target>
     <target name="-after-cordova-emulate"/>
-    <target name="cordova-emulate"
-            depends="cordova-init, -before-cordova-emulate, -cordova-emulate, -after-cordova-emulate"/>
+    <target name="cordova-emulate" depends="cordova-init, -before-cordova-emulate, -cordova-emulate, -after-cordova-emulate"/>
 
     <!-- Runs application on device for all platforms -->
     <target name="-before-cordova-run"/>
@@ -88,8 +84,7 @@
     <!-- Adds all missing Platforms from properties file to the project-->
     <target name="-before-cordova-platform-add"/>
     <target name="-cordova-platform-add">
-        <fail status="0"
-              message="No platforms were specified, add a platform to ${build.name}'s -> cordova -> config -> platforms property in app.json">
+        <fail status="0" message="No platforms were specified, add a platform to ${build.name}'s -> cordova -> config -> platforms property in app.json">
             <condition>
                 <or>
                     <not>
@@ -105,7 +100,7 @@
             var platforms = project.getProperty("cordova.platforms");
 
             if (!platforms) {
-            platforms = ""
+                platforms = ""
             }
             platforms = platforms.replace("/,/g", " ");
             project.setProperty("cordova.platforms.clean", platforms);
@@ -121,24 +116,24 @@
             var available = existing_platforms.indexOf("Available");
 
             if (available >= 0) {
-            existing_platforms = existing_platforms.substring(0, available);
+                existing_platforms = existing_platforms.substring(0, available);
             }
 
             var missing_platforms = [], platformIndex, platform;
             for (platformIndex in target_platforms) {
-            platform = target_platforms[platformIndex];
-            if(existing_platforms.indexOf(platform) === -1){
-            missing_platforms.push(platform);
-            }
+                platform = target_platforms[platformIndex];
+                if(existing_platforms.indexOf(platform) === -1){
+                    missing_platforms.push(platform);
+                }
             }
 
             if(missing_platforms.length > 0) {
-            self.log("Cordova: Missing platforms " + missing_platforms.toString() + ". Attempting add.");
-            project.setProperty("cordova.platforms.missing", missing_platforms.join(" "));
+                self.log("Cordova: Missing platforms " + missing_platforms.toString() + ". Attempting add.");
+                project.setProperty("cordova.platforms.missing", missing_platforms.join(" "));
             } else if(existing_platforms.length() >0){
-            self.log("Cordova: All requested platforms exist");
+                self.log("Cordova: All requested platforms exist");
             } else {
-            self.log("Cordova: No platforms exist");
+                self.log("Cordova: No platforms exist");
             }
         </script>
 
@@ -153,21 +148,17 @@
         </if>
     </target>
     <target name="-after-cordova-platform-add"/>
-    <target name="cordova-platform-add"
-            depends="cordova-init, -before-cordova-platform-add, -cordova-platform-add, -after-cordova-platform-add"/>
+    <target name="cordova-platform-add" depends="cordova-init, -before-cordova-platform-add, -cordova-platform-add, -after-cordova-platform-add"/>
 
     <target name="-before-cordova-init-native-package"/>
     <target name="-cordova-init-native-package" depends="cordova-create"/>
     <target name="-after-cordova-init-native-package"/>
-    <target name="cordova-init-native-package"
-            depends="cordova-init, -before-cordova-init-native-package, -cordova-init-native-package, -after-cordova-init-native-package"/>
+    <target name="cordova-init-native-package" depends="cordova-init, -before-cordova-init-native-package, -cordova-init-native-package, -after-cordova-init-native-package"/>
 
     <target name="-before-cordova-native-package"/>
-    <target name="-cordova-native-package"
-            depends="cordova-platform-add, cordova-build, cordova-prepare, cordova-emulate, cordova-run"/>
+    <target name="-cordova-native-package" depends="cordova-platform-add, cordova-build, cordova-prepare, cordova-emulate, cordova-run"/>
     <target name="-after-cordova-native-package"/>
-    <target name="cordova-native-package"
-            depends="cordova-init, -before-cordova-native-package, -cordova-native-package, -after-cordova-native-package"/>
+    <target name="cordova-native-package" depends="cordova-init, -before-cordova-native-package, -cordova-native-package, -after-cordova-native-package"/>
 
 
     <macrodef name="cordova-echo">

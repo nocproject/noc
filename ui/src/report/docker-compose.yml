@@ -15,7 +15,7 @@ services:
       - build_coffee
     volumes:
       - ./workspace:/code
-      - ../../report:/code/build/production/NOC.report/
+      - ../../report:/code/build/
       - ./src/app:/code/app
       - ./src/app.js:/code/app.js
       - ./src/app.json:/code/app.json
