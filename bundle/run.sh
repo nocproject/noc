@@ -26,7 +26,18 @@ start_dbs() {
     sleep 6
 }
 migrate() {
-    docker-compose run migrate
+    docker-compose run --rm migrate
+}
+
+install_npkg() {
+    echo "Installing depends card"
+    docker-compose run --rm --entrypoint "./scripts/deploy/install-packages requirements/card.json" test
+    echo "Installing depends login"
+    docker-compose run --rm --entrypoint "./scripts/deploy/install-packages requirements/login.json" test
+    echo "Installing depends mib"
+    docker-compose run --rm --entrypoint "./scripts/deploy/install-packages requirements/mib.json" test
+    echo "Installing depends web"
+    docker-compose run --rm --entrypoint "./scripts/deploy/install-packages requirements/web.json" test
 }
 
 start_sae() {
@@ -53,6 +64,7 @@ start_fm() {
                          correlator \
                          mailsender
 }
+install_npkg
 compile_login
 pull
 start_dbs
