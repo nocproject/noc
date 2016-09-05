@@ -20,6 +20,8 @@ class Profile(BaseProfile):
         (r"Enter <CR> for more or 'q' to quit--:", "\r"),
     ]
     command_submit = "\r"
+    username_submit = "\r"
+    password_submit = "\r"
     command_exit = "logout"
     telnet_send_on_connect = "\r"
     convert_mac = BaseProfile.convert_mac_to_dashed
@@ -40,7 +42,7 @@ class Profile(BaseProfile):
 
     rx_hw = re.compile(
         r"^3Com (?P<platform>.+)\n"
-        r"\n"
+        r"(\n)?"
         r"^System Name\s*:.+\n"
         r"^Location\s*:.+\n"
         r"^Contact\s*:.+\n"
@@ -52,7 +54,7 @@ class Profile(BaseProfile):
         r"^MAC address\s*:\s*(?P<mac>\S+)\s*\n"
         r"^Product Number\s*:\s*(?P<part_no>\S+)\s*\n"
         r"^Serial Number\s*:\s*(?P<serial>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE | re.IGNORECASE)
 
     def get_hardware(self, script):
         c = script.cli("system summary", cached=True)

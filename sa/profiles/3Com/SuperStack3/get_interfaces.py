@@ -13,6 +13,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -29,7 +30,7 @@ class Script(BaseScript):
         re.MULTILINE)
     rx_ipif = re.compile(
         r"^\d+\s+(?P<name>\S+)\s+(?P<ip>\S+)\s+(?P<mask>\S+)\s+(?P<status>\S+)\s+"
-        r"(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
+        r"(?P<vlan_id>(?:\d+|n/a))\s*\n", re.MULTILINE)
 
     def execute(self):
         interfaces = []
@@ -79,16 +80,24 @@ class Script(BaseScript):
                 "admin_status": status,
                 "oper_status": status,
                 "enabled_protocols": [],
-                "mac": mac,
                 "subinterfaces": [{
                     "name": match.group("name"),
                     "admin_status": status,
                     "oper_status": status,
-                    "mac": mac,
-                    "vlan_ids": [int(match.group("vlan_id"))],
                     "enabled_afi": ["IPv4"]
                 }]
             }
+            if is_int(match.group("vlan_id")):
+                vlan_id = int(match.group("vlan_id"))
+                i['subinterfaces'][0]["vlan_ids"] = [vlan_id]
+                i['mac'] = mac
+                i['subinterfaces'][0]["mac"] = mac
+            else:
+                if match.group("name") == "SLIP":
+                    i['type'] = "tunnel"
+                    i['tunnel'] = {}
+                    i['tunnel']['type'] = "SLIP"
+                    i['tunnel']['local_address'] = match.group("ip")
             addr = match.group("ip")
             mask = match.group("mask")
             ip_address = "%s/%s" % (addr, IPv4.netmask_to_len(mask))
