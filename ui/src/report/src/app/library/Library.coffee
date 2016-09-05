@@ -71,10 +71,10 @@ Ext.define 'Report.library.Library',
 					width: '100%'
 					flex: 1
 					tpl:
-					'
-					<div class="title">{name}</div>
-					<div class="description">{description}</div>
-					'
+						'
+						<div class="title">{name}</div>
+						<div class="description">{description}</div>
+						'
 # TODO DEMO
 					data:
 						name: 'Имя виджета'
