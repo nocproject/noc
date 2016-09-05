@@ -256,7 +256,7 @@ class IGetInterfaces(Interface):
                 "tunnel": DictParameter(required=False, attrs={
                     "type": StringParameter(choices=[
                         "GRE", "IPIP", "IPsec", "PPTP", "L2TP", "PPPOE", "PPP",
-                        "SSTP", "EOIP"
+                        "SSTP", "EOIP", "SLIP"
                     ]),
                     "local_address": IPParameter(required=False),
                     "remote_address": IPParameter(required=False)
