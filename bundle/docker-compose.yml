@@ -244,6 +244,7 @@ services:
       - login
       - card
       - grafana
+      - bi
     ports:
       - "4443:4443"
     volumes:
