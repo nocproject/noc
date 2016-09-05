@@ -448,6 +448,7 @@ Ext.define("NOC.core.ModelApplication", {
                         columns: inline.columns,
                         store: istore,
                         selType: "rowmodel",
+                        minHeight: 130,
                         dockedItems : [
                             {
                              xtype: "pagingtoolbar",
@@ -512,6 +513,7 @@ Ext.define("NOC.core.ModelApplication", {
                 formInlines.push({
                     xtype: "fieldset",
                     anchor: "100%",
+                    minHeight: 130,
                     title: inline.title,
                     collapsible: true,
                     items: [gp]
