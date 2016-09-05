@@ -323,7 +323,7 @@ class CLI(object):
         self.logger.debug("State: <PASSWORD>")
         self.send(
             self.script.credentials.get("password", "") +
-            (self.profile.username_submit or "\n")
+            (self.profile.password_submit or "\n")
         )
         self.expect({
             "username": self.on_failure,
