@@ -104,7 +104,7 @@ class Config(BaseConfig):
             min=1, max=65535,
             default=4161
         )
-        hosts = ListParameter(default=[":".join([host.value, str(port.value)])])
+        hosts = ListParameter(default=":".join([host.value, str(port.value)]))
 
     class nsqd(ConfigSection):
         host = StringParameter(default="nsqd")
@@ -112,7 +112,7 @@ class Config(BaseConfig):
             min=1, max=65535,
             default=4151
         )
-        hosts = ListParameter(default=[":".join([host.value, str(port.value)])])
+        hosts = ListParameter(default=":".join([host.value, str(port.value)]))
 
     class cm(ConfigSection):
         vcs_path = StringParameter(default="/usr/local/bin/hg")

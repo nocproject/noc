@@ -104,10 +104,10 @@ class PMWriterService(Service):
     def write_metrics(self):
         self.logger.info(
             "Starting message sender. Batch size %d. Metrics buffer %d",
-            self.config.pm_batch_size,
-            self.config.pm_metrics_buffer
+            self.config.pmwriter.batch_size,
+            self.config.pmwriter.metrics_buffer
         )
-        bs = self.config.pm_batch_size
+        bs = self.config.pmwriter.batch_size
         while True:
             if not self.buffer:
                 yield tornado.gen.sleep(self.MAX_DELAY)
