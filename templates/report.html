@@ -1,4 +1,30 @@
 {% extends "template.html" %}
+{% block extrahead %}{{ block.super }}
+    <script TYPE="text/javascript"
+            SRC="/ui/pkg/jspdf/jspdf.min.js"></script>
+    <script TYPE="text/javascript"
+            SRC="/ui/pkg/jspdf.autotable/jspdf.plugin.autotable.js"></script>
+{% endblock %}
 {% block content %}
-{{data|safe}}
+    {{ data|safe }}
+    <script>
+        function getPDF(t) {
+            var doc = new jsPDF(),
+                columns = [],
+                rows = [],
+                table = $(t);
+            table.find("th").each(function(i, e) {
+                columns.push($(e).html());
+            });
+            table.find("tbody").find("tr").each(function(i, e) {
+                var row = [];
+                $(e).find("td").each(function(i, e) {
+                    row.push($(e).text());
+                });
+                rows.push(row);
+            });
+            doc.autoTable(columns, rows);
+            doc.save('report.pdf');
+        }
+    </script>
 {% endblock %}
