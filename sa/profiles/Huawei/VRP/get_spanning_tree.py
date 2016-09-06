@@ -60,6 +60,9 @@ class Script(BaseScript):
             }
         return ports
 
+    rx_stp_disabled = re.compile(
+        "Protocol Status\s+:\s*Disabled", re.MULTILINE)
+
     rx_mstp_region = re.compile(
         r"Region name\s+:(?P<region>\S+).+Revision level\s+:(?P<revision>\d+)",
         re.DOTALL | re.MULTILINE | re.IGNORECASE)
@@ -180,5 +183,8 @@ class Script(BaseScript):
         return r
 
     def execute(self):
+        cli_stp = self.cli("display stp brief")
+        if self.rx_stp_disabled.search(cli_stp):
+            return {"mode": None, "instances": []}
 
         return self.process_mstp()
