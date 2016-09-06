@@ -46,6 +46,7 @@ scripts/custom/*
 django/*
 ui/pkg/
 ui/login/*
+ui/report/*
 ui/src/login/workspace/sass/example/*
 ui/src/login/workspace/app.*
 ui/src/login/workspace/bootstrap.*
