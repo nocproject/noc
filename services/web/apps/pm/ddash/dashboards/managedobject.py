@@ -89,8 +89,8 @@ class ManagedObjectDashboard(BaseDashboard):
             }]
             for iface in sorted(ifaces, key=split_alnum):
                 i_title = [iface.name]
-                if i.description:
-                    i_title += ["(%s)" % i.description]
+                if iface.description:
+                    i_title += ["(%s)" % iface.description]
                 i_title = " ".join(i_title)
                 r["rows"][-1]["panels"] += [{
                     "span": 6,  # 2-column
