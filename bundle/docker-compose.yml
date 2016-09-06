@@ -120,7 +120,7 @@ services:
     env_file:
       - .env
 
-  test:
+  dev:
     image: registry.gitlab.com/nocproject/docker-noc:dev
     restart: always
     command: sleep 3600
@@ -132,21 +132,9 @@ services:
       - .env
     cap_add:
       - ALL
-
-  migrate:
-    image: registry.gitlab.com/nocproject/docker-noc:dev
-    entrypoint: /opt/noc/scripts/migrate.sh
-    depends_on:
-      - mongo
-      - postgres
-    volumes:
-      - ../:/opt/noc
-      - ./scripts/migrate.sh:/opt/noc/scripts/migrate.sh
-    networks:
-      - backend
-    env_file:
-      - .env
-
+    environment:
+      http_proxy: $http_proxy
+      https_proxy: $http_proxy
 
   ping.default:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -178,6 +166,8 @@ services:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
     restart: always
     command: python ./services/syslogcollector/service.py
+    depends_on:
+      - omap
     volumes:
       - ../:/opt/noc
     networks:
@@ -191,6 +181,8 @@ services:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
     restart: always
     command: python ./services/trapcollector/service.py
+    depends_on:
+      - omap
     volumes:
       - ../:/opt/noc
     networks:
@@ -199,7 +191,6 @@ services:
       - .env
     environment:
       NOC_POOL: default
-
 
   classifier:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -270,7 +261,7 @@ services:
     image: freeseacher/postgres:9.4
     restart: always
     volumes:
-      - ../../noc_data/postgres_empty:/var/lib/postgresql/data
+      - ../../noc_data/postgres:/var/lib/postgresql/data
       - ./scripts/postgres_init.sh:/docker-entrypoint-initdb.d/init-user-db.sh
 #      - ./config/postgres/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
 #      - ./config/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
