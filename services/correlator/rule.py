@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.main.models import PyRule
+from noc.main.models.pyrule import PyRule
 from noc.lib.datasource import datasource_registry
 
 
