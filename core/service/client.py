@@ -146,7 +146,6 @@ class RPCClient(object):
                 logger.info("Will connect to %s", url)
                 for nt in range(3):  # Limit redirects
                     code, response_headers, data = make_call(url, service, body)
-                    logger.info("after make_call %s %s %s", code, response_headers, data)
                     if code == 200:
                         break
                     elif code is None:
@@ -167,7 +166,7 @@ class RPCClient(object):
                 if code != 200:
                     raise RPCException("Redirects limit exceeded")
                 try:
-                    data = ujson.loads(data)
+                    data = json.loads(data)
                 except ValueError as e:
                     raise RPCRemoteError("Failed to decode JSON: %s" % e)
                 if data.get("error"):
