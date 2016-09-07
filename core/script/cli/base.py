@@ -309,7 +309,7 @@ class CLI(object):
     def on_username(self, data, match):
         self.logger.debug("State: <USERNAME>")
         self.send(
-            self.script.credentials.get("user", "") +
+            (self.script.credentials.get("user", "") or "") +
             (self.profile.username_submit or "\n")
         )
         self.expect({
@@ -322,7 +322,7 @@ class CLI(object):
     def on_password(self, data, match):
         self.logger.debug("State: <PASSWORD>")
         self.send(
-            self.script.credentials.get("password", "") +
+            (self.script.credentials.get("password", "") or "") +
             (self.profile.password_submit or "\n")
         )
         self.expect({
