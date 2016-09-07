@@ -98,6 +98,16 @@ class Config(BaseConfig):
         user = StringParameter()
         password = StringParameter()
 
+    class influxdb(ConfigSection):
+        host = ListParameter(default="influxdb")
+        port = IntParameter(
+            min=1, max=65535,
+            default=8123
+        )
+        db = StringParameter(default="noc")
+        user = StringParameter()
+        password = StringParameter()
+
     class nsqlookupd(ConfigSection):
         host = StringParameter(default="nsqlookupd")
         port = IntParameter(
@@ -178,6 +188,8 @@ class Config(BaseConfig):
     class pmwriter(ConfigSection):
         batch_size = IntParameter(default=1000)
         metrics_buffer = IntParameter(default=4000)
+        read_from = StringParameter(default="pmwriter")
+        write_to = StringParameter(default="influxdb")
 
     class web(ConfigSection):
         api_row_limit = IntParameter(default=0)
