@@ -57,19 +57,7 @@ class PMWriterService(Service):
         """
         Returns influx service, channel name
         """
-        # Influx affinity
-        node_addr = self.config.listen.split(":")[0]
-        influx = None
-        channel = "pmwriter-%s" % node_addr
-        for s in self.config.get_service("influxdb"):
-            if s.split(":")[0] == node_addr:
-                influx = s
-                break
-        if not influx:
-            # Fallback to default
-            influx = self.resolve_service("influxdb", 1)[0]
-            channel = "pmwriter"
-        return influx, channel
+        return self.config.pmwriter.write_to, self.config.pmwriter.read_from
 
     def on_metric(self, message, metrics, *args, **kwargs):
         """
