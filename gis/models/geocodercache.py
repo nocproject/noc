@@ -124,8 +124,12 @@ class GeocoderCache(Document):
             try:
                 r = g.forward(query)
                 if r and r.exact:
-                    error = None
-                    break
+                    if r.lon is not None and r.lat is not None:
+                        error = None
+                        break
+                    else:
+                        r = None
+                        error = "No coordinates"
                 else:
                     r = None
             except GeoCoderError as e:
