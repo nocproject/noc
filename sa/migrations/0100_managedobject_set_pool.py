@@ -16,12 +16,18 @@ from noc.lib.nosql import get_db
 class Migration:
     def forwards(self):
         mdb = get_db()
-        for d in mdb.noc.pools.find():
-            pid = int(d["name"][1:])
+        if mdb.noc.pools.count() == 1:
+            pool_id = str(mdb.noc.pools.find()[0]["_id"])
             db.execute(
-                "UPDATE sa_managedobject SET pool=%s WHERE activator_id=%s",
-                [str(d["_id"]), pid]
+                "UPDATE sa_managedobject SET pool=%s", [pool_id]
             )
+        else:
+            for d in mdb.noc.pools.find():
+                pid = int(d["name"][1:])
+                db.execute(
+                    "UPDATE sa_managedobject SET pool=%s WHERE activator_id=%s",
+                    [str(d["_id"]), pid]
+                )
 
     def backwards(self):
         pass

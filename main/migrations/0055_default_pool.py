@@ -18,11 +18,19 @@ class Migration:
 
     def forwards(self):
         mdb = get_db()
-        for a_id, name in db.execute("SELECT id, name FROM sa_activator"):
+        activators = db.execute("SELECT id, name FROM sa_activator")
+        if len(activators) == 1:
             mdb.noc.pools.insert({
-                "name": "P%04d" % a_id,
-                "description": name
+                "name": "default",
+                "description": "Default activator pool"
             })
+        else:
+            for a_id, name in db.execute("SELECT id, name FROM sa_activator"):
+                mdb.noc.pools.insert({
+                    "name": "P%04d" % a_id,
+                    "description": name
+                })
+
 
     def backwards(self):
         pass
