@@ -102,7 +102,7 @@ class Config(BaseConfig):
         host = ListParameter(default="influxdb")
         port = IntParameter(
             min=1, max=65535,
-            default=8123
+            default=8086
         )
         db = StringParameter(default="noc")
         user = StringParameter()
