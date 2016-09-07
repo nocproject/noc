@@ -227,6 +227,7 @@ services:
   front:
     image: nginx:alpine
     container_name: nginx-proxy
+    restart: always
     networks:
       - backend
       - frontend
