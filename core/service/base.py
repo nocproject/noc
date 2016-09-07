@@ -367,7 +367,7 @@ class Service(object):
         metric_deferred = "nsq_msg_deferred_%s" % t
         lookupd = self.config.nsqlookupd.hosts
         self.logger.info("Subscribing to %s/%s (lookupd: %s)",
-                         topic, channel, ", ".join(lookupd))
+                         topic, channel, lookupd)
         self.nsq_readers[handler] = nsq.Reader(
             message_handler=call_raw_handler if raw else call_json_handler,
             topic=topic,
