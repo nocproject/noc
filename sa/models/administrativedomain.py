@@ -43,8 +43,9 @@ class AdministrativeDomain(models.Model):
     )
     tags = TagsField("Tags", null=True, blank=True)
 
-    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-    _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _path_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _nested_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -84,3 +85,23 @@ class AdministrativeDomain(models.Model):
         for d in AdministrativeDomain.objects.filter(parent=self):
             r += d.get_nested()
         return r
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_nested_cache"), lock=lambda _: id_lock)
+    def get_nested_ids(cls, administrative_domain):
+        from django.db import connection
+        if hasattr(administrative_domain, "id"):
+            administrative_domain = administrative_domain.id
+        cursor = connection.cursor()
+        cursor.execute("""
+            WITH RECURSIVE r AS (
+                 SELECT id, parent_id
+                 FROM sa_administrativedomain
+                 WHERE id = %d
+                 UNION
+                 SELECT ad.id, ad.parent_id
+                 FROM sa_administrativedomain ad JOIN r ON ad.parent_id = r.id
+            )
+            SELECT id FROM r
+        """ % administrative_domain)
+        return [r[0] for r in cursor]

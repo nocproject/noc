@@ -8,11 +8,13 @@
 
 ## Python modules
 import operator
+from collections import defaultdict
 ## Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 import cachetools
+from psycopg2.extensions import adapt
 ## Third-party modules
 import six
 ## NOC modules
@@ -150,11 +152,12 @@ class ManagedObjectSelector(models.Model):
                         AND address::inet <<= p.prefix)""" % self.filter_prefix.id)
         # Filter by administrative domain
         if self.filter_administrative_domain:
-            dl = self.filter_administrative_domain.get_nested()
-            if len(dl) == 1:
-                q &= Q(administrative_domain=dl[0])
-            else:
-                q &= Q(administrative_domain__in=dl)
+            dl = AdministrativeDomain.get_nested_ids(
+                self.filter_administrative_domain
+            )
+            q &= SQL("""
+                "sa_managedobject"."administrative_domain_id" IN (%s)
+            """ % ", ".join(str(x) for x in dl))
         # Filter by VRF
         if self.filter_vrf:
             q &= Q(vrf=self.filter_vrf)
@@ -180,19 +183,19 @@ class ManagedObjectSelector(models.Model):
         if self.filter_tags:
             q &= QTags(self.filter_tags)
         # Restrict to attributes when necessary
-        # @todo: optimize with SQL
-        m_ids = None
-        for s in  self.managedobjectselectorbyattribute_set.all():
-            ids = ManagedObjectAttribute.objects.filter(
-                key__regex=s.key_re,
-                value__regex=s.value_re
-            ).values_list("managed_object", flat=True)
-            if m_ids is None:
-                m_ids = set(ids)
-            else:
-                m_ids &= set(ids)
-        if m_ids is not None:
-            q &= Q(id__in=m_ids)
+        for s in self.managedobjectselectorbyattribute_set.all():
+            q &= SQL("""
+                ("sa_managedobject"."id" IN (
+                    SELECT managed_object_id
+                    FROM sa_managedobjectattribute
+                    WHERE
+                        key ~ %s
+                        AND value ~ %s
+                ))
+            """ % (
+                adapt(s.key_re).getquoted(),
+                adapt(s.value_re).getquoted()
+            ))
         # Restrict to sources
         if self.sources.count():
             if self.source_combine_method == "A":
@@ -274,10 +277,12 @@ class ManagedObjectSelector(models.Model):
         from managedobject import ManagedObject
         return ManagedObject.objects.filter(self.Q)
 
-    ##
-    ## Check Managed Object matches selector
-    ##
     def match(self, managed_object):
+        """
+        Check managed object matches selector
+        :param managed_object:
+        :return:
+        """
         return self.managed_objects.filter(id=managed_object.id).exists()
 
     def __contains__(self, managed_object):
