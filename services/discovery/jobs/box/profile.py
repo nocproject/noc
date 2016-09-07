@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Profile check
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,17 +10,15 @@
 import re
 import threading
 import time
+import cachetools
+import operator
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.profilecheckrule import ProfileCheckRule
 from noc.lib.mib import mib
 from noc.core.service.client import RPCClient, RPCError
 
-
-cache_lock = threading.Lock()
-cached_rules = None
-cached_time = None
-CACHED_RULE_TTL = 60  # Recompile every minute
+rules_lock = threading.Lock()
 
 
 class ProfileCheck(DiscoveryCheck):
@@ -28,6 +26,8 @@ class ProfileCheck(DiscoveryCheck):
     Profile discovery
     """
     name = "profile"
+
+    _rules_cache = cachetools.TTLCache(10, ttl=60)
 
     def handler(self):
         self.logger.info("Checking profile accordance")
@@ -63,6 +63,7 @@ class ProfileCheck(DiscoveryCheck):
         self.logger.info("Cannot find profile in \"Profile Check Rules\"")
         return None
 
+    @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)
     def get_rules(self):
         """
         Load ProfileCheckRules and return a list, groupped by preferences
@@ -77,31 +78,22 @@ class ProfileCheck(DiscoveryCheck):
 
         }]
         """
-        global cached_rules, cached_time, cache_lock
-        now = time.time()
-        with cache_lock:
-            if (cached_time is not None and
-                    cached_time + CACHED_RULE_TTL > now):
-                self.logger.info("Using cached \"Profile Check rules\"")
-                return cached_rules
-            self.logger.info("Compiling \"Profile Check rules\"")
-            d = {}  # preference -> (method, param) -> [rule, ..]
-            for r in ProfileCheckRule.objects.all().order_by("preference"):
-                if r.preference not in d:
-                    d[r.preference] = {}
-                k = (r.method, r.param)
-                if k not in d[r.preference]:
-                    d[r.preference][k] = []
-                d[r.preference][k] += [(
-                    r.match_method,
-                    r.value,
-                    r.action,
-                    r.profile,
-                    r.name
-                )]
-            cached_rules = [d[p].items() for p in sorted(d)]
-            cached_time = now
-            return cached_rules
+        self.logger.info("Compiling \"Profile Check rules\"")
+        d = {}  # preference -> (method, param) -> [rule, ..]
+        for r in ProfileCheckRule.objects.all().order_by("preference"):
+            if r.preference not in d:
+                d[r.preference] = {}
+            k = (r.method, r.param)
+            if k not in d[r.preference]:
+                d[r.preference][k] = []
+            d[r.preference][k] += [(
+                r.match_method,
+                r.value,
+                r.action,
+                r.profile,
+                r.name
+            )]
+        return [d[p].items() for p in sorted(d)]
 
     def do_check(self, method, param):
         """
