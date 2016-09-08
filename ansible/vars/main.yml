@@ -83,6 +83,7 @@ alerta_deploy_start:
     resource: tower
     event: Deploy
     environment: Production
+    type: AnsibleDeploy
     attributes:
       env_name: "{{noc_env}}"
     service:
@@ -95,6 +96,7 @@ alerta_deploy_finish:
     resource: tower
     event: Deploy
     environment: Production
+    type: AnsibleDeploy
     attributes:
       env_name: "{{noc_env}}"
     service:
