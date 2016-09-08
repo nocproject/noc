@@ -12,7 +12,7 @@
 # there is no pakages for mongodb for jessie. so we will use whezze temporary for jessie too
 - name: "Add MongoDB repository"
   apt_repository: 
-    repo: "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/stable main" 
+    repo: "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/3.2 main"
     state: present 
     update_cache: yes
   environment:
