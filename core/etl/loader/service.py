@@ -47,3 +47,5 @@ class ServiceLoader(BaseLoader):
         "profile": "serviceprofile",
         "managed_object": "managedobject"
     }
+
+    discard_deferred = True
