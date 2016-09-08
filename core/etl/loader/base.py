@@ -259,7 +259,11 @@ class BaseLoader(object):
             elif o and n is None:
                 self.on_delete(o)
             else:
-                self.on_change(o, n)
+                try:
+                    self.on_change(o, n)
+                except self.Deferred:
+                    if not self.discard_deferred:
+                        raise self.Deferred()
             rn = self.c_add + self.c_change + self.c_delete
             if rn > 0 and rn % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", rn)
