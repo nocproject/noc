@@ -13,6 +13,7 @@ import functools
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.ip import IPv4
+from noc.lib.validators import is_int
 from noc.sa.profiles.DLink.DxS import DxS_L2
 from noc.sa.profiles.DLink.DxS import DGS3120
 from noc.sa.profiles.DLink.DxS import DGS3620
@@ -23,6 +24,7 @@ class Script(BaseScript):
     name = "DLink.DxS.get_interfaces"
     interface = IGetInterfaces
 
+    rx_port_no = re.compile("^(?P<unit>\d+)[:/](?P<port>\d+)$")
     rx_ipif1 = re.compile(
         r"(?:Interface Name|IP Interface)\s+:\s+(?P<ifname>\S+)\s*\n"
         r"IP Address\s+:\s+(?P<ip_address>\S+)\s+\(\S+\)\s*\n"
@@ -38,7 +40,6 @@ class Script(BaseScript):
         r"(DHCP Option12 Host Name\s+:\s*\S*\s*\n)?"
         r"(Description\s+:\s*(?P<desc>\S*?)\s*\n)?",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
-
     rx_ipif2 = re.compile(
         r"IP Interface\s+:\s+(?P<ifname>\S+)\s*\n"
         r"VLAN Name\s+:\s+(?P<vlan_name>\S*)\s*\n"
@@ -55,7 +56,6 @@ class Script(BaseScript):
         r"(IPv6 Global Unicast Address\s+:\s+(?P<ipv6_address>\S+) \(\S+\)\s*\n)?"
         r"(IP MTU\s+:\s+(?P<mtu>\d+)\s+\n)?",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
-
     # Work only on DES-1210-XX/ME/BX
     rx_ipif3 = re.compile(
         r"IP Interface\s+:\s+(?P<ifname>.+?)\s*\n"
@@ -68,7 +68,6 @@ class Script(BaseScript):
         r"(IPv4 State\s+:\s+(?P<is_ipv4>Enabled|Disabled)\s*\n)?"
         r"(IPv6 State\s+:\s+(?P<is_ipv6>Enabled|Disabled)\s*\n)?",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
-
     rx_ipmgmt = re.compile(
         r"IP Interface\s+:\s+(?P<ifname>mgmt_ipif)\s*\n"
         r"Status\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
@@ -77,16 +76,13 @@ class Script(BaseScript):
         r"(Gateway\s+:\s+\S+\s*\n)?"
         r"Link Status\s+:\s+(?P<oper_status>Link\s*UP|Link\s*Down)\s*\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
-
     rx_ipswitch = re.compile(
         r"MAC Address\s+:\s*(?P<mac_address>\S+)\s*\n"
         r"IP Address\s+:\s*(?P<ip_address>\S+)\s*\n"
         r"VLAN Name\s+:\s*(?P<vlan_name>\S+)\s*\n"
         r"Subnet Mask\s+:\s*(?P<ip_subnet>\S+)\s*\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
-
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
-
     rx_rip_gs = re.compile(r"RIP Global State : Enabled")
     rx_ospf_gs = re.compile(
         r"OSPF Router ID : \S+( \(.+\))?\s*\nState\s+: Enabled")
@@ -98,18 +94,15 @@ class Script(BaseScript):
     rx_gvrp_gs = re.compile(r"Global GVRP\s+: Enabled")
     rx_stp_gs = re.compile(r"STP Status\s+: Enabled")
     rx_dvmrp_gs = re.compile(r"DVMRP Global State\s+: Enabled")
-
     rx_rip = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+(?:Disabled|Enabled)\s+"
         r"(?:Disabled|Enabled)\s+(?:Disabled|Enabled)\s+Enabled\s*")
-
     rx_ospf = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+\S+\s+Enabled\s+"
         r"Link (?:Up|DOWN)\s+\d+", re.IGNORECASE)
     rx_ospfv3 = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+Enabled\s+"
         r"Link (?:Up|DOWN)\s+\d+", re.IGNORECASE)
-
     rx_lldp = re.compile(
         r"Port ID\s+:\s+(?P<port>\d+(?:[:/]\d+)?)\s*\n"
         r"\-+\s*\nAdmin Status\s+: (?:TX_and_RX|RX_Only|TX_Only)")
@@ -117,37 +110,28 @@ class Script(BaseScript):
         r"Port ID\s+:\s+(?P<port>\d+(?:[:/]\d+)?)\s*\n"
         r"\-+\s*\nPort ID Subtype\s+: MAC Address\s*\n"
         r"Port ID\s+: (?P<mac>\S+)")
-
     rx_pd = re.compile(
         r"Port\s+:\s+(?P<port>\d+(?:[:/]\d+)?)\s*\n"
         r"\-+\s*\nPort Status\s+: Link (?:Up|Down)\s*\n"
         r"Description\s+:\s*(?P<desc>.*?)\s*\n"
         r"HardWare Type\s+:\s*.+\s*\n"
         r"MAC Address\s+:\s*(?P<mac>\S+)\s*\n")
-
     rx_udld = re.compile(
         r"(?P<port>\d+(?:[:/]\d+)?)\s+Enabled\s+\S+\s+\S+\s+\S+\s+\d+")
-
     rx_ctp = re.compile(
         r"^(?P<port>\d+(?:[:/]\d+)?)\s+Enabled\s+\S+",
         re.MULTILINE)
-
     rx_pim = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+\S+\s+\d+\s+\d+\s+\S+\s+Enabled\s+")
-
     rx_igmp = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+Enabled\s+")
-
     rx_dvmrp = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+\d+\s+\d+\s+\d+\s+Enabled\s+")
-
     rx_gvrp = re.compile(
         r"^ (?P<port>\d+(?:[:/]\d+)?)\s+\d+\s+Enabled")
-
     rx_stp = re.compile(
         r"Port Index\s+: (?P<port>\d+(?:[:/]\d+)?)\s+.+?"
         r"Port STP (: )?(?P<state>[Ee]nabled|[Dd]isabled)")
-
     rx_stp1 = re.compile(
         r"Port Index\s+: (?P<port>\d+(?:[:/]\d+)?)\s*\n"
         r"Connection\s+: Link (?:Up|Down)\s*\n"
@@ -155,11 +139,9 @@ class Script(BaseScript):
     rx_stp2 = re.compile(
         r"^(?P<port>\d+(?:[:/]\d+)?)\s+\S+\/\S+\s+Yes",
         re.MULTILINE)
-
     rx_oam = re.compile(
         r"^Port (?P<port>\d+(?:[:/]\d+)?)\s*\n\-+\s*\nOAM\s+:\s+Enabled\s*\n",
         re.MULTILINE)
-
 
     def parse_ctp(self, s):
         match = self.rx_ctp.search(s)
@@ -364,6 +346,14 @@ class Script(BaseScript):
                 if p['port'] == m['port']:
                     i['mac'] = m['mac']
                     i['subinterfaces'][0]["mac"] = m['mac']
+            if is_int(ifname):
+                i['snmp_ifindex'] = int(ifname)
+            else:
+                match = self.rx_port_no.search(ifname)
+                if match:
+                    unit_no = int(match.group("unit"))
+                    port_no = int(match.group("port"))
+                    i['snmp_ifindex'] = int(port_no + (unit_no - 1) * 64)
             tagged_vlans = []
             for v in vlans:
                 if p['port'] in v['tagged_ports']:
