@@ -222,7 +222,7 @@ class CorrelatorService(Service):
             root = ActiveAlarm.objects.filter(**q).first()
             if root:
                 # Root cause found
-                self.logger.debug("%s is root cause for %s (Rule: %s)",
+                self.logger.info("%s is root cause for %s (Rule: %s)",
                     root.id, a.id, rc.name)
                 self.perf_metrics["alarm_correlated_rule"] += 1
                 a.set_root(root)
@@ -249,7 +249,7 @@ class CorrelatorService(Service):
                 rr = ActiveAlarm.objects.filter(**q).first()
                 if rr:
                     # Reverse root cause found
-                    self.logger.debug(
+                    self.logger.info(
                         "%s is root cause for %s (Reverse rule: %s)",
                         a.id, ca.id, rc.name
                     )
