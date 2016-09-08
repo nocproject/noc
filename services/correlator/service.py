@@ -178,6 +178,8 @@ class CorrelatorService(Service):
                 if hh:
                     hh.handler_name = h
                     hl += [hh]
+                else:
+                    self.logger.error("Disabling faulty handler %s" % h)
             if hl:
                 self.handlers[ac.id] = hl
         self.logger.info("Handlers are loaded")
