@@ -176,6 +176,7 @@ class CorrelatorService(Service):
                 # Resolve handler
                 hh = self.resolve_handler(h)
                 if hh:
+                    hh.handler_name = h
                     hl += [hh]
             if hl:
                 self.handlers[ac.id] = hl
@@ -372,7 +373,14 @@ class CorrelatorService(Service):
         if a.alarm_class.id in self.handlers:
             for h in self.handlers[a.alarm_class.id]:
                 try:
+                    has_root = bool(a.root)
                     h(a)
+                    if not has_root and a.root:
+                        self.logger.info(
+                            "[%s|%s|%s] Set root to %s (handler %s)",
+                            a.id, a.managed_object.name, a.managed_object.address,
+                            a.root, h.handler_name
+                        )
                 except:
                     error_report()
                     self.perf_metrics["alarm_handler_errors"] += 1
