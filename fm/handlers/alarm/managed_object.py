@@ -52,7 +52,7 @@ def topology_rca(alarm, seen=None):
         for u in uplinks:
             a = na[u]
             if can_correlate(alarm, a):
-                alarm.set_root(na[uplinks[0]])
+                alarm.set_root(a)
                 metrics["alarm_correlated_topology"] += 1
                 break
     # Correlate neighbors' alarms
