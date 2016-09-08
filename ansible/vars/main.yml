@@ -83,6 +83,8 @@ alerta_deploy_start:
     resource: tower
     event: Deploy
     environment: Production
+    attributes:
+      env_name: "{{noc_env}}"
     service:
       - NOC
     status: open
@@ -93,6 +95,8 @@ alerta_deploy_finish:
     resource: tower
     event: Deploy
     environment: Production
+    attributes:
+      env_name: "{{noc_env}}"
     service:
       - NOC
     status: closed
