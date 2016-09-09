@@ -40,6 +40,7 @@ class MODiscoveryJob(PeriodicJob):
             target=self.out_buffer
         )
         self.check_timings = []
+        self.problems = {}  # check -> problem
 
     def schedule_next(self, status):
         if self.check_timings:
@@ -56,7 +57,8 @@ class MODiscoveryJob(PeriodicJob):
             "_id": key
         }, {
             "$set": {
-                "log": bson.Binary(zlib.compress(self.out_buffer.getvalue()))
+                "log": bson.Binary(zlib.compress(self.out_buffer.getvalue())),
+                "problems": self.problems
             }
         }, upsert=True)
 
@@ -68,6 +70,9 @@ class MODiscoveryJob(PeriodicJob):
         t = time.time()
         yield
         self.check_timings += [(name, time.time() - t)]
+
+    def set_problem(self, name, problem):
+        self.problems[name] = problem
 
 
 class DiscoveryCheck(object):
@@ -128,8 +133,10 @@ class DiscoveryCheck(object):
             try:
                 self.handler()
             except RPCError as e:
+                self.set_problem("RPC Error: %s" % e)
                 self.logger.error("Terminated due RPC error: %s", e)
             except Exception:
+                self.set_problem("Unhandled exception")
                 error_report(logger=self.logger)
 
     def handler(self):
@@ -281,6 +288,9 @@ class DiscoveryCheck(object):
                     i.unlink()
                 except ValueError as e:
                     self.logger.info("Failed to unlink: %s", e)
+
+    def set_problem(self, problem):
+        self.job.set_problem(self.name, problem)
 
 
 class TopologyDiscoveryCheck(DiscoveryCheck):

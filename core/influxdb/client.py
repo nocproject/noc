@@ -28,6 +28,8 @@ class InfluxDBClient(object):
         buff = cStringIO.StringIO()
         if not isinstance(query, basestring):
             query = ";".join(query)
+        if isinstance(query, unicode):
+            query = query.encode("utf-8")
         svc = config.get_service("influxdb", limit=1)
         if not svc:
             raise ValueError("No service configured")

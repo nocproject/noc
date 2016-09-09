@@ -1,0 +1,13 @@
+{
+    "name": "Zyxel | ZyNOS",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "902879f3-35cc-4ae0-abb6-7da33131c8ae",
+    "description": "",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.890.1.5.",
+    "action": "match",
+    "profile": "Zyxel.ZyNOS"
+}

@@ -130,8 +130,6 @@ class Script(BaseScript):
         Returns a set of normalized VTP interface names
         :return:
         """
-        if self.match_version(version__lte="12.2(25)"):
-            return set()
         try:
             v = self.cli("show vtp status")
         except self.CLISyntaxError:

@@ -301,29 +301,29 @@ class CLI(object):
         self.expect({
             "username": self.on_username,
             "password": self.on_password,
+            "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt,
-            "pager": self.send_pager_reply,
-            "unprivileged_prompt": self.on_unprivileged_prompt
+            "pager": self.send_pager_reply
         })
 
     def on_username(self, data, match):
         self.logger.debug("State: <USERNAME>")
         self.send(
-            self.script.credentials.get("user", "") +
+            (self.script.credentials.get("user", "") or "") +
             (self.profile.username_submit or "\n")
         )
         self.expect({
             "username": self.on_failure,
             "password": self.on_password,
-            "prompt": self.on_prompt,
-            "unprivileged_prompt": self.on_unprivileged_prompt
+            "unprivileged_prompt": self.on_unprivileged_prompt,
+            "prompt": self.on_prompt
         })
 
     def on_password(self, data, match):
         self.logger.debug("State: <PASSWORD>")
         self.send(
-            self.script.credentials.get("password", "") +
-            (self.profile.username_submit or "\n")
+            (self.script.credentials.get("password", "") or "") +
+            (self.profile.password_submit or "\n")
         )
         self.expect({
             "username": self.on_failure,
@@ -335,6 +335,8 @@ class CLI(object):
 
     def on_unprivileged_prompt(self, data, match):
         self.logger.debug("State: <UNPRIVILEGED_PROMPT>")
+        if not self.profile.command_super:
+            self.on_failure(data, match)
         self.send(
             self.profile.command_super +
             (self.profile.command_submit or "\n")
@@ -347,7 +349,7 @@ class CLI(object):
 
     def on_failure(self, data, match):
         self.logger.debug("State: <FAILURE>")
-        raise self.CLIError()
+        raise self.CLIError(self.buffer or None)
 
     def on_prompt(self, data, match):
         self.logger.debug("State: <PROMT>")
@@ -370,8 +372,8 @@ class CLI(object):
         self.expect({
             "username": self.on_failure,
             "password": self.on_super_password,
-            "prompt": self.on_prompt,
             "unprivileged_prompt": self.on_unprivileged_prompt,
+            "prompt": self.on_prompt,
             "pager": self.send_pager_reply
         })
 

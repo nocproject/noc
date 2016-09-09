@@ -84,6 +84,9 @@ class Script(BaseScript):
     ##
     @BaseScript.match()
     def execute_config_current_config(self):
-        config = self.cli("show config current_config")
+        try:
+            config = self.cli("show config current_config")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
         config = self.strip_first_lines(config, 1)
         return self.cleaned_config(config)

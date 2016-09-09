@@ -35,10 +35,10 @@ class BaseProfile(object):
     supported_schemes = []
     # Regular expression to catch user name prompt
     # (Usually during telnet sessions)
-    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin):"
+    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin): ?"
     # Regulal expression to catch password prompt
     # (Telnet/SSH sessions)
-    pattern_password = "[Pp]ass[Ww]ord:"
+    pattern_password = "[Pp]ass[Ww]ord: ?"
     # Regular expression to catch command prompt
     # (CLI Sessions)
     pattern_prompt = r"^\S*[>#]"
@@ -71,9 +71,9 @@ class BaseProfile(object):
     command_more = "\n"
     # Sequence to be send at the end of all CLI commands
     command_submit = "\n"
-    # Sequence to submit username. Use command_submit if None
+    # Sequence to submit username. Use "\n" if None
     username_submit = None
-    # Sequence to submit password. Use command_submit if None
+    # Sequence to submit password. Use "\n" if None
     password_submit = None
     # Callable accepting script instance
     # to set up additional script attributes

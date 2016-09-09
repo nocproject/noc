@@ -215,7 +215,7 @@ class PingService(Service):
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
         # Send RTT metrics
         if rtt is not None:
-            name = self.report_rtt[address]
+            name = self.report_rtt.get(address)
             if name:
                 self.register_metrics([
                     "Ping\\ |\\ RTT,object=%s value=%s %s" % (

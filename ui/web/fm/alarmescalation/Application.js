@@ -157,6 +157,13 @@ Ext.define("NOC.fm.alarmescalation.Application", {
                             renderer: NOC.render.Bool
                         },
                         {
+                            text: __("Close TT"),
+                            dataIndex: "close_tt",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
+                        },
+                        {
                             text: __("Stop"),
                             dataIndex: "stop_processing",
                             editor: "checkboxfield",

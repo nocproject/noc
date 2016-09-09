@@ -25,15 +25,20 @@ class Script(BaseScript):
         r"^Lldp neighbor-information of port \[(?P<port>.+?)\]\s*\n"
         r"^-+\s*\n"
         r"(?P<entities>.+?)\n"
-        r"^\s+Maximum frame Size\s+:\s+\d+\s*",
+        r"^\s+Maximum frame Size\s+:(\s+\d+)?\s*",
         re.MULTILINE | re.DOTALL)
     rx_entity = re.compile(
         r"^\s+Chassis ID type\s+:(?P<chassis_id_type>.+)\s*\n"
         r"^\s+Chassis ID\s+:(?P<chassis_id>.+)\s*\n"
         r"^\s+System name\s+:(?P<system_name>.*)\n"
-        r"^\s+System description\s+:(?P<system_description>.*)\n"
+        r"^\s+System description\s+:(?P<system_description>(.|\n)*)\n"
         r"^\s+System capabilities supported\s+:(?P<system_capabilities>.+)\s*\n"
-        r"^\s+System capabilities enabled\s+:(?P<system_capabilities_>.+)\s*\n\n\n"
+        r"^\s+System capabilities enabled\s+:(?P<system_capabilities_>.+)\s*\n"
+        r"(^\s+Management address subtype\s+:(?P<mgmt_addr_type>.+)\s*\n)?"
+        r"(^\s+Management address\s+:(?P<mgmt_addr>.+)\s*\n)?"
+        r"(^\s+Interface numbering subtype\s+:(?P<interface_numbering_subtype>.+)\s*\n)?"
+        r"(^\s+Interface number\s+:(?P<interface_number>.+)\s*\n)?"
+        r"(^\s+Object identifier\s+:\s*\n)?"
         r"^\s+Port ID type\s+:(?P<port_id_type>.+)\s*\n"
         r"^\s+Port ID\s+:(?P<port_id>.+)\s*\n"
         r"^\s+Port description\s+:(?P<port_description>.*)\n",
@@ -60,6 +65,7 @@ class Script(BaseScript):
                     "interface alias": 2,
                     "port component": 3,
                     "mac address": 4,
+                    "MAC address": 4,
                     "macaddress": 4,
                     "network address": 5,
                     "interface name": 6,
@@ -72,8 +78,11 @@ class Script(BaseScript):
                     "interface alias": 1,
                     "port component": 2,
                     "mac address": 3,
+                    "macAddress": 3,
                     "network address": 4,
                     "interface name": 5,
+                    "Interface Name": 5,
+                    "Interface name": 5,
                     "agent circuit id": 6,
                     "locally assigned": 7,
                     "local": 7
@@ -98,6 +107,8 @@ class Script(BaseScript):
                 caps = 0
                 for c in m.group("system_capabilities").split(","):
                     c = c.strip()
+                    if not c:
+                        break
                     caps |= {
                         "Other": 1,
                         "Repeater": 2,

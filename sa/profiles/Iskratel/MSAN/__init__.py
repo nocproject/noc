@@ -18,7 +18,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Iskratel.MSAN"
     # Iskratel do not have "enable_super" command
-    #pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_prompt = r"^\S+?#"
     pattern_more = [
         (r"Press any key to continue or ESC to stop scrolling.", " "),

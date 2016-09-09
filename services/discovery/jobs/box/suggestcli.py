@@ -53,7 +53,8 @@ class SuggestCLICheck(DiscoveryCheck):
                     "address": self.object.address,
                     "user": user,
                     "password": password,
-                    "super_password": super_password
+                    "super_password": super_password,
+                    "path": None
                 }
             )
             self.logger.info("Result: %s", r)

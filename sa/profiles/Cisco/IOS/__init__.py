@@ -36,7 +36,7 @@ class Profile(BaseProfile):
 
     rx_cable_if = re.compile(r"Cable\s*(?P<pr_if>\d+/\d+) U(pstream)?\s*(?P<sub_if>\d+)", re.IGNORECASE)
     default_parser = "noc.cm.parsers.Cisco.IOS.base.BaseIOSParser"
-    rx_ver = re.compile(r"(\d+)\.(\d+)\((\d+)\)\S*")
+    rx_ver = re.compile(r"(\d+)\.(\d+)[\(.](\d+)[\).]\S*")
 
     def cmp_version(self, x, y):
         """12(25)SEC2"""

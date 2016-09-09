@@ -73,6 +73,8 @@ class ActiveAlarm(nosql.Document):
     # <external system name>:<external tt id>
     escalation_ts = nosql.DateTimeField(required=False)
     escalation_tt = nosql.StringField(required=False)
+    # Close tt when alarm cleared
+    close_tt = nosql.BooleanField(default=False)
     # Do not clear alarm until *wait_tt* is closed
     wait_tt = nosql.StringField()
     wait_ts = nosql.DateTimeField()
@@ -244,7 +246,8 @@ class ActiveAlarm(nosql.Document):
                 tt_id=self.escalation_tt,
                 subject=subject,
                 body=body,
-                notification_group_id=self.clear_notification_group.id if self.clear_notification_group else None
+                notification_group_id=self.clear_notification_group.id if self.clear_notification_group else None,
+                close_tt=self.close_tt
             )
         # Clear alarm
         self.delete()
@@ -421,9 +424,10 @@ class ActiveAlarm(nosql.Document):
     def enable_caching(cls, ttl=600):
         cls._fields["alarm_class"].set_cache(ttl)
 
-    def escalate(self, tt_id):
+    def escalate(self, tt_id, close_tt=False):
         self.escalation_tt = tt_id
         self.escalation_ts = datetime.datetime.now()
+        self.close_tt = close_tt
         self.log_message("Escalated to %s" % tt_id)
         self.save(save_condition={
             "managed_object": {
