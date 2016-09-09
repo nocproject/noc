@@ -257,7 +257,7 @@ class ManagedObjectDashboard(BaseDashboard):
                     ]
                 }]
         r["rows"] += [{
-            "title": "Object metrics",
+            "title": "Метрики объекта",
             "showTitle": True,
             "collapse": False,
             "editable": False,
