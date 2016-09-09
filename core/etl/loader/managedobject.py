@@ -62,3 +62,19 @@ class ManagedObjectLoader(BaseLoader):
         v = super(ManagedObjectLoader, self).clean(row)
         v["pool"] = self.pools[v["pool"]]
         return v
+
+    def purge(self):
+        """
+        Perform pending deletes
+        """
+        for r_id, msg in reversed(self.pending_deletes):
+            self.logger.debug("Deactivating: %s", msg)
+            self.c_delete += 1
+            try:
+                obj = self.model.objects.get(pk=self.mappings[r_id])
+                if obj.is_managed:
+                    obj.is_managed = False
+                    obj.save()
+            except self.model.DoesNotExist:
+                pass  # Already deleted
+        self.pending_deletes = []

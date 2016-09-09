@@ -17,7 +17,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "DLink.DxS"
     pattern_more = "CTRL\+C.+?a A[Ll][Ll]"
-    pattern_unpriveleged_prompt = r"^\S+:(3|6|user|operator)#"
+    pattern_unpriveleged_prompt = r"\S+:(3|6|user|operator)# ?"
     pattern_syntax_error = \
         r"(Available commands|Next possible completions|Ambiguous token):"
     command_super = "enable admin"
@@ -37,6 +37,26 @@ class Profile(BaseProfile):
     rx_blocked_session = re.compile(".*System locked by other session!",
                                     re.MULTILINE | re.DOTALL)
 
+    """
+    IF-MIB:IfDescr
+    "D-Link DES-3200-10 R4.37.B008 Port 1 " -> "1"
+    "D-Link DGS-3627G R3.00.B38 Port 1" -> "1"
+    "D-Link DGS-3420-28SC R1.77.B00 Port 9 on Unit 1" -> "9"
+    "D-Link DGS-3120-24SC R4.00.B02 Port 9 on Unit 1" -> "1:9"
+    "D-Link DGS-3120-24SC R3.10.B03 Port 1 on Unit 1" -> "1:1"
+    "D-Link DES-3200-28 R1.87 Port 9" -> "9"
+    "D-Link DGS-1510-28XS/ME R1.00.B023 Port 24" -> "24"
+    "RMON Port  9 on Unit 1" -> "9" - DES-3526/3550 DGS-3200
+    """
+
+    rx_interface_name = re.compile(
+        r"^((?P<re_vendor>(RMON|D-Link))\s)?"
+        r"((?P<re_platform>(D[EXG]S\S+))\s)?"
+        r"((?P<re_firmware>R\S+)\s)?"
+        r"Port\s+(?P<re_port>\d+)?"
+        r"( on Unit (?P<re_slot>\d+))?$"
+    )
+
     def cmp_version(self, x, y):
         return cmp([int(z) for z in self.rx_ver.findall(x)],
             [int(z) for z in self.rx_ver.findall(y)])
@@ -45,6 +65,10 @@ class Profile(BaseProfile):
         r = []
         if name.startswith("1/") or name.startswith("1:"):
             r += [name[2:]]
+            if ':' not in name:
+                r += [name.replace('/', ':')]
+            if '/' not in name:
+                r += [name.replace(':', '/')]
         else:
             r += ["1/%s" % name, "1:%s" % name]
         return r
@@ -54,21 +78,22 @@ class Profile(BaseProfile):
 
     def convert_interface_name(self, s):
         """
+        IF-MIB:IfDescr
         "D-Link DES-3200-10 R4.37.B008 Port 1 " -> "1"
         "PORT 7 ON UNIT 1" -> "7"
         Slot0/1 -> 1 # DES-1210-28/ME
         """
-        su = s.upper().strip()
-        if " PORT " in su:
-            su = su.rsplit(" PORT ", 1)[-1].strip()
-            if " ON UNIT " in su:
-                l, r = [x.strip() for x in su.split(" ON UNIT ")]
-                if r == "1":
-                    return l
-                else:
-                    return "%s:%s" % (r, l)
-            else:
-                return su
+        """
+        Ports in CLI like 1:1-24,2:1-24
+        """
+        platforms_with_stacked_ports = ('DGS-3120','DGS-3100')
+        match = self.rx_interface_name.match(s)
+        if match:
+            if match.group("re_slot") and match.group("re_slot") > "1" or \
+                match.group("re_platform") and any(match.group("re_platform").startswith(p) for p in platforms_with_stacked_ports):
+                return "%s:%s" % (match.group("re_slot"), match.group("re_port"))
+            elif match.group("re_port"):
+                return "%s" % match.group("re_port")
         elif s.startswith("Slot0/"):
             return s[6:]
         else:
@@ -76,8 +101,8 @@ class Profile(BaseProfile):
 
     cluster_member = None
     dlink_pager = False
-    rx_pager = re.compile(r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$",
-        re.MULTILINE)
+    rx_pager = re.compile(
+        r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$", re.MULTILINE)
 
     def setup_session(self, script):
         # Cache "show switch" command and fetch CLI Paging from it
@@ -103,7 +128,8 @@ class Profile(BaseProfile):
         if self.dlink_pager:
             script.cli("enable clipaging")
 
-    rx_port = re.compile(r"^\s*(?P<port>\d+(/|:)?\d*)\s*"
+    rx_port = re.compile(
+        r"^\s*(?P<port>\d+(/|:)?\d*)\s*"
         r"(\((?P<media_type>(C|F))\))?\s+(?P<admin_state>Enabled|Disabled)\s+"
         r"(?P<admin_speed>Auto|10M|100M|1000M|10G)/"
         r"((?P<admin_duplex>Half|Full)/)?"
@@ -151,12 +177,12 @@ class Profile(BaseProfile):
 
     def get_ports(self, script, interface=None):
         if ((script.match_version(DES3200, version__gte="1.70.B007") \
-        and script.match_version(DES3200, version__lte="3.00.B000"))
-        or script.match_version(DES3200, version__gte="4.38.B000") \
-        or script.match_version(DES3028, version__gte="2.90.B10") \
-        or script.match_version(DGS3120, version__gte="3.00.B022") \
-        or script.match_version(DGS3620, version__gte="2.50.017")) \
-        and not script.match_version(DES3200, platform="DES-3200-28F"):
+            and script.match_version(DES3200, version__lte="3.00.B000"))
+            or script.match_version(DES3200, version__gte="4.38.B000") \
+            or script.match_version(DES3028, version__gte="2.90.B10") \
+            or script.match_version(DGS3120, version__gte="3.00.B022") \
+            or script.match_version(DGS3620, version__gte="2.50.017")) \
+            and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []
             if interface is not None:
                 c = script.cli(("show ports %s description" % interface))
@@ -216,21 +242,23 @@ class Profile(BaseProfile):
             prev_port = i['port']
         return ports
 
-    rx_vlan = re.compile(r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
-    r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
-    r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
-    r"^(Current Tagged P|Tagged p)orts\s+:\s*(?P<tagged_ports>\S*?)\s*\n"
-    r"^(Current Untagged P|Untagged p)orts\s*:\s*"
-    r"(?P<untagged_ports>\S*?)\s*\n",
-    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_vlan = re.compile(
+        r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
+        r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
+        r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
+        r"^(Current Tagged P|Tagged p)orts\s+:\s*(?P<tagged_ports>\S*?)\s*\n"
+        r"^(Current Untagged P|Untagged p)orts\s*:\s*"
+        r"(?P<untagged_ports>\S*?)\s*\n",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    rx_vlan1 = re.compile(r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
-    r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
-    r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.*?"
-    r"^Member Ports\s+:\s*(?P<member_ports>\S*?)\s*\n"
-    r"(Static ports\s+:\s*\S+\s*\n)?"
-    r"^(Current )?Untagged ports\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
-    re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    rx_vlan1 = re.compile(
+        r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
+        r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
+        r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.*?"
+        r"^Member Ports\s+:\s*(?P<member_ports>\S*?)\s*\n"
+        r"(Static ports\s+:\s*\S+\s*\n)?"
+        r"^(Current )?Untagged ports\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
+        re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
     def get_vlans(self, script):
         vlans = []
@@ -262,7 +290,7 @@ class Profile(BaseProfile):
                         match.group("untagged_ports"))
                 for port in member_ports:
                     if port not in untagged_ports:
-                        tagged_ports +=[port]
+                        tagged_ports += [port]
                 vlans += [{
                     "vlan_id": int(match.group("vlan_id")),
                     "vlan_name": match.group("vlan_name"),
@@ -271,7 +299,7 @@ class Profile(BaseProfile):
                     "untagged_ports": untagged_ports
                 }]
         return vlans
-    
+
     def cleaned_config(self, config):
         if self.rx_blocked_session.search(config):
             raise BaseException("System locked by other session.")
@@ -287,6 +315,7 @@ def DES3028(v):
     """
     return v["platform"].startswith("DES-3028")
 
+
 def DES3x2x(v):
     """
     DES-3x2x-series
@@ -294,11 +323,12 @@ def DES3x2x(v):
     :return:
     """
     return (
-        v["platform"].startswith("DES-3226") or \
-        v["platform"].startswith("DES-3250") or \
-        v["platform"].startswith("DES-3326") or \
+        v["platform"].startswith("DES-3226") or
+        v["platform"].startswith("DES-3250") or
+        v["platform"].startswith("DES-3326") or
         v["platform"].startswith("DES-3350")
     )
+
 
 def DES3500(v):
     """
@@ -307,6 +337,7 @@ def DES3500(v):
     :return:
     """
     return v["platform"].startswith("DES-35")
+
 
 def DES3200(v):
     """
@@ -367,15 +398,15 @@ def DGS3620(v):
 
 def DxS_L2(v):
     if v["platform"].startswith("DES-1100") \
-    or v["platform"].startswith("DES-12") \
-    or v["platform"].startswith("DES-30") \
-    or v["platform"].startswith("DES-32") \
-    or v["platform"].startswith("DES-35") \
-    or v["platform"].startswith("DES-3810") \
-    or v["platform"].startswith("DGS-1100") \
-    or v["platform"].startswith("DGS-12") \
-    or v["platform"].startswith("DGS-30") \
-    or v["platform"].startswith("DGS-32"):
+        or v["platform"].startswith("DES-12") \
+        or v["platform"].startswith("DES-30") \
+        or v["platform"].startswith("DES-32") \
+        or v["platform"].startswith("DES-35") \
+        or v["platform"].startswith("DES-3810") \
+        or v["platform"].startswith("DGS-1100") \
+        or v["platform"].startswith("DGS-12") \
+        or v["platform"].startswith("DGS-30") \
+        or v["platform"].startswith("DGS-32"):
         return True
     else:
         return False

@@ -45,6 +45,7 @@ class EscalationItem(EmbeddedDocument):
     template = ForeignKeyField(Template)
     clear_template = ForeignKeyField(Template)
     create_tt = BooleanField(default=False)
+    close_tt = BooleanField(default=False)
     wait_tt = BooleanField(default=False)
     # Stop or continue to next rule
     stop_processing = BooleanField(default=False)

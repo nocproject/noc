@@ -53,7 +53,7 @@ class Script(BaseScript):
         r"CLEICode=(?P<code>.*?)\n", re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE)
 
     rx_item_content2 = re.compile(
-        r"Board(\s|)Type=(?P<board_type>.*?)\n"
+        r"Board(\s|)Type=(?P<board_type>.*?)(\n|)"
         r"BarCode=(?P<bar_code>.*?)(\n|)"
         r"\s*Item=(?P<item>.*?)\n"
         r"Description=(?P<desc>.*?)\n"
@@ -67,7 +67,7 @@ class Script(BaseScript):
         date_check = re.compile("\d+-\d+-\d+")
         match_body = self.rx_item_content2.search(item)
         if not match_body or match_body is None:
-            print 1
+            self.logger.info("Port number %s not having asset" % number)
         vendor = match_body.group("vendor").strip()
         serial = match_body.group("bar_code").strip()
         part_no = match_body.group("board_type")
@@ -106,6 +106,9 @@ class Script(BaseScript):
         elif type == "XCVR":
             for f in re.finditer(self.rx_port, v):
                 num = f.group("port_num")
+                if f.group("body") == '':
+                    self.logger.info("Slot %s, Port %s not having asset" % (slot_num, num))
+                    continue
                 sfp = self.parse_item_content(f.group("body"), num, "XCVR")
                 if sfp:
                     r.append(sfp)
@@ -147,7 +150,7 @@ class Script(BaseScript):
     @staticmethod
     def parse_table(s):
         """List of Dict [{column1: row1, column2: row2}, ...]"""
-        rx_header_start = re.compile(r"^\s*[-=]+\s+[-=]+")
+        rx_header_start = re.compile(r"^\s*[-=]+\s*[-=]+")
 
         r = []
         columns = []

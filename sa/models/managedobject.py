@@ -454,6 +454,13 @@ class ManagedObject(Model):
             "container" in self.changed_fields
         ):
             ObjectPath.refresh(self)
+        if self.initial_data["id"] and "container" in self.changed_fields:
+            # Move object to another container
+            if self.container:
+                for o in Object.get_managed(self):
+                    o.container = self.container.id
+                    o.log("Moved to container %s (%s)" % (self.container, self.container.id))
+                    o.save()
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache

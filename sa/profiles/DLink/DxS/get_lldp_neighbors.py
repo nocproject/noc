@@ -24,7 +24,7 @@ class Script(BaseScript):
         r"^Port ID : (?P<port>\S+)\s*\n"
         r"^-+\s*\n"
         r"^Remote Entities Count : \d+\s*\n"
-        r"(?P<entities>.+?)\n\n", re.MULTILINE | re.DOTALL)
+        r"(?P<entities>.+?)\n\n", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_entity = re.compile(
         r"^Entity \d+\s*\n"
         r"^\s+Chassis ID Subtype\s+:(?P<chassis_id_subtype>.+)\s*\n"
@@ -35,7 +35,7 @@ class Script(BaseScript):
         r"^\s+System Name\s+:(?P<system_name>(.*\n)*)"
         r"^\s+System Description\s+:(?P<system_description>(.*\n)*)"
         r"^\s+System Capabilities\s+:(?P<system_capabilities>.+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
         r = []
@@ -72,6 +72,7 @@ class Script(BaseScript):
                     "macaddress": 3,
                     "network address": 4,
                     "interface name": 5,
+                    "interface_name": 5,
                     "agent circuit id": 6,
                     "locally assigned": 7,
                     "local": 7
@@ -96,6 +97,8 @@ class Script(BaseScript):
                 caps = 0
                 for c in m.group("system_capabilities").split(","):
                     c = c.strip()
+                    if not c:
+                        break
                     caps |= {
                         "Other": 1,
                         "Repeater": 2,

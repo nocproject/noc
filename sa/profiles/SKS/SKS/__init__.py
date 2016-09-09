@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Vendor: SKS (SVYAZKOMPLEKTSERVICE, LLC.)
+## Vendor: SKS (SVYAZKOMPLEKTSERVICE, LLC. - http://skss.ru/)
 ## OS:     SKS
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
