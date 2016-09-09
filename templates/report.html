@@ -1,30 +1,45 @@
 {% extends "template.html" %}
 {% block extrahead %}{{ block.super }}
     <script TYPE="text/javascript"
-            SRC="/ui/pkg/jspdf/jspdf.min.js"></script>
+            SRC="/ui/pkg/pdfmake/pdfmake.min.js"></script>
     <script TYPE="text/javascript"
-            SRC="/ui/pkg/jspdf.autotable/jspdf.plugin.autotable.js"></script>
+            SRC="/ui/pkg/pdfmake/vfs_fonts.js"></script>
 {% endblock %}
 {% block content %}
     {{ data|safe }}
     <script>
         function getPDF(t) {
-            var doc = new jsPDF(),
-                columns = [],
-                rows = [],
+            var rows = [],
                 table = $(t);
-            table.find("th").each(function(i, e) {
-                columns.push($(e).html());
-            });
-            table.find("tbody").find("tr").each(function(i, e) {
+            var makeRow = function(tag, child){
+              table.find(tag).find("tr").each(function(i, e) {
                 var row = [];
-                $(e).find("td").each(function(i, e) {
-                    row.push($(e).text());
+                $(e).find(child).each(function(i, e) {
+                    var colSpan = $(e).prop('colSpan'),
+                        name = $(e).text();
+                    if(colSpan > 0) {
+                        row.push({text: name, colSpan: colSpan});
+                    } else {
+                        row.push(name);
+                    }
                 });
                 rows.push(row);
-            });
-            doc.autoTable(columns, rows);
-            doc.save('report.pdf');
+              });
+            }
+            makeRow("thead", "th");
+            makeRow("tbody", "td");
+            pdfMake.createPdf({
+              content: [
+                {
+                  table: {
+                    headerRows: 1,
+                    keepWithHeaderRows: 1,
+                    body: rows
+                  },
+                  layout: 'lightHorizontalLines'
+                }
+              ]
+            }).open();
         }
     </script>
 {% endblock %}
