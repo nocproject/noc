@@ -39,6 +39,7 @@ class SuggestCLICheck(DiscoveryCheck):
                 )
                 return
         self.logger.info("Failed to guess CLI credentials")
+        self.set_problem("Failed to guess CLI credentials")
 
     def check_login(self, user, password, super_password):
         self.logger.info("Checking %s/%s/%s", user, password, super_password)
