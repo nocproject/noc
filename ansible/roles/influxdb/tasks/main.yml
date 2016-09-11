@@ -24,7 +24,7 @@
     state: present
 
 - name: Create InfluxDB database
-  command: "{{ influx_path }} -execute 'CREATE DATABASE IF NOT EXISTS {{ noc_influxdb_db }}'"
+  command: "{{ influx_path }} -execute 'CREATE DATABASE {{ noc_influxdb_db }}'"
 
 - name: Check InfluxDB user
   shell: "{{ influx_path }} -database {{ noc_influxdb_db }} -execute 'show users' | grep {{noc_influxdb_user}}"
