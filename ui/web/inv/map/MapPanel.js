@@ -144,6 +144,12 @@ Ext.define("NOC.inv.map.MapPanel", {
                     glyph: NOC.glyph.line_chart,
                     scope: me,
                     handler: me.onNodeMenuDashboard
+                },
+                {
+                    text: __("To maintaince mode"),
+                    glyph: NOC.glyph.plus,
+                    scope: me,
+                    handler: me.onNodeMenuMaintainceMode
                 }
             ]
         });
@@ -806,6 +812,21 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this;
         window.open(
             "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.nodeMenuObject
+        );
+    },
+
+    onNodeMenuMaintainceMode: function() {
+        var me = this,
+            objectId = Number(me.nodeMenuObject);
+        NOC.run(
+            'NOC.inv.map.Maintainance',
+            'Add To Maintainance',
+            {
+                args: [
+                    {mode: 'Object'},
+                    {object: objectId, object__label: me.objectNodes[objectId].attributes.attrs.text.text}
+                ]
+            }
         );
     },
 
