@@ -32,7 +32,7 @@ class AdministrativeDomain(models.Model):
         app_label = "sa"
         ordering = ["name"]
 
-    name = models.CharField(_("Name"), max_length=32, unique=True)
+    name = models.CharField(_("Name"), max_length=255, unique=True)
     parent = models.ForeignKey("self", verbose_name="Parent", null=True, blank=True)
     description = models.TextField(
         _("Description"),
