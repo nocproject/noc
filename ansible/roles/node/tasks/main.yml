@@ -87,6 +87,19 @@
   environment:
     http_proxy: "{{http_proxy}}"
 
+- name: Upgrade setuptools
+  pip:
+    name: setuptools
+    chdir: "{{noc_root}}"
+    virtualenv: "{{noc_root}}"
+    state: forcereinstall
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  when: node_check.changed
+  tags:
+    - requirements
+
 - name: Relink site-packages
   command: "{{ noc_root }}/scripts/deploy/link-site-packages"
   args:
