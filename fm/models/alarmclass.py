@@ -69,7 +69,7 @@ class AlarmClass(nosql.Document):
     flap_condition = fields.StringField(
         required=False,
         choices=[("none", "none"), ("count", "count")],
-        default=None)
+        default="none")
     flap_window = fields.IntField(required=False, default=0)
     flap_threshold = fields.FloatField(required=False, default=0)
     # RCA
