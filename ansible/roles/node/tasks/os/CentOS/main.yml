@@ -4,7 +4,7 @@
     policy: targeted
     state: permissive
 
-- name: Install CentOS system packages
+- name: Install CentOS system packages 1/2
   yum:
     name: "{{ item }}"
     state: present
@@ -17,7 +17,6 @@
    - mercurial
    - python-virtualenv
    - telnet
-   - quilt
    - gcc
    - postgresql
    - postgresql-devel
@@ -27,6 +26,19 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
+
+- name: Install RedHat system packages 2/2
+  yum:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+  with_items:
+   - quilt
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
   tags:
     - requirements
 
