@@ -92,11 +92,10 @@
     name: setuptools
     chdir: "{{noc_root}}"
     virtualenv: "{{noc_root}}"
-    state: forcereinstall
+    state: latest
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
-  when: node_check.changed
   tags:
     - requirements
 
