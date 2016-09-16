@@ -320,6 +320,17 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             title: "Timing",
                             items: [
                                 {
+                                    name: "flap_condition",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Flap Condition"),
+                                    allowBlank: false,
+                                    uiStyle: "small",
+                                    store: [
+                                        ["none", __("None")],
+                                        ["count", __("Count")]
+                                    ]
+                                },
+                                {
                                     name: "flap_window",
                                     xtype: "numberfield",
                                     fieldLabel: __("Flap Window"),
@@ -393,9 +404,5 @@ Ext.define("NOC.fm.alarmclass.Application", {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
-    },
-    //
-    onSave: function() {
-        NOC.info("Sorry! Not implemented still. Please apply changes to JSON files directly");
     }
 });
