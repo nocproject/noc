@@ -52,6 +52,7 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
     DEFAULT_CONFIG = "env:///NOC"
 
     PROTOCOLS = {
+        "consul": "noc.core.config.proto.consul_proto.ConsulProtocol",
         "env": "noc.core.config.proto.env_proto.EnvProtocol",
         "yaml": "noc.core.config.proto.yaml_proto.YAMLProtocol"
     }
