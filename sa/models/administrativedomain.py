@@ -105,3 +105,7 @@ class AdministrativeDomain(models.Model):
             SELECT id FROM r
         """ % administrative_domain)
         return [r[0] for r in cursor]
+
+    @property
+    def has_children(self):
+        return True if AdministrativeDomain.objects.filter(parent=self.id) else False
