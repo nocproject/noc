@@ -33,6 +33,8 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  tags:
+    - perms
 
 - name: Synchronize MIBs
   command: ./noc sync-mibs
