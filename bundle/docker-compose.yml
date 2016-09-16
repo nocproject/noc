@@ -206,7 +206,7 @@ services:
     env_file:
       - .env
     environment:
-      NOC_POOL: default  
+      NOC_POOL: default
 
   correlator:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -238,7 +238,7 @@ services:
       - grafana
       - bi
     ports:
-      - "4443:4443"
+      - "443:443"
     volumes:
       - ./config/nginx:/etc/nginx/
       - ../:/opt/noc
@@ -249,9 +249,9 @@ services:
     image: freeseacher/mongo:3.2.7
     restart: always
     # do not add --smallfiles here. it is only for mmap
-    command: --storageEngine wiredTiger --wiredTigerDirectoryForIndexes 
+    command: --storageEngine wiredTiger --wiredTigerDirectoryForIndexes
     networks:
-      backend: 
+      backend:
         aliases:
           - mongo-master.docker
     volumes:
@@ -267,7 +267,7 @@ services:
 #      - ./config/postgres/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
 #      - ./config/postgres/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
     networks:
-      backend: 
+      backend:
         aliases:
           - postgres-master.docker
     environment:
@@ -294,7 +294,7 @@ services:
     volumes:
       - ./config/clickhouse:/etc/clickhouse-server
       - ../../noc_data/clickhouse:/opt/clickhouse/data
-    ports: 
+    ports:
       - "8123:8123"
       - "9000:9000"
     ulimits:
