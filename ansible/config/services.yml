@@ -305,6 +305,11 @@ config:
       label: LDAP Server
       type: str
 
+    pam_service:
+      label: PAM Service
+      type: str
+      default: noc
+
   mailsender:
     smtp_server:
       label: SMTP server address
