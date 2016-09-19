@@ -32,6 +32,15 @@ Ext.define("NOC.sa.groupaccess.Model", {
             name: "selector__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "administrative_domain",
+            type: "int"
+        },
+        {
+            name: "administrative_domain__label",
+            type: "string",
+            persist: false
         }
     ]
 });

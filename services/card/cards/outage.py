@@ -81,8 +81,15 @@ class OutageCard(BaseCard):
             "subscribers": {},
             "services": {}
         }
+        if self.current_user.is_superuser:
+            qs = ActiveAlarm.objects.filter(root__exists=False)
+        else:
+            qs = ActiveAlarm.objects.filter(
+                adm_path__in=self.get_user_domains(),
+                root__exists=False
+            )
         now = datetime.datetime.now()
-        for alarm in ActiveAlarm.objects.filter(root__exists=False):
+        for alarm in qs:
             if not alarm.total_services and not alarm.total_subscribers:
                 continue
             ct = tree
