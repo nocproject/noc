@@ -110,7 +110,8 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
                     padding: "0 0 0 4",
                     explicitSubmit: true,
                     scope: me,
-                    handler: me.app.onSearch
+                    handler: me.app.onSearch,
+                    hidden: !NOC.settings.enable_search
                 }
             ]
         });
