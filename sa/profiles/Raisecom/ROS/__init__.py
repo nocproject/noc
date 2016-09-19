@@ -21,6 +21,7 @@ class Profile(BaseProfile):
     command_super = "enable"
     pattern_prompt = r"^\S+?#"
     command_more = " "
+    command_exit = "exit"
 
     rx_ver = re.compile(
         r"Product name: (?P<platform>\S+)\s*\n"

@@ -2,12 +2,14 @@
 ##----------------------------------------------------------------------
 ## ORACLE Data Extractor
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import os
+## Third-party modules
+from concurrent.futures import ThreadPoolExecutor, as_completed
 ## NOC modules
 from sql import SQLExtractor
 
@@ -27,7 +29,10 @@ class ORACLEExtractor(SQLExtractor):
             os.environ.update(env)
             # Connect to database
             self.logger.info("Connecting to database")
-            self.connect = cx_Oracle.connect(self.config["dsn"])
+            self.connect = cx_Oracle.connect(
+                self.config["dsn"],
+                threaded=int(self.config.get("concurrency", 1)) > 1
+            )
             os.environ = old_env  # Restore environment
         cursor = self.connect.cursor()
         if self.config.get("arraysize"):
@@ -35,10 +40,24 @@ class ORACLEExtractor(SQLExtractor):
         return cursor
 
     def iter_data(self):
-        cursor = self.get_cursor()
-        # Fetch data
-        self.logger.info("Fetching data")
-        for query, params in self.get_sql():
+        def fetch_sql(query, params):
+            cursor = self.get_cursor()
             cursor.execute(query, params)
-            for row in cursor:
-                yield row
+            return list(cursor)
+
+        concurrency = int(self.config.get("concurrency", 1))
+        if concurrency == 1:
+            cursor = self.get_cursor()
+            # Fetch data
+            self.logger.info("Fetching data")
+            for query, params in self.get_sql():
+                cursor.execute(query, params)
+                for row in cursor:
+                    yield row
+        else:
+            with ThreadPoolExecutor(max_workers=concurrency) as pool:
+                futures = [pool.submit(fetch_sql, query, params)
+                           for query, params in self.get_sql()]
+                for f in as_completed(futures):
+                    for row in f.result():
+                        yield row

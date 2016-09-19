@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -126,10 +126,58 @@ class Script(BaseScript):
                     "admin_status": "X" not in f,
                     "oper_status": "R" in f,
                     "enabled_afi": [],
-                    "tagged_vlans": [int(r["vlan-id"])],
+                    "vlan_ids": [int(r["vlan-id"])],
                     "enabled_protocols": []
                 }
                 i["subinterfaces"] += [self.si]
+        # process internal `switch` ports and vlans
+        vlan_tags = {}
+        v = self.cli_detail(
+            "/interface ethernet switch port print detail without-paging")
+        for n, f, r in v:
+            if (r["vlan-mode"] in ["check", "secure"]) \
+            and (r["vlan-header"] in ["add-if-missing", "leave-as-is"]):
+                vlan_tags[r["name"]] = True
+            else:
+                vlan_tags[r["name"]] = False
+        # Attach subinterfaces with `BRIDGE` AFI to parent
+        for n, f, r in self.cli_detail(
+            "/interface ethernet switch vlan print detail without-paging"):
+            vlan_id = int(r["vlan-id"])
+            ports = r["ports"].split(",")
+            if not ports:
+                continue
+            for p in ports:
+                if p not in ifaces:
+                    continue
+                i = ifaces[p]
+                self.si = {
+                    "name": p,
+                    "mac": i.get("mac"),
+                    "mtu": i.get("mtu"),
+                    "admin_status": i.get("admin_status"),
+                    "oper_status": i.get("oper_status"),
+                    "enabled_afi": ["BRIDGE"],
+                    "enabled_protocols": [],
+                    "tagged_vlans": []
+                }
+                if p in vlan_tags:
+                    if vlan_tags[p]:
+                        self.si["tagged_vlans"] += [vlan_id]
+                    else:
+                        self.si["utagged_vlan"] = vlan_id
+                # Try to find in already created subinterfaces
+                found = False
+                for sub in i["subinterfaces"]:
+                    if sub["name"] == p:
+                        if p in vlan_tags:
+                            if vlan_tags[p]:
+                                sub["tagged_vlans"] += [vlan_id]
+                            else:
+                                sub["utagged_vlan"] = vlan_id
+                            found = True
+                if not found:
+                    i["subinterfaces"] += [self.si]
         # Refine ip addresses
         for n, f, r in self.cli_detail(
             "/ip address print detail without-paging"):

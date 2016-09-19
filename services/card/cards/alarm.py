@@ -26,7 +26,13 @@ class AlarmCard(BaseCard):
     default_template_name = "alarm"
 
     def dereference(self, id):
-        return get_alarm(id)
+        a = get_alarm(id)
+        if self.current_user.is_superuser:
+            return a
+        elif set(self.get_user_domains()) & set(a.adm_path):
+            return a
+        else:
+            return None
 
     def get_data(self):
         now = datetime.datetime.now()

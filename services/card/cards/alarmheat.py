@@ -65,7 +65,11 @@ class AlarmHeatCard(BaseCard):
         alarms = []
         services = {}
         subscribers = {}
-        for a in ActiveAlarm.objects.all():
+        if self.current_user.is_superuser:
+            qs = ActiveAlarm.objects.all()
+        else:
+            qs = ActiveAlarm.objects.filter(adm_path__in=self.get_user_domains())
+        for a in qs:
             mo = a.managed_object
             x, y = self.get_object_coords(mo)
             w = 0

@@ -14,6 +14,7 @@ import operator
 from jinja2 import Template, Environment
 ## NOC modules
 from noc.core.translation import ugettext as _
+from noc.sa.models.useraccess import UserAccess
 
 
 class BaseCard(object):
@@ -31,13 +32,24 @@ class BaseCard(object):
     card_js = []
     card_css = []
 
-    def __init__(self, id):
+    def __init__(self, handler, id):
+        self.handler = handler
         self.object = self.dereference(id)
+
+    @property
+    def current_user(self):
+        return self.handler.current_user
+
+    def get_user_domains(self):
+        return UserAccess.get_domains(self.current_user)
+
+    def get_object(self, id):
+        return self.model.objects.get(pk=id)
 
     def dereference(self, id):
         if self.model:
             try:
-                return self.model.objects.get(pk=id)
+                return self.get_object(id)
             except self.model.DoesNotExist:
                 return None
         else:

@@ -31,9 +31,14 @@ class TotalOutageCard(BaseCard):
             "subscriber": {},
             "service": {}
         }
-        for a in ActiveAlarm.objects.filter(
-            root__exists=False
-        ).only("total_subscribers", "total_services"):
+        if self.current_user.is_superuser:
+            qs = ActiveAlarm.objects.filter(root__exists=False)
+        else:
+            qs = ActiveAlarm.objects.filter(
+                adm_path__in=self.get_user_domains(),
+                root__exists=False
+            )
+        for a in qs.only("total_subscribers", "total_services"):
             update_dict(
                 summary["subscriber"],
                 SummaryItem.items_to_dict(a.total_subscribers or [])

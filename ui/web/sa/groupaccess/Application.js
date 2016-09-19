@@ -11,7 +11,8 @@ Ext.define("NOC.sa.groupaccess.Application", {
     uses: [
         "NOC.sa.groupaccess.Model",
         "NOC.main.group.LookupField",
-        "NOC.sa.managedobjectselector.LookupField"
+        "NOC.sa.managedobjectselector.LookupField",
+        "NOC.sa.administrativedomain.LookupField"
     ],
     model: "NOC.sa.groupaccess.Model",
     columns: [
@@ -24,6 +25,11 @@ Ext.define("NOC.sa.groupaccess.Application", {
             text: __("Selector"),
             dataIndex: "selector",
             renderer: NOC.render.Lookup("selector")
+        },
+        {
+            text: __("Adm. Domain"),
+            dataIndex: "administrative_domain",
+            renderer: NOC.render.Lookup("administrative_domain")
         }
     ],
     fields: [
@@ -37,7 +43,13 @@ Ext.define("NOC.sa.groupaccess.Application", {
             name: "selector",
             xtype: "sa.managedobjectselector.LookupField",
             fieldLabel: __("Object Selector"),
-            allowBlank: false
+            allowBlank: true
+        },
+        {
+            name: "administrative_domain",
+            xtype: "sa.administrativedomain.LookupField",
+            fieldLabel: __("Adm. Domain"),
+            allowBlank: true
         }
     ],
     filters: [
@@ -52,6 +64,12 @@ Ext.define("NOC.sa.groupaccess.Application", {
             name: "selector",
             ftype: "lookup",
             lookup: "sa.managedobjectselector"
+        },
+        {
+            title: "By Administrative Domain",
+            name: "administrative_domain",
+            ftype: "lookup",
+            lookup: "sa.administrativedomain"
         }
     ]
 });

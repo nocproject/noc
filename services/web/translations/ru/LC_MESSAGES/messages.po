@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-08-09 09:19+0300\n"
-"PO-Revision-Date: 2016-08-09 09:27+0300\n"
+"POT-Creation-Date: 2016-09-15 20:07+0500\n"
+"PO-Revision-Date: 2016-09-15 20:27+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
-"X-Generator: Poedit 1.8.8\n"
+"X-Generator: Poedit 1.8.9\n"
 
 #: lib/app/modelapplication.py:321
 msgid "All"
@@ -275,8 +275,8 @@ msgstr "Монитор FM"
 msgid "OID Aliases"
 msgstr "Синонимы OID"
 
-#: services/web/apps/fm/reportalarmdetail/views.py:21
-#: services/web/apps/fm/reportalarmdetail/views.py:22
+#: services/web/apps/fm/reportalarmdetail/views.py:29
+#: services/web/apps/fm/reportalarmdetail/views.py:30
 msgid "Alarm Detail"
 msgstr "Детали аварии"
 
@@ -289,8 +289,9 @@ msgid "Classification Quality"
 msgstr "Качество классификации"
 
 #: services/web/apps/fm/reportclassificationrule/views.py:21
-#: services/web/apps/sa/reportobjectsummary/views.py:36
-#: services/web/apps/sa/reportobjectsummary/views.py:68
+#: services/web/apps/sa/reportobjectsummary/views.py:42
+#: services/web/apps/sa/reportobjectsummary/views.py:53
+#: services/web/apps/sa/reportobjectsummary/views.py:74
 msgid "Profile"
 msgstr "Профиль"
 
@@ -328,17 +329,19 @@ msgstr "Время эскалации"
 
 #: services/web/apps/fm/reportescalations/views.py:89
 #: services/web/apps/fm/reportreboots/views.py:93
+#: services/web/apps/sa/reportfaileddiscovery/views.py:65
 msgid "Managed Object"
 msgstr "Объекты управления"
 
 #: services/web/apps/fm/reportescalations/views.py:90
 #: services/web/apps/ip/ipam/views.py:822
+#: services/web/apps/sa/reportfaileddiscovery/views.py:65
 msgid "Address"
 msgstr "Адрес"
 
 #: services/web/apps/fm/reportescalations/views.py:91
-#: services/web/apps/sa/reportobjectsummary/views.py:68
 #: services/web/apps/sa/reportobjectsummary/views.py:74
+#: services/web/apps/sa/reportobjectsummary/views.py:80
 msgid "Platform"
 msgstr "Платформа"
 
@@ -608,6 +611,12 @@ msgstr "Нет линков"
 #: services/web/apps/inv/reportdiscoveryproblem/views.py:59
 msgid "No uplinks"
 msgstr "Нет аплинков"
+
+#: services/web/apps/inv/reportobjectsserial/views.py:27
+#: services/web/apps/sa/managedobjectselector/views.py:21
+#: services/web/apps/sa/managedobjectselector/views.py:22
+msgid "Managed Object Selector"
+msgstr "Селекторы"
 
 #: services/web/apps/inv/reportobjectsummary/views.py:17
 msgid "Inventory Object Summary"
@@ -1067,7 +1076,7 @@ msgstr ""
 msgid "Checkpoint has been set"
 msgstr "Контрольная точка установлена"
 
-#: services/web/apps/main/csv/views.py:25
+#: services/web/apps/main/csv/views.py:25 services/web/apps/main/csv/views.py:28
 msgid "CSV Export/Import"
 msgstr "Импорт/экспорт CSV"
 
@@ -1135,6 +1144,7 @@ msgid "PyRule"
 msgstr ""
 
 #: services/web/apps/main/refbook/views.py:20
+#: services/web/apps/main/refbook/views.py:23
 msgid "Reference Books"
 msgstr "Справочники"
 
@@ -1370,6 +1380,7 @@ msgstr ""
 #: services/web/apps/ip/prefixaccess/views.py:20
 #: services/web/apps/ip/routeimport/views.py:73
 #: services/web/apps/ip/vrfgroup/views.py:20
+#: services/web/apps/main/csv/views.py:28
 #: services/web/apps/main/customfield/views.py:20
 #: services/web/apps/main/customfieldenumgroup/views.py:21
 #: services/web/apps/main/dbtrigger/views.py:20
@@ -1381,6 +1392,7 @@ msgstr ""
 #: services/web/apps/main/pool/views.py:20
 #: services/web/apps/main/prefixtable/views.py:23
 #: services/web/apps/main/pyrule/views.py:22
+#: services/web/apps/main/refbook/views.py:23
 #: services/web/apps/main/resourcestate/views.py:20
 #: services/web/apps/main/schedule/views.py:82
 #: services/web/apps/main/style/views.py:21
@@ -1402,7 +1414,7 @@ msgstr ""
 #: services/web/apps/sa/action/views.py:20
 #: services/web/apps/sa/actioncommands/views.py:22
 #: services/web/apps/sa/administrativedomain/views.py:20
-#: services/web/apps/sa/authprofile/views.py:20
+#: services/web/apps/sa/authprofile/views.py:23
 #: services/web/apps/sa/commandsnippet/views.py:20
 #: services/web/apps/sa/groupaccess/views.py:20
 #: services/web/apps/sa/managedobjectprofile/views.py:20
@@ -1507,11 +1519,11 @@ msgstr "Комманды действий"
 msgid "Administrative Domains"
 msgstr "Зоны ответственности"
 
-#: services/web/apps/sa/authprofile/views.py:19
+#: services/web/apps/sa/authprofile/views.py:22
 msgid "Auth Profile"
 msgstr "Профиль авторизации"
 
-#: services/web/apps/sa/authprofile/views.py:20
+#: services/web/apps/sa/authprofile/views.py:23
 msgid "Auth Profiles"
 msgstr "Профили авторизации"
 
@@ -1548,15 +1560,10 @@ msgstr "Профиль объекта"
 msgid "Managed Object Profiles"
 msgstr "Профили объектов"
 
-#: services/web/apps/sa/managedobjectselector/views.py:21
-#: services/web/apps/sa/managedobjectselector/views.py:22
-msgid "Managed Object Selector"
-msgstr "Селекторы"
-
 #: services/web/apps/sa/mrtconfig/views.py:19
 #: services/web/apps/sa/mrtconfig/views.py:20
 msgid "MRT Config"
-msgstr ""
+msgstr "Настройка MRT"
 
 #: services/web/apps/sa/objectnotification/views.py:19
 #: services/web/apps/sa/objectnotification/views.py:20
@@ -1571,54 +1578,111 @@ msgstr "Правило проверки профиля"
 msgid "Profile Check Rules"
 msgstr "Правила проверки профиля"
 
+#: services/web/apps/sa/reportfaileddiscovery/views.py:21
+msgid "Failed Discovery"
+msgstr "Проблемы Discovery"
+
+#: services/web/apps/sa/reportfaileddiscovery/views.py:26
+msgid "Managed Objects Pools"
+msgstr ""
+
+#: services/web/apps/sa/reportfaileddiscovery/views.py:66
+msgid "Discovery"
+msgstr ""
+
+#: services/web/apps/sa/reportfaileddiscovery/views.py:66
+msgid "Error"
+msgstr ""
+
 #: services/web/apps/sa/reportfailedscript/views.py:16
 msgid "Failed Scripts"
 msgstr "Скрипты, которые не смогли"
 
 #: services/web/apps/fm/reporteventsummary/views.py:22
-#: services/web/apps/sa/reportobjectsummary/views.py:18
+#: services/web/apps/sa/reportobjectsummary/views.py:19
 msgid "By Profile"
 msgstr "По профилю"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:19
+#: services/web/apps/sa/reportobjectsummary/views.py:20
 msgid "By Administrative Domain"
 msgstr "По З.О."
 
-#: services/web/apps/sa/reportobjectsummary/views.py:20
+#: services/web/apps/sa/reportobjectsummary/views.py:21
 msgid "By Administrative Domain and Profile"
 msgstr "По З.О. и профилю"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:21
+#: services/web/apps/sa/reportobjectsummary/views.py:22
 msgid "By Tags"
 msgstr "По тегам"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:22
+#: services/web/apps/sa/reportobjectsummary/views.py:23
 msgid "By Platform"
 msgstr "По платформе"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:23
+#: services/web/apps/sa/reportobjectsummary/views.py:24
 msgid "By Version"
 msgstr "По версии"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:31
+#: services/web/apps/sa/reportobjectsummary/views.py:36
 msgid "Managed Objects Summary"
 msgstr "Сводка по объектам"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:40
-#: services/web/apps/sa/reportobjectsummary/views.py:47
+#: services/web/apps/sa/reportobjectsummary/views.py:46
+#: services/web/apps/sa/reportobjectsummary/views.py:53
 msgid "Administrative Domain"
 msgstr "Зона ответственности"
 
 #: services/web/apps/main/tag/views.py:19
-#: services/web/apps/sa/reportobjectsummary/views.py:54
+#: services/web/apps/sa/reportobjectsummary/views.py:60
 msgid "Tag"
 msgstr "Тег"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:74
+#: services/web/apps/sa/reportobjectsummary/views.py:80
 msgid "Version"
 msgstr "Версия"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:85
+#: services/web/apps/sa/reportprofilechecksummary/views.py:19
+msgid "Managed Object Profile Check Summary"
+msgstr "Сводка по статусу объектов"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:34
+msgid "Not Managed"
+msgstr "Не управляемые"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:35
+msgid "Is Managed"
+msgstr "Управляемые"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:36
+msgid "Not Generic.Host is Managed"
+msgstr "Распознанные"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:38
+msgid "Generic.Host is Managed"
+msgstr "Не распознанные"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:39
+msgid "Generic.Host is Managed ping"
+msgstr "Живые"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:40
+msgid "Generic.Host is Managed not ping"
+msgstr "Не Живые"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:41
+msgid "Generic.Host is Managed bad SNMP Credential"
+msgstr "Не распознанные (не подходит SNMP Community)"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:42
+msgid "Generic.Host is Managed bad CLI Credential"
+msgstr "Не распознанные (не подходят пользователь/пароль)"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:51
+msgid "Status"
+msgstr "Состояние"
+
+#: services/web/apps/sa/reportobjectsummary/views.py:91
+#: services/web/apps/sa/reportprofilechecksummary/views.py:52
 msgid "Quantity"
 msgstr "Количество"
 

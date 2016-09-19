@@ -50,12 +50,8 @@
       "version": "2.13"
     },
     {
-      "name": "jspdf",
-      "version": "1.2.60"
-    },
-    {
-      "name": "jspdf.autotable",
-      "version": "2.0.32"
+      "name": "pdfmake",
+      "version": "0.1.17"
     }
   ]
 }

@@ -36,6 +36,15 @@ class ManagedObjectCard(BaseCard):
     default_template_name = "managedobject"
     model = ManagedObject
 
+    def get_object(self, id):
+        if self.current_user.is_superuser:
+            return ManagedObject.objects.get(id=id)
+        else:
+            return ManagedObject.objects.get(
+                id=id,
+                administrative_domain__in=self.get_user_domains()
+            )
+
     def get_template_name(self):
         return self.object.object_profile.card or "managedobject"
 
@@ -236,7 +245,7 @@ class ManagedObjectCard(BaseCard):
         return r
 
     @classmethod
-    def search(cls, query):
+    def search(cls, handler, query):
         q = Q(name__icontains=query)
         if is_ipv4(query):
             q |= Q(address=query)
@@ -251,6 +260,8 @@ class ManagedObjectCard(BaseCard):
                 q = Q(id=mo.id)
         except ValueError:
             pass
+        if not handler.current_user.is_superuser:
+            q = Q(administrative_domain__in=handler.get_user_domains())
         r = []
         for mo in ManagedObject.objects.filter(q):
             r += [{
