@@ -17,11 +17,12 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
-from noc.fm.models import get_alarm, get_event
+from noc.fm.models import get_alarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.selectorcache import SelectorCache
 from noc.main.models import User
+from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
 from noc.maintainance.models.maintainance import Maintainance
@@ -168,7 +169,12 @@ class AlarmApplication(ExtApplication):
         if status not in self.model_map:
             raise Exception("Invalid status")
         model = self.model_map[status]
-        return model.objects.all()
+        if request.user.is_superuser:
+            return model.objects.all()
+        else:
+            return model.objects.filter(
+                adm_path__in=UserAccess.get_domains(request.user)
+            )
 
     @view(url=r"^$", access="launch", method=["GET"], api=True)
     def api_list(self, request):
