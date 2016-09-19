@@ -64,6 +64,7 @@
                 logo_height: {{setup.logo_height}},
                 branding_color: "{{ setup.branding_color }}",
                 branding_background_color: "{{ setup.branding_background_color }}",
+                enable_search: {% if setup.enable_search %}true{% else %}false{% endif %},
                 install_collection: {% if setup.install_collection %}true{% else %}false{% endif %},
                 gis: {
                     base: {

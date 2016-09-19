@@ -21,6 +21,7 @@ from noc.main.models import Group
 from noc.main.models.usersession import UserSession
 from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
+from noc.main.models.permission import Permission
 from noc.support.cp import CPClient
 from noc.core.service.client import RPCClient, RPCError
 from noc.core.translation import ugettext as _
@@ -106,7 +107,10 @@ class DesktopApplication(ExtApplication):
             favicon_mime = "image/jpeg"
         else:
             favicon_mime = None
-
+        if request.user.is_authenticated():
+            enable_search = Permission.has_perm(request.user, "main:search:launch")
+        else:
+            enable_search = False
         setup = {
             "system_uuid": cp.system_uuid,
             "installation_name": config.get("customization",
@@ -125,8 +129,8 @@ class DesktopApplication(ExtApplication):
             "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
             "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap"),
             "trace_extjs_events": config.getboolean("main", "trace_extjs_events"),
-            "preview_theme": "midnight"
-
+            "preview_theme": "midnight",
+            "enable_search": enable_search
         }
         return self.render(
             request, "desktop.html",
