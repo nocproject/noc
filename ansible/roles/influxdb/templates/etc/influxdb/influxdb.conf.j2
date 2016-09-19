@@ -26,7 +26,7 @@ reporting-disabled = true
   data-logging-enabled = true
   max-series-per-database = 0
 
-[cluster]
+[coordinator]
   force-remote-mapping = false
   write-timeout = "5s"
   shard-writer-timeout = "5s"
@@ -84,30 +84,6 @@ reporting-disabled = true
   consistency-level = "one"
   separator = "."
   udp-read-buffer = 0
-
-[[collectd]]
-  enabled = false
-  bind-address = ":25826"
-  database = "collectd"
-  retention-policy = ""
-  batch-size = 5000
-  batch-pending = 10
-  batch-timeout = "10s"
-  read-buffer = 0
-  typesdb = "/usr/share/collectd/types.db"
-
-[[opentsdb]]
-  enabled = false
-  bind-address = ":4242"
-  database = "opentsdb"
-  retention-policy = ""
-  consistency-level = "one"
-  tls-enabled = false
-  certificate = "/etc/ssl/influxdb.pem"
-  batch-size = 1000
-  batch-pending = 5
-  batch-timeout = "1s"
-  log-point-errors = true
 
 [[udp]]
   enabled = false
