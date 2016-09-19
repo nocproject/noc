@@ -2,7 +2,6 @@
 ##----------------------------------------------------------------------
 ## Vendor: D-Link
 ## OS:     DxS
-## Compatible:
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
@@ -34,8 +33,10 @@ class Profile(BaseProfile):
     ## <major>.<minor><sep><patch>
     ##
     rx_ver = re.compile(r"\d+")
-    rx_blocked_session = re.compile(".*System locked by other session!",
-                                    re.MULTILINE | re.DOTALL)
+
+    def cmp_version(self, x, y):
+        return cmp([int(z) for z in self.rx_ver.findall(x)],
+            [int(z) for z in self.rx_ver.findall(y)])
 
     """
     IF-MIB:IfDescr
@@ -56,10 +57,6 @@ class Profile(BaseProfile):
         r"Port\s+(?P<re_port>\d+)?"
         r"( on Unit (?P<re_slot>\d+))?$"
     )
-
-    def cmp_version(self, x, y):
-        return cmp([int(z) for z in self.rx_ver.findall(x)],
-            [int(z) for z in self.rx_ver.findall(y)])
 
     def get_interface_names(self, name):
         r = []
@@ -86,7 +83,7 @@ class Profile(BaseProfile):
         """
         Ports in CLI like 1:1-24,2:1-24
         """
-        platforms_with_stacked_ports = ('DGS-3120','DGS-3100')
+        platforms_with_stacked_ports = ('DGS-3120', 'DGS-3100')
         match = self.rx_interface_name.match(s)
         if match:
             if match.group("re_slot") and match.group("re_slot") > "1" or \
@@ -117,7 +114,7 @@ class Profile(BaseProfile):
             for p in script.credentials["path"].split("/"):
                 if p.startswith("cluster:"):
                     self.cluster_member = p[8:].strip()
-            # Switch to cluster member, if necessary
+        # Switch to cluster member, if necessary
         if self.cluster_member:
             script.logger.debug("Switching to SIM member %s" % script.cluster_member)
             script.cli("reconfig member_id %s" % script.cluster_member)
@@ -250,7 +247,6 @@ class Profile(BaseProfile):
         r"^(Current Untagged P|Untagged p)orts\s*:\s*"
         r"(?P<untagged_ports>\S*?)\s*\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
-
     rx_vlan1 = re.compile(
         r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
         r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
@@ -299,6 +295,9 @@ class Profile(BaseProfile):
                     "untagged_ports": untagged_ports
                 }]
         return vlans
+
+    rx_blocked_session = re.compile(
+        ".*System locked by other session!", re.MULTILINE | re.DOTALL)
 
     def cleaned_config(self, config):
         if self.rx_blocked_session.search(config):
@@ -405,6 +404,7 @@ def DxS_L2(v):
         or v["platform"].startswith("DES-3810") \
         or v["platform"].startswith("DGS-1100") \
         or v["platform"].startswith("DGS-12") \
+        or v["platform"].startswith("DGS-15") \
         or v["platform"].startswith("DGS-30") \
         or v["platform"].startswith("DGS-32"):
         return True

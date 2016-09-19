@@ -137,3 +137,6 @@ class NetworkSegment(Document):
             if o.is_managed:
                 o.run_discovery()
 
+    @property
+    def has_children(self):
+        return True if NetworkSegment.objects.filter(parent=self.id) else False

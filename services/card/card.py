@@ -6,16 +6,23 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import os
+import inspect
+from threading import Lock
+import operator
 ## Third-party modules
 import tornado.web
 from jinja2 import Template
 import ujson
-import os
-import inspect
+import cachetools
 ## NOC modules
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
 from noc.lib.debug import error_report
+from noc.main.models import User
+
+user_lock = Lock()
 
 
 class CardRequestHandler(UIHandler):
@@ -23,18 +30,35 @@ class CardRequestHandler(UIHandler):
     CARD_TEMPLATE_PATH = "services/card/templates/card.html.j2"
     CARD_TEMPLATE = None
 
+    _user_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
     def initialize(self):
         if not self.CARD_TEMPLATE:
             with open(self.CARD_TEMPLATE_PATH) as f:
                 self.CARD_TEMPLATE = Template(f.read())
 
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_user_cache"), lock=lambda _: user_lock)
+    def get_user_by_name(cls, name):
+        try:
+            return User.objects.get(username=name)
+        except User.DoesNotExist:
+            return None
+
+    def get_current_user(self):
+        return self.get_user_by_name(
+            self.request.headers.get("Remote-User")
+        )
+
     def get(self, card_type, card_id, *args, **kwargs):
+        if not self.current_user:
+            raise tornado.web.HTTPError(404, "Not found")
         is_ajax = card_id == "ajax"
         tpl = self.CARDS.get(card_type)
         if not tpl:
             raise tornado.web.HTTPError(404, "Card template not found")
         try:
-            card = tpl(card_id)
+            card = tpl(self, card_id)
             if is_ajax:
                 data = card.get_ajax_data()
             else:

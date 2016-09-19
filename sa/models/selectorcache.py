@@ -78,7 +78,7 @@ class SelectorCache(Document):
         from django.db import connection
         selectors = cls.get_active_selectors()
         if not selectors:
-            return []
+            return set()
         sql = []
         params = []
         for s in selectors:
@@ -108,6 +108,9 @@ class SelectorCache(Document):
             t, p = q.query.sql_with_params()
             sql += [t.rsplit(" ORDER BY ", 1)[0]]
             params += p
+        if not sql:
+            # Fully optimized, fully negative
+            return set()
         sql = " UNION ALL ".join(sql)
         sql = """
             WITH sa_managedobject_item AS (

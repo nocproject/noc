@@ -22,8 +22,22 @@ class NetworkSegmentApplication(ExtDocApplication):
     model = NetworkSegment
     query_fields = ["name__icontains", "description__icontains"]
 
+    def instance_to_lookup(self, o, fields=None):
+        return {
+            "id": str(o.id),
+            "label": unicode(o),
+            "has_children": o.has_children
+        }
+
     def field_count(self, o):
         return ManagedObject.objects.filter(segment=o).count()
+
+    @view("^(?P<id>[0-9a-f]{24})/get_path/$",
+          access="read", api=True)
+    def api_get_path(self, request, id):
+        o = self.get_object_or_404(NetworkSegment, id=id)
+        path = [NetworkSegment.objects.get(id=ns) for ns in o.get_path()]
+        return {"data": [{"level": path.index(p), "id": str(p.id), "label": unicode(p.name)} for p in path]}
 
     @view("^(?P<id>[0-9a-f]{24})/effective_settings/$",
           access="read", api=True)

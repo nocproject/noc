@@ -61,22 +61,28 @@ class BaseExtractor(object):
             else:
                 return str(s)
 
+        # Fetch data
         self.logger.info("Extracting %s from %s",
                          self.name, self.system)
         t0 = time.time()
-        f = self.get_new_state()
-        writer = csv.writer(f)
+        data = []
         n = 0
         for row in self.iter_data():
             row = self.clean(row)
-            writer.writerow([q(x) for x in row])
+            data += [[q(x) for x in row]]
             n += 1
             if n % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", n)
-        f.close()
         dt = time.time() - t0
         speed = n / dt
         self.logger.info(
-            "%d records downloaded in %.2fs (%d records/s)",
+            "%d records extracted in %.2fs (%d records/s)",
             n, dt, speed
         )
+        # Sort
+        data.sort()
+        # Write
+        f = self.get_new_state()
+        writer = csv.writer(f)
+        writer.writerows(data)
+        f.close()
