@@ -20,7 +20,7 @@ class YAMLProtocol(BaseProtocol):
     """
     Environment variables mapping
     URL:
-        env:///<path>
+        yaml:///<path>
     """
     INDENT = "  "
 

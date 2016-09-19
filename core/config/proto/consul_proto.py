@@ -54,7 +54,7 @@ class ConsulProtocol(BaseProtocol):
         :param url:
         :return:
         """
-        buff = six.StringIO.StringIO()
+        buff = six.StringIO()
         for host in self.hosts:
             url = "http://%s%s" % (host, path)
             c = pycurl.Curl()
