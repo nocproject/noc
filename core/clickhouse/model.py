@@ -6,11 +6,14 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import time
 ## Third-party modules
-from six import with_metaclass
+import six
 ## NOC modules
 from fields import BaseField
 from noc.core.clickhouse.connect import connection
+from noc.core.bi.query import to_sql, escape_field
 
 __all__ = ["Model"]
 
@@ -44,7 +47,7 @@ class ModelMeta(object):
         self.tags = tags
 
 
-class Model(with_metaclass(ModelBase)):
+class Model(six.with_metaclass(ModelBase)):
     class Meta:
         engine = None
         db_table = None
@@ -110,3 +113,82 @@ class Model(with_metaclass(ModelBase)):
             if getattr(o._meta, "db_table", None) == name:
                 return o
         return None
+
+    @classmethod
+    def query(cls, query):
+        """
+        Execute query and return result
+        :param query: dict of
+            "fields": list of dicts
+                *expr -- field expression
+                *alias -- resulting name
+                *group -- nth field in GROUP BY expression, starting from 0
+                *order -- nth field in ORDER BY expression, starting from 0
+                *desc -- sort in descending order, if true
+            "filter": expression
+            "limit": N -- limit to N rows
+            "offset": N -- skip first N rows
+            "sample": 0.0-1.0 -- randomly select rows
+            @todo: group by
+            @todo: order by
+        :return:
+        """
+        # Get field expressions
+        fields = query.get("fields", [])
+        if not fields:
+            return None
+        fields_x = []
+        aliases = []
+        group_by = {}
+        order_by = {}
+        for i, f in enumerate(fields):
+            if isinstance(f["expr"], six.string_types):
+                default_alias = f["expr"]
+                f["expr"] = {"$field": f["expr"]}
+            else:
+                default_alias = "f%04d" % i
+            alias = f.get("alias", default_alias)
+            aliases += [alias]
+            fields_x += ["%s AS %s" % (to_sql(f["expr"]), escape_field(alias))]
+            if "group" in f:
+                group_by[int(f["group"])] = alias
+            if "order" in f:
+                if "desc" in f and f["desc"]:
+                    order_by[int(f["order"])] = "%s DESC" % alias
+                else:
+                    order_by[int(f["order"])] = alias
+        # Get where expressions
+        filter_x = to_sql(query.get("filter", {}))
+        # Generate SQL
+        sql = ["SELECT "]
+        sql += [", ".join(fields_x)]
+        sql += ["FROM %s" % cls._meta.db_table]
+        sample = query.get("sample")
+        if sample:
+            sql += ["SAMPLE %s" % float(sample)]
+        if filter_x:
+            sql += ["WHERE %s" % filter_x]
+        # GROUP BY
+        if group_by:
+            sql += ["GROUP BY %s" % ", ".join(group_by[v] for v in sorted(group_by))]
+        # ORDER BY
+        if order_by:
+            sql += ["ORDER BY %s" % ", ".join(order_by[v] for v in sorted(order_by))]
+        # LIMIT
+        if "limit" in query:
+            if "offset" in query:
+                sql += ["LIMIT %d, %d" % (query["offset"], query["limit"])]
+            else:
+                sql += ["LIMIT %d" % query["limit"]]
+        sql = " ".join(sql)
+        # Execute query
+        ch = connection()
+        t0 = time.time()
+        r = ch.execute(sql)
+        dt = time.time() - t0
+        return {
+            "fields": aliases,
+            "result": r,
+            "duration": dt,
+            "sql": sql
+        }

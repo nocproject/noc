@@ -10,6 +10,7 @@
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
 from noc.core.bi.models.reboots import Reboots
+from noc.core.bi.query import to_sql
 
 
 class BIAPI(API):
@@ -83,17 +84,17 @@ class BIAPI(API):
         return r
 
     @api
-    def query(self, datasource, filter, fields):
+    def query(self, query):
         """
         Perform query and return result
-        :param datasource: Name of datasource
-        :param filter:
-        :param fields:
-            List of dicts
-            * name -- field name
-            * expr -- Optional expression
-            * alias
-            * agg -- Aggregation function
+        :param query: Dict containing fields
+            datasource - name of datasource
+            see model.query for the rest
         :return:
         """
-        raise NotImplementedError()
+        if "datasource" not in query:
+            raise APIError("No datasource")
+        model = Model.get_model_class(query["datasource"])
+        if not model:
+            raise APIError("Invalid datasource")
+        return model.query(query)
