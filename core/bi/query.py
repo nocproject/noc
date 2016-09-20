@@ -74,7 +74,7 @@ OP_MAP = {
     # upper
     # substring
     # Aggregate functions
-    "$count": OP(min=0, max=0, function="COUNT")
+    "$count": OP(min=0, max=0, function="COUNT"),
     "$any": OP(min=1, max=1, function="ANY"),
     "$anylast": OP(min=1, max=1, function="ANYLAST"),
     "$min": OP(min=1, max=1, function="MIN"),
