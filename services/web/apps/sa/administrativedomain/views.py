@@ -36,4 +36,4 @@ class AdministrativeDomainApplication(ExtModelApplication):
     def api_get_path(self, request, id):
         o = self.get_object_or_404(AdministrativeDomain, id=id)
         path = [AdministrativeDomain.objects.get(id=ns) for ns in o.get_path()]
-        return {"data": [{"level": path.index(p), "id": str(p.id), "label": unicode(p.name)} for p in path]}
+        return {"data": [{"level": path.index(p) + 1, "id": str(p.id), "label": unicode(p.name)} for p in path]}
