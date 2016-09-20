@@ -168,7 +168,8 @@ Ext.define("NOC.core.ModelApplication", {
                         afi: "NOC.core.modelfilter.AFI",
                         vc: "NOC.core.modelfilter.VC",
                         tag: "NOC.core.modelfilter.Tag",
-                        favorites: "NOC.core.modelfilter.Favorites"
+                        favorites: "NOC.core.modelfilter.Favorites",
+                        tree: "NOC.core.modelfilter.Tree"
                     }[f.ftype];
                     var fc = Ext.Object.merge(f, {
                         referrer: me.appName

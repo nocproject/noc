@@ -10,6 +10,7 @@ Ext.define("NOC.inv.map.Application", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.inv.networksegment.LookupField",
+        "NOC.core.TreeField",
         "NOC.inv.map.MapPanel"
     ],
 
@@ -31,17 +32,26 @@ Ext.define("NOC.inv.map.Application", {
 
         me.readOnly = !me.hasPermission("write");
 
-        me.segmentCombo = Ext.create("NOC.inv.networksegment.LookupField", {
+        // me.segmentCombo = Ext.create("NOC.inv.networksegment.LookupField", {
+        //     fieldLabel: __("Segment"),
+        //     labelWidth: 45,
+        //     minWidth: 280,
+        //     allowBlank: true,
+        //     disabled: true,
+        //     emptyText: __("Select segment..."),
+        //     listeners: {
+        //         scope: me,
+        //         select: me.onSelectSegment
+        //     }
+        // });
+
+        me.segmentField = Ext.create('NOC.core.TreeField', {
             fieldLabel: __("Segment"),
             labelWidth: 45,
             minWidth: 280,
-            allowBlank: true,
-            disabled: true,
             emptyText: __("Select segment..."),
-            listeners: {
-                scope: me,
-                select: me.onSelectSegment
-            }
+            restUrl: '/inv/networksegment',
+            action: Ext.bind(me.loadSegment, me)
         });
 
         me.zoomCombo = Ext.create("Ext.form.ComboBox", {
@@ -181,7 +191,8 @@ Ext.define("NOC.inv.map.Application", {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
-                        me.segmentCombo,
+                        // me.segmentCombo,
+                        me.segmentField,
                         "-",
                         me.zoomCombo,
                         me.reloadButton,
@@ -206,8 +217,13 @@ Ext.define("NOC.inv.map.Application", {
 
     loadSegment: function(segmentId) {
         var me = this;
-        me.segmentCombo.setDisabled(false);
-        me.segmentCombo.setValue(segmentId);
+
+        // me.segmentCombo.setDisabled(false);
+        // me.segmentCombo.setValue(segmentId);
+        if(me.segmentField && me.segmentField.getValue().length === 0) {
+            // console.log('query segment label by id :' + segmentId);
+            me.segmentField.restoreById(segmentId);
+        }
         me.setHistoryHash(segmentId);
         // @todo: Remove
         me.mapPanel.loadSegment(segmentId);
@@ -226,7 +242,7 @@ Ext.define("NOC.inv.map.Application", {
 
     onMapReady: function() {
         var me = this;
-        me.segmentCombo.setDisabled(false);
+        // me.segmentCombo.setDisabled(false);
         if(me.getCmd() === "history") {
             me.loadSegment(me.noc.cmd.args[0]);
         }
