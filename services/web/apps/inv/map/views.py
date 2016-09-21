@@ -179,6 +179,12 @@ class MapApplication(ExtApplication):
     def api_info_managedobject(self, request, id, mo_id):
         segment = self.get_object_or_404(NetworkSegment, id=id)
         object = self.get_object_or_404(ManagedObject, id=int(mo_id))
+        s = {
+            1: "telnet",
+            2: "ssh",
+            3: "http",
+            4: "https"
+        }[object.scheme]
         r = {
             "id": object.id,
             "name": object.name,
@@ -191,7 +197,8 @@ class MapApplication(ExtApplication):
                 "id": str(object.segment.id),
                 "name": object.segment.name
             },
-            "caps": object.get_caps()
+            "caps": object.get_caps(),
+            "console_url": "%s://%s/" % (s, object.address)
         }
         return r
 
