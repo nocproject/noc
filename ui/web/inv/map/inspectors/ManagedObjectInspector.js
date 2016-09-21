@@ -52,6 +52,14 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
             disabled: true
         });
 
+        me.consoleButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.terminal,
+            scope: me,
+            tooltip: __("Console"),
+            handler: me.onConsole,
+            disabled: true
+        });
+
         Ext.apply(me, {
             items: [
                 me.infoText
@@ -63,7 +71,8 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
                     me.cardButton,
                     me.lookButton,
                     me.segmentButton,
-                    me.dashboardButton
+                    me.dashboardButton,
+                    me.consoleButton
                 ]
             }]
         });
@@ -109,6 +118,8 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
         me.lookButton.setDisabled(false);
         me.cardButton.setDisabled(false);
         me.dashboardButton.setDisabled(false);
+        me.consoleButton.setDisabled(false);
+        me.consoleUrl = data.console_url;
     },
 
     onLook: function() {
@@ -139,5 +150,10 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
                 "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.currentObjectId
             );
         }
+    },
+
+    onConsole: function() {
+        var me = this;
+        window.open(me.consoleUrl);
     }
 });
