@@ -150,6 +150,12 @@ Ext.define("NOC.inv.map.MapPanel", {
                     glyph: NOC.glyph.plus,
                     scope: me,
                     handler: me.onNodeMenuMaintainceMode
+                },
+                {
+                    text: __("Create new maintaince"),
+                    glyph: NOC.glyph.wrench,
+                    scope: me,
+                    handler: me.onNodeMenuNewMaintaince
                 }
             ]
         });
@@ -818,6 +824,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     onNodeMenuMaintainceMode: function() {
         var me = this,
             objectId = Number(me.nodeMenuObject);
+
         NOC.run(
             'NOC.inv.map.Maintainance',
             'Add To Maintainance',
@@ -828,6 +835,21 @@ Ext.define("NOC.inv.map.MapPanel", {
                 ]
             }
         );
+    },
+
+    onNodeMenuNewMaintaince: function() {
+        var me = this,
+            objectId = Number(me.nodeMenuObject);
+
+        NOC.launch("maintainance.maintainance", "new", {
+            args: {
+                direct_objects: [{
+                    object: objectId,
+                    object__label: me.objectNodes[objectId].attributes.attrs.text.text
+                }],
+                subject: 'created from map at ' + new Date()
+            }
+        });
     },
 
     setStp: function(status) {

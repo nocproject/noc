@@ -88,6 +88,9 @@ Ext.define("NOC.core.ModelApplication", {
                 me.restoreHistory(me.noc.cmd.args);
                 return;
                 break;
+            case "new":
+                me.newRecord(me.noc.cmd.args);
+                break;
         }
         // Finally, load the store
         me.store.load();

@@ -49,6 +49,13 @@ Ext.define('NOC.inv.map.Maintainance', {
                     fieldLabel: __('Filter'),
                     labelWidth: 50,
                     width: '100%',
+                    triggers: {
+                        clear: {
+                            cls: 'x-form-clear-trigger',
+                            scope: me,
+                            handler: 'cleanFilter'
+                        }
+                    },
                     listeners: {
                         specialkey: 'setFilter'
                     }
@@ -177,17 +184,18 @@ Ext.define('NOC.inv.map.Maintainance', {
                 }
                 return this.filter.length > 0 && !this.isCompleted && element.subject.indexOf(this.filter) > -1;
 
-            };
-        var filterValue = me.dockMaintainance.down('#filterField') ? me.dockMaintainance.down('#filterField').getValue() : '',
+            },
+            filterValue = me.dockMaintainance.down('#filterField') ? me.dockMaintainance.down('#filterField').getValue() : '',
             isCompletedValue = me.dockMaintainance.down('#isCompleted') ? me.dockMaintainance.down('#isCompleted').getValue() : true;
-        var params = {};
 
-        if(filterValue.length > 0) {
-            params = Ext.apply(params, {query: filterValue});
-        }
-        if(isCompletedValue) {
-            params = Ext.apply(params, {completed: 1})
-        }
+        // ToDo uncomment after create backend request
+        // var params = {};
+        // if(filterValue.length > 0) {
+        //     params = Ext.apply(params, {query: filterValue});
+        // }
+        // if(isCompletedValue) {
+        //     params = Ext.apply(params, {completed: 1})
+        // }
 
         Ext.Ajax.request({
             url: me.rest_url,
@@ -210,9 +218,16 @@ Ext.define('NOC.inv.map.Maintainance', {
 
     setFilter: function(field, e) {
         var me = this;
+
         if(Ext.EventObject.ENTER === e.getKey()) {
             me.loadData();
         }
+    },
+
+    cleanFilter: function() {
+        var me = this;
+        me.dockMaintainance.down('#filterField').setValue('');
+        me.loadData();
     },
 
     makeLabel: function(name, value) {
