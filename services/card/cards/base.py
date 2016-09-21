@@ -213,7 +213,7 @@ class BaseCard(object):
             3: "http",
             4: "https"
         }[object.scheme]
-        return "<a href='%s://%s/' style='font-weight: bold'><i class='fa fa-terminal'></i> %s</a>" % (
+        return "<a href='%s://%s/'><i class='fa fa-terminal'></i> %s</a>" % (
             s, object.address, s.upper()
         )
 
