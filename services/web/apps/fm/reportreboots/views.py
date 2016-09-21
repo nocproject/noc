@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## fm.reportreboots
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -77,20 +77,21 @@ class ReportRebootsApplication(SimpleReport):
             chunk = [str(x) for x in ids[:500]]
             ids = ids[500:]
             cursor.execute("""
-                SELECT id, name
+                SELECT id, address, name
                 FROM sa_managedobject
                 WHERE id IN (%s)""" % ", ".join(chunk))
-            mo_names.update(dict(cursor))
+            mo_names.update(dict([(c[0], c[1:3]) for c in cursor]))
         #
         data = [
-            (mo_names.get(x["_id"], "---"), x["count"])
+            (mo_names.get(x["_id"][0], "---"),
+             mo_names.get(x["_id"][1], "---"), x["count"])
             for x in data
         ]
 
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"),
+                _("Managed Object"), _("Address"),
                 TableColumn(_("Reboots"), align="right",
                             format="numeric", total="sum")
             ],
