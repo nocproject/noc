@@ -371,6 +371,13 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                     fieldLabel: __("Control Time N"),
                                     allowBlank: true,
                                     uiStyle: "small"
+                                },
+                                {
+                                    name: "recover_time",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("Recover Time"),
+                                    allowBlank: true,
+                                    uiStyle: "small"
                                 }
 
                             ]

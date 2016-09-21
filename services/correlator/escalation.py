@@ -24,12 +24,13 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.core.config.base import config
 
 
 logger = logging.getLogger(__name__)
 
 
-def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
+def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
     def log(message, *args):
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
@@ -100,10 +101,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                 "$gte": ets
             }
         }).count()
-        if ae >= tt_escalation_limit:
+        if ae >= config.tt_escalation_limit:
             logger.error(
                 "Escalation limit exceeded (%s/%s). Skipping",
-                ae, tt_escalation_limit
+                ae, config.tt_escalation_limit
             )
             metrics["escalation_throttled"] += 1
             return
@@ -290,6 +291,25 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt
             log("Invalid notification group %s", notification_group_id)
 
 
+def check_close_consequence(alarm_id):
+    logger.info("[%s] Checking close", alarm_id)
+    alarm = get_alarm(alarm_id)
+    if alarm is None:
+        logger.info("[%s] Missing alarm, skipping", alarm_id)
+        return
+    if alarm.status == "C":
+        logger.info("[%s] Alarm is closed. Check passed", alarm_id)
+        return
+    # Detach root
+    logger.info("[%s] Alarm is active. Detaching root", alarm_id)
+    alarm.root = None
+    alarm.log_message("Detached from root for not recovered",
+                      to_save=True)
+    metrics["detached_root"] += 1
+    # Trigger escalations
+    AlarmEscalation.watch_escalations(alarm)
+
+
 def get_item(model, **kwargs):
     if not id:
         return None
@@ -297,6 +317,7 @@ def get_item(model, **kwargs):
         return model.objects.get(**kwargs)
     except model.DoesNotExist:
         return None
+
 
 TTL = 60
 CACHE_SIZE = 256

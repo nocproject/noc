@@ -249,6 +249,22 @@ class ActiveAlarm(nosql.Document):
                 notification_group_id=self.clear_notification_group.id if self.clear_notification_group else None,
                 close_tt=self.close_tt
             )
+        # Set checks on all consequences
+        for d in self._get_collection().find({
+            "root": self.id
+        }, {"_id": 1, "alarm_class": 1}):
+            ac = AlarmClass.get_by_id(d["alarm_class"])
+            if not ac:
+                continue
+            t = ac.recover_time
+            if not t:
+                continue
+            call_later(
+                "noc.services.correlator.escalation.check_close_consequence",
+                scheduler="correlator",
+                delay=t,
+                alarm_id=self.id
+            )
         # Clear alarm
         self.delete()
         # Return archived

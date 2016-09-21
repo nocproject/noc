@@ -44,9 +44,8 @@ class CorrelatorService(Service):
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
-        self.escalations = defaultdict(list)  # alarm class -> [AlarmEscalation, ..]
         self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
-        self.handlers = {}  # alamr class id -> [<handler>]
+        self.handlers = {}  # alarm class id -> [<handler>]
         self.scheduler = None
         self.correlate_queue = Queue.Queue()
 
@@ -81,7 +80,6 @@ class CorrelatorService(Service):
         self.load_rules()
         self.load_triggers()
         self.load_rca_rules()
-        self.load_escalation_rules()
         self.load_handlers()
 
     def load_rules(self):
@@ -149,19 +147,6 @@ class CorrelatorService(Service):
                 self.rca_reverse[rc.root.id] += [rc]
                 n += 1
         self.logger.info("%d RCA Rules have been loaded" % n)
-
-    def load_escalation_rules(self):
-        """
-        Load escalation rules
-        """
-        self.logger.info("Loading escalations")
-        self.escalations = defaultdict(list)
-        n = 0
-        for ae in AlarmEscalation.objects.all():
-            for ac in ae.alarm_classes:
-                self.escalations[ac.alarm_class.id] += [ae]
-                n += 1
-        self.logger.info("%d escalation rules have been loaded", n)
 
     def load_handlers(self):
         self.logger.info("Loading handlers")
@@ -417,9 +402,7 @@ class CorrelatorService(Service):
             }, delay=a.alarm_class.get_notification_delay())
         # Watch for escalations, when necessary
         if not a.root:
-            esc = self.escalations.get(a.alarm_class.id)
-            if esc:
-                self.watch_escalations(a, esc)
+            AlarmEscalation.watch_escalations(a)
 
     def clear_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
@@ -560,23 +543,6 @@ class CorrelatorService(Service):
                                     self.clear_alarm(br, de)
                 if r.stop_disposition:
                     break
-
-    def watch_escalations(self, alarm, escalations):
-        for esc in escalations:
-            for delay in esc.delays:
-                self.logger.debug(
-                    "[%s] Watch for %s after %s seconds",
-                    alarm.id, esc.name, delay
-                )
-                call_later(
-                    "noc.services.correlator.escalation.escalate",
-                    delay=delay,
-                    scheduler="correlator",
-                    alarm_id=alarm.id,
-                    escalation_id=esc.id,
-                    escalation_delay=delay,
-                    tt_escalation_limit=self.config.tt_escalation_limit
-                )
 
 if __name__ == "__main__":
     CorrelatorService().start()

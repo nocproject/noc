@@ -181,12 +181,12 @@ config:
       type: str
       default: en
 
-  correlator:
     tt_escalation_limit:
       label: TT escalation limin (tt/minute)
       type: int
       default: 10
 
+  correlator:
     max_threads:
       label: Correlator threads
       type: int

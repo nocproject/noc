@@ -89,6 +89,10 @@ class AlarmClass(nosql.Document):
     control_time1 = fields.IntField(required=False)
     # Control time to reopen alarm after >1 reopen
     control_timeN = fields.IntField(required=False)
+    # Consequence recover time
+    # Root cause will be detached if consequence alarm
+    # will not clear itself in *recover_time*
+    recover_time = fields.IntField(required=False, default=300)
     #
     category = nosql.ObjectIdField()
 
