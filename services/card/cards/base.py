@@ -89,7 +89,8 @@ class BaseCard(object):
                         "logical_status": self.f_logical_status,
                         "timestamp": self.f_timestamp,
                         "glyph_summary": self.f_glyph_summary,
-                        "object_location": self.f_object_location
+                        "object_location": self.f_object_location,
+                        "object_console": self.f_object_console
                     })
                     with open(tp) as f:
                         self.template_cache[name] = env.from_string(f.read())
@@ -203,6 +204,18 @@ class BaseCard(object):
         if not path:
             return _("N/A")
         return ", ".join(reversed(path))
+
+    @classmethod
+    def f_object_console(cls, object):
+        s = {
+            1: "telnet",
+            2: "ssh",
+            3: "http",
+            4: "https"
+        }[object.scheme]
+        return "<a href='%s://%s/' style='font-weight: bold'><i class='fa fa-terminal'></i> %s</a>" % (
+            s, object.address, s.upper()
+        )
 
     @staticmethod
     def update_dict(s, d):
