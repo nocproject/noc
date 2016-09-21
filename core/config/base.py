@@ -40,7 +40,9 @@ class BaseConfig(object):
         "geocoding_order": "yandex,google",
         "geocoding_yandex_key": 0,
         "geocoding_google_key": 0,
-        "geocoding_google_language": "en"
+        "geocoding_google_language": "en",
+        # Alarm escalations
+        "tt_escalation_limit": 10
     }
 
     def __init__(self):
@@ -71,6 +73,8 @@ class BaseConfig(object):
         self.geocoding_yandex_key = None
         self.geocoding_google_key = None
         self.geocoding_google_language = None
+        #
+        self.tt_escalation_limit = None
         #
         self.load()
 
