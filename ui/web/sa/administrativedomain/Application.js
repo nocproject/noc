@@ -11,6 +11,7 @@ Ext.define("NOC.sa.administrativedomain.Application", {
     requires: [
         "NOC.sa.administrativedomain.Model",
         "NOC.sa.administrativedomain.LookupField",
+        "NOC.core.TreeField",
         "NOC.main.pool.LookupField"
     ],
     model: "NOC.sa.administrativedomain.Model",
@@ -55,9 +56,11 @@ Ext.define("NOC.sa.administrativedomain.Application", {
         },
         {
             name: "parent",
-            xtype: "sa.administrativedomain.LookupField",
+            xtype: "nocTreeField",
             fieldLabel: __("Parent"),
-            allowBlank: true
+            allowBlank: true,
+            emptyText: __("Select parent..."),
+            restUrl: '/sa/administrativedomain'
         },
         {
             name: "description",
