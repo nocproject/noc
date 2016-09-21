@@ -125,6 +125,10 @@ Ext.define('NOC.core.TreeField', {
             items: me.panel
         });
 
+        this.on('change', function() {
+            me.fireEvent('select');
+        });
+
         this.on('destroy', function() {
             // ToDo ext-all.js:22 Uncaught TypeError: Cannot read property 'addCls' of null, press x on tab on open window panel
             console.log('destroy TreeField');
@@ -165,5 +169,12 @@ Ext.define('NOC.core.TreeField', {
             level: 0
         });
         this.panel.byIdQuery('_root_');
+    },
+
+    getValue: function() {
+        if(this.fieldValue != null) {
+            return this.fieldValue.id;
+        }
+        return null;
     }
 });

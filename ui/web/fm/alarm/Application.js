@@ -90,11 +90,11 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         });
 
-        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.LookupField", {
+        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.TreeField", {
             fieldLabel: __("Adm. Domain"),
             width: 198,
             listeners: {
-                scope: me, 
+                scope: me,
                 select: me.onChangeFilter,
                 clear: me.onChangeFilter
             },
@@ -115,13 +115,13 @@ Ext.define("NOC.fm.alarm.Application", {
             fieldLabel: __("Selector"),
             width: 198,
             listeners: {
-                scope: me, 
+                scope: me,
                 select: me.onChangeFilter,
                 clear: me.onChangeFilter
             }   
         }); 
 
-        me.segmentCombo = Ext.create("NOC.inv.networksegment.LookupField", {
+        me.segmentCombo = Ext.create("NOC.inv.networksegment.TreeField", {
             fieldLabel: __("Segment"),
             width: 198,
             listeners: {
