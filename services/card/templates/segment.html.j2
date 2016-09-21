@@ -30,7 +30,7 @@
     <tr>
         <th scope="row">{{ _("Objects") }}</th>
         <td>
-            <table>
+            <table class="table table-striped">
                 <thead>
                     <th class="col-sm-6">{{ _("Name") }}</th>
                     <th class="col-sm-2">{{ _("Address") }}</th>
@@ -39,9 +39,15 @@
                 </thead>
                 <tbody>
                 {% for o in managed_objects %}
-                <tr>
-                    <td><a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.object | managed_object_title}}</a></td>
-                    <td>{{ o.object.address }} {{ o.object | object_console }}</td>
+                <tr class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[o.status] }}">
+                    <td>
+                        <a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.object | managed_object_title}}</a><br>
+                        <small>{{ o.object | object_location }}</small>
+                    </td>
+                    <td>
+                        {{ o.object.address }}<br/>
+                        {{ o.object | object_console }}
+                    </td>
                     <td>{{ o.object.platform }}</td>
                     <td>{{ o.summary | glyph_summary }}</td>
                 </tr>
