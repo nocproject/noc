@@ -260,6 +260,10 @@ class AlarmClass(nosql.Document):
                 if self.control_timeN:
                     r[-1] += ","
                     r += ["    \"control_timeN\": %d" % self.control_timeN]
+        if self.recover_time:
+            if r[-1][-1] != ",":
+                r[-1] += ","
+            r += ["    \"recover_time\": %d" % self.recover_time]
         # Close
         if r[-1].endswith(","):
             r[-1] = r[-1][:-1]
