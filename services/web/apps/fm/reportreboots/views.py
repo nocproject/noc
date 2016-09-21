@@ -83,8 +83,8 @@ class ReportRebootsApplication(SimpleReport):
             mo_names.update(dict([(c[0], c[1:3]) for c in cursor]))
         #
         data = [
-            (mo_names.get(x["_id"][0], "---"),
-             mo_names.get(x["_id"][1], "---"), x["count"])
+            (mo_names.get(x["_id"], "---")[0],
+             mo_names.get(x["_id"], "---")[1], x["count"])
             for x in data
         ]
 
