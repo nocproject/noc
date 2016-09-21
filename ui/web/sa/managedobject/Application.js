@@ -732,13 +732,13 @@ Ext.define("NOC.sa.managedobject.Application", {
         {
             title: "By Adm. Domain",
             name: "administrative_domain",
-            ftype: "lookup",
+            ftype: "tree",
             lookup: "sa.administrativedomain"
         },
         {
             title: "By Segment",
             name: "segment",
-            ftype: "lookup",
+            ftype: "tree",
             lookup: "inv.networksegment"
         },
         {
