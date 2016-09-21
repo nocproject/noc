@@ -41,7 +41,7 @@
                 {% for o in managed_objects %}
                 <tr>
                     <td><a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.object | managed_object_title}}</a></td>
-                    <td>{{ o.object.address }}</td>
+                    <td>{{ o.object.address }} {{ o.object | object_console }}</td>
                     <td>{{ o.object.platform }}</td>
                     <td>{{ o.summary | glyph_summary }}</td>
                 </tr>

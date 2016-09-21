@@ -70,7 +70,7 @@
 {% endif %}
 <tr>
     <th scope="row">{{ _("IP") }}</th>
-    <td>{{ address }}</td>
+    <td>{{ address }} {{ object | object_console }}</td>
 </tr>
 <tr>
     <th scope="row">{{ _("MAC") }}</th>
