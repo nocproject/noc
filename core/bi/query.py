@@ -82,7 +82,7 @@ OP_MAP = {
     "$sum": OP(min=1, max=1, function="SUM"),
     "$avg": OP(min=1, max=1, function="AVG"),
     "$uniq": OP(min=1, max=1, function="UNIQ"),
-    "median": OP(min=1, max=1, function="MEDIAN")
+    "$median": OP(min=1, max=1, function="MEDIAN")
 }
 
 
