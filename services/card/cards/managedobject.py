@@ -49,6 +49,8 @@ class ManagedObjectCard(BaseCard):
         return self.object.object_profile.card or "managedobject"
 
     def get_data(self):
+        if not self.object:
+            return None
         # @todo: Stage
         # @todo: Service range
         # @todo: Open TT
