@@ -36,6 +36,9 @@ Ext.define('NOC.core.TreePanel', {
                     if(hasChild(record.data)) {
                         record.data.level = me.historyStore.max('level') + 1;
                         me.historyStore.add(record.data);
+                        if(me.actionAlways){
+                            me.action(record.data);
+                        }
                     } else {
                         me.action(record.data);
                         me.pathStore.removeAll();
