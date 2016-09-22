@@ -35,7 +35,8 @@ class AlarmCard(BaseCard):
             return None
 
     def get_data(self):
-        now = datetime.datetime.now()
+        if not self.object:
+            return None
         # Get container path
         cp = []
         if self.object.managed_object.container:
