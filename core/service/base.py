@@ -66,6 +66,8 @@ class Service(object):
     require_nsq_writer = False
     ## List of API instances
     api = []
+    ## Request handler class
+    api_request_handler = APIRequestHandler
     ## Initialize gettext and process *language* configuration
     use_translation = False
     ## Initialize jinja2 templating engine
@@ -369,7 +371,7 @@ class Service(object):
             )
             handlers += [(
                 url,
-                APIRequestHandler,
+                self.api_request_handler,
                 {"service": self, "api_class": a}
             )]
             # Populate sdl
