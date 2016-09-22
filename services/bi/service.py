@@ -3,13 +3,14 @@
 ##----------------------------------------------------------------------
 ## BI service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## NOC modules
 from noc.core.service.base import Service
 from api.bi import BIAPI
+from noc.core.service.authapi import AuthAPIRequestHandler
 
 
 class BIService(Service):
@@ -17,6 +18,7 @@ class BIService(Service):
     api = [
         BIAPI
     ]
+    api_request_handler = AuthAPIRequestHandler
     process_name = "noc-%(name).10s-%(instance).2s"
 
     def __init__(self):

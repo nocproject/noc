@@ -421,3 +421,7 @@ config:
       default: 10000
 
   bi:
+    query_threads:
+      type: int
+      label: Concurrent query limit per process
+      default: 10
