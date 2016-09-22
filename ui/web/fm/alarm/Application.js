@@ -93,6 +93,7 @@ Ext.define("NOC.fm.alarm.Application", {
         me.admdomCombo = Ext.create("NOC.sa.administrativedomain.TreeField", {
             fieldLabel: __("Adm. Domain"),
             width: 198,
+            actionAlways: true,
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
@@ -124,6 +125,7 @@ Ext.define("NOC.fm.alarm.Application", {
         me.segmentCombo = Ext.create("NOC.inv.networksegment.TreeField", {
             fieldLabel: __("Segment"),
             width: 198,
+            actionAlways: true,
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,

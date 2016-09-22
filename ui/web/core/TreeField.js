@@ -91,6 +91,7 @@ Ext.define('NOC.core.TreeField', {
             listStore: this.listStore,
             historyStore: this.historyStore,
             pathStore: this.pathStore,
+            actionAlways: this.actionAlways,
             closeSelectWindow: function() {
                 me.selectWindow.hide();
             },
@@ -100,7 +101,9 @@ Ext.define('NOC.core.TreeField', {
                 if(me.action !== undefined) {
                     me.action(node.id);
                 }
-                me.selectWindow.hide();
+                if(!me.actionAlways) {
+                    me.selectWindow.hide();
+                }
             },
             fieldValue: function(value) {
                 if(value === undefined) {
