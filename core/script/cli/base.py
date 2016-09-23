@@ -29,6 +29,17 @@ class CLI(object):
     CONNECT_RETRIES = 3
     # Timeout after immediate disconnect
     CONNECT_TIMEOUT = 3
+    # compiled capabilities
+    HAS_TCP_KEEPALIVE = hasattr(socket, "SO_KEEPALIVE")
+    HAS_TCP_KEEPIDLE = hasattr(socket, "TCP_KEEPIDLE")
+    HAS_TCP_KEEPINTVL = hasattr(socket, "TCP_KEEPINTVL")
+    HAS_TCP_KEEPCNT = hasattr(socket, "TCP_KEEPCNT")
+    # Time until sending first keepalive probe
+    KEEP_IDLE = 10
+    # Keepalive packets interval
+    KEEP_INTVL = 10
+    # Terminate connection after N keepalive failures
+    KEEP_CNT = 3
 
     class CLIError(Exception):
         pass
@@ -70,6 +81,19 @@ class CLI(object):
             s.setsockopt(
                 socket.IPPROTO_IP, socket.IP_TOS, self.tos
             )
+        if self.HAS_TCP_KEEPALIVE:
+            s.setsockopt(
+                socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1
+            )
+            if self.HAS_TCP_KEEPIDLE:
+                s.setsockopt(socket.SOL_TCP,
+                             socket.TCP_KEEPIDLE, self.KEEP_IDLE)
+            if self.HAS_TCP_KEEPINTVL:
+                s.setsockopt(socket.SOL_TCP,
+                             socket.TCP_KEEPINTVL, self.KEEP_INTVL)
+            if self.HAS_TCP_KEEPCNT:
+                s.setsockopt(socket.SOL_TCP,
+                             socket.TCP_KEEPCNT, self.KEEP_CNT)
         return self.iostream_class(s, self)
 
     def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None):
@@ -228,7 +252,7 @@ class CLI(object):
                     self.profile.rx_pattern_syntax_error.search(self.buffer)):
                 self.error = self.script.CLISyntaxError(self.buffer)
                 break
-            # Then check for operaion error
+            # Then check for operation error
             if (self.profile.rx_pattern_operation_error and
                     self.profile.rx_pattern_operation_error.search(self.buffer)):
                 self.error = self.script.CLIOperationError(self.buffer)
