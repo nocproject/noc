@@ -16,8 +16,10 @@ import pprint
 from django.utils.dateformat import DateFormat
 ## NOC modules
 from reportapplication import *
+from noc.core.translation import ugettext as _
 from noc import settings
 from noc.lib.widgets import tags_list
+
 
 INDENT = "    "
 
@@ -483,7 +485,7 @@ class TableSection(ReportSection):
             "<input type='hidden' name='filename' value='report.csv'>",
             "<input type='hidden' name='data' id='csv_data'>",
             "<input type='submit' value='CSV' onclick='getCSVData(\".report-table\");'>",
-            "<input type='button' value='Print' onclick='window.print()'>",
+            "<input type='button' value=" + _('Print') + "onclick='window.print()'>",
             "<input type='button' value='PDF' onclick='getPDF(\".report-table\")'>",
             "</form>",
             "<table class='report-table' summary='%s'>" % self.quote(self.name)
@@ -508,7 +510,7 @@ class TableSection(ReportSection):
                 if type(row) == SectionRow:
                     # Display section row
                     if (current_section and self.has_total and
-                        current_section.subtotal):
+                    current_section.subtotal):
                         # Display totals from previous sections
                         s += render_subtotals()
                     s += [

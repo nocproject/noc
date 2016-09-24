@@ -24,12 +24,16 @@ class ReportFilterApplication(SimpleReport):
             data += [SectionRow(name=p.name)]
 
             is_managed = ManagedObject.objects.filter(is_managed=True, pool=p, profile_name="Generic.Host")
+            is_managed_not_generic = ManagedObject.objects.filter(is_managed=True, pool=p).exclude(
+                profile_name="Generic.Host")
             is_managed_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-" +
                              str(m.id) for m in is_managed]
+            is_managed_ng_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-" +
+                                str(m.id) for m in is_managed_not_generic]
             bad_snmp_cred = get_db()["noc.joblog"].find({"problems.suggest_snmp": "Failed to guess SNMP community",
                                                          "_id": {"$in": is_managed_in}}).count()
             bad_cli_cred = get_db()["noc.joblog"].find({"problems.suggest_cli": "Failed to guess CLI credentials",
-                                                        "_id": {"$in": is_managed_in}}).count()
+                                                        "_id": {"$in": is_managed_ng_in}}).count()
             calc = {
                 _("Not Managed"): ManagedObject.objects.filter(is_managed=False, pool=p).count(),
                 _("Is Managed"): ManagedObject.objects.filter(is_managed=True, pool=p).count(),
@@ -39,7 +43,7 @@ class ReportFilterApplication(SimpleReport):
                 _("Generic.Host is Managed ping"): len([s for s in is_managed if s.get_status()]),
                 _("Generic.Host is Managed not ping"): len([s for s in is_managed if not s.get_status()]),
                 _("Generic.Host is Managed bad SNMP Credential"): bad_snmp_cred,
-                _("Generic.Host is Managed bad CLI Credential"): bad_cli_cred,
+                _("Is Managed bad CLI Credential"): bad_cli_cred,
             }
 
             for c in calc:
