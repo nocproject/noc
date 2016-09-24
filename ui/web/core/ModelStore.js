@@ -19,9 +19,8 @@ Ext.define("NOC.core.ModelStore", {
     constructor: function(config) {
         var me = this,
             model = Ext.create(config.model),
-            fields = model.fields.items.concat(config.customFields),
+            fields = model.fields.items.concat(config.customFields || []),
             defaultValues = {};
-
         for(var i=0; i < fields.length; i++) {
             var field = fields[i],
                 dv = field.defaultValue;
