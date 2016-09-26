@@ -45,7 +45,7 @@ Ext.define("NOC.sa.runcommands.Application", {
         text = Ext.create({
             xtype: "textarea",
             anchor: "100%",
-            width: "100%",
+            width: "100%"
         });
 
         return Ext.create("Ext.panel.Panel", {
