@@ -1,5 +1,5 @@
 ###
-    Тулбар управления библиотекой.
+	Тулбар управления библиотекой.
 ###
 Ext.define 'Report.view.library.Control',
 	extend: 'Ext.toolbar.Toolbar'

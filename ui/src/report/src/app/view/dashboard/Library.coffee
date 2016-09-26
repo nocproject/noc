@@ -1,5 +1,5 @@
 ###
-    Библиотека дашбордов.
+	Библиотека дашбордов.
 ###
 Ext.define 'Report.view.dashboard.Library',
 	extend: 'Report.view.library.Main'

@@ -1,5 +1,5 @@
 ###
-    Кнопка добавления виджета.
+	Кнопка добавления виджета.
 ###
 Ext.define 'Report.view.dashboard.AddWidget',
 	extend: 'Ext.button.Button'

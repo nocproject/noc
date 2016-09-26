@@ -1,5 +1,5 @@
 ###
-    Мета-данные сущности.
+	Мета-данные сущности.
 ###
 Ext.define 'Report.view.configurator.Meta',
 	extend: 'Ext.container.Container'

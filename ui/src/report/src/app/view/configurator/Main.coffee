@@ -1,5 +1,5 @@
 ###
-    Окно конфигуратора.
+	Окно конфигуратора.
 ###
 Ext.define 'Report.view.configurator.Main',
 	extend: 'Ext.window.Window'
@@ -21,14 +21,14 @@ Ext.define 'Report.view.configurator.Main',
 	config:
 	
 		###
-		    @cfg {Boolean} displayType
-            Указывает на необходимость отображать выбор типа сущности.
+			@cfg {Boolean} displayType
+			Указывает на необходимость отображать выбор типа сущности.
 		###
 		displayType: false
 		
 		###
-		    @cfg {Boolean} displaySize
-            Указывает на необходимость отображать настройки размера сущности.
+			@cfg {Boolean} displaySize
+			Указывает на необходимость отображать настройки размера сущности.
 		###
 		displaySize: false
 	

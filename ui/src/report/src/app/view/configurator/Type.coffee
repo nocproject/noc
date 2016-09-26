@@ -1,5 +1,5 @@
 ###
-    Тип виджета.
+	Тип виджета.
 ###
 Ext.define 'Report.view.configurator.Type',
 	extend: 'Ext.container.Container'

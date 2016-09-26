@@ -1,5 +1,5 @@
 ###
-    Модель источника данных для отчета.
+	Модель источника данных для отчета.
 ###
 Ext.define 'Report.model.wellspring.List',
 	extend: 'Ext.data.Model'

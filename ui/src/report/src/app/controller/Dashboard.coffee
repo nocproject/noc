@@ -1,5 +1,5 @@
 ###
-    Управление логикой дашбордов.
+	Управление логикой дашбордов.
 ###
 Ext.define 'Report.controller.Dashboard',
 	extend: 'Ext.app.Controller'
@@ -34,9 +34,9 @@ Ext.define 'Report.controller.Dashboard',
 		showWidgetLibrary: (button) ->
 			
 			###
-	            Оповещает о необходимости добавления виджета.
-	            @param {Report.controller.Dashboard} this Контроллер.
-	            @param {Report.view.dashboard.AddWidget} button Кнопка добавления виджета.
+				Оповещает о необходимости добавления виджета.
+				@param {Report.controller.Dashboard} this Контроллер.
+				@param {Report.view.dashboard.AddWidget} button Кнопка добавления виджета.
 			###
 			@fireEvent 'addDashboardAction', @, button
 	
@@ -58,15 +58,15 @@ Ext.define 'Report.controller.Dashboard',
 	
 		###
 			Добавляет дашборд.
-            @param {Ext.button.Button} button Кнопка добавления дашборда.
+			@param {Ext.button.Button} button Кнопка добавления дашборда.
 		###
 		addDashboard: (button) ->
 			list = button.up('dashboardLibrary').down('#list')
 			dashboardData = list.getSelectionModel().getSelection()[0]
 			
 			###
-			    Оповещает о необходимости добавления дашборда.
-	            @param {Report.controller.Dashboard} this Контроллер.
-	            @param {Report.model.config.Dashboard} dashboardData Данные дашборда.
+				Оповещает о необходимости добавления дашборда.
+				@param {Report.controller.Dashboard} this Контроллер.
+				@param {Report.model.config.Dashboard} dashboardData Данные дашборда.
 			###
 			@fireEvent 'addDashboardAction', @, dashboardData

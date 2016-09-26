@@ -1,5 +1,5 @@
 ###
-    Основа дашборда.
+	Основа дашборда.
 ###
 Ext.define 'Report.view.dashboard.Main',
 	extend: 'Ext.container.Container'
@@ -20,28 +20,28 @@ Ext.define 'Report.view.dashboard.Main',
 		model: null
 		
 		###
-            @cfg {Number} dashPadding Отступ внутренностей дашборда.
-        ###
+			@cfg {Number} dashPadding Отступ внутренностей дашборда.
+		###
 		dashPadding: 10
 		
 		###
-            @cfg {Number} dashCellHeight Высота ячейки дашборда.
-        ###
+			@cfg {Number} dashCellHeight Высота ячейки дашборда.
+		###
 		dashCellHeight: 310
 		
 		###
-            @cfg {Number} dashColumns Количество колонок дашборда.
-        ###
+			@cfg {Number} dashColumns Количество колонок дашборда.
+		###
 		dashColumns: 4
 		
 		###
-            @cfg {Number} dashHeaderHeight Высота хедера виджета.
-        ###
+			@cfg {Number} dashHeaderHeight Высота хедера виджета.
+		###
 		dashHeaderHeight: 56
 		
 		###
-            @cfg {Boolean} dashFirstCall Первый ли запуск отрисовки дашборда.
-        ###
+			@cfg {Boolean} dashFirstCall Первый ли запуск отрисовки дашборда.
+		###
 		dashFirstCall: true
 
 	items: [
@@ -85,7 +85,7 @@ Ext.define 'Report.view.dashboard.Main',
 	]
 
 	###
-	   Запуск расстановки виджетов внутри дашборда.
+		Запуск расстановки виджетов внутри дашборда.
 	###
 	doDashboardLayout: () ->
 		items = @getDashItems()
@@ -112,7 +112,7 @@ Ext.define 'Report.view.dashboard.Main',
 
 		###
 			Фикс скрола при ресайзе дашборда.
-            Исправляет проблему с недостаточным отступом снизу.
+			Исправляет проблему с недостаточным отступом снизу.
 		###
 		fixScrollOnResize: do () ->
 			browserCall = false
@@ -124,9 +124,9 @@ Ext.define 'Report.view.dashboard.Main',
 
 		###
 			Генерация пустой виртуальной матрицы расположения элементов.
-            Используется для расстановки элементов без учета конкретных размеров.
-            Каждый виджет может занимать в матрице несколько ячеек.
-            @return {Array[]} Пустая матрица.
+			Используется для расстановки элементов без учета конкретных размеров.
+			Каждый виджет может занимать в матрице несколько ячеек.
+			@return {Array[]} Пустая матрица.
 		###
 		generateEmptyMatrix: () ->
 			matrix = []
@@ -141,8 +141,8 @@ Ext.define 'Report.view.dashboard.Main',
 
 		###
 			Создает пустой курсор для хранения текущей позиции в
-            матрице виджетов при рассчете расстановки.
-            @return {Object} Курсор.
+			матрице виджетов при рассчете расстановки.
+			@return {Object} Курсор.
 		###
 		makeNewCursor: () ->
 			{
@@ -152,24 +152,24 @@ Ext.define 'Report.view.dashboard.Main',
 
 		###
 			Возвращает виджеты дашборда.
-            @return {Ext.Component[]} Виджеты.
+			@return {Ext.Component[]} Виджеты.
 		###
 		getDashItems: () ->
 			@down('#widgets').getItems()
 
 		###
 			Возвращает ширину колонки лейаута в пикселях.
-            @return {Number} Ширина.
+			@return {Number} Ширина.
 		###
 		getColWidth: () ->
 			@getWidth() / @getDashColumns()
 
 		###
 			Выполняет позиционирование виджета на доске.
-            @param {Object} cursor Курсор.
-            @param {Number} width Ширина в виртуальных единицах.
-            @return {Function}
-            Функция, принимающая первым параметром виджет (Ext.Component).
+			@param {Object} cursor Курсор.
+			@param {Number} width Ширина в виртуальных единицах.
+			@return {Function}
+			Функция, принимающая первым параметром виджет (Ext.Component).
 		###
 		positioning: (cursor, width) -> (item) =>
 			x = @calcX cursor.col, width
@@ -183,24 +183,24 @@ Ext.define 'Report.view.dashboard.Main',
 
 		###
 			Помещает функцию в конец очереди исполнения интерпретатором JS.
-            @param {Function} fn Функция.
+			@param {Function} fn Функция.
 		###
 		toEndOfTurn: (fn) ->
 			setTimeout fn, 0
 
 		###
 			Вычисляет X-координату для виджета.
-            @param {Number} col Колонка.
-            @param {Number} width Ширина в виртуальных единицах.
-            @return {Number} Координата.
+			@param {Number} col Колонка.
+			@param {Number} width Ширина в виртуальных единицах.
+			@return {Number} Координата.
 		###
 		calcX: (col, width) ->
 			@getColWidth() * col + width + @getDashPadding()
 
 		###
 			Вычисляет Y-координату для виджета.
-            @param {Number} row Строка.
-            @return {Number} Координата.
+			@param {Number} row Строка.
+			@return {Number} Координата.
 		###
 		calcY: (row) ->
 			@getDashCellHeight() * row - @getDashHeaderHeight() * row + @getDoubleDashPadding()
@@ -215,10 +215,10 @@ Ext.define 'Report.view.dashboard.Main',
 
 		###
 			Перемещает элемент дашборада на доске.
-            Не предполагает ручной вызов, метод служит
-            для работы при расстановке виджетов на доске.
-            @param {Function} move Функция-передвигатель.
-            @param {Ext.Component} item Виджет.
+			Не предполагает ручной вызов, метод служит
+			для работы при расстановке виджетов на доске.
+			@param {Function} move Функция-передвигатель.
+			@param {Ext.Component} item Виджет.
 		###
 		moveDashItem: (move, item) ->
 			if item.rendered
@@ -227,31 +227,31 @@ Ext.define 'Report.view.dashboard.Main',
 				item.on 'afterrender', move, @
 
 		###
-            Удвоенный отступ доски.
-            @return {Number} Отступ.
+			Удвоенный отступ доски.
+			@return {Number} Отступ.
 		###
 		getDoubleDashPadding: () ->
 			@getDashPadding() * 2
 	
 		###
 			Четверной отступ доски.
-            @return {Number} Отступ.
+			@return {Number} Отступ.
 		###
 		getQuadDashPadding: () ->
 			@getDoubleDashPadding() * 2
 	
 		###
 			Особый отступ доски по высоте, особенность рендеринга.
-            @return {Number} Отступ.
+			@return {Number} Отступ.
 		###
 		getMagicHeightDashPadding: () ->
 			@getDashPadding() * 7.5
 	
 		###
 			Устанавливает физические размеры виджета в пикселях.
-            @param {Ext.Component} item Виджет.
-            @param {Number} width Ширина в виртуальных единицах.
-            @param {Number} height Высота в виртуальных единицах.
+			@param {Ext.Component} item Виджет.
+			@param {Number} width Ширина в виртуальных единицах.
+			@param {Number} height Высота в виртуальных единицах.
 		###
 		setDashItemSize: (item, width, height) ->
 			@setDashItemWidth item, width
@@ -259,32 +259,32 @@ Ext.define 'Report.view.dashboard.Main',
 	
 		###
 			Устанавливает физическую ширину виджета в пикселях.
-            @param {Ext.Component} item Виджет.
-            @param {Number} width Ширина в виртуальных единицах.
+			@param {Ext.Component} item Виджет.
+			@param {Number} width Ширина в виртуальных единицах.
 		###
 		setDashItemWidth: (item, width) ->
 			item.setWidth @calcDashItemWidth width
 	
 		###
 			Вычисляет необходимую ширину виджета в пикселях.
-            @param {Number} width Ширина.
-            @return {Number} Результат вычислений.
+			@param {Number} width Ширина.
+			@return {Number} Результат вычислений.
 		###
 		calcDashItemWidth: (width) ->
 			width * @getColWidth() - @getDoubleDashPadding()
 	
 		###
 			Устанавливает физическую высоту виджета в пикселях.
-            @param {Ext.Component} item Виджет.
-            @param {Number} height Высота в виртуальных единицах.
+			@param {Ext.Component} item Виджет.
+			@param {Number} height Высота в виртуальных единицах.
 		###
 		setDashItemHeight: (item, height) ->
 			item.setHeight @calcDashItemHeight height
 	
 		###
 			Вычисляет необходимую высоту виджета в пикселях.
-            @param {Number} height Высота.
-            @return {Number} Результат вычислений.
+			@param {Number} height Высота.
+			@return {Number} Результат вычислений.
 		###
 		calcDashItemHeight: (height) ->
 			total = height * @getDashCellHeight()
@@ -295,11 +295,11 @@ Ext.define 'Report.view.dashboard.Main',
 	
 		###
 			Создает функцию, устанавливающую курсор на свободную позицию в матрице
-            с учетов виртуальных размеров виджета, пропуская занятые ячейки и ячейки,
-            установка в которую приведет к залезанию на другой виджет или выход за границы доски.
-            @param {Array[]} matrix Матрица.
-            @param {Object} cursor Курсор.
-            @return {Function} Функция, принимающая первым параметром шиниру, в Number.
+			с учетов виртуальных размеров виджета, пропуская занятые ячейки и ячейки,
+			установка в которую приведет к залезанию на другой виджет или выход за границы доски.
+			@param {Array[]} matrix Матрица.
+			@param {Object} cursor Курсор.
+			@return {Function} Функция, принимающая первым параметром шиниру, в Number.
 		###
 		makeCursorToFreeMover: (matrix, cursor) -> (width) =>
 			loop
@@ -315,26 +315,26 @@ Ext.define 'Report.view.dashboard.Main',
 	
 		###
 			Определяет получится ли переполнение при установке виджета
-            по указанному курсором адресу в матрице.
-            @param {Object} cursor Курсор.
-            @param {Number} width Ширина.
-            @return {Boolean} Результат проверки.
+			по указанному курсором адресу в матрице.
+			@param {Object} cursor Курсор.
+			@param {Number} width Ширина.
+			@return {Boolean} Результат проверки.
 		###
 		isDashOverflow: (cursor, width) ->
 			cursor.col + width > @getDashColumns()
 	
 		###
 			Определяет занята ли ячейка матрицы по адресу, указанному курсором.
-            @param {Array[]} matrix Матрица.
-            @param {Object} cursor Курсор.
-            @return {Boolean} Результат проверки.
+			@param {Array[]} matrix Матрица.
+			@param {Object} cursor Курсор.
+			@return {Boolean} Результат проверки.
 		###
 		isEngaged: (matrix, cursor) ->
 			matrix[cursor.col][cursor.row]
 	
 		###
 			Переводит курсор на следующую строку матрицы.
-            @param {Object} cursor Курсор.
+			@param {Object} cursor Курсор.
 		###
 		nextRow: (cursor) ->
 			cursor.col = 0
@@ -342,18 +342,18 @@ Ext.define 'Report.view.dashboard.Main',
 	
 		###
 			Переводит курсор на следующую колонку матрицы.
-            @param {Object} cursor Курсор.
+			@param {Object} cursor Курсор.
 		###
 		nextCol: (cursor) ->
 			cursor.col = ++cursor.col
 	
 		###
 			Создает функцию-заполнятель, которая заполняет пространство
-            в матрице виджетов на указанные высоту и ширину.
-            @param {Array[]} matrix Матрица.
-            @param {Object} cursor Курсор.
-            @return {Function}
-            Функция, принимающая на вход 2 параметра - шарину и высоту, оба Number.
+			в матрице виджетов на указанные высоту и ширину.
+			@param {Array[]} matrix Матрица.
+			@param {Object} cursor Курсор.
+			@return {Function}
+			Функция, принимающая на вход 2 параметра - шарину и высоту, оба Number.
 		###
 		makeFiller: (matrix, cursor) -> (width, height) =>
 			for colIndex in [0...width]

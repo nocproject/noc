@@ -1,5 +1,5 @@
 ###
-    Набор мета-данных описания выбранной сущности.
+	Набор мета-данных описания выбранной сущности.
 ###
 Ext.define 'Report.view.library.Description',
 	extend: 'Ext.container.Container'

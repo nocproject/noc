@@ -1,5 +1,5 @@
 ###
-    Тулбар управления Noc.
+	Тулбар управления Noc.
 ###
 Ext.define 'Report.view.root.NocToolbar',
 	extend: 'Ext.toolbar.Toolbar'

@@ -1,5 +1,5 @@
 ###
-    Виджет для отображения табличных данных.
+	Виджет для отображения табличных данных.
 ###
 Ext.define 'Report.view.widget.type.Grid',
 	extend: 'Report.view.widget.type.Abstract'
@@ -17,7 +17,7 @@ Ext.define 'Report.view.widget.type.Grid',
 	privates:
 		
 		###
-		    Конструирует колонки для грида на основе колонок данных.
+			Конструирует колонки для грида на основе колонок данных.
 		###
 		makeGridColumns: () ->
 			@getColumns().getRange().map (column) ->

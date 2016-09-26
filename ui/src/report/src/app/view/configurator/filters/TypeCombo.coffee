@@ -1,5 +1,5 @@
 ###
-    Комбо выбора типа фильтра.
+	Комбо выбора типа фильтра.
 ###
 Ext.define 'Report.view.configurator.filters.TypeCombo',
 	extend: 'Ext.form.field.ComboBox'
