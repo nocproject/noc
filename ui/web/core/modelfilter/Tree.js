@@ -18,7 +18,7 @@ Ext.define("NOC.core.modelfilter.Tree", {
 
     initComponent: function() {
         var me = this,
-            wn = "NOC." + me.lookup + ".TreeField",
+            wn = "NOC." + me.lookup + ".TreeCombo",
             tree = Ext.create(wn, {
                 labelAlign: "top",
                 fieldLabel: me.title,
@@ -27,6 +27,7 @@ Ext.define("NOC.core.modelfilter.Tree", {
                 listeners: {
                     scope: me,
                     clear: me.onChange,
+                    select: me.onChange,
                     change: me.onChange
                 }
             });
