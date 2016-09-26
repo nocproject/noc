@@ -97,6 +97,13 @@
         - node
         - noc
 
+    - role: mrt
+      when: "{{ has_svc_mrt | default(False) }}"
+      tags:
+        - mrt
+        - node
+        - noc
+
     - role: web
       when: "{{ has_svc_web | default(False) }}"
       tags:
