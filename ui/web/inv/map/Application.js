@@ -10,9 +10,9 @@ Ext.define("NOC.inv.map.Application", {
     extend: "NOC.core.Application",
     requires: [
         "NOC.inv.networksegment.TreeField",
+        "NOC.core.TreeCombo",
         "NOC.inv.map.MapPanel"
     ],
-
 
     zoomLevels: [
         [0.25, "25%"],
@@ -31,12 +31,16 @@ Ext.define("NOC.inv.map.Application", {
 
         me.readOnly = !me.hasPermission("write");
 
-        me.segmentField = Ext.create('NOC.inv.networksegment.TreeField', {
+        me.segmentCombo = Ext.create('NOC.inv.networksegment.TreeCombo', {
             fieldLabel: __("Segment"),
-            labelWidth: 45,
-            minWidth: 280,
+            labelWidth: 50,
+            labelAlign: "left",
+            minWidth: 400,
             emptyText: __("Select segment..."),
-            action: Ext.bind(me.loadSegment, me)
+            listeners: {
+                scope: me,
+                select: me.onSelectSegment
+            }
         });
 
         me.zoomCombo = Ext.create("Ext.form.ComboBox", {
@@ -176,7 +180,7 @@ Ext.define("NOC.inv.map.Application", {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
-                        me.segmentField,
+                        me.segmentCombo,
                         "-",
                         me.zoomCombo,
                         me.reloadButton,
@@ -202,8 +206,8 @@ Ext.define("NOC.inv.map.Application", {
     loadSegment: function(segmentId) {
         var me = this;
 
-        if(me.segmentField.getFieldValue() == null) {
-            me.segmentField.restoreById(segmentId);
+        if(me.segmentCombo.getValue() == null) {
+            me.segmentCombo.restoreById(segmentId);
         }
         me.setHistoryHash(segmentId);
         // @todo: Remove
@@ -223,7 +227,6 @@ Ext.define("NOC.inv.map.Application", {
 
     onMapReady: function() {
         var me = this;
-        // me.segmentCombo.setDisabled(false);
         if(me.getCmd() === "history") {
             me.loadSegment(me.noc.cmd.args[0]);
         }
@@ -231,7 +234,9 @@ Ext.define("NOC.inv.map.Application", {
 
     onSelectSegment: function(combo, record, opts) {
         var me = this;
-        me.loadSegment(record.get("id"));
+        if(record) {
+            me.loadSegment(record.get("id"));
+        }
     },
 
     onZoom: function(combo, record, opts) {

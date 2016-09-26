@@ -82,10 +82,6 @@ Ext.define("NOC.core.LookupField", {
                 me.clearValue();
                 me.fireEvent("clear");
                 break;
-            case e.ENTER:
-                var keyNav = me.getPicker().getNavigationModel();
-                keyNav.selectHighlighted(e);
-                break;
         }
     },
 
