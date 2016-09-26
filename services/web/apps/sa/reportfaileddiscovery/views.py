@@ -27,13 +27,17 @@ class ReportForm(forms.Form):
         label=_("Managed Objects Profile"),
         required=False,
         queryset=ManagedObjectProfile.objects.order_by("name"))
+    avail_status = forms.BooleanField(
+        label=_("Filter by Ping status"),
+        required=False
+    )
 
 
 class ReportFilterApplication(SimpleReport):
     title = _("Failed Discovery")
     form = ReportForm
 
-    def get_data(self, pool, obj_profile, **kwargs):
+    def get_data(self, pool, obj_profile, avail_status, **kwargs):
         data = []
         job_logs = get_db()["noc.joblog"].find({"$and": [{"problems": {"$ne": {  }}},
                                                          {"problems": {"$exists": "true"}}]})
@@ -44,12 +48,16 @@ class ReportFilterApplication(SimpleReport):
                 mo = mo.filter(object_profile=obj_profile)
             if not mo:
                 continue
+            if avail_status:
+                if not mo[0].get_status():
+                    continue
             for method in discovery["problems"]:
 
                 data += [
                     (
                         mo[0].name,
                         mo[0].address,
+                        mo[0].get_status(),
                         method,
                         discovery["problems"][method]
                     )
@@ -59,6 +67,7 @@ class ReportFilterApplication(SimpleReport):
             title=self.title,
             columns=[
                 _("Managed Object"), _("Address"),
+                TableColumn(_("Avail"), format="bool"),
                 _("Discovery"), _("Error")
             ],
             data=data)
