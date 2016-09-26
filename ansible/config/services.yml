@@ -134,6 +134,10 @@ services:
     description: Reports
     level: global
 
+  mrt:
+    description: MRT worker
+    level: global
+
 config:
   noc:
     installation_name:
@@ -425,3 +429,9 @@ config:
       type: int
       label: Concurrent query limit per process
       default: 10
+
+  mrt:
+    max_concurrency:
+      type: int
+      label: Amount of concurrent tasks
+      default: 50

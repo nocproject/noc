@@ -53,9 +53,22 @@ Ext.define("NOC.sa.runcommands.Application", {
             items: [
                 text
             ],
-            setResult: function(result) {
+            showResult: function(result) {
                 text.setValue(result);
             }
         });
+    },
+
+    getArgs: function() {
+        var me = this;
+        return {
+            "script": "commands",
+            "args": {
+                "commands": [
+                    // @todo: Split lines
+                    me.commandsField.getValue()
+                ]
+            }
+        }
     }
 });
