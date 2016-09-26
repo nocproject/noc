@@ -40,11 +40,13 @@ class MRTRequestHandler(AuthRequestHandler):
             })
             logger.debug("Run script %s %s %s", oid, script, args)
             r = yield self.service.sae.script(oid, script, args)
+            metrics["mrt_success"] += 1
             raise tornado.gen.Return({
                 "id": str(oid),
                 "result": r
             })
         except Exception as e:
+            metrics["mrt_failed"] += 1
             raise tornado.gen.Return({
                 "id": str(oid),
                 "error": str(e)
