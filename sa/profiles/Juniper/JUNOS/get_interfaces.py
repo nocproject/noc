@@ -57,6 +57,7 @@ class Script(BaseScript):
         r"^\s+Flags:.+, Unnumbered", re.IGNORECASE | re.MULTILINE)
     rx_iface_unnumbered = re.compile(
         r"^\s+Donor interface: (?P<name>\S+)", re.IGNORECASE | re.MULTILINE)
+    rx_mtu = re.compile(r", MTU: (?P<mtu>\d+)", re.MULTILINE)
 
     def execute(self):
         untagged = {}
@@ -75,7 +76,7 @@ class Script(BaseScript):
             L = self.rx_log_split.split(v)
             phy = L.pop(0)
             phy = phy.replace(" )", "")
-            match = self.re_search(self.rx_phy_name, v)
+            match = self.re_search(self.rx_phy_name, phy)
             name = match.group("ifname")
             # Detect interface type
             if name.startswith("lo"):
@@ -97,6 +98,11 @@ class Script(BaseScript):
                 "oper_status": match.group("oper").lower() == "up",
                 "type": iftype,
                 }
+            def_si = {
+                "name": name,
+                "admin_status": match.group("admin").lower() == "enabled",
+                "oper_status": match.group("oper").lower() == "up"
+                }
             # Get description
             match = self.rx_phy_description.search(phy)
             if match:
@@ -111,6 +117,10 @@ class Script(BaseScript):
             if match:
                 mac = match.group("mac")
                 iface["mac"] = mac
+                def_si["mac"] = mac
+            match = self.rx_mtu.search(phy)
+            if match:
+                def_si["mtu"] = match.group("mtu")
             # Process subinterfaeces
             subs = []
             for s in L:
@@ -127,6 +137,10 @@ class Script(BaseScript):
                 }
                 if mac:
                     si["mac"] = mac
+                # Get MTU
+                match = self.rx_mtu.search(s)
+                if match:
+                    si["mtu"] = match.group("mtu")
                 # Get description
                 match = self.rx_phy_description.search(s)
                 if match:
@@ -203,6 +217,8 @@ class Script(BaseScript):
                         si["ip_unnumbered_subinterface"] = match.group("name")
                 # Append to subinterfaces list
                 subs += [si]
+            if not subs:
+                subs += [def_si]
             # Append to collected interfaces
             iface["subinterfaces"] = subs
             interfaces += [iface]
@@ -238,7 +254,6 @@ class Script(BaseScript):
                                       if imap.get(si["name"], "default") == vrf]
                 vrfs[vrf]["interfaces"] += [c]
         return vrfs.values()
-
 
     rx_vlan_sep = re.compile(r"^VLAN:", re.MULTILINE)
     rx_802_1Q_tag = re.compile(r"802.1Q\s+Tag:\s+(?P<tag>\d+)",
