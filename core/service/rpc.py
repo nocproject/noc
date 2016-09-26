@@ -78,6 +78,8 @@ class RPCProxy(object):
         services = self._service.config.get_service(
             self._service_name
         )
+        if not services:
+            raise RPCError("Service is not found")
         timeouts = list(self._service.iter_rpc_retry_timeout())
         retries = len(timeouts) + 1
         if len(services) < retries:

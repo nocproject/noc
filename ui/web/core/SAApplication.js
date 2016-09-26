@@ -21,6 +21,13 @@ Ext.define("NOC.core.SAApplication", {
         f: __("Failed")
     },
 
+    stateCls: {
+        w: "noc-status-waiting",
+        r: "noc-status-running",
+        s: "noc-status-success",
+        f: "noc-status-failed"
+    },
+
     initComponent: function() {
         var me = this,
             bs = 100;
@@ -359,6 +366,17 @@ Ext.define("NOC.core.SAApplication", {
                     text: __("Platform"),
                     dataIndex: "platform",
                     flex: 1
+                },
+                {
+                    text: __("Status"),
+                    dataIndex: "status",
+                    width: 70,
+                    renderer: NOC.render.Choices({
+                        w: __("Waiting"),
+                        r: __("Running"),
+                        f: __("Failed"),
+                        s: __("Success")
+                    })
                 }
             ],
             listeners: {
@@ -374,7 +392,13 @@ Ext.define("NOC.core.SAApplication", {
                     me.progressState.s,
                     me.progressState.f
                 ]
-            }]
+            }],
+            viewConfig: {
+                getRowClass: function(r) {
+                    console.log("row class", me.stateCls[r.get("status")]);
+                    return me.stateCls[r.get("status")];
+                }
+            }
         });
 
         me.resultPanel = me.getResultPanel();
@@ -450,11 +474,91 @@ Ext.define("NOC.core.SAApplication", {
         me.selectContinueButton.setDisabled(!count);
     },
     //
+    getParams: function() {
+        return {
+        }
+    },
+    //
     onRun: function() {
-        var me = this;
-        // check errors
+        var me = this,
+            xhr, cfg,
+            params = [],
+            offset=0,
+            rxChunk = /^(\d+)\|/;
+        // Get params and check errors
+        cfg = me.getArgs();
+        me.store.each(function(record) {
+            var v = {};
+            // Copy config
+            Ext.Object.each(cfg, function(key, value) {
+                if(key !== "id") {
+                    v[key] = value;
+                }
+            });
+            v.id = record.get("id");
+            params.push(v);
+        });
+        //
         me.showItem(me.ITEM_PROGRESS);
-        me.onUpdateProgress();
+        me.currentProgress = {
+            w: me.store.count(),
+            r: 0,
+            s: 0,
+            f: 0
+        };
+        me.setBadges();
+        // Start streaming request
+        xhr = new XMLHttpRequest();
+        xhr.open(
+            "POST",
+            "/api/mrt/",
+            true
+        );
+        xhr.setRequestHeader("Content-Type", "text/json");
+        xhr.onprogress = function() {
+            // Parse incoming chunks
+            var ft = xhr.responseText.substr(offset),
+                match, l, lh, chunk, record;
+            while(ft) {
+                match = ft.match(rxChunk);
+                if(!match) {
+                    break;
+                }
+                lh = match[0].length;
+                l = parseInt(match[1]);
+                chunk = JSON.parse(ft.substr(lh, l));
+                offset += lh + l;
+                ft = ft.substr(lh + l);
+                // Process chunk
+                record = me.store.getById(chunk.id);
+                if(chunk.error) {
+                    record.set({
+                        status: "f",
+                        result: chunk.error
+                    });
+                    me.currentProgress.r -= 1;
+                    me.currentProgress.f += 1;
+                }
+                if(chunk.running) {
+                    record.set("status", "r");
+                    me.currentProgress.w -= 1;
+                    me.currentProgress.r += 1;
+                }
+                if(chunk.result) {
+                    record.set({
+                        status: "s",
+                        result: chunk.result
+                    });
+                    me.currentProgress.r -= 1;
+                    me.currentProgress.s += 1;
+                }
+                console.log(chunk);
+            }
+            me.setBadges();
+        };
+        xhr.onload = function() {};
+        xhr.onerror = function() {};
+        xhr.send(JSON.stringify(params));
     },
     //
     onShowResult: function(grid, record) {
@@ -462,16 +566,13 @@ Ext.define("NOC.core.SAApplication", {
         me.resultPanel.showResult(record.get("result"));
     },
     //
-    onUpdateProgress: function() {
-        var me = this,
-            r = {w: 0, r: 0, s: 0, f: 0};
-        me.store.each(function(record) {
-            var s = record.get("state") || "w";
-            r[s] += 1;
-        });
-        Ext.Object.each(function(k, v) {
+    setBadges: function() {
+        var me = this;
+        Ext.Object.each(me.currentProgress, function(k, v) {
             var b = me.progressState[k];
-            // @todo: Set badge
+            // @todo: set badge
+            console.log("set badge", k, v);
+            b.setText(b.text.replace(/ \(\d+\)$/, "") + " (" + v + ")")
         });
     }
 });
