@@ -1,5 +1,5 @@
 ###
-    Кнопка вызова конфигуратора дашборда.
+	Кнопка вызова конфигуратора дашборда.
 ###
 Ext.define 'Report.view.dashboard.Configure',
 	extend: 'Ext.button.Button'

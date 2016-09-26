@@ -1,5 +1,5 @@
 ###
-    Управление логикой конфигуратора.
+	Управление логикой конфигуратора.
 ###
 Ext.define 'Report.controller.Configurator',
 	extend: 'Ext.app.Controller'

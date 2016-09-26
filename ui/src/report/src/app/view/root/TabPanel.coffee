@@ -1,5 +1,5 @@
 ###
-    Панель вкладок дашбордов.
+	Панель вкладок дашбордов.
 ###
 Ext.define 'Report.view.root.TabPanel',
 	extend: 'Ext.tab.Panel'

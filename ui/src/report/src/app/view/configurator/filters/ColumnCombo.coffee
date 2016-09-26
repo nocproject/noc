@@ -1,5 +1,5 @@
 ###
-    Комбо выбора колонки источника данных.
+	Комбо выбора колонки источника данных.
 ###
 Ext.define 'Report.view.configurator.filters.ColumnCombo',
 	extend: 'Ext.form.field.ComboBox'

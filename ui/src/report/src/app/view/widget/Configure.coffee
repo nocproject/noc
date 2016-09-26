@@ -1,5 +1,5 @@
 ###
-    Кнопка вызова конфигуратора виджета.
+	Кнопка вызова конфигуратора виджета.
 ###
 Ext.define 'Report.view.widget.Configure',
 	extend: 'Ext.button.Button'

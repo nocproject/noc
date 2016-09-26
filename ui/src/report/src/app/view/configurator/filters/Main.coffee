@@ -1,5 +1,5 @@
 ###
-    Список фильтров.
+	Список фильтров.
 ###
 Ext.define 'Report.view.configurator.filters.Main',
 	extend: 'Ext.container.Container'

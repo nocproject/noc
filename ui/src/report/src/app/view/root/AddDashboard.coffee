@@ -1,5 +1,5 @@
 ###
-    Кнопка добавления дашборда.
+	Кнопка добавления дашборда.
 ###
 Ext.define 'Report.view.root.AddDashboard',
 	extend: 'Ext.button.Button'

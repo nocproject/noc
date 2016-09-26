@@ -1,5 +1,5 @@
 ###
-    Модель конфигурации дашборда.
+	Модель конфигурации дашборда.
 ###
 Ext.define 'Report.model.config.Dashboard',
 	extend: 'Ext.data.Model'

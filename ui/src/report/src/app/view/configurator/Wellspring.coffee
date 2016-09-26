@@ -1,5 +1,5 @@
 ###
-    Источник данных виджета и соответствующие колонки.
+	Источник данных виджета и соответствующие колонки.
 ###
 Ext.define 'Report.view.configurator.Wellspring',
 	extend: 'Ext.container.Container'

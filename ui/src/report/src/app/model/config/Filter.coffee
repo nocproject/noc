@@ -1,5 +1,5 @@
 ###
-    Модель конфигурации фильтра.
+	Модель конфигурации фильтра.
 ###
 Ext.define 'Report.model.config.Filter',
 	extend: 'Ext.data.Model'

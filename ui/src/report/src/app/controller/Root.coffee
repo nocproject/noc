@@ -1,5 +1,5 @@
 ###
-    Управление корневой частью приложения, виевпортом и генерацией контента по конфигу.
+	Управление корневой частью приложения, виевпортом и генерацией контента по конфигу.
 ###
 Ext.define 'Report.controller.Root',
 	extend: 'Ext.app.Controller'
@@ -26,15 +26,15 @@ Ext.define 'Report.controller.Root',
 				click: 'showDashboardLibrary'
 
 	###
-        @private
-        @readonly
-        @property {Report.model.config.Root} reportConfig Конфигурация всего отчета.
-    ###
+		@private
+		@readonly
+		@property {Report.model.config.Root} reportConfig Конфигурация всего отчета.
+	###
 	reportConfig: null
 	
 	###
-        Рендеринг отчета по сохраненному на сервере конфигу.
-    ###
+		Рендеринг отчета по сохраненному на сервере конфигу.
+	###
 	renderByConfig: () ->
 		@getReportConfig (data) ->
 			model = Ext.create 'Report.data.Root'
@@ -48,10 +48,10 @@ Ext.define 'Report.controller.Root',
 	privates:
 
 		###
-            Получение конфига отчета с сервера.
-            @param {Function} next
-            Следующий шаг, принимающий первым параметром результат в виде объекта.
-        ###
+			Получение конфига отчета с сервера.
+			@param {Function} next
+			Следующий шаг, принимающий первым параметром результат в виде объекта.
+		###
 		getReportConfig: (next) ->
 			Report.data.Gate.send(
 				Report.data.API.config,
@@ -63,7 +63,7 @@ Ext.define 'Report.controller.Root',
 			Сохранение конфига отчета на сервере.
 			@param {Object} data Конфиг.
 			@param {Function} next
-            Следующий шаг, принимающий первым параметром результат в виде объекта.
+			Следующий шаг, принимающий первым параметром результат в виде объекта.
 		###
 		setReportConfig: (data, next) ->
 			Report.data.Gate.post(
@@ -85,9 +85,9 @@ Ext.define 'Report.controller.Root',
 		showDashboardLibrary: (button) ->
 			
 			###
-	            Оповещает о необходимости добавления дашборда.
-	            @param {Report.controller.Root} this Контроллер.
-	            @param {Report.view.root.TabPanel} tabPanel Панель вкладок для добавления дашбордов.
-	            @param {Report.view.root.AddDashboard} button Кнопка добавления дашборда.
+				Оповещает о необходимости добавления дашборда.
+				@param {Report.controller.Root} this Контроллер.
+				@param {Report.view.root.TabPanel} tabPanel Панель вкладок для добавления дашбордов.
+				@param {Report.view.root.AddDashboard} button Кнопка добавления дашборда.
 			###
 			@fireEvent 'addDashboardAction', @, button

@@ -1,5 +1,5 @@
 ###
-    Библиотека виджетов.
+	Библиотека виджетов.
 ###
 Ext.define 'Report.view.widget.Library',
 	extend: 'Report.view.library.Main'

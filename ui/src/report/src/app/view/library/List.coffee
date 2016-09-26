@@ -1,5 +1,5 @@
 ###
-    Список сущностей конкретной библиотеку.
+	Список сущностей конкретной библиотеку.
 ###
 Ext.define 'Report.view.library.List',
 	extend: 'Ext.container.Container'
@@ -11,7 +11,7 @@ Ext.define 'Report.view.library.List',
 	config:
 	
 		###
-		    @cfg {Ext.data.Store} store Стор для списка сущностей.
+			@cfg {Ext.data.Store} store Стор для списка сущностей.
 		###
 		store: null
 	

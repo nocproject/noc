@@ -1,5 +1,5 @@
 ###
-    Окно библиотеки.
+	Окно библиотеки.
 ###
 Ext.define 'Report.view.library.Main',
 	extend: 'Ext.window.Window'
@@ -18,7 +18,7 @@ Ext.define 'Report.view.library.Main',
 	config:
 	
 		###
-		    @cfg {Object} store Конфигурация стора для библиотеки.
+			@cfg {Object} store Конфигурация стора для библиотеки.
 		###
 		store: null
 	

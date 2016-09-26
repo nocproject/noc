@@ -1,5 +1,5 @@
 ###
-    Корневой виджет приложения.
+	Корневой виджет приложения.
 ###
 Ext.define 'Report.view.root.Main',
 	extend: 'Ext.panel.Panel'

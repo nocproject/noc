@@ -1,5 +1,5 @@
 ###
-    Модель конфигурации виджета.
+	Модель конфигурации виджета.
 ###
 Ext.define 'Report.model.config.Widget',
 	extend: 'Ext.data.Model'

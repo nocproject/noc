@@ -1,5 +1,5 @@
 ###
-    Размеры сущности.
+	Размеры сущности.
 ###
 Ext.define 'Report.view.configurator.Size',
 	extend: 'Ext.container.Container'

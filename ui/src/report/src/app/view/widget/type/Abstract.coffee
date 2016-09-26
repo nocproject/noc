@@ -1,5 +1,5 @@
 ###
-    Абстрактный виджет.
+	Абстрактный виджет.
 ###
 Ext.define 'Report.view.widget.type.Abstract',
 	extend: 'Ext.container.Container'

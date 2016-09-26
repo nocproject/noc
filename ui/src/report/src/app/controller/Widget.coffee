@@ -1,5 +1,5 @@
 ###
-    Управление виджетами.
+	Управление виджетами.
 ###
 Ext.define 'Report.controller.Widget',
 	extend: 'Ext.app.Controller'
@@ -22,15 +22,15 @@ Ext.define 'Report.controller.Widget',
 	
 	###
 		Добавляет виджет в дашборд.
-        @param {Ext.button.Button} button Кнопка добавления дашборда.
+		@param {Ext.button.Button} button Кнопка добавления дашборда.
 	###
 	addWidget: (button) ->
 		list = button.up('widgetLibrary').down('#list')
 		widgetData = list.getSelectionModel().getSelection()[0]
 		
 		###
-		    Оповещает о необходимости добавления виджета.
-            @param {Report.controller.Widget} this Контроллер.
-            @param {Report.model.config.Widget} widgetData Данные виджета.
+			Оповещает о необходимости добавления виджета.
+			@param {Report.controller.Widget} this Контроллер.
+			@param {Report.model.config.Widget} widgetData Данные виджета.
 		###
 		@fireEvent 'addWidgetAction', @, widgetData

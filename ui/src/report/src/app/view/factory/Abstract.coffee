@@ -1,5 +1,5 @@
 ###
-    Абстрактная фабрика отчетов
+	Абстрактная фабрика отчетов
 ###
 Ext.define 'Report.factory.Abstract',
 	
@@ -11,7 +11,7 @@ Ext.define 'Report.factory.Abstract',
 		@callParent arguments
 
 	###
-        @method
+		@method
 		Создает отчет по входящей модели.
 		@param {Ext.data.Model} model Модель отчета.
 	###

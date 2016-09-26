@@ -1,5 +1,5 @@
 ###
-    Конфигуратор виджета.
+	Конфигуратор виджета.
 ###
 Ext.define 'Report.view.widget.Configurator',
 	extend: 'Report.view.configurator.Main'

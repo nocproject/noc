@@ -1,7 +1,7 @@
 ###
-    Универсальный виджет, тип которого определяется конфигурацией.
-    Типы конструируемых тел для виджетов можно изучить в пакете
-    Report.view.widget.type.<WIDGET>
+	Универсальный виджет, тип которого определяется конфигурацией.
+	Типы конструируемых тел для виджетов можно изучить в пакете
+	Report.view.widget.type.<WIDGET>
 ###
 Ext.define 'Report.view.widget.Main',
 	extend: 'Ext.panel.Panel'
@@ -33,8 +33,8 @@ Ext.define 'Report.view.widget.Main',
 	config:
 		
 		###
-	        @cfg {Ext.data.Model} model Модель-конфиг виджета.
-	    ###
+			@cfg {Ext.data.Model} model Модель-конфиг виджета.
+		###
 		model: null
 	
 		###
@@ -49,7 +49,7 @@ Ext.define 'Report.view.widget.Main',
 	
 		###
 			@private
-            @cfg {Ext.data.Store} store Стор данных виджета.
+			@cfg {Ext.data.Store} store Стор данных виджета.
 		###
 		store: null
 	
@@ -65,16 +65,16 @@ Ext.define 'Report.view.widget.Main',
 	privates:
 		
 		###
-            Определяет xtype тела виджета по типу виджета,
-            указанному в конфигурации.
+			Определяет xtype тела виджета по типу виджета,
+			указанному в конфигурации.
 		###
 		getWidgetXtype: () ->
 			switch @getType()
 				when 'grid' then 'widgetTypeGrid'
 		
 		###
-            Создает стор данных виджета.
-            @return {Ext.data.Store} Стор.
+			Создает стор данных виджета.
+			@return {Ext.data.Store} Стор.
 		###
 		makeStore: () ->
 			Ext.create 'Ext.data.Store',
@@ -82,8 +82,8 @@ Ext.define 'Report.view.widget.Main',
 				proxy: 'memory'
 		
 		###
-		    Создает упрощенную модель данных (fields) для стора.
-            @param {String[]} Массив строк имен полей.
+			Создает упрощенную модель данных (fields) для стора.
+			@param {String[]} Массив строк имен полей.
 		###
 		makeFields: () ->
 			fields = []

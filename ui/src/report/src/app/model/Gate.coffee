@@ -1,15 +1,15 @@
 ###
-    Синглтон общения с сервером.
+	Синглтон общения с сервером.
 ###
 Ext.define 'Report.model.Gate',
 	singleton: true
 	
 	###
-        Отправка запроса на сервер.
-        @param {String} point Точка доступа.
-        @param {Object/Null} data Данные.
-        @param {Function} next
-        Следующий шаг, принимающий первым параметром результат в виде объекта.
+		Отправка запроса на сервер.
+		@param {String} point Точка доступа.
+		@param {Object/Null} data Данные.
+		@param {Function} next
+		Следующий шаг, принимающий первым параметром результат в виде объекта.
 	###
 	send: (point, data, next) ->
 		Ext.create 'Ext.data.Connection',

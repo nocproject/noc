@@ -1,7 +1,7 @@
 ###
-    Фабрика отчетов версии 0.1
-    Используюет единую плоскую структуру конфига
-    для хранения текущего состояния при конструировании отчета.
+	Фабрика отчетов версии 0.1
+	Используюет единую плоскую структуру конфига
+	для хранения текущего состояния при конструировании отчета.
 ###
 Ext.define 'Report.factory.V_0_1',
 	extend: 'Report.factory.Abstract'
@@ -16,7 +16,7 @@ Ext.define 'Report.factory.V_0_1',
 	config:
 	
 		###
-		    @cfg {Report.view.dashboard.Main} dashboard Текущий дашборд.
+			@cfg {Report.view.dashboard.Main} dashboard Текущий дашборд.
 		###
 		dashboard: null
 	
@@ -57,13 +57,13 @@ Ext.define 'Report.factory.V_0_1',
 	
 		###
 			@cfg {Ext.data.Store} columnsStore
-            Текущие хранилище колонок виджета на основе модели Report.model.config.Filter.
+			Текущие хранилище колонок виджета на основе модели Report.model.config.Filter.
 		###
 		columnsStore: null
 
 	###
 		Создает отчет по входящей модели.
-        @param {Ext.data.Model} model Модель отчета.
+		@param {Ext.data.Model} model Модель отчета.
 	###
 	make: (model) ->
 		model.get('dashboards').each (dashboard) ->
@@ -90,7 +90,7 @@ Ext.define 'Report.factory.V_0_1',
 	privates:
 	
 		###
-            Создание дашборда.
+			Создание дашборда.
 		###
 		makeDashboard: () ->
 			model = @getDashboardModel()
@@ -105,13 +105,13 @@ Ext.define 'Report.factory.V_0_1',
 			tabPanel.add dashboard
 			
 		###
-            Создание фильтра для дашборда.
+			Создание фильтра для дашборда.
 		###
 		makeDashboardFilter: () ->
 			@makeFilter @getDashboardFilterModel(), @getDashboard()
 		
 		###
-            Создание виджета.
+			Создание виджета.
 		###
 		makeWidget: () ->
 			model = @getWidgetModel()
@@ -126,15 +126,15 @@ Ext.define 'Report.factory.V_0_1',
 			target.add widget
 		
 		###
-            Создание фильтра для виджета.
+			Создание фильтра для виджета.
 		###
 		makeWidgetFilter: () ->
 			@makeFilter @getWidgetFilterModel(), @getWidget()
 	
 		###
 			Создание фильтра для виджета.
-            @param {Ext.data.Model} model Модель фильтра.
-            @param {Ext.Container} container Контейнер, содержащий область с id '#filters'
+			@param {Ext.data.Model} model Модель фильтра.
+			@param {Ext.Container} container Контейнер, содержащий область с id '#filters'
 		###
 		makeFilter: (model, container) ->
 			target = container.down('#filters')
