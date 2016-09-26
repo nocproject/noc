@@ -80,14 +80,9 @@ class RPCProxy(object):
                         "X-NOC-Calling-Service": self._service.name,
                         "Content-Type": "text/json"
                     },
-                    follow_redirects=False
+                    follow_redirects=False,
+                    raise_error=False
                 )
-            except tornado.httpclient.HTTPError as e:
-                if e.code == 599:
-                    logger.debug("Timed out")
-                    raise tornado.gen.Return(None)
-                raise RPCHTTPError("HTTP Error %s: %s" % (
-                    e.code, e.message))
             except socket.error as e:
                 if e.args[0] in RETRY_SOCKET_ERRORS:
                     logger.debug("Socket error: %s" % e)
@@ -100,7 +95,7 @@ class RPCProxy(object):
                 # Resolve CurlHTTPClient circular dependencies
                 client._force_timeout_callback = None
                 client._multi = None
-            #
+            # Process response
             if response.code == 200:
                 raise tornado.gen.Return(response)
             elif response.code == 307:
@@ -111,6 +106,14 @@ class RPCProxy(object):
                 logger.debug("Redirecting to %s", url)
                 r = yield make_call(url, response.body, limit - 1)
                 raise tornado.gen.Return(r)
+            elif response.code == 599:
+                logger.debug("Timed out")
+                raise tornado.gen.Return(None)
+            else:
+                raise RPCHTTPError(
+                    "HTTP Error %s: %s" % (
+                        response.code, response.body
+                    ))
 
         tid = self._tid.next()
         msg = {
