@@ -39,10 +39,28 @@ class ManagedObjectDashboard(BaseDashboard):
         # Basic setup
         r = {
             "title": str(self.object.name),
+            "style": "dark",
+            "timezone": "browser",
+            "editable": False,
+            "time": {
+                "from": "now-6h",
+                "to": "now"
+            },
+            "refresh": "1m",
+            "rows": []
         }
         # Add object name and description
+        title = [self.object.name, "(%s)" % self.object.address]
         if self.object.platform:
-            r['platform'] = self.object.platform
+            title += [self.object.platform]
+        title = " ".join(title)
+        r["rows"] += [{
+            "title": title,
+            "showTitle": True,
+            "collapse": True,
+            "editable": False,
+            "panels": []
+        }]
         if self.object.description:
             r["rows"][-1]["panels"] += [{
                 "editable": False,
