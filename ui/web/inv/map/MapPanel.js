@@ -847,7 +847,9 @@ Ext.define("NOC.inv.map.MapPanel", {
                     object: objectId,
                     object__label: me.objectNodes[objectId].attributes.attrs.text.text
                 }],
-                subject: 'created from map at ' + new Date()
+                subject: 'created from map at ' + new Date(),
+                contacts: NOC.username,
+                suppress_alarms: true
             }
         });
     },
