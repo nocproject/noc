@@ -38,7 +38,7 @@ class OMapAPI(API):
         p = Pool.objects.filter(name=pool).first()
         if not p:
             return {}
-        return ObjectMap.get_syslog_sources(p)
+        return ObjectMap.get_trap_sources(p)
 
     @api
     @lock("lock-omap-%(env)s")
