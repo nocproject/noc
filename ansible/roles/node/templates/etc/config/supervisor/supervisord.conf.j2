@@ -6,14 +6,6 @@ pidfile = {{ noc_service_pidfile }}
 {% if noc_env_type == "prod" %}
 [inet_http_server]
 port = *:9009 ;
-
-[eventlistener:evlistener]
-command=./bin/evlistener.py
-events=PROCESS_STATE,TICK_60
-buffer_size=1024
-stdout_logfile = var/log/%(program_name)s.log
-stdout_logfile_maxbytes = 1MB
-environment =
 {% endif %}
 
 [ctlplugin:serialrestart]
