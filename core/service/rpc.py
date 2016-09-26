@@ -65,6 +65,53 @@ class RPCProxy(object):
 
     @tornado.gen.coroutine
     def _call(self, method, *args, **kwargs):
+        @tornado.gen.coroutine
+        def make_call(url, body, limit=3):
+            client = tornado.httpclient.AsyncHTTPClient(
+                force_instance=True,
+                max_clients=1
+            )
+            try:
+                response = yield client.fetch(
+                    url,
+                    method="POST",
+                    body=body,
+                    headers={
+                        "X-NOC-Calling-Service": self._service.name,
+                        "Content-Type": "text/json"
+                    },
+                    follow_redirects=False
+                )
+            except tornado.httpclient.HTTPError as e:
+                if e.code == 599:
+                    logger.debug("Timed out")
+                    raise tornado.gen.Return(None)
+                raise RPCHTTPError("HTTP Error %s: %s" % (
+                    e.code, e.message))
+            except socket.error as e:
+                if e.args[0] in RETRY_SOCKET_ERRORS:
+                    logger.debug("Socket error: %s" % e)
+                    raise tornado.gen.Return(None)
+                raise RPCException(str(e))
+            except Exception as e:
+                raise RPCException(str(e))
+            finally:
+                client.close()
+                # Resolve CurlHTTPClient circular dependencies
+                client._force_timeout_callback = None
+                client._multi = None
+            #
+            if response.code == 200:
+                raise tornado.gen.Return(response)
+            elif response.code == 307:
+                # Process redirect
+                if not limit:
+                    raise RPCException("Redirects limit exceeded")
+                url = response.headers.get("location")
+                logger.debug("Redirecting to %s", url)
+                r = yield make_call(url, response.body, limit - 1)
+                raise tornado.gen.Return(r)
+
         tid = self._tid.next()
         msg = {
             "method": method,
@@ -87,44 +134,17 @@ class RPCProxy(object):
         response = None
         last = None
         for svc in random.sample(services, retries):
-            client = tornado.httpclient.AsyncHTTPClient(
-                force_instance=True,
-                max_clients=1
-            )
             # Sleep when trying same instance
             if svc == last:
                 yield tornado.gen.sleep(timeouts.pop())
             #
             last = svc
-            try:
-                response = yield client.fetch(
-                    "http://%s/api/%s/" % (svc, self._api),
-                    method="POST",
-                    body=body,
-                    headers={
-                        "X-NOC-Calling-Service": self._service.name,
-                        "Content-Type": "text/json"
-                    }
-                )
+            response = yield make_call(
+                "http://%s/api/%s/" % (svc, self._api),
+                body
+            )
+            if response:
                 break
-            except tornado.httpclient.HTTPError as e:
-                if e.code == 599:
-                    logger.debug("Timed out")
-                    continue
-                raise RPCHTTPError("HTTP Error %s: %s" % (
-                    e.code, e.message))
-            except socket.error as e:
-                if e.args[0] in RETRY_SOCKET_ERRORS:
-                    logger.debug("Socket error: %s" % e)
-                    continue
-                raise RPCException(str(e))
-            except Exception, why:
-                raise RPCException(why)
-            finally:
-                client.close()
-                # Resolve CurlHTTPClient circular dependencies
-                client._force_timeout_callback = None
-                client._multi = None
         if response:
             if not is_notify:
                 result = ujson.loads(response.body)
