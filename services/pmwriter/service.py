@@ -143,6 +143,7 @@ class PMWriterService(Service):
                             "Failed to write metrics: %s",
                             response.body
                         )
+                        self.perf_metrics["metrics_spool_failed"] += 1
                 except tornado.httpclient.HTTPError as e:
                     self.logger.error("Failed to spool %d metrics: %s",
                                       len(batch), e)
