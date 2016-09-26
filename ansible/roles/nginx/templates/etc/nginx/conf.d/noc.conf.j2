@@ -186,7 +186,7 @@ server {
     location /api/mrt/ {
         proxy_pass http://mrt;
         auth_request /api/auth/auth/;
-        rewrite  ^/api/mrt/(.*)  /$1 break;
+        # rewrite  ^/api/mrt/(.*)  /$1 break;
         # internal;
         gzip on;
         gzip_types text/css text/x-js;
