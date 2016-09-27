@@ -23,6 +23,7 @@ class Script(BaseScript):
         r"^\s*Line protocol current state :\s*(?P<oper_status>UP|UP \(spoofing\)|DOWN)\s*\n"
         r"^\s*Description :\s*(?P<descr>.*)\n"
         r"^\s*The Maximum Transmit Unit is (?P<mtu>\d+) bytes\s*\n"
+        r"(^\s*Forward plane MTU: \S+\n)?"
         r"(^\s*Internet Address is (?P<ip>\S+)\s*\n)?"
         r"(^\s*IP Sending Frames' Format is PKTFMT_ETHNT_2, Hardware address is (?P<mac>\S+)\s*\n)?",
         re.MULTILINE)
@@ -43,7 +44,7 @@ class Script(BaseScript):
         r"adl\s+0/\d+\s*/(?P<port>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\d+\s+"
         r"(?P<admin_status>\S+)\s*\n", re.MULTILINE)
     rx_sp = re.compile(
-        r"^\s*\d+\s+(?P<vlan>\d+)\s+\S+\s+adl\s+0/\d+\s*/(?P<port>\d+)\s+"
+        r"^\s*\d+\s+(?P<vlan>\d+)\s+\S+\s+(:?adl|gpon)\s+0/\d+\s*/(?P<port>\d+)\s+"
         r"(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s+"
         r"(?P<admin_status>up|down)\s*$", re.MULTILINE)
 
@@ -54,7 +55,7 @@ class Script(BaseScript):
         display_service_port = False
         ports = self.profile.fill_ports(self)
         for i in range(len(ports)):
-            if ports[i]["t"] in ["GE", "FE"]:
+            if ports[i]["t"] in ["10GE", "GE", "FE"]:
                 v = self.cli("display board 0/%d" % i)
                 for match in self.rx_ether.finditer(v):
                     ifname = "0/%d/%d" % (i, int(match.group("port")))
@@ -83,14 +84,17 @@ class Script(BaseScript):
                         iface["subinterfaces"][0]["untagged"] = untagged
                         iface["subinterfaces"][0]["tagged"] = tagged
                     interfaces += [iface]
-            if ports[i]["t"] == "ADSL":
+            if ports[i]["t"] in ["ADSL", "GPON"]:
                 oper_states = []
-                v = self.cli("display adsl port state 0/%d\r\n" % i)
-                for match in self.rx_adsl_state.finditer(v):
-                    oper_states += [{
-                        "name": "0/%d/%d" % (i, int(match.group("port"))),
-                        "oper_state": match.group("oper_state") == "Activated"
-                    }]
+                try:
+                    v = self.cli("display adsl port state 0/%d\r\n" % i)
+                    for match in self.rx_adsl_state.finditer(v):
+                        oper_states += [{
+                            "name": "0/%d/%d" % (i, int(match.group("port"))),
+                            "oper_state": match.group("oper_state") == "Activated"
+                        }]
+                except self.CLISyntaxError:
+                    pass
                 if (not display_pvc) and (not display_service_port):
                     try:
                         self.cli("display pvc number")
