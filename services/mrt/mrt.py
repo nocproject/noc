@@ -17,6 +17,7 @@ from noc.core.service.authhandler import AuthRequestHandler
 from noc.core.perf import metrics
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
+from noc.lib.debug import error_report
 
 
 logger = logging.getLogger(__name__)
@@ -41,16 +42,17 @@ class MRTRequestHandler(AuthRequestHandler):
             logger.debug("Run script %s %s %s", oid, script, args)
             r = yield self.service.sae.script(oid, script, args)
             metrics["mrt_success"] += 1
-            raise tornado.gen.Return({
-                "id": str(oid),
-                "result": r
-            })
         except Exception as e:
+            error_report()
             metrics["mrt_failed"] += 1
             raise tornado.gen.Return({
                 "id": str(oid),
                 "error": str(e)
             })
+        raise tornado.gen.Return({
+            "id": str(oid),
+            "result": r
+        })
 
     @tornado.gen.coroutine
     def post(self, *args, **kwargs):
@@ -89,6 +91,7 @@ class MRTRequestHandler(AuthRequestHandler):
                     "id": str(d["id"]),
                     "error": "Access denied"
                 })
+                metrics["mrt_access_denied"] += 1
             if len(futures) >= self.service.config.max_concurrency:
                 wi = tornado.gen.WaitIterator(*futures)
                 r = yield wi.next()

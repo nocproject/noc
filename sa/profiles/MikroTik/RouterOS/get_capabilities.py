@@ -20,3 +20,9 @@ class Script(BaseScript):
         caps["MikroTik | RouterOS | License | Level"] = c["nlevel"]
         if c.get("upgradable-to"):
             caps["MikroTik | RouterOS | License | Upgradable To"] = c["upto"]
+
+    def has_cdp(self):
+        """
+        Check box has cdp enabled
+        """
+        return True

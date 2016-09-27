@@ -43,13 +43,13 @@ Ext.define("NOC.sa.runcommands.Application", {
             text;
 
         text = Ext.create({
-            xtype: "textarea"
+            xtype: "textarea",
+            anchor: "100%",
+            width: "100%"
         });
 
         return Ext.create("Ext.panel.Panel", {
             flex: 1,
-            anchor: "100%",
-            width: "100%",
             items: [
                 text
             ],

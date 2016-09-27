@@ -34,19 +34,13 @@ Ext.define('NOC.core.TreePanel', {
                     }
                 } else {
                     if(hasChild(record.data)) {
+                        if(me.actionAlways) {
+                            me._action(me, record, true);
+                        }
                         record.data.level = me.historyStore.max('level') + 1;
                         me.historyStore.add(record.data);
-                        if(me.actionAlways){
-                            me.action(record.data);
-                        }
                     } else {
-                        me.action(record.data);
-                        me.pathStore.removeAll();
-                        me.pathStore.add(Ext.Array.map(me.historyStore.getRange(), function(record) {
-                            return record.copy();
-                        }));
-                        me.fieldValue(record);
-                        me.list.getView().refresh();
+                        me._action(me, record, false);
                         return;
                     }
                 }
@@ -156,9 +150,10 @@ Ext.define('NOC.core.TreePanel', {
     },
 
     // --- Load data ---
-    loadList: function() {
+    loadList: function(params) {
         this.listStore.load({
             scope: this,
+            params: params,
             callback: this.selectListRow
         });
     },
@@ -180,24 +175,20 @@ Ext.define('NOC.core.TreePanel', {
         if('_root_' === id) {
             id = '';
         }
-        this.listStore.proxy.extraParams = {
-            parent: id,
-            __format: 'ext'
-        };
-        this.loadList();
+        this.loadList({parent: id});
         this.currentId = id;
         this.onClearFilter(false);
     },
 
     filterQuery: function(value) {
-        this.listStore.proxy.extraParams = {parent: this.currentId};
+        var extraParams = {parent: this.currentId};
         if(value.length > 0) {
-            Ext.apply(this.listStore.proxy.extraParams, {
+            Ext.apply(extraParams, {
                 __query: value,
                 __format: 'ext'
             });
         }
-        this.loadList();
+        this.loadList(extraParams);
         this.queryPrevLength = value.length;
     },
 
@@ -217,6 +208,16 @@ Ext.define('NOC.core.TreePanel', {
             }
         }
         this.searchField.getTrigger('clear').show();
+    },
+
+    _action: function(me, record, hasChild) {
+        me.action(record, hasChild);
+        me.pathStore.removeAll();
+        me.pathStore.add(Ext.Array.map(me.historyStore.getRange(), function(record) {
+            return record.copy();
+        }));
+        me.fieldValue(record);
+        me.list.getView().refresh();
     },
 
     onClearFilter: function(withQuery) {

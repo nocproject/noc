@@ -3,10 +3,12 @@
 ## Vendor: Juniper
 ## OS:     JUNOS
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import re
 ## NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -76,3 +78,27 @@ class Profile(BaseProfile):
         if n.endswith(".0"):
             names += [n[:-2]]
         return names
+
+    internal_interfaces = re.compile(
+        r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-|"
+        r"em|jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-0|pc-|me0|sp-|fab|mams-|"
+        r"bme|esi)")
+    internal_interfaces_olive = re.compile(
+        r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-)")
+
+    def valid_interface_name(self, name, platform):
+        if platform == "olive":
+            internal = self.internal_interfaces_olive
+        else:
+            internal = self.internal_interfaces
+        # Skip internal interfaces
+        if internal.search(name):
+            return False
+        if "." in name:
+            try:
+                ifname, unit = name.split(".")
+            except:
+                return True
+            if int(unit) > 4094:
+                return False
+        return True

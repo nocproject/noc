@@ -47,7 +47,7 @@ def snmp_get(address, oids, port=161,
         raise ValueError("oids must be either string or dict")
     logger.debug("[%s] SNMP GET %s", address, oids)
     # Send GET PDU
-    pdu = get_pdu(community=community, oids=oids)
+    pdu = get_pdu(community=community, oids=oids, version=version)
     sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     # Wait for result
@@ -109,9 +109,10 @@ def snmp_count(address, oid, port=161,
         # Get PDU
         if bulk:
             pdu = getbulk_pdu(community, oid,
-                              max_repetitions=max_repetitions)
+                              max_repetitions=max_repetitions,
+                              version=version)
         else:
-            pdu = getnext_pdu(community, oid)
+            pdu = getnext_pdu(community, oid, version=version)
         # Send request and wait for response
         try:
             yield sock.sendto(pdu, (address, port))
@@ -170,10 +171,11 @@ def snmp_getnext(address, oid, port=161,
         if bulk:
             pdu = getbulk_pdu(
                 community, oid,
-                max_repetitions=max_repetitions or BULK_MAX_REPETITIONS
+                max_repetitions=max_repetitions or BULK_MAX_REPETITIONS,
+                version=version
             )
         else:
-            pdu = getnext_pdu(community, oid)
+            pdu = getnext_pdu(community, oid, version=version)
         # Send request and wait for response
         try:
             yield sock.sendto(pdu, (address, port))
@@ -219,7 +221,7 @@ def snmp_set(address, varbinds, port=161,
     sock = UDPSocket(ioloop=ioloop, tos=tos)
     sock.settimeout(timeout)
     # Send GET PDU
-    pdu = set_pdu(community=community, varbinds=varbinds)
+    pdu = set_pdu(community=community, varbinds=varbinds, version=version)
     # Wait for result
     try:
         yield sock.sendto(pdu, (address, port))
