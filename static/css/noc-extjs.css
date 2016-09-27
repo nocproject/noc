@@ -258,4 +258,5 @@ TABLE {
 .noc-mrt-result {
     padding-left: 8px;
     font-family: "Courier New", Courier, monospace;
+    white-space: pre;
 }
