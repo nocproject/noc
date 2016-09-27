@@ -18,9 +18,6 @@ from noc.lib.log import PrefixLoggerAdapter
 
 
 class SNMP(object):
-    CAP_v2c = "SNMP | v2c"
-    CAP
-
     class TimeOutError(Exception):
         pass
 
