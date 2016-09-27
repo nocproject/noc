@@ -180,6 +180,9 @@ class PingService(Service):
         """
         Perform ping check and set result
         """
+        def q(s):
+            return s.replace(" ", "\\ ").replace(",", "\\,")
+
         if address not in self.ping_tasks:
             return
         self.perf_metrics["ping_check_total"] += 1
@@ -219,7 +222,7 @@ class PingService(Service):
             if name:
                 self.register_metrics([
                     "Ping\\ |\\ RTT,object=%s value=%s %s" % (
-                        name, rtt, int(time.time())
+                        q(name), rtt, int(time.time())
                     )
                 ])
 

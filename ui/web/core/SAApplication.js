@@ -57,9 +57,9 @@ Ext.define("NOC.core.SAApplication", {
         me.ITEM_PROGRESS = me.registerItem(
             me.createProgressPanel()
         );
-        // me.ITEM_REPORT = me.registerItem(
-        //     me.createReportPanel()
-        // );
+        me.ITEM_REPORT = me.registerItem(
+            me.createReportPanel()
+        );
         Ext.apply(me, {
             items: me.getRegisteredItems(),
             activeItem: me.ITEM_SELECT
@@ -403,6 +403,28 @@ Ext.define("NOC.core.SAApplication", {
 
         me.resultPanel = me.getResultPanel();
 
+        me.progressBackButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.arrow_left,
+            tooltip: __("Back"),
+            disabled: true,
+            scope: me,
+            handler: function() {
+                me.showItem(me.ITEM_CONFIG);
+            }
+        });
+
+        me.progressReportButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.print,
+            tooltip: __("Report"),
+            disabled: true,
+            handler: function() {
+                var r = me.showItem(me.ITEM_REPORT);
+                r.setHtml(
+                    me.buildReport()
+                );
+            }
+        });
+
         return Ext.create("Ext.panel.Panel", {
             layout: "hbox",
             items: [
@@ -414,16 +436,8 @@ Ext.define("NOC.core.SAApplication", {
                     xtype: "toolbar",
                     dock: "top",
                     items: [
-                        {
-                            glyph: NOC.glyph.arrow_left,
-                            tooltip: __("Back"),
-                            disabled: true
-                        },
-                        {
-                            glyph: NOC.glyph.print,
-                            tooltip: __("Report"),
-                            disabled: true
-                        }
+                        me.progressBackButton,
+                        me.progressReportButton
                     ]
                 }
             ]
@@ -432,6 +446,25 @@ Ext.define("NOC.core.SAApplication", {
     //
     createReportPanel: function() {
         var me = this;
+        return Ext.create("Ext.panel.Panel", {
+            html: "",
+            autoScroll: true,
+            bodyPadding: 4,
+            dockedItems: [{
+                xtype: "toolbar",
+                dock: "top",
+                items: [
+                    {
+                        glyph: NOC.glyph.arrow_left,
+                        tooltip: __("Back"),
+                        scope: me,
+                        handler: function() {
+                            me.showItem(me.ITEM_PROGRESS);
+                        }
+                    }
+                ]
+            }]
+        });
     },
     //
     getSelectionRowClass: function(record, index, params, store) {
@@ -499,6 +532,8 @@ Ext.define("NOC.core.SAApplication", {
             params.push(v);
         });
         //
+        me.progressReportButton.setDisabled(true);
+        me.progressBackButton.setDisabled(true);
         me.showItem(me.ITEM_PROGRESS);
         me.currentProgress = {
             w: me.store.count(),
@@ -556,8 +591,15 @@ Ext.define("NOC.core.SAApplication", {
             }
             me.setBadges();
         };
-        xhr.onload = function() {};
-        xhr.onerror = function() {};
+        xhr.onload = function() {
+            me.progressReportButton.setDisabled(false);
+            me.progressBackButton.setDisabled(false);
+        };
+        xhr.onerror = function() {
+            NOC.error("Error!");
+            me.progressReportButton.setDisabled(false);
+            me.progressBackButton.setDisabled(false);
+        };
         xhr.send(JSON.stringify(params));
     },
     //
@@ -571,8 +613,17 @@ Ext.define("NOC.core.SAApplication", {
         Ext.Object.each(me.currentProgress, function(k, v) {
             var b = me.progressState[k];
             // @todo: set badge
-            console.log("set badge", k, v);
             b.setText(b.text.replace(/ \(\d+\)$/, "") + " (" + v + ")")
         });
+    },
+    //
+    buildReport: function() {
+        var me = this,
+            r = [];
+        me.store.each(function(record) {
+            r.push("<div class='noc-mrt-section'>" + record.get("name") + "(" + record.get("address") + ")</div>");
+            r.push("<div class='noc-mrt-result'>" + record.get("result") + "</div>");
+        });
+        return r.join("\n");
     }
 });

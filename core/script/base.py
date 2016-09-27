@@ -693,11 +693,20 @@ class BaseScript(object):
         """
         return bool(self.credentials.get("snmp_ro"))
 
+    def has_snmp_v1(self):
+        return self.has_capability("SNMP | v1")
+
+    def has_snmp_v2c(self):
+        return self.has_capability("SNMP | v2c") or self.has_capability("SNMP")
+
+    def has_snmp_v3(self):
+        return self.has_capability("SNMP | v3")
+
     def has_snmp_bulk(self):
         """
         Check whether equipment supports SNMP BULK
         """
-        return "SNMP | Bulk" in self.capabilities
+        return self.has_capability("SNMP | Bulk")
 
     def has_capability(self, capability):
         """

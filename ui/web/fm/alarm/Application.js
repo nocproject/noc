@@ -90,13 +90,13 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         });
 
-        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.TreeField", {
+        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.TreeCombo", {
             fieldLabel: __("Adm. Domain"),
             width: 198,
-            actionAlways: true,
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
+                change: me.onChange,
                 clear: me.onChangeFilter
             },
             uiStyle: null
@@ -108,6 +108,7 @@ Ext.define("NOC.fm.alarm.Application", {
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
+                change: me.onChange,
                 clear: me.onChangeFilter
             }
         });
@@ -118,17 +119,18 @@ Ext.define("NOC.fm.alarm.Application", {
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
+                change: me.onChange,
                 clear: me.onChangeFilter
             }   
         }); 
 
-        me.segmentCombo = Ext.create("NOC.inv.networksegment.TreeField", {
+        me.segmentCombo = Ext.create("NOC.inv.networksegment.TreeCombo", {
             fieldLabel: __("Segment"),
             width: 198,
-            actionAlways: true,
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
+                change: me.onChange,
                 clear: me.onChangeFilter
             }
         });
@@ -139,6 +141,7 @@ Ext.define("NOC.fm.alarm.Application", {
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
+                change: me.onChange,
                 clear: me.onChangeFilter
             }
         });
@@ -506,6 +509,13 @@ Ext.define("NOC.fm.alarm.Application", {
         setIf("timestamp__lte", me.toDateField.getValue());
         me.currentQuery = q;
         me.reloadStore();
+    },
+    //
+    onChange: function(element, newValue) {
+        if(newValue === null) {
+            element.clearValue();
+            this.onChangeFilter();
+        }
     },
     // Return Grid's row classes
     getRowClass: function(record, index, params, store) {

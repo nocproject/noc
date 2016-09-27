@@ -249,3 +249,13 @@ TABLE {
 .noc-status-failed > td {
     background-color: #be3a31 !important;
 }
+
+.noc-mrt-section {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.noc-mrt-result {
+    padding-left: 8px;
+    font-family: "Courier New", Courier, monospace;
+}

@@ -14,8 +14,8 @@ import re
 
 class Profile(BaseProfile):
     name = "Huawei.MA5600T"
-    pattern_username = r"^>>User name:"
-    pattern_password = r"^>>(?:User )?[Pp]assword:"
+    pattern_username = r"^>[>\s]User name(|\s\([<\s\w]+\)):"
+    pattern_password = r"^>[>\s](?:User )?[Pp]assword(|\s\([<\s\w]+\)):"
     pattern_more = [
         (r"^---- More \( Press 'Q' to break \) ----", " "),
         (r"\[<frameId/slotId>\]", "\n"),
