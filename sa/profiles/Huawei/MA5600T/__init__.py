@@ -21,7 +21,8 @@ class Profile(BaseProfile):
         (r"\[<frameId/slotId>\]", "\n"),
         (r"\(y/n\) \[n\]", "y\n"),
         (r"\[to\]\:", "\n"),
-        (r"\{ \<cr\>\|vpi\<K\> \}\:", "\n")
+        (r"\{ \<cr\>\|vpi\<K\> \}\:", "\n"),
+        (r"\{ \<cr\>\|ont\<K\> \}\:", "\n")
     ]
     pattern_unpriveleged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
@@ -37,8 +38,8 @@ class Profile(BaseProfile):
 
     rx_slots = re.compile("^\s*\d+", re.MULTILINE)
     rx_ports = re.compile(
-        "^\s*\d+\s+(?P<type>ADSL|GE|FE)\s+.+?"
-        "(?P<state>online|offline|Activating|Activated)",
+        "^\s*\d+\s+(?P<type>ADSL|GPON|10GE|GE|FE)\s+.+?"
+        "(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated)",
          re.MULTILINE)
 
     def get_slots_n(self, script):
@@ -56,7 +57,7 @@ class Profile(BaseProfile):
         for match in self.rx_ports.finditer(v):
             i += 1
             t = match.group("type")
-            s += [match.group("state") in ["online", "Activated"]]
+            s += [match.group("state") in ["Online", "online", "Activated"]]
         return {"n": i, "t": t, "s": s}
 
     def fill_ports(self, script):
