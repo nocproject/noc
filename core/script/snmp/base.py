@@ -13,10 +13,14 @@ import tornado.gen
 from noc.core.ioloop.snmp import (snmp_get, snmp_count, snmp_getnext,
                                   snmp_set)
 from noc.core.snmp.error import SNMPError, TIMED_OUT
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.lib.log import PrefixLoggerAdapter
 
 
 class SNMP(object):
+    CAP_v2c = "SNMP | v2c"
+    CAP
+
     class TimeOutError(Exception):
         pass
 
@@ -39,11 +43,23 @@ class SNMP(object):
             self.ioloop = tornado.ioloop.IOLoop()
         return self.ioloop
 
-    def get(self, oids, cached=False):
+    def _get_snmp_version(self, version=None):
+        if version:
+            return version
+        if self.script.has_snmp_v2c():
+            return SNMP_v2c
+        elif self.script.has_snmp_v3():
+            return SNMP_v3
+        elif self.script.has_snmp_v1():
+            return SNMP_v1
+        return SNMP_v2c
+
+    def get(self, oids, cached=False, version=None):
         """
         Perform SNMP GET request
         :param oid: string or list of oids
-        :returns: eighter result scalar or dict of name -> value
+        :param cached: True if get results can be cached during session
+        :returns: eigther result scalar or dict of name -> value
         """
         @tornado.gen.coroutine
         def run():
@@ -53,16 +69,19 @@ class SNMP(object):
                     oids=oids,
                     community=str(self.script.credentials["snmp_ro"]),
                     tos=self.script.tos,
-                    ioloop=self.get_ioloop()
+                    ioloop=self.get_ioloop(),
+                    version=version
                 )
                 if self.beef:
+                    # Restore from beef
                     self.beef.set_snmp_get(oids, self.result)
-            except SNMPError, why:
-                if why.code == TIMED_OUT:
+            except SNMPError as e:
+                if e.code == TIMED_OUT:
                     raise self.TimeOutError()
                 else:
                     raise
 
+        version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
         return self.result
 
@@ -70,7 +89,7 @@ class SNMP(object):
         """
         Perform SNMP GET request
         :param oid: string or list of oids
-        :returns: eighter result scalar or dict of name -> value
+        :returns: eigther result scalar or dict of name -> value
         """
         @tornado.gen.coroutine
         def run():
@@ -82,8 +101,8 @@ class SNMP(object):
                     tos=self.script.tos,
                     ioloop=self.get_ioloop()
                 )
-            except SNMPError, why:
-                if why.code == TIMED_OUT:
+            except SNMPError as e:
+                if e.code == TIMED_OUT:
                     raise self.TimeOutError()
                 else:
                     raise
@@ -97,7 +116,7 @@ class SNMP(object):
         self.get_ioloop().run_sync(run)
         return self.result
 
-    def count(self, oid, filter=None):
+    def count(self, oid, filter=None, version=None):
         """
         Iterate MIB subtree and count matching instances
         :param oid: OID
@@ -113,20 +132,23 @@ class SNMP(object):
                     bulk=self.script.has_snmp_bulk,
                     filter=filter,
                     tos=self.script.tos,
-                    ioloop=self.get_ioloop()
+                    ioloop=self.get_ioloop(),
+                    version=version
                 )
-            except SNMPError, why:
-                if why.code == TIMED_OUT:
+            except SNMPError as e:
+                if e.code == TIMED_OUT:
                     raise self.TimeOutError()
                 else:
                     raise
 
+        version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
         return self.result
 
     def getnext(self, oid, community_suffix=None,
                 filter=None, cached=False,
-                only_first=False, bulk=None, max_repetitions=None):
+                only_first=False, bulk=None,
+                max_repetitions=None, version=None):
         @tornado.gen.coroutine
         def run():
             try:
@@ -139,7 +161,8 @@ class SNMP(object):
                     filter=filter,
                     only_first=only_first,
                     tos=self.script.tos,
-                    ioloop=self.get_ioloop()
+                    ioloop=self.get_ioloop(),
+                    version=version
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:
@@ -147,6 +170,7 @@ class SNMP(object):
                 else:
                     raise
 
+        version = self._get_snmp_version(version)
         self.get_ioloop().run_sync(run)
         return self.result
 
