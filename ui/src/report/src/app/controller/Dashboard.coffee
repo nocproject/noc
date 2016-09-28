@@ -1,0 +1,72 @@
+###
+	Управление логикой дашбордов.
+###
+Ext.define 'Report.controller.Dashboard',
+	extend: 'Ext.app.Controller'
+	id: 'dashboard'
+	
+	listen:
+		controller:
+			'#root':
+				addDashboardAction: 'showDashboardsLibrary'
+		component:
+			'dashboardMain #addWidget':
+				click: 'showWidgetLibrary'
+			'dashboardMain #configure':
+				click: 'configureDashboard'
+			'dashboardLibrary #control #create':
+				click: 'showConfigurator'
+			'dashboardLibrary #control #select':
+				click: 'addDashboard'
+
+	privates:
+
+		###
+			Показывает библиотеку дашбордов.
+		###
+		showDashboardsLibrary: () ->
+			Ext.create('Report.view.dashboard.Library').show()
+	
+		###
+			Показывает библиотеку виджетов.
+			@param {Report.view.dashboard.AddWidget} button Кнопка добавления виджета.
+		###
+		showWidgetLibrary: (button) ->
+			
+			###
+				Оповещает о необходимости добавления виджета.
+				@param {Report.controller.Dashboard} this Контроллер.
+				@param {Report.view.dashboard.AddWidget} button Кнопка добавления виджета.
+			###
+			@fireEvent 'addDashboardAction', @, button
+	
+		###
+			Запускает редактирование дашборда.
+		###
+		configureDashboard: () ->
+			configurator = Ext.create 'Report.view.dashboard.Configurator'
+	
+			# TODO
+	
+		###
+			Показывает конфигуратор дашборда.
+		###
+		showConfigurator: () ->
+			Ext.create 'Report.view.dashboard.Configurator'
+	
+			# TODO
+	
+		###
+			Добавляет дашборд.
+			@param {Ext.button.Button} button Кнопка добавления дашборда.
+		###
+		addDashboard: (button) ->
+			list = button.up('dashboardLibrary').down('#list')
+			dashboardData = list.getSelectionModel().getSelection()[0]
+			
+			###
+				Оповещает о необходимости добавления дашборда.
+				@param {Report.controller.Dashboard} this Контроллер.
+				@param {Report.model.config.Dashboard} dashboardData Данные дашборда.
+			###
+			@fireEvent 'addDashboardAction', @, dashboardData
