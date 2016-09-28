@@ -5,7 +5,6 @@ Ext.application(
 	controllers: [
 		'Configurator'
 		'Dashboard'
-		'Filter'
 		'Library'
 		'Root'
 		'Widget'

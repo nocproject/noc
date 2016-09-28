@@ -16,10 +16,6 @@ Ext.define 'Report.controller.Root',
 	]
 	
 	listen:
-		controller:
-			'filter':
-				updateReportDataByFilter: 'updateReportDataByFilter'
-	
 		component:
 			'rootMain #userButton':
 				click: 'openNocUserMenu'
@@ -45,15 +41,6 @@ Ext.define 'Report.controller.Root',
 			switch model.get 'version'
 				when null or '0.1'
 					Ext.create('Report.factory.V_0_1').make model
-	
-	###
-		Обновляет данные отчета на основе изменений фильтра.
-		@param {Report.controller.FilterReport.controller.Filter} this Контроллер фильтров.
-		@param {Report.model.config.Filter} model Модель фильтра.
-		@param {Ext.form.field.Base} field Поле-инициатор.
-	###
-	updateReportDataByFilter: (controller, model, field) ->
-		# TODO
 					
 	privates:
 
