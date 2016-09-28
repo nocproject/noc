@@ -41,7 +41,7 @@ class SNMP(object):
         return self.ioloop
 
     def _get_snmp_version(self, version=None):
-        if version:
+        if version is not None:
             return version
         if self.script.has_snmp_v2c():
             return SNMP_v2c
