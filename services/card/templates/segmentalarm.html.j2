@@ -1,0 +1,41 @@
+<table class="table table-condensed">
+    <thead>
+        <tr class="row">
+            <th>{{ _("Object") }}</th>
+            <th class="col-xs-1">{{ _("IP") }}</th>
+            <th class="col-xs-2">{{ _("Duration") }}</th>
+            <th class="col-xs-2">{{ _("TT") }}</th>
+            <th class="col-xs-2">{{ _("Summary") }}</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for item in tree recursive %}
+    {% set level = loop.depth0 %}
+    <tr class="row">
+        <td colspan="4" style="font-weight: bold">
+            {{ "".join(["&nbsp;&nbsp;&nbsp;&nbsp;"] * level) }}
+            <a href="/api/card/view/segment/{{ item["segment"].id }}/">{{ item["segment"].name }}</a>
+        </td>
+        <td>{{ item["summary"] | glyph_summary }}</td>
+    </tr>
+    {% for a in item["alarms"] %}
+    <tr class="row">
+        <td>
+            <a href="/api/card/view/managedobject/{{ a["object"].id }}/">{{ a["object"].name }}</a><br/>
+            <small>{{ a["object"] | object_location }}</small>
+        </td>
+        <td>{{ a["object"].address }}</td>
+        <td>
+            <a href="/api/card/view/alarm/{{ a["alarm_id"] }}/">{{ a["timestamp"] | timestamp}}</a><br>
+            {{ a["duration"] }}
+        </td>
+        <td>
+            <a href="/api/card/view/tt/{{ a["escalation_tt"] }}/">{{ a["escalation_tt"] }}</a>
+        </td>
+        <td>{{ a["summary"] | glyph_summary }}</td>
+    </tr>
+    {% endfor %}
+    {{ loop(item["children"]) }}
+{% endfor %}
+</tbody>
+</table>
