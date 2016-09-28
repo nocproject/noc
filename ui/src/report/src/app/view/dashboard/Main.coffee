@@ -2,15 +2,15 @@
 	Основа дашборда.
 ###
 Ext.define 'Report.view.dashboard.Main',
-	extend: 'Ext.container.Container'
+	extend: 'Ext.panel.Panel'
 	xtype: 'dashboardMain'
 
 	requires: [
-		'Report.view.dashboard.AddWidget'
 		'Report.view.dashboard.Configurator'
-		'Report.view.dashboard.Configure'
 		'Report.view.dashboard.Library'
 	]
+	
+	layout: 'fit'
 	
 	config:
 	
@@ -44,41 +44,32 @@ Ext.define 'Report.view.dashboard.Main',
 		###
 		dashFirstCall: true
 
-	items: [
+	tools: [
 		{
-			itemId: 'filters'
-			xtype: 'toolbar'
-			items: [
-				{
-					itemId: 'addWidget'
-					xtype: 'dashboardAddWidget'
-				}
-				{
-					itemId: 'configure'
-					xtype: 'dashboardConfigure'
-				}
-			]
+			itemId: 'addWidget'
+			type: 'plus'
 		}
 		{
-			xtype: 'panel'
-			layout: 'fit'
+			itemId: 'configure'
+			type: 'gear'
+		}
+	]
+		
+	items: [
+		{
+			xtype: 'container'
+			scrollable: 'vertical'
 			items: [
 				{
-					xtype: 'container'
-					scrollable: 'vertical'
-					items: [
-						{
-							itemId: 'widgets'
-							xtype: 'panel'
-							layout:
-								type: 'hbox'
-								align: 'center'
-								pack: 'center'
-							listeners:
-								resize: 'fixScrollOnResize'
-								afterrender: 'doDashboardLayout'
-						}
-					]
+					itemId: 'widgets'
+					xtype: 'panel'
+					layout:
+						type: 'hbox'
+						align: 'center'
+						pack: 'center'
+					listeners:
+						resize: 'fixScrollOnResize'
+						afterrender: 'doDashboardLayout'
 				}
 			]
 		}

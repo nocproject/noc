@@ -11,22 +11,15 @@ Ext.define 'Report.view.widget.Main',
 		'Report.view.widget.type.Abstract'
 		'Report.view.widget.type.Grid'
 		'Report.view.widget.Configurator'
-		'Report.view.widget.Configure'
 		'Report.view.widget.Library'
 	]
 	
 	layout: 'fit'
-	dockedItems: [
+	
+	tools: [
 		{
-			itemId: 'filters'
-			xtype: 'toolbar'
-			docked: 'top'
-			items: [
-				{
-					itemId: 'configure'
-					xtype: 'widgetConfigure'
-				}
-			]
+			itemId: 'configure'
+			type: 'gear'
 		}
 	]
 	

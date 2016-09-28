@@ -70,22 +70,12 @@ Ext.define 'Report.factory.V_0_1',
 			@setDashboardModel dashboard
 			
 			@makeDashboard()
-			
-			dashboard.get('filters')?.each (filter) ->
-				@setDashboardFilterModel filter
-				
-				@makeDashboardFilter()
 				
 			dashboard.get('widgets')?.each (widget) ->
 				@setWidgetModel widget
 				@setColumnsStore widget.get 'columns'
 				
 				@makeWidget()
-				
-				widget.get('filters')?.each (filter) ->
-					@setWidgetFilterModel filter
-					
-					@makeWidgetFilter()
 					
 	privates:
 	
@@ -103,12 +93,6 @@ Ext.define 'Report.factory.V_0_1',
 			
 			@setDashboard dashboard
 			tabPanel.add dashboard
-			
-		###
-			Создание фильтра для дашборда.
-		###
-		makeDashboardFilter: () ->
-			@makeFilter @getDashboardFilterModel(), @getDashboard()
 		
 		###
 			Создание виджета.
@@ -121,23 +105,7 @@ Ext.define 'Report.factory.V_0_1',
 				xtype: 'widgetMain'
 				model: model
 				columns: columns
+				title: model.get 'name'
 			}
 			
 			target.add widget
-		
-		###
-			Создание фильтра для виджета.
-		###
-		makeWidgetFilter: () ->
-			@makeFilter @getWidgetFilterModel(), @getWidget()
-	
-		###
-			Создание фильтра для виджета.
-			@param {Ext.data.Model} model Модель фильтра.
-			@param {Ext.Container} container Контейнер, содержащий область с id '#filters'
-		###
-		makeFilter: (model, container) ->
-			target = container.down('#filters')
-			filterWidgets = Report.view.filter.Factory.makeFilter(model)
-			
-			target.add.apply target, filterWidgets
