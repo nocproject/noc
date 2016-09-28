@@ -66,23 +66,23 @@ Ext.define 'Report.factory.V_0_1',
 		@param {Ext.data.Model} model Модель отчета.
 	###
 	make: (model) ->
-		model.get('dashboards').each (dashboard) ->
+		model.get('dashboards')?.each (dashboard) ->
 			@setDashboardModel dashboard
 			
 			@makeDashboard()
 			
-			dashboard.get('filters').each (filter) ->
+			dashboard.get('filters')?.each (filter) ->
 				@setDashboardFilterModel filter
 				
 				@makeDashboardFilter()
 				
-			dashboard.get('widgets').each (widget) ->
+			dashboard.get('widgets')?.each (widget) ->
 				@setWidgetModel widget
 				@setColumnsStore widget.get 'columns'
 				
 				@makeWidget()
 				
-				widget.get('filters').each (filter) ->
+				widget.get('filters')?.each (filter) ->
 					@setWidgetFilterModel filter
 					
 					@makeWidgetFilter()
