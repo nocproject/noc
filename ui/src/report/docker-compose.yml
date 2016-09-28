@@ -17,6 +17,8 @@ services:
       - ./workspace:/code
       - ../../report:/code/build/
       - ./src/app:/code/app
+      - ./src/app/sass:/code/sass
+      - ./src/app/packages:/code/packages
       - ./src/app.js:/code/app.js
       - ./src/app.json:/code/app.json
     volumes_from:

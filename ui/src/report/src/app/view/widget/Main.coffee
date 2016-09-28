@@ -33,7 +33,7 @@ Ext.define 'Report.view.widget.Main',
 	config:
 		
 		###
-			@cfg {Ext.data.Model} model Модель-конфиг виджета.
+			@cfg {Report.model.config.Widget} model Модель-конфиг виджета.
 		###
 		model: null
 	
