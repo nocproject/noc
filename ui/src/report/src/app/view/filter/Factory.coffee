@@ -43,12 +43,15 @@ Ext.define 'Report.view.filter.Factory',
 			else
 				xtype = 'textfield'
 		
-		result = [
-			{
-				xtype: 'tbtext'
-				text: label
-			}
-		]
+		result = []
+				
+		if suffix
+			result.push [
+				{
+					xtype: 'tbtext'
+					text: label
+				}
+			]
 				
 		for num in [0...composition]
 			result.push {
