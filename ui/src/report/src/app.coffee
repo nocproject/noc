@@ -14,5 +14,5 @@ Ext.application(
 	mainView: 'Report.view.root.Main'
 	
 	launch: () ->
-		@getController('root').renderByConfig()
+		@getController('root').makeReport()
 )
