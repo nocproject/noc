@@ -697,7 +697,7 @@ class BaseScript(object):
         return self.has_capability("SNMP | v1")
 
     def has_snmp_v2c(self):
-        return self.has_capability("SNMP | v2c") or self.has_capability("SNMP")
+        return self.has_capability("SNMP | v2c")
 
     def has_snmp_v3(self):
         return self.has_capability("SNMP | v3")
