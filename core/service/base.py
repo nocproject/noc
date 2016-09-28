@@ -292,6 +292,10 @@ class Service(object):
                 "Running service %s", self.name
             )
         try:
+            if os.environ.get("NOC_LIBUV"):
+                from tornaduv import UVLoop
+                self.logger.warn("Using libuv")
+                tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.current()
             self.logger.warn("Activating service")
             self.activate()
