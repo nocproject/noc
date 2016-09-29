@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## fm.alarm application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,6 +10,8 @@
 import os
 import inspect
 import datetime
+## Third-party modules
+import bson
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.fm.models.activealarm import ActiveAlarm
@@ -19,7 +21,6 @@ from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.fm.models import get_alarm
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.selectorcache import SelectorCache
 from noc.main.models import User
 from noc.sa.models.useraccess import UserAccess
@@ -100,12 +101,10 @@ class AlarmApplication(ExtApplication):
             q["managed_object__in"] = Maintainance.currently_affected()
         del q["maintainance"]
         if "administrative_domain" in q:
-            a = AdministrativeDomain.objects.get(id=q["administrative_domain"])
-            q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
+            q["adm_path"] = int(q["administrative_domain"])
             q.pop("administrative_domain")
         if "segment" in q:
-            ns = NetworkSegment.objects.get(id=q["segment"])
-            q["managed_object__in"] = ns.managed_objects.values_list("id", flat=True)
+            q["segment_path"] = bson.ObjectId(q["segment"])
             q.pop("segment")
         if "managedobjectselector" in q:
             s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list("object")
