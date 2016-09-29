@@ -318,6 +318,7 @@ class ManagedObjectDashboard(BaseDashboard):
                         r["rows"][-1]["panels"][-1]["seriesOverrides"] = seriesoverrides
                         r["rows"][-1]["panels"][-1]["targets"] = targets
                         r["rows"][-1]["panels"][-1]["tags"] = tags
+                        r["rows"][-1]["panels"][-1]["tooltip"]["value_type"] = "individual"
 
 
         r["rows"] += [{
