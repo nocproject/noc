@@ -42,7 +42,7 @@ class ManagedObjectDashboard(BaseDashboard):
             "title": str(self.object.name),
             "style": "dark",
             "timezone": "browser",
-            "editable": True,
+            "editable": False,
             "time": {
                 "from": "now-6h",
                 "to": "now"
@@ -59,12 +59,12 @@ class ManagedObjectDashboard(BaseDashboard):
             "title": title,
             "showTitle": True,
             "collapse": True,
-            "editable": True,
+            "editable": False,
             "panels": []
         }]
         if self.object.description:
             r["rows"][-1]["panels"] += [{
-                "editable": True,
+                "editable": False,
                 "mode": "markdown",
                 "content": self.object.description,
                 "height": "24px",
@@ -84,7 +84,7 @@ class ManagedObjectDashboard(BaseDashboard):
                 "title": profile.name,
                 "showTitle": True,
                 "collapse": False,
-                "editable": True,
+                "editable": False,
                 "height": "250px",
                 "panels": []
             }]
@@ -325,7 +325,7 @@ class ManagedObjectDashboard(BaseDashboard):
             "title": "Метрики объекта",
             "showTitle": True,
             "collapse": False,
-            "editable": True,
+            "editable": False,
             "height": "250px",
             "panels": []
         }]

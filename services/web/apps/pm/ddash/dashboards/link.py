@@ -74,7 +74,7 @@ class LinkDashboard(BaseDashboard):
             fish.update(c)
             list += [fish.copy()]
 
-        config = [{"template": "link_def1", "templating": {"list": list}}]
+        config = [{"template": "link_dashboard", "templating": {"list": list}}]
         r = self.generator(config)
         return r
 
