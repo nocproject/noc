@@ -78,6 +78,8 @@ class Script(BaseScript):
             phy = phy.replace(" )", "")
             match = self.re_search(self.rx_phy_name, phy)
             name = match.group("ifname")
+            if name.endswith(")"):
+                name = name[:-1]
             # Detect interface type
             if name.startswith("lo"):
                 iftype = "loopback"
