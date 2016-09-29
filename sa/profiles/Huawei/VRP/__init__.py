@@ -24,7 +24,7 @@ class Profile(BaseProfile):
         (r"^Squeeze flash:", "y\n\r")
     ]
     pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.\[/`\s]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
-    pattern_syntax_error = r"^Error: | % Wrong parameter found at| % Unrecognized command found at|Error:Too many parameters found"
+    pattern_syntax_error = r"(Error: |% Wrong parameter found at|% Unrecognized command found at|Error:Too many parameters found|% Too many parameters found at|% Ambiguous command found at)"
 
     command_more = " "
     config_volatile = ["^%.*?$"]
@@ -77,3 +77,9 @@ class Profile(BaseProfile):
     def clean_spaces(self, config):
         config = self.spaces_rx.sub("", config)
         return config
+
+    def fix_version(self, v):
+        if v["platform"] == "S5628F-HI" and v["version"] == "5.20":
+            # Do not change these numbers. Used in get_switchport script
+            v = "3.10"
+        return v

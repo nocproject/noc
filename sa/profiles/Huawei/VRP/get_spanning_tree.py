@@ -84,7 +84,7 @@ class Script(BaseScript):
         r"\s+Port\sProtocol\s+:(?P<status>\S+).+?"
         r"\s+Port\sRole\s+:(?P<role>\S+).+?"
         r"\s+Port\sPriority\s+:(?P<priority>\d+).+?"
-        r"\s+Port\sCost\(Dot1T \)\s+:.+?Active=(?P<cost>\d+).+?"
+        r"\s+Port\sCost\((?:Dot1T |Legacy)\)\s+:.+?Active=(?P<cost>\d+).+?"
         r"\s+(Desg\.|Designated)\sBridge/Port\s+:(?P<designated_bridge_priority>\d+)\."
         r"(?P<designated_bridge_id>\S+)\s/\s(?P<designated_port_id>\S+).+?"
         r"\s+Port\sEdged\s+:Config=(?P<edge_config>\S+)\s/\sActive=(?P<edge_status>\S+).+?"

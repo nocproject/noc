@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Huawei.VRP.get_interface_status
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -12,7 +12,7 @@ from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 import re
 
 rx_ifc_status = re.compile(
-    r"^\s*(?P<interface>[^ ]+) current state :.*?(?P<status>up|down)",
+    r"^\s*(?P<interface>[^ ]+) current state\s*:.*?(?P<status>up|down)",
     re.IGNORECASE)
 rx_ifc_block = re.compile(
     r"Interface\s+(PHY|Physical)\s+Protocol[^\n]+\n(?P<block>.*)$",
@@ -48,9 +48,11 @@ class Script(BaseScript):
         ##
         ## VRP3 style
         ##
-        if self.match_version(version__startswith="3."):
+        version = self.profile.fix_version(self.scripts.get_version())
+        if version.startswith("3."):
             for l in self.cli("display interface").splitlines():
-                if (l.find(" current state :") != -1 \
+                if ((l.find(" current state :") != -1 \
+                or l.find(" current state:") != -1) \
                 and l.find("Line protocol ") == -1):
                     match_int = rx_ifc_status.match(l)
                     if match_int:
