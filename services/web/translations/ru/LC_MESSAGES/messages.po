@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-09-29 07:55+0500\n"
-"PO-Revision-Date: 2016-09-29 08:00+0500\n"
+"PO-Revision-Date: 2016-09-29 22:11+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -1495,7 +1495,7 @@ msgstr "Анализ производительности"
 
 #: services/web/apps/pm/ddash/views.py:20
 msgid "Dynamic Dashboard"
-msgstr ""
+msgstr "Динамический экран"
 
 #: services/web/apps/pm/metrictype/views.py:20
 msgid "Metric Type"
@@ -1534,11 +1534,11 @@ msgstr "Действия"
 
 #: services/web/apps/sa/actioncommands/views.py:21
 msgid "Action Command"
-msgstr "Комманда действия"
+msgstr "Команда действия"
 
 #: services/web/apps/sa/actioncommands/views.py:22
 msgid "Action Commands"
-msgstr "Комманды действий"
+msgstr "Команды действий"
 
 #: services/web/apps/sa/administrativedomain/views.py:19
 #: services/web/apps/sa/administrativedomain/views.py:20
@@ -1614,7 +1614,7 @@ msgstr "Профили объектов"
 
 #: services/web/apps/sa/reportfaileddiscovery/views.py:31
 msgid "Filter by Ping status"
-msgstr "Фиотрация по доступности"
+msgstr "Фильтрация по доступности"
 
 #: services/web/apps/sa/reportfaileddiscovery/views.py:37
 msgid "Failed Discovery"
@@ -1740,7 +1740,7 @@ msgstr "Зависший Discovery"
 #: services/web/apps/sa/runcommands/views.py:15
 #: services/web/apps/sa/runcommands/views.py:16
 msgid "Run Commands"
-msgstr "Запуск комманд"
+msgstr "Запуск команд"
 
 #: services/web/apps/sa/runsnippet/views.py:59
 #: services/web/apps/sa/runsnippet/views.py:125
