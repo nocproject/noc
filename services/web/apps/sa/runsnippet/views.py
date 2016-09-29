@@ -122,7 +122,7 @@ class RunSnippetApplication(Application):
         )
         return task.id
     
-    @view(url=r"^$", url_name="index", menu="Tasks | Run Snippet",
+    @view(url=r"^$", url_name="index", menu=_("Tasks") + " | " + _("Run Snippet"),
           access="launch")
     def view_index(self, request):
         """ Display all available snippets"""
