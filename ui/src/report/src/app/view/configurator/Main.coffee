@@ -17,8 +17,15 @@ Ext.define 'Report.view.configurator.Main',
 	width: 1200
 	height: 500
 	layout: 'hbox'
+	autoShow: true
 	
 	config:
+	
+		###
+            Целевая сущность, которую будем конфигурировать.
+            Ожидается что сущность имеет метод getStore.
+        ###
+		targetEntity: null
 	
 		###
 			@cfg {Boolean} displayType
@@ -63,8 +70,14 @@ Ext.define 'Report.view.configurator.Main',
 		}
 	]
 	
-	constructor: () ->
+	initComponent: () ->
 		@callParent arguments
+		
+		@mask()
 		
 		if @getDisplayType() then @down('#type').show()
 		if @getDisplaySize() then @down('#size').show()
+	
+		@setEntityStore @getTargetEntity().getModel()
+		
+		# TODO

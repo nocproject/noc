@@ -42,11 +42,11 @@ Ext.define 'Report.controller.Dashboard',
 	
 		###
 			Запускает редактирование дашборда.
+            @param {Ext.button.Button} Кнопка открытия конфигуратора.
 		###
-		configureDashboard: () ->
-			configurator = Ext.create 'Report.view.dashboard.Configurator'
-	
-			# TODO
+		configureDashboard: (button) ->
+			Ext.create 'Report.view.dashboard.Configurator',
+				targetEntity: button.up 'dashboardConfigurator'
 	
 		###
 			Показывает конфигуратор дашборда.
