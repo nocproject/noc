@@ -5,6 +5,12 @@ Ext.define 'Report.controller.Root',
 	extend: 'Ext.app.Controller'
 	id: 'root'
 	
+	requires: [
+		'Report.model.Gate'
+		'Report.model.API'
+		'Report.model.StoreField'
+	]
+	
 	models: [
 		'config.Column'
 		'config.Dashboard'
@@ -50,8 +56,8 @@ Ext.define 'Report.controller.Root',
 			Следующий шаг, принимающий первым параметром результат в виде объекта.
 		###
 		getReportConfig: (next) ->
-			Report.data.Gate.send(
-				Report.data.API.config,
+			Report.model.Gate.send(
+				Report.model.API.config,
 				null,
 				next.bind @
 			)
@@ -63,8 +69,8 @@ Ext.define 'Report.controller.Root',
 			Следующий шаг, принимающий первым параметром результат в виде объекта.
 		###
 		setReportConfig: (data, next) ->
-			Report.data.Gate.post(
-				Report.data.API.config,
+			Report.model.Gate.post(
+				Report.model.API.config,
 				data,
 				next.bind @
 			)

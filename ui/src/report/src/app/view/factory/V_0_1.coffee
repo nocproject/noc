@@ -8,7 +8,6 @@ Ext.define 'Report.factory.V_0_1',
 	
 	requires: [
 		'Report.view.dashboard.Main'
-		'Report.view.filter.Factory'
 		'Report.view.root.Main'
 		'Report.view.widget.Main'
 	]

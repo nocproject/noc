@@ -17,12 +17,29 @@ services:
       - ./workspace:/code
       - ../../report:/code/build/
       - ./src/app:/code/app
-      - ./src/app/sass:/code/sass
-      - ./src/app/packages:/code/packages
+      - ./src/sass:/code/sass
+      - ./src/packages:/code/packages
       - ./src/app.js:/code/app.js
       - ./src/app.json:/code/app.json
     volumes_from:
       - ext
+
+  work_sencha:
+      image: freeseacher/sencha:6.1.3.42
+      command: app watch
+      working_dir: /code
+      ports:
+        - 1841:1841
+      volumes:
+        - ./workspace:/code
+        - ../../report:/code/build/
+        - ./src/app:/code/app
+        - ./src/sass:/code/sass
+        - ./src/packages:/code/packages
+        - ./src/app.js:/code/app.js
+        - ./src/app.json:/code/app.json
+      volumes_from:
+        - ext
 
   ext:
     image: freeseacher/ext:6.0.1

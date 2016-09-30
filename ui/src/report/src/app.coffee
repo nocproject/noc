@@ -2,6 +2,10 @@ Ext.application(
 	extend: 'Ext.app.Application'
 	name: 'Report'
 	
+	requires: [
+		'Report.view.root.Main'
+	]
+	
 	controllers: [
 		'Configurator'
 		'Dashboard'
@@ -13,5 +17,5 @@ Ext.application(
 	mainView: 'Report.view.root.Main'
 	
 	launch: () ->
-		@getController('root').makeReport()
+		@getController('Root').makeReport()
 )
