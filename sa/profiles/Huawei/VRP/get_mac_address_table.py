@@ -25,12 +25,12 @@ class Script(BaseScript):
         if mac is not None:
             cmd += " %s" % self.profile.convert_mac(mac)
         version = self.profile.fix_version(
-            self.scripts.get_version()).split(".")[0]
-        if version == "3":
+            self.scripts.get_version())
+        if version.startswith("3"):
             rx_line = rx_vrp3line
-        elif self.match_version(version__startswith="5.3"):
+        elif version.startswith("5.3"):
             rx_line = rx_vrp53line
-        elif version == "5":
+        elif version.startswith("5"):
             rx_line = rx_vrp5line
         r = []
         for l in self.cli(cmd).splitlines():
