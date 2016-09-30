@@ -2,7 +2,7 @@
 	Окно библиотеки.
 ###
 Ext.define 'Report.view.library.Main',
-	extend: 'Ext.window.Window'
+	extend: 'Report.view.ui.PopUpWindow'
 	xtype: 'libraryMain'
 	
 	requires: [
@@ -26,11 +26,13 @@ Ext.define 'Report.view.library.Main',
 		{
 			itemId: 'list'
 			xtype: 'libraryList'
+			height: '100%'
 			flex: 1
 		}
 		{
 			itemId: 'description'
 			xtype: 'libraryDescription'
+			height: '100%'
 			flex: 2
 		}
 	]
@@ -39,6 +41,7 @@ Ext.define 'Report.view.library.Main',
 		{
 			itemId: 'control'
 			xtype: 'libraryControl'
+			dock: 'bottom'
 		}
 	]
 	

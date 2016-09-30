@@ -9,7 +9,7 @@ Ext.define 'Report.view.library.Control',
 		{
 			itemId: 'create'
 			xtype: 'button'
-			text: 'Создать...'
+			text: 'Создать'
 		}
 		'->'
 		{

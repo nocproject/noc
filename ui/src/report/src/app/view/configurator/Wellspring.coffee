@@ -7,12 +7,14 @@ Ext.define 'Report.view.configurator.Wellspring',
 	
 	items: [
 		{
-			itemId: 'point'
+			itemId: 'combo'
 			xtype: 'combobox'
 			fieldLabel: 'Источник данных'
 			queryMode: 'local'
 			displayField: 'name'
 			valueField: 'id'
+			emptyText: 'Любой'
+			readOnly: true
 			store:
 				model: 'Report.model.wellspring.List'
 		}
@@ -24,13 +26,26 @@ Ext.define 'Report.view.configurator.Wellspring',
 			columns: [
 				{
 					dataindex: 'title'
-					text: 'Имя'
+					text: 'Колонка'
 					flex: 1
 				}
 				{
 					dataIndex: 'selected'
 					xtype: 'checkcolumn'
+					width: 25
 				}
 			]
 		}
 	]
+	
+	###
+        Разблокирует комбо выбора источника данных.
+	###
+	enableCombo: () ->
+		@down('#combo').setReadOnly(false)
+	
+	###
+        Блокирует комбо выбора источника данных.
+	###
+	disableCombo: () ->
+		@down('#combo').setReadOnly(true)

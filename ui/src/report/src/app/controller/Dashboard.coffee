@@ -15,7 +15,7 @@ Ext.define 'Report.controller.Dashboard',
 			'dashboardMain #configure':
 				click: 'configureDashboard'
 			'dashboardLibrary #control #create':
-				click: 'showConfigurator'
+				click: 'createDashboard'
 			'dashboardLibrary #control #select':
 				click: 'addDashboard'
 
@@ -51,7 +51,7 @@ Ext.define 'Report.controller.Dashboard',
 		###
 			Показывает конфигуратор дашборда.
 		###
-		showConfigurator: () ->
+		createDashboard: () ->
 			Ext.create 'Report.view.dashboard.Configurator'
 	
 			# TODO
@@ -62,7 +62,9 @@ Ext.define 'Report.controller.Dashboard',
 		###
 		addDashboard: (button) ->
 			list = button.up('dashboardLibrary').down('#list')
-			dashboardData = list.getSelectionModel().getSelection()[0]
+			dashboardData = list.getSelected()
+			
+			unless dashboardData then return
 			
 			###
 				Оповещает о необходимости добавления дашборда.

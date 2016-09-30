@@ -12,17 +12,27 @@ Ext.define 'Report.view.configurator.filters.Main',
 	
 	items: [
 		{
-			itemId: 'grid'
-			xtype: 'grid'
-			title: 'Список фильтров'
-			tbar: [
-				'->'
+			xtype: 'container'
+			layout: 'hbox'
+			items: [
+				{
+					xtype: 'tbspacer'
+					flex: 1
+				}
 				{
 					itemId: 'addFilter'
 					xtype: 'button'
-					text: 'Добавить'
+					iconCls: 'x-fa fa-plus'
+					text: 'Добавить фильтр'
+					margin: '16 10'
+					handler: (button) ->
+						button.up('configuratorFilters').down('grid').getStore().add({})
 				}
 			]
+		}
+		{
+			itemId: 'grid'
+			xtype: 'grid'
 			plugins:
 				ptype: 'cellediting'
 				clicksToEdit: 1
@@ -30,15 +40,9 @@ Ext.define 'Report.view.configurator.filters.Main',
 				model: 'Report.model.config.Filter'
 			columns: [
 				{
-					dataIndex: 'type'
-					editor: [
-						{
-							xtype: 'configuratorFiltersTypeCombo'
-						}
-					]
-				}
-				{
 					dataIndex: 'column'
+					text: 'Колонка'
+					flex: 1
 					editor: [
 						{
 							xtype: 'configuratorFiltersColumnCombo'
@@ -46,7 +50,18 @@ Ext.define 'Report.view.configurator.filters.Main',
 					]
 				}
 				{
+					dataIndex: 'type'
+					text: 'Тип фильтра'
+					flex: 1
+					editor: [
+						{
+							xtype: 'configuratorFiltersTypeCombo'
+						}
+					]
+				}
+				{
 					xtype: 'actioncolumn'
+					width: 25
 					items: [
 						{
 							iconCls: 'x-fa fa-close'

@@ -20,5 +20,6 @@ Ext.define 'Report.view.configurator.Meta',
 			itemId: 'description'
 			xtype: 'textarea'
 			fieldLabel: 'Описание'
+			height: 150
 		}
 	]

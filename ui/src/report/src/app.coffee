@@ -7,15 +7,37 @@ Ext.application(
 	]
 	
 	controllers: [
+		'Root'
 		'Configurator'
 		'Dashboard'
 		'Library'
-		'Root'
 		'Widget'
 	]
 	
 	mainView: 'Report.view.root.Main'
 	
 	launch: () ->
-		@getController('Root').makeReport()
+		body = Ext.getBody()
+		
+		loader = Ext.create 'Ext.Img',
+			floating: true,
+			src: 'resources/img/SOVA.png',
+			autoShow: true,
+			shadow: false,
+			x: body.getWidth() / 2 - 380,
+			y: body.getHeight() / 2 - 88
+		
+		loader.animate {
+			delay: 1000
+			duration: 1200
+			to:
+				opacity: 0
+		}
+		
+		setTimeout(
+			() -> loader.destroy()
+			3000
+		)
+			
+		@controllers.getAt(0).makeReport()
 )
