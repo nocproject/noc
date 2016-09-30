@@ -50,7 +50,7 @@ ui/report/*
 ui/src/login/workspace/sass/example/*
 ui/src/login/workspace/app.*
 ui/src/login/workspace/bootstrap.*
-ui/src/report/src/**.js
+ui/src/report/src/app/**.js
 ui/src/report/workspace/sass/example/*
 ui/src/report/workspace/app.*
 ui/src/report/workspace/bootstrap.*
