@@ -27,7 +27,7 @@ Ext.define 'Report.controller.Root',
 				click: 'openNocUserMenu'
 			'rootMain #addDashboard':
 				click: 'showDashboardLibrary'
-
+		
 	###
 		@private
 		@readonly

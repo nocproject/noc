@@ -2,7 +2,7 @@
 	Окно конфигуратора.
 ###
 Ext.define 'Report.view.configurator.Main',
-	extend: 'Ext.window.Window'
+	extend: 'Report.view.ui.PopUpWindow'
 	xtype: 'configuratorMain'
 	
 	requires: [
@@ -23,7 +23,8 @@ Ext.define 'Report.view.configurator.Main',
 	
 		###
             Целевая сущность, которую будем конфигурировать.
-            Ожидается что сущность имеет метод getStore.
+            Ожидается что сущность имеет метод getModel.
+            Может отсутствовать при создании новой сущности.
         ###
 		targetEntity: null
 	
@@ -38,11 +39,31 @@ Ext.define 'Report.view.configurator.Main',
 			Указывает на необходимость отображать настройки размера сущности.
 		###
 		displaySize: false
+		
+		###
+            @cfg {Boolean} enableWellspringCombo
+            Указывает на необходимость разблокировки списка источников данных.
+        ###
+		enableWellspringCombo: false
+	
+	
+	###
+        Модель конфигурируемой сущности.
+        @property {Ext.data.Model} entityModel
+	###
+	entityModel: null
+	
+	
+	defaults:
+		height: '100%'
+		border: 1
 	
 	items: [
 		{
 			xtype: 'container'
 			layout: 'vbox'
+			padding: 10
+			flex: 1
 			items: [
 				{
 					itemId: 'type'
@@ -63,21 +84,33 @@ Ext.define 'Report.view.configurator.Main',
 		{
 			itemId: 'wellspring'
 			xtype: 'configuratorWellspring'
+			padding: 10
+			flex: 1
 		}
 		{
 			itemId: 'filters'
 			xtype: 'configuratorFilters'
+			flex: 2
+		}
+	]
+	
+	dockedItems: [
+		{
+			itemId: 'control'
+			xtype: 'configuratorControl'
+			dock: 'bottom'
 		}
 	]
 	
 	initComponent: () ->
 		@callParent arguments
 		
-		@mask()
-		
 		if @getDisplayType() then @down('#type').show()
 		if @getDisplaySize() then @down('#size').show()
+		if @getEnableWellspringCombo() then @down('#wellspring').enableCombo()
 	
-		@setEntityStore @getTargetEntity().getModel()
+		@entityModel = @getTargetEntity()?.getModel()
+		
+		@setTitle (@entityModel?.get 'name') or 'Новый'
 		
 		# TODO
