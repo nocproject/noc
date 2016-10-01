@@ -59,4 +59,4 @@ Ext.define 'Report.controller.Configurator',
 			else
 				data = target.getStore().getData()
 				
-				Ext.Array.from(data).map (value) -> value.getData()
+				data.items.map (value) -> value.getData()
