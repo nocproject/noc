@@ -4,6 +4,7 @@ Ext.application(
 	
 	requires: [
 		'Report.view.root.Main'
+		'Report.model.MainDataTree'
 	]
 	
 	controllers: [
@@ -17,27 +18,41 @@ Ext.application(
 	mainView: 'Report.view.root.Main'
 	
 	launch: () ->
-		body = Ext.getBody()
+		@showLoader()
+		@makeReport()
 		
-		loader = Ext.create 'Ext.Img',
-			floating: true,
-			src: 'resources/img/SOVA.png',
-			autoShow: true,
-			shadow: false,
-			x: body.getWidth() / 2 - 380,
-			y: body.getHeight() / 2 - 88
+	privates:
 		
-		loader.animate {
-			delay: 1000
-			duration: 1200
-			to:
-				opacity: 0
-		}
-		
-		setTimeout(
-			() -> loader.destroy()
-			3000
-		)
+		###
+            Отображает прелоадер.
+		###
+		showLoader: () ->
+			body = Ext.getBody()
+	
+			loader = Ext.create 'Ext.Img',
+				floating: true,
+				src: 'resources/img/SOVA.png',
+				alt: 'SOVA logo'
+				autoShow: true,
+				shadow: false,
+				x: body.getWidth() / 2 - 380,
+				y: body.getHeight() / 2 - 88
 			
-		@controllers.getAt(0).makeReport()
+			loader.animate {
+				delay: 1000
+				duration: 1200
+				to:
+					opacity: 0
+			}
+			
+			setTimeout(
+				() -> loader.destroy()
+				2500
+			)
+
+		###
+            Создает-инициализирует отчет.
+		###
+		makeReport: () ->
+			@controllers.getAt(0).makeReport()
 )
