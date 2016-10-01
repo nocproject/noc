@@ -70,6 +70,12 @@ Ext.define("NOC.inv.networksegment.Application", {
                     renderer: NOC.render.Lookup("selector")
                 },
                 {
+                    text: __("Redundant"),
+                    dataIndex: "is_redundant",
+                    width: 50,
+                    renderer: NOC.render.Lookup("is_redundant")
+                },
+                {
                     text: __("Obj."),
                     dataIndex: "count",
                     width: 30,

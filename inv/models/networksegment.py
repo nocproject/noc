@@ -13,9 +13,12 @@ from threading import RLock
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ReferenceField,
-                                ListField)
+                                ListField, BooleanField, EmbeddedDocumentField)
+from django.db.models.aggregates import Count
+## NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 
 id_lock = RLock()
 
@@ -37,6 +40,19 @@ class NetworkSegment(Document):
     # Sibling segment, if part of larger structure with
     # horizontal links
     sibling = ReferenceField("self")
+    # True if segment has alternative paths
+    is_redundant = BooleanField(default=False)
+    # True if segment is redundant and redundancy
+    # currently broken
+    lost_redundancy = BooleanField(default=False)
+    # Objects, services and subscribers belonging to segment directly
+    direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
+    direct_services = ListField(EmbeddedDocumentField(SummaryItem))
+    direct_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
+    # Objects, services and subscribers belonging to all nested segments
+    total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
+    total_services = ListField(EmbeddedDocumentField(SummaryItem))
+    total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -140,3 +156,91 @@ class NetworkSegment(Document):
     @property
     def has_children(self):
         return True if NetworkSegment.objects.filter(parent=self.id) else False
+
+    def set_redundancy(self, status):
+        """
+        Change interface redundancy status
+        :param status:
+        :return:
+        """
+        siblings = list(self.get_siblings())
+        filter = {
+            "status": {"$ne": status}
+        }
+        if len(siblings) == 1:
+            filter["_id"] = self.id
+        else:
+            filter["_id"] = {
+                "$in": [s.id for s in siblings]
+            }
+
+        set_op = {
+            "is_redundant": status
+        }
+        if not status:
+            set_op["lost_redundancy"] = False
+        NetworkSegment._get_collection().update(
+            filter, {
+                "$set": set_op
+            },
+            multi=True
+        )
+
+    def update_summary(self):
+        """
+        Update summaries
+        :return:
+        """
+        def update_dict(d1, d2):
+            for k in d2:
+                if k in d1:
+                    d1[k] += d2[k]
+                else:
+                    d1[k] = d2[k]
+
+        services = {}
+        subscribers = {}
+        objects = dict(
+            (d["object_profile"], d["count"])
+            for d in self.managed_objects.values(
+                "object_profile"
+            ).annotate(
+                count=Count("id")
+            ).order_by("count"))
+        # Direct services
+        mo_ids = self.managed_objects.values_list("id", flat=True)
+        for ss in ServiceSummary.objects.filter(managed_object__in=mo_ids):
+            update_dict(services, SummaryItem.items_to_dict(ss.service))
+            update_dict(subscribers, SummaryItem.items_to_dict(ss.subscriber))
+        self.direct_services = SummaryItem.dict_to_items(services)
+        self.direct_subscribers = SummaryItem.dict_to_items(subscribers)
+        self.direct_objects = ObjectSummaryItem.dict_to_items(objects)
+        siblings = set()
+        for ns in NetworkSegment.objects.filter(parent=self.id):
+            if ns.id in siblings:
+                continue
+            update_dict(services, SummaryItem.items_to_dict(ns.total_services))
+            update_dict(subscribers, SummaryItem.items_to_dict(ns.total_subscribers))
+            update_dict(objects, ObjectSummaryItem.items_to_dict(ns.total_objects))
+            siblings.add(ns.id)
+            if ns.sibling:
+                siblings.add(ns.sibling.id)
+        self.total_services = SummaryItem.dict_to_items(services)
+        self.total_subscribers = SummaryItem.dict_to_items(subscribers)
+        self.total_objects = ObjectSummaryItem.dict_to_items(objects)
+        self.save()
+        # Update upwards
+        ns = self.parent
+        while ns:
+            services = SummaryItem.items_to_dict(ns.direct_services)
+            subscribers = SummaryItem.items_to_dict(ns.direct_subscribers)
+            objects = ObjectSummaryItem.items_to_dict(ns.direct_objects)
+            for nsc in NetworkSegment.objects.filter(parent=ns.id):
+                update_dict(services, SummaryItem.items_to_dict(nsc.total_services))
+                update_dict(subscribers, SummaryItem.items_to_dict(nsc.total_subscribers))
+                update_dict(objects, ObjectSummaryItem.items_to_dict(nsc.total_objects))
+            ns.total_services = SummaryItem.dict_to_items(services)
+            ns.total_subscribers = SummaryItem.dict_to_items(subscribers)
+            ns.total_objects = ObjectSummaryItem.dict_to_items(objects)
+            ns.save()
+            ns = ns.parent
