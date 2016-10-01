@@ -9,6 +9,8 @@ Ext.define 'Report.controller.Root',
 		'Report.model.Gate'
 		'Report.model.API'
 		'Report.model.StoreField'
+		'Report.view.dashboard.Library'
+		'Report.view.dashboard.Configurator'
 	]
 	
 	models: [
