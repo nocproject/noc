@@ -1,0 +1,8 @@
+$menu-item-active-background-color: $color-concrete;
+$menu-border-style: dashed;
+$menu-border-width: 0;
+
+.x-menu.x-menu-default,
+.x-menu-body.x-menu-body-default {
+  border-radius: $border-radius;
+}
