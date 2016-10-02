@@ -19,21 +19,32 @@ import pymongo
 from mongoengine.base import *
 from mongoengine import *
 import mongoengine
+import six
 ## NOC modules
 from noc.core.config.base import config
 
 logger = logging.getLogger(__name__)
 
 ## Connect to the database
-try:
-    ca = config.mongo_connection_args
-    if ca.get("password"):
-        ca["password"] = "********"
-    logger.info("Connecting to MongoDB %s", ca)
-    connect(**config.mongo_connection_args)
-except mongoengine.connection.ConnectionError, why:
-    logger.error("Cannot connect to mongodb: %s" % why)
-    sys.exit(1)
+RETRIES = 20
+TIMEOUT = 3
+
+for i in range(RETRIES):
+    try:
+        ca = config.mongo_connection_args
+        if ca.get("password"):
+            ca["password"] = "********"
+        logger.info("Connecting to MongoDB %s", ca)
+        connect(**config.mongo_connection_args)
+        break
+    except mongoengine.connection.ConnectionError as e:
+        logger.error("Cannot connect to mongodb: %s", e)
+        if i < RETRIES - 1:
+            logger.error("Waiting %d seconds", TIMEOUT)
+            time.sleep(TIMEOUT)
+        else:
+            logger.error("Cannot connect %d times. Exiting", RETRIES)
+            sys.exit(1)
 
 ## Shortcut to ObjectId
 try:
@@ -192,6 +203,7 @@ class ForeignKeyField(BaseField):
             raise ValidationError("Argument to ForeignKeyField constructor "
                                   "must be a Model class")
         self.document_type = model
+        self.has_get_by_id = hasattr(self.document_type, "get_by_id")
         super(ForeignKeyField, self).__init__(**kwargs)
         if True:  # not settings.IS_TEST:
             django.db.models.signals.pre_delete.connect(self.on_ref_delete,
@@ -207,7 +219,7 @@ class ForeignKeyField(BaseField):
         """
         if not self.name:
             return
-        doc = self.owner_document
+        doc = self.document_type
         if hasattr(doc, "objects"):
             if doc.objects.filter(**{self.name: instance.id}).first() is not None:
                 raise IntegrityError(
@@ -227,7 +239,10 @@ class ForeignKeyField(BaseField):
         value = instance._data.get(self.name)
         # Dereference
         if isinstance(value, int):
-            value = self.document_type.objects.get(pk=value)
+            if self.has_get_by_id:
+                value = self.document_type.get_by_id(value)
+            else:
+                value = self.document_type.objects.get(pk=value)
             if value is not None:
                 instance._data[self.name] = value
         return super(ForeignKeyField, self).__get__(instance, owner)
@@ -235,6 +250,8 @@ class ForeignKeyField(BaseField):
     def __set__(self, instance, value):
         if not value:
             value = None
+        elif isinstance(value, six.string_types):
+            value = int(value)
         super(ForeignKeyField, self).__set__(instance, value)
 
     def to_mongo(self, document):
@@ -275,46 +292,3 @@ class RawDictField(DictField):
         return dict([(k.replace(".", ESC1).replace("$", ESC2), v)
             for k, v in value.items()])
 
-
-class Sequence(object):
-    """
-    Unique sequence number generator
-    """
-    def __init__(self, name, prefix, shard_id):
-        # Generate sequence template
-        self.format = "%s%d.%%d" % (prefix, shard_id)
-        self.name = name
-        self.sequences = get_db().noc.sequences["s%d" % shard_id]
-        self.sequences.insert({"_id": self.name, "value": 0L})
-
-    def next(self):
-        s = self.sequences.find_and_modify(
-            query={"_id": self.name},
-            update={"$inc": {"value": 1}},
-            new=True
-        )
-        return self.format % s["value"]
-
-
-class IntSequence(object):
-    FIELD = "v"
-    def __init__(self, name):
-        self.name = name
-        self.isequences = get_db().noc.isequences
-        self.isequences.insert({"_id": self.name, self.FIELD: 0L})
-
-    def next(self):
-        s = self.isequences.find_and_modify(
-            query={"_id": self.name},
-            update={"$inc": {self.FIELD: 1}},
-            new=True
-        )
-        return s[self.FIELD]
-
-
-# def create_test_db(verbosity, autoclobber):
-#     connect(**connection_args)
-#
-#
-# def destroy_test_db(verbosity):
-#     get_connection().drop_database(settings.NOSQL_DATABASE_TEST_NAME)

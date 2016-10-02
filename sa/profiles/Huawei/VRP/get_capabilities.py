@@ -23,16 +23,20 @@ class Script(BaseScript):
             r = self.cli("display stp global | include Enabled")
             return "Enabled" in r
         except self.CLISyntaxError:
-            r = self.cli("display stp | include disabled")
-            return not "Protocol Status" in r
+            try:
+                r = self.cli("display stp | include disabled")
+                return "Protocol Status" not in r
+            except self.CLISyntaxError:
+                r = self.cli("display stp")
+                return "Protocol Status" not in r
 
     @false_on_cli_error
     def has_lldp(self):
         """
         Check box has LLDP enabled
         """
-        r = self.cli("display lldp local | include enabled")
-        return not "Global LLDP is not enabled" in r
+        r = self.cli("display lldp local")
+        return "Global LLDP is not enabled" not in r
 
     @false_on_cli_error
     def has_bfd(self):
@@ -48,4 +52,6 @@ class Script(BaseScript):
         Check box has UDLD enabled
         """
         r = self.cli("display dldp")
-        return not "Global DLDP is not enabled" in r
+        return "Global DLDP is not enabled" not in r \
+        and "DLDP global status : disable" not in r
+

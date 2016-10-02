@@ -11,15 +11,47 @@
         <td><a href="/api/card/view/segment/{{ parent.id }}/">{{ parent.name }}</a></td>
     </tr>
     {% endif %}
+    <tr>
+        <th scope="row">{{ _("Redundancy") }}</th>
+        <td>
+            {% if object.is_redundant %}
+                {% if object.lost_redundancy %}
+                    <i class="fa fa-exclamation-triangle"></i>{{ _("Lost redundancy") }}
+                {% else %}
+                    <i class="fa fa-check"></i>{{ _("Redundant") }}
+                {% endif %}
+            {% else %}
+                <i class="fa fa-times"></i>{{ _("No redundancy") }}
+            {% endif %}
+        </td>
+    </tr>
     {% if children %}
     <tr>
         <th scope="row">{{ _("Children") }}</th>
         <td>
             <table>
+                <thead>
+                    <tr>
+                        <th class="col-sm-10">{{ _("Segment") }}</th>
+                        <th class="col-sm-2">{{ _("Summary") }}</th>
+                    </tr>
+                </thead>
                 <tbody>
                 {% for c in children %}
                 <tr>
-                    <td><a href="/api/card/view/segment/{{ c.id }}/">{{ c.name }}</a></td>
+                    <td><a href="/api/card/view/segment/{{ c.id }}/">
+                        {% if c.object.is_redundant %}
+                            {% if c.object.lost_redundancy %}
+                                <i class="fa fa-exclamation-triangle" title="{{ _("Lost redundancy") }}"></i>
+                            {% else %}
+                                <i class="fa fa-check" title="{{ _("Redundant") }}"></i>
+                            {% endif %}
+                        {% else %}
+                            <i class="fa fa-times" title="{{ _("No redundancy") }}"></i>
+                        {% endif %}
+                        {{ c.name }}</a>
+                    </td>
+                    <td>{{ c["summary"] | glyph_summary }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>

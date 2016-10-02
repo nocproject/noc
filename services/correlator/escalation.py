@@ -62,7 +62,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
     #
     escalation = escalation_cache[escalation_id]
     if not escalation:
-        log("Escalation %s is not found, skipping", escalation_id)
+        log("Escalation %s is not found, skipping",
+            escalation_id)
         return
 
     # Evaluate escalation chain
@@ -71,10 +72,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
         if a.delay != escalation_delay:
             continue  # Try other type
         # Check administrative domain
-        if (
-            a.administrative_domain and
-            mo.administrative_domain.id != a.administrative_domain.id
-        ):
+        if (a.administrative_domain and
+                a.administrative_domain.id not in alarm.adm_path):
             continue
         # Check severity
         if a.min_severity and alarm.severity < a.min_severity:
@@ -88,7 +87,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
         # Render escalation message
         if not a.template:
             log("No escalation template, skipping")
-            return
+            continue
         # Check global limits
         ets = datetime.datetime.now() - datetime.timedelta(seconds=60)
         ae = ActiveAlarm._get_collection().find({

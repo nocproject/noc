@@ -26,7 +26,7 @@ class Script(BaseScript):
         re.IGNORECASE
     )
     rx_mac = re.compile(
-        "Hardware address is (?P<mac>[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
+        "Hardware [Aa]ddress(?::| is) (?P<mac>[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
     )
     rx_ipv4 = re.compile(
         r"Internet Address is (?P<ip>\d{1,2}\.\d{1,2}\.\d{1,2}\.\d{1,2}/\d{1,2})",
@@ -35,7 +35,7 @@ class Script(BaseScript):
 
     rx_iftype = re.compile(r"^(\S+?)\d+.*$")
 
-    rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s+:\s+(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
+    rx_dis_ip_int = re.compile(r"^(?P<interface>\S+?)\s+current\s+state\s*:\s*(?:administratively\s+)?(?P<admin_status>up|down)", re.IGNORECASE)
 
     rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})", re.MULTILINE | re.IGNORECASE)
 
@@ -68,7 +68,9 @@ class Script(BaseScript):
         "Tunnel": "tunnel",
         "Virtual-Ethernet": None,
         "Virtual-Template": None,
-        "Vlanif": "SVI"
+        "Vlanif": "SVI",
+        "Vlan-interface": "SVI",
+        "NULL": "null"
     }
 
     def get_ospfint(self):

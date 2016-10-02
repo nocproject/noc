@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Generic.get_capabilities
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -65,15 +65,16 @@ class Script(BaseScript):
         """
         return self.check_snmp_get(self.SNMP_GET_CHECK_OID)
 
-    def get_snmp_version(self):
+    def get_snmp_versions(self):
         """
         Get SNMP version
-        :return: Working SNMP version or None
+        :return: Working SNMP versions set or empty set
         """
+        sv = set()
         for v in self.SNMP_VERSIONS:
             if self.check_snmp_get(self.SNMP_GET_CHECK_OID, version=v):
-                return v
-        return None
+                sv.add(v)
+        return sv
 
     def has_snmp_bulk(self):
         return self.check_snmp_getnext(self.SNMP_BULK_CHECK_OID,
@@ -123,6 +124,12 @@ class Script(BaseScript):
         """
         return False
 
+    def has_ipv6(self):
+        """
+        Returns True when IPv6 ND is enabled
+        """
+        return False
+
     def execute_platform(self, caps):
         """
         Method to be overriden in subclasses.
@@ -132,13 +139,15 @@ class Script(BaseScript):
 
     def execute(self):
         caps = {}
-        sv = self.get_snmp_version()
-        if sv is not None:
+        svs = self.get_snmp_versions()
+        if svs:
             # SNMP is enabled
             caps["SNMP"] = True
+            self.capabilities["SNMP"] = True
             for v in self.SNMP_CAPS:
-                caps[self.SNMP_CAPS[v]] = v == sv
-            if sv != SNMP_v1 and self.has_snmp_bulk():
+                caps[self.SNMP_CAPS[v]] = v in svs
+                self.capabilities[self.SNMP_CAPS[v]] = v in svs
+            if svs & set([SNMP_v2c, SNMP_v3]) and self.has_snmp_bulk():
                 caps["SNMP | Bulk"] = True
             if self.has_snmp_ifmib():
                 caps["SNMP | IF-MIB"] = True
@@ -161,6 +170,8 @@ class Script(BaseScript):
             caps["Network | OAM"] = True
         if self.has_udld():
             caps["Network | UDLD"] = True
+        if self.has_ipv6():
+            caps["Network | IPv6"] = True
         self.execute_platform(caps)
         return caps
 

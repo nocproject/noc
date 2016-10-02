@@ -34,8 +34,15 @@ class Script(BaseScript):
         try:
             trunk = self.cli("display eth-trunk", cached=True)
         except self.CLISyntaxError:
-            # version 5.3 produce like this:
-            # Error: No valid trunk in the system.
+            trunk = self.cli("display link-aggregation summary", cached=True)
+            """
+            Need more examples
+
+            version 5.2 produce like this:
+            No link-aggregation group defined at present.
+            version 5.3 produce like this:
+            Error: No valid trunk in the system.
+            """
             return []
         for match in self.rx_chan_line_vrp5.finditer(trunk):
             r += [{

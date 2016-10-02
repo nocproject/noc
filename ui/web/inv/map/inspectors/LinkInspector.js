@@ -21,10 +21,25 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
             padding: 4
         });
 
+        me.dashboardButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.line_chart,
+            scope: me,
+            tooltip: __("Show dashboard"),
+            handler: me.onDashboard,
+            disabled: true
+        });
+
         Ext.apply(me, {
             items: [
                 me.infoText
-            ]
+            ],
+            dockedItems: [{
+                xtype: "toolbar",
+                dock: "top",
+                items: [
+                    me.dashboardButton
+                ]
+            }]
         });
         me.callParent();
     },
@@ -71,7 +86,17 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
             return parseInt(v / 1000000) + "Mbit/s";
         }).join(" | ");
         t += "<b>Util: </b>" + ut + "<br>";
+        me.dashboardButton.setDisabled(false);
         me.infoText.setHtml(t);
         me.currentLinkId = data.id;
     },
+
+    onDashboard: function() {
+        var me = this;
+        if(me.currentLinkId) {
+            window.open(
+                '/ui/grafana/dashboard/script/noc.js?dashboard=link&id=' + me.currentLinkId
+            );
+        }
+    }
 });

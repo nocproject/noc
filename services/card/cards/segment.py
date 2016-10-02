@@ -10,7 +10,7 @@
 import operator
 ## NOC modules
 from base import BaseCard
-from noc.sa.models.servicesummary import ServiceSummary
+from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.objectstatus import ObjectStatus
@@ -24,8 +24,8 @@ class SegmentCard(BaseCard):
     def get_data(self):
         # Calculate contained objects
         summary = {
-            "service": {},
-            "subscriber": {}
+            "service": SummaryItem.items_to_dict(self.object.total_services),
+            "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers)
         }
         objects = []
         for mo in self.object.managed_objects.filter(is_managed=True):
@@ -36,8 +36,6 @@ class SegmentCard(BaseCard):
                 "object": mo,
                 "summary": ss
             }]
-            self.update_dict(summary["service"], ss.get("service", {}))
-            self.update_dict(summary["subscriber"], ss.get("subscriber", {}))
         # Update object statuses
         mos = [o["id"] for o in objects]
         alarms = set(d["managed_object"] for d in ActiveAlarm._get_collection().find({
@@ -60,7 +58,11 @@ class SegmentCard(BaseCard):
             children += [{
                 "id": ns.id,
                 "name": ns.name,
-                "object": ns
+                "object": ns,
+                "summary": {
+                    "service": SummaryItem.items_to_dict(ns.total_services),
+                    "subscriber": SummaryItem.items_to_dict(ns.total_subscribers),
+                }
             }]
         return {
             "object": self.object,
