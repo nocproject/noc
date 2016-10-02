@@ -17,10 +17,17 @@ Ext.define 'Report.view.root.Main',
 			xtype: 'rootTabPanel'
 			listeners:
 				afterrender: () ->
-					@getTabBar().add({
-						itemId: 'addDashboard'
-						xtype: 'rootAddDashboard'
-					})
+					@getTabBar().add [
+						{
+							xtype: 'component'
+							flex: 1
+						},
+						{
+							itemId: 'addDashboard'
+							xtype: 'rootAddDashboard'
+							margin: '2 10 2 2'
+						}
+					]
 		}
 	]
 

@@ -1,7 +1,7 @@
 ###
 	Абстрактная фабрика отчетов
 ###
-Ext.define 'Report.factory.Abstract',
+Ext.define 'Report.view.factory.Abstract',
 	
 	config: {}
 	

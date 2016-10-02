@@ -67,14 +67,19 @@ Ext.define 'Report.view.dashboard.Main',
 						type: 'hbox'
 						align: 'center'
 						pack: 'center'
-					listeners:
-						resize: 'fixScrollOnResize'
-						afterrender: 'doDashboardLayout'
 				}
 			]
 		}
 	]
 
+	initComponent: () ->
+		@callParent arguments
+		
+		@down('#widgets').on {
+			resize:      () => @fixScrollOnResize()
+			afterrender: () => @doDashboardLayout()
+		}
+	
 	###
 		Запуск расстановки виджетов внутри дашборда.
 	###
@@ -111,7 +116,7 @@ Ext.define 'Report.view.dashboard.Main',
 				browserCall = !browserCall
 
 				if browserCall
-					@setHeight @getHeight() + @getQuadPadding()
+					@setHeight @getHeight() + @getQuadDashPadding()
 
 		###
 			Генерация пустой виртуальной матрицы расположения элементов.
