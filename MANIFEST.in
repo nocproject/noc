@@ -1,0 +1,46 @@
+recursive-include core *.py
+recursive-include commands *.py *.sh
+recursive-include fixes *.py
+recursive-include collections *.json *.json.gz
+recursive-include scripts *
+recursive-include services *.py *.html *.j2 *.pot *.po *.mo *.dict
+recursive-include lib *.py
+resursive-include speedup *.c
+prune lib/python
+prune lib/python2.6
+prune lib/python2.7
+recursive-include static *.js *.css *.svg *.gif
+recursive-include cm *.py *.html *.j2
+recursive-include crm *.py *.html *.j2
+recursive-include cmibs *.py
+recursive-include cm *.py *.html *.j2
+recursive-include dns *.py *.html *.j2
+recursive-include fm *.py *.html *.j2
+recursive-include gis *.py *.html *.j2
+recursive-include inv *.py *.html *.j2
+recursive-include ip *.py *.html *.j2
+recursive-include kb *.py *.html *.j2
+recursive-include main *.py *.html *.j2
+recursive-include maintainance *.py *.html *.j2
+recursive-include peer *.py *.html *.j2
+recursive-include pm *.py *.html *.j2
+recursive-include peer *.py *.html *.j2
+recursive-include project *.py *.html *.j2
+recursive-include sa *.py *.html *.j2
+recursive-include support *.py *.html *.j2
+recursive-include vc *.py *.html *.j2
+recursive-include tests *.py
+recursive-include templates *.html *.j2
+recursive-include ui *.html *.css *.js *.json *.hbs
+prune ui/pkg
+include __init__.py
+include AUTHORS
+include config.py
+include LICENSE
+include manage.py
+include models.py
+include noc
+include requirements.txt
+include settings
+include urls.py
+include VERSION
