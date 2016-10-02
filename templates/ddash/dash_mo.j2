@@ -83,7 +83,7 @@
         {% set comma = joiner(",") -%}
         {% for graph in object_metrics -%}
           {% set template = 'graph_' + graph + '.j2' %}
-          {{ comma() }}{% include template with context %}
+          {{ comma() }}{% include [template, "graph_default.j2"] ignore missing with context %}
         {%- endfor %}
       ]
 
