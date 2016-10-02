@@ -19,7 +19,21 @@ Ext.application(
 	mainView: 'Report.view.root.Main'
 	
 	constructor: () ->
+		
+		###
+            @method getAllCmp
+            Возвращает компоненты, соответствующие селектору.
+            Аналог Ext.ComponentQuery.query
+            @param {String} query Селектор.
+        ###
 		Report.getAllCmp = (query) -> Ext.ComponentQuery.query(query)
+		
+		###
+            @method getCmp
+            Возвращает первый найденый компонент, соответствующий селектору.
+            Аналог Ext.ComponentQuery.query
+            @param {String} query Селектор.
+        ###
 		Report.getCmp    = (query) -> Ext.ComponentQuery.query(query)[0]
 			
 		@callParent arguments
