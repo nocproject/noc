@@ -5,6 +5,7 @@ Ext.define 'Report.model.config.Dashboard',
 	extend: 'Ext.data.Model'
 
 	fields: [
+		{name: 'id',   type: 'string'}
 		{name: 'name', type: 'string'}
 		{name: 'tags', type: 'string'}
 		{name: 'description', type: 'string'}
