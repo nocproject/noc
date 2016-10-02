@@ -1,0 +1,10 @@
+$tab-color: $color;
+$tab-color-active: $color-clouds;
+
+.x-tab.x-tab-active.x-tab-default {
+  background-color: $color-concrete;
+}
+
+.x-tab-focus.x-tab-default {
+  outline-color: transparent;
+}

@@ -1,0 +1,21 @@
+$grid-body-background-color: $color-clouds;
+$grid-row-cell-background-color: $color-clouds;
+$grid-row-cell-alt-background-color: $color-clouds;
+$grid-row-cell-border-color: $color-silver;
+$grid-row-cell-over-background-color: darken($grid-row-cell-background-color, 5%);
+$grid-row-cell-over-border-color: $grid-row-cell-border-color;
+$grid-row-cell-focus-border-color: $grid-row-cell-border-color;
+$grid-row-cell-selected-border-color: $grid-row-cell-border-color;
+
+.x-grid-with-row-lines {
+  border-top: 1px solid $color-silver;
+
+  &.x-grid-body {
+    border-top: 0;
+  }
+}
+
+.x-focus .x-column-header-inner.x-leaf-column-header::after,
+.x-grid-item-focused .x-grid-cell-inner::before {
+  border: none;
+}
