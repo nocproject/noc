@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Huawei.VRP.get_lldp_neighbors
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -29,22 +29,30 @@ class Script(BaseScript):
     rx_iface_sep = re.compile(
         r"^(\S+)\s+has\s+\d+\s+neighbors?", re.MULTILINE
     )
+    rx_iface3_sep = re.compile(
+        r"^LLDP neighbor-information of port \d+\[(?P<local_iface>\S+)\]:", re.MULTILINE
+    )
 
     rx_neighbor_split = re.compile(
-        r"^Neighbor",
+        r"^\s*Neighbor",
         re.MULTILINE
     )
 
     CHASSIS_TYPES = {
         "macaddress": 4,
+        "mac address": 4,
         "interfacename": 6,
+        "interface name": 6,
         "local": 7
     }
 
     PORT_TYPES = {
         "interfacealias": 1,
+        "interface alias": 1,
         "macaddress": 3,
+        "mac address": 3,
         "interfacename": 5,
+        "interface name": 5,
         "local": 7
     }
 
@@ -66,6 +74,8 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         il = self.rx_iface_sep.split(v)[1:]
+        if not il:
+            il = self.rx_iface3_sep.split(v)[1:]
         for local_iface, data in zip(il[::2], il[1::2]):
             neighbors = []
             for ndata in self.rx_neighbor_split.split(data)[1:]:
@@ -78,10 +88,12 @@ class Script(BaseScript):
                     "portidsubtype": "remote_port_subtype",
                     "port id": "remote_port",
                     "portid": "remote_port",
+                    "port description": "remote_port_description",
                     "system capabilities enabled": "remote_capabilities",
                     "syscapenabled": "remote_capabilities",
                     "system name": "remote_system_name",
-                    "sysname": "remote_system_name"
+                    "sysname": "remote_system_name",
+                    "system description": "remote_system_description"
                 }, ndata)
                 # Convert chassis id
                 n["remote_chassis_id_subtype"] = self.CHASSIS_TYPES[n["remote_chassis_id_subtype"].lower()]
@@ -95,7 +107,7 @@ class Script(BaseScript):
                 caps = 0
                 cs = n.get("remote_capabilities", "").replace(",", " ")
                 for c in cs.split():
-                    caps |= self.CAPS[c.strip()]
+                    caps |= self.CAPS[c.lower().strip()]
                 n["remote_capabilities"] = caps
                 neighbors += [n]
             if neighbors:

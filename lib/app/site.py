@@ -469,13 +469,14 @@ class Site(object):
             logger.debug("Loading %s applications", app)
             root = self.add_module_menu("noc.%s" % app)
             # Initialize application
-            for f in glob.glob("%s/*/views.py" % app_path):
-                d = os.path.split(f)[0]
-                # Skip application loading if denoted by DISABLED file
-                if os.path.isfile(os.path.join(d, "DISABLED")):
-                    continue
-                __import__(".".join(["noc"] + f[:-3].split(os.path.sep)),
-                           {}, {}, "*")
+            for cs in ["custom", ""]:
+                for f in glob.glob("%s/*/views.py" % os.path.join(cs, app_path)):
+                    d = os.path.split(f)[0]
+                    # Skip application loading if denoted by DISABLED file
+                    if os.path.isfile(os.path.join(d, "DISABLED")):
+                        continue
+                    __import__(".".join(["noc"] + f[:-3].split(os.path.sep)),
+                               {}, {}, "*")
             # Try to install dynamic menus
             menu = None
             try:

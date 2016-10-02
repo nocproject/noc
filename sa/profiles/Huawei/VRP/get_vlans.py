@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Huawei.VRP.get_vlans
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -50,9 +50,11 @@ class Script(BaseScript):
             r"^(?P<vlan_id>\d{1,4})\s*?.*?",
             re.IGNORECASE | re.DOTALL | re.MULTILINE)
         rx_vlan_line_vrp3 = re.compile(
-            r"^\sVLAN ID:\s+?(?P<vlan_id>\d{1,4})\n.*?Name:\s+(?P<name>.*?)\n"
+            r"^\sVLAN ID:\s+?(?P<vlan_id>\d{1,4})\n.*?"
+            r"(?:Name|Description):\s+(?P<name>.*?)\n"
             r".*?(\n\n|$)", re.IGNORECASE | re.DOTALL | re.MULTILINE)
-        if self.match_version(version__startswith="5."):
+        version = self.profile.fix_version(self.scripts.get_version())
+        if version.startswith("5."):
             vlans = self.cli("display vlan", cached=True)
             return [{
                 "vlan_id": int(match.group("vlan_id"))

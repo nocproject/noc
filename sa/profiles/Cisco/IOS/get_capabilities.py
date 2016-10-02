@@ -55,3 +55,11 @@ class Script(BaseScript):
         or "No spanning tree instances exist" in r:
             return False
         return True
+
+    @false_on_cli_error
+    def has_ipv6(self):
+        """
+        Check box has IPv6 ND enabled
+        """
+        self.cli("show ipv6 neighbors")
+        return True

@@ -82,6 +82,9 @@ class ServiceSummary(Document):
 
     @classmethod
     def build_summary_for_object(cls, managed_object):
+        from noc.inv.models.interface import Interface
+        from noc.sa.models.service import Service
+
         def update_children(parent):
             for s in Service._get_collection().find({
                 "parent": parent,
@@ -169,6 +172,9 @@ class ServiceSummary(Document):
 
     @classmethod
     def _refresh_object(cls, managed_object):
+        from noc.inv.models.networksegment import NetworkSegment
+        from noc.sa.models.managedobject import ManagedObject
+
         def to_dict(v):
             return dict(
                 (r["profile"], r["summary"])
@@ -225,6 +231,8 @@ class ServiceSummary(Document):
             n += 1
         if n:
             bulk.execute()
+        mo = ManagedObject.get_by_id(managed_object)
+        mo.segment.update_summary()
 
     @classmethod
     def get_object_summary(cls, managed_object):
@@ -294,6 +302,8 @@ class ServiceSummary(Document):
         """
         Convert result of *get_object_summary* to alarm severity
         """
+        from noc.fm.models.alarmseverity import AlarmSeverity
+
         return AlarmSeverity.severity_for_weight(
             cls.get_weight(summary)
         )
@@ -301,8 +311,3 @@ class ServiceSummary(Document):
 
 def refresh_object(managed_object):
     ServiceSummary._refresh_object(managed_object)
-
-## Resolve circular dependencies
-from noc.inv.models.interface import Interface
-from noc.sa.models.service import Service
-from noc.fm.models.alarmseverity import AlarmSeverity
