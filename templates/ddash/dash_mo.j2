@@ -1,0 +1,92 @@
+{% set comma = joiner(",") -%}
+{
+  "id": 17,
+  "title": "{{device}}",
+  "tags": [],
+  "style": "dark",
+  "timezone": "browser",
+  "refresh": "5m",
+  "editable": true,
+  "hideControls": false,
+  "sharedCrosshair": false,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5m"
+    ],
+    "time_options": [
+      "1h",
+      "3h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d"
+    ]
+  },
+  "templating": {
+    "list": [
+      {% include "template_device.j2" with context -%},
+      {% include "template_vendor.j2" with context -%},
+      {% include "template_platform.j2" with context -%},
+      {% include "template_device_id.j2" with context -%},
+      {% include "template_ip_info.j2" with context -%},
+      {% for port_type in port_types -%}
+        {% from 'template_port.j2' import ports -%}
+        {{ comma() }}{{ ports(port_type) }}
+      {% endfor -%}
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "schemaVersion": 12,
+  "version": 33,
+  "links": [],
+  "gnetId": null,
+  "rows": [
+    {
+      "collapse": false,
+      "editable": false,
+      "height": "100px",
+      "showTitle": true,
+      "title": "$device $ip $vendor $platform",
+      "panels": [
+      {% include "panel_device.j2" with context -%},
+      {% include "panel_ip.j2" with context -%}
+      ]
+
+    },
+    {% for port in port_types -%}
+    {
+      "collapse": true,
+      "editable": false,
+      "height": "250px",
+      "showTitle": true,
+      "title": "{{port.name}}",
+      "panels": [
+        {% from "graph_interface_load.j2" import interface -%}
+        {{interface(port)}}
+      ]
+    },
+    {%- endfor %}
+    {
+      "collapse": false,
+      "editable": false,
+      "height": "250px",
+      "showTitle": true,
+      "title": "Objects metrics",
+      "panels": [
+        {% set comma = joiner(",") -%}
+        {% for graph in object_metrics -%}
+          {% set template = 'graph_' + graph + '.j2' %}
+          {{ comma() }}{% include template with context %}
+        {%- endfor %}
+      ]
+
+    }
+  ]
+}
