@@ -24,6 +24,11 @@ Ext.define 'Report.controller.Root',
 	]
 	
 	listen:
+		controller:
+			'#dashboard':
+				refresh: 'reportRefresh'
+			'#widget':
+				refresh: 'reportRefresh'
 		component:
 			'rootMain #userButton':
 				click: 'openNocUserMenu'
@@ -38,20 +43,55 @@ Ext.define 'Report.controller.Root',
 	reportConfig: null
 	
 	###
-		Создание отчета по сохраненному на сервере конфигу.
+		Создание отчета по серверному конфигу.
 	###
 	makeReport: () ->
-		@getReportConfig (data) ->
-			model = Ext.create 'Report.data.Root'
-			
-			model.set data
-			
-			switch model.get 'version'
-				when null or '0.1'
-					Ext.create('Report.factory.V_0_1').make model
+		@getReportConfig @makeReportByConfigObject.bind @
 					
 	privates:
+		
+		###
+            Полное обновление вью отчета.
+        ###
+		reportRefresh: () ->
+			@cleanReportView()
+			@makeReportByMainDataTree()
+	
+		###
+            Полностью очищает вью отчета.
+        ###
+		cleanReportView: () ->
+			model = Report.model.MainDataTree
+			
+			switch model.get 'version'
+				when ''
+					Report.factory.V_0_1.clean()
+				when '0.1'
+					Report.factory.V_0_1.clean()
+			
+		###
+            Создает отчет по объекту конфигурации.
+            @param {Object} configObject Объект конфигурации.
+        ###
+		makeReportByConfigObject: (configObject) ->
+			model = Report.model.MainDataTree
+			
+			model.set configObject
+		
+			@makeReportByMainDataTree()
+		
+		###
+            Создает отчет по главному дереву данных, хранящему конфигурацию отчета.
+        ###
+		makeReportByMainDataTree: () ->
+			model = Report.model.MainDataTree
 
+			switch model.get 'version'
+				when ''
+					Ext.create('Report.factory.V_0_1').make model
+				when '0.1'
+					Ext.create('Report.factory.V_0_1').make model
+			
 		###
 			Получение конфига отчета с сервера.
 			@param {Function} next

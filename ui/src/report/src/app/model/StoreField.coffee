@@ -36,4 +36,4 @@ Ext.define 'Report.model.StoreField',
 
 		Ext.create 'Ext.data.Store',
 			model: this.model,
-			data: value
+			data: value or []

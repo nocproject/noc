@@ -9,6 +9,8 @@ Ext.define 'Report.controller.Dashboard',
 		controller:
 			'#root':
 				addDashboardAction: 'showDashboardsLibrary'
+			'#configurator':
+				startSave: 'saveDashboard'
 		component:
 			'dashboardMain #addWidget':
 				click: 'showWidgetLibrary'
@@ -49,12 +51,10 @@ Ext.define 'Report.controller.Dashboard',
 				targetEntity: button.up 'dashboardConfigurator'
 	
 		###
-			Показывает конфигуратор дашборда.
+			Показывает конфигуратор дашборда без начальных данных.
 		###
 		createDashboard: () ->
 			Ext.create 'Report.view.dashboard.Configurator'
-	
-			# TODO
 	
 		###
 			Добавляет дашборд.
@@ -72,3 +72,25 @@ Ext.define 'Report.controller.Dashboard',
 				@param {Report.model.config.Dashboard} dashboardData Данные дашборда.
 			###
 			@fireEvent 'addDashboardAction', @, dashboardData
+	
+		###
+            Сохраняет дашборд.
+            @param {Report.controller.Configurator} controller Контроллер конфигуратора.
+            @param {Report.model.configurator.Model} model Модель конфигуратора.
+		###
+		saveDashboard: (controller, model) ->
+			dashboards = Report.model.MainDataTree.get('dashboards')
+			get = model.get.bind model
+			
+			dashboards.add {
+				name:        get 'name'
+				tags:        get 'tags'
+				description: get 'description'
+				filters:     get 'filters'
+			}
+			
+			###
+                Оповещает о необходимости полностью обновить отчет.
+                @param {Report.controller.Dashboard} this Контроллер.
+			###
+			@fireEvent 'refresh', @

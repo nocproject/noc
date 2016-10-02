@@ -3,14 +3,17 @@
 	Используюет единую плоскую структуру конфига
 	для хранения текущего состояния при конструировании отчета.
 ###
-Ext.define 'Report.factory.V_0_1',
-	extend: 'Report.factory.Abstract'
+Ext.define 'Report.view.factory.V_0_1',
+	extend: 'Report.view.factory.Abstract'
 	
 	requires: [
 		'Report.view.dashboard.Main'
 		'Report.view.root.Main'
 		'Report.view.widget.Main'
 	]
+	
+	statics:
+		clean: () -> Report.getCmp('rootMain #tabPanel').removeAll()
 	
 	config:
 	
@@ -65,12 +68,12 @@ Ext.define 'Report.factory.V_0_1',
 		@param {Ext.data.Model} model Модель отчета.
 	###
 	make: (model) ->
-		model.get('dashboards')?.each (dashboard) ->
+		model.get('dashboards')?.each (dashboard) =>
 			@setDashboardModel dashboard
 			
 			@makeDashboard()
 				
-			dashboard.get('widgets')?.each (widget) ->
+			dashboard.get('widgets')?.each (widget) =>
 				@setWidgetModel widget
 				@setColumnsStore widget.get 'columns'
 				
@@ -83,7 +86,7 @@ Ext.define 'Report.factory.V_0_1',
 		###
 		makeDashboard: () ->
 			model = @getDashboardModel()
-			tabPanel = Ext.ComponentQuery.query('rootMain #tabPanel')
+			tabPanel = Report.getCmp('rootMain #tabPanel')
 			dashboard = Ext.create {
 				xtype: 'dashboardMain'
 				model: model
