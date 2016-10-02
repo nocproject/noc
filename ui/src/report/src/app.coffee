@@ -5,6 +5,7 @@ Ext.application(
 	requires: [
 		'Report.view.root.Main'
 		'Report.model.MainDataTree'
+		'Report.factory.V_0_1'
 	]
 	
 	controllers: [
@@ -16,6 +17,12 @@ Ext.application(
 	]
 	
 	mainView: 'Report.view.root.Main'
+	
+	constructor: () ->
+		Report.getAllCmp = (query) -> Ext.ComponentQuery.query(query)
+		Report.getCmp    = (query) -> Ext.ComponentQuery.query(query)[0]
+			
+		@callParent arguments
 	
 	launch: () ->
 		@showLoader()
