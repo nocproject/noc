@@ -288,6 +288,11 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                     xtype: "stringsfield",
                                     name: "handlers",
                                     fieldLabel: __("Handlers")
+                                },
+                                {
+                                    xtype: "stringsfield",
+                                    name: "clear_handlers",
+                                    fieldLabel: __("Clear Handlers")
                                 }
                             ]
                         },
