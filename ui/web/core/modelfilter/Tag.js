@@ -29,6 +29,10 @@ Ext.define("NOC.core.modelfilter.Tag", {
                         select: {
                             scope: me,
                             fn: me.onChange
+                        },
+                        change: {
+                            scope: me,
+                            fn: me.onChange
                         }
                     }
                 }
