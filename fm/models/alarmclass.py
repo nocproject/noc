@@ -21,7 +21,6 @@ from alarmclassvar import AlarmClassVar
 from datasource import DataSource
 from alarmrootcausecondition import AlarmRootCauseCondition
 from alarmclasscategory import AlarmClassCategory
-from alarmclassjob import AlarmClassJob
 from alarmplugin import AlarmPlugin
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
@@ -77,8 +76,6 @@ class AlarmClass(nosql.Document):
     # RCA
     root_cause = fields.ListField(
         fields.EmbeddedDocumentField(AlarmRootCauseCondition))
-    # Job descriptions
-    jobs = fields.ListField(fields.EmbeddedDocumentField(AlarmClassJob))
     # List of handlers to be called on alarm raising
     handlers = fields.ListField(fields.StringField())
     # List of handlers to be called on alarm clear
@@ -245,26 +242,6 @@ class AlarmClass(nosql.Document):
                 r[-1] += ","
             r += ["    \"root_cause\": ["]
             r += [",\n".join(rc)]
-            r += ["    ]"]
-        # Jobs
-        if self.jobs:
-            jobs = []
-            for job in self.jobs:
-                jd = ["        {"]
-                jd += ["            \"job\": \"%s\"," % job.job]
-                jd += ["            \"interval\": %d," % job.interval]
-                jd += ["            \"vars\": {"]
-                jv = []
-                for v in job.vars:
-                    jv += ["                \"%s\": \"%s\"" % (v, job.vars[v])]
-                jd += [",\n".join(jv)]
-                jd += ["            }"]
-                jd += ["        }"]
-                jobs += ["\n".join(jd)]
-            if r[-1][-1] != ",":
-                r[-1] += ","
-            r += ["    \"jobs\": ["]
-            r += [",\n".join(jobs)]
             r += ["    ]"]
         # Plugins
         if self.plugins:

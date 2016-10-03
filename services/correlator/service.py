@@ -43,7 +43,6 @@ class CorrelatorService(Service):
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
-        self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
         self.scheduler = None
         self.correlate_queue = Queue.Queue()
 
@@ -348,10 +347,6 @@ class CorrelatorService(Service):
             a.delete()
             self.perf_metrics["alarm_drop"] += 1
             return
-        # Launch jobs when necessary
-        if a.alarm_class.id in self.alarm_jobs:
-            for job in self.alarm_jobs[r.alarm_class.id]:
-                job.submit(a)
         # Notify about new alarm
         if not a.root:
             a.managed_object.event(a.managed_object.EV_ALARM_RISEN, {
