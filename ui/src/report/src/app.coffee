@@ -3,9 +3,12 @@ Ext.application(
 	name: 'Report'
 	
 	requires: [
+		'Report.model.Gate'
+		'Report.model.API'
+		'Report.model.StoreField'
 		'Report.view.root.Main'
+		'Report.view.factory.V_0_1'
 		'Report.model.MainDataTree'
-		'Report.factory.V_0_1'
 	]
 	
 	controllers: [

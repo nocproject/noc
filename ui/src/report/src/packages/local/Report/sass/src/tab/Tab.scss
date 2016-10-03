@@ -1,15 +1,26 @@
-$tab-color: $color;
-$tab-color-active: $color-white;
+.x-tab {
+	$shadow: 0 0 2px $color-midnight-blue;
 
-.x-tab.x-tab-default {
-	background-color: $color-white;
-	border-radius: 3px;
-}
+	&.x-tab-default,
+	&.x-tab-focus.x-tab-default,
+	&.x-tab-active.x-tab-default,
+	&.x-tab-active.x-tab-focus.x-tab-default {
+		@include background-gradient($darken-white, matte, top);
+		box-shadow: $shadow;
+		border: none;
+		margin: 2px;
+		border-radius: $border-radius;
+		outline: none;
 
-.x-tab.x-tab-active.x-tab-default {
-	background-color: $color-piter-river;
-}
+		.x-tab-inner {
+			color: $color;
+		}
+	}
 
-.x-tab-focus.x-tab-default {
-	outline-color: transparent;
+	&.x-tab-active.x-tab-default,
+	&.x-tab-focus.x-tab-default,
+	&.x-tab-active.x-tab-focus.x-tab-default {
+		@include background-gradient($darken-white, matte-reverse, top);
+		box-shadow: $shadow inset;
+	}
 }

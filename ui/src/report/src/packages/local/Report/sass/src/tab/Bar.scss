@@ -1,1 +1,14 @@
 $tabbar-base-color: $color-clouds;
+
+.x-tab-bar.x-tab-bar-default.x-tab-bar-horizontal.x-tab-bar-default-horizontal {
+	padding-bottom: 12px;
+
+	&::before {
+		content: '';
+		box-shadow: 0 0 6px $color-midnight-blue;
+		position: absolute;
+		width: 100%;
+		height: 120%;
+		margin-top: -15px;
+	}
+}
