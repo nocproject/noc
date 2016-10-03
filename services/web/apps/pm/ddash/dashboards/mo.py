@@ -54,7 +54,17 @@ class MODashboard(BaseDashboard):
                 ports += [{"name": iface.name, "descr": iface.description}]
                 if iface.is_linked:
                     ports[-1]["link_id"] = str(iface.link.id)
-
+                if iface.type == u"aggregated":
+                    agg = Interface.objects.filter(managed_object=self.object.id,
+                                                   aggregated_interface=iface)
+                    ports[-1]["targets"] = []
+                    for agg_iface in agg:
+                        ports[-1]["targets"] += [{"name": u"Input",
+                                                  "measurement": u"Interface | Load | In",
+                                                  "port": agg_iface.name},
+                                                 {"name": u"Output",
+                                                  "measurement": u"Interface | Load | Out",
+                                                  "port": agg_iface.name}]
             port_types += [{"type": profile.name,  "name": profile.name,
                             "ports": ports}]
 
