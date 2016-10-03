@@ -58,19 +58,13 @@ class MODashboard(BaseDashboard):
             port_types += [{"type": profile.name,  "name": profile.name,
                             "ports": ports}]
 
-        transform = {"CPU | Usage": "cpu",
-                     "Ping | RTT": "rtt",
-                     "Memory | Usage": "memory",
-                     "Radio | CINR": "cinr",
-                     "Radio | RSSI": "rssi"
-                    }
         if self.object.object_profile.report_ping_rtt:
             object_metrics += ["rtt"]
         for m in (self.object.object_profile.metrics or []):
             mt = MetricType.get_by_id(m["metric_type"])
             if not mt or not m.get("is_active", False):
                 continue
-            object_metrics += [transform[mt.name]]
+            object_metrics += [mt.name]
 
         return {"port_types": port_types,
                 "object_metrics": object_metrics}
