@@ -9,8 +9,7 @@ console.debug("Defining NOC.inv.map.Application");
 Ext.define("NOC.inv.map.Application", {
     extend: "NOC.core.Application",
     requires: [
-        "NOC.inv.networksegment.TreeField",
-        "NOC.core.TreeCombo",
+        "NOC.inv.networksegment.TreeCombo",
         "NOC.inv.map.MapPanel"
     ],
 

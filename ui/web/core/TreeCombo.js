@@ -60,7 +60,7 @@ Ext.define('NOC.core.TreeCombo', {
         });
 
         this.proxy = Ext.create('Ext.data.proxy.Rest', {
-            url: this.restUrl + '/lookup',
+            url: this.restUrl + '/lookup/',
             pageParam: '__page',
             startParam: '__start',
             limitParam: '__limit',
@@ -229,7 +229,7 @@ Ext.define('NOC.core.TreeCombo', {
 
         if(id) {
             this.restoreStore.load({
-                url: this.restUrl + '/' + id + '/get_path',
+                url: this.restUrl + '/' + id + '/get_path/',
                 callback: function(records) {
                     if(records) {
                         me.selectNode(records.pop());
