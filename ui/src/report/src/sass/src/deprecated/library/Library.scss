@@ -1,0 +1,20 @@
+.library {
+	.x-dataview-item {
+		font-size: $font-size-header;
+		padding: 10px;
+	}
+
+	.widget-description {
+		font-size: $font-size-header;
+		padding: 10px;
+
+		.title {
+			font-weight: bold;
+			padding: 0 0 20px 0;
+		}
+
+		.description {
+			line-height: 1.1;
+		}
+	}
+}

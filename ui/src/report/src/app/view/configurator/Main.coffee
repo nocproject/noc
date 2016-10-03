@@ -57,13 +57,14 @@ Ext.define 'Report.view.configurator.Main',
 	defaults:
 		height: '100%'
 		border: 1
+		padding: 10
 	
 	items: [
 		{
 			xtype: 'container'
 			layout: 'vbox'
-			padding: 10
 			flex: 1
+			cls: 'configurator-main-delemiter-border'
 			items: [
 				{
 					itemId: 'type'
@@ -84,7 +85,7 @@ Ext.define 'Report.view.configurator.Main',
 		{
 			itemId: 'wellspring'
 			xtype: 'configuratorWellspring'
-			padding: 10
+			cls: 'configurator-main-delemiter-border'
 			flex: 1
 		}
 		{
