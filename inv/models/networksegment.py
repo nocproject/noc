@@ -186,6 +186,15 @@ class NetworkSegment(Document):
             multi=True
         )
 
+    def set_lost_redundancy(self, status):
+        NetworkSegment._get_collection().update({
+            "_id": self.id
+        }, {
+            "$set": {
+                "lost_redundancy": bool(status)
+            }
+        })
+
     def update_summary(self):
         """
         Update summaries
