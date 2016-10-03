@@ -6,9 +6,6 @@ Ext.define 'Report.controller.Root',
 	id: 'root'
 	
 	requires: [
-		'Report.model.Gate'
-		'Report.model.API'
-		'Report.model.StoreField'
 		'Report.view.dashboard.Library'
 		'Report.view.dashboard.Configurator'
 	]
@@ -65,9 +62,9 @@ Ext.define 'Report.controller.Root',
 			
 			switch model.get 'version'
 				when ''
-					Report.factory.V_0_1.clean()
+					Report.view.factory.V_0_1.clean()
 				when '0.1'
-					Report.factory.V_0_1.clean()
+					Report.view.factory.V_0_1.clean()
 			
 		###
             Создает отчет по объекту конфигурации.
@@ -88,9 +85,9 @@ Ext.define 'Report.controller.Root',
 
 			switch model.get 'version'
 				when ''
-					Ext.create('Report.factory.V_0_1').make model
+					Ext.create('Report.view.factory.V_0_1').make model
 				when '0.1'
-					Ext.create('Report.factory.V_0_1').make model
+					Ext.create('Report.view.factory.V_0_1').make model
 			
 		###
 			Получение конфига отчета с сервера.

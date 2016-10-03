@@ -43,17 +43,6 @@ Ext.define 'Report.view.dashboard.Main',
 			@cfg {Boolean} dashFirstCall Первый ли запуск отрисовки дашборда.
 		###
 		dashFirstCall: true
-
-	tools: [
-		{
-			itemId: 'addWidget'
-			type: 'plus'
-		}
-		{
-			itemId: 'configure'
-			type: 'gear'
-		}
-	]
 		
 	items: [
 		{
@@ -67,6 +56,33 @@ Ext.define 'Report.view.dashboard.Main',
 						type: 'hbox'
 						align: 'center'
 						pack: 'center'
+				}
+			]
+		}
+	]
+	
+	dockedItems: [
+		{
+			xtype: 'container'
+			layout: 'hbox'
+			padding: '10 12 10 0'
+			items: [
+				{
+					xtype: 'component'
+					flex: 1
+				}
+				{
+					itemId: 'addWidget'
+					xtype: 'button'
+					iconCls: 'x-fa fa-plus'
+					text: 'Виджет'
+					margin: '2 10 0 0'
+				}
+				{
+					itemId: 'configure'
+					xtype: 'button'
+					iconCls: 'x-fa fa-gear'
+					text: 'Настроить'
 				}
 			]
 		}
@@ -151,7 +167,7 @@ Ext.define 'Report.view.dashboard.Main',
 			@return {Ext.Component[]} Виджеты.
 		###
 		getDashItems: () ->
-			@down('#widgets').getItems()
+			@down('#widgets').items
 
 		###
 			Возвращает ширину колонки лейаута в пикселях.

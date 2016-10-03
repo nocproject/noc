@@ -42,6 +42,8 @@ Ext.define 'Report.controller.Configurator',
         ###
 		@fireEvent 'startSave', @, model
 		
+		configurator.hide()
+		
 	privates:
 		
 		###
