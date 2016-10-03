@@ -24,7 +24,7 @@ Ext.define 'Report.view.configurator.filters.Main',
 					xtype: 'button'
 					iconCls: 'x-fa fa-plus'
 					text: 'Добавить фильтр'
-					margin: '16 10'
+					margin: '6 2 16 0'
 					handler: (button) ->
 						button.up('configuratorFilters').down('grid').getStore().add({})
 				}

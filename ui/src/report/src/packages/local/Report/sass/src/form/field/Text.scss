@@ -10,3 +10,11 @@ input.x-form-field {
 		border-radius: $radius 0 0 $radius;
 	}
 }
+
+/**
+ * Чиним баг, когда поля ввода вылезают на 1 пиксель
+ * на скругленные углы рамки справа.
+ **/
+.x-form-text {
+	width: calc(100% - 3px);
+}

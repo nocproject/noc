@@ -52,26 +52,34 @@ Ext.application(
 		###
 		showLoader: () ->
 			body = Ext.getBody()
-	
+			windowWidthCenter = body.getWidth() / 2
+			windowHeightCenter = body.getHeight() / 2
+			loaderWidthCenter = 760 / 2
+			loaderHeightCenter = 176 / 2
+			decorativeTopMargin = 44
+			startHideDelay = 1000
+			hideDuration = 1200
+			destroyDelay = 300
+			
 			loader = Ext.create 'Ext.Img',
-				floating: true,
-				src: 'resources/img/SOVA.png',
+				floating: true
+				src: 'resources/img/SOVA.png'
 				alt: 'SOVA logo'
-				autoShow: true,
-				shadow: false,
-				x: body.getWidth() / 2 - 380,
-				y: body.getHeight() / 2 - 88
+				autoShow: true
+				shadow: false
+				x: windowWidthCenter - loaderWidthCenter
+				y: windowHeightCenter - loaderHeightCenter + decorativeTopMargin
 			
 			loader.animate {
-				delay: 1000
-				duration: 1200
+				delay: startHideDelay
+				duration: hideDuration
 				to:
 					opacity: 0
 			}
 			
 			setTimeout(
 				() -> loader.destroy()
-				2500
+				startHideDelay + hideDuration + destroyDelay
 			)
 
 		###
