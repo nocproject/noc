@@ -10,7 +10,7 @@ Ext.define("NOC.sa.administrativedomain.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.sa.administrativedomain.Model",
-        "NOC.sa.administrativedomain.TreeField",
+        "NOC.sa.administrativedomain.TreeCombo",
         "NOC.main.pool.LookupField"
     ],
     model: "NOC.sa.administrativedomain.Model",
@@ -55,7 +55,7 @@ Ext.define("NOC.sa.administrativedomain.Application", {
         },
         {
             name: "parent",
-            xtype: "sa.administrativedomain.TreeField",
+            xtype: "sa.administrativedomain.TreeCombo",
             fieldLabel: __("Parent"),
             allowBlank: true,
             emptyText: __("Select parent...")

@@ -12,9 +12,7 @@ Ext.define("NOC.core.modelfilter.Tree", {
     lookup: null,  // module.app
     referrer: null, // Referrer application id
 
-    requires: [
-        "NOC.core.TreeField"
-    ],
+    requires: [],
 
     initComponent: function() {
         var me = this,
