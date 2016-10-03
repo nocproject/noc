@@ -1,13 +1,13 @@
 .x-dataview-item {
-  cursor: pointer;
+	cursor: pointer;
 
-  &.x-item-selected,
-  &.x-view-item-focused {
-    outline: none !important;
-    background-color: $color-clouds;
-  }
+	&.x-item-selected,
+	&.x-view-item-focused {
+		outline: none !important;
+		background-color: $color-clouds;
+	}
 
-  &:hover:not(.x-item-selected) {
-    background-color: lighten($color-clouds, 3%);
-  }
+	&:hover:not(.x-item-selected) {
+		background-color: lighten($color-clouds, 3%);
+	}
 }
