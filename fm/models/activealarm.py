@@ -24,6 +24,7 @@ from noc.sa.models.objectpath import ObjectPath
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
+from noc.lib.debug import error_report
 
 
 class ActiveAlarm(nosql.Document):
@@ -186,6 +187,13 @@ class ActiveAlarm(nosql.Document):
                     alarm_id=self.id
                 )
             return
+        if self.alarm_class.clear_handlers:
+            # Process clear handlers
+            for h in self.alarm_class.get_clear_handlers():
+                try:
+                    h(self)
+                except:
+                    error_report()
         log = self.log + [AlarmLog(timestamp=ts, from_status="A",
                                    to_status="C", message=message)]
         a = ArchivedAlarm(

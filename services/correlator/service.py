@@ -30,7 +30,6 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 import utils
-from noc.core.defer import call_later
 
 
 class CorrelatorService(Service):
@@ -45,7 +44,6 @@ class CorrelatorService(Service):
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
-        self.handlers = {}  # alarm class id -> [<handler>]
         self.scheduler = None
         self.correlate_queue = Queue.Queue()
 
@@ -80,7 +78,6 @@ class CorrelatorService(Service):
         self.load_rules()
         self.load_triggers()
         self.load_rca_rules()
-        self.load_handlers()
 
     def load_rules(self):
         """
@@ -147,40 +144,6 @@ class CorrelatorService(Service):
                 self.rca_reverse[rc.root.id] += [rc]
                 n += 1
         self.logger.info("%d RCA Rules have been loaded" % n)
-
-    def load_handlers(self):
-        self.logger.info("Loading handlers")
-        self.handlers = {}
-        for ac in AlarmClass.objects.filter():
-            handlers = ac.handlers
-            if not handlers:
-                continue
-            self.logger.debug("    <%s>: %s", ac.name, ", ".join(handlers))
-            hl = []
-            for h in ac.handlers:
-                # Resolve handler
-                hh = self.resolve_handler(h)
-                if hh:
-                    hh.handler_name = h
-                    hl += [hh]
-                else:
-                    self.logger.error("Disabling faulty handler %s" % h)
-            if hl:
-                self.handlers[ac.id] = hl
-        self.logger.info("Handlers are loaded")
-
-    def resolve_handler(self, h):
-        mn, s = h.rsplit(".", 1)
-        try:
-            m = __import__(mn, {}, {}, s)
-        except ImportError:
-            self.logger.error("Failed to load handler '%s'. Ignoring" % h)
-            return None
-        try:
-            return getattr(m, s)
-        except AttributeError:
-            self.logger.error("Failed to load handler '%s'. Ignoring" % h)
-            return None
 
     def mark_as_failed(self, event):
         """
@@ -357,20 +320,19 @@ class CorrelatorService(Service):
             # Check alarm is the root cause for existing ones
             self.set_reverse_root_cause(a)
         # Call handlers
-        if a.alarm_class.id in self.handlers:
-            for h in self.handlers[a.alarm_class.id]:
-                try:
-                    has_root = bool(a.root)
-                    h(a)
-                    if not has_root and a.root:
-                        self.logger.info(
-                            "[%s|%s|%s] Set root to %s (handler %s)",
-                            a.id, a.managed_object.name, a.managed_object.address,
-                            a.root, h.handler_name
-                        )
-                except:
-                    error_report()
-                    self.perf_metrics["alarm_handler_errors"] += 1
+        for h in a.alarm_class.get_handlers():
+            try:
+                has_root = bool(a.root)
+                h(a)
+                if not has_root and a.root:
+                    self.logger.info(
+                        "[%s|%s|%s] Set root to %s (handler %s)",
+                        a.id, a.managed_object.name, a.managed_object.address,
+                        a.root, h.handler_name
+                    )
+            except:
+                error_report()
+                self.perf_metrics["alarm_handler_errors"] += 1
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:

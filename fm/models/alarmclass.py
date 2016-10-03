@@ -9,7 +9,7 @@
 ## Python modules
 import hashlib
 import os
-from threading import RLock
+from threading import Lock
 import operator
 ## Third-party modules
 from mongoengine import fields
@@ -25,8 +25,10 @@ from alarmclassjob import AlarmClassJob
 from alarmplugin import AlarmPlugin
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
+from noc.core.handler import get_handler
 
-id_lock = RLock()
+id_lock = Lock()
+handlers_lock = Lock()
 
 
 class AlarmClass(nosql.Document):
@@ -77,8 +79,10 @@ class AlarmClass(nosql.Document):
         fields.EmbeddedDocumentField(AlarmRootCauseCondition))
     # Job descriptions
     jobs = fields.ListField(fields.EmbeddedDocumentField(AlarmClassJob))
-    #
+    # List of handlers to be called on alarm raising
     handlers = fields.ListField(fields.StringField())
+    # List of handlers to be called on alarm clear
+    clear_handlers = fields.ListField(fields.StringField())
     # Plugin settings
     plugins = fields.ListField(fields.EmbeddedDocumentField(AlarmPlugin))
     # Time in seconds to delay alarm risen notification
@@ -97,14 +101,46 @@ class AlarmClass(nosql.Document):
     category = nosql.ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _handlers_cache = {}
+    _clear_handlers_cache = {}
 
     def __unicode__(self):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda: id_lock)
     def get_by_id(cls, id):
         return AlarmClass.objects.filter(id=id).first()
+
+    def get_handlers(self):
+        @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
+        def _get_handlers(alarm_class):
+            handlers = []
+            for hh in alarm_class.handlers:
+                try:
+                    h = get_handler(hh)
+                except ImportError:
+                    h = None
+                if h:
+                    handlers += [h]
+            return handlers
+
+        return _get_handlers(self)
+
+    def get_clear_handlers(self):
+        @cachetools.cached(self._clear_handlers_cache, key=lambda x: x.id, lock=handlers_lock)
+        def _get_handlers(alarm_class):
+            handlers = []
+            for hh in alarm_class.clear_handlers:
+                try:
+                    h = get_handler(hh)
+                except ImportError:
+                    h = None
+                if h:
+                    handlers += [h]
+            return handlers
+
+        return _get_handlers(self)
 
     def save(self, *args, **kwargs):
         c_name = " | ".join(self.name.split(" | ")[:-1])
@@ -174,6 +210,11 @@ class AlarmClass(nosql.Document):
         if self.handlers:
             hh = ["        \"%s\"" % h for h in self.handlers]
             r += ["    \"handlers\": ["]
+            r += [",\n\n".join(hh)]
+            r += ["    ],"]
+        if self.clear_handlers:
+            hh = ["        \"%s\"" % h for h in self.clear_handlers]
+            r += ["    \"clear_handlers\": ["]
             r += [",\n\n".join(hh)]
             r += ["    ],"]
         # Text
