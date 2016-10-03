@@ -26,7 +26,6 @@ from alarmseverity import AlarmSeverity
 from alarmclassvar import AlarmClassVar
 from datasource import DataSource
 from alarmrootcausecondition import AlarmRootCauseCondition
-from alarmclassjob import AlarmClassJob
 from alarmclasscategory import AlarmClassCategory
 from alarmclass import AlarmClass
 from eventclass import (EventClass, EventClassCategory, EventClassVar,
