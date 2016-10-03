@@ -1,11 +1,11 @@
 .x-toolbar-default {
-  @include background-gradient($color-concrete, matte, top);
-  padding: 12px;
+	@include background-gradient($color-concrete, matte, top);
+	padding: 12px;
 }
 
 .x-toolbar-text-default {
-  font-size: $font-size-header;
-  font-weight: $font-weight-header;
-  color: $color-clouds;
-  text-shadow: 0 0 2px $color-midnight-blue;
+	font-size: $font-size-header;
+	font-weight: $font-weight-header;
+	color: $color-clouds;
+	text-shadow: 0 0 2px $color-midnight-blue;
 }

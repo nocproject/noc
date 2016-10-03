@@ -8,14 +8,14 @@ $grid-row-cell-focus-border-color: $grid-row-cell-border-color;
 $grid-row-cell-selected-border-color: $grid-row-cell-border-color;
 
 .x-grid-with-row-lines {
-  border-top: 1px solid $color-silver;
+	border-top: 1px solid $color-silver;
 
-  &.x-grid-body {
-    border-top: 0;
-  }
+	&.x-grid-body {
+		border-top: 0;
+	}
 }
 
 .x-focus .x-column-header-inner.x-leaf-column-header::after,
 .x-grid-item-focused .x-grid-cell-inner::before {
-  border: none;
+	border: none;
 }

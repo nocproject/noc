@@ -14,8 +14,8 @@ $color-white: #ffffff;
 
 // Font
 @include google-webfont(
-        $font-name: PT Sans,
-        $font-weight: 400, 400 italic, 700, 700 italic
+	$font-name: PT Sans,
+	$font-weight: 400, 400 italic, 700, 700 italic
 );
 
 $font-size-base: 13px;

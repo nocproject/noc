@@ -1,10 +1,15 @@
 $tab-color: $color;
-$tab-color-active: $color-clouds;
+$tab-color-active: $color-white;
+
+.x-tab.x-tab-default {
+	background-color: $color-white;
+	border-radius: 3px;
+}
 
 .x-tab.x-tab-active.x-tab-default {
-  background-color: $color-concrete;
+	background-color: $color-piter-river;
 }
 
 .x-tab-focus.x-tab-default {
-  outline-color: transparent;
+	outline-color: transparent;
 }
