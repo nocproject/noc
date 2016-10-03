@@ -111,6 +111,13 @@ class ManagedObjectCard(BaseCard):
             uplinks = set(uplinks.uplinks)
         else:
             uplinks = set()
+        if len(uplinks) > 1:
+            if self.object.segment.lost_redundancy:
+                redundancy = "L"
+            else:
+                redundancy = "R"
+        else:
+            redundancy = "N"
         links = []
         for l in Link.object_links(self.object):
             local_interfaces = []
@@ -230,7 +237,8 @@ class ManagedObjectCard(BaseCard):
             "links": links,
             "alarms": alarm_list,
             "interfaces": interfaces,
-            "maintainance": maintainance
+            "maintainance": maintainance,
+            "redundancy": redundancy
         }
         return r
 
