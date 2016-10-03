@@ -54,7 +54,28 @@
 </tr>
 <tr>
     <th scope="row">{{ _("Segment") }}</th>
-    <td>{% if segment %}<a href="/api/card/view/segment/{{ segment.id }}/">{{ segment.name }}</a>{% endif %}</td>
+    <td>
+        {% if segment %}
+        <a href="/api/card/view/segment/{{ segment.id }}/">
+                {% if segment.is_redundant %}
+                    {% if segment.lost_redundancy %}
+                        <i class="fa fa-exclamation-triangle" title="{{ _("Lost redundancy") }}"></i>
+                    {% else %}
+                        <i class="fa fa-check" title="{{ _("Redundant") }}"></i>
+                    {% endif %}
+                {% else %}
+                    <i class="fa fa-times" title="{{ _("No redundancy") }}"></i>
+                {% endif %}
+            {{ segment.name }}
+        </a>
+        {% endif %}
+    </td>
+</tr>
+<tr>
+    <th scope="row">{{ _("Redundancy") }}</th>
+    <td>
+        {{ {"R": _("Redundant"), "L": _("Lost redundancy"), "N": _("No redundancy") }[redundancy] }}
+    </td>
 </tr>
 <tr>
     <th scope="row">{{ _("Model") }}</th>
