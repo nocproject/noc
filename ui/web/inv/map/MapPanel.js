@@ -24,7 +24,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         osOk: [46, 204, 113],
         // Sunflower, #f1c40f
         osAlarm: [241, 196, 15],
-        //
+        // #404040
         osUnreach: [64, 64, 64],
         // Pomegranade, #c0392b
         osDown: [192, 57, 43]
@@ -131,35 +131,41 @@ Ext.define("NOC.inv.map.MapPanel", {
                     text: __("View Card"),
                     glyph: NOC.glyph.eye,
                     scope: me,
-                    handler: me.onNodeMenuViewCard
+                    handler: me.onNodeMenuViewCard,
+                    menuOn: ['managedobject', 'link']
                 },
                 {
                     text: __("Edit"),
                     glyph: NOC.glyph.pencil,
                     scope: me,
-                    handler: me.onNodeMenuEdit
+                    handler: me.onNodeMenuEdit,
+                    menuOn: ['managedobject', 'link']
                 },
                 {
                     text: __("Show dashboard"),
                     glyph: NOC.glyph.line_chart,
                     scope: me,
-                    handler: me.onNodeMenuDashboard
+                    handler: me.onNodeMenuDashboard,
+                    menuOn: ['managedobject', 'link']
                 },
                 {
                     text: __("To maintaince mode"),
                     glyph: NOC.glyph.plus,
                     scope: me,
-                    handler: me.onNodeMenuMaintainceMode
+                    handler: me.onNodeMenuMaintainceMode,
+                    menuOn: 'managedobject'
                 },
                 {
                     text: __("Create new maintaince"),
                     glyph: NOC.glyph.wrench,
                     scope: me,
-                    handler: me.onNodeMenuNewMaintaince
+                    handler: me.onNodeMenuNewMaintaince,
+                    menuOn: 'managedobject'
                 }
             ]
         });
         me.nodeMenuObject = null;
+        me.nodeMenuObjectType = null;
         //
         me.callParent();
     },
@@ -435,8 +441,13 @@ Ext.define("NOC.inv.map.MapPanel", {
     },
     onContextMenu: function(view, evt, x, y) {
         var me = this;
+
         evt.preventDefault();
         me.nodeMenuObject = view.model.get("id").split(":")[1];
+        me.nodeMenuObjectType = view.model.get('data').type;
+        me.nodeMenu.items.items.map(function(item) {
+            item.setVisible(item.menuOn.indexOf(me.nodeMenuObjectType) !== -1)
+        });
         me.nodeMenu.showAt(evt.clientX, evt.clientY);
     },
     onCellDoubleClick: function(view, evt, x, y) {
@@ -817,7 +828,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     onNodeMenuDashboard: function() {
         var me = this;
         window.open(
-            "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.nodeMenuObject
+            '/ui/grafana/dashboard/script/noc.js?dashboard=' + me.nodeMenuObjectType + '&id=' + me.nodeMenuObject
         );
     },
 
