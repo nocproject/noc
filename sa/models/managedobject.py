@@ -464,6 +464,12 @@ class ManagedObject(Model):
         # Rebuild summary
         if "object_profile" in self.changed_fields:
             self.segment.update_summary()
+        # Rebuild segment access
+        if self.initial_data["id"] is None:
+            self.segment.update_access()
+        elif "segment" in self.changed_fields:
+            self.initial_data["segment"].update_access()
+            self.segment.update_access()
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache

@@ -13,7 +13,8 @@ from threading import RLock
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ReferenceField,
-                                ListField, BooleanField, EmbeddedDocumentField)
+                                ListField, BooleanField, IntField,
+                                EmbeddedDocumentField)
 from django.db.models.aggregates import Count
 ## NOC modules
 from noc.lib.nosql import ForeignKeyField
@@ -26,7 +27,7 @@ id_lock = RLock()
 class NetworkSegment(Document):
     meta = {
         "collection": "noc.networksegments",
-        "indexes": ["parent", "sibling"]
+        "indexes": ["parent", "sibling", "adm_domains"]
     }
 
     name = StringField(unique=True)
@@ -45,6 +46,9 @@ class NetworkSegment(Document):
     # True if segment is redundant and redundancy
     # currently broken
     lost_redundancy = BooleanField(default=False)
+    # Administrative domains which have access to segment
+    # Sum of all administrative domains
+    adm_domains = ListField(IntField())
     # Objects, services and subscribers belonging to segment directly
     direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     direct_services = ListField(EmbeddedDocumentField(SummaryItem))
@@ -253,3 +257,30 @@ class NetworkSegment(Document):
             ns.total_objects = ObjectSummaryItem.dict_to_items(objects)
             ns.save()
             ns = ns.parent
+
+    def update_access(self):
+        from noc.sa.models.administrativedomain import AdministrativeDomain
+        # Get all own administrative domains
+        adm_domains = set(
+            d["administrative_domain"]
+            for d in self.managed_objects.values(
+                "administrative_domain"
+            ).annotate(
+                count=Count("id")
+            ).order_by("count")
+        )
+        p = set()
+        for a in adm_domains:
+            a = AdministrativeDomain.get_by_id(a)
+            p |= set(a.get_path())
+        adm_domains |= p
+        # Merge with children's administrative domains
+        for s in NetworkSegment.objects.filter(parent=self.id).only("adm_domains"):
+            adm_domains |= set(s.adm_domains or [])
+        # Check for changes
+        if set(self.adm_domains) != adm_domains:
+            self.adm_domains = sorted(adm_domains)
+            self.save()
+            # Propagate to parents
+            if self.parent:
+                self.parent.update_access()

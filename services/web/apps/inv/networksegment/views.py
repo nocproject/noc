@@ -10,6 +10,7 @@
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
@@ -21,6 +22,12 @@ class NetworkSegmentApplication(ExtDocApplication):
     menu = [_("Setup"), _("Network Segments")]
     model = NetworkSegment
     query_fields = ["name__icontains", "description__icontains"]
+
+    def queryset(self, request, query=None):
+        qs = super(NetworkSegmentApplication, self).queryset(request, query)
+        if not request.user.is_superuser:
+            qs = qs.filter(adm_domains__in=UserAccess.get_domains(request.user))
+        return qs
 
     def instance_to_lookup(self, o, fields=None):
         return {
