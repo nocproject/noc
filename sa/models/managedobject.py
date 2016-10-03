@@ -461,6 +461,9 @@ class ManagedObject(Model):
                     o.container = self.container.id
                     o.log("Moved to container %s (%s)" % (self.container, self.container.id))
                     o.save()
+        # Rebuild summary
+        if "object_profile" in self.changed_fields:
+            self.segment.update_summary()
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache
