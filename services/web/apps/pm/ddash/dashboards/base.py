@@ -21,6 +21,7 @@ class BaseDashboard(object):
     def __init__(self, object):
         self.object = self.resolve_object(object)
         self.logger = logging.getLogger("dashboard.%s" % self.name)
+        self.object_data = self.resolve_object_data(object)
         self.templates_path = ""
         self.templates = self.load_templates()
 
@@ -29,6 +30,12 @@ class BaseDashboard(object):
         Resolve symbolic object link to name
         """
         return object
+
+    def resolve_object_data(self, object):
+        """
+        Return Dictionary with data for grafana templating section
+        """
+        return {}
 
     def render(self):
         """
