@@ -24,6 +24,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.inv.models.objectuplink import ObjectUplink
 from noc.core.config.base import config
 
 
@@ -113,6 +114,17 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
         affected_objects = sorted(alarm.iter_affected(),
                                   key=operator.attrgetter("name"))
         #
+        if alarm.managed_object.is_redundant:
+            uplinks = ObjectUplink.uplinks_for_object(alarm.managed_object)
+            lost_redundancy = len(uplinks) > 1
+            segment = alarm.managed_object.segment
+            affected_subscribers = summary_to_list(segment.total_subscribers, SubscriberProfile)
+            affected_services = summary_to_list(segment.total_services, ServiceProfile)
+        else:
+            lost_redundancy = False
+            affected_subscribers = []
+            affected_services = []
+        #
         ctx = {
             "alarm": alarm,
             "affected_objects": affected_objects,
@@ -120,7 +132,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
             "total_objects": summary_to_list(alarm.total_objects, ManagedObjectProfile),
             "total_subscribers": summary_to_list(alarm.total_subscribers, SubscriberProfile),
             "total_services": summary_to_list(alarm.total_services, ServiceProfile),
-            "tt": None
+            "tt": None,
+            "lost_redundancy": lost_redundancy,
+            "affected_subscribers": affected_subscribers,
+            "affected_services": affected_services
         }
         # Escalate to TT
         if a.create_tt:
