@@ -157,14 +157,17 @@ Ext.define("NOC.main.desktop.Application", {
             return;
         }
         //
-        var url = "/" + app.replace(".", "/") + "/launch_info/";
+        // skip saved hash
+        var index = app.indexOf('?')
+            , _app = index === -1 ? app : app.substr(0, index)
+            , url = "/" + _app.replace(".", "/") + "/launch_info/";
         Ext.Ajax.request({
             url: url,
             method: "GET",
             scope: me,
             success: function(response) {
                 var li = Ext.decode(response.responseText),
-                    params = {};
+                    params = {filterValuesUrl: app};
                 if(cmd) {
                     params.cmd = Ext.merge({}, data);
                     params.cmd.cmd = cmd;
@@ -175,6 +178,8 @@ Ext.define("NOC.main.desktop.Application", {
                     li.title,
                     params
                 );
+                // restore saved hash
+                Ext.History.setHash(app);
             },
             failure: function() {
                 NOC.error("Failed to launch application " + app);

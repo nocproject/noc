@@ -49,5 +49,12 @@ Ext.define("NOC.core.modelfilter.Tree", {
             return r;
         }
         return r;
+    },
+
+    setFilter: function(filter) {
+        var me = this;
+        if(me.name in filter) {
+            me.tree.restoreById(filter[me.name]);
+        }
     }
 });
