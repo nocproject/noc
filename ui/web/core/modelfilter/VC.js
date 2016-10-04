@@ -42,5 +42,10 @@ Ext.define("NOC.core.modelfilter.VC", {
         if(value)
             r[this.name + "__vc"] = value;
         return r;
+    },
+
+    setFilter: function(filter) {
+        var me = this;
+        console.warn('setting a value for the field VC is not implemented');
     }
 });

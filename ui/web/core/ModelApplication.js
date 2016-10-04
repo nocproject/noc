@@ -140,6 +140,7 @@ Ext.define("NOC.core.ModelApplication", {
         // Filters
         var grid_rbar = null;
         me.filterGetters = [];
+        me.filterSetters = [];
         if(me.filters) {
             var fh = Ext.bind(me.onFilter, me),
                 filters = [{
@@ -181,6 +182,9 @@ Ext.define("NOC.core.ModelApplication", {
                     fg.handler = fh;
                     me.filterGetters = me.filterGetters.concat(
                         Ext.bind(fg.getFilter, fg)
+                    );
+                    me.filterSetters = me.filterSetters.concat(
+                        Ext.bind(fg.setFilter, fg)
                     );
                     return fg;
                 })
@@ -583,6 +587,7 @@ Ext.define("NOC.core.ModelApplication", {
         } else {
             focusField = me.form.getFields().items[1];
         }
+        me.restoreFilter(me.noc.filterValuesUrl);
         return me.formPanel;
     },
     // Show grid
@@ -840,6 +845,22 @@ Ext.define("NOC.core.ModelApplication", {
         }
         me.reloadStore();
     },
+    saveFilterToUrl: function(filter) {
+        var params = Ext.Object.toQueryString(filter, true)
+            , currentHash = Ext.History.getHash()
+            , index = currentHash.indexOf('?')
+            , app;
+        if(index === -1) {
+            app = currentHash;
+        } else {
+            app = currentHash.substr(0, index);
+        }
+        if(params) {
+            Ext.History.add(app + '?' + params);
+        } else {
+            Ext.History.add(app);
+        }
+    },
     // Filter
     onFilter: function() {
         var me = this,
@@ -850,6 +871,7 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.currentQuery.__query) {
             fexp.__query = me.currentQuery.__query;
         }
+        me.saveFilterToUrl(fexp);
         me.currentQuery = fexp;
         me.reloadStore();
     },
@@ -1463,5 +1485,27 @@ Ext.define("NOC.core.ModelApplication", {
     onMetrics: function(record) {
         var me = this;
         me.showItem(me.ITEM_METRIC_SETTINGS).preview(record);
+    },
+    //
+    restoreFilter: function(currentHash) {
+        var me = this,
+            filterStr,
+            index,
+            queryString;
+
+        if(!currentHash) {
+            return;
+        }
+
+        index = currentHash.indexOf('?');
+        if(index !== -1) {
+            queryString = currentHash.substr(index + 1);
+            filterStr = Ext.Object.fromQueryString(queryString, true);
+            Ext.each(me.filterSetters, function(set) {
+                set(filterStr);
+            });
+            me.currentQuery = filterStr;
+            me.store.setFilterParams(me.currentQuery);
+        }
     }
 });
