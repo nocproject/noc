@@ -7,12 +7,12 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-08-09 09:25+0300",
-        "POT-Creation-Date": "2016-08-09 09:19+0300",
+        "PO-Revision-Date": "2016-10-04 15:07+0500",
+        "POT-Creation-Date": "2016-10-04 13:14+0500",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
-        "X-Generator": "Poedit 1.8.8"
+        "X-Generator": "Poedit 1.8.9"
     },
     "About NOC ...": [
         null,
@@ -31,6 +31,10 @@
         "Активный"
     ],
     "Add": [
+        null,
+        "Добавить"
+    ],
+    "Add ": [
         null,
         "Добавить"
     ],
@@ -186,6 +190,10 @@
         null,
         "Жирный"
     ],
+    "Box discovery": [
+        null,
+        "Пакетный опрос"
+    ],
     "Branch": [
         null,
         "Ветка"
@@ -198,9 +206,57 @@
         null,
         "Встроен"
     ],
+    "By Adm. Domain": [
+        null,
+        "По З.О."
+    ],
+    "By Adm. domain": [
+        null,
+        "По З.О."
+    ],
     "By Date": [
         null,
         "По дате"
+    ],
+    "By Managed": [
+        null,
+        "По статусу"
+    ],
+    "By Obj. Profile": [
+        null,
+        "По профилю объекта"
+    ],
+    "By Pool": [
+        null,
+        "По Пулу"
+    ],
+    "By SA Profile": [
+        null,
+        "По профилю"
+    ],
+    "By Segment": [
+        null,
+        "По сегменту"
+    ],
+    "By Selector": [
+        null,
+        "По селектору"
+    ],
+    "By Tags": [
+        null,
+        "По тэгам"
+    ],
+    "By Termination Group": [
+        null,
+        "По группе терминации"
+    ],
+    "By VC Domain": [
+        null,
+        "По виртуальному домену"
+    ],
+    "By VRF": [
+        null,
+        "По VRF"
     ],
     "Capabilities": [
         null,
@@ -233,6 +289,10 @@
     "Change Password": [
         null,
         "Смена пароля"
+    ],
+    "Change configuration": [
+        null,
+        "Изменить конфигурацию"
     ],
     "Change password": [
         null,
@@ -338,6 +398,10 @@
         null,
         "Условие"
     ],
+    "Conduits": [
+        null,
+        "Колодцы"
+    ],
     "Config": [
         null,
         "Конфиг"
@@ -354,6 +418,14 @@
         null,
         "Соединить"
     ],
+    "Connect to": [
+        null,
+        "Подключить к"
+    ],
+    "Connection Rule": [
+        null,
+        "Правила подключения"
+    ],
     "Console": [
         null,
         "Консоль"
@@ -369,6 +441,10 @@
     "Content": [
         null,
         "Содержимое"
+    ],
+    "Context": [
+        null,
+        "Контекст"
     ],
     "Count": [
         null,
@@ -389,6 +465,10 @@
     "Create Rule": [
         null,
         "Создать правило"
+    ],
+    "Create new maintaince": [
+        null,
+        "Создать новый РНР"
     ],
     "Credentials": [
         null,
@@ -466,6 +546,14 @@
         null,
         "Отключить"
     ],
+    "Discovery": [
+        null,
+        "Опрос"
+    ],
+    "Discovery Policy": [
+        null,
+        "Политика при опросе"
+    ],
     "Do you wish to unlink interface {0}?": [
         null,
         "Отсоединить интерфейс {0}?"
@@ -538,6 +626,10 @@
         null,
         "RE класса события"
     ],
+    "Event TTL": [
+        null,
+        "Время жизни события"
+    ],
     "Event class RE": [
         null,
         "RE класса события"
@@ -558,6 +650,10 @@
         null,
         "Истекает"
     ],
+    "FQDN Template": [
+        null,
+        "Шаблон FQDN"
+    ],
     "FQDN template": [
         null,
         "Шаблон FQDN"
@@ -569,6 +665,14 @@
     "Failed": [
         null,
         "Ошибка"
+    ],
+    "Failed Interval, sec": [
+        null,
+        "Интервал при сбое, с"
+    ],
+    "Failed interval": [
+        null,
+        "Интервал при сбое"
     ],
     "Failed to change credentials: ": [
         null,
@@ -662,6 +766,10 @@
         null,
         "Фильтровать по адресу (REGEXP)"
     ],
+    "Filter by Administrative Domain": [
+        null,
+        "Фильтровать по З.О."
+    ],
     "Filter by Description (REGEXP)": [
         null,
         "Фильтровать по описанию (REGEXP)"
@@ -670,6 +778,10 @@
         null,
         "Фильтровать по ID"
     ],
+    "Filter by Is Managed": [
+        null,
+        "Фильтровать по статусу"
+    ],
     "Filter by Name (REGEXP)": [
         null,
         "Фильтровать по имени (REGEXP)"
@@ -677,6 +789,14 @@
     "Filter by Object Profile": [
         null,
         "Фильтровать по профилю объекта"
+    ],
+    "Filter by Pool": [
+        null,
+        "Фильтровать по пулу"
+    ],
+    "Filter by Prefix Table": [
+        null,
+        "Фильтровать по таблице префиксов"
     ],
     "Filter by Profile": [
         null,
@@ -734,6 +854,10 @@
         null,
         "Полный путь"
     ],
+    "Get config NOW": [
+        null,
+        "Запрос конфига"
+    ],
     "Global limit": [
         null,
         "Глобальный лимит"
@@ -769,6 +893,14 @@
     "Hide maintainance": [
         null,
         "Скрыть РНР"
+    ],
+    "High Error": [
+        null,
+        "Верхний порог ошибки"
+    ],
+    "High Warn": [
+        null,
+        "Верхний порог предупр."
     ],
     "Hits": [
         null,
@@ -838,9 +970,21 @@
         null,
         "Появилась"
     ],
+    "Inventory": [
+        null,
+        "Учёт объектов"
+    ],
+    "Is Active": [
+        null,
+        "Активный"
+    ],
     "Is Builtin": [
         null,
         "Встроен"
+    ],
+    "Is Locked": [
+        null,
+        "Заблокированный"
     ],
     "Is Managed?": [
         null,
@@ -922,6 +1066,14 @@
         null,
         "Линк"
     ],
+    "Link Event": [
+        null,
+        "Событие на интерфейсе"
+    ],
+    "Link Events": [
+        null,
+        "События интерфейса"
+    ],
     "Link Inspector": [
         null,
         "Свойства линка"
@@ -950,6 +1102,18 @@
         null,
         "Выход"
     ],
+    "Low Error": [
+        null,
+        "Нижний порог ошибки"
+    ],
+    "Low Warn": [
+        null,
+        "Нижний порог предупр."
+    ],
+    "MAC Discovery": [
+        null,
+        "Сбор MAC адресов"
+    ],
     "Mac Address": [
         null,
         "MAC-адрес"
@@ -966,6 +1130,10 @@
         null,
         "Управляем"
     ],
+    "Managed Object Selector": [
+        null,
+        "Селектор"
+    ],
     "Management": [
         null,
         "Управление"
@@ -974,9 +1142,17 @@
         null,
         "Основные"
     ],
+    "Match": [
+        null,
+        "Критерий"
+    ],
     "Match Condition": [
         null,
-        "Условие совпадения"
+        "Критерий совпадения"
+    ],
+    "Match Rules": [
+        null,
+        "Список критериев"
     ],
     "Max": [
         null,
@@ -1025,6 +1201,10 @@
     "Min Zoom": [
         null,
         "Мин.Увел."
+    ],
+    "Min. Duration": [
+        null,
+        "Мин. продолжительность"
     ],
     "Min. Weight": [
         null,
@@ -1138,6 +1318,10 @@
         null,
         "Профиль объекта"
     ],
+    "Object Selector": [
+        null,
+        "Селектор"
+    ],
     "Object/Segment": [
         null,
         "Объект/Сегмент"
@@ -1177,6 +1361,10 @@
     "Optical Tx, bBm": [
         null,
         "Optical Tx, dBm"
+    ],
+    "Order": [
+        null,
+        "Приоритет"
     ],
     "Org. Name": [
         null,
@@ -1234,6 +1422,10 @@
         null,
         "Маски"
     ],
+    "Periodic discovery": [
+        null,
+        "Периодический опрос"
+    ],
     "Phone": [
         null,
         "Телефон"
@@ -1261,6 +1453,10 @@
     "Point Radius": [
         null,
         "Радиус точки"
+    ],
+    "Policy": [
+        null,
+        "Действие"
     ],
     "Pool": [
         null,
@@ -1350,9 +1546,17 @@
         null,
         "Протокол"
     ],
+    "Protocols": [
+        null,
+        "Протоколы"
+    ],
     "Rack: ": [
         null,
         "Стойка:"
+    ],
+    "Reclassify": [
+        null,
+        "Переклассифицировать"
     ],
     "Recommended Actions": [
         null,
@@ -1401,6 +1605,10 @@
     "Reset Layout": [
         null,
         "Сбросить раскладку"
+    ],
+    "Reset filter": [
+        null,
+        "Сброс фильтра"
     ],
     "Result": [
         null,
@@ -1526,6 +1734,10 @@
         null,
         "Выберите объект"
     ],
+    "Select parent...": [
+        null,
+        "Выбрать родителя..."
+    ],
     "Select segment...": [
         null,
         "Выберите сегмент..."
@@ -1562,6 +1774,10 @@
         null,
         "Установить первопричину"
     ],
+    "Settings": [
+        null,
+        "Настройки"
+    ],
     "Severity": [
         null,
         "Серьёзность"
@@ -1569,6 +1785,10 @@
     "Shape": [
         null,
         "Форма"
+    ],
+    "Shift": [
+        null,
+        "Смещение (в юнитах)"
     ],
     "Short": [
         null,
@@ -1650,6 +1870,10 @@
         null,
         "Статичная карта"
     ],
+    "Sibling": [
+        null,
+        "Родственники"
+    ],
     "Size": [
         null,
         "Размер"
@@ -1681,6 +1905,14 @@
     "Status": [
         null,
         "Статус"
+    ],
+    "Status Change Notification": [
+        null,
+        "Уведомление об изменение статуса"
+    ],
+    "Status Discovery": [
+        null,
+        "Опрос статуса интерфейса"
     ],
     "Stop": [
         null,
@@ -1734,6 +1966,10 @@
         null,
         "Затронуто/ТТ"
     ],
+    "Super Password": [
+        null,
+        "Пароль Суперпользователя"
+    ],
     "Suppress": [
         null,
         "Подавление"
@@ -1776,7 +2012,7 @@
     ],
     "Tagged": [
         null,
-        "Помеч."
+        "Тэгированный"
     ],
     "Tags": [
         null,
@@ -1862,6 +2098,10 @@
         null,
         "в OID"
     ],
+    "To maintaince mode": [
+        null,
+        "Добавить в РНР"
+    ],
     "Toggle autoreload": [
         null,
         "Переключить автозагрузку"
@@ -1882,6 +2122,10 @@
         null,
         "Тип"
     ],
+    "UUID": [
+        null,
+        "Идентификатор"
+    ],
     "Underlined": [
         null,
         "Подчеркнутый"
@@ -1890,13 +2134,17 @@
         null,
         "Уникальный"
     ],
+    "Units": [
+        null,
+        "Рзамер (в юнитах)"
+    ],
     "Unlink interface": [
         null,
         "Отсоединить интерфейс"
     ],
     "Untag.": [
         null,
-        "Непомеч."
+        "Нетэгированный"
     ],
     "Upload": [
         null,
@@ -1905,6 +2153,10 @@
     "User": [
         null,
         "Пользователь"
+    ],
+    "User name": [
+        null,
+        "Имя пользователя"
     ],
     "User profile ...": [
         null,

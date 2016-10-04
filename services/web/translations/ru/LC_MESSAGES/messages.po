@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-09-29 07:55+0500\n"
-"PO-Revision-Date: 2016-09-29 22:11+0500\n"
+"POT-Creation-Date: 2016-10-04 13:15+0500\n"
+"PO-Revision-Date: 2016-10-04 14:40+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -92,7 +92,7 @@ msgstr "Правила валидации"
 
 #: services/web/apps/crm/__init__.py:12
 msgid "CRM"
-msgstr ""
+msgstr "Учёт клиентов"
 
 #: services/web/apps/crm/subscriber/views.py:19
 msgid "Subscriber"
@@ -180,11 +180,11 @@ msgstr "Сводка по зонам NS"
 msgid "Fault Management"
 msgstr "Управление авариями"
 
-#: services/web/apps/fm/alarm/views.py:38
+#: services/web/apps/fm/alarm/views.py:39
 msgid "Alarm"
 msgstr "Авария"
 
-#: services/web/apps/fm/alarm/views.py:39
+#: services/web/apps/fm/alarm/views.py:40
 msgid "Alarms"
 msgstr "Аварии"
 
@@ -441,7 +441,7 @@ msgstr "Правила по профилю"
 
 #: services/web/apps/fm/reportrulesetsummary/views.py:18
 msgid "Ruleset Summary"
-msgstr "Свока по набору правил"
+msgstr "Сводка по набору правил"
 
 #: services/web/apps/fm/reportunclassifiedoids/views.py:16
 msgid "Unclassified Trap OIDs"
@@ -518,6 +518,10 @@ msgstr "Способность"
 #: services/web/apps/inv/capability/views.py:21
 msgid "Capabilities"
 msgstr "Способности"
+
+#: services/web/apps/inv/card/views.py:15 services/web/apps/inv/card/views.py:16
+msgid "Cards"
+msgstr "Карточки"
 
 #: services/web/apps/inv/connectionrule/views.py:21
 #: services/web/apps/inv/connectionrule/views.py:22
@@ -597,11 +601,11 @@ msgstr "Отображение моделей"
 msgid "Monitor"
 msgstr "Монитор"
 
-#: services/web/apps/inv/networksegment/views.py:20
+#: services/web/apps/inv/networksegment/views.py:21
 msgid "Network Segment"
 msgstr "Сегмент сети"
 
-#: services/web/apps/inv/networksegment/views.py:21
+#: services/web/apps/inv/networksegment/views.py:22
 msgid "Network Segments"
 msgstr "Сегменты сети"
 
@@ -616,11 +620,11 @@ msgstr "Сравнить спецификации"
 
 #: services/web/apps/inv/reportdiscovery/views.py:24
 msgid "Discovery Summary"
-msgstr "Сводка Discovery"
+msgstr "Сводка опроса"
 
 #: services/web/apps/inv/reportdiscoveryproblem/views.py:21
 msgid "Discovery Problems"
-msgstr "Проблемы discovery"
+msgstr "Проблемы при опросе"
 
 #: services/web/apps/inv/reportdiscoveryproblem/views.py:34
 msgid "Profile check failed"
@@ -752,7 +756,7 @@ msgstr ""
 
 #: services/web/apps/ip/ipam/views.py:490 services/web/apps/ip/ipam/views.py:683
 msgid "Enable IP Discovery"
-msgstr "Включить поиск IP"
+msgstr "Включить опрос IP"
 
 #: services/web/apps/ip/ipam/views.py:525
 #, python-format
@@ -1397,7 +1401,7 @@ msgstr "Группы пиров"
 #: services/web/apps/inv/interfaceprofile/views.py:20
 #: services/web/apps/inv/modelinterface/views.py:20
 #: services/web/apps/inv/modelmapping/views.py:20
-#: services/web/apps/inv/networksegment/views.py:21
+#: services/web/apps/inv/networksegment/views.py:22
 #: services/web/apps/inv/objectmodel/views.py:24
 #: services/web/apps/inv/technology/views.py:20
 #: services/web/apps/inv/vendor/views.py:21
@@ -1493,7 +1497,7 @@ msgstr ""
 msgid "Performance Management"
 msgstr "Анализ производительности"
 
-#: services/web/apps/pm/ddash/views.py:20
+#: services/web/apps/pm/ddash/views.py:22
 msgid "Dynamic Dashboard"
 msgstr "Динамический экран"
 
@@ -1606,7 +1610,7 @@ msgstr "Правила проверки профиля"
 
 #: services/web/apps/sa/reportfaileddiscovery/views.py:23
 msgid "Managed Objects Pools"
-msgstr ""
+msgstr "Пулы"
 
 #: services/web/apps/sa/reportfaileddiscovery/views.py:27
 msgid "Managed Objects Profile"
@@ -1618,7 +1622,7 @@ msgstr "Фильтрация по доступности"
 
 #: services/web/apps/sa/reportfaileddiscovery/views.py:37
 msgid "Failed Discovery"
-msgstr "Сбои Discovery"
+msgstr "Сбои при опросе"
 
 #: services/web/apps/sa/reportfaileddiscovery/views.py:70
 msgid "Avail"
@@ -1626,7 +1630,7 @@ msgstr ""
 
 #: services/web/apps/sa/reportfaileddiscovery/views.py:71
 msgid "Discovery"
-msgstr ""
+msgstr "Опрос"
 
 #: services/web/apps/sa/reportfaileddiscovery/views.py:71
 msgid "Error"
@@ -1735,7 +1739,7 @@ msgstr "Количество"
 
 #: services/web/apps/sa/reportstalediscovery/views.py:21
 msgid "Stale discovery"
-msgstr "Зависший Discovery"
+msgstr "Зависший опрос"
 
 #: services/web/apps/sa/runcommands/views.py:15
 #: services/web/apps/sa/runcommands/views.py:16

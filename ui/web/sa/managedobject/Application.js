@@ -713,72 +713,72 @@ Ext.define("NOC.sa.managedobject.Application", {
     filters: [
         // @todo: By SA Profile
         {
-            title: "By Managed",
+            title: __("By Managed"),
             name: "is_managed",
             ftype: "boolean"
         },
         {
-            title: "By SA Profile",
+            title: __("By SA Profile"),
             name: "profile_name",
             ftype: "lookup",
             lookup: "main.ref.profile"
         },
         {
-            title: "By Obj. Profile",
+            title: __("By Obj. Profile"),
             name: "object_profile",
             ftype: "lookup",
             lookup: "sa.managedobjectprofile"
         },
         {
-            title: "By Adm. Domain",
+            title: __("By Adm. Domain"),
             name: "administrative_domain",
             ftype: "tree",
             lookup: "sa.administrativedomain"
         },
         {
-            title: "By Segment",
+            title: __("By Segment"),
             name: "segment",
             ftype: "tree",
             lookup: "inv.networksegment"
         },
         {
-            title: "By Selector",
+            title: __("By Selector"),
             name: "selector",
             ftype: "lookup",
             lookup: "sa.managedobjectselector"
         },
         {
-            title: "By Pool",
+            title: __("By Pool"),
             name: "pool",
             ftype: "lookup",
             lookup: "main.pool"
         },
         {
-            title: "By VRF",
+            title: __("By VRF"),
             name: "vrf",
             ftype: "lookup",
             lookup: "ip.vrf"
         },
         {
-            title: "By VC Domain",
+            title: __("By VC Domain"),
             name: "vc_domain",
             ftype: "lookup",
             lookup: "vc.vcdomain"
         },
         {
-            title: "By Termination Group",
+            title: __("By Termination Group"),
             name: "termination_group",
             ftype: "lookup",
             lookup: "sa.terminationgroup"
         },
         {
-            title: "By Service Terminator",
+            title: __("By Service Terminator"),
             name: "service_terminator",
             ftype: "lookup",
             lookup: "sa.terminationgroup"
         },
         {
-            title: "By Tags",
+            title: __("By Tags"),
             name: "tags",
             ftype: "tag"
         }
