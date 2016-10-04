@@ -25,8 +25,7 @@ Ext.define("NOC.core.modelfilter.Lookup", {
                 listeners: {
                     scope: me,
                     select: me.onChange,
-                    clear: me.onChange,
-                    blur: me.onChange
+                    clear: me.onChange
                 }
             });
 
