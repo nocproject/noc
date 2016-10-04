@@ -14,6 +14,18 @@
   environment:
     http_proxy: "{{http_proxy}}"
 
+- name: Install service monitoring
+  template:
+    src: "{{item}}"
+    dest: "/{{item[:-3]}}"
+    force: no
+  with_items:
+    - "etc/telegraf/telegraf.d/discovery.conf.j2"
+    - "etc/telegraf/telegraf.d/fm-monitor.conf.j2"
+  notify: reload telegraf
+  tags:
+    - config
+
 - name: Install nginx monitoring
   template:
     src: "etc/telegraf/telegraf.d/nginx.conf.j2"
