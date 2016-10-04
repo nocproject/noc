@@ -31,7 +31,7 @@ class Script(BaseScript):
     #
     SNMP_CAPS = {
         SNMP_v1: "SNMP | v1",
-        SNMP_v2c: "SNMP | v2",
+        SNMP_v2c: "SNMP | v2c",
         SNMP_v3: "SNMP | v3"
     }
 
