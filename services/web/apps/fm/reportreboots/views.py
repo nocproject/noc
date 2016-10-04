@@ -15,6 +15,8 @@ from django.contrib.admin.widgets import AdminDateWidget
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.fm.models.reboot import Reboot
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
@@ -39,7 +41,7 @@ class ReportRebootsApplication(SimpleReport):
     title = _("Reboots")
     form = ReportForm
 
-    def get_data(self, interval, from_date, to_date, **kwargs):
+    def get_data(self, request, interval, from_date, to_date, **kwargs):
         interval = int(interval)
         if interval:
             ts = datetime.datetime.now() - datetime.timedelta(days=interval)
@@ -70,7 +72,12 @@ class ReportRebootsApplication(SimpleReport):
         data = Reboot._get_collection().aggregate(pipeline)
         data = data["result"]
         # Get managed objects
-        ids = [x["_id"] for x in data]
+        if not request.user.is_superuser:
+            id_perm = [mo.id for mo in ManagedObject.objects.filter(
+                administrative_domain__in=UserAccess.get_domains(request.user))]
+            ids = [x["_id"] for x in data if x["_id"] in id_perm]
+        else:
+            ids = [x["_id"] for x in data]
         mo_names = {}  # mo id -> mo name
         cursor = connection.cursor()
         while ids:
@@ -82,11 +89,18 @@ class ReportRebootsApplication(SimpleReport):
                 WHERE id IN (%s)""" % ", ".join(chunk))
             mo_names.update(dict([(c[0], c[1:3]) for c in cursor]))
         #
-        data = [
-            (mo_names.get(x["_id"], "---")[0],
-             mo_names.get(x["_id"], "---")[1], x["count"])
-            for x in data
-        ]
+        if not request.user.is_superuser:
+            data = [
+                (mo_names.get(x["_id"], "---")[0],
+                 mo_names.get(x["_id"], "---")[1], x["count"])
+                for x in data if x["_id"] in id_perm
+            ]
+        else:
+            data = [
+                (mo_names.get(x["_id"], "---")[0],
+                 mo_names.get(x["_id"], "---")[1], x["count"])
+                for x in data
+            ]
 
         return self.from_dataset(
             title=self.title,

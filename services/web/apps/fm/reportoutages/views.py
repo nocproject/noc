@@ -15,6 +15,7 @@ from django.contrib.admin.widgets import AdminDateWidget
 ## NOC modules
 from noc.fm.models.outage import Outage
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.lib.dateutils import total_seconds
 from noc.lib.nosql import Q
@@ -42,7 +43,7 @@ class ReportOutagesApplication(SimpleReport):
     title = _("Outages")
     form = ReportForm
 
-    def get_data(self, duration, from_date, to_date, **kwargs):
+    def get_data(self, request, duration, from_date, to_date, **kwargs):
         now = datetime.datetime.now()
         if int(duration):
             self.logger.info("Use duration\n")
@@ -66,6 +67,10 @@ class ReportOutagesApplication(SimpleReport):
             outages[o.object] += [o]
             otime[o.object] += total_seconds(stop - start)
         td = total_seconds(d)
+        if not request.user.is_superuser:
+            for mo in ManagedObject.objects.exclude(administrative_domain__in=UserAccess.get_domains(request.user)):
+                if mo.id in otime:
+                    otime.pop(mo.id)
         # Load managed objects
         mos = list(otime)
         chunk = 500

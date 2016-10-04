@@ -14,6 +14,7 @@ from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport
+from noc.sa.models.useraccess import UserAccess
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.managedobject import ManagedObject
@@ -41,7 +42,7 @@ class ReportEscalationsApplication(SimpleReport):
     title = _("Escalations")
     form = ReportForm
 
-    def get_data(self, interval, from_date, to_date, **kwargs):
+    def get_data(self, request, interval, from_date, to_date, **kwargs):
         interval = int(interval)
         if interval:
             ts = datetime.datetime.now() - datetime.timedelta(days=interval)
@@ -68,7 +69,10 @@ class ReportEscalationsApplication(SimpleReport):
         data = []
         for ac in (ActiveAlarm, ArchivedAlarm):
             for d in ac._get_collection().find(q):
-                mo = ManagedObject.get_by_id(d["managed_object"])
+                mo = ManagedObject.objects.filter(
+                    administrative_domain__in=UserAccess.get_domains(request.user)).filter(id=(d["managed_object"]))
+                if mo:
+                    continue
                 data += [(
                     d["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
                     d["escalation_ts"].strftime("%Y-%m-%d %H:%M:%S"),
