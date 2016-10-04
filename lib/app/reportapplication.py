@@ -81,7 +81,7 @@ class ReportApplication(Application):
                 return self.render(request, "report_form.html",
                                    form=form, app=self, is_report=True)
                 # Build result
-        rdata = getattr(self, "report_%s" % format)(**query)
+        rdata = getattr(self, "report_%s" % format)(request=request, **query)
         # Render result
         if format == "html":
             return self.render(request, "report.html",
