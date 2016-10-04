@@ -1,0 +1,13 @@
+{
+    "name": "Vitesse | VSC | VSC7460 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "f574e44a-0f78-42f2-b3f3-761d7b6baa3f",
+    "description": "Jaguar-1 Telecom NSWITCH",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.40248.1",
+    "action": "match",
+    "profile": "Vitesse.VSC"
+}
