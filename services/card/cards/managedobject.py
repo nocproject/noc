@@ -271,7 +271,7 @@ class ManagedObjectCard(BaseCard):
         except ValueError:
             pass
         if not handler.current_user.is_superuser:
-            q = Q(administrative_domain__in=handler.get_user_domains())
+            q &= Q(administrative_domain__in=handler.get_user_domains())
         r = []
         for mo in ManagedObject.objects.filter(q):
             r += [{
