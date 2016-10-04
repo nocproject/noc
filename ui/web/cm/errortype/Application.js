@@ -72,7 +72,7 @@ Ext.define("NOC.cm.errortype.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON

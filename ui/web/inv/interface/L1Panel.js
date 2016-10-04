@@ -33,10 +33,10 @@ Ext.define("NOC.inv.interface.L1Panel", {
                             renderer: function (val, metadata, record) {
                                 if (record.get("link")) {
                                     this.items[0].glyph = NOC.glyph.unlink;
-                                    this.items[0].tooltip = 'Unlink';
+                                    this.items[0].tooltip = __('Unlink');
                                 } else {
                                     this.items[0].glyph = NOC.glyph.link;
-                                    this.items[0].tooltip = 'Link';
+                                    this.items[0].tooltip = __('Link');
                                 }
                                 metadata.style = 'cursor: pointer;';
                                 return val;

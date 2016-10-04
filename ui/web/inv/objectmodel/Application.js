@@ -234,7 +234,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
@@ -242,7 +242,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 {
                     text: __("Test"),
                     glyph: NOC.glyph.question,
-                    tooltip: "Test compatible types",
+                    tooltip: __("Test compatible types"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onTest

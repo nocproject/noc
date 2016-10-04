@@ -33,21 +33,21 @@ Ext.define("NOC.inv.inv.Application", {
 
         me.navReloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
-            tooltip: "Reload",
+            tooltip: __("Reload"),
             scope: me,
             handler: me.onReloadNav
         });
 
         me.addButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.plus,
-            tooltip: "Add objects",
+            tooltip: __("Add objects"),
             scope: me,
             handler: me.onAddObject
         });
 
         me.removeButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.minus,
-            tooltip: "Remove group",
+            tooltip: __("Remove group"),
             scope: me,
             handler: me.onRemoveGroup
         });

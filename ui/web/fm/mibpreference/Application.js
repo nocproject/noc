@@ -66,7 +66,7 @@ Ext.define("NOC.fm.mibpreference.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON

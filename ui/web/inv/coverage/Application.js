@@ -46,7 +46,7 @@ Ext.define("NOC.inv.coverage.Application", {
             columns: [
                 {
                     text: __("Pref."),
-                    tooltip: "Preference",
+                    tooltip: __("Preference"),
                     dataIndex: "preference",
                     width: 50,
                     textAlign: "right"
@@ -70,7 +70,7 @@ Ext.define("NOC.inv.coverage.Application", {
             columns: [
                 {
                     text: __("Pref."),
-                    tooltip: "Preference",
+                    tooltip: __("Preference"),
                     dataIndex: "preference",
                     width: 50,
                     textAlign: "right"

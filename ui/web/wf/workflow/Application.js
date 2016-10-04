@@ -165,7 +165,7 @@ Ext.define("NOC.wf.workflow.Application", {
                     itemId: "wfedit",
                     text: __("WF Editor"),
                     glyph: NOC.glyph.pencil,
-                    tooltip: "Workflow Editor",
+                    tooltip: __("Workflow Editor"),
                     scope: me,
                     handler: me.onWFEditor
                 }
