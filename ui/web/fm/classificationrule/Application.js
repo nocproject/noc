@@ -160,7 +160,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
@@ -168,7 +168,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
                 {
                     text: __("Test"),
                     glyph: NOC.glyph.question_circle,
-                    tooltip: "Test rule",
+                    tooltip: __("Test rule"),
                     hasAccess: NOC.hasPermission("test"),
                     scope: me,
                     handler: me.onTest

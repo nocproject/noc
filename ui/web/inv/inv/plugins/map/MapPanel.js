@@ -78,14 +78,14 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         }
         //
         me.centerButton = Ext.create("Ext.button.Button", {
-            tooltip: "Center to object",
+            tooltip: __("Center to object"),
             glyph: NOC.glyph.location_arrow,
             scope: me,
             handler: me.centerToObject
         });
 
         me.zoomInButton = Ext.create("Ext.button.Button", {
-            tooltip: "Zoom in",
+            tooltip: __("Zoom in"),
             glyph: NOC.glyph.search_plus,
             disabled: true,
             scope: me,
@@ -93,7 +93,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         });
 
         me.zoomOutButton = Ext.create("Ext.button.Button", {
-            tooltip: "Zoom out",
+            tooltip: __("Zoom out"),
             glyph: NOC.glyph.search_minus,
             disabled: true,
             scope: me,
@@ -101,7 +101,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         });
 
         me.zoomLevelButton = Ext.create("Ext.button.Button", {
-            tooltip: "Zoom to level",
+            tooltip: __("Zoom to level"),
             text: __("1:100 000"),
             menu: {
                 items: me.zoomLevels.map(function(z, index) {
@@ -116,7 +116,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         });
 
         me.setPositionButton = Ext.create("Ext.button.Button", {
-            tooltip: "Set position",
+            tooltip: __("Set position"),
             glyph: NOC.glyph.map_marker,
             enableToggle: true,
             listeners: {
@@ -126,7 +126,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         });
 
         me.layersButton = Ext.create("Ext.button.Button", {
-            tooltip: "Setup layers",
+            tooltip: __("Setup layers"),
             text: __("Layers"),
             glyph: NOC.glyph.align_justify,
             menu: {
@@ -135,7 +135,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         });
 
         me.baseLayerButton = Ext.create("Ext.button.Button", {
-            tooltip: "Select base layer",
+            tooltip: __("Select base layer"),
             text: me.baseLayers[0].text,
             menu: {
                 items: me.baseLayers

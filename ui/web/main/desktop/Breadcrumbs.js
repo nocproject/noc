@@ -22,7 +22,7 @@ Ext.define("NOC.main.desktop.Breadcrumbs", {
                 {
                     xtype: "tool",
                     type: "down",
-                    tooltip: "Switch to tree view",
+                    tooltip: __("Switch to tree view"),
                     listeners: {
                         scope: me,
                         click: function() {me.app.toggleNav();}

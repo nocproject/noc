@@ -23,7 +23,7 @@ Ext.define("NOC.project.project.Application", {
                     itemId: "resources",
                     text: __("Resources"),
                     glyph: NOC.glyph.list,
-                    tooltip: "Show Allocated resources",
+                    tooltip: __("Show Allocated resources"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onProjectResources

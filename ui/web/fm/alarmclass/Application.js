@@ -394,7 +394,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "View as JSON",
+                    tooltip: __("View as JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON

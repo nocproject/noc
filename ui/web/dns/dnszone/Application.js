@@ -192,7 +192,7 @@ Ext.define("NOC.dns.dnszone.Application", {
                 {
                     text: __("Preview"),
                     glyph: NOC.glyph.search,
-                    tooltip: "Preview zone",
+                    tooltip: __("Preview zone"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onPreviewZone

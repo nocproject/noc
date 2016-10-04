@@ -361,7 +361,7 @@ Ext.define("NOC.fm.eventclass.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "View as JSON",
+                    tooltip: __("View as JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON

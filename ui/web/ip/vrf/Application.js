@@ -181,7 +181,7 @@ Ext.define("NOC.ip.vrf.Application", {
                     "itemId": "import",
                     text: __("Import"),
                     glyph: NOC.glyph.level_down,
-                    tooltip: "Import VRFs",
+                    tooltip: __("Import VRFs"),
                     checkAccess: NOC.hasPermission("import"),
                     menu: {
                         xtype: "menu",

@@ -68,7 +68,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             text: __("Dashboard"),
             glyph: NOC.glyph.line_chart,
             scope: me,
-            tooltip: "Show dashboard",
+            tooltip: __("Show dashboard"),
             handler: me.onDashboard
         });
 

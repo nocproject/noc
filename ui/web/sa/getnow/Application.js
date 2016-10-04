@@ -46,7 +46,7 @@ Ext.define("NOC.sa.getnow.Application", {
         me.rawButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.android,
             text: __("Raw"),
-            tooltip: "Raw",
+            tooltip: __("Raw"),
             scope: me,
             handler: me.onRaw
         });

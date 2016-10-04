@@ -21,7 +21,7 @@ Ext.define("NOC.fm.monitor.Application", {
 
         me.refreshButton = Ext.create("Ext.button.Button", {
             text: __("Refresh"),
-            tooltip: "Refresh data",
+            tooltip: __("Refresh data"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.loadData

@@ -31,7 +31,7 @@ Ext.define("NOC.inv.interface.L2Panel", {
                             width: 25,
                             items: [
                                 {
-                                    tooltip: "Show MACs",
+                                    tooltip: __("Show MACs"),
                                     glyph: NOC.glyph.play,
                                     scope: me,
                                     handler: me.showMAC,

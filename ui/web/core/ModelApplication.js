@@ -112,7 +112,7 @@ Ext.define("NOC.core.ModelApplication", {
 
         me.refreshButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
-            tooltip: "Refresh",
+            tooltip: __("Refresh"),
             scope: me,
             handler: me.onRefresh
         });
@@ -121,7 +121,7 @@ Ext.define("NOC.core.ModelApplication", {
             itemId: "create",
             text: __("Add"),
             glyph: NOC.glyph.plus,
-            tooltip: "Add new record",
+            tooltip: __("Add new record"),
             hasAccess: NOC.hasPermission("create"),
             scope: me,
             handler: me.onNewRecord
@@ -158,7 +158,7 @@ Ext.define("NOC.core.ModelApplication", {
                 tools: [
                     {
                         type: "close",
-                        tooltip: "Reset filters",
+                        tooltip: __("Reset filters"),
                         scope: me,
                         handler: me.onResetFilters
                     }
@@ -207,7 +207,7 @@ Ext.define("NOC.core.ModelApplication", {
         var rowItems = [
             {
                 glyph: NOC.glyph.star,
-                tooltip: "Mark/Unmark",
+                tooltip: __("Mark/Unmark"),
                 scope: me,
                 getColor: function(cls, meta, r) {
                     return r.get("fav_status") ? NOC.colors.starred : NOC.colors.unstarred;
@@ -217,7 +217,7 @@ Ext.define("NOC.core.ModelApplication", {
             {
                 glyph: NOC.glyph.edit,
                 color: NOC.colors.edit,
-                tooltip: "Edit",
+                tooltip: __("Edit"),
                 scope: me,
                 handler: function(grid, rowIndex, colIndex) {
                     var me = this,
@@ -232,7 +232,7 @@ Ext.define("NOC.core.ModelApplication", {
                 {
                     glyph: NOC.glyph.search,
                     color: NOC.colors.preview,
-                    tooltip: "Preview",
+                    tooltip: __("Preview"),
                     scope: me,
                     handler: function(grid, rowIndex, colIndex) {
                         var me = this;
@@ -255,7 +255,7 @@ Ext.define("NOC.core.ModelApplication", {
                 {
                     glyph: NOC.glyph.search,
                     color: NOC.colors.preview,
-                    tooltip: "Preview",
+                    tooltip: __("Preview"),
                     scope: me,
                     handler: function(grid, rowIndex, colIndex) {
                         var me = this;
@@ -365,7 +365,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.saveButton = Ext.create("Ext.button.Button", {
             itemId: "save",
             text: __("Save"),
-            tooltip: "Save changes",
+            tooltip: __("Save changes"),
             glyph: NOC.glyph.save,
             formBind: true,
             disabled: true,
@@ -377,7 +377,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.closeButton = Ext.create("Ext.button.Button", {
             itemId: "close",
             text: __("Close"),
-            tooltip: "Close without saving",
+            tooltip: __("Close without saving"),
             glyph: NOC.glyph.arrow_left,
             scope: me,
             handler: me.onClose
@@ -386,7 +386,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.resetButton = Ext.create("Ext.button.Button", {
             itemId: "reset",
             text: __("Reset"),
-            tooltip: "Reset to default values",
+            tooltip: __("Reset to default values"),
             glyph: NOC.glyph.undo,
             disabled: true,
             scope: me,
@@ -396,7 +396,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.deleteButton = Ext.create("Ext.button.Button", {
             itemId: "delete",
             text: __("Delete"),
-            tooltip: "Delete object",
+            tooltip: __("Delete object"),
             glyph: NOC.glyph.times,
             disabled: true,
             hasAccess: NOC.hasPermission("delete"),
@@ -407,7 +407,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.cloneButton = Ext.create("Ext.button.Button", {
             itemId: "clone",
             text: __("Clone"),
-            tooltip: "Copy existing values to a new object",
+            tooltip: __("Copy existing values to a new object"),
             glyph: NOC.glyph.copy,
             disabled: true,
             hasAccess: NOC.hasPermission("create"),
@@ -428,7 +428,7 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.onPreview) {
             formToolbar.push({
                 text: __("View"),
-                tooltip: "Preview",
+                tooltip: __("Preview"),
                 glyph: NOC.glyph.eye,
                 // hasAccess:
                 scope: me,
@@ -1421,7 +1421,7 @@ Ext.define("NOC.core.ModelApplication", {
 
         me.actionMenu = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.download,
-            tooltip: "Group actions",
+            tooltip: __("Group actions"),
             hasAccess: NOC.hasPermission("update"),
             itemId: "action_menu",
             disabled: true,

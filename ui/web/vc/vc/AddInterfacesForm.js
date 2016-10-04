@@ -74,7 +74,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                             items: [
                                 {
                                     glyph: NOC.glyph.minus_circle,
-                                    tooltip: "Delete",
+                                    tooltip: __("Delete"),
                                     handler: me.onDeleteRecord
                                 }
                             ]

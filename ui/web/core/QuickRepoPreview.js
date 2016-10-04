@@ -93,14 +93,14 @@ Ext.define("NOC.core.QuickRepoPreview", {
         me.reloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
             text: __("Reload"),
-            tooltip: "Reload",
+            tooltip: __("Reload"),
             scope: me,
             handler: me.onReload
         });
 
         me.nextDiffButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.arrow_up,
-            tooltip: "Next change",
+            tooltip: __("Next change"),
             disabled: true,
             scope: me,
             handler: me.onNextDiff
@@ -108,7 +108,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
 
         me.prevDiffButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.arrow_down,
-            tooltip: "Previous change",
+            tooltip: __("Previous change"),
             disabled: true,
             scope: me,
             handler: me.onPrevDiff
@@ -116,7 +116,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
 
         me.swapRevButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.exchange,
-            tooltip: "Swap revisions",
+            tooltip: __("Swap revisions"),
             disabled: true,
             scope: me,
             handler: me.onSwapRev
@@ -124,7 +124,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
 
         me.lastDayButton = Ext.create("Ext.button.Button", {
             text: __("Day"),
-            tooltip: "Last day's changes",
+            tooltip: __("Last day's changes"),
             toogleGroup: "diffrange",
             scope: me,
             handler: me.onLastPressed,
@@ -133,7 +133,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
 
         me.lastWeekButton = Ext.create("Ext.button.Button", {
             text: __("Week"),
-            tooltip: "Last week's changes",
+            tooltip: __("Last week's changes"),
             toogleGroup: "diffrange",
             scope: me,
             handler: me.onLastPressed,
@@ -142,7 +142,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
 
         me.lastMonthButton = Ext.create("Ext.button.Button", {
             text: __("Month"),
-            tooltip: "Last month's changes",
+            tooltip: __("Last month's changes"),
             toogleGroup: "diffrange",
             scope: me,
             handler: me.onLastPressed,
