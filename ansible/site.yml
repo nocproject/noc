@@ -118,6 +118,13 @@
         - card
         - noc
 
+    - role: grafanads
+      when: "{{ has_svc_grafanads | default(False) }}"
+      tags:
+        - node
+        - grafanads
+        - noc
+
     - role: mailsender
       when: "{{ has_svc_mailsender | default(False) }}"
       tags:
