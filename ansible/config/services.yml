@@ -138,6 +138,10 @@ services:
     description: MRT worker
     level: global
 
+  grafanads:
+    description: Grafana DataSource
+    level: global
+
 config:
   noc:
     installation_name:
@@ -435,3 +439,9 @@ config:
       type: int
       label: Amount of concurrent tasks
       default: 50
+
+  grafanads:
+    db_threads:
+      type: int
+      label: Concurrent query limit per process
+      default: 10
