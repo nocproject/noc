@@ -3,9 +3,6 @@ Ext.application(
 	name: 'Report'
 	
 	requires: [
-		'Report.model.Gate'
-		'Report.model.API'
-		'Report.model.StoreField'
 		'Report.view.root.Main'
 		'Report.view.factory.V_0_1'
 		'Report.model.MainDataTree'
@@ -37,7 +34,7 @@ Ext.application(
             Аналог Ext.ComponentQuery.query
             @param {String} query Селектор.
         ###
-		Report.getCmp    = (query) -> Ext.ComponentQuery.query(query)[0]
+		Report.getCmp = (query) -> Ext.ComponentQuery.query(query)[0]
 			
 		@callParent arguments
 	
@@ -56,7 +53,7 @@ Ext.application(
 			windowHeightCenter = body.getHeight() / 2
 			loaderWidthCenter = 760 / 2
 			loaderHeightCenter = 176 / 2
-			decorativeTopMargin = 44
+			decorativeTopMargin = 10
 			startHideDelay = 1000
 			hideDuration = 1200
 			destroyDelay = 300

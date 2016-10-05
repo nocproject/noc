@@ -10,6 +10,8 @@ Ext.define 'Report.view.configurator.Type',
 			itemId: 'combo'
 			xtype: 'combobox'
 			fieldLabel: 'Тип'
+			width: 275
+			labelWidth: 70
 			queryMode: 'local'
 			displayField: 'name'
 			valueField: 'id'

@@ -1,0 +1,15 @@
+.library {
+	.x-dataview-item {
+		font-size: $font-size-header;
+		padding: 10px;
+	}
+
+	.delimiter-border {
+		border-right: 1px solid $color-black;
+	}
+
+	.description {
+		font-size: $font-size-header;
+		line-height: 1.1;
+	}
+}

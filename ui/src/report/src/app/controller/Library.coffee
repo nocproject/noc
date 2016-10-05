@@ -5,7 +5,7 @@ Ext.define 'Report.controller.Library',
 	extend: 'Ext.app.Controller'
 	id: 'library'
 	
-	control:
+	listen:
 		component:
 			'libraryMain #list':
 				select: 'updateDescription'
@@ -14,8 +14,11 @@ Ext.define 'Report.controller.Library',
 	
 		###
 			Обновляет данные описания выбранной сущности.
-			@param {Ext.view.View} list Список сущностей.
+			@param {Report.view.library.List} list Виджет списка сущностей.
 			@param {Ext.data.Record} record Данные сущности.
 		###
 		updateDescription: (list, record) ->
-			list.up('libraryMain').down('#description').setData record.getData()
+			description = list.up('libraryMain').down('#description')
+			data = record.getData()
+			
+			description.setDescription data.name, data.description

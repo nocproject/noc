@@ -5,6 +5,10 @@ Ext.define 'Report.view.configurator.Meta',
 	extend: 'Ext.container.Container'
 	xtype: 'configuratorMeta'
 	
+	defaults:
+		width: 275
+		labelWidth: 70
+	
 	items: [
 		{
 			itemId: 'name'

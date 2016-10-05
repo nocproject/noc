@@ -4,6 +4,18 @@
 Ext.define 'Report.controller.Dashboard',
 	extend: 'Ext.app.Controller'
 	id: 'dashboard'
+
+	###
+        @event refresh
+		Оповещает о необходимости полностью обновить отчет.
+		@param {Report.controller.Dashboard} this Контроллер.
+	###
+
+	###
+		Оповещает о необходимости добавления виджета.
+		@param {Report.controller.Dashboard} this Контроллер.
+		@param {Report.view.dashboard.AddWidget} button Кнопка добавления виджета.
+	###
 	
 	listen:
 		controller:
@@ -16,10 +28,12 @@ Ext.define 'Report.controller.Dashboard',
 				click: 'showWidgetLibrary'
 			'dashboardMain #configure':
 				click: 'configureDashboard'
+			'dashboardMain #close':
+				click: 'closeDashboard'
 			'dashboardLibrary #control #create':
 				click: 'createDashboard'
 			'dashboardLibrary #control #select':
-				click: 'addDashboard'
+				click: 'addDashboardFromLibrary'
 
 	privates:
 
@@ -34,12 +48,6 @@ Ext.define 'Report.controller.Dashboard',
 			@param {Report.view.dashboard.AddWidget} button Кнопка добавления виджета.
 		###
 		showWidgetLibrary: (button) ->
-			
-			###
-				Оповещает о необходимости добавления виджета.
-				@param {Report.controller.Dashboard} this Контроллер.
-				@param {Report.view.dashboard.AddWidget} button Кнопка добавления виджета.
-			###
 			@fireEvent 'addDashboardAction', @, button
 	
 		###
@@ -48,7 +56,7 @@ Ext.define 'Report.controller.Dashboard',
 		###
 		configureDashboard: (button) ->
 			Ext.create 'Report.view.dashboard.Configurator',
-				targetEntity: button.up 'dashboardConfigurator'
+				entityModel: button.up('dashboardMain').getModel()
 	
 		###
 			Показывает конфигуратор дашборда без начальных данных.
@@ -57,21 +65,20 @@ Ext.define 'Report.controller.Dashboard',
 			Ext.create 'Report.view.dashboard.Configurator'
 	
 		###
-			Добавляет дашборд.
+			Добавляет дашборд из библиотеки дашбордов.
 			@param {Ext.button.Button} button Кнопка добавления дашборда.
 		###
-		addDashboard: (button) ->
-			list = button.up('dashboardLibrary').down('#list')
+		addDashboardFromLibrary: (button) ->
+			library = button.up('dashboardLibrary')
+			list = library.down('#list')
 			dashboardData = list.getSelected()
 			
-			unless dashboardData then return
+			if dashboardData
+				dashboardData.set 'visible', true
 			
-			###
-				Оповещает о необходимости добавления дашборда.
-				@param {Report.controller.Dashboard} this Контроллер.
-				@param {Report.model.config.Dashboard} dashboardData Данные дашборда.
-			###
-			@fireEvent 'addDashboardAction', @, dashboardData
+				@fireEvent 'refresh', @
+				
+				library.hide()
 	
 		###
             Сохраняет дашборд.
@@ -82,15 +89,22 @@ Ext.define 'Report.controller.Dashboard',
 			dashboards = Report.model.MainDataTree.get('dashboards')
 			get = model.get.bind model
 			
+			dashboards.findRecord('active', true)?.set('active', false)
+			
 			dashboards.add {
 				name:        get 'name'
 				tags:        get 'tags'
 				description: get 'description'
 				filters:     get 'filters'
+				active:      true
+				visible:     false
 			}
+	
+		###
+            Закрывает текущий дашборд.
+			@param {Ext.button.Button} button Кнопка закрытия дашборда.
+		###
+		closeDashboard: (button) ->
+			button.up('dashboardMain').getModel().set 'visible', false
 			
-			###
-                Оповещает о необходимости полностью обновить отчет.
-                @param {Report.controller.Dashboard} this Контроллер.
-			###
 			@fireEvent 'refresh', @

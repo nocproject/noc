@@ -4,6 +4,12 @@
 Ext.define 'Report.model.configurator.Model',
 	extend: 'Ext.data.Model'
 	
+	requires: [
+		'Report.model.StoreField'
+		'Report.model.config.Column'
+		'Report.model.config.Filter'
+	]
+	
 	fields: [
 		{name: 'type',        type: 'string'}
 		{name: 'name',        type: 'string'}

@@ -8,16 +8,15 @@ Ext.define 'Report.controller.Root',
 	requires: [
 		'Report.view.dashboard.Library'
 		'Report.view.dashboard.Configurator'
-	]
-	
-	models: [
-		'config.Column'
-		'config.Dashboard'
-		'config.Filter'
-		'config.Root'
-		'config.Widget'
-		'query.Query'
-		'wellspring.List'
+		'Report.model.Gate'
+		'Report.model.API'
+		'Report.model.config.Column'
+		'Report.model.config.Dashboard'
+		'Report.model.config.Filter'
+		'Report.model.config.Root'
+		'Report.model.config.Widget'
+		'Report.model.query.Query'
+		'Report.model.wellspring.List'
 	]
 	
 	listen:
