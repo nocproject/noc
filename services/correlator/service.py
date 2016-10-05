@@ -26,6 +26,7 @@ from noc.fm.models import (ActiveEvent, EventClass,ActiveAlarm,
 from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
@@ -357,6 +358,8 @@ class CorrelatorService(Service):
                 "recommended_actions": a.alarm_class.recommended_actions,
                 "probable_causes": a.alarm_class.probable_causes
             }, delay=a.alarm_class.get_notification_delay())
+        # Gather diagnostics when necessary
+        AlarmDiagnosticConfig.on_raise(a)
         # Watch for escalations, when necessary
         if not a.root:
             AlarmEscalation.watch_escalations(a)

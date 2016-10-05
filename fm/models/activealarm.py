@@ -275,6 +275,8 @@ class ActiveAlarm(nosql.Document):
             )
         # Clear alarm
         self.delete()
+        # Gather diagnostics
+        AlarmDiagnosticConfig.on_clear(a)
         # Return archived
         return a
 
@@ -501,3 +503,4 @@ class ActiveAlarm(nosql.Document):
 ## Avoid circular references
 from archivedalarm import ArchivedAlarm
 from utils import get_alarm
+from alarmdiagnosticconfig import AlarmDiagnosticConfig
