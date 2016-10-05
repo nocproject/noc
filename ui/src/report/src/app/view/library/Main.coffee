@@ -11,6 +11,8 @@ Ext.define 'Report.view.library.Main',
 		'Report.view.library.List'
 	]
 	
+	cls: 'library'
+	
 	width: 900
 	height: 500
 	layout: 'hbox'
@@ -18,7 +20,7 @@ Ext.define 'Report.view.library.Main',
 	config:
 	
 		###
-			@cfg {Object} store Конфигурация стора для библиотеки.
+			@cfg {Object} store Конфигурация стора для библиотеки, может отсутствовать.
 		###
 		store: null
 	
@@ -27,6 +29,7 @@ Ext.define 'Report.view.library.Main',
 			itemId: 'list'
 			xtype: 'libraryList'
 			height: '100%'
+			cls: 'delimiter-border'
 			flex: 1
 		}
 		{
@@ -48,6 +51,7 @@ Ext.define 'Report.view.library.Main',
 	initComponent: () ->
 		@callParent arguments
 		
-		store = Ext.create 'Ext.data.Store', @getStore()
-		
-		@down('#list').setStore store
+		if @getStore()
+			store = Ext.create 'Ext.data.Store', @getStore()
+			
+			@down('#list').setStore store

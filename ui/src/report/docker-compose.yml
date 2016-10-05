@@ -19,7 +19,7 @@ services:
       - ./src/app:/code/app
       - ./src/sass:/code/sass
       - ./src/packages:/code/packages
-      - ./src/resources:/code/resources
+      - ./src/resources:/code/classic/resources
       - ./src/app.js:/code/app.js
       - ./src/app.json:/code/app.json
     volumes_from:

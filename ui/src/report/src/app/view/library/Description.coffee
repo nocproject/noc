@@ -9,11 +9,21 @@ Ext.define 'Report.view.library.Description',
 	
 	items: [
 		{
+			itemId: 'tpl'
 			xtype: 'component'
-			tpl: '
-				<div class="title">{name}</div>
-				<div class="description">{description}</div>
-			'
+			padding: 20
+			tpl: '<div class="description">{description}</div>'
 		}
 	]
+	
+	###
+		Устанавливает описание сущности.
+		@param {String} name Имя.
+		@param {String} description Описание.
+	###
+	setDescription: (name, description) ->
+		@down('#tpl').setData {
+			name
+			description
+		}
 		

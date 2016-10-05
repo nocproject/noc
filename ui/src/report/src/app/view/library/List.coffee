@@ -25,6 +25,11 @@ Ext.define 'Report.view.library.List',
 		}
 	]
 	
+	initComponent: () ->
+		@callParent arguments
+		
+		@on 'afterrender', @fireEventOnSelectEntity.bind @
+	
 	###
         Автоматический обработчик установки {@link #cfg-store}.
         Передает стор лежащему внутри вью, устанавливая его
@@ -41,9 +46,29 @@ Ext.define 'Report.view.library.List',
 	###
 	getSelected: () ->
 		@getListView().getSelectionModel().getSelection()[0] or null
+	
+	###
+		Выделяет свежесозданную сущность.
+	###
+	selectNew: () ->
+		@getListView().select @getStore().last()
 		
 	privates:
 		
+		###
+            Бросает эвент {@link #event-select} при выборе сущности в списке сущностей библиотеки.
+        ###
+		fireEventOnSelectEntity: () ->
+			@getListView().on 'select', (selection, record) =>
+				
+				###
+					@event select
+					Оповещает о выборе сущности в списке сущностей библиотеки.
+					@param {Report.view.library.List} this Виджет списка сущностей.
+					@param {Ext.data.Record} record Данные сущности.
+				###
+				@fireEvent 'select', @, record
+	
 		###
             @return {Ext.view.View} Вью выбора списка сущностей.
 		###

@@ -94,7 +94,12 @@ Ext.define 'Report.view.factory.V_0_1',
 			}
 			
 			@setDashboard dashboard
-			tabPanel.add dashboard
+			
+			if model.get 'visible'
+				tabPanel.add dashboard
+			
+				if model.get 'active'
+					tabPanel.setActiveTab dashboard
 		
 		###
 			Создание виджета.

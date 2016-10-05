@@ -22,11 +22,10 @@ Ext.define 'Report.view.configurator.Main',
 	config:
 	
 		###
-            Целевая сущность, которую будем конфигурировать.
-            Ожидается что сущность имеет метод getModel.
-            Может отсутствовать при создании новой сущности.
+            Модель сущности, которую конфигурируем.
+            Может отсутствовать если создается новая сущность.
         ###
-		targetEntity: null
+		entityModel: null
 	
 		###
 			@cfg {Boolean} displayType
@@ -46,14 +45,6 @@ Ext.define 'Report.view.configurator.Main',
         ###
 		enableWellspringCombo: false
 	
-	
-	###
-        Модель конфигурируемой сущности.
-        @property {Ext.data.Model} entityModel
-	###
-	entityModel: null
-	
-	
 	defaults:
 		height: '100%'
 		border: 1
@@ -64,7 +55,7 @@ Ext.define 'Report.view.configurator.Main',
 			xtype: 'container'
 			layout: 'vbox'
 			flex: 1
-			cls: 'configurator-main-delemiter-border'
+			cls: 'configurator-main-delimiter-border'
 			items: [
 				{
 					itemId: 'type'
@@ -85,7 +76,7 @@ Ext.define 'Report.view.configurator.Main',
 		{
 			itemId: 'wellspring'
 			xtype: 'configuratorWellspring'
-			cls: 'configurator-main-delemiter-border'
+			cls: 'configurator-main-delimiter-border'
 			flex: 1
 		}
 		{
@@ -110,8 +101,16 @@ Ext.define 'Report.view.configurator.Main',
 		if @getDisplaySize() then @down('#size').show()
 		if @getEnableWellspringCombo() then @down('#wellspring').enableCombo()
 	
-		@entityModel = @getTargetEntity()?.getModel()
+		model = @getEntityModel()
 		
-		@setTitle (@entityModel?.get 'name') or 'Новый'
-		
-		# TODO
+		if model
+			@setTitle model.get 'name'
+			
+			###
+                Оповещает о необходимости синхронизировать модель сущности и модель конфигуратора.
+                @param {'Report.view.configurator.Main'} this Конфигуратор.
+                @param {Ext.data.Model} model Модель сущности.
+			###
+			@fireEvent 'syncModels', @, model
+		else
+			@setTitle 'Новый'

@@ -83,6 +83,13 @@ Ext.define 'Report.view.dashboard.Main',
 					xtype: 'button'
 					iconCls: 'x-fa fa-gear'
 					text: 'Настроить'
+					margin: '2 10 0 0'
+				}
+				{
+					itemId: 'close'
+					xtype: 'button'
+					iconCls: 'x-fa fa-close'
+					text: 'Закрыть'
 				}
 			]
 		}

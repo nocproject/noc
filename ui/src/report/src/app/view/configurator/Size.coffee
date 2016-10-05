@@ -10,6 +10,8 @@ Ext.define 'Report.view.configurator.Size',
 		queryMode: 'local'
 		displayField: 'value'
 		valueField: 'value'
+		width: 275
+		labelWidth: 70
 		store:
 			fields: ['value']
 			data: [
