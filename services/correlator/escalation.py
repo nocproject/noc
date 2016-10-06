@@ -114,10 +114,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
         affected_objects = sorted(alarm.iter_affected(),
                                   key=operator.attrgetter("name"))
         #
-        if alarm.managed_object.is_redundant:
+        segment = alarm.managed_object.segment
+        if segment.is_redundant:
             uplinks = ObjectUplink.uplinks_for_object(alarm.managed_object)
             lost_redundancy = len(uplinks) > 1
-            segment = alarm.managed_object.segment
             affected_subscribers = summary_to_list(segment.total_subscribers, SubscriberProfile)
             affected_services = summary_to_list(segment.total_services, ServiceProfile)
         else:
