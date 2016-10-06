@@ -100,7 +100,7 @@ Ext.define("NOC.wf.workflow.Application", {
     ],
     inlines: [
         {
-            title: "Variables",
+            title: __("Variables"),
             model: "NOC.wf.workflow.VariablesModel",
             columns: [
                 {
@@ -137,7 +137,7 @@ Ext.define("NOC.wf.workflow.Application", {
             ]
         },
         {
-            title: "Lanes",
+            title: __("Lanes"),
             model: "NOC.wf.workflow.LanesModel",
             columns: [
                 {

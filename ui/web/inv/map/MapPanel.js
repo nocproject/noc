@@ -230,7 +230,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                 me.renderMap(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },
@@ -525,12 +525,12 @@ Ext.define("NOC.inv.map.MapPanel", {
             jsonData: r,
             scope: me,
             success: function(response) {
-                NOC.info("Map has been saved");
+                NOC.info(__("Map has been saved"));
                 me.isDirty = false;
                 me.app.saveButton.setDisabled(true);
             },
             failure: function() {
-                NOC.error("Failed to save data");
+                NOC.error(__("Failed to save data"));
             }
      });
     },
@@ -797,7 +797,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                 me.loadSegment(me.segmentId, forceSpring);
             },
             failure: function() {
-                NOC.error("Failed to reset layout");
+                NOC.error(__("Failed to reset layout"));
             }
         });
     },

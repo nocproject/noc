@@ -42,7 +42,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
     ],
     filters: [
         {
-            title: "By Event Class",
+            title: __("By Event Class"),
             name: "event_class",
             ftype: "lookup",
             lookup: "fm.eventclass"
@@ -210,7 +210,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
                 me.newRecord(data);
             },
             failure: function() {
-                NOC.error("Failed to create rule from event");
+                NOC.error(__("Failed to create rule from event"));
             }
         });
     },

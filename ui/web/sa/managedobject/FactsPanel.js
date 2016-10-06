@@ -120,7 +120,7 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
                 me.store.loadData(data);
             },
             failure: function() {
-                NOC.error("Failed to load data");
+                NOC.error(__("Failed to load data"));
             }
         });
     },
@@ -164,7 +164,7 @@ Ext.define("NOC.sa.managedobject.FactsPanel", {
                 if(data && data.success === false) {
                     NOC.error(data.message);
                 } else {
-                    NOC.error("Error getting validation results");
+                    NOC.error(__("Error getting validation results"));
                     console.log(response.responseText);
                 }
                 me.unmask();

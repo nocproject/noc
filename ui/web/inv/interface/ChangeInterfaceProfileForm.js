@@ -30,7 +30,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceProfileForm", {
         });
 
         Ext.apply(me, {
-            title: "Change " + me.record.get("name") + " profile",
+            title: __("Change") + " " + me.record.get("name") + " " + __("profile"),
             items: [
                 {
                     xtype: "form",
@@ -78,7 +78,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceProfileForm", {
                 me.close();
             },
             failure: function() {
-                NOC.error("Failed to change profile");
+                NOC.error(__("Failed to change profile"));
             }
         });
     }

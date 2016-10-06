@@ -84,7 +84,7 @@ Ext.define("NOC.gis.street.Application", {
     },
     filters: [
         {
-            title: "By Parent",
+            title: __("By Parent"),
             name: "parent",
             ftype: "lookup",
             lookup: "gis.division"

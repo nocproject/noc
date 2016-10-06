@@ -17,7 +17,7 @@ Ext.define("NOC.inv.connectionrule.Application", {
 
     actions: [
         {
-            title: "Get JSON",
+            title: __("Get JSON"),
             action: "json",
             glyph: NOC.glyph.file,
             resultTemplate: "JSON"
@@ -157,7 +157,7 @@ Ext.define("NOC.inv.connectionrule.Application", {
 
     filters: [
         {
-            title: "By Is Builtin",
+            title: __("By Is Builtin"),
             name: "is_builtin",
             ftype: "boolean"
         }

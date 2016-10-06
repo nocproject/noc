@@ -131,7 +131,7 @@ Ext.define("NOC.fm.mib.Application", {
                 me.treeStore.setRootNode(data);
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },

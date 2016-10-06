@@ -105,7 +105,7 @@ Ext.define("NOC.gis.layer.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Zoom",
+                    title: __("Zoom"),
                     layout: "hbox",
                     items: [
                         {
@@ -133,7 +133,7 @@ Ext.define("NOC.gis.layer.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Style",
+                    title: __("Style"),
                     items: [
                         {
                             name: "stroke_color",
@@ -157,7 +157,7 @@ Ext.define("NOC.gis.layer.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Point Style",
+                    title: __("Point Style"),
                     items: [
                         {
                             name: "point_radius",
@@ -187,7 +187,7 @@ Ext.define("NOC.gis.layer.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Line Style",
+                    title: __("Line Style"),
                     items: [
                         {
                             name: "stroke_dashstyle",
@@ -206,7 +206,7 @@ Ext.define("NOC.gis.layer.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Text Style",
+                    title: __("Text Style"),
                     items: [
                         {
                             name: "show_labels",

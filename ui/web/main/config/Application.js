@@ -124,7 +124,7 @@ Ext.define("NOC.main.config.Application", {
             scope: me,
             success: me.onGetConfigList,
             failure: function() {
-                NOC.error("Failed to get configs list");
+                NOC.error(__("Failed to get configs list"));
             }
         });
     },
@@ -144,7 +144,7 @@ Ext.define("NOC.main.config.Application", {
             scope: me,
             success: me.onConfigLoad,
             failure: function() {
-                NOC.error("Failed to get config");
+                NOC.error(__("Failed to get config"));
                 me.resetAll();
             }
         });
@@ -191,10 +191,10 @@ Ext.define("NOC.main.config.Application", {
             jsonData: data,
             success: function() {
                 this.loadConfig();
-                NOC.info("Config saved");
+                NOC.info(__("Config saved"));
             },
             failure: function() {
-                NOC.error("Failed to save config");
+                NOC.error(__("Failed to save config"));
             }
         });
     },

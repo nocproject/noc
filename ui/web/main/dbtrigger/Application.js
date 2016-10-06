@@ -126,7 +126,7 @@ Ext.define("NOC.main.dbtrigger.Application", {
     ],
     filters: [
         {
-            title: "By Active",
+            title: __("By Active"),
             name: "is_active",
             ftype: "boolean"
         }

@@ -26,7 +26,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
 
         me.paramsGrid = Ext.create("Ext.grid.property.Grid", {
             width: 288,
-            title: "Params",
+            title: __("Params"),
             source: {
             }
         });

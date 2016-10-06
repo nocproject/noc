@@ -66,7 +66,7 @@ Ext.define("NOC.fm.ignoreeventrule.Application", {
     ],
     filters: [
         {
-            title: "By Is Active",
+            title: __("By Is Active"),
             name: "is_active",
             ftype: "boolean"
         }

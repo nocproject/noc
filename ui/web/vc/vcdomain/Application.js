@@ -92,18 +92,18 @@ Ext.define("NOC.vc.vcdomain.Application", {
     ],
     filters: [
         {
-            title: "By VC Type",
+            title: __("By VC Type"),
             name: "type",
             ftype: "lookup",
             lookup: "vc.vctype"
         },
         {
-            title: "By Provisioning",
+            title: __("By Provisioning"),
             name: "enable_provisioning",
             ftype: "boolean"
         },
         {
-            title: "By Bind Filter",
+            title: __("By Bind Filter"),
             name: "enable_vc_bind_filter",
             ftype: "boolean"
         }

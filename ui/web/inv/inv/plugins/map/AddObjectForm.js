@@ -59,7 +59,7 @@ Ext.define("NOC.inv.inv.plugins.map.AddObjectForm", {
         });
 
         Ext.apply(me, {
-            title: "Create new " + me.objectModelName,
+            title: __("Create new") + " " + me.objectModelName,
             items: [me.form]
         });
         me.callParent();
@@ -94,7 +94,7 @@ Ext.define("NOC.inv.inv.plugins.map.AddObjectForm", {
                 me.app.app.showObject(data.id, true);
             },
             failure: function() {
-                NOC.error("Failed to save");
+                NOC.error(__("Failed to save"));
             }
         });
     }

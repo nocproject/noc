@@ -10,7 +10,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
     extend: "Ext.panel.Panel",
     requires: [
     ],
-    title: "Conduits",
+    title: __("Conduits"),
     closable: false,
     layout: {
         type: "hbox",
@@ -207,7 +207,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
                 w.show();
             },
             failure: function() {
-                NOC.error("Failed to get neighbors");
+                NOC.error(__("Failed to get neighbors"));
             }
         })
     },
@@ -225,7 +225,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
             selection = sm.getSelection(),
             remoteId = selection[0].get("target_id");
         Ext.Msg.show({
-            title: "Remove conduits to " + selection[0].get("target_name") + "?",
+            title: __("Remove conduits to") + " " + selection[0].get("target_name") + "?",
             msg: "Would you like to remove conduits?",
             buttons: Ext.Msg.YESNO,
             glyph: NOC.glyph.question_circle,
@@ -286,7 +286,7 @@ Ext.define("NOC.inv.inv.plugins.conduits.ConduitsForm", {
                 me.reload();
             },
             failure: function() {
-                NOC.error("Failed to save conduits");
+                NOC.error(__("Failed to save conduits"));
             }
         });
     },

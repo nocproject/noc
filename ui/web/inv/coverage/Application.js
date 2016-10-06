@@ -41,7 +41,7 @@ Ext.define("NOC.inv.coverage.Application", {
     ],
     inlines: [
         {
-            title: "Covered Buildings",
+            title: __("Covered Buildings"),
             model: "NOC.inv.coverage.BuildingModel",
             columns: [
                 {
@@ -65,7 +65,7 @@ Ext.define("NOC.inv.coverage.Application", {
             ]
         },
         {
-            title: "Covered Objects",
+            title: __("Covered Objects"),
             model: "NOC.inv.coverage.ObjectModel",
             columns: [
                 {

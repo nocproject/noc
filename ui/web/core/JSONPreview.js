@@ -138,7 +138,7 @@ Ext.define("NOC.core.JSONPreview", {
                 me.installButton.setDisabled(!record.get("uuid"));
             },
             failure: function() {
-                NOC.error("Failed to get JSON")
+                NOC.error(__("Failed to get JSON"))
             }
         });
     },
@@ -151,7 +151,7 @@ Ext.define("NOC.core.JSONPreview", {
     onInstallJSON: function() {
         var me = this;
         Ext.Msg.show({
-            title: "Add to collections?",
+            title: __("Add to collections?"),
             msg: Ext.String.format("Would you like to add object to your local {0} collection?", me.app.noc.collection),
             buttons: Ext.Msg.YESNO,
             modal: true,
@@ -162,7 +162,7 @@ Ext.define("NOC.core.JSONPreview", {
                         method: "POST",
                         scope: me,
                         failure: function() {
-                            NOC.error("Failed to save JSON");
+                            NOC.error(__("Failed to save JSON"));
                         }
                     });
                 }

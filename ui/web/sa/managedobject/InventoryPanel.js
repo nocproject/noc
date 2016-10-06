@@ -104,7 +104,7 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
                 me.store.setRootNode(data || me.defaultRoot)
             },
             failure: function() {
-                NOC.error("Failed to load data");
+                NOC.error(__("Failed to load data"));
             }
         });
     },

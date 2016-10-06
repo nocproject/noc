@@ -82,7 +82,7 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
                 me.scriptStore.loadData(data || []);
             },
             failure: function() {
-                NOC.error("Failed to load data");
+                NOC.error(__("Failed to load data"));
             }
         });
     },
@@ -119,7 +119,7 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
             },
             failure: function() {
                 me.loadMask.hide();
-                NOC.error("Failed to run script");
+                NOC.error(__("Failed to run script"));
             }
         });
     },

@@ -79,7 +79,7 @@ Ext.define("NOC.fm.eventclass.Application", {
                     },
                     items: [
                         {
-                            title: "Text",
+                            title: __("Text"),
                             items: [
                                 {
                                     name: "description",
@@ -125,7 +125,7 @@ Ext.define("NOC.fm.eventclass.Application", {
                             ]
                         },
                         {
-                            title: "Action",
+                            title: __("Action"),
                             items: [
                                 {
                                     name: "action",
@@ -145,7 +145,7 @@ Ext.define("NOC.fm.eventclass.Application", {
                             ]
                         },
                         {
-                            title: "Variables",
+                            title: __("Variables"),
                             items: [
                                 {
                                     name: "vars",
@@ -190,7 +190,7 @@ Ext.define("NOC.fm.eventclass.Application", {
                             ]
                         },
                         {
-                            title: "Disposition",
+                            title: __("Disposition"),
                             items: [
                                 {
                                     name: "disposition",
@@ -255,7 +255,7 @@ Ext.define("NOC.fm.eventclass.Application", {
                             ]
                         },
                         {
-                            title: "Suppression",
+                            title: __("Suppression"),
                             items: [
                                 {
                                     name: "deduplication_window",
@@ -320,7 +320,7 @@ Ext.define("NOC.fm.eventclass.Application", {
                             ]
                         },
                         {
-                            title: "Handlers",
+                            title: __("Handlers"),
                             items: [
                                 {
                                     xtype: "stringsfield",
@@ -330,7 +330,7 @@ Ext.define("NOC.fm.eventclass.Application", {
                             ]
                         },
                         {
-                            title: "Plugins",
+                            title: __("Plugins"),
                             items: [
                                 {
                                     xtype: "gridfield",
@@ -378,7 +378,7 @@ Ext.define("NOC.fm.eventclass.Application", {
     },
     filters: [
         {
-            title: "By Link Event",
+            title: __("By Link Event"),
             name: "link_event",
             ftype: "boolean"
         }

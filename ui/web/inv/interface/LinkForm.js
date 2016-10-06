@@ -87,7 +87,7 @@ Ext.define("NOC.inv.interface.LinkForm", {
                 me.store.loadData(data);
             },
             failure: function() {
-                NOC.error("Failed to get interfaces list");
+                NOC.error(__("Failed to get interfaces list"));
             }
         });
     },
@@ -109,7 +109,7 @@ Ext.define("NOC.inv.interface.LinkForm", {
                 me.close();
             },
             failure: function() {
-                NOC.error("Failed to connect interfaces");
+                NOC.error(__("Failed to connect interfaces"));
             }
         });
     },

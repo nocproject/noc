@@ -596,7 +596,7 @@ Ext.define("NOC.core.SAApplication", {
             me.progressBackButton.setDisabled(false);
         };
         xhr.onerror = function() {
-            NOC.error("Error!");
+            NOC.error(__("Error!"));
             me.progressReportButton.setDisabled(false);
             me.progressBackButton.setDisabled(false);
         };

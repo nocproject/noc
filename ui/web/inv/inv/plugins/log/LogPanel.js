@@ -11,7 +11,7 @@ Ext.define("NOC.inv.inv.plugins.log.LogPanel", {
     requires: [
         "NOC.inv.inv.plugins.log.LogModel"
     ],
-    title: "Log",
+    title: __("Log"),
     closable: false,
     layout: "fit",
 
@@ -90,7 +90,7 @@ Ext.define("NOC.inv.inv.plugins.log.LogPanel", {
                 me.preview(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     }

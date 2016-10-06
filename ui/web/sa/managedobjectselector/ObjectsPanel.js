@@ -108,7 +108,7 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
                 me.totalField.setValue(__("Total: ") + data.length);
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     }

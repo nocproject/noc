@@ -9,7 +9,7 @@ console.debug("Defining NOC.support.account.SystemPanel");
 Ext.define("NOC.support.account.SystemPanel", {
     extend: "Ext.panel.Panel",
     app: null,
-    title: "System",
+    title: __("System"),
     layout: "fit",
     autoScroll: true,
     closable: false,

@@ -114,7 +114,7 @@ Ext.define("NOC.core.Preview", {
                 me.renderText(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to get text");
+                NOC.error(__("Failed to get text"));
             }
         });
     },

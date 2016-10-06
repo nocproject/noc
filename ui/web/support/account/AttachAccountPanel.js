@@ -8,7 +8,7 @@ console.debug("Defining NOC.support.account.AttachAccountPanel");
 
 Ext.define("NOC.support.account.AttachAccountPanel", {
     extend: "Ext.Window",
-    title: "Attach existing account",
+    title: __("Attach existing account"),
     layout: "fit",
     autoShow: true,
     draggable: false,

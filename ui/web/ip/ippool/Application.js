@@ -132,13 +132,13 @@ Ext.define("NOC.ip.ippool.Application", {
     },
     filters: [
         {
-            title: "By Termination Group",
+            title: __("By Termination Group"),
             name: "termination_group",
             ftype: "lookup",
             lookup: "sa.terminationgroup"
         },
         {
-            title: "By VRF",
+            title: __("By VRF"),
             name: "vrf",
             ftype: "lookup",
             lookup: "ip.vrf"

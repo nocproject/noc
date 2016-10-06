@@ -54,19 +54,19 @@ Ext.define("NOC.sa.useraccess.Application", {
     ],
     filters: [
         {
-            title: "By User",
+            title: __("By User"),
             name: "user",
             ftype: "lookup",
             lookup: "main.user"
         },
         {
-            title: "By Selector",
+            title: __("By Selector"),
             name: "selector",
             ftype: "lookup",
             lookup: "sa.managedobjectselector"
         },
         {
-            title: "By Administrative Domain",
+            title: __("By Administrative Domain"),
             name: "administrative_domain",
             ftype: "lookup",
             lookup: "sa.administrativedomain"

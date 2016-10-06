@@ -162,22 +162,22 @@ Ext.define("NOC.main.customfield.Application", {
     ],
     filters: [
         {
-            title: "By Active",
+            title: __("By Active"),
             name: "is_active",
             ftype: "boolean"
         },
         {
-            title: "By Searchable",
+            title: __("By Searchable"),
             name: "is_searchable",
             ftype: "boolean"
         },
         {
-            title: "By Filtered",
+            title: __("By Filtered"),
             name: "is_filtered",
             ftype: "boolean"
         },
         {
-            title: "By Hidden",
+            title: __("By Hidden"),
             name: "is_hidden",
             ftype: "boolean"
         }

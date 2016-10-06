@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.interface.L1Panel");
 Ext.define("NOC.inv.interface.L1Panel", {
     extend: "Ext.panel.Panel",
     uses: [],
-    title: "Physical",
+    title: __("Physical"),
     closable: false,
     layout: "fit",
     rowClassField: "row_class",
@@ -138,7 +138,7 @@ Ext.define("NOC.inv.interface.L1Panel", {
     unlinkInterface: function(ifaceId, ifaceName) {
         var me = this;
         Ext.Msg.show({
-            title: "Unlink interface",
+            title: __("Unlink interface"),
             msg: Ext.String.format("Do you wish to unlink interface {0}?", ifaceName),
             buttons: Ext.Msg.YESNO,
             icon: Ext.window.MessageBox.QUESTION,
@@ -167,7 +167,7 @@ Ext.define("NOC.inv.interface.L1Panel", {
     linkInterface: function(ifaceId, ifaceName) {
         var me = this;
         Ext.create("NOC.inv.interface.LinkForm", {
-            title: Ext.String.format("Link {0} with", ifaceName),
+            title: Ext.String.format(__("Link" + " {0} " + __("with"), ifaceName),
             app: me.app,
             ifaceId: ifaceId
         });

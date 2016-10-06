@@ -90,7 +90,7 @@ Ext.define("NOC.core.ModelStore", {
                 params: Ext.apply({}, me.filterParams),
                 callback: function(records, operation, success) {
                     if(!success) {
-                        NOC.error("Failed to fetch data!");
+                        NOC.error(__("Failed to fetch data!"));
                     }
                 }
             }, config);
