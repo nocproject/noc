@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-10-04 13:15+0500\n"
-"PO-Revision-Date: 2016-10-04 14:40+0500\n"
+"POT-Creation-Date: 2016-10-06 07:59+0500\n"
+"PO-Revision-Date: 2016-10-06 11:12+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -285,7 +285,7 @@ msgid "Alarm Detail"
 msgstr "Детали аварии"
 
 #: services/web/apps/fm/reportavailability/views.py:22
-#: services/web/apps/fm/reportoutages/views.py:109
+#: services/web/apps/fm/reportoutages/views.py:114
 msgid "Availability"
 msgstr "Доступность"
 
@@ -293,78 +293,63 @@ msgstr "Доступность"
 msgid "Classification Quality"
 msgstr "Качество классификации"
 
-#: services/web/apps/fm/reportescalations/views.py:25
-#: services/web/apps/fm/reportoutages/views.py:26
-#: services/web/apps/fm/reportreboots/views.py:23
+#: services/web/apps/fm/reportescalations/views.py:26
+#: services/web/apps/fm/reportoutages/views.py:27
+#: services/web/apps/fm/reportreboots/views.py:25
 msgid "Range"
 msgstr "Диапазон"
 
-#: services/web/apps/fm/reportescalations/views.py:26
-#: services/web/apps/fm/reportoutages/views.py:27
-#: services/web/apps/fm/reportreboots/views.py:24
+#: services/web/apps/fm/reportescalations/views.py:27
+#: services/web/apps/fm/reportoutages/views.py:28
+#: services/web/apps/fm/reportreboots/views.py:26
 msgid "1 day"
 msgstr "1 день"
 
-#: services/web/apps/fm/reportescalations/views.py:27
-#: services/web/apps/fm/reportoutages/views.py:28
-#: services/web/apps/fm/reportreboots/views.py:25
+#: services/web/apps/fm/reportescalations/views.py:28
+#: services/web/apps/fm/reportoutages/views.py:29
+#: services/web/apps/fm/reportreboots/views.py:27
 msgid "1 week"
 msgstr "1 неделя"
 
-#: services/web/apps/fm/reportescalations/views.py:28
-#: services/web/apps/fm/reportoutages/views.py:29
-#: services/web/apps/fm/reportreboots/views.py:26
+#: services/web/apps/fm/reportescalations/views.py:29
+#: services/web/apps/fm/reportoutages/views.py:30
+#: services/web/apps/fm/reportreboots/views.py:28
 msgid "1 month"
 msgstr "1 месяц"
 
-#: services/web/apps/fm/reportescalations/views.py:41
+#: services/web/apps/fm/reportescalations/views.py:42
 msgid "Escalations"
 msgstr "Эскалации"
 
-#: services/web/apps/fm/reportescalations/views.py:87
+#: services/web/apps/fm/reportescalations/views.py:91
 msgid "Timestamp"
 msgstr "Время"
 
-#: services/web/apps/fm/reportescalations/views.py:88
+#: services/web/apps/fm/reportescalations/views.py:92
 msgid "Escalation Timestamp"
 msgstr "Время эскалации"
 
-#: services/web/apps/fm/reportescalations/views.py:89
-#: services/web/apps/fm/reportoutages/views.py:105
-#: services/web/apps/fm/reportreboots/views.py:94
+#: services/web/apps/fm/reportescalations/views.py:93
+#: services/web/apps/fm/reportoutages/views.py:110
+#: services/web/apps/fm/reportreboots/views.py:108
 #: services/web/apps/sa/reportfaileddiscovery/views.py:69
 msgid "Managed Object"
 msgstr "Объекты управления"
 
-#: services/web/apps/fm/reportescalations/views.py:90
-#: services/web/apps/fm/reportoutages/views.py:105
-#: services/web/apps/fm/reportreboots/views.py:94
-#: services/web/apps/ip/ipam/views.py:822
-#: services/web/apps/sa/reportfaileddiscovery/views.py:69
-msgid "Address"
-msgstr "Адрес"
-
-#: services/web/apps/fm/reportescalations/views.py:91
-#: services/web/apps/fm/reportoutages/views.py:105
-#: services/web/apps/sa/reportobjectsummary/views.py:74
-#: services/web/apps/sa/reportobjectsummary/views.py:80
-msgid "Platform"
-msgstr "Платформа"
-
-#: services/web/apps/fm/reportescalations/views.py:92
+#: services/web/apps/fm/reportescalations/views.py:96
 msgid "Segment"
 msgstr "Сегмент"
 
-#: services/web/apps/fm/reportescalations/views.py:93
+#: services/web/apps/fm/reportescalations/views.py:97
 msgid "TT"
 msgstr ""
 
-#: services/web/apps/fm/reportescalations/views.py:94
+#: services/web/apps/fm/reportescalations/views.py:98
 msgid "Objects"
 msgstr "Объекты"
 
 #: services/web/apps/crm/subscriber/views.py:20
-#: services/web/apps/fm/reportescalations/views.py:95
+#: services/web/apps/fm/reportescalations/views.py:99
 msgid "Subscribers"
 msgstr "Абоненты"
 
@@ -402,27 +387,27 @@ msgstr "Ошибочные MIB"
 
 #: services/web/apps/fm/outage/views.py:15
 #: services/web/apps/fm/outage/views.py:16
-#: services/web/apps/fm/reportoutages/views.py:42
+#: services/web/apps/fm/reportoutages/views.py:43
 msgid "Outages"
 msgstr "Оперативная обстановка"
 
 #: services/web/apps/fm/reportclassificationrule/views.py:21
-#: services/web/apps/fm/reportoutages/views.py:105
-#: services/web/apps/sa/reportobjectsummary/views.py:42
-#: services/web/apps/sa/reportobjectsummary/views.py:53
-#: services/web/apps/sa/reportobjectsummary/views.py:74
+#: services/web/apps/fm/reportoutages/views.py:110
+#: services/web/apps/sa/reportobjectsummary/views.py:55
+#: services/web/apps/sa/reportobjectsummary/views.py:68
+#: services/web/apps/sa/reportobjectsummary/views.py:91
 msgid "Profile"
 msgstr "Профиль"
 
-#: services/web/apps/fm/reportoutages/views.py:106
+#: services/web/apps/fm/reportoutages/views.py:111
 msgid "Managed"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:108
+#: services/web/apps/fm/reportoutages/views.py:113
 msgid "Downtime"
-msgstr ""
+msgstr "Время простоя"
 
-#: services/web/apps/fm/reportoutages/views.py:110
+#: services/web/apps/fm/reportoutages/views.py:115
 msgid "Downs"
 msgstr ""
 
@@ -430,8 +415,8 @@ msgstr ""
 msgid "Overlapped MIB OIDs"
 msgstr "Пересекающиеся OID"
 
-#: services/web/apps/fm/reportreboots/views.py:39
-#: services/web/apps/fm/reportreboots/views.py:95
+#: services/web/apps/fm/reportreboots/views.py:41
+#: services/web/apps/fm/reportreboots/views.py:109
 msgid "Reboots"
 msgstr "Перезагрузки"
 
@@ -642,11 +627,46 @@ msgstr "Нет линков"
 msgid "No uplinks"
 msgstr "Нет аплинков"
 
-#: services/web/apps/inv/reportobjectsserial/views.py:27
+#: services/web/apps/inv/reportobjectsserial/views.py:23
 #: services/web/apps/sa/managedobjectselector/views.py:21
 #: services/web/apps/sa/managedobjectselector/views.py:22
 msgid "Managed Object Selector"
 msgstr "Селекторы"
+
+#: services/web/apps/inv/reportobjectsserial/views.py:29
+msgid "Managed Object Serial Number"
+msgstr "Серийные номера."
+
+#: services/web/apps/inv/reportobjectsserial/views.py:41
+msgid "SW Version"
+msgstr "Версия ПО"
+
+#: services/web/apps/inv/reportobjectsserial/views.py:41
+msgid "Serial"
+msgstr "Серийный номер"
+
+#: services/web/apps/fm/reportescalations/views.py:94
+#: services/web/apps/fm/reportoutages/views.py:110
+#: services/web/apps/fm/reportreboots/views.py:108
+#: services/web/apps/inv/reportobjectsserial/views.py:41
+#: services/web/apps/ip/ipam/views.py:822
+#: services/web/apps/sa/reportfaileddiscovery/views.py:69
+msgid "Address"
+msgstr "Адрес"
+
+#: services/web/apps/fm/reportescalations/views.py:95
+#: services/web/apps/fm/reportoutages/views.py:110
+#: services/web/apps/inv/reportobjectsserial/views.py:41
+#: services/web/apps/sa/reportobjectsummary/views.py:91
+#: services/web/apps/sa/reportobjectsummary/views.py:97
+msgid "Platform"
+msgstr "Платформа"
+
+#: services/web/apps/inv/reportobjectsserial/views.py:41
+#: services/web/apps/sa/managedobject/views.py:57
+#: services/web/apps/sa/managedobject/views.py:58
+msgid "Managed Objects"
+msgstr "Список объектов"
 
 #: services/web/apps/inv/reportobjectsummary/views.py:17
 msgid "Inventory Object Summary"
@@ -825,7 +845,7 @@ msgstr "Адрес уже существует"
 
 #: services/web/apps/ip/ipam/views.py:901
 msgid "Invalid Managed Object"
-msgstr "Неверный управляемый объект"
+msgstr "Неверный объект"
 
 #: services/web/apps/ip/ipam/views.py:930 services/web/apps/ip/ipam/views.py:1047
 #: services/web/apps/ip/ipam/views.py:1129
@@ -1041,7 +1061,7 @@ msgstr "База знаний"
 
 #: services/web/apps/main/__init__.py:11
 msgid "Main"
-msgstr "Главное"
+msgstr "Основное"
 
 #: services/web/apps/main/audittrail/views.py:19
 #: services/web/apps/main/audittrail/views.py:20
@@ -1275,6 +1295,9 @@ msgid ""
 "Raw passwords are not stored, so there is no way to see this user's password, "
 "but you can change the password using <a href=\"password/\">this form</a>."
 msgstr ""
+"В открытом виде пароль не хранится, поэтому вы не можете увидеть пароль этого "
+"пользователя, но вы можете изменить пароль, используя <a href=\"password/"
+"\">эту форму</a>."
 
 #: services/web/apps/main/user/views.py:58
 msgid "Personal info"
@@ -1326,7 +1349,7 @@ msgstr "Типы РНР"
 
 #: services/web/apps/peer/__init__.py:13
 msgid "Peering Management"
-msgstr ""
+msgstr "Управление ПИРами"
 
 #: services/web/apps/peer/asset/views.py:21
 #: services/web/apps/peer/asset/views.py:22
@@ -1346,7 +1369,7 @@ msgstr "Типы community"
 #: services/web/apps/peer/maintainer/views.py:21
 #: services/web/apps/peer/maintainer/views.py:22
 msgid "Maintainers"
-msgstr ""
+msgstr "Специалист по эксплуатации"
 
 #: services/web/apps/peer/organisation/views.py:19
 #: services/web/apps/peer/organisation/views.py:20
@@ -1511,7 +1534,7 @@ msgstr "Типы метрик"
 
 #: services/web/apps/project/__init__.py:12
 msgid "Project Management"
-msgstr "Управление проектом"
+msgstr "Управление проектами"
 
 #: services/web/apps/ip/ipam/views.py:458 services/web/apps/ip/ipam/views.py:460
 #: services/web/apps/ip/ipam/views.py:648 services/web/apps/ip/ipam/views.py:650
@@ -1577,11 +1600,6 @@ msgstr "Права групп"
 msgid "MAC Report"
 msgstr "Отчет по MAC"
 
-#: services/web/apps/sa/managedobject/views.py:57
-#: services/web/apps/sa/managedobject/views.py:58
-msgid "Managed Objects"
-msgstr "Список объектов"
-
 #: services/web/apps/sa/managedobjectprofile/views.py:19
 msgid "Managed Object Profile"
 msgstr "Профиль объекта"
@@ -1641,45 +1659,45 @@ msgid "Failed Scripts"
 msgstr "Сбои скриптов"
 
 #: services/web/apps/fm/reporteventsummary/views.py:22
-#: services/web/apps/sa/reportobjectsummary/views.py:19
+#: services/web/apps/sa/reportobjectsummary/views.py:20
 msgid "By Profile"
 msgstr "По профилю"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:20
+#: services/web/apps/sa/reportobjectsummary/views.py:21
 msgid "By Administrative Domain"
 msgstr "По З.О."
 
-#: services/web/apps/sa/reportobjectsummary/views.py:21
+#: services/web/apps/sa/reportobjectsummary/views.py:22
 msgid "By Administrative Domain and Profile"
 msgstr "По З.О. и профилю"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:22
+#: services/web/apps/sa/reportobjectsummary/views.py:23
 msgid "By Tags"
 msgstr "По тегам"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:23
+#: services/web/apps/sa/reportobjectsummary/views.py:24
 msgid "By Platform"
 msgstr "По платформе"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:24
+#: services/web/apps/sa/reportobjectsummary/views.py:25
 msgid "By Version"
 msgstr "По версии"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:36
+#: services/web/apps/sa/reportobjectsummary/views.py:37
 msgid "Managed Objects Summary"
 msgstr "Сводка по объектам"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:46
-#: services/web/apps/sa/reportobjectsummary/views.py:53
+#: services/web/apps/sa/reportobjectsummary/views.py:60
+#: services/web/apps/sa/reportobjectsummary/views.py:68
 msgid "Administrative Domain"
 msgstr "Зона ответственности"
 
 #: services/web/apps/main/tag/views.py:19
-#: services/web/apps/sa/reportobjectsummary/views.py:60
+#: services/web/apps/sa/reportobjectsummary/views.py:76
 msgid "Tag"
 msgstr "Тег"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:80
+#: services/web/apps/sa/reportobjectsummary/views.py:97
 msgid "Version"
 msgstr "Версия"
 
@@ -1727,12 +1745,12 @@ msgstr "Тип устройства не определён, по различн
 msgid "PP"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:107
+#: services/web/apps/fm/reportoutages/views.py:112
 #: services/web/apps/sa/reportprofilechecksummary/views.py:63
 msgid "Status"
 msgstr "Состояние"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:91
+#: services/web/apps/sa/reportobjectsummary/views.py:108
 #: services/web/apps/sa/reportprofilechecksummary/views.py:64
 msgid "Quantity"
 msgstr "Количество"
