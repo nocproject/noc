@@ -43,21 +43,15 @@ Ext.define 'Report.view.configurator.filters.Main',
 					dataIndex: 'column'
 					text: 'Колонка'
 					flex: 1
-					editor: [
-						{
-							xtype: 'configuratorFiltersColumnCombo'
-						}
-					]
+					editor:
+						xtype: 'configuratorFiltersColumnCombo'
 				}
 				{
 					dataIndex: 'type'
 					text: 'Тип фильтра'
 					flex: 1
-					editor: [
-						{
-							xtype: 'configuratorFiltersTypeCombo'
-						}
-					]
+					editor:
+						xtype: 'configuratorFiltersTypeCombo'
 				}
 				{
 					xtype: 'actioncolumn'
