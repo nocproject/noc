@@ -7,16 +7,18 @@ Ext.define 'Report.view.configurator.filters.TypeCombo',
 	
 	allowBlank: false
 	queryMode: 'local'
-	displayField: 'title'
-	valueField: 'type'
+	displayField: 'name'
+	valueField: 'name'
 	
 	store:
-		fields: ['type', 'title']
+		fields: ['name']
 		data: [
-			{type: 'eq',  title: '='      }
-			{type: 'gt',  title: '>'      }
-			{type: 'gte', title: '> или ='}
-			{type: 'lt',  title: '<'      }
-			{type: 'lte', title: '< или ='}
-			{type: 'btw', title: 'между'  }
+			{name: '= (равно)'                }
+			{name: '!= (не равно)'            }
+			{name: '> (больше)'               }
+			{name: '< (меньше)'               }
+			{name: '>= (больше или равно)'    }
+			{name: '<= (меньше или равно)'    }
+			{name: 'r (регулярное выражение)' }
+			{name: 'p (взять из дашборда)'    }
 		]
