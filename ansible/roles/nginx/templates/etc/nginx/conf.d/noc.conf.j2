@@ -100,6 +100,7 @@ server {
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
     add_header X-Content-Type-Options nosniff;
     add_header X-Backend-Server $upstream_addr;
+    add_header X-Front-Server $hostname;
     ssl_stapling on;
     ssl_stapling_verify on;
 
