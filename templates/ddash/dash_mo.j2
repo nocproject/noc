@@ -29,15 +29,15 @@
   },
   "templating": {
     "list": [
+      {% for port_type in port_types -%}
+        {% from 'template_port.j2' import ports -%}
+        {{ comma() }}{{ ports(port_type) }}
+      {% endfor -%},
       {% include "template_device.j2" with context -%},
       {% include "template_vendor.j2" with context -%},
       {% include "template_platform.j2" with context -%},
       {% include "template_device_id.j2" with context -%},
-      {% include "template_ip_info.j2" with context -%},
-      {% for port_type in port_types -%}
-        {% from 'template_port.j2' import ports -%}
-        {{ comma() }}{{ ports(port_type) }}
-      {% endfor -%}
+      {% include "template_ip_info.j2" with context -%}
     ]
   },
   "annotations": {
