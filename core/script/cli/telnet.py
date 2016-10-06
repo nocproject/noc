@@ -83,7 +83,7 @@ class TelnetIOStream(IOStream):
         self.logger = cli.logger
         self.iac_seq = ""
         self.out_iac_seq = []
-        self.naws = "\x00\x80\x00\x80"
+        self.naws = cli.profile.get_telnet_naws()
 
     @tornado.gen.coroutine
     def startup(self):
