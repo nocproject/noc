@@ -39,8 +39,9 @@ Ext.define 'Report.controller.Configurator',
 	###
 	saveData: (button) ->
 		configurator = button.up('configuratorMain')
-		get = @getValueGetter configurator
+		entityModel = configurator.getEntityModel()
 		model = Ext.create 'Report.model.configurator.Model'
+		get = @getValueGetter configurator
 		
 		model.set {
 			type:        get '#type #combo'
@@ -53,13 +54,14 @@ Ext.define 'Report.controller.Configurator',
 			columns:     get '#wellspring #grid'
 			filters:     get '#filters #grid'
 		}
-		
+			
 		###
             Оповещает о начале сохранения данных конфигуратора.
             @param {Report.controller.Configurator} this Конфигуратор.
-            @param {Report.model.configurator.Model} model Модель.
+            @param {Report.model.configurator.Model} model Модель конфигуратора.
+            @param {Ext.data.Model/Null} entityModel Модель сущности, которую конфигурируем, если есть.
         ###
-		@fireEvent 'startSave', @, model
+		@fireEvent 'startSave', @, model, entityModel
 		
 		configurator.hide()
 		
