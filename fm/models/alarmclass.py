@@ -105,7 +105,7 @@ class AlarmClass(nosql.Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return AlarmClass.objects.filter(id=id).first()
 
