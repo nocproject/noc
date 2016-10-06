@@ -21,6 +21,9 @@ from noc.fm.models.alarmclass import AlarmClass
 
 
 class AnnotationsHandler(tornado.web.RequestHandler):
+    def initialize(self, service=None):
+        self.service = service
+
     @tornado.gen.coroutine
     def post(self, *args, **kwargs):
         try:
