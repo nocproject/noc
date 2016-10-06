@@ -97,6 +97,7 @@ class MODashboard(BaseDashboard):
         data = tmpl.render(context)
         try:
             render = json.loads(data)
+            return json.loads(render)
         except:
             tmpl = j2_env.get_template("dash_error.j2")
             context = {"data": data}
