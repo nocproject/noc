@@ -65,7 +65,7 @@ class MODashboard(BaseDashboard):
                                                  {"name": u"Output",
                                                   "measurement": u"Interface | Load | Out",
                                                   "port": agg_iface.name}]
-            port_types += [{"type": profile.name,  "name": profile.name,
+            port_types += [{"type": profile.name, "name": profile.id,
                             "ports": ports}]
 
         if self.object.object_profile.report_ping_rtt:
