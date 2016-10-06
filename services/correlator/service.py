@@ -328,7 +328,7 @@ class CorrelatorService(Service):
                     self.logger.info(
                         "[%s|%s|%s] Set root to %s (handler %s)",
                         a.id, a.managed_object.name, a.managed_object.address,
-                        a.root, h.handler_name
+                        a.root, h
                     )
             except:
                 error_report()
