@@ -51,7 +51,7 @@ class MODashboard(BaseDashboard):
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
             for iface in sorted(ifaces, key=split_alnum):
-                ports += [{"name": iface.name, "descr": iface.description}]
+                ports += [{"name": iface.name, "descr": iface.description or iface.name}]
                 if iface.is_linked:
                     ports[-1]["link_id"] = str(iface.link.id)
                 if iface.type == u"aggregated":
@@ -94,6 +94,9 @@ class MODashboard(BaseDashboard):
         PM_TEMPLATE_PATH = "templates/ddash/"
         j2_env = Environment(loader=FileSystemLoader(PM_TEMPLATE_PATH))
         tmpl = j2_env.get_template("dash_mo.j2")
-        # with open(MO_TEMPLATE_PATH) as f:
-        #    CARD_TEMPLATE = Template(f.read())
-        return json.loads(tmpl.render(context))
+        try:
+            return json.loads(tmpl.render(context))
+        except:
+            tmpl = j2_env.get_template("dash_error.j2")
+            context = {"data": tmpl.render(context)}
+            return json.loads(tmpl.render(context))
