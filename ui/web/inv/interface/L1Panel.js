@@ -167,7 +167,7 @@ Ext.define("NOC.inv.interface.L1Panel", {
     linkInterface: function(ifaceId, ifaceName) {
         var me = this;
         Ext.create("NOC.inv.interface.LinkForm", {
-            title: Ext.String.format(__("Link" + " {0} " + __("with"), ifaceName),
+            title: Ext.String.format(__("Link") + " {0} " + __("with"), ifaceName),
             app: me.app,
             ifaceId: ifaceId
         });
