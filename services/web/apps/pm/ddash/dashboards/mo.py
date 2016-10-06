@@ -94,9 +94,10 @@ class MODashboard(BaseDashboard):
         PM_TEMPLATE_PATH = "templates/ddash/"
         j2_env = Environment(loader=FileSystemLoader(PM_TEMPLATE_PATH))
         tmpl = j2_env.get_template("dash_mo.j2")
+        data = tmpl.render(context)
         try:
-            return json.loads(tmpl.render(context))
+            render = json.loads(data)
         except:
             tmpl = j2_env.get_template("dash_error.j2")
-            context = {"data": tmpl.render(context)}
+            context = {"data": data}
             return json.loads(tmpl.render(context))
