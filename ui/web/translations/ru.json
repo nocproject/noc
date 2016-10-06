@@ -7,8 +7,8 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-10-06 11:12+0500",
-        "POT-Creation-Date": "2016-10-06 07:59+0500",
+        "PO-Revision-Date": "2016-10-07 04:01+0500",
+        "POT-Creation-Date": "2016-10-07 01:49+0500",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
@@ -21,6 +21,10 @@
     "Access": [
         null,
         "Доступ"
+    ],
+    "Account": [
+        null,
+        "Учётная запись"
     ],
     "Account is not registred. Please register account to get access to additional support and services": [
         null,
@@ -50,9 +54,17 @@
         null,
         "Добавить"
     ],
+    "Add Conduits": [
+        null,
+        "Добавить связь"
+    ],
     "Add First Free": [
         null,
         "Добавить первый свободный"
+    ],
+    "Add First Free VC": [
+        null,
+        "Добавить первый свободный VC"
     ],
     "Add Interfaces": [
         null,
@@ -73,6 +85,10 @@
     "Add objects": [
         null,
         "Добавить объект"
+    ],
+    "Add to collections?": [
+        null,
+        "Добавить в коллекцию?"
     ],
     "Address": [
         null,
@@ -174,6 +190,10 @@
         null,
         "Все"
     ],
+    "All interface settings has been applied successfully": [
+        null,
+        "Все настройки интерфейса успешно применены"
+    ],
     "Allocated till": [
         null,
         "Размещено до"
@@ -213,6 +233,10 @@
     "Attic": [
         null,
         "Чердак"
+    ],
+    "Attributes": [
+        null,
+        "Аттрибуты"
     ],
     "Attrs": [
         null,
@@ -266,6 +290,10 @@
         null,
         "Пакетный опрос"
     ],
+    "Box discovery intervals": [
+        null,
+        "Интервал Пакетного опроса"
+    ],
     "Branch": [
         null,
         "Ветка"
@@ -286,21 +314,49 @@
         null,
         "По З.О."
     ],
+    "By Administrative Domain": [
+        null,
+        "По Зоне Ответственности"
+    ],
     "By Date": [
         null,
         "По дате"
+    ],
+    "By Group": [
+        null,
+        "По Группе"
+    ],
+    "By Link Event": [
+        null,
+        "По событиям на линке"
     ],
     "By Managed": [
         null,
         "По статусу"
     ],
+    "By Notification": [
+        null,
+        "По Уведомлению"
+    ],
     "By Obj. Profile": [
         null,
         "По профилю объекта"
     ],
+    "By Parent": [
+        null,
+        "По Родителю"
+    ],
     "By Pool": [
         null,
         "По Пулу"
+    ],
+    "By Profile": [
+        null,
+        "По Профилю"
+    ],
+    "By Project": [
+        null,
+        "По Проекту"
     ],
     "By SA Profile": [
         null,
@@ -326,6 +382,10 @@
         null,
         "По группе терминации"
     ],
+    "By User": [
+        null,
+        "По пользователям"
+    ],
     "By VC Domain": [
         null,
         "По виртуальному домену"
@@ -333,6 +393,10 @@
     "By VRF": [
         null,
         "По VRF"
+    ],
+    "By Vendor": [
+        null,
+        "По производителю"
     ],
     "CR. Context": [
         null,
@@ -345,6 +409,10 @@
     "Can View": [
         null,
         "Может смотреть"
+    ],
+    "Cannot get settings": [
+        null,
+        "Не удалось получить настройки"
     ],
     "Capabilities": [
         null,
@@ -426,6 +494,10 @@
         null,
         "Очистить"
     ],
+    "Clear Handlers": [
+        null,
+        "Очистить обработчики"
+    ],
     "Clear Template": [
         null,
         "Шаблон закрытия"
@@ -482,6 +554,10 @@
         null,
         "Комментарий"
     ],
+    "Common": [
+        null,
+        "Общий"
+    ],
     "Community": [
         null,
         "Сообщество"
@@ -518,10 +594,6 @@
         null,
         "Конфигурация не соответствует политике"
     ],
-    "Config Validation pyRule": [
-        null,
-        "pyRule валидации конфигурации"
-    ],
     "Config changed": [
         null,
         "Конфиг изменен"
@@ -529,6 +601,10 @@
     "Config policy violation": [
         null,
         "Конфигурация не соответствует политике"
+    ],
+    "Config saved": [
+        null,
+        "Настройки сохранены"
     ],
     "Config. Mode": [
         null,
@@ -634,9 +710,21 @@
         null,
         "Создать правило"
     ],
+    "Create new": [
+        null,
+        "Создать новый"
+    ],
     "Create new maintaince": [
         null,
         "Создать новый РНР"
+    ],
+    "Create new object in '": [
+        null,
+        "Создать новый объекта в '"
+    ],
+    "Create new top-level object": [
+        null,
+        "Создать новый объект верхнего уровня"
     ],
     "Credentials": [
         null,
@@ -665,6 +753,10 @@
     "Data": [
         null,
         "Данные"
+    ],
+    "Data Sources": [
+        null,
+        "Источники данных"
     ],
     "Datasource": [
         null,
@@ -706,6 +798,10 @@
         null,
         "Удалить объект"
     ],
+    "Delete record?": [
+        null,
+        "Удалить запись?"
+    ],
     "Deleted": [
         null,
         "Удаленный"
@@ -745,6 +841,10 @@
     "Display Name": [
         null,
         "Отображаемое имя"
+    ],
+    "Do you wish to delete record? This operation cannot be undone!": [
+        null,
+        "Вы уверены в удалении записи? Операция не может быть отменена!"
     ],
     "Do you wish to unlink interface {0}?": [
         null,
@@ -802,9 +902,25 @@
         null,
         "Подъезды"
     ],
+    "Error": [
+        null,
+        "Ошибка"
+    ],
     "Error Type": [
         null,
         "Тип ошибки"
+    ],
+    "Error in data": [
+        null,
+        "Ошибка в данных"
+    ],
+    "Error saving record!": [
+        null,
+        "Ошибка при сохранении записи!"
+    ],
+    "Error!": [
+        null,
+        "Ошибка!"
     ],
     "Escalations": [
         null,
@@ -833,6 +949,10 @@
     "Event Role": [
         null,
         "Роль события"
+    ],
+    "Event Sources": [
+        null,
+        "Источник событий"
     ],
     "Event TTL": [
         null,
@@ -890,9 +1010,41 @@
         null,
         "Интервал при сбое"
     ],
+    "Failed to apply interface settings": [
+        null,
+        "Ошибка при применении настроек интерфейса"
+    ],
+    "Failed to apply some interfaces settings": [
+        null,
+        "Ошибка при применении некоторых настроек интерфейса"
+    ],
+    "Failed to change VC Domain": [
+        null,
+        "Ошибка при изменении VC домена"
+    ],
+    "Failed to change credentials:": [
+        null,
+        "Ошибка при изменени учётных данных"
+    ],
     "Failed to change credentials: ": [
         null,
         "Не удалось сменить пароль: "
+    ],
+    "Failed to change layer settings": [
+        null,
+        "Ошибка при изменении настроек слоя"
+    ],
+    "Failed to change profile": [
+        null,
+        "Ошибка при изменении профиля"
+    ],
+    "Failed to change project": [
+        null,
+        "Ошибка при изменении проекта"
+    ],
+    "Failed to change state": [
+        null,
+        "Ошибка при изменении статуса"
     ],
     "Failed to clear alarm": [
         null,
@@ -902,33 +1054,153 @@
         null,
         "Не удалось соединить интерфейсы"
     ],
+    "Failed to create ignore pattern from event": [
+        null,
+        "Ошибка при создании шаблона игнорирования из события"
+    ],
+    "Failed to create rule from event": [
+        null,
+        "Ошибка создания правила из сообщения"
+    ],
+    "Failed to delete file": [
+        null,
+        "Ошибка при удалении файла"
+    ],
+    "Failed to delete group": [
+        null,
+        "Ошибка при удалении группы"
+    ],
+    "Failed to disable tasks": [
+        null,
+        "Ошибка при отключении задачи"
+    ],
+    "Failed to fetch data!": [
+        null,
+        "Ошибка при обращении к данным"
+    ],
+    "Failed to find node": [
+        null,
+        "Ошибка про поиске ноды"
+    ],
     "Failed to fix": [
         null,
         "Не удалось исправить"
+    ],
+    "Failed to get JSON": [
+        null,
+        "Ошибка при получении JSON"
+    ],
+    "Failed to get MAC history": [
+        null,
+        "Ошибка при получении истории MAC адресов"
+    ],
+    "Failed to get MACs": [
+        null,
+        "Ошибка при получении MAC адреса"
     ],
     "Failed to get STP status": [
         null,
         "Ошибка получения статуса STP"
     ],
+    "Failed to get VC Filter": [
+        null,
+        "Ошибка при получении фильров VC"
+    ],
     "Failed to get alarm": [
         null,
         "Не удалось получить аварию"
+    ],
+    "Failed to get config": [
+        null,
+        "Ошибка при получении конфигурации"
+    ],
+    "Failed to get configs list": [
+        null,
+        "Ошибка при получении списка конфигураций"
     ],
     "Failed to get data": [
         null,
         "Ошибка получения данных"
     ],
+    "Failed to get data for plugin": [
+        null,
+        "Ошибка получения данных для плагина"
+    ],
+    "Failed to get diff": [
+        null,
+        "Ошибка при получении разницы"
+    ],
+    "Failed to get event": [
+        null,
+        "Ошибка получения события"
+    ],
+    "Failed to get first free VC": [
+        null,
+        "Ошибка при получении дерева VC"
+    ],
+    "Failed to get interfaces": [
+        null,
+        "Ошибка при получении интерфейсов"
+    ],
     "Failed to get interfaces list": [
         null,
         "Не удалось получить список интерфейсов"
+    ],
+    "Failed to get neighbors": [
+        null,
+        "Ошибка при получении соседей"
+    ],
+    "Failed to get path": [
+        null,
+        "Ошибка при получении пути"
+    ],
+    "Failed to get revisions": [
+        null,
+        "Ошибка при получении ревизий"
+    ],
+    "Failed to get text": [
+        null,
+        "Ошибка при получении текста"
+    ],
+    "Failed to import VLANs": [
+        null,
+        "Ошибка при импорте вланов"
+    ],
+    "Failed to launch application": [
+        null,
+        "Ошибка при запуске приложения"
+    ],
+    "Failed to launch application ": [
+        null,
+        "Ошибка при запуске приложения"
     ],
     "Failed to load data": [
         null,
         "Ошибка загрузки"
     ],
+    "Failed to move": [
+        null,
+        "Ошибка при перемещении"
+    ],
     "Failed to post message": [
         null,
         "Не удалось послать сообщение"
+    ],
+    "Failed to reclassify": [
+        null,
+        "Ошибка при переклассификации"
+    ],
+    "Failed to reset layout": [
+        null,
+        "Ошибка при сбросе уровня"
+    ],
+    "Failed to run command": [
+        null,
+        "Ошибка при запуске команды"
+    ],
+    "Failed to run script": [
+        null,
+        "Ошибка при запуске скрипта"
     ],
     "Failed to run tasks": [
         null,
@@ -938,9 +1210,37 @@
         null,
         "Ошибка сохранения"
     ],
+    "Failed to save JSON": [
+        null,
+        "Ошибка при сохранении JSON"
+    ],
+    "Failed to save VCs": [
+        null,
+        "Ошибка при сохранении VC"
+    ],
+    "Failed to save conduits": [
+        null,
+        "Ошибка при сохранении связей."
+    ],
+    "Failed to save config": [
+        null,
+        "Ошибка при сохранении настроек"
+    ],
+    "Failed to save data": [
+        null,
+        "Ошибка при сохранении данных"
+    ],
     "Failed to search": [
         null,
         "Ошибка поиска"
+    ],
+    "Failed to set data": [
+        null,
+        "Ошибка при установке данных"
+    ],
+    "Failed to set position": [
+        null,
+        "Ошибка при задании позиции"
     ],
     "Failed to set root cause": [
         null,
@@ -949,6 +1249,22 @@
     "Failed to set watcher": [
         null,
         "Не удалось подписаться"
+    ],
+    "Failed to test rule": [
+        null,
+        "Ошибка при тестировании правила"
+    ],
+    "Failed to upload MIB": [
+        null,
+        "Ошибка при загрузке MIB"
+    ],
+    "Failed to upload files": [
+        null,
+        "Ошибка при загрузке файлов"
+    ],
+    "Favorites": [
+        null,
+        "Избранное"
     ],
     "Fax-no": [
         null,
@@ -961,6 +1277,14 @@
     "File #": [
         null,
         "№ файла"
+    ],
+    "Files": [
+        null,
+        "Файлы"
+    ],
+    "Files has been uploaded": [
+        null,
+        "Файлы будут загружены"
     ],
     "Fill Color": [
         null,
@@ -1029,6 +1353,10 @@
     "Filter by VRF": [
         null,
         "Фильтровать по VRF"
+    ],
+    "Filter by attributes": [
+        null,
+        "Фильтровать по аттрибутам"
     ],
     "Filter by service terminator": [
         null,
@@ -1113,6 +1441,10 @@
     "Gender": [
         null,
         "Мама/Папа"
+    ],
+    "Get JSON": [
+        null,
+        "Получить JSON"
     ],
     "Get config NOW": [
         null,
@@ -1265,6 +1597,10 @@
     "Introduced": [
         null,
         "Появилась"
+    ],
+    "Invalid data!": [
+        null,
+        "Неверные данные!"
     ],
     "Inventory": [
         null,
@@ -1450,6 +1786,10 @@
         null,
         "Вход"
     ],
+    "Login failed": [
+        null,
+        "Не удаётся зайти"
+    ],
     "Logout": [
         null,
         "Выход"
@@ -1465,6 +1805,10 @@
     "MAC Discovery": [
         null,
         "Сбор MAC адресов"
+    ],
+    "MIBs has been uploaded": [
+        null,
+        "MIB'ы будет загружены"
     ],
     "Mac Address": [
         null,
@@ -1498,9 +1842,21 @@
         null,
         "Управление"
     ],
+    "Map": [
+        null,
+        "Карта"
+    ],
+    "Map Distange (m)": [
+        null,
+        "Дистанция на карте (м)"
+    ],
     "Map Script": [
         null,
         "Применяемый скрипт"
+    ],
+    "Map has been saved": [
+        null,
+        "Карта будет сохранена"
     ],
     "Mark/Unmark": [
         null,
@@ -1654,6 +2010,18 @@
         null,
         "Следующее изменение"
     ],
+    "No MAC history found": [
+        null,
+        "История MAC адресов не найдена"
+    ],
+    "No interfaces found": [
+        null,
+        "Интерфейсы не найдены"
+    ],
+    "Nothing changed": [
+        null,
+        "Изменений нет"
+    ],
     "Notification": [
         null,
         "Уведомление"
@@ -1721,6 +2089,10 @@
     "Object Selector": [
         null,
         "Селектор"
+    ],
+    "Object has been loaded": [
+        null,
+        "Объект будет загружен"
     ],
     "Object/Segment": [
         null,
@@ -1794,6 +2166,10 @@
         null,
         "Организация"
     ],
+    "Other": [
+        null,
+        "Другие"
+    ],
     "Out (kbit/s)": [
         null,
         "Вых (Кб/с)"
@@ -1846,6 +2222,10 @@
         null,
         "Периодический опрос"
     ],
+    "Periodic discovery intervals": [
+        null,
+        "Интервал переодического опроса"
+    ],
     "Permission": [
         null,
         "Разрешения"
@@ -1853,6 +2233,10 @@
     "Phone": [
         null,
         "Телефон"
+    ],
+    "Physical": [
+        null,
+        "Физический"
     ],
     "Platform": [
         null,
@@ -1882,6 +2266,10 @@
         null,
         "Радиус точки"
     ],
+    "Point Style": [
+        null,
+        "Стиль точки"
+    ],
     "Policy": [
         null,
         "Действие"
@@ -1893,6 +2281,10 @@
     "Pool Name": [
         null,
         "Имя пула"
+    ],
+    "Pools": [
+        null,
+        "Пулы"
     ],
     "Port": [
         null,
@@ -1986,9 +2378,17 @@
         null,
         "Профиль сохранен"
     ],
+    "Proj. Distange (m)": [
+        null,
+        "Проектная дистанция (м)"
+    ],
     "Project": [
         null,
         "Проект"
+    ],
+    "Project distance (m)": [
+        null,
+        "Проектная дистанция (м)"
     ],
     "Protocol": [
         null,
@@ -1997,6 +2397,10 @@
     "Protocols": [
         null,
         "Протоколы"
+    ],
+    "Rack": [
+        null,
+        "Стойка"
     ],
     "Rack: ": [
         null,
@@ -2013,6 +2417,14 @@
     "Recommended Actions": [
         null,
         "Рекомендованные действия"
+    ],
+    "Records": [
+        null,
+        "Записи"
+    ],
+    "Records has been updated": [
+        null,
+        "Записи будут обновлены"
     ],
     "Recover Time": [
         null,
@@ -2058,6 +2470,10 @@
         null,
         "Удалить группу"
     ],
+    "Remove group '": [
+        null,
+        "Удалить группу '"
+    ],
     "Rep.": [
         null,
         "Повт."
@@ -2093,6 +2509,10 @@
     "Reset Layout": [
         null,
         "Сбросить раскладку"
+    ],
+    "Reset Scopes": [
+        null,
+        "Сбросить область"
     ],
     "Reset changes": [
         null,
@@ -2154,6 +2574,14 @@
         null,
         "Прав. RE"
     ],
+    "Root": [
+        null,
+        "Корень"
+    ],
+    "Root Cause": [
+        null,
+        "Первопричина"
+    ],
     "Root only": [
         null,
         "Первопричина"
@@ -2165,6 +2593,10 @@
     "Run": [
         null,
         "Запуск"
+    ],
+    "Run discovery now": [
+        null,
+        "Запустить опрос"
     ],
     "Running": [
         null,
@@ -2197,6 +2629,14 @@
     "Script": [
         null,
         "Скрипт"
+    ],
+    "Script Failed": [
+        null,
+        "Ошибка скрипта"
+    ],
+    "Script failed": [
+        null,
+        "Ошибка скрипта"
     ],
     "Scripts": [
         null,
@@ -2254,6 +2694,14 @@
         null,
         "Выбрать MIB..."
     ],
+    "Select Shape": [
+        null,
+        "Выбрать изображение"
+    ],
+    "Select VCs to import": [
+        null,
+        "Выберите VC для импорта"
+    ],
     "Select base layer": [
         null,
         "Выбрать начальный уровень"
@@ -2290,6 +2738,10 @@
         null,
         "Серийный №"
     ],
+    "Service": [
+        null,
+        "Сервис"
+    ],
     "Service Terminator": [
         null,
         "Терминатор сервиса"
@@ -2302,6 +2754,10 @@
         null,
         "Указать первопричину"
     ],
+    "Set managed": [
+        null,
+        "Сделать управляемым"
+    ],
     "Set position": [
         null,
         "Установить позицию"
@@ -2309,6 +2765,10 @@
     "Set root cause": [
         null,
         "Указать первопричину"
+    ],
+    "Set unmanaged": [
+        null,
+        "Сделать неуправляемым"
     ],
     "Settings": [
         null,
@@ -2530,6 +2990,10 @@
         null,
         "Успех"
     ],
+    "Success!": [
+        null,
+        "Успех!"
+    ],
     "Summary": [
         null,
         "Итог"
@@ -2553,6 +3017,10 @@
     "Suppress alarms": [
         null,
         "Подавлять аварии"
+    ],
+    "Suppression": [
+        null,
+        "Подавление"
     ],
     "Swap revisions": [
         null,
@@ -2670,9 +3138,25 @@
         null,
         "Проверка правила"
     ],
+    "Test selected groups": [
+        null,
+        "Проверить выбранную группу"
+    ],
+    "Test selected patterns": [
+        null,
+        "Проверить выбранные шаблоны"
+    ],
+    "Test selected prefix tables ...": [
+        null,
+        "Проверить выбранные таблицы префиксов"
+    ],
     "Text": [
         null,
         "Текст"
+    ],
+    "Text Style": [
+        null,
+        "Стиль текста"
     ],
     "Theme": [
         null,
@@ -2697,6 +3181,10 @@
     "Time Pattern": [
         null,
         "Маска времени"
+    ],
+    "Time Patterns": [
+        null,
+        "Шаблоны времени"
     ],
     "Time/Duration": [
         null,
@@ -2814,6 +3302,10 @@
         null,
         "Загрузка"
     ],
+    "Upload Files": [
+        null,
+        "Загрузить файлы"
+    ],
     "Uptime": [
         null,
         "Время работы"
@@ -2833,6 +3325,10 @@
     "User profile ...": [
         null,
         "Профиль пользователя ..."
+    ],
+    "Users": [
+        null,
+        "Пользователи"
     ],
     "VC Filter": [
         null,
@@ -2881,6 +3377,10 @@
     "Var.  Map.": [
         null,
         "Прив. перем."
+    ],
+    "Variables": [
+        null,
+        "Переменные"
     ],
     "Vars": [
         null,
@@ -2950,6 +3450,14 @@
         null,
         "Окно"
     ],
+    "Workflow Editor": [
+        null,
+        "Редактор рабочих процессов"
+    ],
+    "Workflows": [
+        null,
+        "Рабочие процессы"
+    ],
     "Would you like to reset current layout and generate new?": [
         null,
         "Сбросить раскладку карты и перестроить заново?"
@@ -2957,6 +3465,10 @@
     "Your must select maintainance!": [
         null,
         "Вы должны выбрать РНР!"
+    ],
+    "Zoom": [
+        null,
+        "Масштаб"
     ],
     "Zoom Actual": [
         null,
@@ -3034,6 +3546,10 @@
         null,
         "плагин"
     ],
+    "profile": [
+        null,
+        "профиль"
+    ],
     "project": [
         null,
         "проект"
@@ -3046,8 +3562,16 @@
         null,
         "свйт"
     ],
+    "state": [
+        null,
+        "состояния"
+    ],
     "type": [
         null,
         "тип"
+    ],
+    "with": [
+        null,
+        "с"
     ]
 }
