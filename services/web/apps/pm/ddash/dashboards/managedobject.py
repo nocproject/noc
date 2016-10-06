@@ -259,6 +259,7 @@ class ManagedObjectDashboard(BaseDashboard):
                 }]
                 targets = []
                 seriesoverrides = []
+                tags = []
                 id = 0
                 if iface.type == u"aggregated":
                         agg = Interface.objects.filter(managed_object=self.object.id,
