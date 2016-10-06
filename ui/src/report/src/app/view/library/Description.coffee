@@ -11,7 +11,7 @@ Ext.define 'Report.view.library.Description',
 		{
 			itemId: 'tpl'
 			xtype: 'component'
-			padding: 20
+			padding: '25 20'
 			tpl: '<div class="description">{description}</div>'
 		}
 	]

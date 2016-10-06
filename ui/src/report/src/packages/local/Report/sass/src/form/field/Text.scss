@@ -18,3 +18,12 @@ input.x-form-field {
 .x-form-text {
 	width: calc(100% - 3px);
 }
+
+/**
+ * Чиним аффект от починки бага со скругленными углами (см. выше).
+ * Возвращаем белизну частичке фона что находится под сдвинутым полем ввода.
+ * Актуально для эдиторов внутри грида.
+ **/
+.x-form-trigger-wrap.x-form-trigger-wrap-default.x-form-trigger-wrap-focus {
+	background-color: white;
+}

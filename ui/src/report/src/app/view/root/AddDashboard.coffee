@@ -7,3 +7,4 @@ Ext.define 'Report.view.root.AddDashboard',
 
 	iconCls: 'x-fa fa-plus'
 	text: 'Дашборд'
+	height: 36
