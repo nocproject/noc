@@ -115,7 +115,7 @@ class BaseProfile(object):
     # True - send password by characters
     telnet_slow_send_password = False
     # Telnet NAWS negotiation
-    telnet_naws = "\xff\xff\xff\xff"
+    telnet_naws = "\x00\x80\x00\x80"
     # Does the equipment supports bitlength netmasks
     # or netmask should be converted to traditional formats
     requires_netmask_conversion = False
@@ -335,3 +335,7 @@ class BaseProfile(object):
             cls.rx_pattern_operation_error = re.compile(cls.pattern_operation_error)
         else:
             cls.rx_pattern_operation_error = None
+
+    @classmethod
+    def get_telnet_naws(cls):
+        return cls.telnet_naws
