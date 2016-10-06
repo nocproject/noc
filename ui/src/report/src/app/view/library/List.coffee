@@ -22,6 +22,8 @@ Ext.define 'Report.view.library.List',
 			itemTpl: '<span class="item">{name}</span>'
 			emptyText: 'Пусто'
 			deferEmptyText: false
+			selectionModel:
+				mode: 'MULTI'
 		}
 	]
 	
@@ -40,12 +42,12 @@ Ext.define 'Report.view.library.List',
 		@getListView().setStore store
 	
 	###
-	    Возвращает выбранный элемент сущности из списка в виде модели
-        либо null если ничего не выбрано.
-        @return {Ext.data.Model/Null} Значение.
+	    Возвращает выбранный элемент сущности из списка
+		в виде массива моделей.
+        @return {Ext.data.Model[]} Значение.
 	###
 	getSelected: () ->
-		@getListView().getSelectionModel().getSelection()[0] or null
+		@getListView().getSelectionModel().getSelection()
 	
 	###
 		Выделяет свежесозданную сущность.

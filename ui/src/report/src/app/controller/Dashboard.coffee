@@ -1,5 +1,8 @@
 ###
 	Управление логикой дашбордов.
+    TODO Реордеринг дашбордов.
+    TODO При закрытии и удалении показывать прошлый активный, а не первый.
+    TODO Кнопка отмены удаления.
 ###
 Ext.define 'Report.controller.Dashboard',
 	extend: 'Ext.app.Controller'
@@ -73,17 +76,17 @@ Ext.define 'Report.controller.Dashboard',
 		addDashboardFromLibrary: (button) ->
 			library = button.up('dashboardLibrary')
 			list = library.down('#list')
-			dashboardData = list.getSelected()
+			selected = list.getSelected()
 			
-			if dashboardData
+			for dashboardData in selected
 				@blurActiveDashboard()
 				
 				dashboardData.set 'active', true
 				dashboardData.set 'visible', true
 			
-				@fireEvent 'refresh', @
+			@fireEvent 'refresh', @
 				
-				library.hide()
+			library.hide()
 	
 		###
             Сохраняет дашборд.
@@ -118,6 +121,7 @@ Ext.define 'Report.controller.Dashboard',
 		###
 		closeDashboard: (button) ->
 			button.up('dashboardMain').getModel().set 'visible', false
+			@getDashboards().first()?.set('active', true)
 			
 			@fireEvent 'refresh', @
 	
@@ -128,14 +132,13 @@ Ext.define 'Report.controller.Dashboard',
 		deleteDashboard: (button) ->
 			library = button.up('dashboardLibrary')
 			list = library.down('#list')
-			dashboardData = list.getSelected()
+			selected = list.getSelected()
 			dashboards = @getDashboards()
 			
-			unless dashboardData then return
-			
-			dashboards.remove dashboardData
-			dashboards.first()?.set('active', true)
-			
+			for dashboardData in selected
+				dashboards.remove dashboardData
+				dashboards.first()?.set('active', true)
+				
 			@fireEvent 'refresh', @
 		
 		###
