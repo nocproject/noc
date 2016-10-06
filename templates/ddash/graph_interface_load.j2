@@ -36,7 +36,7 @@
   "scopedVars": {
     "{{interface.type}}": {
       "selected": true,
-      "text": "{{interface.ports[0].descr}}",
+      "text": "{{interface.ports[0].descr | default(interface.ports[0].name)}}",
       "value": "{{interface.ports[0].name}}"
     }
   },
