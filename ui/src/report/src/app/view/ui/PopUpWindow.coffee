@@ -34,7 +34,7 @@ Ext.define 'Report.view.ui.PopUpWindow',
 			
 			setTimeout(
 				() => @hide()
-				1000
+				600
 			)
 			
 			false

@@ -32,6 +32,8 @@ Ext.define 'Report.controller.Dashboard',
 				click: 'closeDashboard'
 			'dashboardLibrary #control #create':
 				click: 'createDashboard'
+			'dashboardLibrary #control #delete':
+				click: 'deleteDashboard'
 			'dashboardLibrary #control #select':
 				click: 'addDashboardFromLibrary'
 
@@ -74,6 +76,9 @@ Ext.define 'Report.controller.Dashboard',
 			dashboardData = list.getSelected()
 			
 			if dashboardData
+				@blurActiveDashboard()
+				
+				dashboardData.set 'active', true
 				dashboardData.set 'visible', true
 			
 				@fireEvent 'refresh', @
@@ -87,7 +92,7 @@ Ext.define 'Report.controller.Dashboard',
             @param {Ext.data.Model/Null} entityModel Модель сущности, которую конфигурируем, если есть.
 		###
 		saveDashboard: (controller, model, entityModel) ->
-			dashboards = Report.model.MainDataTree.get('dashboards')
+			dashboards = @getDashboards()
 			get = model.get.bind model
 			
 			data = {
@@ -98,8 +103,6 @@ Ext.define 'Report.controller.Dashboard',
 				active:      true
 				visible:     false
 			}
-			
-			dashboards.findRecord('active', true)?.set('active', false)
 			
 			if entityModel
 				data.visible = true
@@ -117,3 +120,32 @@ Ext.define 'Report.controller.Dashboard',
 			button.up('dashboardMain').getModel().set 'visible', false
 			
 			@fireEvent 'refresh', @
+	
+		###
+			Удаляет выбранный дашборд.
+			@param {Ext.button.Button} button Кнопка удаления дашборда.
+		###
+		deleteDashboard: (button) ->
+			library = button.up('dashboardLibrary')
+			list = library.down('#list')
+			dashboardData = list.getSelected()
+			dashboards = @getDashboards()
+			
+			unless dashboardData then return
+			
+			dashboards.remove dashboardData
+			dashboards.first()?.set('active', true)
+			
+			@fireEvent 'refresh', @
+		
+		###
+			Убирает флаг активного с текущего активного дашборда.
+		###
+		blurActiveDashboard: () ->
+			@getDashboards().findRecord('active', true)?.set('active', false)
+			
+		###
+            @return {Ext.data.Store} Стор, хранящий существующие дашборды.
+		###
+		getDashboards: () ->
+			Report.model.MainDataTree.get('dashboards')

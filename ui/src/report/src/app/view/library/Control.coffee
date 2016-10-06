@@ -9,12 +9,21 @@ Ext.define 'Report.view.library.Control',
 		{
 			itemId: 'create'
 			xtype: 'button'
+			iconCls: 'x-fa fa-plus'
 			text: 'Создать'
+			margin: '2 10 2 2'
+		}
+		{
+			itemId: 'delete'
+			xtype: 'button'
+			iconCls: 'x-fa fa-trash'
+			text: 'Удалить'
 		}
 		'->'
 		{
 			itemId: 'select'
 			xtype: 'button'
+			iconCls: 'x-fa fa-check'
 			text: 'Выбрать'
 		}
 	]
