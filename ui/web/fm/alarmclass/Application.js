@@ -79,7 +79,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                     },
                     items: [
                         {
-                            title: "Text",
+                            title: __("Text"),
                             items: [
                                 {
                                     name: "description",
@@ -125,7 +125,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Severity",
+                            title: __("Severity"),
                             items: [
                                 {
                                     name: "default_severity",
@@ -150,7 +150,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Variables",
+                            title: __("Variables"),
                             items: [
                                 {
                                     name: "vars",
@@ -179,7 +179,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Data Sources",
+                            title: __("Data Sources"),
                             items: [
                                 {
                                     name: "datasources",
@@ -209,7 +209,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Root Cause",
+                            title: __("Root Cause"),
                             items: [
                                 {
                                     name: "root_cause",
@@ -252,7 +252,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Jobs",
+                            title: __("Jobs"),
                             items: [
                                 {
                                     name: "jobs",
@@ -282,7 +282,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Handlers",
+                            title: __("Handlers"),
                             items: [
                                 {
                                     xtype: "stringsfield",
@@ -297,7 +297,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Plugins",
+                            title: __("Plugins"),
                             items: [
                                 {
                                     xtype: "gridfield",
@@ -322,7 +322,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Timing",
+                            title: __("Timing"),
                             items: [
                                 {
                                     name: "flap_condition",
@@ -406,7 +406,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
     //
     filters: [
         {
-            title: "By Builtin",
+            title: __("By Builtin"),
             name: "is_builtin",
             ftype: "boolean"
         }

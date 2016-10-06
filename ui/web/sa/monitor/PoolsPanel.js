@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.monitor.PoolsPanel");
 Ext.define("NOC.sa.monitor.PoolsPanel", {
     extend: "Ext.panel.Panel",
     uses: [],
-    title: "Pools",
+    title: __("Pools"),
     closable: false,
     layout: "fit",
 

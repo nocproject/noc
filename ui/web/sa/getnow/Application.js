@@ -278,7 +278,7 @@ Ext.define("NOC.sa.getnow.Application", {
             method: "GET",
             scope: me,
             failure: function () {
-                NOC.error("Failed to run tasks");
+                NOC.error(__("Failed to run tasks"));
             },
             success: function(response) {
                 var data = Ext.decode(response.responseText);
@@ -350,7 +350,7 @@ Ext.define("NOC.sa.getnow.Application", {
                 "names": ['box']
             },
             failure: function () {
-                NOC.error("Failed to run tasks");
+                NOC.error(__("Failed to run tasks"));
             }
         });
     },

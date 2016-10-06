@@ -42,7 +42,7 @@ Ext.define("NOC.main.prefixtable.Application", {
         }
     ],
     inlines: [{
-        title: "Prefixes",
+        title: __("Prefixes"),
         model: "NOC.main.prefixtable.PrefixModel",
         columns: [
             {
@@ -55,7 +55,7 @@ Ext.define("NOC.main.prefixtable.Application", {
     }],
     actions: [
         {
-            title: "Test selected prefix tables ...",
+            title: __("Test selected prefix tables ..."),
             action: "test",
             resultTemplate: "TestResultTemplate",
             form: [

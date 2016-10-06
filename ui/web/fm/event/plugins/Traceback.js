@@ -8,7 +8,7 @@ console.debug("Defining NOC.fm.event.plugins.Traceback");
 
 Ext.define("NOC.fm.event.plugins.Traceback", {
     extend: "Ext.panel.Panel",
-    title: "Traceback",
+    title: __("Traceback"),
     app: null,
     autoScroll: true,
     bodyPadding: 4,

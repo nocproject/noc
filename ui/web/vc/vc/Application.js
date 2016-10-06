@@ -22,35 +22,35 @@ Ext.define("NOC.vc.vc.Application", {
 
     filters: [
         {
-            title: "By VC Domain",
+            title: __("By VC Domain"),
             name: "vc_domain",
             ftype: "lookup",
             lookup: "vc.vcdomain"
         },
         {
-            title: "By State",
+            title: __("By State"),
             name: "state",
             ftype: "lookup",
             lookup: "main.resourcestate"
         },
         {
-            title: "By Project",
+            title: __("By Project"),
             name: "project",
             ftype: "lookup",
             lookup: "project.project"
         },
         {
-            title: "By VC Filter",
+            title: __("By VC Filter"),
             name: "l1",
             ftype: "vcfilter"
         },
         {
-            title: "By Tags",
+            title: __("By Tags"),
             name: "tags",
             ftype: "tag"
         },
         {
-            title: "By Style",
+            title: __("By Style"),
             name: "style",
             ftype: "lookup",
             lookup: "main.style"
@@ -278,12 +278,12 @@ Ext.define("NOC.vc.vc.Application", {
                     scope: me,
                     success: me.processImportFromSwitch,
                     failure: function() {
-                        NOC.error("Failed to import VLANs")
+                        NOC.error(__("Failed to import VLANs"))
                     }
                 });
             },
             failure: function() {
-                NOC.error("Failed to get VC Filter");
+                NOC.error(__("Failed to get VC Filter"));
             }
         });
     },
@@ -326,14 +326,14 @@ Ext.define("NOC.vc.vc.Application", {
             success: function(response) {
                 var r = Ext.decode(response.responseText);
                 if(!r.tagged && !r.untagged && !r.l3) {
-                    NOC.info("No interfaces found");
+                    NOC.info(__("No interfaces found"));
                 } else {
                     var item = me.showItem(me.ITEM_VC_INTERFACES);
                     item.preview(record, {interfaces: r});
                 }
             },
             failure: function() {
-                NOC.error("Failed to get interfaces");
+                NOC.error(__("Failed to get interfaces"));
             }
         });
     },

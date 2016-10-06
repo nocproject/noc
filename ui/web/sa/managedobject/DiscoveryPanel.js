@@ -201,7 +201,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                 me.store.loadData(data);
             },
             failure: function() {
-                NOC.error("Failed to load data");
+                NOC.error(__("Failed to load data"));
             }
         });
     },
@@ -265,7 +265,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
                 me.onRefresh();
             },
             failure: function() {
-                NOC.error("Failed to disable tasks");
+                NOC.error(__("Failed to disable tasks"));
             }
         });
     },

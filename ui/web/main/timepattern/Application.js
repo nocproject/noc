@@ -43,7 +43,7 @@ Ext.define("NOC.main.timepattern.Application", {
     ],
     inlines: [
         {
-            title: "Time Patterns",
+            title: __("Time Patterns"),
             model: "NOC.main.timepattern.TermModel",
             columns: [
                 {
@@ -57,7 +57,7 @@ Ext.define("NOC.main.timepattern.Application", {
     ],
     "actions": [
         {
-            title: "Test selected patterns",
+            title: __("Test selected patterns"),
             action: "test",
             resultTemplate: "TestResultTemplate",
             form: [

@@ -11,7 +11,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
     requires: [
         "NOC.inv.inv.plugins.data.DataModel"
     ],
-    title: "Data",
+    title: __("Data"),
     closable: false,
     layout: "fit",
 
@@ -95,7 +95,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                 me.preview(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },
@@ -119,7 +119,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
                 }
             },
             failure: function() {
-                NOC.error("Failed to save");
+                NOC.error(__("Failed to save"));
             }
         });
     },

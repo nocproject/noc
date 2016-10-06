@@ -105,7 +105,7 @@ Ext.define("NOC.main.desktop.Application", {
                 });
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },
@@ -182,7 +182,7 @@ Ext.define("NOC.main.desktop.Application", {
                 Ext.History.setHash(app);
             },
             failure: function() {
-                NOC.error("Failed to launch application " + app);
+                NOC.error(__("Failed to launch application ") + " " + app);
             }
         });
     },
@@ -266,11 +266,11 @@ Ext.define("NOC.main.desktop.Application", {
                 if (status) {
                     me.onLogin();
                 } else {
-                    NOC.error("Login failed");
+                    NOC.error(__("Login failed"));
                 }
             },
             failure: function(response) {
-                NOC.error("Login failed");
+                NOC.error(__("Login failed"));
             }
         });
     },

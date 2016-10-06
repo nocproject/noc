@@ -79,7 +79,7 @@ Ext.define("NOC.fm.ignorepattern.Application", {
                 me.newRecord(data);
             },
             failure: function() {
-                NOC.error("Failed to create ignore pattern from event");
+                NOC.error(__("Failed to create ignore pattern from event"));
             }
         });
     },

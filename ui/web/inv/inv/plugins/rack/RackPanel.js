@@ -14,7 +14,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     ],
     app: null,
     autoScroll: true,
-    title: "Rack",
+    title: __("Rack"),
     layout: "border",
 
     initComponent: function() {
@@ -169,7 +169,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
                 me.preview(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },
@@ -212,7 +212,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
                 me.onReload();
             },
             failure: function() {
-                NOC.error("Failed to save");
+                NOC.error(__("Failed to save"));
             }
         });
     },

@@ -39,17 +39,17 @@ Ext.define("NOC.fm.event.EventPanel", {
         });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
-            title: "Overview",
+            title: __("Overview"),
             autoScroll: true
         });
 
         me.helpPanel = Ext.create("Ext.panel.Panel", {
-            title: "Help",
+            title: __("Help"),
             autoScroll: true
         });
 
         me.dataPanel = Ext.create("Ext.panel.Panel", {
-            title: "Data",
+            title: __("Data"),
             autoScroll: true
         });
 
@@ -76,7 +76,7 @@ Ext.define("NOC.fm.event.EventPanel", {
         });
 
         me.logPanel = Ext.create("Ext.grid.Panel", {
-            title: "Log",
+            title: __("Log"),
             store: me.logStore,
             autoScroll: true,
             columns: [
@@ -125,7 +125,7 @@ Ext.define("NOC.fm.event.EventPanel", {
             data: []
         });
         me.alarmsPanel = Ext.create("Ext.grid.Panel", {
-            title: "Alarms",
+            title: __("Alarms"),
             store: me.alarmsStore,
             autoScroll: true,
             columns: [
@@ -264,7 +264,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 me.updateData(data);
             },
             failure: function() {
-                NOC.error("Failed to get event");
+                NOC.error(__("Failed to get event"));
             }
         });
         me.app.setHistoryHash(eventId);
@@ -381,7 +381,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 });
             },
             failure: function() {
-                NOC.error("Failed to post message");
+                NOC.error(__("Failed to post message"));
             }
         });
     },
@@ -409,7 +409,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 me.showEvent(me.data.id);
             },
             failure: function() {
-                NOC.error("Failed to reclassify");
+                NOC.error(__("Failed to reclassify"));
             }
         });
     },

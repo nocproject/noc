@@ -107,7 +107,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Match",
+                    title: __("Match"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -158,7 +158,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Action",
+                    title: __("Action"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",

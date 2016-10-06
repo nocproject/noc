@@ -30,17 +30,17 @@ Ext.define("NOC.sa.managedobject.Application", {
     rowClassField: "row_class",
     actions: [
         {
-            title: "Run discovery now",
+            title: __("Run discovery now"),
             action: "run_discovery",
             glyph: NOC.glyph.play
         },
         {
-            title: "Set managed",
+            title: __("Set managed"),
             action: "set_managed",
             glyph: NOC.glyph.check
         },
         {
-            title: "Set unmanaged",
+            title: __("Set unmanaged"),
             action: "set_unmanaged",
             glyph: NOC.glyph.times
         }
@@ -340,7 +340,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     xtype: "fieldset",
                     layout: "hbox",
-                    title: "Role",
+                    title: __("Role"),
                     defaults: {
                         padding: 4
                     },
@@ -366,7 +366,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Location",
+                    title: __("Location"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -415,7 +415,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Access",
+                    title: __("Access"),
                     items: [
                         {
                             xtype: "container",
@@ -523,7 +523,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Service",
+                    title: __("Service"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -548,7 +548,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Event Sources",
+                    title: __("Event Sources"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -652,7 +652,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Rules",
+                    title: __("Rules"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -785,7 +785,7 @@ Ext.define("NOC.sa.managedobject.Application", {
     ],
     inlines: [
         {
-            title: "Attributes",
+            title: __("Attributes"),
             model: "NOC.sa.managedobject.AttributesModel",
             columns: [
                 {

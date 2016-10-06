@@ -14,7 +14,7 @@ Ext.define("NOC.vc.vc.AddFirstFreeForm", {
         "NOC.vc.vcdomain.LookupField",
         "NOC.vc.vcfilter.LookupField"
     ],
-    title: "Add First Free VC",
+    title: __("Add First Free VC"),
     autoShow: true,
     closable: false,
     modal: true,
@@ -81,7 +81,7 @@ Ext.define("NOC.vc.vc.AddFirstFreeForm", {
                 me.app.newRecord({vc_domain: r.vc_domain, l1: vc});
             },
             failure: function() {
-                NOC.error("Failed to get first free VC");
+                NOC.error(__("Failed to get first free VC"));
                 me.close();
             }
         });

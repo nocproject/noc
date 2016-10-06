@@ -8,7 +8,7 @@ console.debug("Defining NOC.support.account.ChangeCredentials");
 
 Ext.define("NOC.support.account.ChangeCredentials", {
     extend: "Ext.Window",
-    title: "Change Password",
+    title: __("Change Password"),
     layout: "fit",
     autoShow: true,
     draggable: false,
@@ -137,7 +137,7 @@ Ext.define("NOC.support.account.ChangeCredentials", {
             },
             failure: function(response) {
                 var status = Ext.decode(response.responseText);
-                NOC.error("Failed to change credentials: " + status.error);
+                NOC.error(__("Failed to change credentials:") + " " + status.error);
             }
         });
     },

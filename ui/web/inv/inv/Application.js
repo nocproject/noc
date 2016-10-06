@@ -149,7 +149,7 @@ Ext.define("NOC.inv.inv.Application", {
                 plugin.preview(data);
             },
             failure: function() {
-                NOC.error("Failed to get data for plugin " + pData.name);
+                NOC.error(__("Failed to get data for plugin") + " " + pData.name);
             }
         });
     },
@@ -176,7 +176,7 @@ Ext.define("NOC.inv.inv.Application", {
                 parent.items.add(c);
             },
             failure: function() {
-                NOC.error("Failed to launch application " + app);
+                NOC.error(__("Failed to launch application") + " " + app);
             }
         });
     },
@@ -218,13 +218,13 @@ Ext.define("NOC.inv.inv.Application", {
                     path.join("/"), "id", "/",
                     function(success, lastNode) {
                         if(!success) {
-                            NOC.error("Failed to find node");
+                            NOC.error(__("Failed to find node"));
                         }
                     }, me
                 );
             },
             failure: function(response) {
-                NOC.error("Failed to get path");
+                NOC.error(__("Failed to get path"));
             }
         })
     },
@@ -256,7 +256,7 @@ Ext.define("NOC.inv.inv.Application", {
             success: function() {
             },
             failure: function() {
-                NOC.error("Failed to move");
+                NOC.error(__("Failed to move"));
             }
         });
     },
@@ -271,7 +271,7 @@ Ext.define("NOC.inv.inv.Application", {
         }
         if(container) {
             Ext.Msg.show({
-                title: "Remove group '" + container.get("name") + "'?",
+                title: __("Remove group '") + container.get("name") + "'?",
                 msg: "Would you like to remove group. All nested groups will be removed. All nested objects will be moved to Lost&Found folder",
                 buttons: Ext.Msg.YESNO,
                 glyph: NOC.glyph.question_circle,
@@ -288,7 +288,7 @@ Ext.define("NOC.inv.inv.Application", {
                                 me.store.reload({node: me.store.getRootNode()});
                             },
                             failure: function() {
-                                NOC.error("Failed to delete group");
+                                NOC.error(__("Failed to delete group"));
                             }
                         });
                     }

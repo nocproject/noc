@@ -10,7 +10,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     extend: "Ext.panel.Panel",
     requires: [
     ],
-    title: "Map",
+    title: __("Map"),
     closable: false,
     layout: "fit",
     autoScroll: true,
@@ -389,7 +389,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 me.objectLayer.refresh({force: true});
             },
             failure: function(response) {
-                NOC.error("Failed to set position");
+                NOC.error(__("Failed to set position"));
             }
         });
     },
@@ -451,7 +451,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 me.showObjectPopup(e.feature, Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },
@@ -488,7 +488,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                 });
             },
             failure: function() {
-                NOC.error("Failed to change layer settings");
+                NOC.error(__("Failed to change layer settings"));
             }
         });
     },

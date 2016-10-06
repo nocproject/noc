@@ -82,7 +82,7 @@ Ext.define("NOC.sa.managedobject.CapsPanel", {
                 me.store.loadData(data);
             },
             failure: function() {
-                NOC.error("Failed to load data");
+                NOC.error(__("Failed to load data"));
             }
         });
     },

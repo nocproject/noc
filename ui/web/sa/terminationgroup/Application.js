@@ -68,7 +68,7 @@ Ext.define("NOC.sa.terminationgroup.Application", {
     },
     inlines: [
         {
-            title: "IP Pools",
+            title: __("IP Pools"),
             model: "NOC.sa.terminationgroup.IPPoolModel",
             columns: [
                 {

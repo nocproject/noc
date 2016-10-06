@@ -12,7 +12,7 @@ Ext.define("NOC.gis.building.FillEntrancesForm", {
     autoShow: true,
     width: 270,
     height: 260,
-    title: "Fill Entrances",
+    title: __("Fill Entrances"),
     app: null,
 
     initComponent: function() {

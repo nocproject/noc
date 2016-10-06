@@ -85,7 +85,7 @@ Ext.define("NOC.inv.monitor.Application", {
                 me.store.loadData(data);
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     }

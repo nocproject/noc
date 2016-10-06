@@ -22,12 +22,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
     treeFilter: "category",
     filters: [
         {
-            title: "By Is Builtin",
+            title: __("By Is Builtin"),
             name: "is_builtin",
             ftype: "boolean"
         },
         {
-            title: "By Vendor",
+            title: __("By Vendor"),
             name: "vendor",
             ftype: "lookup",
             lookup: "inv.vendor"
@@ -36,7 +36,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
 
     actions: [
         {
-            title: "Get JSON",
+            title: __("Get JSON"),
             action: "json",
             glyph: NOC.glyph.file,
             resultTemplate: "JSON"
@@ -269,7 +269,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 me.showItem(me.ITEM_TEST).preview(me.currentRecord, data);
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },

@@ -8,7 +8,7 @@ console.debug("Defining NOC.fm.alarm.plugins.Validation");
 
 Ext.define("NOC.fm.alarm.plugins.Validation", {
     extend: "Ext.panel.Panel",
-    title: "Validation",
+    title: __("Validation"),
     app: null,
     autoScroll: true,
     bodyPadding: 4,

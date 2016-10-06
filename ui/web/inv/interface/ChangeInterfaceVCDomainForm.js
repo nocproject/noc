@@ -28,7 +28,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceVCDomainForm", {
         });
 
         Ext.apply(me, {
-            title: "Change " + me.record.get("name") + " VC Domain",
+            title: __("Change") + " " + me.record.get("name") + " " + __("VC Domain"),
             items: [
                 {
                     xtype: "form",
@@ -77,7 +77,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceVCDomainForm", {
                 me.close();
             },
             failure: function() {
-                NOC.error("Failed to change VC Domain");
+                NOC.error(__("Failed to change VC Domain"));
             }
         });
     }

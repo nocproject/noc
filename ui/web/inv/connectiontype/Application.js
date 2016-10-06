@@ -18,7 +18,7 @@ Ext.define("NOC.inv.connectiontype.Application", {
     treeFilter: "category",
     filters: [
         {
-            title: "By Is Builtin",
+            title: __("By Is Builtin"),
             name: "is_builtin",
             ftype: "boolean"
         }
@@ -154,7 +154,7 @@ Ext.define("NOC.inv.connectiontype.Application", {
                 me.showItem(me.ITEM_TEST).preview(me.currentRecord, {data: data});
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     }

@@ -132,7 +132,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     },
                     items: [
                         {
-                            title: "Common",
+                            title: __("Common"),
                             items: [
                                 {
                                     name: "description",
@@ -170,7 +170,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             ]
                         },
                         {
-                            title: "Card",
+                            title: __("Card"),
                             items: [
                                 {
                                     name: "card",
@@ -207,7 +207,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             ]
                         },
                         {
-                            title: "Ping Check",
+                            title: __("Ping Check"),
                             items: [
                                 {
                                     name: "enable_ping",
@@ -218,7 +218,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 },
                                 {
                                     xtype: "fieldset",
-                                    title: "Ping discovery intervals",
+                                    title: __("Ping discovery intervals"),
                                     layout: "vbox",
                                     defaults: {
                                         labelAlign: "top",
@@ -274,7 +274,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             ]
                         },
                         {
-                            title: "Box discovery",
+                            title: __("Box discovery"),
                             items: [
                                 {
                                     name: "enable_box_discovery",
@@ -283,7 +283,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 },
                                 {
                                     xtype: "fieldset",
-                                    title: "Box discovery intervals",
+                                    title: __("Box discovery intervals"),
                                     layout: "vbox",
                                     defaults: {
                                         labelAlign: "top",
@@ -534,7 +534,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             ]
                         },
                         {
-                            title: "Periodic discovery",
+                            title: __("Periodic discovery"),
                             items: [
                                 {
                                     name: "enable_periodic_discovery",
@@ -543,7 +543,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 },
                                 {
                                     xtype: "fieldset",
-                                    title: "Periodic discovery intervals",
+                                    title: __("Periodic discovery intervals"),
                                     layout: "vbox",
                                     defaults: {
                                         labelAlign: "top",
@@ -614,7 +614,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                             ]
                         },
                         {
-                            title: "Metrics",
+                            title: __("Metrics"),
                             items: [
                                 {
                                     name: "metrics",

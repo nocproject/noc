@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.inv.plugins.conduits.AddConduitsForm");
 
 Ext.define("NOC.inv.inv.plugins.conduits.AddConduitsForm", {
     extend: "Ext.Window",
-    title: "Add Conduits",
+    title: __("Add Conduits"),
     closable: true,
     layout: "fit",
     app: null,

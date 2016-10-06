@@ -142,13 +142,13 @@ Ext.define("NOC.sa.actioncommands.Application", {
 
     filters: [
         {
-            title: "By SA Profile",
+            title: __("By SA Profile"),
             name: "profile",
             ftype: "lookup",
             lookup: "main.ref.profile"
         },
         {
-            title: "By Action",
+            title: __("By Action"),
             name: "action",
             ftype: "lookup",
             lookup: "sa.action"

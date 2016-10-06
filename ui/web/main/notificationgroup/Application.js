@@ -45,7 +45,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
     ],
     inlines: [
         {
-            title: "Users",
+            title: __("Users"),
             model: "NOC.main.notificationgroup.UsersModel",
             columns: [
                 {
@@ -65,7 +65,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
             ]
         },
         {
-            title: "Other",
+            title: __("Other"),
             model: "NOC.main.notificationgroup.OtherModel",
             columns: [
                 {
@@ -99,7 +99,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
     ],
     actions: [
         {
-            title: "Test selected groups",
+            title: __("Test selected groups"),
             action: "test",
             form: [
                 {

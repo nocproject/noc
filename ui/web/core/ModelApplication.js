@@ -19,10 +19,10 @@ Ext.define("NOC.core.ModelApplication", {
     formToolbar: [],  // Additional form toolbar buttons
     currentRecord: null,
     appTitle: null,
-    createTitle: "Create {0}",
-    cloneTitle: "Clone {0}",
-    changeTitle: "Change {0}",
-    groupChangeTitle: "Change {0} {1}",
+    createTitle: __("Create") + " {0}",
+    cloneTitle: __("Clone") + " {0}",
+    changeTitle: __("Change") + " {0}",
+    groupChangeTitle: __("Change") + " {0} {1}",
     rowClassField: undefined,
     actions: undefined,
     previewIcon: "icon_magnifier",
@@ -144,7 +144,7 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.filters) {
             var fh = Ext.bind(me.onFilter, me),
                 filters = [{
-                    title: "Favorites",
+                    title: __("Favorites"),
                     name: "fav_status",
                     ftype: "favorites"
                 }].concat(me.filters);
@@ -153,7 +153,7 @@ Ext.define("NOC.core.ModelApplication", {
                 autoScroll: true,
                 itemId: "filters",
                 width: 208,
-                title: "Filter",
+                title: __("Filter"),
                 padding: 4,
                 tools: [
                     {
@@ -625,7 +625,7 @@ Ext.define("NOC.core.ModelApplication", {
 
         if(!mv.isValid()) {
             // @todo: Error report
-            NOC.error("Invalid data!");
+            NOC.error(__("Invalid data!"));
             return;
         }
         // Normalize
@@ -907,7 +907,7 @@ Ext.define("NOC.core.ModelApplication", {
     onSave: function() {
         var me = this;
         if(!me.form.isValid()) {
-            NOC.error("Error in data");
+            NOC.error(__("Error in data"));
             return;
         }
         var v = me.getFormData();
@@ -933,8 +933,8 @@ Ext.define("NOC.core.ModelApplication", {
     onDelete: function() {
         var me = this;
         Ext.Msg.show({
-            title: "Delete record?",
-            msg: "Do you wish to delete record? This operation cannot be undone!",
+            title: __("Delete record?"),
+            msg: __("Do you wish to delete record? This operation cannot be undone!"),
             buttons: Ext.Msg.YESNO,
             icon: Ext.window.MessageBox.QUESTION,
             modal: true,
@@ -1159,7 +1159,7 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             },
             failure: function() {
-                NOC.error("Failed");
+                NOC.error(__("Failed"));
             }
         });
     },
@@ -1183,7 +1183,7 @@ Ext.define("NOC.core.ModelApplication", {
                 handler: function() {
                     var form = w.items.first().getForm();
                     if(!form.isValid()) {
-                        NOC.error("Error");
+                        NOC.error(__("Error"));
                         return;
                     }
                     var params = form.getValues();
@@ -1472,12 +1472,12 @@ Ext.define("NOC.core.ModelApplication", {
             scope: me,
             jsonData: values,
             success: function(response) {
-                NOC.info("Records has been updated");
+                NOC.info(__("Records has been updated"));
                 me.showGrid();
                 me.reloadStore();
             },
             failure: function() {
-                NOC.error("Failed");
+                NOC.error(__("Failed"));
             }
         });
     },

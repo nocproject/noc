@@ -286,7 +286,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
             },
             failure: function() {
                 mask.hide();
-                NOC.error("Failed to get text");
+                NOC.error(__("Failed to get text"));
             }
         });
     },
@@ -309,7 +309,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
                 Ext.callback(callback, me);
             },
             failure: function() {
-                NOC.error("Failed to get revisions");
+                NOC.error(__("Failed to get revisions"));
             }
         });
     },
@@ -326,7 +326,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
                 mask.hide();
             },
             failure: function() {
-                NOC.error("Failed to get text");
+                NOC.error(__("Failed to get text"));
                 mask.hide();
             }
         });
@@ -344,7 +344,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
                 mask.hide();
             },
             failure: function() {
-                NOC.error("Failed to get diff");
+                NOC.error(__("Failed to get diff"));
                 mask.hide();
             }
         });
@@ -460,7 +460,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
             t1 = t0 - button.diffRange * 86400000,
             i1;
         if(i0 === 0 && +store.getAt(0).get("ts") <= t1) {
-            NOC.info("Nothing changed");
+            NOC.info(__("Nothing changed"));
             return;
         }
         for(i1 = i0 + 1; i1 < rl; i1 ++) {

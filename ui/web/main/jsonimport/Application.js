@@ -67,7 +67,7 @@ Ext.define("NOC.main.jsonimport.Application", {
             success: function(response) {
                 var data = Ext.decode(response.responseText);
                 if(data.status) {
-                    NOC.info("Object has been loaded");
+                    NOC.info(__("Object has been loaded"));
                     me.jsonField.setValue("");
                 } else {
                     NOC.error("Error loading object: " + data.error);

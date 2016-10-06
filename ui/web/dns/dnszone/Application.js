@@ -135,7 +135,7 @@ Ext.define("NOC.dns.dnszone.Application", {
             ],
             inlines: [
                 {
-                    title: "Records",
+                    title: __("Records"),
                     model: "NOC.dns.dnszone.RecordsModel",
                     columns: [
                         {
@@ -203,25 +203,25 @@ Ext.define("NOC.dns.dnszone.Application", {
     },
     filters: [
         {
-            title: "By Profile",
+            title: __("By Profile"),
             name: "profile",
             ftype: "lookup",
             lookup: "dns.dnszoneprofile"
         },
         {
-            title: "By Project",
+            title: __("By Project"),
             name: "project",
             ftype: "lookup",
             lookup: "project.project"
         },
         {
-            title: "By Notification",
+            title: __("By Notification"),
             name: "notification_group",
             ftype: "lookup",
             lookup: "main.notificationgroup"
         },
         {
-            title: "By Tags",
+            title: __("By Tags"),
             name: "tags",
             ftype: "tag"
         }

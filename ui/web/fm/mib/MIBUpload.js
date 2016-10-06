@@ -62,11 +62,11 @@ Ext.define("NOC.fm.mib.MIBUpload", {
                 url: "/fm/mib/upload/",
                 waitMsg: "Uploading MIBs...",
                 success: function(form, action) {
-                    NOC.info("MIBs has been uploaded");
+                    NOC.info(__("MIBs has been uploaded"));
                     me.close();
                 },
                 failure: function() {
-                    NOC.error("Failed to upload MIB");
+                    NOC.error(__("Failed to upload MIB"));
                 }
             });
         }

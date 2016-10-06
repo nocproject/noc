@@ -52,7 +52,7 @@ Ext.define("NOC.main.systemnotification.Application", {
     ],
     filters: [
         {
-            title: "By Notify Group",
+            title: __("By Notify Group"),
             name: "notification_group",
             ftype: "lookup",
             lookup: "main.notificationgroup"

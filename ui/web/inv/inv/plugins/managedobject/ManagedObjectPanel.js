@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.inv.plugins.managedobject.ManagedObjectPanel");
 Ext.define("NOC.inv.inv.plugins.managedobject.ManagedObjectPanel", {
     extend: "Ext.panel.Panel",
     requires: [],
-    title: "Managed Object",
+    title: __("Managed Object"),
     closable: false,
     layout: "fit",
 

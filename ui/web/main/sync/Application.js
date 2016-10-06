@@ -81,7 +81,7 @@ Ext.define("NOC.main.sync.Application", {
             ],
             filters: [
                 {
-                    title: "Active",
+                    title: __("Active"),
                     name: "is_active",
                     ftype: "boolean"
                 }
