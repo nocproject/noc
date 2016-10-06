@@ -198,7 +198,7 @@ class Command(BaseCommand):
                 self.stdout.write("    | %s\n" % body.replace("\n", "\n    | "))
                 tt_id = "<NETWORK TT>"
                 ctx["tt"] = "%s:%s" % (tt_system.name, tt_id)
-                alarm.escalate(ctx["tt"], close_tt=e.close_tt)
+                # alarm.escalate(ctx["tt"], close_tt=e.close_tt)
                 if tts.promote_group_tt:
                     self.stdout.write("    Promoting group TT")
                     self.stdout.write("    @ Create Group TT")
