@@ -84,14 +84,13 @@ Ext.define 'Report.controller.Dashboard',
             Сохраняет дашборд.
             @param {Report.controller.Configurator} controller Контроллер конфигуратора.
             @param {Report.model.configurator.Model} model Модель конфигуратора.
+            @param {Ext.data.Model/Null} entityModel Модель сущности, которую конфигурируем, если есть.
 		###
-		saveDashboard: (controller, model) ->
+		saveDashboard: (controller, model, entityModel) ->
 			dashboards = Report.model.MainDataTree.get('dashboards')
 			get = model.get.bind model
 			
-			dashboards.findRecord('active', true)?.set('active', false)
-			
-			dashboards.add {
+			data = {
 				name:        get 'name'
 				tags:        get 'tags'
 				description: get 'description'
@@ -99,6 +98,16 @@ Ext.define 'Report.controller.Dashboard',
 				active:      true
 				visible:     false
 			}
+			
+			dashboards.findRecord('active', true)?.set('active', false)
+			
+			if entityModel
+				data.visible = true
+				entityModel.set data
+			else
+				dashboards.add data
+			
+			@fireEvent 'refresh', @
 	
 		###
             Закрывает текущий дашборд.

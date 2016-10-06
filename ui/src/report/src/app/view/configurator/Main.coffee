@@ -22,6 +22,7 @@ Ext.define 'Report.view.configurator.Main',
 	config:
 	
 		###
+            @cfg {Ext.data.Model/Null} entityModel
             Модель сущности, которую конфигурируем.
             Может отсутствовать если создается новая сущность.
         ###
