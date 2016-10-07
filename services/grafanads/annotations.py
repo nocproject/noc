@@ -51,7 +51,7 @@ class AnnotationsHandler(tornado.web.RequestHandler):
         r = []
         # Get alarms
         r += self.get_alarms(mo, f, t, annotation)
-        r = sorted(r, key=operator.attrgetter("time"))
+        r = sorted(r, key=operator.itemgetter("time"))
         return ujson.dumps(r)
 
     def get_alarms(self, mo, f, t, annotation):
