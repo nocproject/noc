@@ -10,15 +10,37 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     extend: "Ext.panel.Panel",
     title: __("Object Inspector"),
     autoScroll: true,
-        bodyStyle: {
+    bodyStyle: {
         background: "#c0c0c0"
     },
 
     initComponent: function() {
         var me = this;
+
         me.infoText = Ext.create("Ext.container.Container", {
-            padding: 4
+            padding: 4,
+            regin: 'north'
         });
+
+        me.legendPicture = Ext.create('NOC.inv.map.Legend', {
+            width: me.width,
+            height: 335
+        });
+
+        me.legendText = Ext.create("Ext.container.Container", {
+            padding: 4,
+            region: 'south',
+            autoShow: false,
+            items: [
+                {
+                    xtype: 'box',
+                    html: __('Legend')
+                },
+                me.legendPicture
+            ]
+        });
+        // autoShow: false doesn't work
+        me.legendText.hide();
 
         me.lookButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.pencil,
@@ -60,9 +82,22 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
             disabled: true
         });
 
+        me.legendButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.info,
+            scope: me,
+            tooltip: __("Show legend"),
+            enableToggle: true,
+            listeners: {
+                scope: me,
+                toggle: me.onLegend
+            }
+        });
+
         Ext.apply(me, {
+            layout: 'border',
             items: [
-                me.infoText
+                me.infoText,
+                me.legendText
             ],
             dockedItems: [{
                 xtype: "toolbar",
@@ -72,7 +107,8 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
                     me.lookButton,
                     me.segmentButton,
                     me.dashboardButton,
-                    me.consoleButton
+                    me.consoleButton,
+                    me.legendButton
                 ]
             }]
         });
@@ -155,5 +191,13 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
     onConsole: function() {
         var me = this;
         window.open(me.consoleUrl);
+    },
+
+    onLegend: function(element, pressed) {
+        if(pressed) {
+            this.legendText.show()
+        } else {
+            this.legendText.hide();
+        }
     }
 });
