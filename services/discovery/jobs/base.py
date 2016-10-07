@@ -620,6 +620,23 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return
         #
         if lpolicy in ("O", "R") and rpolicy in ("O", "R"):
+            # Unlink when necessary
+            if llink:
+                try:
+                    li.unlink()
+                except ValueError as e:
+                    self.logger.info(
+                        "Failed to unlink %s: %s" % (llink, e)
+                    )
+                    return
+            if rlink:
+                try:
+                    ri.unlink()
+                except ValueError as e:
+                    self.logger.info(
+                        "Failed to unlink %s: %s" % (llink, e)
+                    )
+                    return
             self.logger.info(
                 "Linking: %s:%s -- %s:%s",
                 local_object.name, local_interface,
