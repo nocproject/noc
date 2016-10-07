@@ -35,6 +35,7 @@
 
 - name: Wait for Grafana
   wait_for:
-    port: 8002
-    timeout: 30
+    port: "{{ noc_config['services']['grafana'][0].split(':')[1] }}"
+    timeout: 60
     state: present
+    host: 0.0.0.0
