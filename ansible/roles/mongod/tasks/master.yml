@@ -40,9 +40,9 @@
     - config
 
 - name: Create database user
-  shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p {{ noc_mongo_admin_password }} {{ noc_mongo_db }} --authenticationDatabase admin {{ noc_root }}/var/etc/mongo/userinit.js"
+  shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' {{ noc_mongo_db }} --authenticationDatabase admin {{ noc_root }}/var/etc/mongo/userinit.js"
   when: user_status.changed
 
 - name: Update replica set configuration
-  shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p {{ noc_mongo_admin_password }} admin {{ noc_root }}/var/etc/mongo/rsinit.js"
+  shell: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ noc_mongo_admin_password }}' admin {{ noc_root }}/var/etc/mongo/rsinit.js"
   when: rs_conf_status.changed and rs_status.rc == 0
