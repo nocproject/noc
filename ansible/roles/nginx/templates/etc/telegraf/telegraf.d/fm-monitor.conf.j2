@@ -1,10 +1,12 @@
-[[inputs.httpjson]]
+ [[inputs.httpjson]]
   name = "fm_monitor"
 
   servers = [
     "https://{{ noc_web_host }}/fm/monitor/data2/"
   ]
   method = "GET"
+
+  insecure_skip_verify = false
 
   [inputs.httpjson.headers]
     Authorization = "Basic YWRtaW46YWRtaW4K" # admin:admin
@@ -13,5 +15,6 @@
 ## NOC users!
 ##
 ## If you want to use that plugin please create special user in noc web and set "Authorization" to
-## that  ` echo admin:admin | base64`.
+## that  `echo -n admin:admin | base64`.
+## or wget -d --auth-no-challenge --no-check-certificate https://admin:admin@{{ noc_web_host }}/fm/monitor/data2/
 ##
