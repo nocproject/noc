@@ -23,6 +23,7 @@ import ujson
 from noc.settings import TRACEBACK_REVERSE
 from noc.lib.version import get_branch, get_tip
 from noc.lib.fileutils import safe_rewrite
+from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
@@ -281,6 +282,7 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
     fp = error_fingerprint()
     r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)
+    metrics["errors"] += 1
     if ENABLE_CP:
         fp = error_fingerprint()
         path = os.path.join(CP_NEW, fp + ".json")
@@ -288,6 +290,7 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
             # Touch file
             os.utime(path, None)
         else:
+            metrics["unique_errors"] += 1
             # @todo: TZ
             # @todo: Installation ID
             c = {
@@ -304,8 +307,8 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
                 if CP_SET_UID:
                     os.chown(path, CP_SET_UID, -1)
                 logger.error("Writing CP report to %s", path)
-            except OSError, why:
-                logger.error("Unable to write CP report: %s", why)
+            except OSError as e:
+                logger.error("Unable to write CP report: %s", e)
     return r
 
 
