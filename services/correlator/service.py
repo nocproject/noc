@@ -453,7 +453,11 @@ class CorrelatorService(Service):
 
     def dispose_worker(self, message, event_id):
         self.perf_metrics["alarm_dispose"] += 1
-        self.dispose_event(event_id)
+        try:
+            self.dispose_event(event_id)
+        except Exception:
+            self.perf_metrics["alarm_dispose_error"] += 1
+            error_report()
         self.ioloop.add_callback(message.finish)
 
     def dispose_event(self, event_id):
@@ -468,6 +472,7 @@ class CorrelatorService(Service):
             return
         drc = self.rules.get(e.event_class.id)
         if not drc:
+            self.logger.info("[%s] No disposition rules for class %s, skipping", event_id, e.event_class.name)
             return
         # Apply disposition rules
         for r in drc:
@@ -478,9 +483,11 @@ class CorrelatorService(Service):
             if cond:
                 # Process action
                 if r.action == "drop":
+                    self.logger.info("[%s] Dropped by action", event_id)
                     e.delete()
                     return
                 elif r.action == "ignore":
+                    self.logger.info("[%s] Ignored by action", event_id)
                     return
                 elif r.action == "raise" and r.combo_condition == "none":
                     self.raise_alarm(r, e)
