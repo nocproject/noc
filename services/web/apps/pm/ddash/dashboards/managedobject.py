@@ -48,7 +48,10 @@ class ManagedObjectDashboard(BaseDashboard):
                 "to": "now"
             },
             "refresh": "1m",
-            "rows": []
+            "rows": [],
+            "annotations": {
+                "list": []
+            },
         }
         # Add object name and description
         title = [self.object.name, "(%s)" % self.object.address]
@@ -529,6 +532,15 @@ class ManagedObjectDashboard(BaseDashboard):
                     }
                 ]
             }]
+        ann = {
+                    "datasource": "GrafanaDS",
+                    "enable": True,
+                    "iconColor": "rgba(255, 96, 96, 1)",
+                    "name": "Alarm",
+                    "query": str(self.object.id)
+                }
+
+        r["annotations"]["list"] += [ann]
         if not r["rows"][-1]["panels"]:
             r["rows"].pop(-1)  # Remove empty row
         return r
