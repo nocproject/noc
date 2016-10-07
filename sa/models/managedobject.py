@@ -20,6 +20,7 @@ from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, SET_NULL)
 from django.contrib.auth.models import User, Group
 import cachetools
+import six
 ## NOC modules
 from administrativedomain import AdministrativeDomain
 from authprofile import AuthProfile
@@ -468,7 +469,11 @@ class ManagedObject(Model):
         if self.initial_data["id"] is None:
             self.segment.update_access()
         elif "segment" in self.changed_fields:
-            self.initial_data["segment"].update_access()
+            iseg = self.initial_data["segment"]
+            if iseg and isinstance(iseg, six.string_types):
+                iseg = NetworkSegment.get_by_id(iseg)
+            if iseg:
+                iseg.update_access()
             self.segment.update_access()
         # Apply discovery jobs
         self.ensure_discovery_jobs()
