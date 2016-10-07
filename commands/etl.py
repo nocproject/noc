@@ -95,10 +95,10 @@ class Command(BaseCommand):
             for l in chain:
                 n = l.check(chain)
                 if n:
-                    s = "%d errors" % n
+                    ss = "%d errors" % n
                 else:
-                    s = "OK"
-                summary += ["%s.%s: %s" % (s["system"], l.name, s)]
+                    ss = "OK"
+                summary += ["%s.%s: %s" % (s["system"], l.name, ss)]
                 n_errors += n
         if summary:
             self.stdout.write("Summary:\n")
