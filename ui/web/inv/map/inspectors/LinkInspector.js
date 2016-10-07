@@ -8,6 +8,9 @@ console.debug("Defining NOC.inv.map.inspectors.LinkInspector");
 
 Ext.define("NOC.inv.map.inspectors.LinkInspector", {
     extend: "Ext.panel.Panel",
+
+    requires: [],
+
     title: __("Link Inspector"),
     autoScroll: true,
     bodyStyle: {
@@ -18,8 +21,29 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
         var me = this;
 
         me.infoText = Ext.create("Ext.container.Container", {
-            padding: 4
+            padding: 4,
+            region: 'north'
         });
+
+        me.legendPicture = Ext.create('NOC.inv.map.Legend', {
+            width: me.width,
+            height: 335
+        });
+
+        me.legendText = Ext.create("Ext.container.Container", {
+            padding: 4,
+            region: 'south',
+            autoShow: false,
+            items: [
+                {
+                    xtype: 'box',
+                    html: __('Legend')
+                },
+                me.legendPicture
+            ]
+        });
+        // autoShow: false doesn't work
+        me.legendText.hide();
 
         me.dashboardButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.line_chart,
@@ -29,15 +53,29 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
             disabled: true
         });
 
+        me.legendButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.info,
+            scope: me,
+            tooltip: __("Show legend"),
+            enableToggle: true,
+            listeners: {
+                scope: me,
+                toggle: me.onLegend
+            }
+        });
+
         Ext.apply(me, {
+            layout: 'border',
             items: [
-                me.infoText
+                me.infoText,
+                me.legendText
             ],
             dockedItems: [{
                 xtype: "toolbar",
                 dock: "top",
                 items: [
-                    me.dashboardButton
+                    me.dashboardButton,
+                    me.legendButton
                 ]
             }]
         });
@@ -97,6 +135,14 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
             window.open(
                 '/ui/grafana/dashboard/script/noc.js?dashboard=link&id=' + me.currentLinkId
             );
+        }
+    },
+
+    onLegend: function(element, pressed) {
+        if(pressed) {
+            this.legendText.show()
+        } else {
+            this.legendText.hide();
         }
     }
 });
