@@ -40,6 +40,14 @@ upstream mrt {
 }
 {% endif %}
 
+{% if noc_config["services"].get("bi", []) %}
+upstream bi {
+{% for n in noc_config["services"].get("bi", []) %}
+    server {{ n }};
+{% endfor %}
+}
+{% endif %}
+
 {% if noc_config["services"].get("notebook", []) %}
 upstream notebook {
 {% for n in noc_config["services"].get("notebook", []) %}
@@ -201,6 +209,28 @@ server {
         auth_request_set $groups $upstream_http_remote_groups;
         proxy_set_header Remote-Groups $groups;
         access_log  {{ nginx_log_dir }}/mrt.access.log noc_format;
+    }
+{% endif %}
+
+{% if noc_config["services"].get("bi", []) %}
+
+# bi service api
+    location /api/bi/ {
+        proxy_pass http://bi;
+        auth_request /api/auth/auth/;
+        # rewrite  ^/api/bi/(.*)  /$1 break;
+        # internal;
+        gzip on;
+        gzip_types text/css text/x-js;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request_set $user $upstream_http_remote_user;
+        proxy_set_header Remote-User $user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        proxy_set_header Remote-Groups $groups;
     }
 {% endif %}
 
