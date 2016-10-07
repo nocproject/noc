@@ -91,14 +91,14 @@ class ReportRebootsApplication(SimpleReport):
         #
         if not request.user.is_superuser:
             data = [
-                (mo_names.get(x["_id"], "---")[0],
-                 mo_names.get(x["_id"], "---")[1], x["count"])
+                (mo_names.get(x["_id"], "---")[1],
+                 mo_names.get(x["_id"], "---")[0], x["count"])
                 for x in data if x["_id"] in id_perm
             ]
         else:
             data = [
-                (mo_names.get(x["_id"], "---")[0],
-                 mo_names.get(x["_id"], "---")[1], x["count"])
+                (mo_names.get(x["_id"], "---")[1],
+                 mo_names.get(x["_id"], "---")[0], x["count"])
                 for x in data
             ]
 

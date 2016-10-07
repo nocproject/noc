@@ -8,25 +8,43 @@
 
 ## Python modules
 import operator
+from django import forms
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.objectuplink import ObjectUplink
+from noc.main.models.pool import Pool
+from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
+
+
+class ReportForm(forms.Form):
+    pool = forms.ModelChoiceField(
+        label=_("Managed Objects Pools"),
+        required=True,
+        queryset=Pool.objects.order_by("name"))
 
 
 class ReportDiscoveryProblemApplication(SimpleReport):
     title = _("Discovery Problems")
+    form = ReportForm
 
-    def get_data(self, **kwargs):
+    def get_data(self, request, pool, **kwargs):
         problems = {}  # id -> problem
         # Get all managed objects
         mos = dict(
             (mo.id, mo)
-            for mo in ManagedObject.objects.filter(is_managed=True)
+            for mo in ManagedObject.objects.filter(is_managed=True, pool=pool)
         )
+        if not request.user.is_superuser:
+            mos = dict(
+                (mo.id, mo)
+                for mo in ManagedObject.objects.filter(is_managed=True, pool=pool,
+                                                       administrative_domain__in=UserAccess.get_domains(request.user))
+            )
+
         mos_set = set(mos)
         # Get all managed objects with Generic.Host profiles
         for mo in mos:

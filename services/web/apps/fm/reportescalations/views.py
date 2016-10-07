@@ -66,12 +66,13 @@ class ReportEscalationsApplication(SimpleReport):
         q["escalation_tt"] = {
             "$exists": True
         }
+        if not request.user.is_superuser:
+            q["adm_path__in"] = UserAccess.get_domains(request.user)
         data = []
         for ac in (ActiveAlarm, ArchivedAlarm):
             for d in ac._get_collection().find(q):
-                mo = ManagedObject.objects.filter(
-                    administrative_domain__in=UserAccess.get_domains(request.user)).filter(id=(d["managed_object"]))
-                if mo:
+                mo = ManagedObject.objects.get_by_id((d["managed_object"]))
+                if not mo:
                     continue
                 data += [(
                     d["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
