@@ -8,6 +8,7 @@
 
 ## Python modules
 import operator
+from time import mktime
 ## Third-party modules
 import tornado.web
 import tornado.gen
@@ -31,8 +32,8 @@ class AnnotationsHandler(tornado.web.RequestHandler):
         except ValueError as e:
             raise tornado.web.HTTPError(400, "Bad request")
         #
-        f = dateutil.parser.parse(req["range"]["from"])
-        t = dateutil.parser.parse(req["range"]["to"])
+        f = dateutil.parser.parse(req["range"]["from"], ignoretz=True)
+        t = dateutil.parser.parse(req["range"]["to"], ignoretz=True)
         if f > t:
             t, f = f, t
         # Annotation to return in reply
@@ -90,7 +91,7 @@ class AnnotationsHandler(tornado.web.RequestHandler):
                 if f <= d["timestamp"] <= t:
                     r += [{
                         "annotation": annotation,
-                        "time": d["timestamp"].isoformat(),
+                        "time": mktime(d["timestamp"].timetuple())*1000,
                         "title": AlarmClass.get_by_id(d["alarm_class"]).name
                         #"tags": X,
                         #"text": X
@@ -98,7 +99,7 @@ class AnnotationsHandler(tornado.web.RequestHandler):
                 if "clear_timestamp" in d and f <= d["clear_timestamp"] <= t:
                     r += [{
                         "annotation": annotation,
-                        "time": d["timestamp"].isoformat(),
+                        "time": mktime(d["timestamp"].timetuple())*1000,
                         "title": "[CLEAR] %s" % AlarmClass.get_by_id(d["alarm_class"]).name
                         #"tags": X,
                         #"text": X
