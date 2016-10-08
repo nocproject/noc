@@ -19,11 +19,22 @@ Ext.define("NOC.inv.map.inspectors.SegmentInspector", {
         var me = this;
 
         me.infoText = Ext.create("Ext.container.Container", {
-            padding: 4
+            padding: 4,
+            region: 'north'
         });
+
+        me.legend = Ext.create('NOC.inv.map.Legend', {
+            width: me.width
+        });
+
+        // autoShow: false doesn't work
+        me.legend.hide();
+
         Ext.apply(me, {
+            layout: 'border',
             items: [
-                me.infoText
+                me.infoText,
+                me.legend
             ]
         });
         me.callParent();
@@ -54,5 +65,13 @@ Ext.define("NOC.inv.map.inspectors.SegmentInspector", {
             t += "<br/><b>Objects: </b>" + data.objects;
         }
         me.infoText.setHtml(t);
+    },
+
+    onLegend: function() {
+        if(this.legend.isVisible()) {
+            this.legend.hide();
+        } else {
+            this.legend.show()
+        }
     }
 });

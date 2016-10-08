@@ -173,6 +173,16 @@ Ext.define("NOC.inv.map.Application", {
             handler: me.onStp
         });
 
+        me.legendButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.info,
+            tooltip: __("Show legend"),
+            enableToggle: true,
+            listeners: {
+                scope: me,
+                toggle: me.onLegend
+            }
+        });
+
         Ext.apply(me, {
             dockedItems: [
                 {
@@ -192,7 +202,9 @@ Ext.define("NOC.inv.map.Application", {
                         me.viewMapButton,
                         me.viewLoadButton,
                         "-",
-                        me.viewStpButton
+                        me.viewStpButton,
+                        "->",
+                        me.legendButton
                     ]
                 },
                 me.inspectorPanel
@@ -331,5 +343,13 @@ Ext.define("NOC.inv.map.Application", {
     onStp: function() {
         var me = this;
         me.mapPanel.setStp(me.viewStpButton.pressed);
+    },
+
+    onLegend: function() {
+        var me = this;
+
+        me.linkInspector.onLegend();
+        me.managedObjectInspector.onLegend();
+        me.segmentInspector.onLegend();
     }
 });
