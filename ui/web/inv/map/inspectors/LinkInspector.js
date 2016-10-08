@@ -25,25 +25,12 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
             region: 'north'
         });
 
-        me.legendPicture = Ext.create('NOC.inv.map.Legend', {
-            width: me.width,
-            height: 335
+        me.legend = Ext.create('NOC.inv.map.Legend', {
+            width: me.width
         });
 
-        me.legendText = Ext.create("Ext.container.Container", {
-            padding: 4,
-            region: 'south',
-            autoShow: false,
-            items: [
-                {
-                    xtype: 'box',
-                    html: __('Legend')
-                },
-                me.legendPicture
-            ]
-        });
         // autoShow: false doesn't work
-        me.legendText.hide();
+        me.legend.hide();
 
         me.dashboardButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.line_chart,
@@ -53,29 +40,17 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
             disabled: true
         });
 
-        me.legendButton = Ext.create("Ext.button.Button", {
-            glyph: NOC.glyph.info,
-            scope: me,
-            tooltip: __("Show legend"),
-            enableToggle: true,
-            listeners: {
-                scope: me,
-                toggle: me.onLegend
-            }
-        });
-
         Ext.apply(me, {
             layout: 'border',
             items: [
                 me.infoText,
-                me.legendText
+                me.legend
             ],
             dockedItems: [{
                 xtype: "toolbar",
                 dock: "top",
                 items: [
-                    me.dashboardButton,
-                    me.legendButton
+                    me.dashboardButton
                 ]
             }]
         });
@@ -138,11 +113,11 @@ Ext.define("NOC.inv.map.inspectors.LinkInspector", {
         }
     },
 
-    onLegend: function(element, pressed) {
-        if(pressed) {
-            this.legendText.show()
+    onLegend: function() {
+        if(this.legend.isVisible()) {
+            this.legend.hide();
         } else {
-            this.legendText.hide();
+            this.legend.show()
         }
     }
 });
