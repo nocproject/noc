@@ -59,7 +59,7 @@
     },
     "production": {
         "output": {
-            "base": "./build",
+            "base": "build",
             "appCache": {
                 "enable": true,
                 "path": "cache.appcache"
@@ -77,7 +77,7 @@
     },
     "testing": {
         "output": {
-            "base": "./build",
+            "base": "build",
             "appCache": {
                 "enable": true,
                 "path": "cache.appcache"
@@ -108,7 +108,7 @@
             "enable": false
         },
         "resources": {
-            "path": "../resources",
+            "path": "resources",
             "shared": "resources"
         }
     },
