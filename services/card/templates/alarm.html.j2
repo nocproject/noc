@@ -36,7 +36,9 @@
     </tr>
     <tr>
         <th scope="row">{{ _("Segment") }}</th>
-        <td>{{ managed_object.segment.name }}</td>
+        <td>
+            <a href="/api/card/view/segment/{{ managed_object.segment.id }}/">{{ managed_object.segment.name }}</a>
+        </td>
     </tr>
     <tr>
         <th scope="row">{{ _("Administrative Domain") }}</th>
