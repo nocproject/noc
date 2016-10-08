@@ -533,7 +533,7 @@ class ManagedObjectDashboard(BaseDashboard):
                 ]
             }]
         ann = {
-                    "datasource": "GrafanaDS",
+            "datasource": "NocDS",
                     "enable": True,
                     "iconColor": "rgba(255, 96, 96, 1)",
                     "name": "Alarm",
