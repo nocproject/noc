@@ -83,7 +83,10 @@ class Script(BaseScript):
             if not section:
                 continue
             name, cfg = self.parse_section(section)
-            ip_addr = "%s/%s" % (cfg["ip-addr"], cfg["prefix-len"])
+            ip = cfg["ip-addr"]
+            if "static" in ip:
+                ip = ip.replace("static", "").strip()
+            ip_addr = "%s/%s" % (ip, cfg["prefix-len"])
             i = {
                 "name": name,
                 "type": "SVI",
