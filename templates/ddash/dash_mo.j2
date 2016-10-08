@@ -71,8 +71,10 @@
       ]
 
     }{%if port_types %},
+    {% set comma = joiner(",") -%}
     {% for port in port_types -%}
-    {
+
+    {{ comma() }}{
       "collapse": true,
       "editable": false,
       "height": "250px",
