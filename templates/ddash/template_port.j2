@@ -24,7 +24,7 @@
     {%for port in port_type.ports -%}
     {{ comma() }}{
       "selected": false,
-      "text": "{{port.descr | default(port.name)}}",
+      "text": "{% if port.descr %}{{port.name}} ({{port.descr}}){%else%}{{port.name}}{%endif%}",
       "value": "{{port.name}}"
     }
     {%- endfor %}

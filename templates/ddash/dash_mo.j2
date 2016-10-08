@@ -29,10 +29,13 @@
   },
   "templating": {
     "list": [
+      {%if port_types %}
       {% for port_type in port_types -%}
         {% from 'template_port.j2' import ports -%}
         {{ comma() }}{{ ports(port_type) }}
       {% endfor -%},
+      {% endif %}
+
       {% include "template_device.j2" with context -%},
       {% include "template_vendor.j2" with context -%},
       {% include "template_platform.j2" with context -%},
@@ -41,7 +44,15 @@
     ]
   },
   "annotations": {
-    "list": []
+    "list": [
+      {
+        "datasource": "GrafanaDS",
+        "enable": true,
+        "iconColor": "rgba(255, 96, 96, 1)",
+        "name": "Alarm",
+        "query": "$device_id"
+      }
+    ]
   },
   "schemaVersion": 12,
   "version": 33,
@@ -59,7 +70,7 @@
       {% include "panel_ip.j2" with context -%}
       ]
 
-    },
+    }{%if port_types %},
     {% for port in port_types -%}
     {
       "collapse": true,
@@ -71,9 +82,11 @@
         {% from "graph_interface_load.j2" import interface -%}
         {{interface(port)}}
       ]
-    },
+    }
     {%- endfor %}
-    {
+    {%endif%}
+    {%if object_metrics%}
+    ,{
       "collapse": false,
       "editable": false,
       "height": "250px",
@@ -88,5 +101,6 @@
       ]
 
     }
+    {%endif%}
   ]
 }
