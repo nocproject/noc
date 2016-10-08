@@ -37,6 +37,54 @@
   tags:
     - requirements
 
+- name: Add default influx datasource
+  uri:
+    url: "https://{{ noc_web_host }}/ui/grafana/api/datasources"
+    method: POST
+    user: admin
+    password: admin
+    force_basic_auth: yes
+    status_code: 200, 401
+    body_format: json
+    validate_certs: no
+    body:
+      name: default
+      type: influxdb
+      url: "http://{{ noc_config.services.influxdb.0 }}"
+      access: proxy
+      isDefault: True
+      database: "{{ noc_influxdb_db }}"
+      user: "{{noc_influxdb_user}}"
+      password: "{{ noc_influxdb_password }}"
+      jsonData:
+        timeInterval: 300
+  ignore_errors: yes
+  when: "{{ has_svc_influxdb | default(False) }}"
+  tags:
+    - config
+
+- name: Add grafanads datasource
+  uri:
+    url: "https://{{ noc_web_host }}/ui/grafana/api/datasources"
+    method: POST
+    user: admin
+    password: admin
+    force_basic_auth: yes
+    status_code: 200, 401
+    body_format: json
+    validate_certs: no
+    body:
+      name: NocDS
+      type: grafana-simple-json-datasource
+      url: "http://{{ noc_web_host }}/api/grafanads"
+      access: proxy
+      isDefault: False
+  ignore_errors: yes
+  when: "{{ has_svc_grafanads | default(False) }}"
+  tags:
+    - config
+
+
 - name: Start Grafana service
   service:
     name: "{{ grafana_system_service }}"
