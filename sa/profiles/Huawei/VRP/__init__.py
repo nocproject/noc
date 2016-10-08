@@ -24,7 +24,7 @@ class Profile(BaseProfile):
         (r"^Squeeze flash:", "y\n\r")
     ]
     pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.\[/`\s]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
-    pattern_syntax_error = r"(Error: |% Wrong parameter found at|% Unrecognized command found at|Error:Too many parameters found|% Too many parameters found at|% Ambiguous command found at)"
+    pattern_syntax_error = r"(ERROR: |% Wrong parameter found at|% Unrecognized command found at|Error:Too many parameters found|% Too many parameters found at|% Ambiguous command found at)"
 
     command_more = " "
     config_volatile = ["^%.*?$"]
