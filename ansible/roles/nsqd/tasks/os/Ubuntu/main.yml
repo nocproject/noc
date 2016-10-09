@@ -1,16 +1,8 @@
 ---
-- name: install nsqd.conf init file
-  template:
-     src: "os/Ubuntu/etc/init/nsqd.conf.j2"
-     dest: "/etc/init/nsqd.conf"
-  when: "ansible_service_mgr != 'systemd'"
-  notify: restart nsqd
-
 - name: install nsqd.service file
   template:
-     src: etc/systemd/nsqd.service
-     dest: /etc/systemd/system/nsqd.service
-  when: "ansible_service_mgr == 'systemd'"
+     src: "etc/systemd/nsqd.service"
+     dest: "/etc/systemd/system/nsqd.service"
   register: nsqd_service
 
 - name: Install nsqd monitoring
@@ -23,4 +15,4 @@
 
 - name: reload systemd
   shell: systemctl daemon-reload
-  when: "nsqd_service.changed and ansible_service_mgr == 'systemd'"
+  when: nsqd_service.changed
