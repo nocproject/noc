@@ -20,17 +20,18 @@
     - libffi6
     - libffi-dev
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 
 - name: Install supervisord init script
   template:
-    src: "os/Ubuntu/etc/init.d/noc.j2"
-    dest: "/etc/init.d/{{ noc_system_service }}"
-    mode: "a+rx"
-  tags:
-    - config
+    src: "os/Ubuntu/etc/systemd/system/noc.service.j2"
+    dest: "/etc/systemd/system/{{ noc_system_service }}.service"
+    mode: "a+r"
 
 - include: "telegraf.yml"
+
+- name: Reload systemd daemon
+  command: /bin/systemctl daemon-reload
