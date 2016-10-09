@@ -1,16 +1,8 @@
 ---
-- name: install nsqlookupd.conf init file
-  template:
-     src: "os/Ubuntu/etc/init/nsqlookupd.conf.j2"
-     dest: "/etc/init/nsqlookupd.conf"
-  when: "ansible_service_mgr != 'systemd'"
-  notify: restart nsqlookupd
-
 - name: install nsqlookupd.service file
   template:
-     src: etc/systemd/system/nsqlookupd.service
-     dest: /etc/systemd/system/nsqlookupd.service
-  when: "ansible_service_mgr == 'systemd'"
+     src: "etc/systemd/system/nsqlookupd.service"
+     dest: "/etc/systemd/system/nsqlookupd.service"
   register: nsqlookupd_service
 
 - name: Install nsqlookupd monitoring
@@ -23,4 +15,4 @@
 
 - name: reload systemd
   shell: systemctl daemon-reload
-  when: "nsqlookupd_service.changed and ansible_service_mgr == 'systemd'"
+  when: nsqlookupd_service.changed
