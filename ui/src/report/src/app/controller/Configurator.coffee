@@ -29,7 +29,7 @@ Ext.define 'Report.controller.Configurator',
 		set '#meta #description', get 'description'
 		set '#size #width',       get 'width'
 		set '#size #height',      get 'height'
-		set '#wellspring #combo', get 'point'
+		set '#wellspring #combo', get 'wellspring'
 		set '#wellspring #grid',  get 'columns'
 		set '#filters #grid',     get 'filters'
 				
@@ -40,6 +40,7 @@ Ext.define 'Report.controller.Configurator',
 	saveData: (button) ->
 		configurator = button.up('configuratorMain')
 		entityModel = configurator.getEntityModel()
+		entityType = configurator.getEntityType()
 		model = Ext.create 'Report.model.configurator.Model'
 		get = @getValueGetter configurator
 		
@@ -50,7 +51,7 @@ Ext.define 'Report.controller.Configurator',
 			description: get '#meta #description'
 			width:       get '#size #width'
 			height:      get '#size #height'
-			point:       get '#wellspring #combo'
+			wellspring:  get '#wellspring #combo'
 			columns:     get '#wellspring #grid'
 			filters:     get '#filters #grid'
 		}
@@ -60,8 +61,9 @@ Ext.define 'Report.controller.Configurator',
             @param {Report.controller.Configurator} this Конфигуратор.
             @param {Report.model.configurator.Model} model Модель конфигуратора.
             @param {Ext.data.Model/Null} entityModel Модель сущности, которую конфигурируем, если есть.
+            @param {String} entityType Тип сущности в виде произвольной строки.
         ###
-		@fireEvent 'startSave', @, model, entityModel
+		@fireEvent 'startSave', @, model, entityModel, entityType
 		
 		configurator.hide()
 		

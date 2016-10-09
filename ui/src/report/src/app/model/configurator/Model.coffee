@@ -17,7 +17,7 @@ Ext.define 'Report.model.configurator.Model',
 		{name: 'description', type: 'string'}
 		{name: 'width',       type: 'int'   }
 		{name: 'height',      type: 'int'   }
-		{name: 'point',       type: 'string'}
+		{name: 'wellspring',  type: 'string'}
 		{name: 'columns',     type: 'store', model: 'Report.model.config.Column'}
 		{name: 'filters',     type: 'store', model: 'Report.model.config.Filter'}
 	]

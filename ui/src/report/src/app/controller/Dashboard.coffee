@@ -3,6 +3,7 @@
     TODO Реордеринг дашбордов.
     TODO При закрытии и удалении показывать прошлый активный, а не первый.
     TODO Кнопка отмены удаления.
+    TODO Прятать кнопку выбора если такой дашборд уже есть.
 ###
 Ext.define 'Report.controller.Dashboard',
 	extend: 'Ext.app.Controller'
@@ -15,6 +16,7 @@ Ext.define 'Report.controller.Dashboard',
 	###
 
 	###
+        @event addWidgetAction
 		Оповещает о необходимости добавления виджета.
 		@param {Report.controller.Dashboard} this Контроллер.
 		@param {Report.view.dashboard.AddWidget} button Кнопка добавления виджета.
@@ -41,6 +43,13 @@ Ext.define 'Report.controller.Dashboard',
 				click: 'addDashboardFromLibrary'
 
 	privates:
+	
+		###
+			@property {String} ENTITY_TYPE
+            Тип сущности для конфигуратора.
+            Определяется и читается в рамках контроллера, сам конфигуратор лишь хранит эту строку.
+		###
+		ENTITY_TYPE: 'dashboard'
 
 		###
 			Показывает библиотеку дашбордов.
@@ -53,7 +62,7 @@ Ext.define 'Report.controller.Dashboard',
 			@param {Report.view.dashboard.AddWidget} button Кнопка добавления виджета.
 		###
 		showWidgetLibrary: (button) ->
-			@fireEvent 'addDashboardAction', @, button
+			@fireEvent 'addWidgetAction', @, button
 	
 		###
 			Запускает редактирование дашборда.
@@ -61,13 +70,15 @@ Ext.define 'Report.controller.Dashboard',
 		###
 		configureDashboard: (button) ->
 			Ext.create 'Report.view.dashboard.Configurator',
+				entityType: @ENTITY_TYPE
 				entityModel: button.up('dashboardMain').getModel()
 	
 		###
 			Показывает конфигуратор дашборда без начальных данных.
 		###
 		createDashboard: () ->
-			Ext.create 'Report.view.dashboard.Configurator'
+			Ext.create 'Report.view.dashboard.Configurator',
+				entityType: @ENTITY_TYPE
 	
 		###
 			Добавляет дашборд из библиотеки дашбордов.
@@ -93,8 +104,11 @@ Ext.define 'Report.controller.Dashboard',
             @param {Report.controller.Configurator} controller Контроллер конфигуратора.
             @param {Report.model.configurator.Model} model Модель конфигуратора.
             @param {Ext.data.Model/Null} entityModel Модель сущности, которую конфигурируем, если есть.
+			@param {String} entityType Тип сущности в виде произвольной строки.
 		###
-		saveDashboard: (controller, model, entityModel) ->
+		saveDashboard: (controller, model, entityModel, entityType) ->
+			return if entityType isnt @ENTITY_TYPE
+			
 			dashboards = @getDashboards()
 			get = model.get.bind model
 			
