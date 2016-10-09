@@ -42,10 +42,20 @@ Ext.define 'Report.view.configurator.Wellspring',
         Разблокирует комбо выбора источника данных.
 	###
 	enableCombo: () ->
-		@down('#combo').setReadOnly(false)
+		@getCombo().setReadOnly(false)
+		@getCombo().setEmptyText('')
 	
 	###
         Блокирует комбо выбора источника данных.
 	###
 	disableCombo: () ->
-		@down('#combo').setReadOnly(true)
+		@getCombo().setReadOnly(true)
+		@getCombo().setEmptyText('Любой')
+		
+	privates:
+		
+		###
+            @return {Ext.form.field.ComboBox} Виджет список источников.
+		###
+		getCombo: () ->
+			@down('#combo')

@@ -13,7 +13,7 @@ Ext.define 'Report.view.factory.V_0_1',
 	]
 	
 	statics:
-		clean: () -> Report.getCmp('rootMain #tabPanel').removeAll()
+		clean: () -> Report.getCmp('rootMain #tabPanel').removeAll(true)
 	
 	config:
 	
@@ -72,7 +72,9 @@ Ext.define 'Report.view.factory.V_0_1',
 			@setDashboardModel dashboard
 			
 			@makeDashboard()
-				
+			
+			return unless @getDashboard()
+			
 			dashboard.get('widgets')?.each (widget) =>
 				@setWidgetModel widget
 				@setColumnsStore widget.get 'columns'
@@ -87,6 +89,11 @@ Ext.define 'Report.view.factory.V_0_1',
 		makeDashboard: () ->
 			model = @getDashboardModel()
 			tabPanel = Report.getCmp('rootMain #tabPanel')
+			
+			unless model.get 'visible'
+				@setDashboard null
+				return
+				
 			dashboard = Ext.create {
 				xtype: 'dashboardMain'
 				model: model
@@ -94,18 +101,20 @@ Ext.define 'Report.view.factory.V_0_1',
 			}
 			
 			@setDashboard dashboard
+
+			tabPanel.add dashboard
 			
-			if model.get 'visible'
-				tabPanel.add dashboard
-			
-				if model.get 'active'
-					tabPanel.setActiveTab dashboard
+			if model.get 'active'
+				tabPanel.setActiveTab dashboard
 		
 		###
 			Создание виджета.
 		###
 		makeWidget: () ->
 			model = @getWidgetModel()
+			
+			return unless model.get 'visible'
+			
 			target = @getDashboard().down('#widgets')
 			columns = @getColumnsStore()
 			widget = Ext.create {

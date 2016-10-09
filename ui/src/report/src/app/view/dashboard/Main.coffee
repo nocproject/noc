@@ -115,8 +115,8 @@ Ext.define 'Report.view.dashboard.Main',
 
 		for item in items
 
-			width = item.boardWidth
-			height = item.boardHeight
+			width = item.getBoardWidth()
+			height = item.getBoardHeight()
 
 			cursorMove width
 			populate width, height

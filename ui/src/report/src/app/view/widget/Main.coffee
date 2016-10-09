@@ -14,7 +14,9 @@ Ext.define 'Report.view.widget.Main',
 		'Report.view.widget.Library'
 	]
 	
+	cls: 'widget-base'
 	layout: 'fit'
+	draggable: true
 	
 	tools: [
 		{
@@ -39,6 +41,16 @@ Ext.define 'Report.view.widget.Main',
 			@cfg {Ext.data.Store} columns Колонки источника данных в виде стора с моделями.
 		###
 		columns: null
+		
+		###
+			@cfg {Number} boardWidth Ширина в условных единицах для отображения в дашборде.
+		###
+		boardWidth: 1
+		
+		###
+			@cfg {Number} boardHeight Высота в условных единицах для отображения в дашборде.
+		###
+		boardHeight: 1
 	
 		###
 			@private

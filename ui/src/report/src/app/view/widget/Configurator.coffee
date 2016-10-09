@@ -7,3 +7,4 @@ Ext.define 'Report.view.widget.Configurator',
 	
 	displayType: true
 	displaySize: true
+	enableWellspringCombo: true

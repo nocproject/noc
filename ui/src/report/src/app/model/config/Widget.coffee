@@ -20,4 +20,5 @@ Ext.define 'Report.model.config.Widget',
 		{name: 'filters',     type: 'store', model: 'Report.model.config.Filter'}
 		{name: 'width',       type: 'int'}
 		{name: 'height',      type: 'int'}
+		{name: 'visible',     type: 'boolean'}
 	]

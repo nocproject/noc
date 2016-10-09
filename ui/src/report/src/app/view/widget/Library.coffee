@@ -11,3 +11,16 @@ Ext.define 'Report.view.widget.Library',
 		model: 'Report.model.config.Widget'
 		proxy: 'memory'
 	}
+	
+	listeners:
+		afterrender: () ->
+			dashboards = Report.model.MainDataTree.get('dashboards')
+			widgets = dashboards.findRecord('active', true)?.get('widgets')
+			
+			return unless widgets
+			
+			list = @down('#list')
+			
+			widgets.on 'add', list.selectNew.bind list
+			
+			list.setStore widgets
