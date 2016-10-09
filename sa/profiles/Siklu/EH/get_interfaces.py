@@ -22,7 +22,9 @@ class Script(BaseScript):
         "host": 1,
         "eth0": 2,
         "eth1": 3,
-        "eth2": 4
+        "eth2": 4,
+        "eth3": 5,
+        "eth4": 6
     }
 
     rx_ecfg = re.compile(

@@ -19,6 +19,16 @@ class Script(BaseScript):
     name = "Siklu.EH.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
+    CHASSIS_TYPES = {
+        "macaddress": 4,
+        "mac address": 4,
+        "network-addr": 4,
+        "interfacename": 6,
+        "interface name": 6,
+        "local": 7
+    }
+
+
     rx_ecfg = re.compile(
         r"^(?P<cmd>\S+)\s+(?P<name>\S+)\s+\d+\s+(?P<key>\S+)\s*:(?P<value>.*?)$",
         re.MULTILINE)
@@ -43,9 +53,7 @@ class Script(BaseScript):
             name, cfg = self.parse_section(section)
             neighbor = {
                 "remote_chassis_id": cfg["chassis-id"],
-                "remote_chassis_id_subtype": {
-                    "network-addr": 5
-                }[cfg["chassis-id-subtype"]],
+                "remote_chassis_id_subtype": self.CHASSIS_TYPES[cfg["chassis-id-subtype"]],
                 "remote_port": cfg["port-id"],
                 "remote_port_subtype": {
                     "mac-addr": 3
