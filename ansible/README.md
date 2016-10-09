@@ -14,5 +14,5 @@ Supported platforms are:
 * Debian 8
 * CentOS 7
 * RHEL 7.2
-* Ubuntu
+* Ubuntu 16
 * FreeBSD
