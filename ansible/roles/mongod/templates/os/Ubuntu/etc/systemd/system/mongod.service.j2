@@ -1,6 +1,6 @@
 [Unit]
 Description=High-performance, schema-free document-oriented database
-Documentation=man:mongod(1)
+Documentation=https://docs.mongodb.org/manual
 After=syslog.target network.target
 
 [Service]
@@ -10,6 +10,10 @@ LimitAS=infinity
 LimitNOFILE=64000
 LimitRSS=infinity
 LimitNPROC=64000
+TasksMax=infinity
+TasksAccounting=false
+# Recommended limits for for mongod as specified in
+# http://docs.mongodb.org/manual/reference/ulimit/#recommended-settings
 User={{ mongo_user }}
 Group={{ mongo_user }}
 PIDFile={{ mongo_pid }}
