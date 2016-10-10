@@ -20,6 +20,8 @@ Ext.define 'Report.controller.Widget',
 		component:
 			'widgetLibrary #control #create':
 				click: 'showConfiguratorForLibrary'
+			'widgetLibrary #control #copy':
+				click: 'copyWidget'
 			'widgetLibrary #control #delete':
 				click: 'deleteWidget'
 			'widgetLibrary #control #select':
@@ -119,13 +121,40 @@ Ext.define 'Report.controller.Widget',
 			@fireEvent 'refresh', @
 			
 			library.hide()
-		
+	
 		###
-			Удаляет виджет из дашборда.
+			Копирует выбранный виджет дашборда, поддерживает массовое копирование.
+			@param {Ext.button.Button} button Кнопка копирования дашборда.
+		###
+		copyWidget: (button) ->
+			@forSelectedInLibrary button, (widgetData, widgets) =>
+				data = widgetData.getData()
+				
+				delete data.id
+				data.visible = false
+				data.name += ' (копия)'
+				
+				widgets.add data
+			                                    
+		###
+			Удаляет выбранный виджет из дашборда, поддерживается массовое удаление.
 			@param {Ext.button.Button} button Кнопка удаления дашборда.
 		###
 		deleteWidget: (button) ->
-			library = button.up('widgetLibrary')
+			@forSelectedInLibrary button, (widgetData, widgets) =>
+				widgets.remove widgetData
+			
+			@fireEvent 'refresh', @
+	
+		###
+			Итерируется по выбранным вилжетам в библиотеке виджетов.
+			@param {Ext.component.Component} component Любой компонент, лежащий внутри библиотеки.
+			@param {Function}
+			Функция, принимающая первым аргументом модель, относящуюся к выбранному виджету
+			в библиотеке виджетов, а вторым аргументом принимает стор, хранящий все виджеты текущего дашборда.
+		###
+		forSelectedInLibrary: (component, fn) ->
+			library = component.up('widgetLibrary')
 			list = library.down('#list')
 			selected = list.getSelected()
 			widgets = @getWidgets()
@@ -133,9 +162,7 @@ Ext.define 'Report.controller.Widget',
 			return unless widgets
 			
 			for widgetData in selected
-				widgets.remove widgetData
-			
-			@fireEvent 'refresh', @
+				fn widgetData, widgets
 		
 		###
 			@return {Ext.data.Store/Null}

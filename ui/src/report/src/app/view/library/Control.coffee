@@ -14,6 +14,13 @@ Ext.define 'Report.view.library.Control',
 			margin: '2 10 2 2'
 		}
 		{
+			itemId: 'copy'
+			xtype: 'button'
+			iconCls: 'x-fa fa-copy'
+			text: 'Копировать'
+			margin: '2 10 2 2'
+		}
+		{
 			itemId: 'delete'
 			xtype: 'button'
 			iconCls: 'x-fa fa-trash'

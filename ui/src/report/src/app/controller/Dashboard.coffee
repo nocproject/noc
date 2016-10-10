@@ -37,6 +37,8 @@ Ext.define 'Report.controller.Dashboard',
 				click: 'closeDashboard'
 			'dashboardLibrary #control #create':
 				click: 'createDashboard'
+			'dashboardLibrary #control #copy':
+				click: 'copyDashboard'
 			'dashboardLibrary #control #delete':
 				click: 'deleteDashboard'
 			'dashboardLibrary #control #select':
@@ -140,20 +142,46 @@ Ext.define 'Report.controller.Dashboard',
 			@fireEvent 'refresh', @
 	
 		###
-			Удаляет выбранный дашборд.
+			Копирует выбранный дашборд, поддерживается массовое копирование.
+            @param {Ext.button.Button} button Кнопка копирования дашборда.
+		###
+		copyDashboard: (button) ->
+			@forSelectedInLibrary button, (dashboardData, dashboards) =>
+				data = dashboardData.getData()
+				
+				delete data.id
+				data.visible = false
+				data.active = false
+				data.name += ' (копия)'
+				
+				dashboards.add data
+			
+		###
+			Удаляет выбранный дашборд, поддерживается массовое удаление.
 			@param {Ext.button.Button} button Кнопка удаления дашборда.
 		###
 		deleteDashboard: (button) ->
-			library = button.up('dashboardLibrary')
+			@forSelectedInLibrary button, (dashboardData, dashboards) =>
+				dashboards.remove dashboardData
+				dashboards.first()?.set('active', true)
+				
+			@fireEvent 'refresh', @
+		
+		###
+			Итерируется по выбранным дашбордам в библиотеке дашбордов.
+            @param {Ext.component.Component} component Любой компонент, лежащий внутри библиотеки.
+			@param {Function}
+            Функция, принимающая первым аргументом модель, относящуюся к выбранному дашборду
+            в библиотеке дашбордов, а вторым аргументом принимает стор, хранящий все дашборды.
+		###
+		forSelectedInLibrary: (component, fn) ->
+			library = component.up('dashboardLibrary')
 			list = library.down('#list')
 			selected = list.getSelected()
 			dashboards = @getDashboards()
 			
 			for dashboardData in selected
-				dashboards.remove dashboardData
-				dashboards.first()?.set('active', true)
-				
-			@fireEvent 'refresh', @
+				fn dashboardData, dashboards
 		
 		###
 			Убирает флаг активного с текущего активного дашборда.
