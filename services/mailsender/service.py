@@ -73,8 +73,9 @@ class MailSenderService(Service):
             part = MIMEBase("application", "octet-stream")
             part.set_payload(a["data"])
             part.add_header(
-                "Content-Displosition",
-                "attachment; filename=%s" % a["filename"]
+                "Content-Disposition",
+                "attachment",
+                filename=a["filename"]
             )
             message.attach(part)
         msg = message.as_string()
