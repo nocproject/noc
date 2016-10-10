@@ -11,7 +11,9 @@ import datetime
 import zlib
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, ObjectIdField, DateTimeField
+from mongoengine.fields import (StringField, ObjectIdField,
+                                DateTimeField, BinaryField)
+import bson
 ## NOC modules
 
 
@@ -28,7 +30,7 @@ class AlarmDiagnostic(Document):
         ("C", "On Clear"),
         ("P", "On Periodic")
     ])
-    data = StringField()
+    data = BinaryField()
 
     TTL = datetime.timedelta(days=14)
 
@@ -36,7 +38,7 @@ class AlarmDiagnostic(Document):
     def save_diagnostics(cls, alarm, diag, state):
         data = zlib.compress(
             "\n\n".join(str(d) for d in diag),
-            level=9
+            9
         )
         if state == "C":
             expires = datetime.datetime.now() + cls.TTL
@@ -45,7 +47,7 @@ class AlarmDiagnostic(Document):
         AlarmDiagnostic(
             alarm=alarm.id,
             state=state,
-            data=data,
+            data=bson.Binary(data),
             expires=expires
         ).save()
 
@@ -60,8 +62,9 @@ class AlarmDiagnostic(Document):
             r += [{
                 "timestamp": d.timestamp,
                 "state": d.state,
-                "data": zlib.decompress(d.date)
+                "data": zlib.decompress(d.data)
             }]
+        return r
 
     @classmethod
     def clear_diagnostics(cls, alarm):

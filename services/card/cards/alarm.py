@@ -19,6 +19,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
 
 
 class AlarmCard(BaseCard):
@@ -84,7 +85,8 @@ class AlarmCard(BaseCard):
             "container_path": cp,
             "log": log,
             "service_summary": service_summary,
-            "alarms": alarms
+            "alarms": alarms,
+            "diagnostic": AlarmDiagnostic.get_diagnostics(self.object)
         }
         return r
 

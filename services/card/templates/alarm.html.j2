@@ -103,6 +103,23 @@
             </table>
         </td>
     </tr>
+    {% if diagnostic %}
+    <tr>
+        <th scope="row">{{ _("Diagnostic") }}</th>
+        <td>
+            {% for d in diagnostic %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                       {{ d["timestamp"] | timestamp }}
+                    </div>
+                    <div class="panel-body" style="white-space: pre-line">
+                        {{ d["data"] | e }}
+                    </div>
+                </div>
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
     {% if log %}
     <tr>
         <th scope="row">{{ _("Log") }}</th>
