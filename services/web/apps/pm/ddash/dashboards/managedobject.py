@@ -534,7 +534,7 @@ class ManagedObjectDashboard(BaseDashboard):
             }]
         ann = {
             "datasource": "NocDS",
-                    "enable": True,
+            "enable": False,
                     "iconColor": "rgba(255, 96, 96, 1)",
                     "name": "Alarm",
                     "query": str(self.object.id)
