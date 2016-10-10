@@ -1,25 +1,27 @@
 //---------------------------------------------------------------------
 // main.welcome application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-{{year}} The NOC Project
+// Copyright (C) 2007-2016 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.welcome.Application");
 
 Ext.define("NOC.main.welcome.Application", {
     extend: "NOC.core.Application",
-    requires: [
-        "NOC.main.welcome.templates.Welcome"
-    ],
     appId: "main.welcome",
+    bodyPadding: 4,
 
-    initComponent: function() {
+    afterRender: function() {
         var me = this;
-        Ext.apply(me, {
-            html: me.templates.Welcome({
-                systemId: NOC.settings.systemId
-            })
-        });
         me.callParent();
+        Ext.Ajax.request({
+            url: "/main/welcome/welcome/",
+            method: "GET",
+            scope: me,
+            success: function(response) {
+                console.log(response.responseText);
+                me.setHtml(response.responseText);
+            }
+        });
     }
 });
