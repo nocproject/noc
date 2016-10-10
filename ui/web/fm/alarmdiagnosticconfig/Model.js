@@ -39,6 +39,18 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Model", {
             defaultValue: true
         },
         {
+            name: "on_raise_header",
+            type: "string"
+        },
+        {
+            name: "periodic_header",
+            type: "string"
+        },
+        {
+            name: "on_clear_header",
+            type: "string"
+        },
+        {
             name: "periodic_interval",
             type: "int"
         },
