@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-10-06 07:59+0500\n"
-"PO-Revision-Date: 2016-10-06 11:12+0500\n"
+"POT-Creation-Date: 2016-10-11 03:25+0500\n"
+"PO-Revision-Date: 2016-10-11 03:34+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -201,6 +201,10 @@ msgstr "Классы аварий"
 msgid "Alarm Class Config"
 msgstr "Настройка класса аварий"
 
+#: services/web/apps/fm/alarmdiagnosticconfig/views.py:20
+msgid "Alarm Diagnostic"
+msgstr "Диагностика аварий"
+
 #: services/web/apps/fm/alarmescalation/views.py:19
 #: services/web/apps/fm/alarmescalation/views.py:20
 msgid "Alarm Escalation"
@@ -321,35 +325,47 @@ msgstr "1 месяц"
 msgid "Escalations"
 msgstr "Эскалации"
 
-#: services/web/apps/fm/reportescalations/views.py:91
+#: services/web/apps/fm/reportescalations/views.py:46
+msgid "Escalations (1 day)"
+msgstr "Эскалации (1 день)"
+
+#: services/web/apps/fm/reportescalations/views.py:51
+msgid "Escalations (7 days)"
+msgstr "Эскалации (7 день)"
+
+#: services/web/apps/fm/reportescalations/views.py:56
+msgid "Escalations (30 day)"
+msgstr "Эскалации (30 день)"
+
+#: services/web/apps/fm/reportescalations/views.py:109
 msgid "Timestamp"
 msgstr "Время"
 
-#: services/web/apps/fm/reportescalations/views.py:92
+#: services/web/apps/fm/reportescalations/views.py:110
 msgid "Escalation Timestamp"
 msgstr "Время эскалации"
 
-#: services/web/apps/fm/reportescalations/views.py:93
+#: services/web/apps/fm/reportescalations/views.py:111
 #: services/web/apps/fm/reportoutages/views.py:110
-#: services/web/apps/fm/reportreboots/views.py:108
+#: services/web/apps/fm/reportreboots/views.py:125
 #: services/web/apps/sa/reportfaileddiscovery/views.py:69
 msgid "Managed Object"
 msgstr "Объекты управления"
 
-#: services/web/apps/fm/reportescalations/views.py:96
+#: services/web/apps/fm/reportescalations/views.py:114
 msgid "Segment"
 msgstr "Сегмент"
 
-#: services/web/apps/fm/reportescalations/views.py:97
+#: services/web/apps/fm/reportescalations/views.py:115
 msgid "TT"
 msgstr ""
 
-#: services/web/apps/fm/reportescalations/views.py:98
+#: services/web/apps/fm/reportescalations/views.py:116
 msgid "Objects"
 msgstr "Объекты"
 
 #: services/web/apps/crm/subscriber/views.py:20
-#: services/web/apps/fm/reportescalations/views.py:99
+#: services/web/apps/fm/reportescalations/views.py:117
 msgid "Subscribers"
 msgstr "Абоненты"
 
@@ -401,7 +417,7 @@ msgstr "Профиль"
 
 #: services/web/apps/fm/reportoutages/views.py:111
 msgid "Managed"
-msgstr ""
+msgstr "Управляемый"
 
 #: services/web/apps/fm/reportoutages/views.py:113
 msgid "Downtime"
@@ -409,16 +425,28 @@ msgstr "Время простоя"
 
 #: services/web/apps/fm/reportoutages/views.py:115
 msgid "Downs"
-msgstr ""
+msgstr "Простои"
 
 #: services/web/apps/fm/reportoverlappedoids/views.py:16
 msgid "Overlapped MIB OIDs"
 msgstr "Пересекающиеся OID"
 
 #: services/web/apps/fm/reportreboots/views.py:41
-#: services/web/apps/fm/reportreboots/views.py:109
+#: services/web/apps/fm/reportreboots/views.py:126
 msgid "Reboots"
 msgstr "Перезагрузки"
+
+#: services/web/apps/fm/reportreboots/views.py:45
+msgid "Reboots (1 day)"
+msgstr "Перезагрузки (1 день)"
+
+#: services/web/apps/fm/reportreboots/views.py:50
+msgid "Reboots (7 days)"
+msgstr "Перезагрузки (7 дней)"
+
+#: services/web/apps/fm/reportreboots/views.py:55
+msgid "Reboot (30 day)"
+msgstr "Перезагрузки (30 дней)"
 
 #: services/web/apps/fm/reportrulesbyprofile/views.py:19
 msgid "Rules by Profile"
@@ -562,7 +590,7 @@ msgstr ""
 msgid "Mac DB"
 msgstr ""
 
-#: services/web/apps/inv/map/views.py:41 services/web/apps/inv/map/views.py:42
+#: services/web/apps/inv/map/views.py:44 services/web/apps/inv/map/views.py:45
 msgid "Network Map"
 msgstr "Карта сети"
 
@@ -607,23 +635,23 @@ msgstr "Сравнить спецификации"
 msgid "Discovery Summary"
 msgstr "Сводка опроса"
 
-#: services/web/apps/inv/reportdiscoveryproblem/views.py:21
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:31
 msgid "Discovery Problems"
 msgstr "Проблемы при опросе"
 
-#: services/web/apps/inv/reportdiscoveryproblem/views.py:34
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:52
 msgid "Profile check failed"
 msgstr "Профиль не определён"
 
-#: services/web/apps/inv/reportdiscoveryproblem/views.py:44
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:62
 msgid "No interfaces"
 msgstr "Нет интерфейсов"
 
-#: services/web/apps/inv/reportdiscoveryproblem/views.py:51
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:69
 msgid "No links"
 msgstr "Нет линков"
 
-#: services/web/apps/inv/reportdiscoveryproblem/views.py:59
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:77
 msgid "No uplinks"
 msgstr "Нет аплинков"
 
@@ -645,16 +673,16 @@ msgstr "Версия ПО"
 msgid "Serial"
 msgstr "Серийный номер"
 
-#: services/web/apps/fm/reportescalations/views.py:94
+#: services/web/apps/fm/reportescalations/views.py:112
 #: services/web/apps/fm/reportoutages/views.py:110
-#: services/web/apps/fm/reportreboots/views.py:108
+#: services/web/apps/fm/reportreboots/views.py:125
 #: services/web/apps/inv/reportobjectsserial/views.py:41
 #: services/web/apps/ip/ipam/views.py:822
 #: services/web/apps/sa/reportfaileddiscovery/views.py:69
 msgid "Address"
 msgstr "Адрес"
 
-#: services/web/apps/fm/reportescalations/views.py:95
+#: services/web/apps/fm/reportescalations/views.py:113
 #: services/web/apps/fm/reportoutages/views.py:110
 #: services/web/apps/inv/reportobjectsserial/views.py:41
 #: services/web/apps/sa/reportobjectsummary/views.py:91
@@ -980,7 +1008,7 @@ msgstr "Теги"
 
 #: services/web/apps/ip/reportfree/views.py:31
 msgid "VRF Required"
-msgstr ""
+msgstr "Требуется VRF"
 
 #: services/web/apps/ip/reportfree/views.py:45
 msgid "Free Blocks"
@@ -1195,6 +1223,7 @@ msgstr ""
 
 #: services/web/apps/main/refbook/views.py:20
 #: services/web/apps/main/refbook/views.py:23
+#: services/web/apps/main/refbookadmin/views.py:40
 msgid "Reference Books"
 msgstr "Справочники"
 
@@ -1209,6 +1238,11 @@ msgstr "Статус БД"
 #: services/web/apps/main/reportloc/views.py:20
 msgid "Lines Of Code"
 msgstr ""
+
+#: services/web/apps/main/reportsubscription/views.py:20
+#: services/web/apps/main/reportsubscription/views.py:21
+msgid "Report Subscription"
+msgstr "Подписка на отчёты"
 
 #: services/web/apps/main/reportsystemversion/views.py:20
 msgid "System Version"
@@ -1329,7 +1363,7 @@ msgstr "Пользователи"
 msgid "User Profile"
 msgstr "Профиль пользователя"
 
-#: services/web/apps/main/welcome/views.py:18
+#: services/web/apps/main/welcome/views.py:22
 msgid "Welcome"
 msgstr "Добро пожаловать"
 
@@ -1397,6 +1431,7 @@ msgstr "Группы пиров"
 #: services/web/apps/dns/dnszoneprofile/views.py:20
 #: services/web/apps/fm/alarmclass/views.py:21
 #: services/web/apps/fm/alarmclassconfig/views.py:20
+#: services/web/apps/fm/alarmdiagnosticconfig/views.py:20
 #: services/web/apps/fm/alarmescalation/views.py:20
 #: services/web/apps/fm/alarmseverity/views.py:20
 #: services/web/apps/fm/alarmtrigger/views.py:20
@@ -1446,6 +1481,8 @@ msgstr "Группы пиров"
 #: services/web/apps/main/prefixtable/views.py:23
 #: services/web/apps/main/pyrule/views.py:22
 #: services/web/apps/main/refbook/views.py:23
+#: services/web/apps/main/refbookadmin/views.py:40
+#: services/web/apps/main/reportsubscription/views.py:21
 #: services/web/apps/main/resourcestate/views.py:20
 #: services/web/apps/main/schedule/views.py:82
 #: services/web/apps/main/style/views.py:21
@@ -1626,6 +1663,7 @@ msgstr "Правило проверки профиля"
 msgid "Profile Check Rules"
 msgstr "Правила проверки профиля"
 
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:25
 #: services/web/apps/sa/reportfaileddiscovery/views.py:23
 msgid "Managed Objects Pools"
 msgstr "Пулы"
