@@ -107,6 +107,12 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                     allowBlank: true
                                 },
                                 {
+                                    name: "on_raise_header",
+                                    xtype: "textarea",
+                                    fieldLabel: __("Header"),
+                                    allowBlank: true
+                                },
+                                {
                                     name: "on_raise_script",
                                     xtype: "main.ref.script.LookupField",
                                     fieldLabel: __("Script"),
@@ -142,6 +148,12 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                     allowBlank: true
                                 },
                                 {
+                                    name: "periodic_header",
+                                    xtype: "textarea",
+                                    fieldLabel: __("Header"),
+                                    allowBlank: true
+                                },
+                                {
                                     name: "periodic_script",
                                     xtype: "textfield",
                                     fieldLabel: __("Script"),
@@ -174,6 +186,12 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                     xtype: "numberfield",
                                     fieldLabel: __("Delay"),
                                     min: 0,
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "on_clear_header",
+                                    xtype: "textarea",
+                                    fieldLabel: __("Header"),
                                     allowBlank: true
                                 },
                                 {

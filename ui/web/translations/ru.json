@@ -7,13 +7,17 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-10-10 19:36+0500",
-        "POT-Creation-Date": "2016-10-10 19:09+0500",
+        "PO-Revision-Date": "2016-10-11 03:42+0500",
+        "POT-Creation-Date": "2016-10-11 03:25+0500",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
         "X-Generator": "Poedit 1.8.9"
     },
+    "' to maintainance": [
+        null,
+        "в РНР"
+    ],
     "About NOC ...": [
         null,
         "О программе ..."
@@ -306,6 +310,10 @@
         null,
         "Встроен"
     ],
+    "By Action": [
+        null,
+        "По действию"
+    ],
     "By Adm. Domain": [
         null,
         "По З.О."
@@ -322,6 +330,10 @@
         null,
         "По дате"
     ],
+    "By Event Class": [
+        null,
+        "По классу события"
+    ],
     "By Group": [
         null,
         "По Группе"
@@ -337,6 +349,10 @@
     "By Notification": [
         null,
         "По Уведомлению"
+    ],
+    "By Notify Group": [
+        null,
+        "По группе уведомления"
     ],
     "By Obj. Profile": [
         null,
@@ -373,10 +389,6 @@
     "By Service Terminator": [
         null,
         "По терминирующему сервисы"
-    ],
-    "By State": [
-        null,
-        "По состоянию"
     ],
     "By Tags": [
         null,
@@ -469,10 +481,6 @@
     "Changed": [
         null,
         "Изменение"
-    ],
-    "Changes": [
-        null,
-        "Изменения"
     ],
     "Changeset": [
         null,
@@ -686,6 +694,18 @@
         null,
         "Контрольное время N"
     ],
+    "Control time (1 reopen)": [
+        null,
+        "Контрольное время (1 переоткрытие)"
+    ],
+    "Control time (multiple reopens)": [
+        null,
+        "Контрольное время (множество переоткрытий)"
+    ],
+    "Control time (no reopens)": [
+        null,
+        "Контрольное время (переоткрытий нет)"
+    ],
     "Copy existing values to a new object": [
         null,
         "Скопировать значение в новый объект"
@@ -818,6 +838,10 @@
         null,
         "№ описания"
     ],
+    "Diagnostic": [
+        null,
+        "Диагностика"
+    ],
     "Diameter (mm)": [
         null,
         "Диаметр (мм)"
@@ -845,6 +869,10 @@
     "Display Name": [
         null,
         "Отображаемое имя"
+    ],
+    "Disposition": [
+        null,
+        "Размещение"
     ],
     "Do you wish to delete record? This operation cannot be undone!": [
         null,
@@ -1286,6 +1314,10 @@
         null,
         "№ файла"
     ],
+    "File Name": [
+        null,
+        "Имя файла"
+    ],
     "Files": [
         null,
         "Файлы"
@@ -1357,10 +1389,6 @@
     "Filter by User (REGEXP)": [
         null,
         "Фильтровать по пользователю (Шаблон)"
-    ],
-    "Filter by VC Domain": [
-        null,
-        "Фильтровать по домену VC"
     ],
     "Filter by VRF": [
         null,
@@ -1666,6 +1694,10 @@
         null,
         "Отправлено на запуск"
     ],
+    "Jobs": [
+        null,
+        "Задачи"
+    ],
     "Jump to Segment": [
         null,
         "Перейти в сегмент"
@@ -1746,6 +1778,10 @@
         null,
         "Лев. RE"
     ],
+    "Legend": [
+        null,
+        "Легенда"
+    ],
     "Level": [
         null,
         "Уровень"
@@ -1773,6 +1809,18 @@
     "Link Inspector": [
         null,
         "Свойства линка"
+    ],
+    "Link bandwidth style": [
+        null,
+        "Стиль полосы пропускания линка"
+    ],
+    "Link status style": [
+        null,
+        "Стиль статуса линка"
+    ],
+    "Link utilization style": [
+        null,
+        "Стиль заргрузки линка"
     ],
     "Links": [
         null,
@@ -1821,6 +1869,10 @@
     "MIBs has been uploaded": [
         null,
         "MIB'ы будет загружены"
+    ],
+    "MIME Type": [
+        null,
+        "Тип MIME"
     ],
     "Mac Address": [
         null,
@@ -2030,6 +2082,10 @@
         null,
         "Интерфейсы не найдены"
     ],
+    "No new VRFs found": [
+        null,
+        "Новые VRF не найдены"
+    ],
     "Nothing changed": [
         null,
         "Изменений нет"
@@ -2106,6 +2162,10 @@
         null,
         "Объект будет загружен"
     ],
+    "Object status style": [
+        null,
+        "Стиль статуса объекта"
+    ],
     "Object/Segment": [
         null,
         "Объект/Сегмент"
@@ -2113,10 +2173,6 @@
     "Objects": [
         null,
         "Объекты"
-    ],
-    "Old": [
-        null,
-        "Старый"
     ],
     "Old Password": [
         null,
@@ -2410,6 +2466,10 @@
         null,
         "Протоколы"
     ],
+    "Provisioned": [
+        null,
+        "Поставка"
+    ],
     "Rack": [
         null,
         "Стойка"
@@ -2417,6 +2477,10 @@
     "Rack: ": [
         null,
         "Стойка:"
+    ],
+    "Raise": [
+        null,
+        "Поднятие"
     ],
     "Rear": [
         null,
@@ -2444,7 +2508,7 @@
     ],
     "Redundant": [
         null,
-        "Резервирован"
+        "Отказоустойчивый"
     ],
     "Refresh": [
         null,
@@ -2602,6 +2666,10 @@
         null,
         "Первопричина"
     ],
+    "Rotate": [
+        null,
+        "Повернуть"
+    ],
     "Rules": [
         null,
         "Правила"
@@ -2609,6 +2677,10 @@
     "Run": [
         null,
         "Запуск"
+    ],
+    "Run As": [
+        null,
+        "Запустить От"
     ],
     "Run discovery now": [
         null,
@@ -2621,6 +2693,10 @@
     "SA Profile": [
         null,
         "Профиль SA"
+    ],
+    "STP blocked": [
+        null,
+        "STP заблокирован"
     ],
     "Save": [
         null,
@@ -2712,7 +2788,7 @@
     ],
     "Select Object To Import": [
         null,
-        "Выберите объект для импорта"
+        "Выбрать объект для импорта"
     ],
     "Select Shape": [
         null,
@@ -2724,7 +2800,7 @@
     ],
     "Select VRFs to import": [
         null,
-        "Выберите VRF для импорта"
+        "Выбрать VRF для импорта"
     ],
     "Select base layer": [
         null,
@@ -2878,6 +2954,10 @@
         null,
         "Загрузка интерфейсов"
     ],
+    "Show legend": [
+        null,
+        "Показать легенду"
+    ],
     "Show map": [
         null,
         "Карта"
@@ -2937,6 +3017,10 @@
     "Start": [
         null,
         "Начало"
+    ],
+    "Starting": [
+        null,
+        "Запуск"
     ],
     "Starting search": [
         null,
@@ -3310,6 +3394,10 @@
         null,
         "Рзамер (в юнитах)"
     ],
+    "Unknows mode :": [
+        null,
+        "Неизвестный режим :"
+    ],
     "Unlink": [
         null,
         "Расцепить"
@@ -3518,13 +3606,29 @@
         null,
         "Масштаб на уровне"
     ],
+    "admin down": [
+        null,
+        "административно отключён"
+    ],
+    "balance": [
+        null,
+        "баланс"
+    ],
     "cluster": [
         null,
         "кластер"
     ],
+    "created from map at ": [
+        null,
+        "Создано из схемы сегмента для объекта "
+    ],
     "customer": [
         null,
         "клиент"
+    ],
+    "data unavailable": [
+        null,
+        "данные недоступны"
     ],
     "division": [
         null,
@@ -3593,6 +3697,10 @@
     "type": [
         null,
         "тип"
+    ],
+    "unknown": [
+        null,
+        "неизвестный"
     ],
     "with": [
         null,

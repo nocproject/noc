@@ -48,18 +48,21 @@ class AlarmDiagnosticConfig(Document):
     only_root = BooleanField(default=True)
     # On alarm raise actions
     enable_on_raise = BooleanField(default=True)
+    on_raise_header = StringField()
     on_raise_delay = IntField(default=0)
     on_raise_script = StringField()
     on_raise_action = ReferenceField(Action)
     on_raise_handler = StringField()
     # Periodic actions
     enable_periodic = BooleanField(default=True)
+    periodic_header = StringField()
     periodic_interval = IntField(default=0)
     periodic_script = StringField()
     periodic_action = ReferenceField(Action)
     periodic_handler = StringField()
     # Clear actions
     enable_on_clear = BooleanField(default=True)
+    on_clear_header = StringField()
     on_clear_delay = IntField(default=0)
     on_clear_script = StringField()
     on_clear_action = ReferenceField(Action)
@@ -97,18 +100,36 @@ class AlarmDiagnosticConfig(Document):
                 continue
             if c.enable_on_raise:
                 if c.on_raise_script:
-                    r_cfg[c.on_raise_delay] += [{"script": c.on_raise_script}]
+                    r_cfg[c.on_raise_delay] += [{
+                        "script": c.on_raise_script,
+                        "header": c.on_raise_header
+                    }]
                 if c.on_raise_action:
-                    r_cfg[c.on_raise_delay] += [{"action": c.on_raise_action.id}]
+                    r_cfg[c.on_raise_delay] += [{
+                        "action": c.on_raise_action.id,
+                        "header": c.on_raise_header
+                    }]
                 if c.on_raise_handler:
-                    r_cfg[c.on_raise_delay] += [{"handler": c.on_raise_handler}]
+                    r_cfg[c.on_raise_delay] += [{
+                        "handler": c.on_raise_handler,
+                        "header": c.on_raise_header
+                    }]
             if c.enable_periodic:
                 if c.periodic_interval:
-                    p_cfg[c.periodic_interval] += [{"script": c.periodic_interval}]
+                    p_cfg[c.periodic_interval] += [{
+                        "script": c.periodic_interval,
+                        "header": c.periodic_header
+                    }]
                 if c.periodic_interval:
-                    p_cfg[c.periodic_interval] += [{"action": c.periodic_interval.id}]
+                    p_cfg[c.periodic_interval] += [{
+                        "action": c.periodic_interval.id,
+                        "header": c.periodic_header
+                    }]
                 if c.periodic_interval:
-                    p_cfg[c.periodic_interval] += [{"handler": c.periodic_interval}]
+                    p_cfg[c.periodic_interval] += [{
+                        "handler": c.periodic_interval,
+                        "header": c.periodic_header
+                    }]
         # Submit on_raise job
         for delay in r_cfg:
             call_later(
@@ -137,11 +158,20 @@ class AlarmDiagnosticConfig(Document):
                 continue
             if c.enable_on_clear:
                 if c.on_clear_script:
-                    cfg[c.on_clear_delay] += [{"script": c.on_clear_script}]
+                    cfg[c.on_clear_delay] += [{
+                        "script": c.on_clear_script,
+                        "header": c.on_clear_header
+                    }]
                 if c.on_clear_action:
-                    cfg[c.on_clear_delay] += [{"action": c.on_clear_action.id}]
+                    cfg[c.on_clear_delay] += [{
+                        "action": c.on_clear_action.id,
+                        "header": c.on_clear_header
+                    }]
                 if c.on_clear_handler:
-                    cfg[c.on_clear_delay] += [{"handler": c.on_clear_handler}]
+                    cfg[c.on_clear_delay] += [{
+                        "handler": c.on_clear_handler,
+                        "header": c.on_clear_header
+                    }]
         # Submit on_raise job
         for delay in cfg:
             call_later(
@@ -158,7 +188,10 @@ class AlarmDiagnosticConfig(Document):
         mo = alarm.managed_object
         result = []
         for c in cfg:
+            if c.get("header"):
+                result += [c["header"].strip()]
             if "script" in c:
+                logger.info("[%s] Running script %s", alarm.id, c["script"])
                 try:
                     g = getattr(mo.scripts, c["script"])
                     result += [g()]
@@ -166,6 +199,7 @@ class AlarmDiagnosticConfig(Document):
                     error_report()
                     result += [str(e)]
             if "action" in c:
+                logger.info("[%s] Running action %s", alarm.id, c["action"])
                 try:
                     g = getattr(mo.actions, c["action"])
                     result += [g()]
@@ -173,6 +207,7 @@ class AlarmDiagnosticConfig(Document):
                     error_report()
                     result += [str(e)]
             if "handler" in c:
+                logger.info("[%s] Running handler %s", alarm.id, c["handler"])
                 try:
                     h = get_handler(c["handler"])
                     try:
@@ -190,6 +225,7 @@ def on_raise(alarm, cfg, *args, **kwargs):
     a = get_alarm(alarm)
     if not a:
         logger.info("[%s] Alarm is not found, skipping", alarm)
+        return
     if a.status == "C":
         logger.info("[%s] Alarm is closed, skipping", alarm)
         return
