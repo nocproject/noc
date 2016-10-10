@@ -73,13 +73,17 @@ Ext.define 'Report.view.factory.V_0_1',
 			
 			@makeDashboard()
 			
-			return unless @getDashboard()
+			dashboardWidget = @getDashboard()
+			
+			return unless dashboardWidget
 			
 			dashboard.get('widgets')?.each (widget) =>
 				@setWidgetModel widget
 				@setColumnsStore widget.get 'columns'
 				
 				@makeWidget()
+			
+			dashboardWidget.doDashboardLayout()
 					
 	privates:
 	

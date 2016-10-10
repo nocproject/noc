@@ -27,7 +27,7 @@ Ext.define 'Report.view.dashboard.Main',
 		###
 			@cfg {Number} dashCellHeight Высота ячейки дашборда.
 		###
-		dashCellHeight: 310
+		dashCellHeight: 300
 		
 		###
 			@cfg {Number} dashColumns Количество колонок дашборда.
@@ -46,18 +46,12 @@ Ext.define 'Report.view.dashboard.Main',
 		
 	items: [
 		{
-			xtype: 'container'
-			scrollable: 'vertical'
-			items: [
-				{
-					itemId: 'widgets'
-					xtype: 'panel'
-					layout:
-						type: 'hbox'
-						align: 'center'
-						pack: 'center'
-				}
-			]
+			itemId: 'widgets'
+			xtype: 'panel'
+			layout:
+				type: 'hbox'
+				align: 'center'
+				pack: 'center'
 		}
 	]
 	
@@ -65,7 +59,7 @@ Ext.define 'Report.view.dashboard.Main',
 		{
 			xtype: 'container'
 			layout: 'hbox'
-			padding: '10 12 10 0'
+			padding: '8 12 0 0'
 			items: [
 				{
 					xtype: 'component'
@@ -99,7 +93,6 @@ Ext.define 'Report.view.dashboard.Main',
 		@callParent arguments
 		
 		@down('#widgets').on {
-			resize:      () => @fixScrollOnResize()
 			afterrender: () => @doDashboardLayout()
 		}
 	
@@ -174,7 +167,7 @@ Ext.define 'Report.view.dashboard.Main',
 			@return {Ext.Component[]} Виджеты.
 		###
 		getDashItems: () ->
-			@down('#widgets').items
+			@down('#widgets').items.items
 
 		###
 			Возвращает ширину колонки лейаута в пикселях.
@@ -222,7 +215,7 @@ Ext.define 'Report.view.dashboard.Main',
 			@return {Number} Координата.
 		###
 		calcY: (row) ->
-			@getDashCellHeight() * row - @getDashHeaderHeight() * row + @getDoubleDashPadding()
+			@getDashCellHeight() * row - @getDashHeaderHeight() * row + @getDashPadding()
 
 		###
 			Заново запускает расстановку виджетов если был произведен первый запуск расстановки.
