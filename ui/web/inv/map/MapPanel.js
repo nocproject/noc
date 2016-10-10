@@ -441,10 +441,12 @@ Ext.define("NOC.inv.map.MapPanel", {
         evt.preventDefault();
         me.nodeMenuObject = view.model.get("id").split(":")[1];
         me.nodeMenuObjectType = view.model.get('data').type;
-        me.nodeMenu.items.items.map(function(item) {
-            item.setVisible(item.menuOn.indexOf(me.nodeMenuObjectType) !== -1)
-        });
-        me.nodeMenu.showAt(evt.clientX, evt.clientY);
+        if('wrench' !== me.nodeMenuObjectType) {
+            me.nodeMenu.items.items.map(function(item) {
+                item.setVisible(item.menuOn.indexOf(me.nodeMenuObjectType) !== -1)
+            });
+            me.nodeMenu.showAt(evt.clientX, evt.clientY);
+        }
     },
     onCellDoubleClick: function(view, evt, x, y) {
         var me = this,
@@ -629,8 +631,34 @@ Ext.define("NOC.inv.map.MapPanel", {
                 return;
             }
             node.setFilter(me.statusFilter[data[s] & 0x1f]); // Remove maintainance bit
+            var embeddedCells = node.getEmbeddedCells();
             if(data[s] & 0x20) {
-                console.log(node);
+                if(embeddedCells.length === 0) {
+                    var nodeSize = node.get('size');
+                    var size = nodeSize.width / 3;
+                    var wrench = new joint.shapes.basic.Circle({
+                        position: {
+                            x: node.get('position').x + nodeSize.width - size,
+                            y: node.get('position').y + size * 0.95
+                        },
+                        size: {width: size, height: size},
+                        attrs: {
+                            circle: {fill: '#FFFFFF', stoke: '#FFFFFF'},
+                            text: {text: '\uf0ad', 'font-family': 'FontAwesome', 'font-size': size / 1.7}
+                        }
+                    });
+                    wrench.set('data', {type: 'wrench'});
+                    node.embed(wrench);
+                    me.graph.addCell(wrench);
+                    me.paper.findViewByModel(wrench).options.interactive = false;
+                }
+            } else {
+                if(embeddedCells.length !== 0) {
+                    Ext.each(embeddedCells, function(cell) {
+                        node.unembed(cell);
+                        cell.remove();
+                    });
+                }
             }
         });
     },
