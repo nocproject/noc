@@ -77,7 +77,7 @@
       name: NocDS
       type: grafana-simple-json-datasource
       url: "https://{{ noc_web_host }}/api/grafanads"
-      access: proxy
+      access: direct
       isDefault: False
   ignore_errors: yes
   when: "{{ has_svc_grafanads | default(False) }}"
