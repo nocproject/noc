@@ -88,6 +88,8 @@ class MODashboard(BaseDashboard):
             "ip": self.object.address,
             "platform": self.object.platform or "Unknown platform",
             "device_id": self.object.id,
+            "firmare_version": self.object.version.version or None,
+            "segment": self.object.segment.id,
             "vendor": self.object.vendor or "Unknown platform"
         }
         self.logger.info("Context with data: %s" % context)
