@@ -56,6 +56,11 @@ Ext.define 'Report.view.widget.Main',
 	initComponent: () ->
 		@callParent arguments
 	
+		model = @getModel()
+		
+		@setBoardWidth  model.get 'width'
+		@setBoardHeight model.get 'height'
+		
 		@add {
 			xtype: @getWidgetXtype(),
 			store: @makeStore()
