@@ -218,6 +218,8 @@
       owner: "{{ noc_user }}"
     - name: lib/python2.7/site-packages/__pycache__
       owner: "{{ noc_user }}"
+    - name: var/reports
+      owner: "{{noc_user}}"
 
 - name: Install noc.pth
   template:
