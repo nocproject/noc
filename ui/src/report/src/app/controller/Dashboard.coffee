@@ -4,6 +4,7 @@
     TODO При закрытии и удалении показывать прошлый активный, а не первый.
     TODO Кнопка отмены удаления.
     TODO Прятать кнопку выбора если такой дашборд уже есть.
+    TODO При удалении выбирать предыдущий пункт в библиотеке.
 ###
 Ext.define 'Report.controller.Dashboard',
 	extend: 'Ext.app.Controller'
@@ -37,6 +38,8 @@ Ext.define 'Report.controller.Dashboard',
 				click: 'closeDashboard'
 			'dashboardLibrary #control #create':
 				click: 'createDashboard'
+			'dashboardLibrary #control #edit':
+				click: 'configureDashboardFromLibrary'
 			'dashboardLibrary #control #copy':
 				click: 'copyDashboard'
 			'dashboardLibrary #control #delete':
@@ -119,14 +122,13 @@ Ext.define 'Report.controller.Dashboard',
 				tags:        get 'tags'
 				description: get 'description'
 				filters:     get 'filters'
-				active:      true
-				visible:     false
 			}
 			
 			if entityModel
-				data.visible = true
 				entityModel.set data
 			else
+				data.active = false
+				data.visible = false
 				dashboards.add data
 			
 			@fireEvent 'refresh', @
@@ -141,6 +143,17 @@ Ext.define 'Report.controller.Dashboard',
 			
 			@fireEvent 'refresh', @
 	
+		###
+			Конфигурирует выбранный дашборд из библиотеки дашбордов.
+			Поддерживает массовую конфигурацию, открывая множество окон конфигурации.
+			@param {Ext.button.Button} button Кнопка конфигурации дашборда.
+		###
+		configureDashboardFromLibrary: (button) ->
+			@forSelectedInLibrary button, (dashboardData) =>
+				Ext.create 'Report.view.dashboard.Configurator',
+					entityType: @ENTITY_TYPE
+					entityModel: dashboardData
+			
 		###
 			Копирует выбранный дашборд, поддерживается массовое копирование.
             @param {Ext.button.Button} button Кнопка копирования дашборда.
