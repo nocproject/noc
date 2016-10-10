@@ -55,7 +55,7 @@
 - name: Apply PostgreSQL config
   service:
     name: "{{postgres_system_service}}"
-    state: estarted
+    state: restarted
   when: s1.changed or s2.changed or s3.changed
 
 - name: Enable postgres system service
