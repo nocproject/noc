@@ -555,6 +555,14 @@ class Site(object):
     def add_contributor(self, cls, contributor):
         self.app_contributors[cls].add(contributor)
 
+    def iter_predefined_reports(self):
+        self.autodiscover()
+        for app in self.apps:
+            pr = getattr(self.apps[app], "predefined_reports", None)
+            if pr:
+                for pr in self.apps[app].predefined_reports:
+                    yield "%s:%s" % (app, pr), self.apps[app].predefined_reports[pr]
+
 ##
 ## Global application site instance
 ##
