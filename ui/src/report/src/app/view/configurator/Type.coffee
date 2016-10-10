@@ -13,11 +13,11 @@ Ext.define 'Report.view.configurator.Type',
 			width: 275
 			labelWidth: 70
 			queryMode: 'local'
-			displayField: 'name'
 			valueField: 'id'
+			displayField: 'name'
 			autoSelect: true
 			store:
-				fields: ['name', 'id']
+				fields: ['id', 'name']
 				data: [
 					{id: 'grid', name: 'Таблица'}
 				]
