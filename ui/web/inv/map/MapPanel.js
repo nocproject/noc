@@ -506,13 +506,15 @@ Ext.define("NOC.inv.map.MapPanel", {
             };
         // Get nodes position
         Ext.each(me.graph.getElements(), function(e) {
-            var v = e.get("id").split(":");
-            r.nodes.push({
-                type: v[0],
-                id: v[1],
-                x: e.get("position").x,
-                y: e.get("position").y
-            });
+            if('wrench' !== e.get('data').type) {
+                var v = e.get("id").split(":");
+                r.nodes.push({
+                    type: v[0],
+                    id: v[1],
+                    x: e.get("position").x,
+                    y: e.get("position").y
+                });
+            }
         });
         // Get links position
         Ext.each(me.graph.getLinks(), function(e) {
