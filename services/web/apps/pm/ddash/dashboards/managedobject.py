@@ -86,7 +86,7 @@ class ManagedObjectDashboard(BaseDashboard):
             r["rows"] += [{
                 "title": profile.name,
                 "showTitle": True,
-                "collapse": False,
+                "collapse": True,
                 "editable": False,
                 "height": "250px",
                 "panels": []
@@ -328,7 +328,7 @@ class ManagedObjectDashboard(BaseDashboard):
         r["rows"] += [{
             "title": "Метрики объекта",
             "showTitle": True,
-            "collapse": False,
+            "collapse": True,
             "editable": False,
             "height": "250px",
             "panels": []
