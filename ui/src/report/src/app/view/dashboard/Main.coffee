@@ -61,6 +61,8 @@ Ext.define 'Report.view.dashboard.Main',
 			xtype: 'container'
 			layout: 'hbox'
 			padding: '8 12 0 0'
+			defaults:
+				width: 98
 			items: [
 				{
 					xtype: 'component'

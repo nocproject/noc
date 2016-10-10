@@ -1,5 +1,6 @@
 ###
 	Управление виджетами.
+    TODO При удалении выбирать предыдущий пункт в библиотеке.
 ###
 Ext.define 'Report.controller.Widget',
 	extend: 'Ext.app.Controller'
@@ -20,6 +21,8 @@ Ext.define 'Report.controller.Widget',
 		component:
 			'widgetLibrary #control #create':
 				click: 'showConfiguratorForLibrary'
+			'widgetLibrary #control #edit':
+				click: 'configureWidgetFromLibrary'
 			'widgetLibrary #control #copy':
 				click: 'copyWidget'
 			'widgetLibrary #control #delete':
@@ -121,7 +124,17 @@ Ext.define 'Report.controller.Widget',
 			@fireEvent 'refresh', @
 			
 			library.hide()
-	
+		###
+			Конфигурирует выбранный виджет из библиотеки виджетов.
+			Поддерживает массовую конфигурацию, открывая множество окон конфигурации.
+			@param {Ext.button.Button} button Кнопка конфигурации виджета.
+		###
+		configureWidgetFromLibrary: (button) ->
+			@forSelectedInLibrary button, (widgetData) =>
+				Ext.create 'Report.view.widget.Configurator',
+					entityType: @ENTITY_TYPE
+					entityModel: widgetData
+					
 		###
 			Копирует выбранный виджет дашборда, поддерживает массовое копирование.
 			@param {Ext.button.Button} button Кнопка копирования дашборда.

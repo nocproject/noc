@@ -116,7 +116,7 @@ Ext.define 'Report.view.configurator.Main',
 			
 			###
                 Оповещает о необходимости синхронизировать модель сущности и модель конфигуратора.
-                @param {'Report.view.configurator.Main'} this Конфигуратор.
+                @param {Report.view.configurator.Main} this Конфигуратор.
                 @param {Ext.data.Model} model Модель сущности.
 			###
 			@fireEvent 'syncModels', @, model
