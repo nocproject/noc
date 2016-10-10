@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## SimpleReport implementation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -625,6 +625,9 @@ class MatrixSection(ReportSection):
 
 
 class SimpleReport(ReportApplication):
+    # List of PredefinedReport instances
+    predefined_reports = {}
+
     def get_data(self, **kwargs):
         """
         Returns Report object
@@ -660,3 +663,12 @@ class SimpleReport(ReportApplication):
         return self.from_dataset(title=title, columns=columns,
                                  data=self.execute(query, params),
                                  enumerate=enumerate)
+
+    def get_predefined_args(self, variant):
+        return self.predefined_reports[variant].args
+
+
+class PredefinedReport(object):
+    def __init__(self, title=None, args=None):
+        self.title = title
+        self.args = args or {}
