@@ -102,7 +102,7 @@ class AlarmDiagnosticConfig(Document):
                     r_cfg[c.on_raise_delay] += [{"action": c.on_raise_action.id}]
                 if c.on_raise_handler:
                     r_cfg[c.on_raise_delay] += [{"handler": c.on_raise_handler}]
-            if c.enable_on_periodic:
+            if c.enable_periodic:
                 if c.periodic_interval:
                     p_cfg[c.periodic_interval] += [{"script": c.periodic_interval}]
                 if c.periodic_interval:
