@@ -159,6 +159,7 @@ class AlarmDiagnosticConfig(Document):
         result = []
         for c in cfg:
             if "script" in c:
+                logger.info("[%s] Running script %s", alarm.id, c["script"])
                 try:
                     g = getattr(mo.scripts, c["script"])
                     result += [g()]
@@ -166,6 +167,7 @@ class AlarmDiagnosticConfig(Document):
                     error_report()
                     result += [str(e)]
             if "action" in c:
+                logger.info("[%s] Running action %s", alarm.id, c["action"])
                 try:
                     g = getattr(mo.actions, c["action"])
                     result += [g()]
@@ -173,6 +175,7 @@ class AlarmDiagnosticConfig(Document):
                     error_report()
                     result += [str(e)]
             if "handler" in c:
+                logger.info("[%s] Running handler %s", alarm.id, c["handler"])
                 try:
                     h = get_handler(c["handler"])
                     try:
@@ -190,6 +193,7 @@ def on_raise(alarm, cfg, *args, **kwargs):
     a = get_alarm(alarm)
     if not a:
         logger.info("[%s] Alarm is not found, skipping", alarm)
+        return
     if a.status == "C":
         logger.info("[%s] Alarm is closed, skipping", alarm)
         return
