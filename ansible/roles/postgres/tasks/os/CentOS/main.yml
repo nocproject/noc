@@ -1,7 +1,7 @@
 ---
 - name: Enable the PostgreSQL repository RHEL
   yum:
-    name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-centos94-9.4-2.noarch.rpm"
+    name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-centos{{postgresql_version|replace(".","")}}-{{postgresql_version}}-2.noarch.rpm"
     state: present
     validate_certs: no
   environment:
@@ -13,16 +13,16 @@
     state: present
     update_cache: yes
   with_items:
-    - postgresql94-server
-    - postgresql94-contrib
-    - postgresql94-plpython
+    - postgresql{{postgresql_version|replace(".","")}}-server
+    - postgresql{{postgresql_version|replace(".","")}}-contrib
+    - postgresql{{postgresql_version|replace(".","")}}-plpython
     - python-psycopg2
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
 
 - name: PostgreSQL init db
-  command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql94-setup initdb
+  command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql{{postgresql_version|replace(".","")}}-setup initdb
   args:
     creates: /var/lib/pgsql/{{ postgresql_version }}/initdb.log
 
