@@ -16,6 +16,7 @@ Ext.define 'Report.view.root.Main',
 	items: [
 		{
 			xtype: 'panel'
+			layout: 'fit'
 			items: [
 				{
 					itemId: 'tabPanel'
