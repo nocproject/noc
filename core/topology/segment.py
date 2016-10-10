@@ -218,6 +218,9 @@ class SegmentTopology(BaseTopology):
         return s[0], s[1], pos
 
     def get_layout_class(self):
+        if not len(self.G):
+            # Empty graph
+            return SpringLayout
         if not self.force_spring and len(self.get_rings()) == 1:
             return RingLayout
         elif not self.force_spring and nx.is_forest(self.G):
