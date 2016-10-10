@@ -896,22 +896,34 @@ Ext.define("NOC.inv.map.MapPanel", {
     onNodeMenuNewMaintaince: function() {
         var me = this,
             objectId = Number(me.nodeMenuObject);
-
-        NOC.launch("maintainance.maintainance", "new", {
-            args: {
-                direct_objects: [{
-                    object: objectId,
-                    object__label: me.objectNodes[objectId].attributes.attrs.text.text
-                }],
-                subject: 'created from map at ' + new Date(),
-                contacts: NOC.username,
-                start_date: Ext.Date.format(new Date(), 'd.m.Y'),
-                start_time: Ext.Date.format(new Date(), 'H:i'),
-                stop_date: Ext.Date.format(new Date(), 'd.m.Y'),
-                stop_time: '12:00',
-                suppress_alarms: true
-            }
-        });
+        var args = {
+            direct_objects: [{
+                object: objectId,
+                object__label: me.objectNodes[objectId].attributes.attrs.text.text
+            }],
+            subject: 'created from map at ' + new Date(),
+            contacts: NOC.username,
+            start_date: Ext.Date.format(new Date(), 'd.m.Y'),
+            start_time: Ext.Date.format(new Date(), 'H:i'),
+            stop_date: Ext.Date.format(new Date(), 'd.m.Y'),
+            stop_time: '12:00',
+            suppress_alarms: true
+        };
+        Ext.create('NOC.maintainance.maintainancetype.LookupField')
+            .getStore()
+            .load({
+                params: {__query: 'РНР'},
+                callback: function(records) {
+                    if(records.length > 0) {
+                        Ext.apply(args, {
+                            type: records[0].id
+                        })
+                    }
+                    NOC.launch("maintainance.maintainance", "new", {
+                        args: args
+                    });
+                }
+            });
     },
 
     setStp: function(status) {
