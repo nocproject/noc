@@ -7,10 +7,13 @@
   when: "'Linux' in ansible_system"
 
 - name: Setup /etc/hosts
-  lineinfile: dest=/etc/hosts
-              line="{{ hostvars[item].ansible_host }} {{ item }}"
-              regexp=".*{{ item }}"
+  lineinfile:
+    dest: /etc/hosts
+    line: "{{ hostvars[item].ansible_host }} {{ item }}"
+    regexp: ".*{{ item }}"
   with_items: "{{ groups['nodes'] }}"
+  tags:
+    - config
 
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
