@@ -901,11 +901,10 @@ Ext.define("NOC.inv.map.MapPanel", {
                 object: objectId,
                 object__label: me.objectNodes[objectId].attributes.attrs.text.text
             }],
-            subject: 'created from map at ' + new Date(),
+            subject: __('created from map at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
             contacts: NOC.username,
             start_date: Ext.Date.format(new Date(), 'd.m.Y'),
             start_time: Ext.Date.format(new Date(), 'H:i'),
-            stop_date: Ext.Date.format(new Date(), 'd.m.Y'),
             stop_time: '12:00',
             suppress_alarms: true
         };
