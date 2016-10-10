@@ -57,6 +57,7 @@ Ext.define 'Report.view.dashboard.Main',
 	
 	dockedItems: [
 		{
+			itemId: 'control'
 			xtype: 'container'
 			layout: 'hbox'
 			padding: '8 12 0 0'

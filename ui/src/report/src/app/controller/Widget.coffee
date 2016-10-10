@@ -19,9 +19,11 @@ Ext.define 'Report.controller.Widget',
 				startSave: 'saveWidget'
 		component:
 			'widgetLibrary #control #create':
-				click: 'showConfigurator'
+				click: 'showConfiguratorForLibrary'
 			'widgetLibrary #control #select':
 				click: 'addWidget'
+			'widgetMain #configure':
+				click: 'showConfiguratorForWidget'
 	
 	privates:
 	
@@ -42,14 +44,23 @@ Ext.define 'Report.controller.Widget',
 					entityType: @ENTITY_TYPE
 				}
 			).show()
-					
+	
 		###
-			Показывает конфигуратор виджета.
+			Показывает конфигуратор виджета для создания нового виджета.
 		###
-		showConfigurator: () ->
+		showConfiguratorForLibrary: () ->
 			Ext.create 'Report.view.widget.Configurator',
 				entityType: @ENTITY_TYPE
-		
+	
+		###
+			Показывает конфигуратор виджета для существующего виджета.
+            @param {Ext.button.Button} button Кнопка конфигурирования виджета.
+		###
+		showConfiguratorForWidget: (button) ->
+			Ext.create 'Report.view.widget.Configurator',
+				entityType: @ENTITY_TYPE
+				entityModel: button.up('widgetMain').getModel()
+		               
 		###
 			Сохраняет виджет.
 			@param {Report.controller.Configurator} controller Контроллер конфигуратора.
@@ -83,6 +94,8 @@ Ext.define 'Report.controller.Widget',
 				entityModel.set data
 			else
 				widgets.add data
+			
+			@fireEvent 'refresh', @
 			
 		###
 			Добавляет виджет в дашборд.

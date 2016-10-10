@@ -10,6 +10,7 @@ Ext.define 'Report.view.configurator.Control',
 		{
 			itemId: 'save'
 			xtype: 'button'
+			iconCls: 'x-fa fa-save'
 			text: 'Сохранить'
 		}
 	]

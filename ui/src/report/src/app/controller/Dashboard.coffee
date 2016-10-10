@@ -31,7 +31,7 @@ Ext.define 'Report.controller.Dashboard',
 		component:
 			'dashboardMain #addWidget':
 				click: 'showWidgetLibrary'
-			'dashboardMain #configure':
+			'dashboardMain #control #configure':
 				click: 'configureDashboard'
 			'dashboardMain #close':
 				click: 'closeDashboard'
