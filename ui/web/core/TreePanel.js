@@ -26,25 +26,33 @@ Ext.define('NOC.core.TreePanel', {
 
     initComponent: function() {
         var me = this,
-            clickFn = function(element, record, tr, rowIndex) {
+            clickFn = function(element, td, cellIndex, record, tr, rowIndex) {
+                console.log('clickFn');
                 if('history' === element.grid.itemId) {
-                    var maxIndex = me.historyStore.getCount();
-                    for(var i = rowIndex + 1; i < maxIndex; i++) {
-                        me.historyStore.remove(me.historyStore.last());
+                    if(me.actionAlways && cellIndex && cellIndex === 1) {
+                        me._action(me, record, true);
+                        me.byIdQuery(record.data.id, true);
+                    } else {
+                        var maxIndex = me.historyStore.getCount();
+                        for(var i = rowIndex + 1; i < maxIndex; i++) {
+                            me.historyStore.remove(me.historyStore.last());
+                        }
+                        me.byIdQuery(record.data.id, false);
                     }
                 } else {
                     if(hasChild(record.data)) {
-                        if(me.actionAlways) {
+                        if(me.actionAlways && cellIndex && cellIndex === 2) {
                             me._action(me, record, true);
+                            me.byIdQuery(record.data.id, true);
+                        } else {
+                            record.data.level = me.historyStore.max('level') + 1;
+                            me.historyStore.add(record.data);
+                            me.byIdQuery(record.data.id, false);
                         }
-                        record.data.level = me.historyStore.max('level') + 1;
-                        me.historyStore.add(record.data);
                     } else {
                         me._action(me, record, false);
-                        return;
                     }
                 }
-                me.byIdQuery(record.data.id);
             },
             hasChild = function(node) {
                 return 'has_children' in node && node.has_children;
@@ -97,11 +105,16 @@ Ext.define('NOC.core.TreePanel', {
                             + 6 * record.data.level + 'px"></i><b style="padding-left: 6px">'
                             + value + '</b>';
                     }
+                }, {
+                    width: 20,
+                    renderer: function() {
+                        return '<i class="fa fa-location-arrow" aria-hidden="true"></i>';
+                    }
                 }
             ],
             store: this.historyStore,
             listeners: {
-                rowclick: clickFn
+                cellclick: clickFn
             }
         });
 
@@ -133,9 +146,18 @@ Ext.define('NOC.core.TreePanel', {
                     }
                     return Ext.String.format('{0}<span style="padding-left: {1}px">{2}</span>', icon, padding, value);
                 }
+            }, {
+                width: 20,
+                renderer: function(value, metadata, record) {
+                    if(hasChild(record.data)) {
+                        return '<i class="fa fa-location-arrow" aria-hidden="true"></i>';
+                    } else {
+                        return '';
+                    }
+                }
             }],
             listeners: {
-                rowclick: clickFn
+                cellclick: clickFn
             }
         });
 
@@ -171,9 +193,12 @@ Ext.define('NOC.core.TreePanel', {
         }, this);
     },
 
-    byIdQuery: function(id) {
+    byIdQuery: function(id, isClosePanel) {
         if('_root_' === id) {
             id = '';
+        }
+        if(isClosePanel) {
+            this.closeSelectWindow();
         }
         this.loadList({parent: id});
         this.currentId = id;
