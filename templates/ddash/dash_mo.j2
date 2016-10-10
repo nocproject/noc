@@ -97,7 +97,7 @@
       "panels": [
         {% set comma = joiner(",") -%}
         {% for graph in object_metrics -%}
-          {% set template = 'graph_' + graph + '.j2' %}
+          {% set template = 'graph_' + graph | lower() |replace(" ","") | replace("|","_") + '.j2' %}
           {{ comma() }}{% include [template, "graph_default.j2"] ignore missing with context %}
         {%- endfor %}
       ]
