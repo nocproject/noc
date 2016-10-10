@@ -135,6 +135,7 @@
     PYCURL_SSL_LIBRARY: "{{ pycurl_ssl_library | default('openssl')}}"
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
+    PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"
   when: node_check.changed
   tags:
     - requirements
