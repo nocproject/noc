@@ -11,6 +11,7 @@
 import string
 # NOC modules
 from base import BaseDashboard
+from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 
 
@@ -25,7 +26,11 @@ class LinkDashboard(BaseDashboard):
 
     def render(self):
         mos = self.object.managed_objects
-        ifaces = self.object.interfaces
+        ifaces = []
+        for m in mos:
+            for ifs in self.object.interfaces:
+                if ifs in Interface.objects.filter(managed_object=m):
+                    ifaces += [ifs]
         self.logger.info("Link ID is: %s, MO: %s, Ifaces: %s" % (self.object.id, mos, ifaces))
         list = []
         refId = string.lowercase[:14]
@@ -56,7 +61,7 @@ class LinkDashboard(BaseDashboard):
             fish.update(c)
             list += [fish.copy()]
 
-        query = ",".join([i.name for i in ifaces])
+        # query = ",".join([i.name for i in ifaces])
         options = [{"text": i.name, "value": i.name} for i in ifaces]
         for i in ifaces:
             v = {
@@ -67,7 +72,7 @@ class LinkDashboard(BaseDashboard):
             c = {
                 "name": "interface_%s" % refId[ifaces.index(i)],
                 "label": u"Интерфейс %s" % refId[ifaces.index(i)].upper(),
-                "query": query,
+                "query": i.name,
                 "options": options,
                 "current": v
             }
