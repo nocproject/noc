@@ -28,7 +28,7 @@ from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
 from noc.maintainance.models.maintainance import Maintainance
 from noc.sa.models.servicesummary import SummaryItem
-from noc.inv.models.networksegment import NetworkSegment
+from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
 
 
@@ -55,6 +55,11 @@ class AlarmApplication(ExtApplication):
     }
 
     ignored_params = ["status", "_dc"]
+
+    diagnostic_plugin = AlarmPlugin(
+        name="diagnostic",
+        config={}
+    )
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
@@ -246,15 +251,16 @@ class AlarmApplication(ExtApplication):
             d["is_subscribed"] = user in alarm.subscribers
         # Apply plugins
         plugins = []
-        if alarm.alarm_class.plugins:
-            for p in alarm.alarm_class.plugins:
-                if p.name in self.plugins:
-                    plugin = self.plugins[p.name]
-                    dd = plugin.get_data(alarm, p.config)
-                    if "plugins" in dd:
-                        plugins += dd["plugins"]
-                        del dd["plugins"]
-                    d.update(dd)
+        acp = alarm.alarm_class.plugins or []
+        acp += [self.diagnostic_plugin]
+        for p in acp:
+            if p.name in self.plugins:
+                plugin = self.plugins[p.name]
+                dd = plugin.get_data(alarm, p.config)
+                if "plugins" in dd:
+                    plugins += dd["plugins"]
+                    del dd["plugins"]
+                d.update(dd)
         if plugins:
             d["plugins"] = plugins
         return d
