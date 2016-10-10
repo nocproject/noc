@@ -15,6 +15,7 @@ Ext.define 'Report.view.configurator.Type',
 			queryMode: 'local'
 			displayField: 'name'
 			valueField: 'id'
+			autoSelect: true
 			store:
 				fields: ['name', 'id']
 				data: [
