@@ -1,11 +1,4 @@
 ---
-- name: Enable the PostgreSQL repository RHEL
-  yum:
-    name: http://yum.postgresql.org/{{postgresql_version}}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-redhat94-9.4-2.noarch.rpm
-    state: present
-  environment:
-    http_proxy: "{{http_proxy}}"
-
 - name: Install PostgreSQL
   yum:
     name: "{{item}}"
@@ -21,7 +14,7 @@
     https_proxy: "{{http_proxy}}"
 
 - name: PostgreSQL init db
-  command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql94-setup initdb
+  command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql{{postgresql_version|replace(".","")}}-setup initdb
   args:
     creates: /var/lib/pgsql/{{ postgresql_version }}/initdb.log
 
