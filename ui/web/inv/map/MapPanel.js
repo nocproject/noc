@@ -628,7 +628,10 @@ Ext.define("NOC.inv.map.MapPanel", {
             if(!node) {
                 return;
             }
-            node.setFilter(me.statusFilter[data[s]]);
+            node.setFilter(me.statusFilter[data[s] & 0x1f]); // Remove maintainance bit
+            if(data[s] & 0x20) {
+                console.log(node);
+            }
         });
     },
     //

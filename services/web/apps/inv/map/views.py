@@ -10,9 +10,11 @@
 from collections import defaultdict
 import urllib
 import json
+import datetime
 ## Third-party modules
 import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import six
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
@@ -25,6 +27,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.lib.stencil import stencil_registry
 from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.maintainance.models.maintainance import Maintainance
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
@@ -52,6 +55,7 @@ class MapApplication(ExtApplication):
     ST_ALARM = 2  # Object is reachable, Active alarms
     ST_UNREACH = 3  # Object is unreachable due to other's object failure
     ST_DOWN = 4  # Object is down
+    ST_MAINTAINANCE = 32  # Maintainance bit
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],
           access="read", api=True)
@@ -95,7 +99,7 @@ class MapApplication(ExtApplication):
             "id": str(segment.id),
             "name": segment.name,
             "caps": list(topology.caps),
-            "nodes": [q_mo(x) for x in topology.G.node.itervalues()],
+            "nodes": [q_mo(x) for x in six.itervalues(topology.G.node)],
             "links": [topology.G[u][v] for u, v in topology.G.edges()]
         }
         # Parent info
@@ -301,10 +305,33 @@ class MapApplication(ExtApplication):
                     r.update([d["_id"] for d in a["result"]])
             return r
 
+        def get_maintainance(objects):
+            """
+            Returns a set of objects currently in maintainance
+            :param objects:
+            :return:
+            """
+            now = datetime.datetime.now()
+            so = set(objects)
+            r = set()
+            for m in Maintainance._get_collection().find({
+                "is_completed": False,
+                "start": {
+                    "$lte": now
+                }
+            }, {
+                "_id": 0,
+                "affected_objects": 1
+            }):
+                mo = set(r["object"] for r in m["affected_objects"])
+                r |= so & mo
+            return r
+
         # Mark all as unknown
         r = dict((o, self.ST_UNKNOWN) for o in objects)
         sr = ObjectStatus.get_statuses(objects)
         sa = get_alarms(objects)
+        mo = get_maintainance(objects)
         for o in sr:
             if sr[o]:
                 # Check for alarms
@@ -314,6 +341,8 @@ class MapApplication(ExtApplication):
                     r[o] = self.ST_OK
             else:
                 r[o] = self.ST_DOWN
+            if o in mo:
+                r[o] |= self.ST_MAINTAINANCE
         return r
 
     @view(
