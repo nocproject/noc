@@ -13,7 +13,7 @@ from django import forms
 from django.db import connection
 from django.contrib.admin.widgets import AdminDateWidget
 ## NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
@@ -40,8 +40,25 @@ class ReportForm(forms.Form):
 class ReportRebootsApplication(SimpleReport):
     title = _("Reboots")
     form = ReportForm
+    predefined_reports = {
+        "1d": PredefinedReport(
+            _("Reboots (1 day)"), {
+                "interval": 1
+            }
+        ),
+        "7d": PredefinedReport(
+            _("Reboots (7 days)"), {
+                "interval": 7
+            }
+        ),
+        "30d": PredefinedReport(
+            _("Reboot (30 day)"), {
+                "interval": 30
+            }
+        )
+    }
 
-    def get_data(self, request, interval, from_date, to_date, **kwargs):
+    def get_data(self, request, interval, from_date=None, to_date=None, **kwargs):
         interval = int(interval)
         if interval:
             ts = datetime.datetime.now() - datetime.timedelta(days=interval)

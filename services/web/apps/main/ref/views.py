@@ -9,12 +9,14 @@
 ## Python modules
 import os
 import re
+import operator
 ## Django modules
 from django.db import models
 ## Third-party modules
 from mongoengine.base.common import _document_registry
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.app.site import site
 from noc.sa.interfaces.base import interface_registry
 from noc.lib.stencil import stencil_registry
 from noc import settings
@@ -195,10 +197,22 @@ class RefAppplication(ExtApplication):
             key=lambda x: x["label"]
         )
 
+    def _build_report(self):
+        return sorted((
+            {
+                "id": r_id,
+                "label": r.title
+            } for r_id, r in site.iter_predefined_reports()),
+            key=operator.itemgetter("label")
+        )
+
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
         if ref not in self.refs:
-            return self.response_not_found()
+            if ref == "report":
+                self.refs["report"] = self._build_report()
+            else:
+                return self.response_not_found()
         # return self.refs[ref]
         q = dict((str(k), v[0] if len(v) == 1 else v)
                  for k, v in request.GET.lists())

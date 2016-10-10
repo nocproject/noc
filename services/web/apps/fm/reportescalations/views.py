@@ -13,7 +13,7 @@ import operator
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
 ## NOC modules
-from noc.lib.app.simplereport import SimpleReport
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport
 from noc.sa.models.useraccess import UserAccess
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
@@ -41,8 +41,25 @@ class ReportForm(forms.Form):
 class ReportEscalationsApplication(SimpleReport):
     title = _("Escalations")
     form = ReportForm
+    predefined_reports = {
+        "1d": PredefinedReport(
+            _("Escalations (1 day)"), {
+                "interval": 1
+            }
+        ),
+        "7d": PredefinedReport(
+            _("Escalations (7 days)"), {
+                "interval": 7
+            }
+        ),
+        "30d": PredefinedReport(
+            _("Escalations (30 day)"), {
+                "interval": 30
+            }
+        )
+    }
 
-    def get_data(self, request, interval, from_date, to_date, **kwargs):
+    def get_data(self, request, interval, from_date=None, to_date=None, **kwargs):
         interval = int(interval)
         if interval:
             ts = datetime.datetime.now() - datetime.timedelta(days=interval)
