@@ -20,6 +20,8 @@ Ext.define 'Report.controller.Widget',
 		component:
 			'widgetLibrary #control #create':
 				click: 'showConfiguratorForLibrary'
+			'widgetLibrary #control #delete':
+				click: 'deleteWidget'
 			'widgetLibrary #control #select':
 				click: 'addWidget'
 			'widgetMain #configure':
@@ -102,8 +104,7 @@ Ext.define 'Report.controller.Widget',
 			@param {Ext.button.Button} button Кнопка добавления дашборда.
 		###
 		addWidget: (button) ->
-			dashboards = Report.model.MainDataTree.get('dashboards')
-			widgets = dashboards.findRecord('active', true)?.get('widgets')
+			widgets = @getWidgets()
 			
 			return unless widgets
 			
@@ -118,3 +119,28 @@ Ext.define 'Report.controller.Widget',
 			@fireEvent 'refresh', @
 			
 			library.hide()
+		
+		###
+			Удаляет виджет из дашборда.
+			@param {Ext.button.Button} button Кнопка удаления дашборда.
+		###
+		deleteWidget: (button) ->
+			library = button.up('widgetLibrary')
+			list = library.down('#list')
+			selected = list.getSelected()
+			widgets = @getWidgets()
+			
+			return unless widgets
+			
+			for widgetData in selected
+				widgets.remove widgetData
+			
+			@fireEvent 'refresh', @
+		
+		###
+			@return {Ext.data.Store/Null}
+            Стор, хранящий виджеты либо null если ни один из дашбордов не активен.
+		###
+		getWidgets: () ->
+			dashboards = Report.model.MainDataTree.get('dashboards')
+			dashboards.findRecord('active', true)?.get('widgets')
