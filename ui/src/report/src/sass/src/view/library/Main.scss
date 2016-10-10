@@ -1,7 +1,12 @@
 .library {
+
 	.x-dataview-item {
 		font-size: $font-size-header;
 		padding: 10px;
+
+		.checked-flag {
+			float: right;
+		}
 	}
 
 	.delimiter-border {

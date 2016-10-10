@@ -19,7 +19,9 @@ Ext.define 'Report.view.library.List',
 		{
 			itemId: 'view'
 			xtype: 'dataview'
-			itemTpl: '<span class="item">{name}</span>'
+			itemTpl:
+				'<span class="name">{name}</span>
+				 <span class="checked-flag {[ values.visible? "x-fa fa-check" : "" ]}"></span>'
 			emptyText: 'Пусто'
 			deferEmptyText: false
 			selectionModel:
