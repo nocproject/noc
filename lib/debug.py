@@ -297,7 +297,7 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
                 "ts": datetime.datetime.now().isoformat(),
                 "uuid": fp,
                 # "installation": None,
-                "process": os.path.relpath(sys.argv[0]),
+                "process": os.path.relpath(sys.argv[0] or sys.executable),
                 "branch": get_branch(),
                 "tip": get_tip(),
                 "traceback": r
@@ -350,7 +350,7 @@ def error_fingerprint():
         tb = tb.tb_next
     parts = [
         get_branch(),
-        os.path.relpath(sys.argv[0]),  # Process
+        os.path.relpath(sys.argv[0] or sys.executable),  # Process
         str(t),  # Exception class
         noc_file, noc_function, str(noc_lineno),  # NOC code point
         tb_file, tb_function, str(tb_lineno)  # Absolute code point
