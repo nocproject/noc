@@ -641,7 +641,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                     var wrench = new joint.shapes.basic.Circle({
                         position: {
                             x: node.get('position').x + nodeSize.width - size,
-                            y: node.get('position').y + size * 0.95
+                            y: node.get('position').y - size / 2
                         },
                         size: {width: size, height: size},
                         attrs: {
@@ -905,6 +905,10 @@ Ext.define("NOC.inv.map.MapPanel", {
                 }],
                 subject: 'created from map at ' + new Date(),
                 contacts: NOC.username,
+                start_date: Ext.Date.format(new Date(), 'd.m.Y'),
+                start_time: Ext.Date.format(new Date(), 'H:i'),
+                stop_date: Ext.Date.format(new Date(), 'd.m.Y'),
+                stop_time: '12:00',
                 suppress_alarms: true
             }
         });
