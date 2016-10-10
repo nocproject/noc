@@ -12,6 +12,7 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
         "NOC.fm.alarmdiagnosticconfig.Model",
         "NOC.fm.alarmclass.LookupField",
         "NOC.sa.managedobjectselector.LookupField",
+        "NOC.main.ref.script.LookupField",
         "NOC.sa.action.LookupField"
     ],
     model: "NOC.fm.alarmdiagnosticconfig.Model",
@@ -107,7 +108,7 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                 },
                                 {
                                     name: "on_raise_script",
-                                    xtype: "textfield",
+                                    xtype: "main.ref.script.LookupField",
                                     fieldLabel: __("Script"),
                                     allowBlank: true
                                 },
@@ -135,7 +136,7 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                 },
                                 {
                                     name: "periodic_delay",
-                                    xtype: "numberfield",
+                                    xtype: "main.ref.script.LookupField",
                                     fieldLabel: __("Delay"),
                                     min: 0,
                                     allowBlank: true
@@ -177,7 +178,7 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                 },
                                 {
                                     name: "on_clear_script",
-                                    xtype: "textfield",
+                                    xtype: "main.ref.script.LookupField",
                                     fieldLabel: __("Script"),
                                     allowBlank: true
                                 },
