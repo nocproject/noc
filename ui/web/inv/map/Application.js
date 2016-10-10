@@ -71,6 +71,14 @@ Ext.define("NOC.inv.map.Application", {
             handler: me.onEdit
         });
 
+        me.rotateButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.rotate_right,
+            tooltip: __("Rotate"),
+            disabled: true,
+            scope: me,
+            handler: me.onRotate
+        });
+
         me.saveButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.save,
             text: __("Save"),
@@ -198,6 +206,7 @@ Ext.define("NOC.inv.map.Application", {
                         me.saveButton,
                         me.revertButton,
                         me.newLayoutButton,
+                        me.rotateButton,
                         "-",
                         me.viewMapButton,
                         me.viewLoadButton,
@@ -228,6 +237,7 @@ Ext.define("NOC.inv.map.Application", {
         me.editButton.setDisabled(me.readOnly);
         me.editButton.setPressed(false);
         me.saveButton.setDisabled(true);
+        me.rotateButton.setDisabled(true);
         me.revertButton.setDisabled(true);
         me.inspectSegment();
         me.viewMapButton.setPressed(true);
@@ -286,6 +296,7 @@ Ext.define("NOC.inv.map.Application", {
         if(me.editButton.pressed) {
             me.mapPanel.setOverlayMode(0);
             me.viewMapButton.setPressed(true);
+            me.rotateButton.setDisabled(false);
         }
         me.mapPanel.setInteractive(me.editButton.pressed);
     },
@@ -338,6 +349,11 @@ Ext.define("NOC.inv.map.Application", {
                 }
             }
         });
+    },
+
+    onRotate: function() {
+        var me = this;
+        me.mapPanel.onRotate();
     },
 
     onStp: function() {

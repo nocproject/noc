@@ -270,10 +270,6 @@ Ext.define("NOC.inv.map.MapPanel", {
             cells.push(me.createLink(link));
         });
         me.graph.addCells(cells);
-        me.paper.fitToContent({
-            gridHeight: me.getHeight(),
-            gridWidth: me.getWidth()
-        });
         // Run status polling
         if(me.statusPollingTaskId) {
             me.getObjectStatus();
@@ -480,7 +476,23 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.isDirty = true;
         me.fireEvent("changed");
     },
-
+    //
+    onRotate: function() {
+        var me = this,
+            bbox = me.paper.getContentBBox();
+        Ext.each(me.graph.getElements(), function(e) {
+            var pos = e.get("position");
+            e.set("position", {
+                x: -pos.y + bbox.height,
+                y: pos.x
+            })
+        });
+        me.paper.fitToContent({
+            gridHeight: me.getHeight(),
+            gridWidth: me.getWidth()
+        });
+    },
+    //
     save: function() {
         var me = this,
             bbox = me.paper.getContentBBox(),
