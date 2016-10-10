@@ -58,8 +58,8 @@ Ext.define 'Report.view.widget.Main',
 	
 		model = @getModel()
 		
-		@setBoardWidth  model.get 'width'
-		@setBoardHeight model.get 'height'
+		@setBoardWidth  model.get('width')  or @getBoardWidth()
+		@setBoardHeight model.get('height') or @getBoardHeight()
 		
 		@add {
 			xtype: @getWidgetXtype(),
