@@ -66,27 +66,27 @@ Ext.define("NOC.main.audittrail.Application", {
                     name: "op",
                     xtype: "displayfield",
                     fieldLabel: __("Operation")
-                },
-                {
-                    name: "changes",
-                    xtype: "displayfield",
-                    fieldLabel: __("Changes"),
-                    renderer: NOC.render.Table({
-                        columns: [
-                            {
-                                text: __("Field"),
-                                dataIndex: "field"
-                            },
-                            {
-                                text: __("Old"),
-                                dataIndex: "old"
-                            },
-                            {
-                                text: __("New"),
-                                dataIndex: "new"
-                            }
-                        ]
-                    })
+                // },
+                // {
+                //     name: "changes",
+                //     xtype: "displayfield",
+                //     fieldLabel: __("Changes")
+                    // renderer: NOC.render.Table({
+                    //     columns: [
+                    //         {
+                    //             text: __("Field"),
+                    //             dataIndex: "field"
+                    //         },
+                    //         {
+                    //             text: __("Old"),
+                    //             dataIndex: "old"
+                    //         },
+                    //         {
+                    //             text: __("New"),
+                    //             dataIndex: "new"
+                    //         }
+                    //     ]
+                    // })
                 }
             ]
         });
