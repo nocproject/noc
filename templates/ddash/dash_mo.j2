@@ -39,7 +39,8 @@
       {% include "template_device.j2" with context -%},
       {% include "template_vendor.j2" with context -%},
       {% include "template_platform.j2" with context -%},
-      {% include "template_device_id.j2" with context -%}
+      {% include "template_device_id.j2" with context -%},
+      {% include "template_ip_info.j2" with context -%}
     ]
   },
   "annotations": {
@@ -65,8 +66,7 @@
       "showTitle": true,
       "title": "$device $ip $vendor $platform",
       "panels": [
-      {% include "panel_device.j2" with context -%},
-      {% include "panel_ip.j2" with context -%}
+      {% include "panel_device.j2" with context -%}
       ]
 
     }{%if port_types %},
