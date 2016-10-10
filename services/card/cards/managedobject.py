@@ -9,6 +9,7 @@
 ## Python modules
 import datetime
 import operator
+import re
 ## Third-party modules
 from django.db.models import Q
 ## NOC modules
@@ -261,6 +262,16 @@ class ManagedObjectCard(BaseCard):
             q |= Q(address=query)
         if ".*" in query and is_ipv4(query.replace(".*", ".1")):
             q |= Q(address__regex=query.replace(".", "\\.").replace("*", "[0-9]+"))
+        elif set("+*[]()") & set(query):
+            # Maybe regular expression
+            try:
+                # Check syntax
+                # @todo: PostgreSQL syntax differs from python one
+                re.compile(query)
+                q |= Q(name__regex=query)
+                q |= Q(address__regex=query)
+            except re.error:
+                pass
         if is_int(query):
             q |= Q(id=int(query))
         try:
