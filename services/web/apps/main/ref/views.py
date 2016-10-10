@@ -21,6 +21,7 @@ from noc import settings
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.cm.validators.base import validator_registry
 from noc.core.profile.loader import loader as profile_loader
+from noc.core.script.loader import loader as script_loader
 from noc.core.translation import ugettext as _
 
 
@@ -64,6 +65,17 @@ class RefAppplication(ExtApplication):
             "id": n,
             "label": n
         } for n in profile_loader.iter_profiles()]
+
+    def build_script(self):
+        """
+        Profile names
+        :return: (script name, script name)
+        """
+        s = set(x.split(".")[-1] for x in script_loader.iter_scripts())
+        return [{
+            "id": n,
+            "label": n
+        } for n in sorted(s)]
 
     def build_stencil(self):
         """
