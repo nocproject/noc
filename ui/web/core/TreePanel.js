@@ -27,7 +27,6 @@ Ext.define('NOC.core.TreePanel', {
     initComponent: function() {
         var me = this,
             clickFn = function(element, td, cellIndex, record, tr, rowIndex) {
-                console.log('clickFn');
                 if('history' === element.grid.itemId) {
                     if(me.actionAlways && cellIndex && cellIndex === 1) {
                         me._action(me, record, true);
