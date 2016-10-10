@@ -9,5 +9,5 @@ Ext.define 'Report.model.config.Filter',
 		{name: 'type',     type: 'string'}
 		{name: 'column',   type: 'string'}
 		{name: 'dataType', type: 'string'}
-		{name: 'value',                  }
+		{name: 'value'                   }
 	]

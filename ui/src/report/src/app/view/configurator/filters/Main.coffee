@@ -8,6 +8,7 @@ Ext.define 'Report.view.configurator.filters.Main',
 	requires: [
 		'Report.view.configurator.filters.ColumnCombo'
 		'Report.view.configurator.filters.TypeCombo'
+		'Report.view.configurator.filters.ValueEditor'
 	]
 	
 	items: [
@@ -52,6 +53,13 @@ Ext.define 'Report.view.configurator.filters.Main',
 					flex: 1
 					editor:
 						xtype: 'configuratorFiltersTypeCombo'
+				}
+				{
+					dataIndex: 'value'
+					text: 'Значение'
+					flex: 1
+					editor:
+						xtype: 'configuratorFiltersValueEditor'
 				}
 				{
 					xtype: 'actioncolumn'
