@@ -498,7 +498,7 @@
       "title": "Errors"
     },
     {
-      "collapse": false,
+      "collapse": true,
       "editable": false,
       "height": "250px",
       "panels": [
@@ -839,7 +839,8 @@
       "title": "LOAD"
     },
     {
-      "collapse": false,
+      "collapse": true,
+      "showTitle": true,
       "editable": false,
       "height": "250px",
       "panels": [
