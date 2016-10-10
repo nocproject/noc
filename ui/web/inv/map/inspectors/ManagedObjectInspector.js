@@ -158,7 +158,7 @@ Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
         var me = this;
         if(me.currentObjectId) {
             window.open(
-                "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.currentObjectId
+                "/ui/grafana/dashboard/script/noc.js?dashboard=mo&id=" + me.currentObjectId
             );
         }
     },
