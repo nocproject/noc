@@ -7,8 +7,8 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-10-07 04:01+0500",
-        "POT-Creation-Date": "2016-10-07 01:49+0500",
+        "PO-Revision-Date": "2016-10-10 19:36+0500",
+        "POT-Creation-Date": "2016-10-10 19:09+0500",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
@@ -373,6 +373,10 @@
     "By Service Terminator": [
         null,
         "По терминирующему сервисы"
+    ],
+    "By State": [
+        null,
+        "По состоянию"
     ],
     "By Tags": [
         null,
@@ -828,7 +832,7 @@
     ],
     "Disconnect": [
         null,
-        "Отключить"
+        "Отсоединить"
     ],
     "Discovery": [
         null,
@@ -973,6 +977,10 @@
     "Expand panels": [
         null,
         "Развернуть панели"
+    ],
+    "Expiration time": [
+        null,
+        "Срок давности"
     ],
     "Expire": [
         null,
@@ -1349,6 +1357,10 @@
     "Filter by User (REGEXP)": [
         null,
         "Фильтровать по пользователю (Шаблон)"
+    ],
+    "Filter by VC Domain": [
+        null,
+        "Фильтровать по домену VC"
     ],
     "Filter by VRF": [
         null,
@@ -2430,6 +2442,10 @@
         null,
         "Время восстановления"
     ],
+    "Redundant": [
+        null,
+        "Резервирован"
+    ],
     "Refresh": [
         null,
         "Обновить"
@@ -2694,6 +2710,10 @@
         null,
         "Выбрать MIB..."
     ],
+    "Select Object To Import": [
+        null,
+        "Выберите объект для импорта"
+    ],
     "Select Shape": [
         null,
         "Выбрать изображение"
@@ -2701,6 +2721,10 @@
     "Select VCs to import": [
         null,
         "Выберите VC для импорта"
+    ],
+    "Select VRFs to import": [
+        null,
+        "Выберите VRF для импорта"
     ],
     "Select base layer": [
         null,
