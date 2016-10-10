@@ -19,7 +19,6 @@ Ext.define("NOC.main.welcome.Application", {
             method: "GET",
             scope: me,
             success: function(response) {
-                console.log(response.responseText);
                 me.setHtml(response.responseText);
             }
         });
