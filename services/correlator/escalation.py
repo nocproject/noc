@@ -53,18 +53,22 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
     alarm = get_alarm(alarm_id)
     if alarm is None:
         logger.info("[%s] Missing alarm, skipping", alarm_id)
+        metrics["escalation_missed_alarm"] += 1
         return
     if alarm.status == "C":
         logger.info("[%s] Alarm is closed, skipping", alarm_id)
+        metrics["escalation_already_closed"] += 1
         return
     if alarm.root:
         log("[%s] Alarm is not root cause, skipping", alarm_id)
+        metrics["escalation_alarm_is_not_root"] += 1
         return
     #
     escalation = escalation_cache[escalation_id]
     if not escalation:
         log("Escalation %s is not found, skipping",
             escalation_id)
+        metrics["escalation_not_found"] += 1
         return
 
     # Evaluate escalation chain
@@ -249,6 +253,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
         if a.stop_processing:
             logger.debug("Stopping processing")
             break
+    logger.info("[%s] Ecalations loop end", alarm_id)
+
 
 
 def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt=False):
