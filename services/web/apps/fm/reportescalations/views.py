@@ -71,7 +71,7 @@ class ReportEscalationsApplication(SimpleReport):
         data = []
         for ac in (ActiveAlarm, ArchivedAlarm):
             for d in ac._get_collection().find(q):
-                mo = ManagedObject.objects.get_by_id((d["managed_object"]))
+                mo = ManagedObject.get_by_id(d["managed_object"])
                 if not mo:
                     continue
                 data += [(
