@@ -817,7 +817,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         var me = this;
         if(me.currentRecord) {
             window.open(
-                "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.currentRecord.get("id")
+                "/ui/grafana/dashboard/script/noc.js?dashboard=mo&id=" + me.currentRecord.get("id")
             );
         }
     },
