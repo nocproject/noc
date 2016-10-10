@@ -146,6 +146,7 @@ class ReportSubscription(Document):
         with open(path) as f:
             data = f.read()
         for a in addresses:
+            logger.info("[%s] Sending to %s", self.file_name, a)
             pub(
                 "mailsender",
                 {
