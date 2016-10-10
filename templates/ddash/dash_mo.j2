@@ -40,14 +40,13 @@
       {% include "template_vendor.j2" with context -%},
       {% include "template_platform.j2" with context -%},
       {% include "template_device_id.j2" with context -%},
-      {% include "template_ip_info.j2" with context -%}
     ]
   },
   "annotations": {
     "list": [
       {
         "datasource": "NocDS",
-        "enable": true,
+        "enable": false,
         "iconColor": "rgba(255, 96, 96, 1)",
         "name": "Alarm",
         "query": "$device_id"
