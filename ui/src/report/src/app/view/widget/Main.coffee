@@ -33,11 +33,6 @@ Ext.define 'Report.view.widget.Main',
 		model: null
 	
 		###
-			@cfg {String} type Тип виджета.
-		###
-		type: ''
-	
-		###
 			@cfg {Ext.data.Store} columns Колонки источника данных в виде стора с моделями.
 		###
 		columns: null
@@ -74,7 +69,7 @@ Ext.define 'Report.view.widget.Main',
 			указанному в конфигурации.
 		###
 		getWidgetXtype: () ->
-			switch @getType()
+			switch @getModel().get('type')
 				when 'grid' then 'widgetTypeGrid'
 		
 		###
