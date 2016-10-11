@@ -32,6 +32,7 @@ class Command(BaseCommand):
     rx_last_updated = re.compile(r"\"last_updated\": \"([^\"]+)\"",
                                  re.MULTILINE)
     rx_version = re.compile(r"\"version\":\s*(\d+)", re.MULTILINE)
+    PREFIX = "collections/fm.mibs/"
 
     def handle(self, *args, **options):
         print "Synchronizing MIBs"
@@ -42,7 +43,7 @@ class Command(BaseCommand):
         Generator returning bundled MIBs list
         :returns: Yields (MIB Name, path)
         """
-        for root, dirs, files in os.walk("fm/collections/mibs/"):
+        for root, dirs, files in os.walk(self.PREFIX):
             for f in files:
                 if (not f.startswith(".") and
                     (f.endswith(".json.gz") or f.endswith(".json"))):
