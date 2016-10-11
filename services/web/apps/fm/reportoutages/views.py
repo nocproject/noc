@@ -92,6 +92,10 @@ class ReportOutagesApplication(SimpleReport):
             )
             if dt >= 86400:
                 downtime = "%dd %s" % (dt // 86400, downtime)
+            if td:
+                avail = float(td - dt) * 100 / td
+            else:
+                avail = 0
             r += [(
                 m.name,
                 m.address,
@@ -100,7 +104,7 @@ class ReportOutagesApplication(SimpleReport):
                 m.is_managed,
                 m.get_status(),
                 downtime,
-                float(td - dt) * 100 / td,
+                avail,
                 len(outages[o])
             )]
 
