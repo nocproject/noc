@@ -1,0 +1,107 @@
+{% set comma = joiner(",") -%}
+{
+  "id": 17,
+  "title": "Link {{device_a}}-{{device_b}}",
+  "tags": [],
+  "style": "dark",
+  "timezone": "browser",
+  "refresh": "15m",
+  "editable": true,
+  "hideControls": false,
+  "sharedCrosshair": false,
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5m"
+    ],
+    "time_options": [
+      "1h",
+      "3h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d"
+    ]
+  },
+  "templating": {
+    "list": [
+      {%if port_types %}
+      {% for port_type in port_types -%}
+        {% from 'template_port.j2' import ports -%}
+        {{ comma() }}{{ ports(port_type) }}
+      {% endfor -%},
+      {% endif %}
+
+      {% include "template_device.j2" with context -%},
+      {% include "template_device_id.j2" with context -%},
+      {% include "template_segment.j2" with context -%},
+    ]
+  },
+  "annotations": {
+    "list": [
+      {
+        "datasource": "NocDS",
+        "enable": false,
+        "iconColor": "rgba(255, 96, 96, 1)",
+        "name": "Alarms A",
+        "query": "$device_a"
+      },
+      {
+        "datasource": "NocDS",
+        "enable": false,
+        "iconColor": "rgba(255, 96, 96, 1)",
+        "name": "Alarm B",
+        "query": "$device_b"
+      }
+    ]
+  },
+  "schemaVersion": 12,
+  "version": 33,
+  "links": [],
+  "gnetId": null,
+  "rows": [
+    {
+      "title": "Errors",
+      "showTitle": true,
+      "collapse": false,
+      "editable": true,
+      "height": "60px",
+      "panels": [
+        {% from "graph_interface_errors.j2" import errors -%}
+        {% from "graph_interface_discards.j2" import discards -%}
+        {{errors(interfece_device_a)}},
+        {{discards(interfece_device_a)}},
+        {{errors(interfece_device_b)}},
+        {{discards(interfece_device_b)}}
+
+      ],
+    },
+    {
+      "title": "LOAD",
+      "showTitle": true,
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {% from "graph_interface_load.j2" import interface -%}
+        {{interface(interfece_device_a)}},
+        {{interface(interfece_device_b)}}
+        ],
+    },
+    {
+      "title": "PPS",
+      "showTitle": true,
+      "collapse": false,
+      "editable": true,
+      "height": "250px",
+      "panels": [
+        {% from "graph_interface_pps.j2" import pps -%}
+        {{pps(interfece_device_a)}},
+        {{pps(interfece_device_b)}}
+      ]
+    }
+}
