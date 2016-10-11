@@ -14,6 +14,8 @@ import datetime
 import bson
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
+from noc.inv.models.object import Object
+from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmseverity import AlarmSeverity
@@ -211,6 +213,19 @@ class AlarmApplication(ExtApplication):
         d["managed_object_version"] = mo.get_attr("version")
         d["segment"] = mo.segment.name
         d["segment_id"] = str(mo.segment.id)
+        d["segment_path"] = " | ".join(NetworkSegment.get_by_id(p).name for p in NetworkSegment.get_path(mo.segment))
+        if mo.container:
+            cp = []
+            c = mo.container.id
+            while c:
+                try:
+                    o = Object.objects.get(id=c)
+                    if o.container:
+                        cp.insert(0, o.name)
+                    c = o.container
+                except Object.DoesNotExist:
+                    break
+            d["container_path"] = " | ".join(cp)
         d["tags"] = mo.tags
         # Log
         if alarm.log:
