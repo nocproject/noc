@@ -11,6 +11,7 @@ import datetime
 import re
 ## Django modules
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 ## NOC modules
 from noc.lib.app.simplereport import (SimpleReport, SectionRow,
                                       SafeString)
@@ -20,7 +21,7 @@ from noc.ip.models.address import Address
 
 
 class ReportHistoryApplication(SimpleReport):
-    title = "History"
+    title = _("History")
 
     class form(forms.Form):
         days = forms.IntegerField(label="Days", initial=3)

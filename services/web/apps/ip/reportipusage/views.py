@@ -6,13 +6,14 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from django.utils.translation import ugettext_lazy as _
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, TableColumn
 from noc.lib.ip import IP
 
 
 class ReportIPUsageApplication(SimpleReport):
-    title = "IP Usage"
+    title = _("IP Usage")
 
     QUERY = """
     SELECT v.name, v.rd, p.afi, p.prefix, p.description, COUNT(*)

@@ -26,13 +26,15 @@ class ReportForm(forms.Form):
         (1, _("1 day")),
         (7, _("1 week")),
         (30, _("1 month"))
-    ])
+    ], label=_("Inteval"))
     from_date = forms.CharField(
         widget=AdminDateWidget,
+        label=_("From Date"),
         required=False
     )
     to_date = forms.CharField(
         widget=AdminDateWidget,
+        label=_("To Date"),
         required=False
     )
 
