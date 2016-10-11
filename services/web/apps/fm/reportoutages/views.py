@@ -28,13 +28,15 @@ class ReportForm(forms.Form):
         (86400, _("1 day")),
         (7 * 86400, _("1 week")),
         (30 * 86400, _("1 month"))
-    ])
+    ], label=_("Duration"))
     from_date = forms.CharField(
         widget=AdminDateWidget,
+        label=_("From Date"),
         required=False
     )
     to_date = forms.CharField(
         widget=AdminDateWidget,
+        label=_("To Date"),
         required=False
     )
 

@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from django.utils.translation import ugettext_lazy as _
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow
 from noc.ip.models import VRF
@@ -14,7 +15,7 @@ from noc.inv.models.subinterface import SubInterface
 
 
 class ReportVPNStatusApplication(SimpleReport):
-    title = "VPN Status"
+    title = _("VPN Status")
 
     def get_data(self, **kwargs):
         data = []
@@ -38,6 +39,6 @@ class ReportVPNStatusApplication(SimpleReport):
         #
         return self.from_dataset(
             title=self.title,
-            columns=["Managed. Object", "Interfaces"],
+            columns=[_("Managed. Object"), _("Interfaces")],
             data=data
         )

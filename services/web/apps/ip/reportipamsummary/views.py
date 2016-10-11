@@ -6,12 +6,13 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from django.utils.translation import ugettext_lazy as _
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 
 
 class ReportIPAMSummaryApplication(SimpleReport):
-    title = "IPAM Summary"
+    title = _("IPAM Summary")
 
     def get_data(self, **kwargs):
         return self.from_query(

@@ -27,7 +27,7 @@ report_types = [
 
 
 class ReportForm(forms.Form):
-    report_type = forms.ChoiceField(choices=report_types)
+    report_type = forms.ChoiceField(label=_("Report Type"), choices=report_types)
 ##
 ##
 ##

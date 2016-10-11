@@ -27,8 +27,8 @@ class ReportForm(forms.Form):
         queryset=Pool.objects.order_by("name"))
 
 
-class ReportDiscoveryProblemApplication(SimpleReport):
-    title = _("Discovery Problems")
+class ReportDiscoveryTopologyProblemApplication(SimpleReport):
+    title = _("Discovery Topology Problems")
     form = ReportForm
 
     def get_data(self, request, pool, **kwargs):
