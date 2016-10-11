@@ -84,7 +84,7 @@ class ReportEscalationsApplication(SimpleReport):
             "$exists": True
         }
         if not request.user.is_superuser:
-            q["adm_path__in"] = UserAccess.get_domains(request.user)
+            q["adm_path"] = {"$in": UserAccess.get_domains(request.user)}
         data = []
         for ac in (ActiveAlarm, ArchivedAlarm):
             for d in ac._get_collection().find(q):
