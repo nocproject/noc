@@ -8,7 +8,6 @@
 
 ## Python modules
 import math
-from collections import defaultdict
 ## Third-party modules
 import networkx as nx
 import numpy as np
@@ -21,6 +20,9 @@ class TreeLayout(LayoutBase):
     DX = 100
     # Vertical step
     DY = 100
+    #
+    CHILDREN_PER_LEVEL = 10.0
+    MAX_LEVELS = 4
 
     def get_layout(self):
         T = self.topology
@@ -75,9 +77,10 @@ class TreeLayout(LayoutBase):
                 level * self.DY
             ])
         }
+        dl = min(math.ceil(n["tree_width"] / self.CHILDREN_PER_LEVEL), self.MAX_LEVELS)
         for d in downlinks:
             pos.update(
-                self.get_pos(d, x0, total_w, level + 1)
+                self.get_pos(d, x0, total_w, level + dl)
             )
             x0 += T.G.node[d]["tree_width"]
         return pos
