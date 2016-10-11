@@ -37,7 +37,10 @@ class DiscoveryID(Document):
     meta = {
         "collection": "noc.inv.discovery_id",
         "allow_inheritance": False,
-        "indexes": ["object", "hostname", "udld_id"]
+        "indexes": [
+            "object", "hostname", "udld_id",
+            ("chassis_mac.first_mac", "chassis_mac.last_mac")
+        ]
     }
     object = ForeignKeyField(ManagedObject)
     chassis_mac = ListField(EmbeddedDocumentField(MACRange))
@@ -96,7 +99,7 @@ class DiscoveryID(Document):
                         }
                     }
                 }
-            })
+            }, {"_id": 0, "object": 1})
             if r:
                 return ManagedObject.get_by_id(r["object"])
             # Fallback to interface search
