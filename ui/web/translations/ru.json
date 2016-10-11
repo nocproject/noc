@@ -7,8 +7,8 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-10-11 03:42+0500",
-        "POT-Creation-Date": "2016-10-11 03:25+0500",
+        "PO-Revision-Date": "2016-10-11 12:52+0500",
+        "POT-Creation-Date": "2016-10-11 12:32+0500",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
@@ -102,6 +102,10 @@
         null,
         "Адрес/Платформа"
     ],
+    "Addresses": [
+        null,
+        "Адреса"
+    ],
     "Adm. Domain": [
         null,
         "Зона ответственности"
@@ -125,6 +129,14 @@
     "Administrative Domain": [
         null,
         "Зона ответственности"
+    ],
+    "Affected Objects": [
+        null,
+        "Накрыто Объектов"
+    ],
+    "Affected Subscriber": [
+        null,
+        "Накрытых Абонентов"
     ],
     "Alarm": [
         null,
@@ -670,6 +682,34 @@
         null,
         "Контакты"
     ],
+    "Container (Level 1)": [
+        null,
+        "Контейнер (Уровень 1)"
+    ],
+    "Container (Level 2)": [
+        null,
+        "Контейнер (Уровень 2)"
+    ],
+    "Container (Level 3)": [
+        null,
+        "Контейнер (Уровень 3)"
+    ],
+    "Container (Level 4)": [
+        null,
+        "Контейнер (Уровень 4)"
+    ],
+    "Container (Level 5)": [
+        null,
+        "Контейнер (Уровень 5)"
+    ],
+    "Container (Level 6)": [
+        null,
+        "Контейнер (Уровень 6)"
+    ],
+    "Container (Level 7)": [
+        null,
+        "Контейнер (Уровень 7)"
+    ],
     "Content": [
         null,
         "Содержимое"
@@ -953,6 +993,10 @@
     "Error!": [
         null,
         "Ошибка!"
+    ],
+    "Escalation Time": [
+        null,
+        "Время эскалации"
     ],
     "Escalations": [
         null,
@@ -1946,6 +1990,10 @@
         null,
         "Совпадение с объектами"
     ],
+    "Matching row:": [
+        null,
+        "Совпало строк:"
+    ],
     "Max": [
         null,
         "Макс"
@@ -2005,6 +2053,14 @@
     "Min. Labels": [
         null,
         "Мин. метка"
+    ],
+    "Min. Objects": [
+        null,
+        "Мин. Объектов"
+    ],
+    "Min. Subscribers": [
+        null,
+        "Мин. Абонентов"
     ],
     "Min. Weight": [
         null,
@@ -2081,6 +2137,10 @@
     "No interfaces found": [
         null,
         "Интерфейсы не найдены"
+    ],
+    "No matching": [
+        null,
+        "Не совпадает"
     ],
     "No new VRFs found": [
         null,
@@ -2197,6 +2257,10 @@
     "Only Root": [
         null,
         "Только первопричина"
+    ],
+    "Only not Completed": [
+        null,
+        "Только не Завершённые"
     ],
     "Open Template": [
         null,
@@ -2662,6 +2726,10 @@
         null,
         "Первопричина"
     ],
+    "Root ID": [
+        null,
+        "ID Корня"
+    ],
     "Root only": [
         null,
         "Первопричина"
@@ -2761,6 +2829,34 @@
     "Segment": [
         null,
         "Сегмент"
+    ],
+    "Segment (Level 1)": [
+        null,
+        "Сегмент (Уровень 1)"
+    ],
+    "Segment (Level 2)": [
+        null,
+        "Сегмент (Уровень 2)"
+    ],
+    "Segment (Level 3)": [
+        null,
+        "Сегмент (Уровень 3)"
+    ],
+    "Segment (Level 4)": [
+        null,
+        "Сегмент (Уровень 4)"
+    ],
+    "Segment (Level 5)": [
+        null,
+        "Сегмент (Уровень 5)"
+    ],
+    "Segment (Level 6)": [
+        null,
+        "Сегмент (Уровень 6)"
+    ],
+    "Segment (Level 7)": [
+        null,
+        "Сегмент (Уровень 7)"
     ],
     "Segment Inspector": [
         null,
