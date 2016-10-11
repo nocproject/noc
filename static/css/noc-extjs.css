@@ -260,3 +260,21 @@ TABLE {
     font-family: "Courier New", Courier, monospace;
     white-space: pre;
 }
+
+.noc-alarm-subject {
+    font-weight: bold;
+    border-bottom: 1px solid #808080;
+}
+
+.noc-alarm-timestamp {
+    float: right;
+}
+
+.noc-alarm-label {
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+.noc-alarm-label:after {
+    content: ": "
+}

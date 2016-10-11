@@ -30,14 +30,21 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         });
 
         me.topPanel = Ext.create("Ext.panel.Panel", {
-            height: 100,
-            bodyPadding: 4,
             layout: "fit",
-            items: [{
-                xtype: "container",
-                autoScroll: true,
-                padding: 4
-            }]
+            bodyPadding: 4,
+            tpl: "<div class='noc-alarm-subject {row_class}'>{subject} [{severity__label}/{severity}]"
+                + "  <span class='noc-alarm-timestamp'>{timestamp} ({duration})</span>"
+                + "</div>"
+                + "<div>"
+                + "<span class='noc-alarm-label'>Object</span> {managed_object__label} "
+                + "<span class='noc-alarm-label'>IP</span> {managed_object_address} "
+                + "<tpl if='managed_object_platform'><span class='noc-alarm-label'>Platform</span> {managed_object_platform} </tpl>"
+                + "<tpl if='managed_object_version'><span class='noc-alarm-label'>Version</span> {managed_object_version} </tpl>"
+                + "</div>"
+                + "<tpl if='segment_path'><div><span class='noc-alarm-label'>Segment</span> {segment_path}"
+                + "</div></tpl>"
+                + "<tpl if='container_path'><div><span class='noc-alarm-label'>Location</span> {container_path}"
+                + "</div></tpl>"
         });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
@@ -326,9 +333,7 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         me.data = data;
         //
         me.alarmIdField.setValue(me.data.id);
-        me.topPanel.items.first().update(
-            me.app.templates.SummaryPanel(me.data)
-        );
+        me.topPanel.setData(me.data);
         //
         me.updatePanel(me.overviewPanel, me.app.templates.Overview,
             data.subject, data);

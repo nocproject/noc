@@ -11,8 +11,7 @@ Ext.define("NOC.fm.alarm.Application", {
     requires: [
         "NOC.fm.alarm.templates.Overview",
         "NOC.fm.alarm.templates.Help",
-        "NOC.fm.alarm.templates.Data",
-        "NOC.fm.alarm.templates.SummaryPanel"
+        "NOC.fm.alarm.templates.Data"
     ],
     layout: "card",
     STATUS_MAP: {
