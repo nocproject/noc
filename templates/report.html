@@ -18,9 +18,9 @@
                     var colSpan = $(e).prop('colSpan'),
                         name = $(e).text();
                     if(colSpan > 0) {
-                        row.push({text: name, colSpan: colSpan});
+                        row.push({width: 'auto', text: name, colSpan: colSpan, fontSize: 8});
                     } else {
-                        row.push(name);
+                        row.push({width: 'auto', text: name, fontSize: 8});
                     }
                 });
                 rows.push(row);
@@ -29,6 +29,7 @@
             makeRow("thead", "th");
             makeRow("tbody", "td");
             pdfMake.createPdf({
+              pageSize: 'A4',
               content: [
                 {
                   table: {
