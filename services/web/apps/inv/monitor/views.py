@@ -26,8 +26,10 @@ class InvMonitorApplication(ExtApplication):
 
     @view(url="^$", method=["GET"], access="read", api=True)
     def api_data(self, request):
+        # waiting for https://github.com/influxdata/telegraf/issues/1363
+        # to be done
         db = get_db()
-        r = []
+        r = {}
         now = datetime.datetime.now()
         for p in Pool.objects.all().order_by("name"):
             sc = db["noc.schedules.discovery.%s" % p.name]
@@ -45,8 +47,8 @@ class InvMonitorApplication(ExtApplication):
                 lag = 0
             late_count = sc.find(late_q).count()
             #
-            r = {
-                "pool": p.name,
+            r[p.name.lower()] = {
+                "pool": p.name.lower(),
                 "total_tasks": sc.count(),
                 "running_tasks": sc.find({Job.ATTR_STATUS: Job.S_RUN}).count(),
                 "late_tasks": late_count,
