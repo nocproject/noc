@@ -16,10 +16,13 @@ Ext.define("NOC.sa.runcommands.Application", {
             xtype: "textarea",
             fieldLabel: __("Commands"),
             labelAlign: "top",
-            anchor: "100%",
-            width: "100%",
-            minHeight: 100,
+            width: '100%',
+            height: 700,
+            scrollable: true,
+            padding: 4,
+            // ???
             componentId: "commands",
+            itemId: 'commands',
             listeners: {
                 scope: me,
                 change: function (field, newValue, oldValue) {
@@ -31,7 +34,8 @@ Ext.define("NOC.sa.runcommands.Application", {
         });
 
         return Ext.create("Ext.panel.Panel", {
-            flex: 1,
+            activeItem: 'commands',
+            border: false,
             items: [
                 me.commandsField
             ]
@@ -44,12 +48,14 @@ Ext.define("NOC.sa.runcommands.Application", {
 
         text = Ext.create({
             xtype: "textarea",
-            anchor: "100%",
-            width: "100%"
+            layout: 'fit',
+            width: '100%',
+            height: 700,
+            scrollable: true,
+            padding: 4
         });
 
         return Ext.create("Ext.panel.Panel", {
-            flex: 1,
             items: [
                 text
             ],
