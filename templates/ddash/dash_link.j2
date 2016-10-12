@@ -29,16 +29,84 @@
   },
   "templating": {
     "list": [
-      {%if port_types %}
-      {% for port_type in port_types -%}
-        {% from 'template_port.j2' import ports -%}
-        {{ comma() }}{{ ports(port_type) }}
-      {% endfor -%},
-      {% endif %}
-
-      {% include "template_device.j2" with context -%},
-      {% include "template_device_id.j2" with context -%},
-      {% include "template_segment.j2" with context -%},
+      {
+        "current": {
+          "text": "{{device_a}}",
+          "value": "{{device_a}}"
+        },
+        "datasource": null,
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "device_a",
+        "options": {
+          "text": "{{device_a}}",
+          "value": "{{device_a}}"
+        },
+        "query": "{{device_a}}",
+        "refresh": 0,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": "{{device_b}}",
+          "value": "{{device_b}}"
+        },
+        "datasource": null,
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "device_b",
+        "options": {
+          "text": "{{device_b}}",
+          "value": "{{device_b}}"
+        },
+        "query": "{{device_b}}",
+        "refresh": 0,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": "{{interface_a.descr}}",
+          "value": "{{interface_a.name}}"
+        },
+        "datasource": null,
+        "hide": 2,
+        "includeAll": false,
+        "label": "A",
+        "multi": false,
+        "name": "interface_a",
+        "options": [
+          {
+            "text": "{{interface_a.descr}}",
+            "value": "{{interface_a.name}}"
+          }
+        ],
+        "query": "{{interface_a.name}}",
+        "refresh": 0,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": "{{interface_b.descr}}",
+          "value": "{{interface_b.name}}"
+        },
+        "datasource": null,
+        "hide": 2,
+        "includeAll": false,
+        "label": "B",
+        "multi": false,
+        "name": "interface_b",
+        "options": [
+           {
+            "text": "{{interface_b.descr}}",
+            "value": "{{interface_b.name}}"
+          }
+        ],
+        "query": "{{interface_b.name}}",
+        "refresh": 0,
+        "type": "custom"
+      }
     ]
   },
   "annotations": {
@@ -54,7 +122,7 @@
         "datasource": "NocDS",
         "enable": false,
         "iconColor": "rgba(255, 96, 96, 1)",
-        "name": "Alarm B",
+        "name": "Alarms B",
         "query": "$device_b"
       }
     ]
@@ -73,12 +141,11 @@
       "panels": [
         {% from "graph_interface_errors.j2" import errors -%}
         {% from "graph_interface_discards.j2" import discards -%}
-        {{errors(interfece_device_a)}},
-        {{discards(interfece_device_a)}},
-        {{errors(interfece_device_b)}},
-        {{discards(interfece_device_b)}}
-
-      ],
+        {{errors("$interface_a", "$device_a")}},
+        {{discards("$interface_a", "$device_a")}},
+        {{errors("$interface_b", "$device_b")}},
+        {{discards("$interface_b", "$device_b")}}
+      ]
     },
     {
       "title": "LOAD",
@@ -87,10 +154,11 @@
       "editable": true,
       "height": "250px",
       "panels": [
-        {% from "graph_interface_load.j2" import interface -%}
-        {{interface(interfece_device_a)}},
-        {{interface(interfece_device_b)}}
-        ],
+        {% from "graph_interface_load_simple.j2" import interface -%}
+        {# interface(interface, device) #}
+        {{interface("$interface_a", device_a)}},
+        {{interface("$interface_b", device_b)}}
+        ]
     },
     {
       "title": "PPS",
@@ -100,8 +168,9 @@
       "height": "250px",
       "panels": [
         {% from "graph_interface_pps.j2" import pps -%}
-        {{pps(interfece_device_a)}},
-        {{pps(interfece_device_b)}}
+        {{pps("$interface_a", device_a)}},
+        {{pps("$interface_b", device_b)}}
       ]
     }
+  ]
 }
