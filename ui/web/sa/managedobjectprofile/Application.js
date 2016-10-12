@@ -677,11 +677,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 }
                             ]
                         }
-                    ],
-                    formToolbar: [
-                        me.validationSettingsButton
                     ]
                 }
+            ],
+            formToolbar: [
+                me.validationSettingsButton
             ]
         });
         me.callParent();
