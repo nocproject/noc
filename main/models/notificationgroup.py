@@ -77,10 +77,15 @@ class NotificationGroup(models.Model):
                 if profile.preferred_language:
                     lang = profile.preferred_language
             except:
+                # Fallback to user's email
+                m += [(TimePatternList([]), "mail", ngu.user.email, lang)]
                 continue
-            for tp, method, params in profile.contacts:
-                m += [(TimePatternList([ngu.time_pattern, tp]),
-                       method, params, lang)]
+            if profile.contacts:
+                for tp, method, params in profile.contacts:
+                    m += [(TimePatternList([ngu.time_pattern, tp]),
+                           method, params, lang)]
+            else:
+                m += [(TimePatternList([]), "mail", ngu.user.email, lang)]
         # Collect other notifications
         for ngo in self.notificationgroupother_set.all():
             if ngo.notification_method == "mail" and "," in ngo.params:
