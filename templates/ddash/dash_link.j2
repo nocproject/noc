@@ -116,14 +116,14 @@
         "enable": false,
         "iconColor": "rgba(255, 96, 96, 1)",
         "name": "Alarms A",
-        "query": "$device_a"
+        "query": "{{device_a_id}}"
       },
       {
         "datasource": "NocDS",
         "enable": false,
         "iconColor": "rgba(255, 96, 96, 1)",
         "name": "Alarms B",
-        "query": "$device_b"
+        "query": "{{device_b_id}}"
       }
     ]
   },
@@ -155,7 +155,6 @@
       "height": "250px",
       "panels": [
         {% from "graph_interface_load_simple.j2" import interface -%}
-        {# interface(interface, device) #}
         {{interface("$interface_a", device_a)}},
         {{interface("$interface_b", device_b)}}
         ]
@@ -163,7 +162,7 @@
     {
       "title": "PPS",
       "showTitle": true,
-      "collapse": false,
+      "collapse": true,
       "editable": true,
       "height": "250px",
       "panels": [
