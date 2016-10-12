@@ -1,0 +1,177 @@
+{% macro interface(interface, device) -%}
+{
+  "title": "LOAD {{interface}}",
+  "aliasColors": {},
+  "bars": false,
+  "datasource": null,
+  "fill": 1,
+  "grid": {
+    "threshold1": null,
+    "threshold1Color": "rgba(216, 200, 27, 0.27)",
+    "threshold2": null,
+    "threshold2Color": "rgba(234, 112, 112, 0.22)"
+  },
+  "id": {{ range(1000, 99999) | random }},
+  "legend": {
+    "alignAsTable": true,
+    "avg": true,
+    "current": true,
+    "max": true,
+    "min": true,
+    "show": true,
+    "sortDesc": true,
+    "total": false,
+    "values": true
+  },
+  "lines": true,
+  "linewidth": 2,
+  "links": [],
+  "minSpan": 6,
+  "nullPointMode": "connected",
+  "percentage": false,
+  "pointradius": 5,
+  "points": false,
+  "renderer": "flot",
+  "repeat": "",
+  "seriesOverrides": [
+    {
+      "alias": "Input",
+      "transform": "negative-Y"
+    }
+  ],
+  "span": 6,
+  "stack": false,
+  "steppedLine": false,
+  "targets": [
+    {
+      "alias": "Input",
+      "dsType": "influxdb",
+      "groupBy": [
+        {
+          "params": [
+            "$interval"
+          ],
+          "type": "time"
+        },
+        {
+          "params": [
+            "null"
+          ],
+          "type": "fill"
+        }
+      ],
+      "measurement": "Interface | Load | In",
+      "policy": "default",
+      "refId": "A",
+      "resultFormat": "time_series",
+      "select": [
+        [
+          {
+            "params": [
+              "value"
+            ],
+            "type": "field"
+          },
+          {
+            "params": [],
+            "type": "mean"
+          }
+        ]
+      ],
+      "tags": [
+        {
+          "key": "object",
+          "operator": "=~",
+          "value": "/^{{device}}$/"
+        },
+        {
+          "condition": "AND",
+          "key": "interface",
+          "operator": "=~",
+          "value": "/^{{interface}}$/"
+        }
+      ]
+    },
+    {
+      "alias": "Output",
+      "dsType": "influxdb",
+      "groupBy": [
+        {
+          "params": [
+            "$interval"
+          ],
+          "type": "time"
+        },
+        {
+          "params": [
+            "null"
+          ],
+          "type": "fill"
+        }
+      ],
+      "measurement": "Interface | Load | Out",
+      "policy": "default",
+      "refId": "B",
+      "resultFormat": "time_series",
+      "select": [
+        [
+          {
+            "params": [
+              "value"
+            ],
+            "type": "field"
+          },
+          {
+            "params": [],
+            "type": "mean"
+          }
+        ]
+      ],
+      "tags": [
+        {
+          "key": "object",
+          "operator": "=~",
+          "value": "/^{{device}}$/"
+        },
+        {
+          "condition": "AND",
+          "key": "interface",
+          "operator": "=~",
+          "value": "/^{{interface}}$/"
+        }
+      ]
+    }
+  ],
+  "timeFrom": null,
+  "timeShift": null,
+  "tooltip": {
+    "msResolution": false,
+    "shared": true,
+    "sort": 0,
+    "value_type": "cumulative"
+  },
+  "type": "graph",
+  "xaxis": {
+    "show": true
+  },
+  "y-axis": true,
+  "yaxes": [
+    {
+      "format": "Bps",
+      "label": "bit/s",
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": true
+    },
+    {
+      "format": "short",
+      "label": null,
+      "logBase": 1,
+      "max": null,
+      "min": null,
+      "show": null
+    }
+  ]
+}
+{%- endmacro %}
