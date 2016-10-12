@@ -13,6 +13,8 @@ import string
 from base import BaseDashboard
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
+from jinja2 import Environment, FileSystemLoader
+import json
 
 
 class LinkDashboard(BaseDashboard):
@@ -25,89 +27,25 @@ class LinkDashboard(BaseDashboard):
             raise self.NotFound()
 
     def render(self):
-        mos = self.object.managed_objects
-        ifaces = []
-        for m in mos:
-            for ifs in self.object.interfaces:
-                if ifs in Interface.objects.filter(managed_object=m):
-                    ifaces += [ifs]
-        self.logger.info("Link ID is: %s, MO: %s, Ifaces: %s" % (self.object.id, mos, ifaces))
-        list = []
-        refId = string.lowercase[:14]
-        fish = {
-            "current": {},
-            "datasource": None,
-            "hide": 2,
-            "includeAll": False,
-            "multi": False,
-            "name": "device_a",
-            "options": [],
-            "query": "",
-            "refresh": 0,
-            "type": "custom"
-            }
-        for o in mos:
-            v = {
-                "text": o.name,
-                "value": o.name
-            }
+        mos = self.object
+        context = {
+            "device_a": mos.managed_objects[0].name,
+            "device_b": mos.managed_objects[1].name,
+            "interface_a": {
+                "name": mos.interfaces[0].name,
+                "descr": mos.interfaces[0].description or mos.interfaces[0].name},
+            "interface_b": {
+                "name": mos.interfaces[1].name,
+                "descr": mos.interfaces[0].description or mos.interfaces[1].name},
+            "segment": mos.managed_objects[0].segment.id,
+            "device_a_id": mos.managed_objects[0].id,
+            "device_b_id": mos.managed_objects[0].id,
+        }
+        self.logger.info("Context with data: %s" % context)
+        PM_TEMPLATE_PATH = "templates/ddash/"
+        j2_env = Environment(loader=FileSystemLoader(PM_TEMPLATE_PATH))
+        tmpl = j2_env.get_template("dash_link.j2")
+        data = tmpl.render(context)
 
-            c = {
-                "name": "device_%s" % refId[mos.index(o)],
-                "query": o.name,
-                "options": v,
-                "current": v
-            }
-            fish.update(c)
-            list += [fish.copy()]
-
-        # query = ",".join([i.name for i in ifaces])
-        options = [{"text": i.name, "value": i.name} for i in ifaces]
-        for i in ifaces:
-            v = {
-                "text": i.name,
-                "value": i.name
-            }
-
-            c = {
-                "name": "interface_%s" % refId[ifaces.index(i)],
-                "label": u"Интерфейс %s" % refId[ifaces.index(i)].upper(),
-                "query": i.name,
-                "options": options,
-                "current": v
-            }
-            fish.update(c)
-            list += [fish.copy()]
-
-        config = [{"template": "link_dashboard", "templating": {"list": list}}]
-        r = self.generator(config)
-        return r
-
-    def generator(self, config):
-        """Create dashboard from config and template"""
-        t = self.templates
-        r = []
-        for c in config:
-            # templ_name = c["template"]
-            templ_name = c.pop("template")
-            # r1 = t[c["template"]]
-            if "panel" in templ_name:
-                m2 = []
-                for tg in c.pop("targets"):
-                    t[tg.pop("template")].update(tg)
-                    m2.append(t["panel.targets_basic"].copy())
-
-                c["targets"] = m2[:]
-                # t[templ_name]["targets"] = t["targets"].update(c.pop("targets"))
-                t[templ_name].update(c)
-                r["rows"][-1]["panels"] += [t[templ_name].copy()]
-            elif "row" in templ_name:
-                t[templ_name].update(c)
-                r["rows"] += [t[templ_name].copy()]
-            elif "dashboard" in templ_name or "." not in templ_name:
-                t[templ_name].update(c)
-                r = t[templ_name].copy()
-            else:
-                t[templ_name].update(c)
-                r += [t[templ_name].copy()]
-        return r
+        render = json.loads(data)
+        return render
