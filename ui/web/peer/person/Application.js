@@ -116,7 +116,8 @@ Ext.define("NOC.peer.person.Application", {
     preview: {
         xtype: "NOC.core.RepoPreview",
         syntax: "rpsl",
-        previewName: "Person RPSL: {{nic_hdl}}",
-        restUrl: "/peer/person/{{id}}/repo/rpsl/"
+        // ToDo need check
+        previewName: new Ext.XTemplate('Person RPSL: {nic_hdl}'),
+        restUrl: new Ext.XTemplate('/peer/person/{id}/repo/rpsl/')
     }
 });
