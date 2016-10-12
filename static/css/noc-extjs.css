@@ -278,3 +278,38 @@ TABLE {
 .noc-alarm-label:after {
     content: ": "
 }
+
+/*
+ * Badge
+ */
+.noc-badge {
+    height: 15px;
+    width: 30px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    display: inline-block;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.noc-badge-waiting {
+    background-color: #7f8c8d
+}
+
+.noc-badge-running {
+    background-color: #f0c330
+}
+
+.noc-badge-success {
+    background-color: #39ca74
+}
+
+.noc-badge-failed {
+    background-color: #be3a31
+}
+
+.noc-mrt-section {
+    font-weight: bold;
+    text-decoration: underline;
+}
+

@@ -35,6 +35,16 @@ Ext.define("NOC.core.SAApplicationModel", {
             name: "row_class",
             type: "string",
             persist: false
+        },
+        {
+            name: 'status',
+            defaultValue: 'w',
+            persist: false
+
+        },
+        {
+            name: 'result',
+            persist: false
         }
     ]
 });
