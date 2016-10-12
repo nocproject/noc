@@ -229,8 +229,8 @@ Ext.define("NOC.dns.dnszone.Application", {
     preview: {
         xtype: "NOC.core.RepoPreview",
         syntax: "bind",
-        previewName: "Zone: {{name}}",
-        restUrl: "/dns/dnszone/{{id}}/repo/zone/"
+        previewName: new Ext.XTemplate('Zone: {name}'),
+        restUrl: new Ext.XTemplate('/dns/dnszone/{id}/repo/zone/')
     },
     // Check RRType accepts priority field
     isPrioVisible: function(rrType) {

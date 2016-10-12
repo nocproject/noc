@@ -194,9 +194,6 @@ Ext.define("NOC.core.RepoPreview", {
             }
         });
         me.callParent();
-        //
-        me.urlTemplate = Handlebars.compile(me.restUrl);
-        me.titleTemplate = Handlebars.compile(me.previewName);
     },
     //
     afterRender: function() {
@@ -244,9 +241,8 @@ Ext.define("NOC.core.RepoPreview", {
             bi = backItem === undefined? me.backItem : backItem;
         me.currentRecord = record;
         me.backItem = bi;
-        // @todo: Replace to superclass call
-        me.rootUrl = me.urlTemplate(record.data);
-        me.setTitle(me.titleTemplate(record.data));
+        me.rootUrl = me.restUrl.apply(record.data);
+        me.setTitle(me.previewName.apply(record.data));
     },
     //
     preview: function(record, backItem) {
@@ -266,12 +262,12 @@ Ext.define("NOC.core.RepoPreview", {
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText));
                 mask.hide();
-                if(me.historyHashPrefix) {
-                    me.app.setHistoryHash(
-                        me.currentRecord.get("id"),
-                        me.historyHashPrefix
-                    );
-                }
+                // if(me.historyHashPrefix) {
+                //     me.app.setHistoryHash(
+                //         me.currentRecord.get("id"),
+                //         me.historyHashPrefix
+                //     );
+                // }
             },
             failure: function() {
                 mask.hide();
@@ -313,13 +309,13 @@ Ext.define("NOC.core.RepoPreview", {
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText));
                 mask.hide();
-                if(me.historyHashPrefix) {
-                    me.app.setHistoryHash(
-                        me.currentRecord.get("id"),
-                        me.historyHashPrefix,
-                        rev
-                    );
-                }
+                // if(me.historyHashPrefix) {
+                //     me.app.setHistoryHash(
+                //         me.currentRecord.get("id"),
+                //         me.historyHashPrefix,
+                //         rev
+                //     );
+                // }
             },
             failure: function() {
                 NOC.error(__("Failed to get text"));
@@ -338,14 +334,14 @@ Ext.define("NOC.core.RepoPreview", {
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText), "diff");
                 mask.hide();
-                if(me.historyHashPrefix) {
-                    me.app.setHistoryHash(
-                        me.currentRecord.get("id"),
-                        me.historyHashPrefix,
-                        rev1,
-                        rev2
-                    );
-                }
+                // if(me.historyHashPrefix) {
+                //     me.app.setHistoryHash(
+                //         me.currentRecord.get("id"),
+                //         me.historyHashPrefix,
+                //         rev1,
+                //         rev2
+                //     );
+                // }
             },
             failure: function() {
                 NOC.error(__("Failed to get diff"));
