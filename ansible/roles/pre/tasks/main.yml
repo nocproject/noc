@@ -8,10 +8,21 @@
   tags:
     - always
 
+- set_fact:
+    tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0]}}"
+  tags:
+    - always
+
+- set_fact:
+    grafana_pg_password: "{{noc_config['config'].get('grafana-global-%s' % ansible_hostname, {}).get('password', 'grafana')}}"
+  tags:
+    - always
+
 - name: set proxy
   set_fact:
     http_proxy: "{{ proxy }}"
   when: "proxy is defined"
+  become: yes
   tags:
     - config
     - always
@@ -27,6 +38,7 @@
   when: "alerta_url and alerta_url is defined and alerta_token is defined and 'prod' in noc_env_type"
   register: alerta_notified
   changed_when: "alerta_notified.status == 201"
+  become: yes
   run_once: true
   environment:
     https_proxy: "{{http_proxy}}"
@@ -35,34 +47,25 @@
 
 - name: "Loading system-dependend settings"
   include_vars: "os/{{ ansible_distribution }}.yml"
+  become: yes
   tags:
     - config
     - always
 
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
+  become: yes
   tags:
     - config
     - always
 
 
 - name: Stop NOC node
-  service: name="{{ noc_system_service }}" state=stopped
+  service:
+    name: "{{ noc_system_service }}"
+    state: stopped
+  become: yes
   failed_when: False
   changed_when: False
   tags:
     - restart
-
-- name: Check if vboxsf is supported
-  shell: "cat /proc/filesystems"
-  register: vboxsf_support
-  when: "'virtualbox' in ansible_virtualization_type and 'Linux' in ansible_system"
-
-- name: Mount cache dir
-  mount:
-      src: cache
-      name: /root/.cache
-      state: mounted
-      fstype: vboxsf
-  when: "'virtualbox' in ansible_virtualization_type and 'vboxsf' in vboxsf_support.stdout"
-  ignore_errors: yes

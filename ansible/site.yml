@@ -1,7 +1,7 @@
 ---
 - name: Install and upgrade NOC
   hosts: nodes
-  become: yes
+  become: no
   any_errors_fatal: true
   vars_files:
     - [ "vars/main.yml", "vars/local.yml" ]
@@ -12,34 +12,40 @@
     - role: pre
 
     - role: node
+      become: yes
       tags:
         - node
         - noc
 
     - role: dev
+      become: yes
       when: "{{ has_svc_dev | default(False) }} or {{ has_svc_notebook | default(False) }}"
       tags:
         - dev
 
     - role: mongod
+      become: yes
       when: "{{ has_svc_mongod | default(False) }}"
       tags:
         - mongod
         - external
 
     - role: postgres
+      become: yes
       when: "{{ has_svc_postgres | default(False) }}"
       tags:
         - postgres
         - external
 
     - role: influxdb
+      become: yes
       when: "{{ has_svc_influxdb | default(False) }}"
       tags:
         - influxdb
         - external
 
     - role: nginx
+      become: yes
       when: "{{ has_svc_nginx | default(False) }}"
       tags:
         - nginx
@@ -47,12 +53,14 @@
         - external
 
     - role: grafana
+      become: yes
       when: "{{ has_svc_grafana | default(False) }}"
       tags:
         - grafana
         - external
 
     - role: nsqd
+      become: yes
       when: "{{ has_svc_nsqd | default(False) }}"
       tags:
         - nsq
@@ -60,6 +68,7 @@
         - external
 
     - role: nsqlookupd
+      become: yes
       when: "{{ has_svc_nsqlookupd| default(False) }}"
       tags:
         - nsq
@@ -67,6 +76,7 @@
         - external
 
     - role: nsqadmin
+      become: yes
       when: "{{ has_svc_nsqadmin | default(False) }}"
       tags:
         - nsq
@@ -74,23 +84,27 @@
         - external
 
     - role: notebook
+      become: yes
       when: "{{ has_svc_notebook | default(False) }}"
       tags:
         - notebook
         - external
 
     - role: redis
+      become: yes
       when: "{{ has_svc_redis | default(False) }}"
       tags:
         - redis
         - external
 
     - role: migrate
+      become: yes
       when: "{{ has_svc_mongod_master | default(False) }}"
       tags:
         - migrate
 
     - role: login
+      become: yes
       when: "{{ has_svc_login | default(False) }}"
       tags:
         - login
@@ -98,6 +112,7 @@
         - noc
 
     - role: mrt
+      become: yes
       when: "{{ has_svc_mrt | default(False) }}"
       tags:
         - mrt
@@ -105,6 +120,7 @@
         - noc
 
     - role: web
+      become: yes
       when: "{{ has_svc_web | default(False) }}"
       tags:
         - node
@@ -112,6 +128,7 @@
         - noc
 
     - role: card
+      become: yes
       when: "{{ has_svc_card | default(False) }}"
       tags:
         - node
@@ -119,6 +136,7 @@
         - noc
 
     - role: grafanads
+      become: yes
       when: "{{ has_svc_grafanads | default(False) }}"
       tags:
         - node
@@ -126,6 +144,7 @@
         - noc
 
     - role: mailsender
+      become: yes
       when: "{{ has_svc_mailsender | default(False) }}"
       tags:
         - mailsender
@@ -133,6 +152,7 @@
         - noc
 
     - role: omap
+      become: yes
       when: "{{ has_svc_omap | default(False) }}"
       tags:
         - omap
@@ -140,6 +160,7 @@
         - noc
 
     - role: pmwriter
+      become: yes
       when: "{{ has_svc_pmwriter | default(False) }}"
       tags:
         - pmwriter
@@ -147,6 +168,7 @@
         - noc
 
     - role: activator
+      become: yes
       when: "{{ has_svc_activator | default(False) }}"
       tags:
         - activator
@@ -154,6 +176,7 @@
         - noc
 
     - role: classifier
+      become: yes
       when: "{{ has_svc_classifier | default(False) }}"
       tags:
         - classifier
@@ -161,6 +184,7 @@
         - noc
 
     - role: correlator
+      become: yes
       when: "{{ has_svc_correlator | default(False) }}"
       tags:
         - correlator
@@ -168,6 +192,7 @@
         - noc
 
     - role: syslogcollector
+      become: yes
       when: "{{ has_svc_syslogcollector | default(False) }}"
       tags:
         - syslogcollector
@@ -175,6 +200,7 @@
         - noc
 
     - role: trapcollector
+      become: yes
       when: "{{ has_svc_trapcollector | default(False) }}"
       tags:
         - trapcollector
@@ -182,6 +208,7 @@
         - noc
 
     - role: ping
+      become: yes
       when: "{{ has_svc_ping | default(False) }}"
       tags:
         - ping
@@ -189,6 +216,7 @@
         - noc
 
     - role: sae
+      become: yes
       when: "{{ has_svc_sae | default(False) }}"
       tags:
         - sae
@@ -196,6 +224,7 @@
         - noc
 
     - role: scheduler
+      become: yes
       when: "{{ has_svc_scheduler | default(False) }}"
       tags:
         - scheduler
@@ -203,6 +232,7 @@
         - noc
 
     - role: discovery
+      become: yes
       when: "{{ has_svc_discovery | default(False) }}"
       tags:
         - discovery
@@ -210,5 +240,6 @@
         - noc
 
     - role: post
+      become: yes
       tags:
         - post

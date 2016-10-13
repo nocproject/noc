@@ -7,6 +7,7 @@
   ignore_errors: yes
   tags:
     - config
+    - firewall
 
 - name: Add firewall permissions for nodes
   firewalld:
@@ -18,4 +19,15 @@
   when: "firewalld_state.stdout == 'active'"
   tags:
     - config
+    - firewall
 
+- name: Add firewall permissions for tower
+  firewalld:
+    rich_rule: "rule family='ipv4' source address={{ tower_ip }} accept"
+    permanent: true
+    state: enabled
+    immediate: true
+  when: "firewalld_state.stdout == 'active'"
+  tags:
+    - config
+    - firewall
