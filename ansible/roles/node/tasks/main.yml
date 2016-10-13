@@ -19,10 +19,16 @@
   include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Create NOC group
-  group: name="{{noc_group}}" state=present
+  group:
+    name: "{{noc_group}}"
+    state: present
 
 - name: Create NOC user
-  user: name="{{noc_user}}" group="{{noc_group}}" comment="NOC user" state=present
+  user:
+    name: "{{noc_user}}"
+    group: "{{noc_group}}"
+    comment: "NOC user"
+    state: present
 
 - name: Clean NOC directory
   hg:
