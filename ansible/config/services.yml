@@ -445,3 +445,9 @@ config:
       type: int
       label: Concurrent query limit per process
       default: 10
+
+  grafana:
+    password:
+      type: str
+      label: Grafana postgres password
+      default: grafana

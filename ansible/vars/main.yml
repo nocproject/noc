@@ -14,6 +14,10 @@ grafana_group: grafana
 grafana_home: /usr/share/grafana
 grafana_system_service: grafana-server
 grafana_user: grafana
+grafana_pg_user: grafana
+grafana_pg_password:
+grafana_pg_db: grafana
+
 influx_path: /usr/bin/influx
 influxdb_conf: /etc/influxdb/influxdb.conf
 influxdb_db_path: /var/lib/influxdb

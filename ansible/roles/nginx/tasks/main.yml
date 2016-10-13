@@ -33,12 +33,6 @@
   tags:
     - config
 
-- name: Enable Nginx system service
-  service:
-    name: "{{ nginx_system_service }}"
-    enabled: yes
-    state: started
-
 - name: Install packages
   pip:
     chdir: "{{noc_root}}"
@@ -49,3 +43,9 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+
+- name: Enable Nginx system service
+  service:
+    name: "{{ nginx_system_service }}"
+    enabled: yes
+    state: restarted

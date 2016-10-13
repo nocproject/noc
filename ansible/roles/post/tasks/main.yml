@@ -41,7 +41,6 @@
   tags:
     - always
 
-
 - name: Reread config
   shell: "{{ noc_root }}/noc ctl reread"
   when: "'RUNNING' in noc_ctl_status.stdout"
@@ -53,8 +52,23 @@
 - name: Serial NOC restart
   shell: "{{ noc_root }}/noc ctl serialrestart all"
   when: "noc_ctl_reread"
+  changed_when: False
   tags:
     - soft_restart
+
+- name: Force start on Debian/Ubuntu
+  shell: systemctl start "{{ noc_system_service }}"
+  when: '"Debian" in ansible_distribution'
+
+- name: Enable NOC node
+  service:
+    name: "{{ noc_system_service }}"
+    enabled: yes
+  changed_when: False
+  ignore_errors: yes
+  when: '"Debian" in ansible_distribution'
+  tags:
+    - restart
 
 - name: Restart NOC node
   service:
@@ -66,14 +80,57 @@
   tags:
     - restart
 
-- name: umount cache dir
-  mount:
-      src: cache
-      name: /root/.cache
-      state: absent
-      fstype: vboxsf
-  when: "'virtualbox' in ansible_virtualization_type and 'vboxsf' in vboxsf_support.stdout"
+- name: Wait for NOC to start
+  pause:
+    seconds: 30
+
+- name: Add default influx datasource
+  uri:
+    url: "https://{{ noc_web_host }}/ui/grafana/api/datasources"
+    method: POST
+    timeout: 60
+    user: admin
+    password: admin
+    force_basic_auth: yes
+    status_code: 200, 401
+    body_format: json
+    validate_certs: no
+    body:
+      name: default
+      type: influxdb
+      url: "http://{{ noc_config.services.influxdb.0 }}"
+      access: proxy
+      isDefault: True
+      database: "{{ noc_influxdb_db }}"
+      user: "{{noc_influxdb_user}}"
+      password: "{{ noc_influxdb_password }}"
+      jsonData:
+        timeInterval: 300
   ignore_errors: yes
+  when: "{{ has_svc_influxdb | default(False) }}"
+  tags:
+    - config
+
+- name: Add grafanads datasource
+  uri:
+    url: "https://{{ noc_web_host }}/ui/grafana/api/datasources"
+    method: POST
+    user: admin
+    password: admin
+    force_basic_auth: yes
+    status_code: 200, 401
+    body_format: json
+    validate_certs: no
+    body:
+      name: NocDS
+      type: grafana-simple-json-datasource
+      url: "https://{{ noc_web_host }}/api/grafanads"
+      access: direct
+      isDefault: False
+  ignore_errors: yes
+  when: "{{ has_svc_grafanads | default(False) }}"
+  tags:
+    - config
 
 - name: notify alerta of deployment end
   uri:
