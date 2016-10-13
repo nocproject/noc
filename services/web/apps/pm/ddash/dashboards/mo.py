@@ -59,6 +59,7 @@ class MODashboard(BaseDashboard):
                         "ports": [i.name for i in iface.lag_members],
                         "descr": iface.description or "No description"
                     }]
+                    continue
                 ports += [{"name": iface.name, "descr": iface.description}]
             port_types += [{"type": profile.id, "name": profile.name,
                             "ports": ports}]
