@@ -88,6 +88,12 @@ Ext.define('NOC.core.TreeCombo', {
             remoteFilter: true,
             model: 'NOC.core.TreeModel',
             pageSize: 500,
+            remoteSort: true,
+            sorters: [
+                {
+                    property: 'name'
+                }
+            ],
             proxy: this.proxy
         });
 
