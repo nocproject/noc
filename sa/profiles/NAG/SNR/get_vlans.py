@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## NAG.SNR.get_vlans
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -21,9 +21,8 @@ class Script(BaseScript):
         # Try snmp first
         if self.has_snmp():
             try:
-                for vlan, name in self.snmp.join_tables(
-                    "1.3.6.1.2.1.17.7.1.4.2.1.3", "1.3.6.1.2.1.17.7.1.4.3.1.1",
-                    bulk=True):
+                for vlan, name in self.snmp.join_tables("1.3.6.1.2.1.17.7.1.4.2.1.3",
+                                                        "1.3.6.1.2.1.17.7.1.4.3.1.1"):
                     r.append({
                         "vlan_id": vlan,
                         "name": name
