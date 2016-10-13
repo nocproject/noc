@@ -88,6 +88,23 @@
     }
     {%- endfor %}
     {%endif%}
+    {%if lags %},
+    {% set comma = joiner(",") -%}
+    {% for lag in lags -%}
+
+    {{ comma() }}{
+      "collapse": true,
+      "editable": false,
+      "height": "250px",
+      "showTitle": true,
+      "title": "{{lag.name}} ({{lag.descr}})",
+      "panels": [
+        {% from "graph_interface_load_lag.j2" import interface -%}
+        {{interface(lag)}}
+      ]
+    }
+    {%- endfor %}
+    {%endif%}
     {%if object_metrics%}
     ,{
       "collapse": false,

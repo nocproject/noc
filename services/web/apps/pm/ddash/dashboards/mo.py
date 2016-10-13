@@ -38,6 +38,7 @@ class MODashboard(BaseDashboard):
 
         port_types = []
         object_metrics = []
+        lags = []
 
         # Get all interface profiles with configurable metrics
         all_ifaces = list(Interface.objects.filter(
@@ -51,20 +52,14 @@ class MODashboard(BaseDashboard):
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
             for iface in sorted(ifaces, key=split_alnum):
-                ports += [{"name": iface.name, "descr": iface.description}]
-                if iface.is_linked:
-                    ports[-1]["link_id"] = str(iface.link.id)
+
                 if iface.type == u"aggregated":
-                    agg = Interface.objects.filter(managed_object=self.object.id,
-                                                   aggregated_interface=iface)
-                    ports[-1]["targets"] = []
-                    for agg_iface in agg:
-                        ports[-1]["targets"] += [{"name": u"Input",
-                                                  "measurement": u"Interface | Load | In",
-                                                  "port": agg_iface.name},
-                                                 {"name": u"Output",
-                                                  "measurement": u"Interface | Load | Out",
-                                                  "port": agg_iface.name}]
+                    lags += [{
+                        "name": iface.name,
+                        "ports": [i.name for i in iface.lag_members],
+                        "descr": iface.description or "No description"
+                    }]
+                ports += [{"name": iface.name, "descr": iface.description}]
             port_types += [{"type": profile.id, "name": profile.name,
                             "ports": ports}]
 
@@ -77,13 +72,15 @@ class MODashboard(BaseDashboard):
             object_metrics += [mt.name]
 
         return {"port_types": port_types,
-                "object_metrics": object_metrics}
+                "object_metrics": object_metrics,
+                "lags": lags}
 
     def render(self):
 
         context = {
             "port_types": self.object_data["port_types"],
             "object_metrics": self.object_data["object_metrics"],
+            "lags": self.object_data["lags"],
             "device": self.object.name,
             "ip": self.object.address,
             "platform": self.object.platform or "Unknown platform",
