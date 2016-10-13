@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## NAG.SNR.get_interface_status
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8", bulk=True):  # IF-MIB
+                                                  "1.3.6.1.2.1.2.2.1.8"):  # IF-MIB
                     if n[:8] == 'Ethernet':
                         pass
                     else:
