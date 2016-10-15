@@ -161,8 +161,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.ITEM_CONFIG = me.registerItem(
             Ext.create("NOC.core.RepoPreview", {
                 app: me,
-                previewName: new Ext.XTemplate('{data.name} config'),
-                restUrl: new Ext.XTemplate('/sa/managedobject/{id}/repo/cfg/'),
+                previewName: '{0} config',
+                restUrl: '/sa/managedobject/{0}/repo/cfg/',
                 historyHashPrefix: "config"
             })
         );

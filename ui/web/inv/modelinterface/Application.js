@@ -16,8 +16,8 @@ Ext.define("NOC.inv.modelinterface.Application", {
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/inv/modelinterface/{{id}}/json/",
-            previewName: "Model Interface: {{name}}"
+            restUrl: new Ext.XTemplate('/inv/modelinterface/{id}/json/'),
+            previewName: new Ext.XTemplate('Model Interface: {name}')
         });
 
         me.ITEM_JSON = me.registerItem(me.jsonPanel);

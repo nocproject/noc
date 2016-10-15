@@ -30,8 +30,8 @@ Ext.define("NOC.inv.connectionrule.Application", {
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/inv/connectionrule/{{id}}/json/",
-            previewName: "Connection Rule: {{name}}"
+            restUrl: new Ext.XTemplate('/inv/connectionrule/{id}/json/'),
+            previewName: new Ext.XTemplate('Connection Rule: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 

@@ -14,7 +14,7 @@ Ext.define("NOC.sa.getnow.Application", {
     layout: 'border',
     rowClassField: "row_class",
     historyHashPrefix: null,
-    restUrl: "/sa/managedobject/{{id}}/repo/cfg/",
+    restUrl: '/sa/managedobject/{0}/repo/cfg/',
     theme: "default",
     syntax: "groovy",
     taskStates: {},
@@ -140,9 +140,9 @@ Ext.define("NOC.sa.getnow.Application", {
             app: me,
             region: 'east',
             width: '60%',
-            previewName: new Ext.XTemplate('{data.name} config'),
-            restUrl: new Ext.XTemplate('/sa/managedobject/{id}/repo/cfg/'),
-            historyHashPrefix: "config"
+            previewName: '{0} config',
+            restUrl: '/sa/managedobject/{0}/repo/cfg/',
+            historyHashPrefix: 'config'
         });
 
         me.gridpanel = Ext.create("Ext.grid.Panel", {
@@ -151,10 +151,10 @@ Ext.define("NOC.sa.getnow.Application", {
             width: '40%',
             selModel: me.selModel,
             listeners: {
-                rowdblclick: function (grid, index, rec) {
-                    me.currentDeviceId = index.get("id");
-                    me.currentDeviceLabel = index.get("name");
-                    me.quickRepoPreview.preview({"data": index});
+                rowdblclick: function (grid, record, rec) {
+                    me.currentDeviceId = record.get("id");
+                    me.currentDeviceLabel = record.get("name");
+                    me.quickRepoPreview.preview(record);
                 }
             },
             columns: [
@@ -244,7 +244,7 @@ Ext.define("NOC.sa.getnow.Application", {
         });
         me.callParent();
         me.getStylesInfo();
-        me.urlTemplate = Handlebars.compile(me.restUrl);
+        me.urlTemplate = '/sa/managedobject/{0}/repo/cfg/';
     },
     onCloseApp: function() {
         var me = this;

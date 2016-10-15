@@ -12,7 +12,7 @@ Ext.define("NOC.core.RestTemplatePreview", {
     initComponent: function() {
         var me = this;
 
-        me.urlTemplate = Handlebars.compile(me.restUrl);
+        console.error('Handlebars removed : class NOC.core.RestTemplatePreview, code : me.urlTemplate = Handlebars.compile(me.restUrl)');
         me.callParent();
     },
     //

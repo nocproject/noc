@@ -19,8 +19,8 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/sa/profilecheckrule/{{id}}/json/",
-            previewName: "Profile Check Rule: {{name}}"
+            restUrl: new Ext.XTemplate('/sa/profilecheckrule/{id}/json/'),
+            previewName: new Ext.XTemplate('Profile Check Rule: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 

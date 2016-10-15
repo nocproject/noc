@@ -169,11 +169,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         });
         me.callParent();
         //
-        me.infoTemplate = Handlebars.compile(
-            "<b>{{name}}</b><br>" +
-            "<i>{{model}}</i><br><hr>" +
-            "<a id='{{showLinkId}}' href='#'>Show...</a>"
-        );
+        me.infoTemplate = '<b>{0}</b><br><i>{1}</i><br><hr><a id="{2}" href="#">Show...</a>';
     },
     //
     //
@@ -415,8 +411,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         var me = this,
             showLinkId = "noc-ol-tip-show-link-" + me.id,
             text, ttEl, showLink;
-        data = Ext.merge({showLinkId: showLinkId}, data);
-        text = me.infoTemplate(data);
+        text = Ext.String.format(me.infoTemplate, data.name, data.model, showLinkId);
         if(me.infoPopup) {
             me.olMap.removePopup(me.infoPopup);
             me.infoPopup.destroy();

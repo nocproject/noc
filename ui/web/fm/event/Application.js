@@ -8,12 +8,6 @@ console.debug("Defining NOC.fm.event.Application");
 
 Ext.define("NOC.fm.event.Application", {
     extend: "NOC.core.Application",
-    requires: [
-        "NOC.fm.event.templates.Overview",
-        "NOC.fm.event.templates.Help",
-        "NOC.fm.event.templates.Data",
-        "NOC.fm.event.templates.SummaryPanel"
-    ],
     layout: "card",
     STATUS_MAP: {
         N: "New", A: "Active",
@@ -246,8 +240,8 @@ Ext.define("NOC.fm.event.Application", {
         //
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/fm/event/{{id}}/json/",
-            previewName: "Event: {{id}}"
+            restUrl: new Ext.XTemplate('/fm/event/{id}/json/'),
+            previewName: new Ext.XTemplate('Event: {id}')
         });
         me.ITEM_GRID = me.registerItem(me.gridPanel);
         me.ITEM_FORM = me.registerItem(me.eventPanel);

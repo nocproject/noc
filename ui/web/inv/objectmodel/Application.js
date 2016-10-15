@@ -13,9 +13,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
         "NOC.inv.objectmodel.Model",
         "NOC.inv.vendor.LookupField",
         "NOC.inv.connectiontype.LookupField",
-        "NOC.inv.connectionrule.LookupField",
-        "NOC.inv.objectmodel.templates.Test",
-        "NOC.inv.objectmodel.templates.JSON"
+        "NOC.inv.connectionrule.LookupField"
     ],
     model: "NOC.inv.objectmodel.Model",
     search: true,
@@ -39,7 +37,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
             title: __("Get JSON"),
             action: "json",
             glyph: NOC.glyph.file,
-            resultTemplate: "JSON"
+            resultTemplate: new Ext.XTemplate('<pre>{data}</pre>')
         }
     ],
 
@@ -49,15 +47,15 @@ Ext.define("NOC.inv.objectmodel.Application", {
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/inv/objectmodel/{{id}}/json/",
-            previewName: "Object Model: {{name}}"
+            restUrl: new Ext.XTemplate('/inv/objectmodel/{id}/json/'),
+            previewName: new Ext.XTemplate('Object Model: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
         // Test panel
         me.testPanel = Ext.create("NOC.core.TemplatePreview", {
             app: me,
-            previewName: "Compatible connections for {{name}}",
-            template: me.templates.Test
+            previewName: new Ext.XTemplate('Compatible connections for {name}'),
+            template: new Ext.XTemplate('<div class="noc-tp">\n    <h1>Possible connections for model {name}</h1>\n    <table border="1">\n        <tpl foreach="connections">\n            <tr>\n                <td>\n                    <tpl foreach="names">\n                        <b>{name}</b><br/><i>({description})</i><br/>\n                    </tpl>\n                </td>\n                <td>{direction}</td>\n                <td>\n                    <table>\n                        <tpl foreach="connections">\n                            <tr>\n                                <td>\n                                    <b>{name}</b><br/></i>({description})</i>\n                                </td>\n                                <td><b>{model}</b><br/>({model_description})</td>\n                            </tr>\n                        </tpl>\n                    </table>\n                </td>\n            </tr>\n        </tpl>\n    </table>\n    <h1>Internal crossing for {name}</h1>\n    <!--{grid crossing}-->\n</div>')
         });
         me.ITEM_TEST = me.registerItem(me.testPanel);
         //

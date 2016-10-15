@@ -61,9 +61,6 @@ Ext.define("NOC.core.JSONPreview", {
             items: [me.cmContainer]
         });
         me.callParent();
-        //
-        me.urlTemplate = Handlebars.compile(me.restUrl);
-        me.titleTemplate = Handlebars.compile(me.previewName);
     },
     //
     afterRender: function() {
@@ -125,8 +122,8 @@ Ext.define("NOC.core.JSONPreview", {
             me.installButton.setDisabled(true);
             return;
         }
-        var url = me.urlTemplate(record.data);
-        me.setTitle(me.titleTemplate(record.data));
+        var url = me.restUrl.apply(record.data);
+        me.setTitle(me.previewName.apply(record.data));
         me.currentRecord = record;
         Ext.Ajax.request({
             url: url,

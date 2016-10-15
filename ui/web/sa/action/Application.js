@@ -19,8 +19,8 @@ Ext.define("NOC.sa.action.Application", {
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/sa/action/{{id}}/json/",
-            previewName: "Action: {{name}}"
+            restUrl: new Ext.XTemplate('/sa/action/{id}/json/'),
+            previewName: new Ext.XTemplate('Action: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
