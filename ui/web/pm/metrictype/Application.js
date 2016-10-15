@@ -20,8 +20,8 @@ Ext.define("NOC.pm.metrictype.Application", {
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/pm/metrictype/{{id}}/json/",
-            previewName: "Metric Type: {{name}}"
+            restUrl: new Ext.XTemplate('/pm/metrictype/{id}/json/'),
+            previewName: new Ext.XTemplate('Metric Type: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 

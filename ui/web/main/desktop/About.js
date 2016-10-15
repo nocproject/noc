@@ -27,7 +27,7 @@ Ext.define("NOC.main.desktop.About", {
             items: [
                 {
                     xtype: "container",
-                    html: me.app.templates.About(me.aboutCfg)
+                    html: new Ext.XTemplate('<div class="noc-tp">\n    <img src="/static/img/logo_black.svg" style="width: 100px; height: 100px; padding: 8px; float: left"></img>\n    <div style="font-size: 16pt; font-weight: bold">NOC {version}</div>\n    <div style="font-size: 12pt; font-style: italic">{installation}</div>\n    <tpl if="system_id">\n    <div style="font-size: 12pt">System ID: {system_id}</div>\n    <tpl else>\n    <div style="font-size: 12pt">Unregistred system</div>\n    </tpl>\n    <div style="">Copyright &copy; {copyright}</div>\n    <a href=\'http://nocproject.org/\' target=\'_\'>nocproject.org</a>\n</div>').apply(me.aboutCfg)
                 }
             ]
         });

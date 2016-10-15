@@ -370,8 +370,8 @@ Ext.define("NOC.fm.eventclass.Application", {
         });
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/fm/eventclass/{{id}}/json/",
-            previewName: "Event Class: {{name}}"
+            restUrl: new Ext.XTemplate('/fm/eventclass/{id}/json/'),
+            previewName: new Ext.XTemplate('Event Class: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
         me.callParent();

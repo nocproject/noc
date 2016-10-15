@@ -38,7 +38,6 @@ Ext.define("NOC.core.TemplatePreview", {
             }]
         });
         me.callParent();
-        me.titleTemplate = Handlebars.compile(me.previewName);
     },
     //
     preview: function(record, extra) {
@@ -48,8 +47,8 @@ Ext.define("NOC.core.TemplatePreview", {
         if(extra) {
             Ext.apply(context, extra);
         }
-        me.setTitle(me.titleTemplate(context));
-        me.items.first().update("<div class='noc-tp'>" + me.template(context) + "</div>");
+        me.setTitle(me.previewName.apply(context));
+        me.items.first().update(me.template.apply(context));
     },
     //
     onClose: function() {
@@ -65,7 +64,6 @@ Ext.define("NOC.core.TemplatePreview", {
                 idx = me.onCloseItem;
             }
         }
-        console.log(idx);
         me.app.showItem(idx);
     }
 });

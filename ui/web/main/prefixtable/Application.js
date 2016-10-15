@@ -9,9 +9,7 @@ console.debug("Defining NOC.main.prefixtable.Application");
 Ext.define("NOC.main.prefixtable.Application", {
     extend: "NOC.core.ModelApplication",
     uses: [
-        "NOC.main.prefixtable.Model",
-        "NOC.main.prefixtable.PrefixModel",
-        "NOC.main.prefixtable.templates.TestResultTemplate"
+        "NOC.main.prefixtable.Model"
     ],
     model: "NOC.main.prefixtable.Model",
     search: true,
@@ -57,7 +55,7 @@ Ext.define("NOC.main.prefixtable.Application", {
         {
             title: __("Test selected prefix tables ..."),
             action: "test",
-            resultTemplate: "TestResultTemplate",
+            resultTemplate: new Ext.XTemplate('<b>IP:</b> {ip}\n<table border="1">\n    <tr><th>Prefix Table</th><th>Result</th></tr>\n    <tpl foreach="result">\n    <tr><td>{name}</td><td><tpl if="result">+<tpl else>-</tpl></td></tr>\n    </tpl>\n</table>'),
             form: [
                 {
                     name: "ip",

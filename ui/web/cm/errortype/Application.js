@@ -19,8 +19,8 @@ Ext.define("NOC.cm.errortype.Application", {
         me.ITEM_JSON = me.registerItem(
             Ext.create("NOC.core.JSONPreview", {
                 app: me,
-                restUrl: "/cm/errortype/{{id}}/json/",
-                previewName: "Error Type: {{name}}"
+                restUrl: new Ext.XTemplate('/cm/errortype/{id}/json/'),
+                previewName: new Ext.XTemplate('Error Type: {name}')
             })
         );
 

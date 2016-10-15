@@ -49,17 +49,20 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
             title: __("Overview"),
-            autoScroll: true
+            scrollable: true,
+            tpl: '<div class="noc-tp"><b>{subject}</b><br/><pre>{body}</pre></div>'
         });
 
         me.helpPanel = Ext.create("Ext.panel.Panel", {
             title: __("Help"),
-            autoScroll: true
+            scrollable: true,
+            tpl: '<div class="noc-tp"><b>Symptoms:</b><br/><pre>{symptoms}</pre><br/><b>Probable Causes:</b><br/><pre>{probable_causes}</pre><br/><b>Recommended Actions:</b><br/><pre>{recommended_actions}</pre><br/></div>'
         });
 
         me.dataPanel = Ext.create("Ext.panel.Panel", {
             title: __("Data"),
-            autoScroll: true
+            scrollable: true,
+            tpl: '<div class="noc-tp">\n    <table border="0">\n        <tpl if="vars && vars.length">\n            <tr>\n                <th colspan="2">Alarm Variables</th>\n            </tr>\n            <tpl foreach="vars">\n                <tpl foreach=".">\n                    <tr>\n                        <td><b>{$}</b></td>\n                        <td>{.}</td>\n                    </tr>\n                </tpl>\n            </tpl>\n        </tpl>\n        <tpl if="resolved_vars && resolved_vars.length">\n            <tr>\n                <th colspan="2">Resolved Variables</th>\n            </tr>\n            <tpl foreach="resolved_vars">\n                <tpl foreach=".">\n                    <tr>\n                        <td><b>{$}</b></td>\n                        <td>{.}</td>\n                    </tr>\n                </tpl>\n            </tpl>\n        </tpl>\n        <tpl if="raw_vars && raw_vars.length">\n            <tr>\n                <th colspan="2">Raw Variables</th>\n            </tr>\n            <tpl foreach="raw_vars">\n                <tpl foreach=".">\n                    <tr>\n                        <td><b>{$}</b></td>\n                        <td>{.}</td>\n                    </tr>\n                </tpl>\n            </tpl>\n        </tpl>\n    </table>\n</div>'
         });
 
         me.logStore = Ext.create("Ext.data.Store", {
@@ -318,28 +321,26 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         me.app.setHistoryHash(alarmId);
     },
     //
-    updatePanel: function(panel, template, enabled, data) {
+    updatePanel: function(panel, enabled, data) {
         panel.setDisabled(!enabled);
         panel.setVisible(enabled);
         if(enabled) {
-            panel.update("<div class='noc-tp'>" + template(data) + "</div>");
+            panel.update(data);
         }
     },
     //
     updateData: function(data) {
         var me = this,
-            oldId = me.data ? me.data.id : undefined,
-            o = [];
+            oldId = me.data ? me.data.id : undefined;
+
         me.data = data;
         //
         me.alarmIdField.setValue(me.data.id);
         me.topPanel.setData(me.data);
         //
-        me.updatePanel(me.overviewPanel, me.app.templates.Overview,
-            data.subject, data);
-        me.updatePanel(me.helpPanel, me.app.templates.Help,
-            data.symptoms, data);
-        me.updatePanel(me.dataPanel, me.app.templates.Data,
+        me.updatePanel(me.overviewPanel, data.subject, data);
+        me.updatePanel(me.helpPanel, data.symptoms, data);
+        me.updatePanel(me.dataPanel,
             (data.vars && data.vars.length)
                 || (data.raw_vars && data.raw_vars.length)
                 || (data.resolved_vars && data.resolved_vars.length),

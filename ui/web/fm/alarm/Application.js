@@ -8,11 +8,6 @@ console.debug("Defining NOC.fm.alarm.Application");
 
 Ext.define("NOC.fm.alarm.Application", {
     extend: "NOC.core.Application",
-    requires: [
-        "NOC.fm.alarm.templates.Overview",
-        "NOC.fm.alarm.templates.Help",
-        "NOC.fm.alarm.templates.Data"
-    ],
     layout: "card",
     STATUS_MAP: {
         A: "Active",

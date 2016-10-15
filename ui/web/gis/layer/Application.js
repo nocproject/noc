@@ -19,8 +19,8 @@ Ext.define("NOC.gis.layer.Application", {
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/gis/layer/{{id}}/json/",
-            previewName: "Layer: {{name}}"
+            restUrl: new Ext.XTemplate('/gis/layer/{id}/json/'),
+            previewName: new Ext.XTemplate('Layer: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 

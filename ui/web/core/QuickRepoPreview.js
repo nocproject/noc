@@ -201,8 +201,7 @@ Ext.define("NOC.core.QuickRepoPreview", {
         });
         me.callParent();
         //
-        me.urlTemplate = Handlebars.compile(me.restUrl);
-        me.titleTemplate = Handlebars.compile(me.previewName);
+        console.error('Handlebars removed : class NOC.core.RestTemplatePreview, code : me.urlTemplate = Handlebars.compile(me.restUrl);me.titleTemplate = Handlebars.compile(me.previewName);');
     },
     //
     afterRender: function() {
@@ -260,9 +259,9 @@ Ext.define("NOC.core.QuickRepoPreview", {
             bi = backItem === undefined? me.backItem : backItem;
         me.currentRecord = record;
         me.backItem = bi;
-        // @todo: Replace to superclass call
-        me.rootUrl = me.urlTemplate(record.data);
-        me.setTitle(me.titleTemplate(record.data));
+        // Removed: 13.10.2016 by uncol
+        // me.rootUrl = me.urlTemplate(record.data);
+        // me.setTitle(me.titleTemplate(record.data));
     },
     //
     preview: function(record, backItem) {

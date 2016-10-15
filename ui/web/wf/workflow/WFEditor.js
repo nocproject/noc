@@ -395,7 +395,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             style
         );
         v.wfdata = data;
-        v.nocTooltipTemplate = me.app.templates.NodeTooltip;
+        console.error('removed, code : v.nocTooltipTemplate = me.app.templates.NodeTooltip;');
         v.setConnectable(false);
         // Create ports
         // Input

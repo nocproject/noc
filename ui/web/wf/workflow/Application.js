@@ -12,8 +12,7 @@ Ext.define("NOC.wf.workflow.Application", {
         "NOC.wf.workflow.Model",
         "NOC.wf.solution.LookupField",
         "NOC.wf.workflow.LanesModel",
-        "NOC.wf.workflow.VariablesModel",
-        "NOC.wf.workflow.templates.NodeTooltip"
+        "NOC.wf.workflow.VariablesModel"
     ],
     model: "NOC.wf.workflow.Model",
     columns: [

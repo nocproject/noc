@@ -241,8 +241,8 @@ Ext.define("NOC.core.RepoPreview", {
             bi = backItem === undefined? me.backItem : backItem;
         me.currentRecord = record;
         me.backItem = bi;
-        me.rootUrl = me.restUrl.apply(record.data);
-        me.setTitle(me.previewName.apply(record.data));
+        me.rootUrl = Ext.String.format(me.restUrl, record.get('id'));
+        me.setTitle(Ext.String.format(me.previewName, record.get('name')));
     },
     //
     preview: function(record, backItem) {

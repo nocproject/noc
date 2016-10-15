@@ -10,8 +10,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.fm.classificationrule.Model",
-        "NOC.fm.eventclass.LookupField",
-        "NOC.fm.classificationrule.templates.TestResult"
+        "NOC.fm.eventclass.LookupField"
     ],
     model: "NOC.fm.classificationrule.Model",
     search: true,
@@ -53,8 +52,8 @@ Ext.define("NOC.fm.classificationrule.Application", {
         var me = this;
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/fm/classificationrule/{{id}}/json/",
-            previewName: "Classification Rule: {{name}}"
+            restUrl: new Ext.XTemplate('/fm/classificationrule/{id}/json/'),
+            previewName: new Ext.XTemplate('Classification Rule: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
         //
@@ -65,8 +64,8 @@ Ext.define("NOC.fm.classificationrule.Application", {
         //
         me.testResultPanel = Ext.create("NOC.core.TemplatePreview", {
             app: me,
-            previewName: "Rule Test Result",
-            template: me.templates.TestResult,
+            previewName: new Ext.XTemplate('Rule Test Result'),
+            template: new Ext.XTemplate('<div class="noc-tp">\n    <tpl if="errors">\n        <i class="icon-warning-sign"></i><b>Errors:</b><br/>\n        <tpl foreach="errors">\n            {.}<br/>\n        </tpl>\n    </tpl>\n    <b>Result:</b>\n    <tpl if="result">\n        <i class="fa fa-check"></i> Matched\n        <tpl else><i class="fa fa-exclamation-triangle"></i> Not matched\n    </tpl>\n    <br/>\n    <br/>\n    <b>Fetched variables:</b><br/>\n    <table border="1">\n        <thead>\n        <th>Name</th>\n        <th>Value</th>\n        </thead>\n        <tbody>\n        <tpl foreach="vars">\n            <tr>\n                <td><b>{key}</b></td>\n                <td>{value}</td>\n            </tr>\n        </tpl>\n        </tbody>\n    </table>\n    <br/>\n    <b>Patterns:</b><br/>\n    <table border="1">\n        <tr>\n            <th rowspan="2"\n            </th>\n            <th colspan="2">Key</th>\n            <th colspan="2">Value</th>\n            <th rowspan="2">Vars</th>\n        </tr>\n        <tr>\n            <th>Key</th>\n            <th>Key Pattern</th>\n            <th>Value</th>\n            <th>Value Pattern</th>\n        </tr>\n        <tpl foreach="patterns">\n\n            <tr>\n                <td>\n                    <tpl if="status">\n                    <i class="fa fa-check"></i>\n                    <tpl else><i class="fa fa-exclamation-triangle"></i></tpl>\n                </td>\n                <td>{key}</td>\n                <td>{key_re}</td>\n                <td>{value}</td>\n                <td>{value_re}</td>\n                <td>\n                    <tpl if="vars">\n                        <tpl foreach="vars">\n                            <b>{key}:</b> {value}<br/>\n                        </tpl>\n                    </tpl>\n                </td>\n            </tr>\n        </tpl>\n    </table>\n    <br/>\n    <div style="border: 1px dotted #808080">\n        <b>Subject:</b> {subject}<br/>\n        {body}\n    </div>\n</div>'),
             onCloseItem: "ITEM_FORM"
         });
         me.ITEM_TEST_RESULT = me.registerItem(me.testResultPanel);

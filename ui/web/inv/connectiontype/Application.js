@@ -10,8 +10,7 @@ Ext.define("NOC.inv.connectiontype.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "Ext.ux.form.ModelDataField",
-        "NOC.inv.connectiontype.LookupField",
-        "NOC.inv.connectiontype.templates.Test"
+        "NOC.inv.connectiontype.LookupField"
     ],
     model: "NOC.inv.connectiontype.Model",
     search: true,
@@ -29,15 +28,15 @@ Ext.define("NOC.inv.connectiontype.Application", {
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/inv/connectiontype/{{id}}/json/",
-            previewName: "Connection Type: {{name}}"
+            restUrl: new Ext.XTemplate('/inv/connectiontype/{id}/json/'),
+            previewName: new Ext.XTemplate('Connection Type: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
         // Test panel
         me.testPanel = Ext.create("NOC.core.TemplatePreview", {
             app: me,
-            previewName: "Compatible connections for {{name}}",
-            template: me.templates.Test
+            previewName: new Ext.XTemplate('Compatible connections for {name}'),
+            template: new Ext.XTemplate('<div class="noc-tp">\n    <h1>Possible connections for type {name}</h1>\n    <table border="1">\n        <tpl foreach="data">\n            <tr>\n                <th colspan="4">Gender \'{gender}\' can be connected to:</th>\n            </tr>\n            <tr>\n                <th>Gender</th>\n                <th>Connection Type</th>\n                <th>Reason</th>\n                <th>Description</th>\n            </tr>\n            <tpl foreach="records">\n                <tr>\n                    <td>{gender}</td>\n                    <td>{name}</td>\n                    <td>{reason}</td>\n                    <td>{description}</td>\n                </tr>\n            </tpl>\n        </tpl>\n    </table>\n</div>')
         });
         me.ITEM_TEST = me.registerItem(me.testPanel);
         //

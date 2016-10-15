@@ -1144,7 +1144,7 @@ Ext.define("NOC.core.ModelApplication", {
             success: function(response) {
                 var r = Ext.decode(response.responseText) || "OK";
                 if(action.resultTemplate) {
-                    var d = me.templates[action.resultTemplate](r);
+                    var d = action.resultTemplate.apply(r);
                     Ext.create("Ext.Window", {
                         html: d,
                         width: 600,

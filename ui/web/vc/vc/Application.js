@@ -13,8 +13,7 @@ Ext.define("NOC.vc.vc.Application", {
         "NOC.main.style.LookupField",
         "NOC.main.resourcestate.LookupField",
         "NOC.project.project.LookupField",
-        "NOC.vc.vcdomain.LookupField",
-        "NOC.vc.vc.templates.VCInterfaces"
+        "NOC.vc.vcdomain.LookupField"
     ],
     model: "NOC.vc.vc.Model",
     search: true,
@@ -241,8 +240,8 @@ Ext.define("NOC.vc.vc.Application", {
         me.ITEM_VC_INTERFACES = me.registerItem(
             Ext.create("NOC.core.TemplatePreview", {
                 app: me,
-                previewName: "Interfaces in VC {{name}} ({{vc_domain__label}} VLAN {{l1}})",
-                template: me.templates.VCInterfaces
+                previewName: new Ext.XTemplate('Interfaces in VC {name} ({vc_domain__label} VLAN {l1})'),
+                template: new Ext.XTemplate('<div class="noc-tp">\n    <table class="noc-report">\n        <!-- Untagged interfaces -->\n        <tpl if="interfaces.untagged.length">\n        <tr><th colspan="2">Untagged interfaces</th>\n            <tpl foreach="interfaces.untagged">\n        <tr>\n            <td style="width: 200px">{managed_object_name}</td>\n            <td>\n                <tpl foreach="interfaces">{name}, </tpl>\n            </td>\n        </tr>\n        </tpl>\n        </tpl>\n        <!-- Tagged interfaces -->\n        <tpl if="interfaces.tagged.length">\n        <tr><th colspan="2">Tagged interfaces</th>\n            <tpl foreach="interfaces.tagged">\n        <tr>\n            <td style="width: 200px">{managed_object_name}</td>\n            <td>\n                <tpl foreach="interfaces">{name}, </tpl>\n            </td>\n        </tr>\n        </tpl>\n        </tpl>\n        <!-- L3 interfaces -->\n        <tpl if="interfaces.l3.length">\n        <tr><th colspan="2">L3 interfaces</th>\n            <tpl foreach="interfaces.l3">\n        <tr>\n            <td style="width: 200px">{managed_object_name}</td>\n            <td>\n                <tpl foreach="interfaces">\n                {ipv4_addresses}\n                {ipv6_addresses}\n                </tpl>\n            </td>\n        </tr>\n        </tpl>\n        </tpl>\n    </table>\n</div>')
             })
         );
         me.callParent();
