@@ -155,8 +155,8 @@
       "height": "250px",
       "panels": [
         {% from "graph_interface_load_simple.j2" import interface -%}
-        {{interface("$interface_a", device_a)}},
-        {{interface("$interface_b", device_b)}}
+        {{interface("$interface_a", "$device_a")}},
+        {{interface("$interface_b", "$device_b")}}
         ]
     },
     {
@@ -167,8 +167,8 @@
       "height": "250px",
       "panels": [
         {% from "graph_interface_pps.j2" import pps -%}
-        {{pps("$interface_a", device_a)}},
-        {{pps("$interface_b", device_b)}}
+        {{pps("$interface_a", "$device_a")}},
+        {{pps("$interface_b", "$device_b")}}
       ]
     }
   ]
