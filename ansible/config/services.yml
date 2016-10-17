@@ -22,6 +22,11 @@ services:
     level: system
     port: 5432
 
+  pgbouncer:
+    description: pgbouncer daemon
+    level: system
+    port: 6432
+
   mongod:
     description: Mongod server
     level: system

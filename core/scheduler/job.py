@@ -34,8 +34,6 @@ class Job(object):
     # Group name. Only one job from group can be started
     # if is not None
     group_name = None
-    # Set to True to run handler inside transactional block
-    use_transactions = False
     # Context format version
     # None - do not store context
     # Set to version number otherwise
