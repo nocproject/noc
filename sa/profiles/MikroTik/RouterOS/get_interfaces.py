@@ -135,6 +135,8 @@ class Script(BaseScript):
         v = self.cli_detail(
             "/interface ethernet switch port print detail without-paging")
         for n, f, r in v:
+            if "vlan-mode" not in r:
+                continue
             if (r["vlan-mode"] in ["check", "secure"]) \
             and (r["vlan-header"] in ["add-if-missing", "leave-as-is"]):
                 vlan_tags[r["name"]] = True
