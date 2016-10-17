@@ -114,7 +114,7 @@ class BaseConfig(object):
         suitable to pass to psycopg2.connect
         """
         if not self._pg_connection_args:
-            hosts = self.get_service("postgres", limit=1)
+            hosts = self.get_service("pgbouncer") or self.get_service("postgres", limit=1)
             if not hosts:
                 hosts = ["127.0.0.1:5432"]
             host, port = hosts[0].split(":")

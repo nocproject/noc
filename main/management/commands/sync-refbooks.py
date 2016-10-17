@@ -9,7 +9,6 @@
 """
 from __future__ import with_statement
 from django.core.management.base import BaseCommand
-from django.db import transaction
 from noc.main.refbooks.refbooks import RefBook
 from noc.main.models import RefBook as RB
 import os
@@ -19,10 +18,8 @@ import os
 class Command(BaseCommand):
     help="Synchronize built-in Reference Books"
     def handle(self, *args, **options):
-        transaction.enter_transaction_management()
         self.sync_refbooks()
-        transaction.leave_transaction_management()
-    
+
     ##
     ## Search for subclasses of givent class inside given directory
     ##

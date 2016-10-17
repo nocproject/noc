@@ -9,19 +9,32 @@ var Heatmap = function () {
 };
 
 Heatmap.prototype.initialize = function () {
+    var q = this.parseQuerystring(),
+        lon = q.lon ? parseFloat(q.lon) : 55.7766,
+        lat = q.lat ? parseFloat(q.lat) : 37.5077,
+        scale = q.scale ? parseInt(q.scale) : 11;
     this.map = L.map("map");
     this.heatmap = null;
     // Set up OSM layer
     var osm = L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-
         });
     this.map.addLayer(osm);
     // Select view
-    // @todo: Calculate dynamically
-    this.map.setView([55.7766, 37.5077], 11);
+    this.map.setView([lon, lat], scale);
     // Poll data
     this.poll_data();
+};
+
+Heatmap.prototype.parseQuerystring = function() {
+    var q = window.location.search.substring(1),
+        vars = q.split("&"),
+        r = {}, i, pair;
+    for(i = 0; i < vars.length; i++) {
+        pair = vars[i].split("=");
+        r[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+    }
+    return r;
 };
 
 Heatmap.prototype.run = function () {
