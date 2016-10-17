@@ -20,12 +20,12 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_line = re.compile(
-        r"\w*==========================\s+"
+        r"\w*=+\s+"
         r"(GigabitEthernet|TenGigabitEthernet|AggregatePort)", re.MULTILINE)
-    rx_line_vlan = re.compile(r"\w*==========================\s+VLAN",
+    rx_line_vlan = re.compile(r"\w*=+\s+VLAN",
                               re.MULTILINE)
     rx_ifindex = re.compile(r"Index\(dec\):(?P<ifindex>\d+) \(hex\):\d+")
-    rx_name = re.compile(r"^(?P<name>\S+.+) is (?P<status>.\S+)(|\s+),",
+    rx_name = re.compile(r"^(?P<name>\S+ \S+) is (?P<status>UP|DOWN)\s*,",
                          re.MULTILINE)
     rx_descr = re.compile(
         r"\s+interface's description:(\"\"|\"(?P<description>.+)\")",
@@ -42,16 +42,16 @@ class Script(BaseScript):
                        re.MULTILINE | re.IGNORECASE)
     rx_ospf_gs = re.compile(r"Routing Protocol is \"ospf \d+\"")
     rx_ospf = re.compile(r"^(?P<if_ospf>.+)\s+is up, line protocol is up",
-                         re.IGNORECASE)
+                         re.MULTILINE | re.IGNORECASE)
     rx_igmp = re.compile(
-        r"^Interface (?P<if_igmp>.+?)\s+\(Index \d+\)\s*\n IGMP Active",
+        r"^\s*Interface (?P<if_igmp>.+?)\s+\(Index \d+\)\s*\n IGMP Active",
         re.MULTILINE | re.IGNORECASE)
     rx_pim = re.compile(
-        r"^\d+\S+\s+(?P<if_pim>.+?)\s+\d+\s+v\S+\s+\d+\s+\d+",
+        r"^\s*\d+\S+\s+(?P<if_pim>.+?)\s+\d+\s+v\S+\s+\d+\s+\d+",
         re.MULTILINE | re.IGNORECASE)
     rx_lldp_gs = re.compile(r"Global\s+status\s+of\s+LLDP\s+:\s+Enable")
     rx_lldp = re.compile(r"Port\s+\[(?P<port>.+)\]\nPort status of LLDP\s+:\s+Enable",
-                         re.IGNORECASE)
+                         re.MULTILINE | re.IGNORECASE)
     types = {
         "Gi": "physical",    # GigabitEthernet
         "Lo": "loopback",    # Loopback
@@ -92,7 +92,7 @@ class Script(BaseScript):
             for match in self.rx_ospf.finditer(c):
                 if_ospf = match.group("if_ospf")
                 iface_ospf = self.profile.convert_interface_name(if_ospf)
-                ospf += [if_ospf]
+                ospf += [iface_ospf]
 
         igmp = []
         try:
@@ -102,7 +102,7 @@ class Script(BaseScript):
         for match in self.rx_igmp.finditer(c):
             if_igmp = match.group("if_igmp")
             iface_igmp = self.profile.convert_interface_name(if_igmp)
-            igmp += [if_igmp]
+            igmp += [iface_igmp]
 
         pim = []
         try:
@@ -112,7 +112,7 @@ class Script(BaseScript):
         for match in self.rx_pim.finditer(c):
             if_pim = match.group("if_pim")
             iface_pim = self.profile.convert_interface_name(if_pim)
-            pim += [if_pim]
+            pim += [iface_pim]
 
         r = []
         try:
@@ -194,7 +194,7 @@ class Script(BaseScript):
             match = self.rx_name.search(s)
             if not match:
                 continue
-            iface = match.group("name")
+            iface = self.profile.convert_interface_name(match.group("name"))
             status = match.group("status")
             match = self.rx_ip.search(s)
             ip = match.group("ip")
@@ -240,4 +240,5 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["description"] = description
             r += [iface]
 
+        #quit()
         return [{"interfaces": r}]
