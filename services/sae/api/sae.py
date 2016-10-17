@@ -8,7 +8,6 @@
 
 ## Third-party modules
 import tornado.gen
-from collections import namedtuple
 ## NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
@@ -18,13 +17,12 @@ from noc.sa.models.credcache import CredentialsCache
 
 class SAEAPI(API):
     """
-    Monitoring API
+    SAE API
     """
     name = "sae"
 
-    PREPARE_SQL = """
-      PREPARE sae_mo AS
-            SELECT
+    RUN_SQL = """
+        SELECT
             mo.name, mo.is_managed, mo.profile_name,
             mo.scheme, mo.address, mo.port, mo."user",
             mo.password,
@@ -36,15 +34,14 @@ class SAEAPI(API):
             ARRAY(
               SELECT key || ' := ' || value
               FROM sa_managedobjectattribute
-              WHERE managed_object_id = $1
+              WHERE managed_object_id = %s
             )
         FROM
             sa_managedobject mo
             LEFT JOIN sa_authprofile ap
                 ON (mo.auth_profile_id = ap.id)
-        WHERE mo.id=$1
+        WHERE mo.id = %s
     """
-    RUN_SQL = "EXECUTE sae_mo(%s)"
 
     @api
     @tornado.gen.coroutine
@@ -97,7 +94,7 @@ class SAEAPI(API):
         # Get Object's attributes
         with self.service.get_pg_connect() as connection:
             cursor = connection.cursor()
-            cursor.execute(self.RUN_SQL, [object_id])
+            cursor.execute(self.RUN_SQL, [object_id, object_id])
             data = cursor.fetchall()
         if not data:
             raise APIError("Object is not found")

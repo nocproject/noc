@@ -1,6 +1,10 @@
-# Django settings for noc project.
-# Do not modify this file directly
-# All necessary configurations will be written by noc-tower
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## Django settings
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2016 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
 import ConfigParser
 import sys
 import os
@@ -42,31 +46,20 @@ MANAGERS = ADMINS
 
 SERVER_EMAIL = config.get("main", "server_email")
 
-## Auto-detect appropriative database engine settings
-if sys.argv[0].endswith("/discovery/service.py"):
-    DB_ENGINE = "dbpool.db.backends.postgresql_psycopg2"
-    DB_OPTIONS = {
-        "MAX_CONNS": 1,
-        "MIN_CONNS": 1
-    }
-    SOUTH_DATABASE_ADAPTER = "django.db.backends.postgresql_psycopg2"
-else:
-    DB_ENGINE = "django.db.backends.postgresql_psycopg2"
-    DB_OPTIONS = {
-    }
-
 ## RDBMS settings
-DATABASE_ENGINE = DB_ENGINE
+SOUTH_DATABASE_ADAPTER = "django.db.backends.postgresql_psycopg2"
 DATABASES = {
     "default": {
-        "ENGINE": DB_ENGINE,
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": cfg.pg_db,
         "USER": cfg.pg_user,
         "PASSWORD": cfg.pg_password,
         "HOST": cfg.pg_connection_args["host"],
         "PORT": cfg.pg_connection_args["port"],
         "TEST_NAME": "test_" + cfg.pg_db,
-        "OPTIONS": DB_OPTIONS
+        "OPTIONS": {
+            "autocommit": True
+        }
     }
 }
 DATABASE_SUPPORTS_TRANSACTIONS = True
@@ -125,7 +118,6 @@ MIDDLEWARE_CLASSES = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.auth.middleware.RemoteUserMiddleware",
-    "django.middleware.transaction.TransactionMiddleware",
     "noc.lib.middleware.TLSMiddleware",  # Thread local storage
     "noc.lib.middleware.ExtFormatMiddleware"
 ]

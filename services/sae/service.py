@@ -9,12 +9,13 @@
 
 ## Python modules
 import contextlib
+## Third-party modules
+from psycopg2.pool import ThreadedConnectionPool
 ## NOC modules
 from noc.core.service.base import Service
 from noc.main.models.pool import Pool
 from api.sae import SAEAPI
 from noc.core.config.base import config
-from pgpool import PreparedConnectionPool
 
 
 class SAEService(Service):
@@ -35,7 +36,7 @@ class SAEService(Service):
 
     def on_activate(self):
         self.load_pools()
-        self.pg_pool = PreparedConnectionPool(
+        self.pg_pool = ThreadedConnectionPool(
             1,
             self.config.db_threads,
             **config.pg_connection_args
