@@ -66,11 +66,12 @@ class Command(BaseCommand):
                 continue
             chain = LoaderChain(s["system"])
             for d in s.get("data"):
-                if loaders and d["type"] not in loaders:
-                    continue
                 chain.get_loader(d["type"])
             # Add & Modify
             for l in chain:
+                if loaders and l.name not in loaders:
+                    l.load_mappings()
+                    continue
                 l.load()
                 l.save_state()
             # Remove in reverse order
@@ -128,11 +129,11 @@ class Command(BaseCommand):
                 continue
             chain = LoaderChain(s["system"])
             for d in s.get("data"):
-                if diffs and d["type"] not in diffs:
-                    continue
                 chain.get_loader(d["type"])
             # Check
             for l in chain:
+                if diffs and l.name not in diffs:
+                    continue
                 l.check_diff()
 
 if __name__ == "__main__":
