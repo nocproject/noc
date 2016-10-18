@@ -92,7 +92,7 @@
     user: admin
     password: admin
     force_basic_auth: yes
-    status_code: 200, 401
+    status_code: 200, 401, 500 #500 - ugly stupid hack. but grafana returns 500 when ds already exists
     body_format: json
     validate_certs: no
     body:
@@ -107,6 +107,8 @@
       jsonData:
         timeInterval: 300
   ignore_errors: yes
+  register: ids
+  changed_when: ids.status != 500
   when: "{{ has_svc_influxdb | default(False) }}"
   tags:
     - config
@@ -118,7 +120,7 @@
     user: admin
     password: admin
     force_basic_auth: yes
-    status_code: 200, 401
+    status_code: 200, 401, 500 #500 - ugly stupid hack. but grafana returns 500 when ds already exists
     body_format: json
     validate_certs: no
     body:
@@ -128,6 +130,8 @@
       access: direct
       isDefault: False
   ignore_errors: yes
+  register: gds
+  changed_when: gds.status != 500
   when: "{{ has_svc_grafanads | default(False) }}"
   tags:
     - config
