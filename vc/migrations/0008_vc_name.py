@@ -27,7 +27,6 @@ class Migration:
             names[vc_domain_id][name] = None
             db.execute("UPDATE vc_vc SET name=%s WHERE id=%s",
                 [name, vc_id])
-        db.execute("COMMIT")
         db.execute("ALTER TABLE vc_vc ALTER COLUMN name SET NOT NULL")
         db.execute(
             "ALTER TABLE vc_vc ALTER COLUMN description DROP NOT NULL")

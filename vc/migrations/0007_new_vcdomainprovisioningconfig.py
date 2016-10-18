@@ -43,7 +43,6 @@ class Migration:
                     [vc_domain_id, selector_id,
                      v["enable"].lower() in ["true", "t"],
                      v["tagged_ports"], None])
-        db.execute("COMMIT")
 
     def backwards(self):
         "Write your backwards migration here"

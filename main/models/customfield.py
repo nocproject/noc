@@ -184,38 +184,37 @@ class CustomField(models.Model):
         return "ALTER TABLE %s DROP COLUMN \"%s\"" % (
             self.table, self.db_column)
 
-    def exec_commit(self, sql):
+    def execute(self, sql):
         logger.debug("Execute: %s", sql)
         c = connection.cursor()
         c.execute(sql)
-        c.execute("COMMIT")
 
     def activate_field(self):
         logger.info("Activating field %s.%s", self.table, self.name)
         if self.is_table:
-            self.exec_commit(self.db_create_statement)
+            self.execute(self.db_create_statement)
 
     def deactivate_field(self):
         logger.info("Deactivating field %s.%s", self.table, self.name)
         if self.is_table:
-            self.exec_commit(self.db_drop_statement)
+            self.execute(self.db_drop_statement)
 
     def create_index(self):
         logger.info("Creating index %s", self.index_name)
         if self.is_table:
-            self.exec_commit("CREATE INDEX %s ON %s(%s)" % (
+            self.execute("CREATE INDEX %s ON %s(%s)" % (
                 self.index_name, self.table, self.db_column))
 
     def drop_index(self):
         logger.info("Dropping index %s", self.index_name)
         if self.is_table:
-            self.exec_commit("DROP INDEX %s" % self.index_name)
+            self.execute("DROP INDEX %s" % self.index_name)
 
     def rename(self, old_name):
         logger.info("Renaming custom field %s.%s to %s.%s",
                     old_name.table, old_name.name, self.table, self.name)
         if self.is_table:
-            self.exec_commit("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
+            self.execute("ALTER TABLE %s RENAME \"%s\" TO \"%s\"" % (
                 self.table, old_name, self.db_column
             ))
 
