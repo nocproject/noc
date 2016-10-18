@@ -34,6 +34,7 @@ class ActiveAlarm(nosql.Document):
         "indexes": [
             "timestamp", "discriminator", "root", "-severity",
             "alarm_class",
+            ("discriminator", "managed_object"),  # @todo: Delete discriminator index
             ("timestamp", "managed_object"),
             "escalation_tt",
             "escalation_ts",
@@ -161,12 +162,25 @@ class ActiveAlarm(nosql.Document):
             self.timestamp = e.timestamp
         else:
             self.last_update = max(self.last_update, e.timestamp)
-        self.save(save_condition={"id": self.id})
+        if self.id:
+            self.save(save_condition={"id": self.id})
+        else:
+            self.save()
         # Update event's list of alarms
         if self.id not in e.alarms:
+            e._get_collection().update({
+                "_id": e.id,
+            }, {
+                "$set": {
+                    "expires": None,
+                },
+                "$push": {
+                    "alarms": self.id
+                }
+            })
             e.alarms.append(self.id)
             e.expires = None
-            e.save()
+            # e.save()
 
     def clear_alarm(self, message, ts=None, force=False):
         """
@@ -445,10 +459,6 @@ class ActiveAlarm(nosql.Document):
         root_alarm.update_summary()
         # Clear pending notifications
         # Notification.purge_delayed("alarm:%s" % self.id)
-
-    @classmethod
-    def enable_caching(cls, ttl=600):
-        cls._fields["alarm_class"].set_cache(ttl)
 
     def escalate(self, tt_id, close_tt=False):
         self.escalation_tt = tt_id
