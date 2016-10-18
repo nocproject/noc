@@ -39,8 +39,8 @@ Ext.define("NOC.core.Rack", {
             // Number boxes bottom
             n_bottom = y + me.TOP_WIDTH + i_height,
             // far side
-            far_side = side === "f" ? "r" : "f";
-        label = opts.label || null;
+            far_side = side === "f" ? "r" : "f",
+            label = opts.label || null;
         /*
          * Enclosure
          */

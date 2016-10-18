@@ -13,7 +13,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         "NOC.inv.inv.plugins.rack.RackLoadModel"
     ],
     app: null,
-    autoScroll: true,
+    scrollable: true,
     title: __("Rack"),
     layout: "border",
 
@@ -51,7 +51,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         });
 
         me.rackViewPanel = Ext.create("Ext.container.Container", {
-            autoScroll: true,
+            scrollable: true,
             region: "center"
         });
 
@@ -144,10 +144,10 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         var me = this,
             r = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide()),
             dc = Ext.create("Ext.draw.Component", {
-                viewBox: false,
-                items: r,
-                autoScroll: true
+                sprites: r,
+                height: me.rackViewPanel.getHeight()
             });
+
         me.currentId = data.id;
         me.rackViewPanel.removeAll();
         me.rackViewPanel.add(dc);
