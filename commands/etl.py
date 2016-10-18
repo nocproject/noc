@@ -27,10 +27,20 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         # load command
         load_parser = subparsers.add_parser("load")
+        load_parser.add_argument(
+            "loaders",
+            nargs=argparse.REMAINDER,
+            help="List of extractor names"
+        )
         # check command
         check_parser = subparsers.add_parser("check")
         # diff command
-        diff = subparsers.add_parser("diff")
+        diff_parser = subparsers.add_parser("diff")
+        diff_parser.add_argument(
+            "diffs",
+            nargs=argparse.REMAINDER,
+            help="List of extractor names"
+        )
         # extract command
         extract_parser = subparsers.add_parser("extract")
         extract_parser.add_argument(
@@ -49,12 +59,15 @@ class Command(BaseCommand):
     def handle_load(self, system=None, *args, **options):
         from noc.core.etl.loader.chain import LoaderChain
 
+        loaders = set(options.get("loaders", []))
         config = self.get_config()
         for s in config:
             if system and s["system"] not in system:
                 continue
             chain = LoaderChain(s["system"])
             for d in s.get("data"):
+                if loaders and d["type"] not in loaders:
+                    continue
                 chain.get_loader(d["type"])
             # Add & Modify
             for l in chain:
@@ -107,12 +120,16 @@ class Command(BaseCommand):
 
     def handle_diff(self, system=None, *args, **options):
         from noc.core.etl.loader.chain import LoaderChain
+
+        diffs = set(options.get("diffs", []))
         config = self.get_config()
         for s in config:
             if system and s["system"] not in system:
                 continue
             chain = LoaderChain(s["system"])
             for d in s.get("data"):
+                if diffs and d["type"] not in diffs:
+                    continue
                 chain.get_loader(d["type"])
             # Check
             for l in chain:
