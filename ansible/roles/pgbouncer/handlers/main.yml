@@ -1,0 +1,10 @@
+---
+- name: reload telegraf
+  service:
+    name: telegraf
+    state: reloaded
+
+- name: reload pgbouncer
+  service:
+    name: pgbouncer
+    state: reloaded

@@ -456,3 +456,9 @@ config:
       type: str
       label: Grafana postgres password
       default: grafana
+
+  pgbouncer:
+    pgbouncer_max_clients:
+      type: int
+      label: Pgbouncer max clients
+      default: 3000
