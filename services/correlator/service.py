@@ -11,8 +11,8 @@
 import sys
 import datetime
 import re
-from collections import defaultdict
 import Queue
+from collections import defaultdict
 ## Third-party modules
 import tornado.gen
 ## NOC modules
@@ -57,7 +57,6 @@ class CorrelatorService(Service):
             max_chunk=100
         )
         self.scheduler.correlator = self
-        ActiveAlarm.enable_caching(600)
         self.subscribe(
             "correlator.dispose",
             "dispose",
@@ -291,7 +290,8 @@ class CorrelatorService(Service):
                 )
             ]
         )
-        a.save()
+        # Saved by contribute_event
+        # a.save()
         a.contribute_event(e, open=True)
         self.logger.info(
             "[%s|%s|%s] %s raises alarm %s(%s): %r",
@@ -367,7 +367,11 @@ class CorrelatorService(Service):
     def clear_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
-            self.logger.debug("Empty managed object, ignoring")
+            self.logger.info(
+                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring",
+                e.id
+            )
+            self.perf_metrics["unknown_object"] += 1
             return
         if r.unique:
             discriminator, vars = r.get_vars(e)
@@ -448,31 +452,45 @@ class CorrelatorService(Service):
         """
         Called on new dispose message
         """
+        self.logger.info("[%s] Receiving message", event_id)
         message.enable_async()
         self.get_executor("max").submit(self.dispose_worker, message, event_id)
 
     def dispose_worker(self, message, event_id):
         self.perf_metrics["alarm_dispose"] += 1
         try:
-            self.dispose_event(event_id)
+            event = self.lookup_event(event_id)
+            if event:
+                self.dispose_event(event)
         except Exception:
             self.perf_metrics["alarm_dispose_error"] += 1
             error_report()
         self.ioloop.add_callback(message.finish)
 
-    def dispose_event(self, event_id):
+    def lookup_event(self, event_id):
+        """
+        Lookup event by id
+        :param event_id:
+        :return: ActiveEvent instance or None
+        """
+        self.logger.info("[%s] Lookup event", event_id)
+        try:
+            return ActiveEvent.objects.get(id=event_id)
+        except ActiveEvent.DoesNotExist:
+            self.logger.info("[%s] Event not found, skipping", event_id)
+            self.perf_metrics["event_lookup_failed"] += 1
+            return None
+
+    def dispose_event(self, e):
         """
         Dispose event according to disposition rule
         """
+        event_id = str(e.id)
         self.logger.info("[%s] Disposing", event_id)
-        try:
-            e = ActiveEvent.objects.get(id=event_id)
-        except ActiveEvent.DoesNotExist:
-            self.logger.info("[%s] Event not found, skipping", event_id)
-            return
         drc = self.rules.get(e.event_class.id)
         if not drc:
-            self.logger.info("[%s] No disposition rules for class %s, skipping", event_id, e.event_class.name)
+            self.logger.info("[%s] No disposition rules for class %s, skipping",
+                             event_id, e.event_class.name)
             return
         # Apply disposition rules
         for r in drc:
@@ -510,6 +528,7 @@ class CorrelatorService(Service):
                                     self.clear_alarm(br, de)
                 if r.stop_disposition:
                     break
+        self.logger.info("[%s] Disposition complete", event_id)
 
 if __name__ == "__main__":
     CorrelatorService().start()
