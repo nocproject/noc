@@ -29,6 +29,7 @@ from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
 from noc.maintainance.models.maintainance import Maintainance
+from noc.maintainance.models.maintainance import MaintainanceObject
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
@@ -137,6 +138,13 @@ class AlarmApplication(ExtApplication):
         s = AlarmSeverity.get_severity(o.severity)
         n_events = (ActiveEvent.objects.filter(alarms=o.id).count() +
                     ArchivedEvent.objects.filter(alarms=o.id).count())
+        mtc = o.managed_object.id in Maintainance.currently_affected()
+        if o.status == "C":
+            # For archived alarms
+            mtc = Maintainance.objects.filter(start__lte=o.clear_timestamp, stop__lte=o.timestamp,
+                                              affected_objects__in=[
+                                                       MaintainanceObject(object=o.managed_object)]).count() > 0
+
         d = {
             "id": str(o.id),
             "status": o.status,
@@ -158,6 +166,7 @@ class AlarmApplication(ExtApplication):
             "escalation_tt": o.escalation_tt,
             "platform": o.managed_object.platform,
             "address": o.managed_object.address,
+            "isInMaintenance": mtc,
             "summary": self.f_glyph_summary({
                 "subscriber": SummaryItem.items_to_dict(o.total_subscribers),
                 "service": SummaryItem.items_to_dict(o.total_services)
