@@ -20,6 +20,7 @@ from mongoengine.base import *
 from mongoengine import *
 import mongoengine
 import six
+import bson
 ## NOC modules
 from noc.core.config.base import config
 
@@ -71,15 +72,13 @@ class PlainReferenceField(BaseField):
     dereferenced on access (lazily). Maps to plain ObjectId
     """
 
-    _DEREF_CACHE = {}
-
     def __init__(self, document_type, *args, **kwargs):
         if not isinstance(document_type, basestring):
             if not issubclass(document_type, (Document, basestring)):
                 raise ValidationError("Argument to PlainReferenceField constructor "
                                       "must be a document class or a string")
         self.document_type_obj = document_type
-        self.ttl = None
+        self.has_get_by_id = None
         super(PlainReferenceField, self).__init__(*args, **kwargs)
 
     @property
@@ -100,16 +99,12 @@ class PlainReferenceField(BaseField):
         value = instance._data.get(self.name)
         # Dereference DBRefs
         if isinstance(value, ObjectId) or (isinstance(value, basestring) and len(value) == 24):
-            v = None
-            if self.ttl:
-                t = time.time()
-                expire, v = self._DEREF_CACHE.get(str(value), (0, None))
-                if expire < t:
-                    v = None
-            if v is None:
-                v = self.document_type.objects(id=value).first()
-                if v and self.ttl:
-                    self._DEREF_CACHE[str(value)] = (t + self.ttl, v)
+            if self.has_get_by_id is None:
+                self.has_get_by_id = hasattr(self.document_type, "get_by_id")
+            if self.has_get_by_id:
+                v = self.document_type.get_by_id(value)
+            else:
+                v = self.document_type.objects.filter(pk=value).first()
             if v is not None:
                 instance._data[self.name] = v
             else:
@@ -150,7 +145,10 @@ class PlainReferenceListField(PlainReferenceField):
         def convert(value):
             if isinstance(value, ObjectId):
                 # Dereference
-                v = self.document_type.objects(id=value).first()
+                if hasattr(self.document_type, "get_by_id"):
+                    return self.document_type.get_by_id(bson.ObjectId(value))
+                else:
+                    v = self.document_type.objects(id=value).first()
                 if v is None:
                     raise ValidationError("Unable to dereference %s:%s" % (
                                         self.document_type, v))

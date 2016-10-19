@@ -28,6 +28,7 @@ class ArchivedAlarm(nosql.Document):
             "control_time",
             "timestamp",
             "managed_object",
+            ("managed_object", "discriminator"),
             "escalation_tt",
             "escalation_ts"
         ]

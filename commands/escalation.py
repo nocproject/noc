@@ -59,7 +59,19 @@ class Command(BaseCommand):
                 )
 
     def handle_run(self, run_alarms=None, *args, **kwargs):
-        pass
+        run_alarms = run_alarms or []
+        for a_id in run_alarms:
+            alarm = get_alarm(a_id)
+            if alarm and alarm.status == "A":
+                self.run_alarm(alarm)
+            elif alarm:
+                self.stdout.write(
+                    "ERROR: Alarm %s is cleared. Skipping\n" % alarm
+                )
+            else:
+                self.stdout.write(
+                    "ERROR: Alarm %s is not found. Skipping\n" % alarm
+                )
 
     def check_alarm(self, alarm):
         def summary_to_list(summary, model):
@@ -223,6 +235,9 @@ class Command(BaseCommand):
                             self.stdout.write("    @ Cannot add to group TT %s. Remote id is not found\n" % (
                                 objects[o]
                             ))
+
+    def run_alarm(self, alarm):
+        AlarmEscalation.watch_escalations(alarm)
 
 
 if __name__ == "__main__":

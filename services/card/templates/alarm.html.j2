@@ -139,5 +139,30 @@
         </td>
     </tr>
     {% endif %}
+    {% if maintenance %}
+    <tr>
+        <th scope="row">{{ _("Maintenance") }}</th>
+        <td>
+            <table class="table table-condensed">
+                <thead>
+                <th scope="row">{{ _("Subject") }}</th>
+                <th scope="row">{{ _("Type") }}</th>
+                <th scope="row">{{ _("Date") }}</th>
+                <th scope="row">{{ _("Contacts") }}</th>
+                </thead>
+                <tbody>
+                {% for m in maintenance %}
+                    <tr>
+                        <td>{{ m.type.name }}</td>
+                        <td><a href="/api/card/view/maintainance/{{ m.id }}/">{{ m.subject }}</a></td>
+                        <td>{{ m.start }} - {{ m.stop }}</td>
+                        <td>{{ m.contacts }}</td>
+                    </tr
+                {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    {% endif %}
 </tbody>
 </table>

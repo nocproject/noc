@@ -339,7 +339,12 @@ Ext.define("NOC.fm.alarm.Application", {
                     text: __("Status"),
                     dataIndex: "status",
                     width: 50,
-                    renderer: NOC.render.Choices(me.STATUS_MAP),
+                    renderer: function(v, _, record){
+                        var value = NOC.render.Choices(me.STATUS_MAP)(v);
+                        if(record.get('isInMaintenance')) value = '<span title="' + __('Under maintaintance') + '">' +
+                            '<i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;' + value + '</span>';
+                        return value;
+                    },
                     hidden: true
                 },
                 {
@@ -357,9 +362,7 @@ Ext.define("NOC.fm.alarm.Application", {
                     dataIndex: "managed_object",
                     width: 250,
                     renderer: function(v, _, record) {
-                        return record.get("managed_object__label") +
-                            "<br/>" +
-                            record.get("segment__label");
+                        return record.get("managed_object__label") + "<br/>" + record.get("segment__label");
                     }
                 },
                 {
