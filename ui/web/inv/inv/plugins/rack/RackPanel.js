@@ -81,13 +81,15 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
                     width: 50
                 },
                 {
-                    text: __("Pos. Front"),
+                    text: __("Front"),
+                    tooltip: __("Position Front"),
                     dataIndex: "position_front",
                     width: 50,
                     editor: "numberfield"
                 },
                 {
-                    text: __("Pos. Rear"),
+                    text: __("Rear"),
+                    tooltip: __("Position Rear"),
                     dataIndex: "position_rear",
                     width: 50,
                     editor: "numberfield"
@@ -142,10 +144,20 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     //
     preview: function(data) {
         var me = this,
-            r = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide()),
-            dc = Ext.create("Ext.draw.Component", {
-                sprites: r,
-                height: me.rackViewPanel.getHeight()
+            sprites = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide()),
+            dc = Ext.create("Ext.draw.Container", {
+                sprites: sprites,
+                height: me.rackViewPanel.getHeight(),
+                listeners: {
+                    spriteclick: function(sprite, event) {
+                        if(sprite.sprite.managed_object_id){
+                            window.open(
+                                        "/api/card/view/managedobject/" + sprite.sprite.managed_object_id + "/"
+                                    );
+                        }
+                    }
+                },
+                plugins: ['spriteevents']
             });
 
         me.currentId = data.id;
