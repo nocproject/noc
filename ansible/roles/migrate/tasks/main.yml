@@ -1,13 +1,7 @@
 # Migrate database schema
 ---
-- name: syncdb
-  command: ./noc syncdb --noinput
-  args:
-    chdir: "{{ noc_root }}"
-  become_user: "{{ noc_user }}"
-
 - name: Migrate
-  command: ./noc migrate --ignore-ghost-migrations
+  command: ./noc migrate
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
