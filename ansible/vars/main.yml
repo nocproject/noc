@@ -18,6 +18,8 @@ grafana_pg_user: grafana
 grafana_pg_password:
 grafana_pg_db: grafana
 
+etc_prefix: /etc
+
 influx_path: /usr/bin/influx
 influxdb_conf: /etc/influxdb/influxdb.conf
 influxdb_db_path: /var/lib/influxdb

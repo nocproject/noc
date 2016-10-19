@@ -110,3 +110,11 @@
   with_items:
     - { name: env.j2, dest: "{{ noc_root }}/var/etc/postgres/env", mode: "u=rw,g=r,o=r" }
     - { name: pgpass.j2, dest: "{{ noc_root }}/var/etc/postgres/.pgpass", mode: "u=rw,g-rwx,o-rwx" }
+
+- name: Install postgres monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/postgres.conf.j2"
+    dest: "{{etc_prefix}}/telegraf/telegraf.d/postgres.conf"
+  notify: reload telegraf
+  tags:
+    - config

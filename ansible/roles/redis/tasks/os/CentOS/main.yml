@@ -22,10 +22,4 @@
     reload: yes
     ignoreerrors: yes
 
-- name: Install redis monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/redis.conf.j2"
-    dest: "/etc/telegraf/telegraf.d/redis.conf"
-  notify: reload telegraf
-  tags:
-    - config
+

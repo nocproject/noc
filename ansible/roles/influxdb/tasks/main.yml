@@ -1,6 +1,13 @@
 ---
 - include: "os/{{ ansible_distribution }}/main.yml"
 
+- name: Install influx monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/influxdb.conf.j2"
+    dest: "{{etc_prefix}}/telegraf/telegraf.d/influxdb.conf"
+  tags:
+    - config
+
 - name: Setup InfluxDB config
   template:
     src: etc/influxdb/influxdb.conf.j2

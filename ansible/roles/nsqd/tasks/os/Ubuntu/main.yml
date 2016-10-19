@@ -5,14 +5,6 @@
      dest: "/etc/systemd/system/nsqd.service"
   register: nsqd_service
 
-- name: Install nsqd monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/nsqd.conf.j2"
-    dest: "/etc/telegraf/telegraf.d/nsqd.conf"
-  notify: reload telegraf
-  tags:
-    - config
-
 - name: reload systemd
   shell: systemctl daemon-reload
   when: nsqd_service.changed

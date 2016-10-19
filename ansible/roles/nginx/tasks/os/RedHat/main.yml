@@ -6,14 +6,6 @@
   environment:
     http_proxy: "{{http_proxy}}"
 
-- name: Install nginx monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/nginx.conf.j2"
-    dest: "/etc/telegraf/telegraf.d/nginx.conf"
-  notify: reload telegraf
-  tags:
-    - config
-
 - name: Install service monitoring
   template:
     src: "{{item}}"

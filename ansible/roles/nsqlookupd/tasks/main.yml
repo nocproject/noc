@@ -2,6 +2,13 @@
 - name: include nsqlookupd os specific tasks
   include: "os/{{ ansible_distribution }}/main.yml"
 
+- name: Install nsqlookupd monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/nsqlookupd.conf.j2"
+    dest: "{{etc_prefix}}/telegraf/telegraf.d/nsqlookupd.conf"
+  notify: reload telegraf
+  tags:
+    - config
 - name: install nsqlookupd config
   template:
     src: config/nsqlookupd.conf.j2

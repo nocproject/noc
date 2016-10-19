@@ -8,11 +8,3 @@
   lineinfile: dest=/etc/rc.conf regexp=^telegraf_flags= line=telegraf_flags="-config-directory /usr/local/etc/telegraf"
   tags:
     - config
-
-- name: Install pmwriter monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/noc-pmwriter.conf.j2"
-    dest: "/usr/local/etc/telegraf/noc-pmwriter.conf"
-  notify: restart telegraf
-  tags:
-    - config

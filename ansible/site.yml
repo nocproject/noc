@@ -30,13 +30,6 @@
         - mongod
         - external
 
-    - role: pgbouncer
-      become: yes
-      when: "{{ has_svc_pgbouncer | default(False) }}"
-      tags:
-        - pgbouncer
-        - external
-
     - role: postgres
       become: yes
       when: "{{ has_svc_postgres | default(False) }}"
@@ -44,6 +37,12 @@
         - postgres
         - external
 
+    - role: pgbouncer
+      become: yes
+      when: "{{ has_svc_pgbouncer | default(False) }}"
+      tags:
+        - pgbouncer
+        - external
     - role: influxdb
       become: yes
       when: "{{ has_svc_influxdb | default(False) }}"
