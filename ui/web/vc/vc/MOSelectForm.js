@@ -14,7 +14,7 @@ Ext.define("NOC.vc.vc.MOSelectForm", {
         "NOC.sa.managedobject.LookupField"
     ],
     title: __("Select Object To Import"),
-    autoShow: true,
+    autoShow: false,
     closable: true,
     modal: true,
     app: null,
@@ -78,7 +78,7 @@ Ext.define("NOC.vc.vc.MOSelectForm", {
     onImport: function() {
         var me = this,
             r = me.down("form").getForm().getValues();
-        me.close();
         me.app.runImportFromSwitch(r.vc_domain, r.managed_object, r.vc_filter);
+        me.hide();
     }
 });
