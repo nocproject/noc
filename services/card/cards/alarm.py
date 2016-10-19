@@ -20,6 +20,8 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
+from noc.maintainance.models.maintainance import Maintainance
+from noc.maintainance.models.maintainance import MaintainanceObject
 
 
 class AlarmCard(BaseCard):
@@ -72,6 +74,13 @@ class AlarmCard(BaseCard):
             "service": SummaryItem.items_to_dict(self.object.total_services),
             "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers)
         }
+        # Maintainance
+        mainteinance = Maintainance.objects.filter(is_completed=False,
+                                                   start__lte=datetime.datetime.now(),
+                                                   affected_objects__in=[
+                                                       MaintainanceObject(object=self.object.managed_object)]
+                                                   )
+
         # Build result
         r = {
             "id": self.object.id,
@@ -86,7 +95,8 @@ class AlarmCard(BaseCard):
             "log": log,
             "service_summary": service_summary,
             "alarms": alarms,
-            "diagnostic": AlarmDiagnostic.get_diagnostics(self.object)
+            "diagnostic": AlarmDiagnostic.get_diagnostics(self.object),
+            "maintenance": mainteinance
         }
         return r
 

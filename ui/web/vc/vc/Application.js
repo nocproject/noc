@@ -58,6 +58,10 @@ Ext.define("NOC.vc.vc.Application", {
     //
     initComponent: function() {
         var me = this;
+
+        me.addFirstFreeForm = Ext.create("NOC.vc.vc.AddFirstFreeForm", {app: me});
+        me.MOSelectForm = Ext.create("NOC.vc.vc.MOSelectForm", {app: me});
+
         Ext.apply(me, {
             columns: [
                 {
@@ -248,11 +252,14 @@ Ext.define("NOC.vc.vc.Application", {
     },
     onFirstNewRecord: function() {
         var me = this;
-        Ext.create("NOC.vc.vc.AddFirstFreeForm", {app: me});
+
+        me.addFirstFreeForm.show();
     },
     //
     onImportVLANSFromSwitch: function() {
-        Ext.create("NOC.vc.vc.MOSelectForm", {app: this});
+        var me = this;
+
+        me.MOSelectForm.show();
     },
     //
     runImportFromSwitch: function(vc_domain, managed_object, vc_filter) {

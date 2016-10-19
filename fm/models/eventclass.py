@@ -9,14 +9,21 @@
 ## Python modules
 import re
 import os
+from threading import Lock
+import operator
 ## Third-party modules
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
+import cachetools
 ## NOC modules
 from noc.lib import nosql
 from alarmclass import AlarmClass
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
+from noc.core.handler import get_handler
+
+id_lock = Lock()
+handlers_lock = Lock()
 
 
 class EventClassVar(EmbeddedDocument):
@@ -246,8 +253,31 @@ class EventClass(Document):
     #
     category = fields.ObjectIdField()
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _handlers_cache = {}
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return EventClass.objects.filter(id=id).first()
+
+    def get_handlers(self):
+        @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
+        def _get_handlers(event_class):
+            handlers = []
+            for hh in event_class.handlers:
+                try:
+                    h = get_handler(hh)
+                except ImportError:
+                    h = None
+                if h:
+                    handlers += [h]
+            return handlers
+
+        return _get_handlers(self)
 
     def save(self, *args, **kwargs):
         c_name = " | ".join(self.name.split(" | ")[:-1])
