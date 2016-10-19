@@ -47,11 +47,10 @@ MANAGERS = ADMINS
 SERVER_EMAIL = config.get("main", "server_email")
 
 ## RDBMS settings
-SOUTH_DATABASE_ADAPTER = "django.db.backends.postgresql_psycopg2"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": cfg.pg_db,
+        "NAME": cfg.pg_connection_args["database"],
         "USER": cfg.pg_user,
         "PASSWORD": cfg.pg_password,
         "HOST": cfg.pg_connection_args["host"],
@@ -62,7 +61,6 @@ DATABASES = {
         }
     }
 }
-DATABASE_SUPPORTS_TRANSACTIONS = True
 
 TIME_ZONE = config.get("main", "timezone")
 LANGUAGE_CODE = config.get("main", "language_code")

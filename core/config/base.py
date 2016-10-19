@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+import os
 import random
 import logging
 import urllib
@@ -82,7 +83,7 @@ class BaseConfig(object):
         """
         Load/Reload config
         """
-        logger.info("Loading config froom %s", self.CONFIG)
+        logger.info("Loading config from %s", self.CONFIG)
         with open(self.CONFIG) as f:
             data = yaml.load(f)
         self.services = data.get("services")
@@ -114,14 +115,24 @@ class BaseConfig(object):
         suitable to pass to psycopg2.connect
         """
         if not self._pg_connection_args:
-            hosts = self.get_service("pgbouncer") or self.get_service("postgres", limit=1)
+            hosts = self.get_service("pgbouncer")
+            if hosts:
+                use_pgbouncer = True
+            else:
+                hosts = self.get_service("postgres", limit=1)
+                use_pgbouncer = False
             if not hosts:
                 hosts = ["127.0.0.1:5432"]
             host, port = hosts[0].split(":")
+            if use_pgbouncer and os.environ.get("NOC_MIGRATE", "no") == "yes":
+                logger.info("Using pgbouncer pool_mode=session")
+                db = self.pg_db + "-migrate"
+            else:
+                db = self.pg_db
             self._pg_connection_args = {
                 "host": host,
                 "port": int(port),
-                "database": self.pg_db,
+                "database": db,
                 "user": self.pg_user,
                 "password": self.pg_password
             }
