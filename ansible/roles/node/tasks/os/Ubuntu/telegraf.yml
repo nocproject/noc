@@ -30,7 +30,7 @@
 - name: render telegraf config
   template:
     src: "etc/telegraf/telegraf.conf.j2"
-    dest: "/etc/telegraf/telegraf.conf"
+    dest: "{{etc_prefix}}/telegraf/telegraf.conf"
   notify: reload telegraf
   tags:
     - config

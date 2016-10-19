@@ -1,6 +1,14 @@
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
 
+- name: Install classifier monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/noc-classifier.conf.j2"
+    dest: "{{etc_prefix}}/telegraf/telegraf.d/noc-classifier.conf"
+  notify: reload telegraf
+  tags:
+    - config
+
 - name: Install classifier python packages
   pip:
     chdir: "{{noc_root}}"

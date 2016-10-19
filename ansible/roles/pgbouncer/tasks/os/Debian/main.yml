@@ -1,0 +1,22 @@
+- name: add pgdg key
+  apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+
+- name: Add PGDG repo
+  apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main"
+
+- name: Install pgbouncer
+  apt:
+    name: pgbouncer
+    update_cache: yes
+
+- name: Create pgbouncer directories
+  file:
+    path: "{{ item }}"
+    owner: "{{postgres_user}}"
+    mode: 0700
+    state: directory
+  with_items:
+    - /var/log/pgbouncer/
+    - /var/run/pgbouncer/

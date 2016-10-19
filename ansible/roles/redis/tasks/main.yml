@@ -2,6 +2,14 @@
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
 
+- name: Install redis monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/redis.conf.j2"
+    dest: "{{etc_prefix}}/telegraf/telegraf.d/redis.conf"
+  notify: reload telegraf
+  tags:
+    - config
+
 - name: Create config dir
   file:
     path: "{{item.name}}"
@@ -25,3 +33,4 @@
     name: "{{ redis_daemon }}"
     state: started
     enabled: yes
+
