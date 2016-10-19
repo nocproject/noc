@@ -188,6 +188,7 @@ class CustomField(models.Model):
         logger.debug("Execute: %s", sql)
         c = connection.cursor()
         c.execute(sql)
+        c.execute("COMMIT")
 
     def activate_field(self):
         logger.info("Activating field %s.%s", self.table, self.name)
