@@ -81,6 +81,7 @@ class Migration:
             if footer_remarks:
                 footer_remarks="\n".join([rx_remarks.sub("",x) for x in rpsl_footer.split("\n")])
             db.execute("UPDATE peer_as SET header_remarks=%s,footer_remarks=%s WHERE id=%s",[header_remarks,footer_remarks,id])
+        db.execute("COMMIT")
         #
         db.delete_column("peer_as","maintainer_id")
         db.delete_column("peer_as","routes_maintainer_id")

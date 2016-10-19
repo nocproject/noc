@@ -14,6 +14,7 @@ class Migration:
             db.execute(
                 "UPDATE peer_peer SET local_ip=%s,remote_ip=%s WHERE id=%s",
                 [local_ip, remote_ip, peer_id])
+        db.execute("COMMIT")
         db.drop_column("peer_peer", "masklen")
 
     def backwards(self):
