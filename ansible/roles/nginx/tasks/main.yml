@@ -2,6 +2,14 @@
 ---
 - include: "os/{{ ansible_distribution }}/main.yml"
 
+- name: Install nginx monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/nginx.conf.j2"
+    dest: "{{etc_prefix}}/telegraf/telegraf.d/nginx.conf"
+  notify: reload telegraf
+  tags:
+    - config
+
 - name: Set up SSL directory
   file:
     path: "{{ nginx_ssl_key_path | dirname }}"

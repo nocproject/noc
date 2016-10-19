@@ -1,5 +1,7 @@
 # FreeBSD settings
 ---
+etc_prefix: /usr/local/etc
+
 grafana_home: /usr/local/share/grafana
 grafana_system_service: grafana3
 influx_path: /usr/local/bin/influx

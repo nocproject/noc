@@ -1,2 +1,10 @@
 ---
 - include: "os/{{ ansible_distribution }}/main.yml"
+
+- name: Install mailsender monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/noc-mailsender.conf.j2"
+    dest: "{{etc_prefix}}/telegraf/telegraf.d/noc-mailsender.conf"
+  notify: reload telegraf
+  tags:
+    - config

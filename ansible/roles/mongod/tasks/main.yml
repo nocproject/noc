@@ -84,3 +84,11 @@
 
 - include: "master.yml"
   when: "{{ has_svc_mongod_master  | default(False) }}"
+
+- name: Install mongodb monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
+    dest: "{{etc_prefix}}/telegraf/telegraf.d/mongodb.conf"
+  notify: reload telegraf
+  tags:
+    - config

@@ -11,11 +11,3 @@
   lineinfile: dest=/etc/rc.conf regexp=^telegraf_flags= line=telegraf_flags="-config-directory /usr/local/etc/telegraf"
   tags:
     - config
-
-- name: Install activator monitoring
-  template:
-    src: "etc/telegraf/telegraf.d/noc-activator.conf.j2"
-    dest: "/usr/local/etc/telegraf/noc-activator.conf"
-  notify: restart telegraf
-  tags:
-    - config
