@@ -35,8 +35,9 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
     rx_tagged = re.compile("(?P<tagged>\d+)", re.MULTILINE)
     rx_ether = re.compile(
-        r"^\s*(?P<port>\d+)\s+[GF]E\s+(\S+\s+)?\d+\s+\S+\s+\S+\s+\S+\s+\S+\s+"
-        r"(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n", re.MULTILINE)
+        r"^\s*(?P<port>\d+)\s+(?:10)?[GF]E\s+(\S+\s+)?\d+\s+\S+\s+\S+\s+\S+\s+"
+        r"\S+\s+(?P<admin_status>\S+)\s+(?P<oper_status>\S+)\s*\n",
+        re.MULTILINE)
     rx_adsl_state = re.compile(
         r"^\s*(?P<port>\d+)\s+(?P<oper_state>\S+)", re.MULTILINE)
     rx_pvc = re.compile(
