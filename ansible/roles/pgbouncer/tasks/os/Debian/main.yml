@@ -1,6 +1,8 @@
 - name: add pgdg key
   apt_key:
     url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+  environment:
+    https_proxy: "{{http_proxy}}"
 
 - name: Add PGDG repo
   apt_repository:
@@ -10,6 +12,9 @@
   apt:
     name: pgbouncer
     update_cache: yes
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
 
 - name: Create pgbouncer directories
   file:
