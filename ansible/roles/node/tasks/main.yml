@@ -139,7 +139,7 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/node.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   environment:
     PYCURL_SSL_LIBRARY: "{{ pycurl_ssl_library | default('openssl')}}"
     http_proxy: "{{http_proxy}}"
@@ -154,7 +154,7 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/prod.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
