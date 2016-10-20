@@ -1,6 +1,12 @@
 ---
-- name: Install FreeBSD system packages
+- name: Install Telegraf packages
   pkgng: name="telegraf" state=present
+
+- name: Create telegraf directories
+  file: path={{item}} state=directory mode=0755
+  with_items:
+    - /usr/local/etc/telegraf
+    - /usr/local/etc/telegraf/telegraf.d
 
 - name: Enable telegraf system service
   service: name="telegraf" enabled=yes state=started
