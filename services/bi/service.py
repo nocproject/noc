@@ -8,12 +8,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.core.service.base import Service
+from noc.core.service.ui import UIService
 from api.bi import BIAPI
 from noc.core.service.authapi import AuthAPIRequestHandler
 
 
-class BIService(Service):
+class BIService(UIService):
     name = "bi"
     api = [
         BIAPI
