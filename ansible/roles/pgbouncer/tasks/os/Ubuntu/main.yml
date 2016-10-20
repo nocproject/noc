@@ -2,4 +2,14 @@
   apt:
     name: pgbouncer
   environment:
-    http_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+
+- name: Create pgbouncer directories
+  file:
+    path: "{{ item }}"
+    owner: "{{ postgres_user }}"
+    mode: 0700
+    state: directory
+  with_items:
+    - /var/log/pgbouncer/
+    - /var/run/pgbouncer/
