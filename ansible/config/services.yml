@@ -138,7 +138,8 @@ services:
   bi:
     description: Reports
     level: global
-
+    required_assets:
+      - bi
   mrt:
     description: MRT worker
     level: global
