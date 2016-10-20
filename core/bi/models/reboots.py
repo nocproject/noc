@@ -9,31 +9,35 @@
 ## NOC modules
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (DateField, DateTimeField,
-                                        StringField, ArrayField,
-                                        Float64Field)
+                                        Float64Field, ReferenceField,
+                                        IPv4Field)
 from noc.core.clickhouse.engines import MergeTree
+from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.bi.dictionaries.vendor import Vendor
+from noc.core.bi.dictionaries.platform import Platform
+from noc.core.bi.dictionaries.version import Version
+from noc.core.bi.dictionaries.profile import Profile
+from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
+from noc.core.bi.dictionaries.networksegment import NetworkSegment
+from noc.core.bi.dictionaries.container import Container
 
 
 class Reboots(Model):
     class Meta:
         db_table = "reboots"
-        engine = MergeTree("date", ("ts", "object_id"))
+        engine = MergeTree("date", ("ts", "managed_object"))
 
     date = DateField()
     ts = DateTimeField()
-    object_id = StringField()
-    object_name = StringField()
-    ip = StringField()
-    profile = StringField()
-    object_profile_id = StringField()
-    object_profile_name = StringField()
-    vendor = StringField()
-    platform = StringField()
-    version = StringField()
-    # Paths
-    adm_path = ArrayField(StringField())
-    segment_path = ArrayField(StringField())
-    container_path = ArrayField(StringField())
+    managed_object = ReferenceField(ManagedObject)
+    ip = IPv4Field()
+    profile = ReferenceField(Profile)
+    vendor = ReferenceField(Vendor)
+    platform = ReferenceField(Platform)
+    version = ReferenceField(Version)
+    administrative_domain = ReferenceField(AdministrativeDomain)
+    segment = ReferenceField(NetworkSegment)
+    container = ReferenceField(Container)
     # Coordinates
     x = Float64Field()
     y = Float64Field()
