@@ -34,3 +34,9 @@
     - key: PLUGINS_DIR
       value: "{{ noc_root }}/var/db/grafana_plugins"
   notify: restart grafana
+
+- name: Provide better renderjs
+  template:
+    src: "render.js"
+    dest: "/usr/share/grafana/vendor/phantomjs/render.js"
+    force: no
