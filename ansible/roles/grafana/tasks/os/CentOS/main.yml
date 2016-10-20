@@ -1,8 +1,12 @@
 ---
 - name: Add Grafana repository
-  template:
-    src: os/CentOS/etc/yum.repos.d/grafana.repo.j2
-    dest: /etc/yum.repos.d/grafana.repo
+  yum_repository:
+    name: grafana
+    description: Grafana repository
+    baseurl: https://packagecloud.io/grafana/stable/el/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+    gpgcheck: yes
+    gpgkey: https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+    enabled: yes
 
 - name: Install CentOS packages
   yum:
@@ -11,8 +15,8 @@
     update_cache: yes
   notify: restart grafana
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: Set up Grafana service
   lineinfile:
