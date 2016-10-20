@@ -1,8 +1,12 @@
 ---
 - name: Add MongoDB repository
-  template:
-    src: os/CentOS/etc/yum.repos.d/mongodb-org.repo.j2
-    dest: /etc/yum.repos.d/mongodb-org.repo
+  yum_repository:
+    name: mongodb
+    description: MongoDB Repository
+    baseurl: https://repo.mongodb.org/yum/redhat/{{ ansible_distribution_major_version }}/mongodb-org/{{ mongo_version }}/x86_64/
+    gpgcheck: yes
+    gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongo_version }}.asc
+    enabled: yes
 
 - name: Disable Transparent Hugepages (runtime)
   shell: if test -f /sys/kernel/mm/transparent_hugepage/enabled; then
@@ -17,8 +21,8 @@
     state: present
     update_cache: yes
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: Delete mongod init file
   file:
