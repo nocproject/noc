@@ -1,3 +1,5 @@
 - name: Install pgbouncer
   apt:
     name: pgbouncer
+  environment:
+    http_proxy: "{{http_proxy}}"
