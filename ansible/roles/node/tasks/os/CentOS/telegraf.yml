@@ -1,8 +1,12 @@
 ---
 - name: Add CentOS InfluxDB repository
-  template:
-    src: "os/CentOS/etc/yum.repos.d/influxdb.repo.j2"
-    dest: "/etc/yum.repos.d/influxdb.repo"
+  yum_repository:
+    name: influxdb
+    description: CentOS InfluxDB Repository
+    baseurl: https://repos.influxdata.com/centos/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}/stable
+    gpgcheck: yes
+    gpgkey: https://repos.influxdata.com/influxdb.key
+    enabled: yes
 
 - name: Install CentOS system packages
   yum:
@@ -13,8 +17,8 @@
    - telegraf
    - lsof
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: render telegraf config
   template:
@@ -29,3 +33,5 @@
     name: telegraf
     enabled: yes
     state: started
+  tags:
+    - config
