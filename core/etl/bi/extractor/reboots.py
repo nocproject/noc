@@ -41,22 +41,19 @@ class RebootsExtractor(BaseExtractor):
             if not mo:
                 continue
             version = mo.version
-            path = ObjectPath.get_path(mo)
             x, y = mo.get_coordinates()
             self.reboot_stream.push(
                 ts=d["ts"],
-                object_id=str(mo.id),
-                object_name=mo.name,
+                managed_object=mo,
                 ip=mo.address,
                 profile=mo.profile_name,
-                object_profile_id=str(mo.object_profile.id),
-                object_profile_name=mo.object_profile.name,
+                object_profile=mo.object_profile,
                 vendor=mo.vendor,
                 platform=mo.platform,
                 version=version.version,
-                adm_path=[str(p) for p in path.adm_path] if path else [],
-                segment_path=path.segment_path if path else [],
-                container_path=path.container_path if path else [],
+                administrative_domain=mo.administrative_domain,
+                segment=mo.segment,
+                container=mo.container,
                 x=x,
                 y=y
             )
