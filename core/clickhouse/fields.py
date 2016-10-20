@@ -8,6 +8,8 @@
 
 ## Python collections
 import itertools
+import socket
+import struct
 
 
 class BaseField(object):
@@ -129,3 +131,37 @@ class ArrayField(BaseField):
 
     def get_db_type(self):
         return "Array(%s)" % self.field_type.get_db_type()
+
+
+class ReferenceField(BaseField):
+    db_type = "UInt64"
+    default_value = 0
+    SELF_REFERENCE = "self"
+
+    def __init__(self, dict_type):
+        super(ReferenceField, self).__init__()
+        self.is_self_reference = dict_type == self.SELF_REFERENCE
+        self.dict_type = dict_type
+
+    def to_tsv(self, value):
+        if value is None:
+            return str(self.default_value)
+        else:
+            return str(
+                self.dict_type.lookup(value)
+            )
+
+
+class IPv4Field(BaseField):
+    db_type = "UInt32"
+
+    def to_tsv(self, value):
+        """
+        Convert IPv4 as integer
+        :param value:
+        :return:
+        """
+        if value is None:
+            return "0"
+        else:
+            return str(struct.unpack("!I", socket.inet_aton(value))[0])
