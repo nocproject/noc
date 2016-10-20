@@ -1,13 +1,5 @@
 ---
-- name: Enable the PostgreSQL repository RHEL
-  yum:
-    name: "https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}/pgdg-centos{{ postgresql_version|replace(\".\",\"\") }}-{{ postgresql_version }}-2.noarch.rpm"
-    state: present
-    validate_certs: no
-  environment:
-    https_proxy: "{{http_proxy}}"
-
-- name: "Install PostgreSQL"
+- name: Install PostgreSQL
   yum:
     name: "{{ item }}"
     state: present
@@ -18,11 +10,11 @@
     - postgresql{{postgresql_version|replace(".","")}}-plpython
     - python-psycopg2
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
 
 - name: PostgreSQL init db
-  command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql{{postgresql_version|replace(".","")}}-setup initdb
+  command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql{{ postgresql_version|replace(".","") }}-setup initdb
   args:
     creates: /var/lib/pgsql/{{ postgresql_version }}/initdb.log
 
@@ -30,4 +22,12 @@
   set_fact:
     postgresql_conf_path: "/var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf"
     postgresql_hba_path: "/var/lib/pgsql/{{ postgresql_version }}/data/pg_hba.conf"
+  tags:
+    - config
 
+- name: Install postgres limits file
+  template:
+    src: "etc/security/limits.d/postgres_limits.conf.j2"
+    dest: "/etc/security/limits.d/postgres_limits.conf"
+  tags:
+    - config
