@@ -227,7 +227,7 @@ server {
     location /api/bi/ {
         proxy_pass http://bi;
         auth_request /api/auth/auth/;
-        # rewrite  ^/api/bi/(.*)  /$1 break;
+        rewrite  ^/api/bi/(.*)  /$1 break;
         # internal;
         gzip on;
         gzip_types text/css text/x-js;
