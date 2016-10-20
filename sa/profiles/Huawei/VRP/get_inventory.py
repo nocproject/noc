@@ -101,6 +101,8 @@ class Script(BaseScript):
 
     def part_parse(self, type, slot_num, subcard_num=""):
         v = self.cli("display elabel slot %s %s" % (slot_num or "", subcard_num))
+        # Avoid of rotten devices, where part_on contains 0xFF characters
+        v = v.decode("ascii", "ignore")
         r = []
 
         if type == "CHASSIS":
