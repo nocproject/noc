@@ -1,8 +1,35 @@
 ---
+- name: Set proxy for yum
+  lineinfile:
+    dest: /etc/yum.conf
+    regexp: "^proxy=.*"
+    line: "proxy=http://{{ http_proxy }}"
+  when: "http_proxy is defined and http_proxy"
+  tags:
+    - config
+
 - name: Disable selinux
   selinux:
     policy: targeted
     state: permissive
+
+- name: Add EPEL Repo
+  yum_repository:
+    name: epel
+    description: EPEL Repo
+    baseurl: http://download.fedoraproject.org/pub/epel/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+    gpgcheck: yes
+    gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
+    enabled: yes
+
+- name: Add PostgreSQL repository RHEL
+  yum_repository:
+    name: pgdg-{{ postgresql_version|replace(".","") }}-centos
+    description: PostgreSQL {{ postgresql_version }}
+    baseurl: https://download.postgresql.org/pub/repos/yum/{{ postgresql_version }}/redhat/rhel-{{ ansible_distribution_major_version }}-{{ ansible_architecture }}
+    gpgcheck: yes
+    gpgkey: https://apt.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG-{{ postgresql_version|replace(".","") }}
+    enabled: yes
 
 - name: Install CentOS system packages 1/2
   yum:
@@ -18,35 +45,36 @@
    - python-virtualenv
    - telnet
    - gcc
-   - postgresql
+   - postgresql{{ postgresql_version|replace(".","") }}
    - postgresql-devel
+   - postgresql{{ postgresql_version|replace(".","") }}-devel
    - libcurl-devel
    - libffi
    - libffi-devel
   environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 
 - name: Install RedHat system packages 2/2
   yum:
-    name: "{{item}}"
+    name: "{{ item }}"
     state: present
     update_cache: yes
   with_items:
    - quilt
   environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
   tags:
     - requirements
 
 - name: Install supervisord init script
   template:
     src: "os/CentOS/etc/systemd/system/noc.service.j2"
-    dest: "/usr/lib/systemd/system//{{ noc_system_service }}.service"
-    mode: "a+rx"
+    dest: "/etc/systemd/system//{{ noc_system_service }}.service"
+    mode: "a+r"
 
 - include: "firewall.yml"
   tags:
