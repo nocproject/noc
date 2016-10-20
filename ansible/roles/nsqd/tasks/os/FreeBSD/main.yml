@@ -1,12 +1,6 @@
 ---
-- name: Create rc.d directory
-  file: path=/usr/local/etc/rc.d state=directory mode=0755
-
 - name: Install nsqd init script
   template: src="os/FreeBSD/etc/rc.d/nsqd.j2" dest="/usr/local/etc/rc.d/nsqd" mode="a+rx"
-
-- name: Ensure /etc/rc.conf exists
-  file: path=/etc/rc.conf state=touch
 
 - name: Enable NSQD system service
   service: name="nsqd" enabled=yes
