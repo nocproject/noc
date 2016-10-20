@@ -338,6 +338,7 @@ server {
         proxy_set_header Remote-User $user;
         auth_request_set $groups $upstream_http_remote_groups;
         proxy_set_header Remote-Groups $groups;
+        proxy_set_header Authorization "";
         access_log  {{ nginx_log_dir }}/grafana.access.log noc_format;
     }
 {% endif %}
