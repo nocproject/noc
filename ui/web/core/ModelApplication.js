@@ -104,7 +104,9 @@ Ext.define("NOC.core.ModelApplication", {
         me.searchField = Ext.create("Ext.ux.form.SearchField", {
             name: "search_field",
             hideLabel: true,
-            width: 200,
+            width: 400,
+            typeAhead: true,
+            typeAheadDelay: 500,
             hasAccess: function(app) { return app.search === true;},
             scope: me,
             handler: me.onSearch
@@ -594,7 +596,7 @@ Ext.define("NOC.core.ModelApplication", {
     showGrid: function() {
         var me = this;
         me.showItem(me.ITEM_GRID);
-        me.setHistoryHash();
+        // me.setHistoryHash();
     },
     // Show Form
     showForm: function() {
@@ -829,6 +831,7 @@ Ext.define("NOC.core.ModelApplication", {
     reloadStore: function() {
         var me = this;
         me.store.setFilterParams(me.currentQuery);
+        me.saveFilterToUrl(me.currentQuery);
         // Reload store
         // ExtJS 5.0.0 WARNING:
         // me.store.reload() sometimes leaves empty grid
@@ -871,7 +874,6 @@ Ext.define("NOC.core.ModelApplication", {
         if(me.currentQuery.__query) {
             fexp.__query = me.currentQuery.__query;
         }
-        me.saveFilterToUrl(fexp);
         me.currentQuery = fexp;
         me.reloadStore();
     },
@@ -1504,6 +1506,9 @@ Ext.define("NOC.core.ModelApplication", {
             Ext.each(me.filterSetters, function(set) {
                 set(filterStr);
             });
+            if('__query' in filterStr) {
+                me.searchField.setValue(filterStr['__query'])
+            }
             me.currentQuery = filterStr;
             me.store.setFilterParams(me.currentQuery);
         }
