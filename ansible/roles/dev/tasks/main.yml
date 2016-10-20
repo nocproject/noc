@@ -5,7 +5,7 @@
   pip: 
     chdir: "{{noc_root}}"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.nocproject.org --find-links https://cdn.nocproject.org/pkg/simple/ --allow-all-external --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
     requirements: "requirements/dev.txt"
   environment:
     https_proxy: "{{http_proxy}}"
