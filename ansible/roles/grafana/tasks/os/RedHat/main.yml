@@ -19,6 +19,14 @@
   environment:
     https_proxy: "{{http_proxy}}"
 
+- name: Install fonts for grafana serverside rendering
+  yum:
+    name: wine-fonts
+    state: present
+    update_cache: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+
 - name: Set up Grafana service
   lineinfile:
     dest: /etc/sysconfig/grafana-server
