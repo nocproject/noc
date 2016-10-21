@@ -33,6 +33,13 @@ Ext.define("NOC.fm.alarm.Application", {
                 status: "A",
                 collapse: 1
             },
+            remoteSort: true,
+            sorters: [
+                {
+                    property: 'timestamp',
+                    direction: 'DESC'
+                }
+            ],
             pageSize: bs,
             leadingBufferZone: bs,
             numFromEdge: bs,
