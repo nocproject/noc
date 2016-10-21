@@ -22,3 +22,4 @@ class Profile(BaseProfile):
     command_disable_pager = "terminal datadump"
     pattern_more = "More: <space>,  Quit: q or CTRL+Z, One line: <return>"
     command_more = "a"
+    command_exit = "exit"
