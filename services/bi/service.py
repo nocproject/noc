@@ -20,6 +20,7 @@ class BIService(UIService):
     ]
     api_request_handler = AuthAPIRequestHandler
     process_name = "noc-%(name).10s-%(instance).2s"
+    use_translation = True
 
     def __init__(self):
         super(BIService, self).__init__()

@@ -440,6 +440,11 @@ config:
       label: Concurrent query limit per process
       default: 10
 
+    language:
+      label: Translation language
+      type: str
+      default: en
+
   mrt:
     max_concurrency:
       type: int
