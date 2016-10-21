@@ -265,7 +265,9 @@ _MODELS = {
     "kb.KBGlobalBookmark": "noc.kb.models.KBGlobalBookmark",
     "kb.KBUserBookmark": "noc.kb.models.KBUserBookmark",
     # support models
-    "support.Crashinfo": "noc.support.models.crashinfo.Crashinfo"
+    "support.Crashinfo": "noc.support.models.crashinfo.Crashinfo",
+    # bi models
+    "bi.DashboardLayout": "noc.bi.models.dashboardlayout.DashboardLayout"
 }
 
 FTS_MODELS = [
@@ -299,6 +301,7 @@ COLLECTIONS = [
     "fm.EventClass",
     "fm.EventClassificationRule",
     "fm.CloneClassificationRule",
-    "sa.ProfileCheckRule"
+    "sa.ProfileCheckRule",
+    "bi.DashboardLayout"
 ]
 
