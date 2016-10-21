@@ -1,5 +1,5 @@
 {
-    "name": "2x2",
+    "name": "c2x2",
     "uuid": "f2736f99-a568-4820-b746-1e71d48b4374",
     "description": "",
     "cells": [
@@ -7,7 +7,7 @@
             "height": 360,
             "lg": null,
             "md": 6,
-            "name": "1-1",
+            "name": "c1-1",
             "row": 0,
             "sm": null,
             "xs": null
@@ -16,7 +16,7 @@
             "height": 360,
             "lg": null,
             "md": 6,
-            "name": "1-2",
+            "name": "c1-2",
             "row": 0,
             "sm": null,
             "xs": null
@@ -25,7 +25,7 @@
             "height": 360,
             "lg": null,
             "md": 6,
-            "name": "2-1",
+            "name": "c2-1",
             "row": 1,
             "sm": null,
             "xs": null
@@ -34,7 +34,7 @@
             "height": 360,
             "lg": null,
             "md": 6,
-            "name": "2-2",
+            "name": "c2-2",
             "row": 1,
             "sm": null,
             "xs": null
