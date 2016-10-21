@@ -21,31 +21,25 @@ class Script(BaseScript):
     rx_ver = re.compile(
         r"^\s*SW version\s+(?P<version>\S+).*\n"
         r"^\s*Boot version\s+(?P<bootprom>\S+).*\n"
-        r"^\s*HW version\s+(?P<hardware>\S+).*\n", re.MULTILINE)
-    rx_platform = re.compile(
-        r"^\s*System Description:\s+(?P<platform>.+)\n", re.MULTILINE)
+        r"^\s*HW version\s*(?P<hardware>\S+)?.*\n", re.MULTILINE)
     rx_serial = re.compile(
-        r"^\s*Serial number : (?P<serial>\S+)")
+        r"^\s*Serial number :\s*(?P<serial>\S+)?")
 
     def execute(self):
         v = self.cli("show version", cached=True)
         match = self.re_search(self.rx_ver, v)
         r = {
             "vendor": "Angtel",
+            "platform": "Topaz",
             "version": match.group("version"),
             "attributes": {
-                "Boot PROM": match.group("bootprom"),
-                "HW version": match.group("hardware")
+                "Boot PROM": match.group("bootprom")
             }
         }
-        v = self.cli("show system", cached=True)
-        match = self.re_search(self.rx_platform, v)
-        platform = match.group("platform")
-        # Need more examples
-        if platform == "Angtel Topaz FE":
-            platform = "Topaz-2O-16E"
-        r["platform"] = platform
+        if match.group("hardware"):
+            r["attributes"]["HW version"] = match.group("hardware")
         v = self.cli("show system id", cached=True)
         match = self.re_search(self.rx_serial, v)
-        r["attributes"]["Serial Number"] = match.group("serial")
+        if match.group("serial"):
+            r["attributes"]["Serial Number"] = match.group("serial")
         return r
