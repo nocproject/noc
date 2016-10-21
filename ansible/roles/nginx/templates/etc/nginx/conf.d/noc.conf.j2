@@ -139,6 +139,44 @@ server {
         allow {{ ip }};
 {% endfor %}
         deny all;
+        access_log off;
+    }
+
+
+    location /inv/monitor/ {
+        proxy_pass http://noc-web;
+        auth_request /api/auth/auth/;
+        proxy_read_timeout 900;
+        gzip on;
+        gzip_types text/css text/x-js;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request_set $user $upstream_http_remote_user;
+        proxy_set_header Remote-User $user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        proxy_set_header Remote-Groups $groups;
+        access_log off;
+    }
+
+    location /fm/monitor/data2/ {
+        proxy_pass http://noc-web;
+        auth_request /api/auth/auth/;
+        proxy_read_timeout 900;
+        gzip on;
+        gzip_types text/css text/x-js;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request_set $user $upstream_http_remote_user;
+        proxy_set_header Remote-User $user;
+        auth_request_set $groups $upstream_http_remote_groups;
+        proxy_set_header Remote-Groups $groups;
+        access_log off;
     }
 
 {% if noc_config["services"].get("login", []) %}
@@ -270,6 +308,7 @@ server {
         alias {{ noc_root }}/django/contrib/admin/static/;
         gzip on;
         gzip_types text/css text/x-js;
+        access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
     # Legacy static resources
@@ -277,6 +316,7 @@ server {
         alias {{ noc_root }}/static/;
         gzip on;
         gzip_types text/css text/x-js;
+        access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
     # Minified JS files
@@ -284,6 +324,8 @@ server {
         alias {{ noc_root }}/var/ui/cache/;
         gzip on;
         gzip_types text/css text/x-js;
+        access_log  {{ nginx_log_dir }}/static.access.log noc_format;
+
     }
 
     # UI files
@@ -291,6 +333,7 @@ server {
         alias {{ noc_root }}/ui/;
         gzip on;
         gzip_types text/css text/x-js;
+        access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
 {% if noc_config["services"].get("notebook", []) %}
