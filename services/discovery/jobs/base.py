@@ -313,10 +313,10 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             # Resolve remote object
             remote_object = self.get_neighbor(ro)
             if not remote_object:
-                problems[li] = "Remote object '%s' is not found" % ro
+                problems[li] = "Remote object '%s' is not found" % str(ro)
                 self.logger.info(
                     "Remote object '%s' is not found. Skipping",
-                    ro
+                    str(ro)
                 )
                 continue
             # Resolve remote interface name
@@ -331,6 +331,11 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     remote_object.name, ri
                 )
                 continue
+            else:
+                self.logger.debug(
+                    "Resolve remote interface as %s:%r",
+                    remote_object.name, ri
+                )
             # Detecting loops
             if remote_object.id == self.object.id:
                 loops[li] = remote_interface
@@ -372,6 +377,10 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     ri
                 )
                 if remote_interface:
+                    self.logger.debug(
+                        "Resolve local interface as %s:%r",
+                        self.object.name, ri
+                    )
                     confirmed.add((remote_interface, li))
                 self.logger.debug("Confirmed candidates candidates: %s, Confidrmed: %s" % (candidates[remote_object],
                                                                                            confirmed))
