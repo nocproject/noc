@@ -596,7 +596,7 @@ Ext.define("NOC.core.ModelApplication", {
     showGrid: function() {
         var me = this;
         me.showItem(me.ITEM_GRID);
-        // me.setHistoryHash();
+        me.setHistoryHash();
     },
     // Show Form
     showForm: function() {
