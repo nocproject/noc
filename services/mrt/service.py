@@ -14,6 +14,7 @@ from mrt import MRTRequestHandler
 
 class MRTService(Service):
     name = "mrt"
+    process_name = "noc-%(name).10s-%(instance).3s"
 
     def on_activate(self):
         self.sae = self.open_rpc("sae")

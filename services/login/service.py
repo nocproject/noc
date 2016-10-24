@@ -17,7 +17,7 @@ from noc.core.handler import get_handler
 
 class LoginService(UIService):
     name = "login"
-    process_name = "noc-%(name).10s-%(instance).2s"
+    process_name = "noc-%(name).10s-%(instance).3s"
     api = [
         LoginAPI
     ]
