@@ -1014,6 +1014,31 @@ class ManagedObject(Model):
                 break
         return None, None
 
+    def get_coordinates_zoom(self):
+        """
+        Get managed object's coordinates
+        :returns: x (lon), y (lat), zoom
+        """
+        c = self.container
+        while c:
+            x = c.get_data("geopoint", "x")
+            y = c.get_data("geopoint", "y")
+            if x and y:
+                zoom = c.get_data("geopoint", "zoom")
+                if not zoom:
+                    from noc.gis.models.layer import Layer
+                    layer = Layer.get_by_code(c.get_data("geopoint", "layer"))
+                    if layer:
+                        zoom = layer.default_zoom
+                return x, y, zoom or 11
+            if c.container:
+                c = Object.get_by_id(c.container)
+                if not c:
+                    break
+            else:
+                break
+        return None, None, None
+
 
 @on_save
 class ManagedObjectAttribute(Model):
