@@ -77,6 +77,31 @@ class Script(BaseScript):
         }]
 
     ##
+    ## IOS XE
+    ##
+    rx_iosxe = re.compile(
+        r"Chassis MAC Address\s*:\s*(?P<mac>\S+)\s+"
+        r"MAC Address block size\s*:\s*(?P<count>\d+)",
+        re.DOTALL)
+
+    @BaseScript.match(platform__regex=r"ASR100[01]")
+    def execute_IOSXE(self):
+        v = self.cli("show diag chassis eeprom detail")
+        macs = []
+        for f, t in [(mac, MAC(mac).shift(int(count) - 1))
+                for mac, count in self.rx_iosxe.findall(v)]:
+            if macs and MAC(f).shift(-1) == macs[-1][1]:
+                macs[-1][1] = t
+            else:
+                macs += [[f, t]]
+        return [
+            {
+                "first_chassis_mac": f,
+                "last_chassis_mac": t
+            } for f, t in macs
+        ]
+
+    ##
     ## Other
     ##
     @BaseScript.match()
