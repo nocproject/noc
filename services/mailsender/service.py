@@ -23,6 +23,7 @@ from noc.core.service.base import Service
 
 class MailSenderService(Service):
     name = "mailsender"
+    process_name = "noc-%(name).10s-%(instance).3s"
 
     def __init__(self, *args, **kwargs):
         super(MailSenderService, self).__init__(*args, **kwargs)

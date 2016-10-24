@@ -15,6 +15,7 @@ from noc.core.service.authapi import AuthAPIRequestHandler
 
 class BIService(UIService):
     name = "bi"
+    process_name = "noc-%(name).10s-%(instance).3s"
     api = [
         BIAPI
     ]
