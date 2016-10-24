@@ -46,17 +46,17 @@ class ReportAvailabilityApplication(SimpleReport):
     form = ReportForm
     predefined_reports = {
         "1d": PredefinedReport(
-            _("Reboots (1 day)"), {
+            _("Availability (1 day)"), {
                 "interval": 1
             }
         ),
         "7d": PredefinedReport(
-            _("Reboots (7 days)"), {
+            _("Availability (7 days)"), {
                 "interval": 7
             }
         ),
         "30d": PredefinedReport(
-            _("Reboot (30 day)"), {
+            _("Availability (30 day)"), {
                 "interval": 30
             }
         )
@@ -114,9 +114,6 @@ class ReportAvailabilityApplication(SimpleReport):
                 _("Managed Object"), _("Profile"), _("Platform"), _("Address"),
                 TableColumn("%d %s" % (interval, _("Day")), align="right", format="percent"),
             ],
-            data=r
+            data=r,
+            enumerate=True
         )
-        """
-                        TableColumn("7d", align="right", format="percent"),
-            TableColumn("30d", align="right", format="percent")
-        """

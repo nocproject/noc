@@ -21,7 +21,7 @@ from noc.core.translation import ugettext as _
 
 class ReportForm(forms.Form):
     pool = forms.ModelChoiceField(
-        label=_("Managed Objects Pools"),
+        label=_("Managed Objects Pool"),
         required=True,
         queryset=Pool.objects.order_by("name"))
     obj_profile = forms.ModelChoiceField(
@@ -40,17 +40,7 @@ class ReportFilterApplication(SimpleReport):
     predefined_reports = {
         "default": PredefinedReport(
             _("Failed Discovery (default)"), {
-                "pool": "default"
-            }
-        ),
-        "MO": PredefinedReport(
-            _("Failed Discovery (MO)"), {
-                "pool": "MO"
-            }
-        ),
-        "Lipets": PredefinedReport(
-            _("Failed Discovery (Lipetsk)"), {
-                "pool": 30 * 86400
+                "pool": Pool.objects.get(name="default")
             }
         )
     }
