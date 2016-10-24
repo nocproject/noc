@@ -50,6 +50,11 @@ class Script(BaseScript):
         r"^Physical IF Info:\s*\n"
         r"^\s*IfnetIndex: 0x(?P<ifindex>[0-9A-F]+)\s*\n", re.MULTILINE)
 
+    rx_lldp = re.compile(
+        r"\n^\s*Interface\s(?P<name>\S+):"
+        r"\s*LLDP\sEnable\sStatus\s*:enabled.+\n", re.MULTILINE
+    )
+
     types = {
         "Aux": "physical",
         "Cellular": "physical",
@@ -116,6 +121,16 @@ class Script(BaseScript):
         stp.pop(0)
         return stp
 
+    def get_lldpint(self):
+        try:
+            v = self.cli("display lldp local")
+        except self.CLISyntaxError:
+            return {}
+        lldp = []
+        for match in self.rx_lldp.finditer(v):
+            lldp += [match.group("name")]
+        return lldp
+
     def execute(self):
         # Get switchports and fill tagged/untagged lists if they are not empty
         switchports = {}
@@ -158,6 +173,8 @@ class Script(BaseScript):
         ifindexes = self.get_ifindex()
         # Get STP interfaces
         stps = self.get_stpint()
+        # Get LLDP interfaces
+        lldps = self.get_lldpint()
 
         v = self.cli("display interface")
         il = self.rx_iface_sep.split(v)[1:]
@@ -251,6 +268,9 @@ class Script(BaseScript):
                 if ifname in stps:
                     # STP
                     iface["enabled_protocols"] += ["STP"]
+                if ifname in lldps:
+                    # LLDP
+                    iface["enabled_protocols"] += ["LLDP"]
 
                 # Portchannel member
                 if ifname in portchannel_members:
