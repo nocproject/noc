@@ -10,9 +10,9 @@ var Heatmap = function () {
 
 Heatmap.prototype.initialize = function () {
     var q = this.parseQuerystring(),
-        lon = q.lon ? parseFloat(q.lon) : 55.7766,
-        lat = q.lat ? parseFloat(q.lat) : 37.5077,
-        scale = q.scale ? parseInt(q.scale) : 11;
+        lon = q.lon ? parseFloat(q.lon) : 37.5077,
+        lat = q.lat ? parseFloat(q.lat) : 55.7766,
+        scale = q.zoom ? parseInt(q.zoom) : 11;
     this.map = L.map("map");
     this.heatmap = null;
     // Set up OSM layer
@@ -21,7 +21,7 @@ Heatmap.prototype.initialize = function () {
         });
     this.map.addLayer(osm);
     // Select view
-    this.map.setView([lon, lat], scale);
+    this.map.setView([lat, lon], scale);
     // Poll data
     this.poll_data();
 };

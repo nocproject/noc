@@ -23,6 +23,12 @@
             <a href="/api/card/view/managedobject/{{ managed_object.id }}/">{{ managed_object | managed_object_title }}</a>
             ({{ managed_object.address }}, {{ managed_object.platform }})
             {{ managed_object | object_console }}
+            {% if lon %}
+            {{ lon }} {{ lat }} {{ zoom }}
+            <a href="/api/card/view/alarmheat/0/?lon={{ lon }}&lat={{ lat }}&zoom={{ zoom }}" target="blank">
+            <i class="fa fa-map" title="Heatmap"></i>
+            </a>
+            {% endif %}
         </td>
     </tr>
     <tr>

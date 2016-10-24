@@ -80,7 +80,8 @@ class AlarmCard(BaseCard):
                                                    affected_objects__in=[
                                                        MaintainanceObject(object=self.object.managed_object)]
                                                    )
-
+        # Coordinates
+        lon, lat, zoom = self.object.managed_object.get_coordinates_zoom()
         # Build result
         r = {
             "id": self.object.id,
@@ -96,7 +97,10 @@ class AlarmCard(BaseCard):
             "service_summary": service_summary,
             "alarms": alarms,
             "diagnostic": AlarmDiagnostic.get_diagnostics(self.object),
-            "maintenance": mainteinance
+            "maintenance": mainteinance,
+            "lon": lon,
+            "lat": lat,
+            "zoom": zoom
         }
         return r
 
