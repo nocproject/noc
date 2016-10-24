@@ -27,7 +27,7 @@ from noc.inv.models.object import Object
 
 
 class ReportAlarmDetailApplication(ExtApplication):
-    menu = _("Alarm Detail")
+    menu = _("Reports") + "|" + _("Alarm Detail")
     title = _("Alarm Detail")
 
     SEGMENT_PATH_DEPTH = 7

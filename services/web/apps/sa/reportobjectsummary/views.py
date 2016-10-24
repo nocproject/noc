@@ -10,7 +10,7 @@
 # Third-party modules
 from django import forms
 # NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn
+from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 ##
@@ -36,6 +36,39 @@ class ReportForm(forms.Form):
 class ReportObjectsSummary(SimpleReport):
     title = _("Managed Objects Summary")
     form = ReportForm
+    predefined_reports = {
+        "profile": PredefinedReport(
+            _("Managed Objects Summary (profile)"), {
+                "report_type": "profile"
+            }
+        ),
+        "domain": PredefinedReport(
+            _("Managed Objects Summary (domain)"), {
+                "report_type": "domain"
+            }
+        ),
+        "domain-profile": PredefinedReport(
+            _("Managed Objects Summary (domain-profile)"), {
+                "report_type": "domain-profile"
+            }
+        ),
+        "tag": PredefinedReport(
+            _("Managed Objects Summary (tag)"), {
+                "report_type": "tag"
+            }
+        ),
+        "platform": PredefinedReport(
+            _("Managed Objects Summary (platform)"), {
+                "report_type": "platform"
+            }
+        ),
+        "version": PredefinedReport(
+            _("Managed Objects Summary (version)"), {
+                "report_type": "version"
+            }
+        )
+
+    }
 
     def get_data(self, request, report_type, **kwargs):
         wr = ("", "",)

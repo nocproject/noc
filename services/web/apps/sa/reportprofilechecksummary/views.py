@@ -8,17 +8,23 @@
 ##----------------------------------------------------------------------
 """
 
-from noc.lib.app.simplereport import SimpleReport, SectionRow
+from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport
 from noc.lib.nosql import get_db
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
 class ReportFilterApplication(SimpleReport):
     title = _("Managed Object Profile Check Summary")
+    predefined_reports = {
+        "default": PredefinedReport(
+            _("Managed Object Profile Check Summary"), {}
+        )
+    }
 
-    def get_data(self, **kwargs):
+    def get_data(self, request, **kwargs):
         data = []
         for p in Pool.objects.order_by("name"):
             data += [SectionRow(name=p.name)]
@@ -26,6 +32,14 @@ class ReportFilterApplication(SimpleReport):
             is_managed = ManagedObject.objects.filter(is_managed=True, pool=p, profile_name="Generic.Host")
             is_managed_not_generic = ManagedObject.objects.filter(is_managed=True, pool=p).exclude(
                 profile_name="Generic.Host")
+            if not request.user.is_superuser:
+                is_managed = is_managed.filter(administrative_domain__in=UserAccess.get_domains(request.user))
+                is_managed_not_generic = is_managed_not_generic.filter(administrative_domain__in=
+                                                                       UserAccess.get_domains(request.user))
+                if not is_managed.count and not is_managed_not_generic.count:
+                    data.pop()
+                    continue
+
             is_alive = [s for s in is_managed if s.get_status()]
 
             is_managed_alive_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-" +

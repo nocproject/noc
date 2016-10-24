@@ -35,7 +35,7 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
                 continue
             data += [SectionRow(name=f["_id"][0])]
             reason = "Other"
-            prev_mo = None
+            prev_mo = ManagedObject.objects.filter(is_managed=True)[1]
             for r in DiscoveryID._get_collection().find({
                 "chassis_mac": {
                     "$elemMatch": f["_id"][0]
@@ -43,12 +43,22 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
             }, {"_id": 0, "object": 1}):
                 # ManagedObject.get_by_id(o)
                 mo = ManagedObject.get_by_id(r["object"])
-                if prev_mo == mo.address:
-                    reason = "Duplicate MO"
+                if prev_mo.address == mo.address:
+                    reason = _("Duplicate MO")
                     d = data.pop()
                     data += [(
                         d[0], d[1], d[2], reason
                     )]
+                    prev_mo = mo
+                    continue
+                if not prev_mo.is_managed or not mo.is_managed:
+                    reason = _("MO is move")
+                    d = data.pop()
+                    data += [(
+                        d[0], d[1], d[2], reason
+                    )]
+                    prev_mo = mo
+                    continue
 
                 data += [(
                     mo.name,
@@ -56,7 +66,7 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
                     mo.profile.name,
                     reason
                 )]
-                prev_mo = mo.address
+                prev_mo = mo
 
         return self.from_dataset(
             title=self.title,
