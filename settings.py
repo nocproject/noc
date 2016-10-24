@@ -49,7 +49,7 @@ SERVER_EMAIL = config.get("main", "server_email")
 ## RDBMS settings
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "ENGINE": "noc.core.model.db",
         "NAME": cfg.pg_connection_args["database"],
         "USER": cfg.pg_user,
         "PASSWORD": cfg.pg_password,
@@ -60,6 +60,10 @@ DATABASES = {
             "autocommit": True
         }
     }
+}
+
+SOUTH_DATABASE_ADAPTERS = {
+    "default": "south.db.postgresql_psycopg2"
 }
 
 TIME_ZONE = config.get("main", "timezone")

@@ -6,9 +6,6 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-import os
-os.environ["NOC_MIGRATE"] = "yes"
 ## Django modules
 from django.core.management import call_command
 
