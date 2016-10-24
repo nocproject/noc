@@ -16,6 +16,10 @@
     {
       "name": "holderjs",
       "version": "2.9.4"
+    },
+    {
+      "name": "ptsans",
+      "version": "1.2"
     }
   ]
 }
