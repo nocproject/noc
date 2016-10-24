@@ -1,7 +1,6 @@
 [databases]
 
-{{noc_pg_db}}= dbname={{noc_pg_db}} host={{ noc_config.services.postgres.0.split(':')[0] }} port=5432 user={{noc_pg_user}} password={{noc_pg_password}} pool_mode=statement
-{{noc_pg_db}}-migrate= dbname={{noc_pg_db}} host={{ noc_config.services.postgres.0.split(':')[0] }} port=5432 user={{noc_pg_user}} password={{noc_pg_password}} pool_mode=session
+{{noc_pg_db}}= dbname={{noc_pg_db}} host={{ noc_config.services.postgres.0.split(':')[0] }} port=5432 user={{noc_pg_user}} password={{noc_pg_password}}
 
 ;; Configuration section
 [pgbouncer]
