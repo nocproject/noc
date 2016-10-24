@@ -7,7 +7,7 @@
     },
     {
       "name": "leaflet",
-      "version": "0.7.7"
+      "version": "1.0.1"
     },
     {
       "name": "leaflet.heat",
