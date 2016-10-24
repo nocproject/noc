@@ -132,7 +132,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         :param port:
         :return: port name if found, None otherwise.
         """
-        self.logger.debug("Remote port description: %s" % port)
+        self.logger.debug("Searching port by description: %s:%s", object.name, port)
         try:
             i = Interface.objects.filter(
                 managed_object=object.id, description=port)[:2]
@@ -150,7 +150,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         :param port:
         :return:
         """
-        self.logger.debug("Remote port local: %s", port)
+        self.logger.debug("Searching port by local: %s:%s", object.name, port)
         # Try ifindex
         if is_int(port):
             i = Interface.objects.filter(
@@ -189,7 +189,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         :param port:
         :return:
         """
-        self.logger.debug("Remote port unspecified: %s", port)
+        self.logger.debug("Searching port by unspecified: %s:%s", object.name, port)
         # Try to find interface with given name.
         try:
             iface = self.get_interface_by_name(port, object)
