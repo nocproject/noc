@@ -116,23 +116,15 @@ class BaseConfig(object):
         """
         if not self._pg_connection_args:
             hosts = self.get_service("pgbouncer")
-            if hosts:
-                use_pgbouncer = True
-            else:
+            if not hosts:
                 hosts = self.get_service("postgres", limit=1)
-                use_pgbouncer = False
             if not hosts:
                 hosts = ["127.0.0.1:5432"]
             host, port = hosts[0].split(":")
-            if use_pgbouncer and os.environ.get("NOC_MIGRATE", "no") == "yes":
-                logger.info("Using pgbouncer pool_mode=session")
-                db = self.pg_db + "-migrate"
-            else:
-                db = self.pg_db
             self._pg_connection_args = {
                 "host": host,
                 "port": int(port),
-                "database": db,
+                "database": self.pg_db,
                 "user": self.pg_user,
                 "password": self.pg_password
             }
