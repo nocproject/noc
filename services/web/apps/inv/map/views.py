@@ -57,6 +57,9 @@ class MapApplication(ExtApplication):
     ST_DOWN = 4  # Object is down
     ST_MAINTAINANCE = 32  # Maintainance bit
 
+    # Maximum object to be shown
+    MAX_OBJECTS = 300
+
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],
           access="read", api=True)
     def api_data(self, request, id):
@@ -69,6 +72,13 @@ class MapApplication(ExtApplication):
 
         # Find segment
         segment = self.get_object_or_404(NetworkSegment, id=id)
+        if segment.managed_objects.count() > self.MAX_OBJECTS:
+            # Too many objects
+            return {
+                "id": str(segment.id),
+                "name": segment.name,
+                "error": _("Too many objects")
+            }
         # Load settings
         settings = MapSettings.objects.filter(segment=id).first()
         node_hints = {}

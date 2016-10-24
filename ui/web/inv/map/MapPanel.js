@@ -227,7 +227,12 @@ Ext.define("NOC.inv.map.MapPanel", {
             method: "GET",
             scope: me,
             success: function(response) {
-                me.renderMap(Ext.decode(response.responseText));
+                var data = Ext.decode(response.responseText);
+                if(data.error) {
+                    NOC.error(data.error);
+                } else {
+                    me.renderMap(data);
+                }
             },
             failure: function() {
                 NOC.error(__("Failed to get data"));
