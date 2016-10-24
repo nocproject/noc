@@ -307,11 +307,13 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         # remote object -> [(local, remote), ..]
         candidates = defaultdict(set)
         loops = {}  # first interface, second interface
+        problems = {}
         # Check local side
         for li, ro, ri in self.iter_neighbors(self.object):
             # Resolve remote object
             remote_object = self.get_neighbor(ro)
             if not remote_object:
+                problems[li] = "Remote object '%s' is not found" % ro
                 self.logger.info(
                     "Remote object '%s' is not found. Skipping",
                     ro
@@ -323,6 +325,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 ri
             )
             if not remote_interface:
+                problems[li] = "Cannot resolve remote interface %s:%r. Skipping" % (remote_object.name, ri)
                 self.logger.info(
                     "Cannot resolve remote interface %s:%r. Skipping",
                     remote_object.name, ri
@@ -362,6 +365,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             for li, ro_id, ri in self.iter_neighbors(remote_object):
                 ro = self.get_neighbor(ro_id)
                 if not ro or ro.id != self.object.id:
+                    self.logger.debug("Candidates check %s %s %s %s" % (li, ro_id, ro, ri))
                     continue  # To other objects
                 remote_interface = self.get_remote_interface(
                     self.object,
@@ -369,7 +373,10 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
                 if remote_interface:
                     confirmed.add((remote_interface, li))
+                self.logger.debug("Confirmed candidates candidates: %s, Confidrmed: %s" % (candidates[remote_object],
+                                                                                           confirmed))
             for l, r in candidates[remote_object] - confirmed:
+                problems[l] = "Pending link: %s - %s:%s" % (l, remote_object, r)
                 self.reject_link(
                     self.object, l,
                     remote_object, r
@@ -379,6 +386,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     self.object, l,
                     remote_object, r
                 )
+        if problems:
+            self.set_problem(problems)
 
     def iter_neighbors(self, mo):
         """
