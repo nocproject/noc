@@ -350,7 +350,7 @@ class CLI(object):
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt,
             "pager": self.send_pager_reply
-        })
+        }, self.profile.cli_timeout_start)
 
     def on_username(self, data, match):
         self.logger.debug("State: <USERNAME>")
@@ -363,7 +363,7 @@ class CLI(object):
             "password": self.on_password,
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt
-        })
+        }, self.profile.cli_timeout_user)
 
     def on_password(self, data, match):
         self.logger.debug("State: <PASSWORD>")
@@ -377,7 +377,7 @@ class CLI(object):
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt,
             "pager": self.send_pager_reply
-        })
+        }, self.profile.cli_timeout_password)
 
     def on_unprivileged_prompt(self, data, match):
         self.logger.debug("State: <UNPRIVILEGED_PROMPT>")
@@ -391,7 +391,7 @@ class CLI(object):
             "username": self.on_super_username,
             "password": self.on_super_password,
             "prompt": self.on_prompt
-        })
+        }, self.profile.cli_timeout_super)
 
     def on_failure(self, data, match):
         self.logger.debug("State: <FAILURE>")
@@ -421,7 +421,7 @@ class CLI(object):
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt,
             "pager": self.send_pager_reply
-        })
+        }, self.profile.cli_timeout_user)
 
     def on_super_password(self, data, match):
         self.send(
@@ -433,7 +433,7 @@ class CLI(object):
             "password": self.on_failure,
             "pager": self.send_pager_reply,
             "unprivileged_prompt": self.on_failure
-        })
+        }, self.profile.cli_timeout_password)
 
     def build_patterns(self):
         """

@@ -125,6 +125,15 @@ class BaseProfile(object):
     # i.e noc.cm.parsers.Cisco.IOS.switch.IOSSwitchParser
     # Can be overriden in get_parser method
     default_parser = None
+    # CLI timeouts
+    # Timeout between connection established and login prompt
+    cli_timeout_start = 60
+    # Timeout after user name provided
+    cli_timeout_user = 30
+    # Timeout after password provided
+    cli_timeout_password = 30
+    # Timeout after submitting *command_super*
+    cli_timeout_super = 10
 
     def convert_prefix(self, prefix):
         """
