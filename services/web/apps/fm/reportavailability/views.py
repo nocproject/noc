@@ -83,7 +83,11 @@ class ReportAvailabilityApplication(SimpleReport):
         a30 = self.get_availability(30)
         """
         interval = int(interval)
+        if not from_date:
+            interval = 1
         if not interval:
+            if not to_date:
+                to_date = datetime.datetime.now().strftime("%d.%m.%Y")
             sub = datetime.datetime.strptime(to_date, "%d.%m.%Y") - \
                   datetime.datetime.strptime(from_date, "%d.%m.%Y")
             interval = sub.days

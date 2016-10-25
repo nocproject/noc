@@ -109,6 +109,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 {
                     name: "from_date",
                     xtype: "datefield",
+                    startDay: 1,
                     fieldLabel: __("From"),
                     allowBlank: false,
                     format: "d.m.Y",
@@ -117,6 +118,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 {
                     name: "to_date",
                     xtype: "datefield",
+                    startDay: 1,
                     fieldLabel: __("To"),
                     allowBlank: false,
                     format: "d.m.Y",
