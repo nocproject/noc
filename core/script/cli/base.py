@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## CLI FSM
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import socket
 import re
 import functools
+import datetime
 ## Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -66,6 +67,7 @@ class CLI(object):
         self.pattern_table = None
         self.collected_data = []
         self.tos = tos
+        self.current_timeout = None
 
     def close(self):
         if self.iostream:
@@ -95,6 +97,12 @@ class CLI(object):
                 s.setsockopt(socket.SOL_TCP,
                              socket.TCP_KEEPCNT, self.KEEP_CNT)
         return self.iostream_class(s, self)
+
+    def set_timeout(self, timeout):
+        if timeout:
+            self.current_timeout = datetime.timedelta(seconds=timeout)
+        else:
+            self.current_timeout = None
 
     def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None):
         self.buffer = ""
@@ -175,8 +183,15 @@ class CLI(object):
         connect_retries = self.CONNECT_RETRIES
         while True:
             try:
-                r = yield self.iostream.read_bytes(self.BUFFER_SIZE,
-                                                   partial=True)
+                f = self.iostream.read_bytes(self.BUFFER_SIZE,
+                                             partial=True)
+                if self.current_timeout:
+                    r = yield tornado.gen.with_timeout(
+                        self.current_timeout,
+                        f
+                    )
+                else:
+                    r = yield f
             except tornado.iostream.StreamClosedError:
                 # Check if remote end closes connection just
                 # after connection established
@@ -204,6 +219,9 @@ class CLI(object):
                     continue
                 else:
                     raise tornado.iostream.StreamClosedError()
+            except tornado.gen.TimeoutError:
+                self.logger.info("Timeout error")
+                raise tornado.gen.TimeoutError()
             self.logger.debug("Received: %r", r)
             # Clean input
             self.buffer += self.cleaned_input(r)
