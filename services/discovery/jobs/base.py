@@ -382,8 +382,11 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         self.object.name, ri
                     )
                     confirmed.add((remote_interface, li))
-                self.logger.debug("Confirmed candidates candidates: %s, Confidrmed: %s" % (candidates[remote_object],
-                                                                                           confirmed))
+                self.logger.debug(
+                    "Candidates: %s, Confirmed: %s",
+                    candidates[remote_object],
+                    confirmed
+                )
             for l, r in candidates[remote_object] - confirmed:
                 problems[l] = "Pending link: %s - %s:%s" % (l, remote_object, r)
                 self.reject_link(
