@@ -41,13 +41,13 @@ class Script(BaseScript):
         }]
 
     ##
-    ## Cisco Catalyst 4000/4500 Series
+    ## Cisco Catalyst 4000/4500/4500e Series
     ##
     rx_cat4000 = re.compile(
         r"MAC Base = (?P<id>\S+).+MAC Count = (?P<count>\d+)",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    @BaseScript.match(version__regex=r"SG")
+    @BaseScript.match(version__regex=r"SG|\d\d\.\d\d\.\d\d\.E")
     def execute_cat4000(self):
         try:
             v = self.cli("show idprom chassis")
