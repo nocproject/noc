@@ -3,7 +3,7 @@
 ## Vendor: Huawei
 ## OS:     VRP
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -33,6 +33,7 @@ class Profile(BaseProfile):
     command_leave_config = "return"
     command_save_config = "save"
     command_exit = "quit"
+    rogue_chars = [re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
 
     def generate_prefix_list(self, name, pl, strict=True):
         p = "ip ip-prefix %s permit %%s" % name
