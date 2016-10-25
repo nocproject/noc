@@ -229,6 +229,8 @@
       owner: "{{ noc_user }}"
     - name: var/reports
       owner: "{{noc_user}}"
+    - name: var/bi
+      owner: "{{noc_user}}"
 
 - name: Install noc.pth
   template:
