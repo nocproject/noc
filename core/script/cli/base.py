@@ -100,8 +100,11 @@ class CLI(object):
 
     def set_timeout(self, timeout):
         if timeout:
+            self.logger.debug("Setting timeout: %ss", timeout)
             self.current_timeout = datetime.timedelta(seconds=timeout)
         else:
+            if self.current_timeout:
+                self.logger.debug("Resetting timeouts")
             self.current_timeout = None
 
     def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None):
@@ -327,7 +330,7 @@ class CLI(object):
                 return
         raise self.InvalidPagerPattern(pg)
 
-    def expect(self, patterns):
+    def expect(self, patterns, timeout=None):
         """
         Send command if not none and set reply patterns
         """
@@ -337,6 +340,7 @@ class CLI(object):
             if not rx:
                 continue
             self.pattern_table[rx] = patterns[pattern_name]
+        self.set_timeout(timeout)
 
     def on_start(self, data=None, match=None):
         self.logger.debug("State: <START>")
