@@ -165,30 +165,6 @@ class InetArrayField(models.Field):
         return "{ " + ", ".join(value) + " }"
 
 
-class IntArrayField(models.Field):
-    """
-    IntArrayField maps to PostgreSQL INT[] type
-    """
-    __metaclass__ = models.SubfieldBase
-
-    def db_type(self, connection):
-        return "INT[]"
-
-    def to_python(self, value):
-        if isinstance(value, types.ListType):
-            return value
-        elif value == "{}":
-            return []
-        elif value is None:
-            return None
-        return [int(x) for x in value[1:-1].split(",")]
-
-    def get_db_prep_value(self, value, connection, prepared=False):
-        if value is None:
-            return None
-        return "{ " + ", ".join([str(x) for x in value]) + " }"
-
-
 class DateTimeArrayField(models.Field):
     __metaclass__ = models.SubfieldBase
 
@@ -337,6 +313,7 @@ class DocumentReferenceDescriptor(object):
         self.field = field
         self.cache_name = field.get_cache_name()
         self.raw_name = field.raw_name
+        self.has_get_by_id = hasattr(self.field.document, "get_by_id")
 
     def is_cached(self, instance):
         return hasattr(instance, self.cache_name)
@@ -353,8 +330,13 @@ class DocumentReferenceDescriptor(object):
                 # If NULL is an allowed value, return it.
                 if self.field.null:
                     return None
-                raise self.field.document.DoesNotExist
-            rel_obj = self.field.document.objects.get(id=val)
+                raise self.field.document.DoesNotExist()
+            if self.has_get_by_id:
+                rel_obj = self.field.document.get_by_id(val)
+                if not rel_obj:
+                    raise self.field.document.DoesNotExist()
+            else:
+                rel_obj = self.field.document.objects.get(id=val)
             setattr(instance, self.cache_name, rel_obj)
             return rel_obj
 
