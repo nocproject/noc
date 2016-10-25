@@ -19,10 +19,10 @@ class Script(BaseScript):
     name = "Huawei.VRP.get_interfaces"
     interface = IGetInterfaces
 
-    rx_iface_sep = re.compile(r"^(?:\s)?(\S+) current state\s*:\s+",
+    rx_iface_sep = re.compile(r"^(?:\s)?(\S+) current state\s*:\s*",
                               re.MULTILINE)
     rx_line_proto = re.compile(
-        r"Line protocol current state : (?P<o_state>UP|DOWN)",
+        r"Line protocol current state :\s*(?P<o_state>UP|DOWN)",
         re.IGNORECASE
     )
     rx_mac = re.compile(
@@ -75,7 +75,8 @@ class Script(BaseScript):
         "Virtual-Template": None,
         "Vlanif": "SVI",
         "Vlan-interface": "SVI",
-        "NULL": "null"
+        "NULL": "null",
+        "RprPos": "unknown"
     }
 
     def get_ospfint(self):
@@ -114,6 +115,8 @@ class Script(BaseScript):
         try:
             v = self.cli("display stp brief")
         except self.CLISyntaxError:
+            return {}
+        if "Protocol Status    :disabled" in v:
             return {}
         stp = []
         for l in v.splitlines():
@@ -212,6 +215,9 @@ class Script(BaseScript):
             if ifname.lower().startswith("vlanif"):
                 # SVI
                 sub["vlan_ids"] = [int(ifname[6:].strip())]
+            if ifname.lower().startswith("vlan-interface"):
+                # SVI
+                sub["vlan_ids"] = [int(ifname[14:].strip())]
             # Parse data
             a_stat, data = data.split("\n", 1)
             a_stat = a_stat.lower().endswith("up")
@@ -232,7 +238,7 @@ class Script(BaseScript):
                 # MAC
                 if not sub.get("mac"):
                     match = self.rx_mac.search(l)
-                    if match:
+                    if match and match.group("mac") != "0000-0000-0000":
                         sub["mac"] = match.group("mac")
                         continue
                 # Static vlans
