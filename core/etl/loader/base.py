@@ -248,14 +248,15 @@ class BaseLoader(object):
             return
         current_state = csv.reader(self.get_current_state())
         new_state = csv.reader(ns)
-        deferred = []
+        deferred_add = []
+        deferred_change = []
         for o, n in self.diff(current_state, new_state):
             if o is None and n:
                 try:
                     self.on_add(n)
                 except self.Deferred:
                     if not self.discard_deferred:
-                        deferred += [n]
+                        deferred_add += [n]
             elif o and n is None:
                 self.on_delete(o)
             else:
@@ -263,21 +264,35 @@ class BaseLoader(object):
                     self.on_change(o, n)
                 except self.Deferred:
                     if not self.discard_deferred:
-                        raise self.Deferred()
+                        deferred_change += [(o, n)]
             rn = self.c_add + self.c_change + self.c_delete
             if rn > 0 and rn % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", rn)
-        # Load deferred record
-        while len(deferred):
+        # Add deferred records
+        while len(deferred_add):
             nd = []
-            for row in deferred:
+            for row in deferred_add:
                 try:
                     self.on_add(row)
                 except self.Deferred:
-                    deferred += [row]
-            if len(nd) == len(deferred):
+                    deferred_add += [row]
+            if len(nd) == len(deferred_add):
                 raise Exception("Unable to defer references")
-            deferred = nd
+            deferred_add = nd
+            rn = self.c_add + self.c_change + self.c_delete
+            if rn % self.REPORT_INTERVAL == 0:
+                self.logger.info("   ... %d records", rn)
+        # Change deferred records
+        while len(deferred_change):
+            nd = []
+            for o, n in deferred_change:
+                try:
+                    self.on_change(o, n)
+                except self.Deferred:
+                    deferred_change += [(o,n)]
+            if len(nd) == len(deferred_change):
+                raise Exception("Unable to defer references")
+            deferred_change = nd
             rn = self.c_add + self.c_change + self.c_delete
             if rn % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", rn)
