@@ -257,13 +257,13 @@ _MODELS = {
     "peer.WhoisASSetMembers": "noc.peer.models.whoisassetmembers.WhoisASSetMembers",
     "peer.WhoisOriginRoute": "noc.peer.models.whoisoriginroute.WhoisOriginRoute",
     # kb models
-    "kb.KBEntry": "noc.kb.models.KBEntry",
-    "kb.KBEntryAttachment": "noc.kb.models.KBEntryAttachment",
-    "kb.KBEntryHistory": "noc.kb.models.KBEntryHistory",
-    "kb.KBEntryPreviewLog": "noc.kb.models.KBEntryPreviewLog",
-    "kb.KBEntryTemplate": "noc.kb.models.KBEntryTemplate",
-    "kb.KBGlobalBookmark": "noc.kb.models.KBGlobalBookmark",
-    "kb.KBUserBookmark": "noc.kb.models.KBUserBookmark",
+    "kb.KBEntry": "noc.kb.models.kbentry.KBEntry",
+    "kb.KBEntryAttachment": "noc.kb.models.kbentryattachment.KBEntryAttachment",
+    "kb.KBEntryHistory": "noc.kb.models.kbentryhistory.KBEntryHistory",
+    "kb.KBEntryPreviewLog": "noc.kb.models.kbentrypreviewlog.KBEntryPreviewLog",
+    "kb.KBEntryTemplate": "noc.kb.models.kbentrytemplate.KBEntryTemplate",
+    "kb.KBGlobalBookmark": "noc.kb.models.kbglobalbookmark.KBGlobalBookmark",
+    "kb.KBUserBookmark": "noc.kb.models.kbuserbookmark.KBUserBookmark",
     # support models
     "support.Crashinfo": "noc.support.models.crashinfo.Crashinfo",
     # bi models
