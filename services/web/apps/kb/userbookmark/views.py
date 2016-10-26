@@ -8,7 +8,7 @@
 from django.contrib import admin
 from django import forms
 from noc.lib.app.modelapplication import ModelApplication
-from noc.kb.models import KBUserBookmark
+from noc.kb.models.kbuserbookmark import KBUserBookmark
 ##
 
 ##
