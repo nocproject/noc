@@ -5,12 +5,14 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+import re
 from django.contrib import admin
 from django import forms
 from django.shortcuts import get_object_or_404
 from noc.lib.app.modelapplication import ModelApplication,HasPerm
-from noc.kb.models import KBEntry,KBEntryAttachment,KBEntryTemplate
-import re
+from noc.kb.models.kbentry import KBEntry
+from noc.kb.models.kbentryattachment import KBEntryAttachment
+from noc.kb.models.kbentrytemplate import KBEntryTemplate
 ##
 ## Inline Admin for Attachments
 ##

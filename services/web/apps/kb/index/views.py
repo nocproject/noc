@@ -8,7 +8,9 @@
 
 ## NOC modules
 from noc.lib.app.application import Application, view
-from noc.kb.models import *
+from noc.kb.models.kbentry import KBEntry
+from noc.kb.models.kbglobalbookmark import KBGlobalBookmark
+from noc.kb.models.kbuserbookmark import KBUserBookmark
 
 
 class IndexAppplication(Application):
