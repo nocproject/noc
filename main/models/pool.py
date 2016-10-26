@@ -26,8 +26,11 @@ class Pool(Document):
     name = StringField(unique=True, min_length=1, max_length=16,
                        regex="^[0-9a-zA-Z]{1,16}$")
     description = StringField()
+    discovery_reschedule_limit = IntField(default=50)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
+    reschedule_lock = threading.Lock()
+    reschedule_ts = {}  # pool id -> timestamp
 
     def __unicode__(self):
         return self.name
@@ -37,5 +40,21 @@ class Pool(Document):
     def get_by_id(cls, id):
         try:
             return Pool.objects.get(id=id)
-        except Pool.DoesNotExists:
+        except Pool.DoesNotExist:
             return None
+
+    def get_delta(self):
+        """
+        Get delta for next discovery,
+        Limit runs to discovery_reschedule_limit tasks
+        """
+        t = time.time()
+        dt = 1.0 / float(self.discovery_reschedule_limit)
+        with self.reschedule_lock:
+            lt = self.reschedule_ts.get(self.id)
+            if lt and lt > t:
+                delta = lt - t
+            else:
+                delta = 0
+            self.reschedule_ts[self.id] = t + dt
+        return delta
