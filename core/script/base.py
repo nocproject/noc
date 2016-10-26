@@ -12,6 +12,7 @@ import logging
 import time
 import itertools
 import operator
+from threading import Lock
 ## NOC modules
 from snmp.base import SNMP
 from snmp.beef import BeefSNMP
@@ -46,6 +47,8 @@ class BaseScript(object):
     name = None
     # Default script timeout
     TIMEOUT = 120
+    # Defeault session timeout
+    SESSION_TIMEOUT = 20
     # Enable call cache
     # If True, script result will be cached and reused
     # during lifetime of parent script
@@ -60,6 +63,9 @@ class BaseScript(object):
     base_logger = logging.getLogger(name or "script")
     #
     _x_seq = itertools.count()
+    # Sessions
+    session_lock = Lock()
+    session_cli = {}
 
     # Common errors
     class ScriptError(Exception):
@@ -97,7 +103,8 @@ class BaseScript(object):
     def __init__(self, service, credentials,
                  args=None, capabilities=None,
                  version=None, parent=None, timeout=None,
-                 name=None, collect_beef=False):
+                 name=None, collect_beef=False,
+                 session=None, session_timeout=None):
         self.service = service
         self.tos = self.service.config.tos
         self.pool = self.service.config.pool
@@ -138,7 +145,11 @@ class BaseScript(object):
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
         self.to_shutdown_session = False
         self.scripts = ScriptsHub(self)
-        self.is_cached = False  # Cache CLI and SNMP calls, if set
+        # Store session id
+        self.session = session
+        self.session_timeout = session_timeout or self.SESSION_TIMEOUT
+        # Cache CLI and SNMP calls, if set
+        self.is_cached = False
         # Suitable only when self.parent is None.
         # Cached results for scripts marked with "cache"
         self.call_cache = {}
@@ -652,12 +663,25 @@ class BaseScript(object):
     def get_cli_stream(self):
         if self.parent:
             return self.root.get_cli_stream()
+        if not self.cli_stream and self.session:
+            # Try to get cached session's CLI
+            with self.session_lock:
+                self.cli_stream = self.session_cli.get(self.session)
+                if self.cli_stream and self.cli_stream.is_closed:
+                    self.cli_stream = None
+                    del self.session_cli[self.session]
+            if self.cli_stream:
+                self.logger.debug("Using cached session's CLI")
         if not self.cli_stream:
             protocol = self.credentials.get("cli_protocol", "telnet")
             self.logger.debug("Open %s CLI", protocol)
             self.cli_stream = get_handler(
                 self.cli_protocols[protocol]
             )(self, tos=self.tos)
+            # Store to the sessions
+            if self.session:
+                with self.session_lock:
+                    self.session_cli[self.session] = self.cli_stream
             # Run session setup
             if self.profile.setup_session:
                 self.logger.debug("Setup session")
@@ -668,8 +692,10 @@ class BaseScript(object):
                 self.logger.debug("Disable paging")
                 self.to_disable_pager = False
                 if isinstance(self.profile.command_disable_pager, basestring):
-                    self.cli(self.profile.command_disable_pager,
-                         ignore_errors=True)
+                    self.cli(
+                        self.profile.command_disable_pager,
+                        ignore_errors=True
+                    )
                 elif isinstance(self.profile.command_disable_pager, list):
                     for cmd in self.profile.command_disable_pager:
                         self.cli(cmd, ignore_errors=True)
@@ -684,8 +710,24 @@ class BaseScript(object):
             if self.to_shutdown_session:
                 self.logger.debug("Shutdown session")
                 self.profile.shutdown_session(self)
-            self.cli_stream.close()
+            if self.session:
+                self.cli_stream.deferred_close(self.session_timeout)
+            else:
+                self.cli_stream.close()
             self.cli_stream = None
+
+    @classmethod
+    def close_session(cls, session_id):
+        """
+        Explicit session closing
+        :return:
+        """
+        with cls.session_lock:
+            stream = cls.session_cli.get(session_id)
+            if stream:
+                del cls.session_cli[session_id]
+        if stream and not stream.is_closed:
+            stream.close()
 
     def has_snmp(self):
         """
