@@ -11,13 +11,13 @@ import datetime
 import os
 ## Django modules
 from django.http import HttpResponse
+from django.contrib.auth.models import Group
 ## NOC modules
 from noc.settings import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.access import PermitLogged
 from noc.lib.version import get_version, get_brand
-from noc.main.models import Group
 from noc.main.models.usersession import UserSession
 from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
