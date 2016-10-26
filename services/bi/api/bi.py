@@ -15,7 +15,7 @@ import ujson
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
 from noc.core.bi.models.reboots import Reboots
-from noc.main.models.dashboard import Dashboard
+from noc.bi.models.dashboard import Dashboard
 
 
 class BIAPI(API):
@@ -175,6 +175,7 @@ class BIAPI(API):
                 raise APIError("Dashboard not found")
         else:
             d = Dashboard(owner=self.get_user())
+        d.format = config.get("format", 1)
         d.config = zlib.compress(ujson.dumps(config))
         d.changed = datetime.datetime.now()
         d.title = config.get("title")  # @todo: Generate title
