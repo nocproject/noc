@@ -94,6 +94,8 @@ class Command(BaseCommand):
         return self.rx_empty.sub("", s)
 
     def create_dir(self, path):
+        if os.path.isdir(path):
+            return
         print "    Creating directory %s ..." % path,
         try:
             os.mkdir(path)
@@ -295,21 +297,13 @@ class Command(BaseCommand):
             if os.path.exists(app_root):
                 raise CommandError("Application %s is already exists" % app)
             # Create apps/__init__.py if missed
-            apps_root = os.path.join(m, "apps")
-            if not os.path.exists(apps_root):
-                self.create_dir(apps_root)
-            apps_init = os.path.join(apps_root, "__init__.py")
-            if not os.path.exists(apps_init):
-                self.create_file(apps_init, "")
+            ui_root = os.path.join("ui", "web", m, a)
             # Create application directory
             self.create_dir(app_root)
             # Fill templates
             for dirpath, dirnames, files in os.walk(ts_root):
                 dp = dirpath.split(os.sep)[3:]  # strip templates/newapp/<ts>/
                 # Create directories
-                for d in dirnames:
-                    p = [app_root] + dp + [d]
-                    self.create_dir(os.path.join(*p))
                 for fn in files:
                     if fn == "DELETE":
                         continue
@@ -319,5 +313,11 @@ class Command(BaseCommand):
                     content = Template(template).render(Context(tv))
                     content = self.compact(content)
                     # Write template
-                    p = [app_root] + dp + [fn[:-3]]  # Strip .j2
-                    self.create_file(os.path.join(*p), content)
+                    if fn.endswith(".js.j2"):
+                        pp = [ui_root] + dp[:-1]
+                        dn = os.path.join(*pp)
+                    else:
+                        pp = [app_root] + dp
+                        dn = os.path.join(*pp)
+                    self.create_dir(dn)
+                    self.create_file(os.path.join(dn, fn[:-3]), content)
