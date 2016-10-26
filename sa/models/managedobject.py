@@ -29,6 +29,7 @@ from objectstatus import ObjectStatus
 from objectmap import ObjectMap
 from terminationgroup import TerminationGroup
 from noc.main.models.pool import Pool
+from noc.main.models.timepattern import TimePattern
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.networksegment import NetworkSegment
@@ -196,6 +197,12 @@ class ManagedObject(Model):
     # Stencils
     shape = CharField("Shape", blank=True, null=True,
         choices=stencil_registry.choices, max_length=128)
+    #
+    time_pattern = ForeignKey(
+        TimePattern,
+        null=True, blank=True,
+        on_delete=SET_NULL
+    )
     # pyRules
     config_filter_rule = ForeignKey(
         PyRule,
@@ -406,7 +413,7 @@ class ManagedObject(Model):
             self.event(self.EV_NEW, {"object": self})
         # Remove discovery jobs from old pool
         if "pool" in self.changed_fields and self.initial_data["id"]:
-            pool_name = Pool.get_name_by_id(self.initial_data["pool"])
+            pool_name = Pool.get_by_id(self.initial_data["pool"]).name
             Job.remove(
                 "discovery",
                 self.BOX_DISCOVERY_JOB,
