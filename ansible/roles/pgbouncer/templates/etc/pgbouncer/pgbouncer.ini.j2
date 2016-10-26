@@ -111,7 +111,7 @@ default_pool_size = 20
 ;reserve_pool_timeout = 3
 
 ; how many total connections to a single database to allow from all pools
-;max_db_connections = 50
+; max_db_connections = {{noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients /10', '300')}}
 ;max_user_connections = 50
 
 ; If off, then server connections are reused in LIFO manner
@@ -127,16 +127,16 @@ default_pool_size = 20
 ;syslog_ident = pgbouncer
 
 ; log if client connects or server connection is made
-;log_connections = 1
+log_connections = 0
 
 ; log if and why connection was closed
 ;log_disconnections = 1
 
 ; log error messages pooler sends to clients
-;log_pooler_errors = 1
+log_pooler_errors = 1
 
 ;; Period for writing aggregated stats into log.
-;stats_period = 60
+stats_period = 10
 
 ;; Logging verbosity.  Same as -v switch on command line.
 ;verbose=0
