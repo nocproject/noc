@@ -3,6 +3,8 @@
     name: pgbouncer
   environment:
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
 
 - name: Install pgbouncer limits file
   template:
