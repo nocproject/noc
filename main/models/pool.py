@@ -9,9 +9,13 @@
 ## Python modules
 import threading
 import time
+import operator
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
+import cachetools
+
+id_lock = threading.Lock()
 
 
 class Pool(Document):
@@ -22,37 +26,16 @@ class Pool(Document):
     name = StringField(unique=True, min_length=1, max_length=16,
                        regex="^[0-9a-zA-Z]{1,16}$")
     description = StringField()
-    discovery_reschedule_limit = IntField(default=50)
 
-    _name_cache = {}
-
-    reschedule_lock = threading.Lock()
-    reschedule_ts = {}  # pool id -> timestamp
+    _id_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
         return self.name
 
     @classmethod
-    def get_name_by_id(cls, id):
-        id = str(id)
-        if id not in cls._name_cache:
-            try:
-                cls._name_cache[id] = Pool.objects.get(id=id).name
-            except Pool.DoesNotExist:
-                cls._name_cache[id] = None
-        return cls._name_cache[id]
-
-    def get_delta(self):
-        """
-        Get delta for next discovery
-        """
-        t = time.time()
-        dt = 1.0 / float(self.discovery_reschedule_limit)
-        with self.reschedule_lock:
-            lt = self.reschedule_ts.get(self.id)
-            if lt and lt > t:
-                delta = lt - t
-            else:
-                delta = 0
-            self.reschedule_ts[self.id] = t + dt
-        return delta
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        try:
+            return Pool.objects.get(id=id)
+        except Pool.DoesNotExists:
+            return None
