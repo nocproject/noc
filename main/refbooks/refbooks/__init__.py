@@ -7,9 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from noc.main.models import RefBook as RB
-from noc.main.models.language import Language
-from noc.main.models import RefBookField
+from noc.main.models.refbook import RefBook as RB
+from noc.main.models.refbookfield import RefBookField
 from noc.main.models.language import Language
 ##
 lang_cache={}

@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## main.refbook application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -12,7 +12,8 @@ from django.shortcuts import get_object_or_404
 ## NOC modules
 from noc.lib.app.application import Application, view, HasPerm
 from noc.main.models.permission import Permission
-from noc.main.models import RefBook, RefBookData
+from noc.main.models.refbookdata import RefBookData
+from noc.main.models.refbook import RefBook
 from noc.core.translation import ugettext as _
 
 

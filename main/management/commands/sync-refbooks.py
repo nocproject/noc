@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Load and syncronize built-in refbooks
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -10,7 +10,7 @@
 from __future__ import with_statement
 from django.core.management.base import BaseCommand
 from noc.main.refbooks.refbooks import RefBook
-from noc.main.models import RefBook as RB
+from noc.main.models.refbook import RefBook as RB
 import os
 ##
 ## Command handler
