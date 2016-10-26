@@ -773,10 +773,10 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         if not ri:
             self.logger.info(
                 "Cannot unlink: %s:%s -- %s:%s. "
-                "Interface %s is not discovered",
+                "Interface %s:%s is not discovered",
                 local_object.name, local_interface,
                 remote_object.name, remote_interface,
-                remote_interface
+                remote_object.name, remote_interface
             )
             return
         # Get existing links
