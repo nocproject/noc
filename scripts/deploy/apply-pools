@@ -33,8 +33,7 @@ def main():
         try:
             pool = Pool.objects.get(name=p)
             changed |= update_if_changed(pool, {
-                "description": data["pools"][p]["description"],
-                "discovery_reschedule_limit": data["pools"][p].get("discovery_reschedule_limit")
+                "description": data["pools"][p]["description"]
             })
         except Pool.DoesNotExist:
             Pool(
