@@ -23,7 +23,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.main.ref.stencil.LookupField",
         "NOC.sa.authprofile.LookupField",
         "NOC.sa.terminationgroup.LookupField",
-        "NOC.inv.networksegment.LookupField"
+        "NOC.inv.networksegment.LookupField",
+        "NOC.main.timepattern.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -466,6 +467,13 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     hideTrigger: true,
                                     minValue: 0,
                                     maxValue: 99
+                                },
+                                {
+                                    name: "time_pattern",
+                                    xtype: "main.timepattern.LookupField",
+                                    fieldLabel: __("Time Pattern"),
+                                    allowBlank: true,
+                                    uiStyle: "medium"
                                 }
                             ]
                         },
