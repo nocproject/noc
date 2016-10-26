@@ -20,17 +20,17 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_sh_int = re.compile(
-        r"^ (?P<interface>\S+) current state: (?P<oper_status>UP|DOWN|DOWN \( Administratively \))\n"
-        r"(^ IP Packet Frame Type: PKTFMT_ETHNT_2, Hardware Address: (?P<mac>\S+)\n)?"
-        r"^ Description: (?P<descr>.+?)\n"
+        r"^\s*(?P<interface>\S+) current state: (?P<oper_status>UP|DOWN|DOWN \( Administratively \))\n"
+        r"(^\s*IP Packet Frame Type: PKTFMT_ETHNT_2, Hardware Address: (?P<mac>\S+)\n)?"
+        r"^\s*Description: (?P<descr>.+?)\n"
         r".*?"
-        r"^( The Maximum Frame Length is (?P<mtu>\d+)\n)?"
+        r"(^\s*The Maximum Frame Length is (?P<mtu>\d+)\n)?"
         r".+?"
-        r"^ Port link-type: (?P<port_type>hybrid|access|trunk)\n"
-        r"(^  Tagged   VLAN ID : (?P<tagged>[^\n])\n)?"
-        r"(^  Untagged VLAN ID : (?P<untagged>[^\n])\n)?"
-        r"(^  VLAN passing  : (?P<passing>[^\n])\n)?"
-        r"(^  VLAN permitted: (?P<permitted>[^\n])\n)?",
+        r"(^\s*Port link-type: (?P<port_type>hybrid|access|trunk)\n)?"
+        r"(^\s*Tagged   VLAN ID : (?P<tagged>[^\n])\n)?"
+        r"(^\s*Untagged VLAN ID : (?P<untagged>[^\n])\n)?"
+        r"(^\s*VLAN passing  : (?P<passing>[^\n])\n)?"
+        r"(^\s*VLAN permitted: (?P<permitted>[^\n])\n)?",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_sh_vlan = re.compile(
         r"^(?P<interface>\S+) current state: (?P<oper_status>UP|DOWN|DOWN \( Administratively \))\n"
@@ -38,8 +38,8 @@ class Script(BaseScript):
         r"^Description: (?P<descr>.+?)\n"
         r"^The Maximum Transmit Unit is (?P<mtu>\d+)\n"
         r".+?"
-        r"(^Internet Address is (?P<ip>\S+) Primary\n)?"
-        r"(^ IP Packet Frame Type: PKTFMT_ETHNT_2, Hardware Address: (?P<mac>\S+)\n)?",
+        r"(^\s*Internet Address is (?P<ip>\S+) Primary\n)?"
+        r"(^\s*IP Packet Frame Type: PKTFMT_ETHNT_2, Hardware Address: (?P<mac>\S+)\n)?",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_name = re.compile(r"^Vlan-interface(?P<vlan>\d+)?")
 
@@ -48,8 +48,13 @@ class Script(BaseScript):
         v = self.cli("display interface")
         for match in self.rx_sh_int.finditer(v):
             ifname = match.group("interface")
-            if ifname.startswith("Bridge-Aggregation"):
+            if ifname.startswith("Bridge-Aggregation") \
+            or ifname.startswith("Route-Aggregation"):
                 iftype = "aggregated"
+            elif ifname.startswith("LoopBack"):
+                iftype = "loopback"
+            elif ifname.startswith("NULL"):
+                iftype = "null"
             else:
                 iftype = "physical"
             o_stat = match.group("oper_status").lower() == "up"
@@ -77,7 +82,7 @@ class Script(BaseScript):
             if match.group("mtu"):
                 sub["mtu"] = int(match.group("mtu"))
             port_type = match.group("port_type")
-            if port_type in ["access","hybrid"]:
+            if port_type in ["access", "hybrid"]:
                 if match.group("untagged") and match.group("untagged") != "none":
                     sub["untagged_vlan"] = int(match.group("untagged"))
                 tagged = match.group("tagged")
