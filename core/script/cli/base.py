@@ -68,6 +68,8 @@ class CLI(object):
         self.collected_data = []
         self.tos = tos
         self.current_timeout = None
+        self.is_closed = False
+        self.close_timeout = None
 
     def close(self):
         if self.iostream:
@@ -76,6 +78,19 @@ class CLI(object):
             self.logger.debug("Closing IOLoop")
             self.ioloop.close(all_fds=True)
             self.ioloop = None
+        self.is_closed = True
+        if self.script.session:
+            self.script.close_session(self.script.session)
+
+    def deferred_close(self, session_timeout):
+        if self.is_closed or not self.iostream:
+            return
+        self.logger.debug("Setting close timeout to %ss",
+                          session_timeout)
+        self.close_timeout = self.ioloop.call_later(
+            session_timeout,
+            self.close
+        )
 
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -108,6 +123,10 @@ class CLI(object):
             self.current_timeout = None
 
     def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None):
+        if self.close_timeout:
+            self.logger.debug("Removing close timeout")
+            self.ioloop.remove_timeout(self.close_timeout)
+            self.close_timeout = None
         self.buffer = ""
         self.command = cmd
         if not self.ioloop:
