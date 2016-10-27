@@ -184,28 +184,85 @@ def refresh():
     """
     Rebuild selector cache job
     """
+    def diff(old, new):
+        def getnext(g):
+            try:
+                return g.next()
+            except StopIteration:
+                return None
+
+        o = getnext(old)
+        n = getnext(new)
+        while o or n:
+            if not o:
+                # New
+                yield None, n
+                n = getnext(new)
+            elif not n:
+                # Removed
+                yield o, None
+                o = getnext(old)
+            else:
+                if n[0] == o[0]:
+                    # Changed
+                    if n != o[:3]:
+                        yield o, n
+                    n = getnext(new)
+                    o = getnext(old)
+                elif n[0] < o[0]:
+                    # Added
+                    yield None, n
+                    n = getnext(new)
+                else:
+                    # Removed
+                    yield o, None
+                    o = getnext(old)
+
     from managedobjectselector import ManagedObjectSelector
 
     r = []
     logger.info("Building selector cache")
+    logger.info("Loading existing cache")
+    old = sorted(
+        (d["object"], d["selector"], d.get("vc_domain"), d["_id"])
+        for d in SelectorCache._get_collection().find({})
+    )
+    logger.info("Generating new selector cache")
+    new = []
     for s in ManagedObjectSelector.objects.filter(is_enabled=True):
-        for o in s.managed_objects:
-            d = o.vc_domain.id if o.vc_domain else None
-            r += [
-                {
-                    "object": o.id,
-                    "selector": s.id,
-                    "vc_domain": d
+        sid = s.id
+        new += [
+            (r[0], sid, r[1])
+            for r in s.managed_objects.values_list("id", "vc_domain")
+        ]
+    new = sorted(new)
+    logger.info("Merging selector caches")
+    n_new = 0
+    n_changed = 0
+    n_removed = 0
+    bulk = SelectorCache._get_collection().initialize_unordered_bulk_op()
+    for o, n in diff(iter(old), iter(new)):
+        if o is None:
+            # New
+            bulk.insert({
+                "object": n[0], "selector": n[1], "vc_domain": n[2]
+            })
+            n_new += 1
+        elif n is None:
+            # Removed
+            bulk.find({"_id": o[-1]}).remove()
+            n_removed += 1
+        else:
+            # Changed
+            bulk.find({"_id": o[-1]}).update({
+                "$set": {
+                    "object": n[0], "selector": n[1], "vc_domain": n[2]
                 }
-            ]
-    # Write temporary cache
-    if r:
-        logger.info("Writing cache")
-        cache = SelectorCache._get_collection_name()
-        c = SelectorCache._get_db()[cache + ".tmp"]
-        c.insert(r)
-        # Substitute cache
-        c.rename(cache, dropTarget=True)
-    else:
-        # No data
-        logger.info("No data to write")
+            })
+            n_changed += 1
+    if n_new + n_changed + n_removed:
+        logger.info("Writing (new=%s, changed=%s, removed=%s)",
+                    n_new, n_changed, n_removed)
+        bulk.execute()
+    logger.info("Done ")
+    return
