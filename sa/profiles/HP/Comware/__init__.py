@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     name = "HP.Comware"
     command_more = " "
     command_exit = "quit"
-    pattern_more = [(r"^.+---- More ----$", " ")]
+    pattern_more = [(r"^\s+---- More ----$", " ")]
     pattern_prompt = r"^[<\[]\S+[>\]]"
     pattern_syntax_error = \
         r"% (?:Unrecognized command|Too many parameters|Incomplete command)" \
