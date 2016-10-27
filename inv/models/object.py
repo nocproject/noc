@@ -103,12 +103,33 @@ class Object(Document):
             self.point = map.get_db_point(x, y, srid=srid)
 
     def on_save(self):
+        def get_coordless_objects(o):
+            r = set([str(o.id)])
+            for co in Object.objects.filter(container=o.id):
+                g = co.data.get("geopoint")
+                if g and g.get("x") and g.get("y"):
+                    continue
+                else:
+                    r |= get_coordless_objects(co)
+            return r
+
         geo = self.data.get("geopoint")
         if geo and geo.get("x") and geo.get("y"):
             # Rebuild connection layers
             for ct in self.REBUILD_CONNECTIONS:
                 for c, _, _ in self.get_genderless_connections(ct):
-                    c.save()  # set_line(
+                    c.save()  #
+            # Update nested objects
+            from noc.sa.models.managedobject import ManagedObject
+            mos = get_coordless_objects(self)
+            if mos:
+                ManagedObject.objects.filter(
+                    container__in=mos
+                ).update(
+                    x=geo.get("x"),
+                    y=geo.get("y"),
+                    default_zoom=self.layer.default_zoom
+                )
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
     def get_path(self):
@@ -490,6 +511,26 @@ class Object(Document):
                 return o
             c = o.container
         return None
+
+    def get_coordinates_zoom(self):
+        """
+        Get managed object's coordinates
+        # @todo: Speedup?
+        :returns: x (lon), y (lat), zoom level
+        """
+        c = self
+        while c:
+            if c.point and c.layer:
+                x = c.get_data("geopoint", "x")
+                y = c.get_data("geopoint", "y")
+                zoom = c.layer.default_zoom or 11
+                return x, y, zoom
+            if c.container:
+                c = Object.get_by_id(c.container)
+                if c:
+                    continue
+            break
+        return None, None, None
 
     @classmethod
     def get_managed(cls, mo):

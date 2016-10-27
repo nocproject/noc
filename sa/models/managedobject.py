@@ -17,7 +17,8 @@ import operator
 from threading import RLock
 ## Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
-                              ForeignKey, IntegerField, SET_NULL)
+                              ForeignKey, IntegerField, FloatField,
+                              SET_NULL)
 from django.contrib.auth.models import User, Group
 import cachetools
 import six
@@ -229,6 +230,10 @@ class ManagedObject(Model):
         "Max. Scripts",
         null=True, blank=True,
         help_text="Concurrent script session limits")
+    # Latitude and longitude, copied from container
+    x = FloatField(null=True, blank=True)
+    y = FloatField(null=True, blank=True)
+    default_zoom = IntegerField(null=True, blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
@@ -462,6 +467,13 @@ class ManagedObject(Model):
             "container" in self.changed_fields
         ):
             ObjectPath.refresh(self)
+            if "container" in self.changed_fields:
+                x, y, zoom = self.container.get_coordinates_zoom()
+                ManagedObject.filter(id=self.id).update(
+                    x=x,
+                    y=y,
+                    default_zoom=zoom
+                )
         if self.initial_data["id"] and "container" in self.changed_fields:
             # Move object to another container
             if self.container:
@@ -1001,50 +1013,6 @@ class ManagedObject(Model):
                     20,
                     pop_id=pop.id
                 )
-
-    def get_coordinates(self):
-        """
-        Get managed object's coordinates
-        :returns: x (lon), y (lat)
-        """
-        c = self.container
-        while c:
-            x = c.get_data("geopoint", "x")
-            y = c.get_data("geopoint", "y")
-            if x and y:
-                return x, y
-            if c.container:
-                c = Object.get_by_id(c.container)
-                if not c:
-                    break
-            else:
-                break
-        return None, None
-
-    def get_coordinates_zoom(self):
-        """
-        Get managed object's coordinates
-        :returns: x (lon), y (lat), zoom
-        """
-        c = self.container
-        while c:
-            x = c.get_data("geopoint", "x")
-            y = c.get_data("geopoint", "y")
-            if x and y:
-                zoom = c.get_data("geopoint", "zoom")
-                if not zoom:
-                    from noc.gis.models.layer import Layer
-                    layer = Layer.get_by_code(c.get_data("geopoint", "layer"))
-                    if layer:
-                        zoom = layer.default_zoom
-                return x, y, zoom or 11
-            if c.container:
-                c = Object.get_by_id(c.container)
-                if not c:
-                    break
-            else:
-                break
-        return None, None, None
 
 
 @on_save

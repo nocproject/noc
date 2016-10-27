@@ -41,7 +41,6 @@ class RebootsExtractor(BaseExtractor):
             if not mo:
                 continue
             version = mo.version
-            x, y = mo.get_coordinates()
             self.reboot_stream.push(
                 ts=d["ts"],
                 managed_object=mo,
@@ -54,8 +53,8 @@ class RebootsExtractor(BaseExtractor):
                 administrative_domain=mo.administrative_domain,
                 segment=mo.segment,
                 container=mo.container,
-                x=x,
-                y=y
+                x=mo.x,
+                y=mo.y
             )
             self.last_ts = d["ts"]
         self.reboot_stream.finish()
