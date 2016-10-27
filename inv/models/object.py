@@ -483,7 +483,9 @@ class Object(Document):
         """
         c = self.container
         while c:
-            o = Object.objects.get(id=c)
+            o = Object.get_by_id(c)
+            if not o:
+                break
             if o.get_data("pop", "level"):
                 return o
             c = o.container

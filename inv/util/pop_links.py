@@ -49,22 +49,38 @@ class LinkedPoP(object):
         linked = set()
         self.pops = set(self.get_pop_objects())
         self_interfaces = set(
-                i.id for i in Interface.objects.filter(
-                        managed_object__in=self.pops)
+            Interface.objects.filter(
+                managed_object__in=self.pops
+            ).values_list("id")
         )
-        for l in Link.objects.filter(interfaces__in=self_interfaces):
-            ri = (i for i in l.interfaces
-                  if i.id not in self_interfaces)
-            if ri:
-                # Remote link
-                ro = set()
-                for i in ri:
-                    ro.add(i.managed_object.id)
-                if len(ro) == 1 and ro:
-                    for o in Object.get_managed(ro.pop()):
-                        pop = o.get_pop()
-                        if pop and pop not in linked:
-                            linked.add(pop)
+        r_ifaces = set()
+        for ld in Link._get_collection().find(
+                {
+                    "interfaces": {
+                        "$in": list(self_interfaces),
+                    }
+                }, {
+                    "_id": 0,
+                    "interfaces": 1
+                }
+        ):
+            r_ifaces |= set(ld.get("interfaces", []))
+        r_ifaces -= self_interfaces
+        r_mos = set(
+            i["managed_object"] for i in
+            Interface._get_collection().find({
+                "_id": {
+                    "$in": list(r_ifaces)
+                }
+            }, {
+                "_id": 0,
+                "managed_object": 1
+            })
+        )
+        for o in Object.objects.filter(data__management__managed_object__in=r_mos):
+            pop = o.get_pop()
+            if pop:
+                linked.add(pop)
         return linked
 
     def update_links(self):
