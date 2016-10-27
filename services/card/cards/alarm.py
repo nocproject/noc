@@ -75,13 +75,14 @@ class AlarmCard(BaseCard):
             "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers)
         }
         # Maintainance
-        mainteinance = Maintainance.objects.filter(is_completed=False,
-                                                   start__lte=datetime.datetime.now(),
-                                                   affected_objects__in=[
-                                                       MaintainanceObject(object=self.object.managed_object)]
-                                                   )
-        # Coordinates
-        lon, lat, zoom = self.object.managed_object.get_coordinates_zoom()
+        mainteinance = Maintainance.objects.filter(
+            is_completed=False,
+            start__lte=datetime.datetime.now(),
+            affected_objects__in=[
+               MaintainanceObject(object=self.object.managed_object)
+            ]
+        )
+        mo = self.object.managed_object
         # Build result
         r = {
             "id": self.object.id,
@@ -98,9 +99,9 @@ class AlarmCard(BaseCard):
             "alarms": alarms,
             "diagnostic": AlarmDiagnostic.get_diagnostics(self.object),
             "maintenance": mainteinance,
-            "lon": lon,
-            "lat": lat,
-            "zoom": zoom
+            "lon": mo.x,
+            "lat": mo.y,
+            "zoom": mo.zoom
         }
         return r
 
