@@ -473,6 +473,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     xtype: "main.timepattern.LookupField",
                                     fieldLabel: __("Time Pattern"),
                                     allowBlank: true,
+                                    groupEdit: true,
                                     uiStyle: "medium"
                                 }
                             ]
