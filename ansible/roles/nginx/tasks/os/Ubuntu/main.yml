@@ -5,6 +5,8 @@
     state: present
   environment:
     http_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: Add Debian Nginx repo
   apt_repository:
@@ -13,6 +15,8 @@
     update_cache: yes
   environment:
     http_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: Install service monitoring
   template:

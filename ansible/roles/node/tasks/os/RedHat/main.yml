@@ -16,6 +16,8 @@
   template:
     src: os/RedHat/etc/yum.repos.d/epel.repo.j2
     dest: /etc/yum.repos.d/epel.repo
+  tags:
+    - repo
 
 - name: Add GPG key EPEL
   rpm_key:
@@ -24,6 +26,8 @@
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: Enable the PostgreSQL repository RHEL
   yum:
@@ -31,6 +35,8 @@
     state: present
   environment:
     http_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: Install RedHat system packages 1/2
   yum:

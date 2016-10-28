@@ -7,11 +7,15 @@
     validate_certs: no
   environment:
     https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: Add MongoDB repository
   template:
     src: os/RedHat/etc/yum.repos.d/mongodb-org-3.2.repo.j2
     dest: /etc/yum.repos.d/mongodb-org-3.2.repo
+  tags:
+    - repo
 
 - name: Disable Transparent Hugepages (bootloader)
   template:

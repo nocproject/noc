@@ -3,6 +3,8 @@
   template:
     src: os/CentOS/etc/yum.repos.d/grafana.repo.j2
     dest: /etc/yum.repos.d/grafana.repo
+  tags:
+    - repo
 
 - name: Install CentOS packages
   yum:

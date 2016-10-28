@@ -8,7 +8,8 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
-
+  tags:
+    - repo
 # there is no pakages for mongodb for jessie. so we will use whezze temporary for jessie too
 - name: "Add MongoDB repository"
   apt_repository: 
@@ -18,6 +19,8 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: Disable Transparent Hugepages (bootloader)
   lineinfile: "dest=/etc/default/grub state=present backrefs=yes regexp='^GRUB_CMDLINE_LINUX_DEFAULT=\"\"' line='GRUB_CMDLINE_LINUX_DEFAULT=\"transparent_hugepage=never\"'"
