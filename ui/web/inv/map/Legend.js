@@ -9,9 +9,6 @@ console.debug('Defining NOC.inv.map.Legend');
 Ext.define('NOC.inv.map.Legend', {
     extend: 'Ext.container.Container',
 
-    padding: 4,
-    region: 'south',
-    autoShow: false,
     items: [
         {
             xtype: 'box',

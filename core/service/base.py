@@ -382,8 +382,8 @@ class Service(object):
             sdl[a.name] = a.get_methods()
         if self.api:
             handlers += [
-                ("^/doc/$", DocRequestHandler, {"service": self}),
-                ("^/sdl.js", SDLRequestHandler, {"sdl": sdl})
+                ("^/api/%s/doc/$" % self.name, DocRequestHandler, {"service": self}),
+                ("^/api/%s/sdl.js" % self.name, SDLRequestHandler, {"sdl": sdl})
             ]
         handlers += self.get_handlers()
         addr, port = self.get_service_address()

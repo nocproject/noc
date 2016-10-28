@@ -1,6 +1,6 @@
 var API = (function() {
     var r = {
-        _base_url: "/api/" + document.location.pathname.split("/")[2] + "/api/",
+        _base_url: "/api/",
         tid: 0
     };
     for(var api in SDL) {
