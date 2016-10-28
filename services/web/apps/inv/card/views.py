@@ -15,4 +15,4 @@ class CardApplication(ExtApplication):
     title = _("Cards")
     menu = _("Cards")
     glyph = "book"
-    link = "/api/card/"
+    link = "/api/card/index.html"

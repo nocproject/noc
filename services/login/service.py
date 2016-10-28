@@ -25,8 +25,8 @@ class LoginService(UIService):
 
     def get_handlers(self):
         return super(LoginService, self).get_handlers() + [
-            ("^/auth/$", AuthRequestHandler, {"service": self}),
-            ("^/logout/$", LogoutRequestHandler)
+            ("^/api/auth/auth/$", AuthRequestHandler, {"service": self}),
+            ("^/api/login/logout/$", LogoutRequestHandler)
         ]
 
     # Fields excluded from logging
