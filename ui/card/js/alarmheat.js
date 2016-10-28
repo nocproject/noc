@@ -9,21 +9,23 @@ var Heatmap = function () {
 };
 
 Heatmap.prototype.initialize = function () {
-    var q = this.parseQuerystring(),
+    var me = this,
+        q = this.parseQuerystring(),
         lon = q.lon ? parseFloat(q.lon) : 37.5077,
         lat = q.lat ? parseFloat(q.lat) : 55.7766,
         scale = q.zoom ? parseInt(q.zoom) : 11;
     this.map = L.map("map");
+    // Subscribe to events
+    this.map.on("moveend", function() {me.poll_data();});
     this.heatmap = null;
+    this.topology = null;
     // Set up OSM layer
     var osm = L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         });
     this.map.addLayer(osm);
-    // Select view
+    // Select view, trigger moveend to poll data
     this.map.setView([lat, lon], scale);
-    // Poll data
-    this.poll_data();
 };
 
 Heatmap.prototype.parseQuerystring = function() {
@@ -42,8 +44,14 @@ Heatmap.prototype.run = function () {
 };
 
 Heatmap.prototype.poll_data = function () {
-    var me = this;
-    $.ajax("/api/card/view/alarmheat/ajax/").done(function(data) {
+    var me = this,
+        bbox = me.map.getBounds(),
+        w = bbox.getWest(),
+        e = bbox.getEast(),
+        n = bbox.getNorth(),
+        s = bbox.getSouth(),
+        zoom = me.map.getZoom();
+    $.ajax("/api/card/view/alarmheat/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s).done(function(data) {
         // Replace heatmap
         var heat_data = [];
         $.each(data.alarms, function(i, v) {
@@ -51,6 +59,14 @@ Heatmap.prototype.poll_data = function () {
                 heat_data.push([v.y, v.x, v.w * 10]);
             }
         });
+        //
+        if(me.topology) {
+            me.map.removeLayer(me.topology);
+        }
+        if(data.links) {
+            me.topology = L.geoJSON(data.links).addTo(me.map);
+        }
+        //
         if(me.heatmap) {
             me.map.removeLayer(me.heatmap);
         }
