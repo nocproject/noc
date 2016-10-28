@@ -288,6 +288,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.hasStp = data.caps.indexOf("Network | STP") !== -1;
         me.app.viewStpButton.setDisabled(!me.hasStp);
         me.setPaperDimension();
+        me.fireEvent("renderdone");
     },
 
     //
@@ -494,10 +495,7 @@ Ext.define("NOC.inv.map.MapPanel", {
                 y: pos.x
             })
         });
-        me.paper.fitToContent({
-            gridHeight: me.getHeight(),
-            gridWidth: me.getWidth()
-        });
+        me.paper.fitToContent();
     },
     //
     save: function() {
@@ -855,11 +853,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     setZoom: function(zoom) {
         var me = this;
         me.paper.scale(zoom, zoom);
-        me.paper.fitToContent({
-                gridHeight: me.getHeight(),
-                gridWidth: me.getWidth()
-            }
-        );
+        me.paper.fitToContent();
         me.setPaperDimension();
     },
 
@@ -1051,10 +1045,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         var me = this;
         me.setPaperDimension();
         if('paper' in me) {
-            me.paper.fitToContent({
-                gridHeight: height,
-                gridWidth: width
-            });
+            me.paper.fitToContent();
         }
         me.setPaperDimension();
     },
