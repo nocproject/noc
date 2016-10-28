@@ -9,6 +9,8 @@
   environment:
     https_proxy: "{ {http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
 
 - name: Add MongoDB repository
   apt_repository:
@@ -18,6 +20,8 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
 
 - name: Disable Transparent Hugepages (runtime)
   shell: if test -f /sys/kernel/mm/transparent_hugepage/enabled; then

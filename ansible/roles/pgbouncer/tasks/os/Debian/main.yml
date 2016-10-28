@@ -3,10 +3,14 @@
     url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
   environment:
     https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: Add PGDG repo
   apt_repository:
     repo: "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main"
+  tags:
+    - repo
 
 - name: Install pgbouncer
   apt:

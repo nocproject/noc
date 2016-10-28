@@ -5,6 +5,8 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
 
 - name: Add Grafana repo
   apt_repository:
@@ -14,6 +16,8 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
 
 - name: Install Ubuntu packages
   apt:

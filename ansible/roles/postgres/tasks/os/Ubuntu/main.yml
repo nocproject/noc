@@ -6,6 +6,8 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: Add Ubuntu PostgreSQL repo
   apt_repository:
@@ -15,6 +17,8 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: "Install PostgreSQL"
   apt:

@@ -6,6 +6,8 @@
     validate_certs: no
   environment:
     https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: "Install PostgreSQL"
   yum:
