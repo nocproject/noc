@@ -6,11 +6,15 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: Add InfluxDB repository
   template:
     src: os/CentOS/etc/yum.repos.d/influxdb.repo.j2
     dest: /etc/yum.repos.d/influxdb.repo
+   tags:
+    - repo
 
 - name: Install CentOS packages
   yum:

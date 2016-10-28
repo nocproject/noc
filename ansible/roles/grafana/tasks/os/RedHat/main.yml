@@ -2,6 +2,8 @@
   template:
     src: os/RedHat/etc/yum.repos.d/grafana.repo.j2
     dest: /etc/yum.repos.d/grafana.repo
+  tags:
+    - repo
 
 - name: Add GPG key
   rpm_key:
@@ -10,6 +12,8 @@
     validate_certs: no
   environment:
     https_proxy: "{{http_proxy}}"
+  tags:
+    - repo
 
 - name: Install Grafana
   yum:
