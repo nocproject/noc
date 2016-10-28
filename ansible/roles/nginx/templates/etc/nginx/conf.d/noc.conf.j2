@@ -130,7 +130,7 @@ server {
     error_page 401 = @error401;
 
     location @error401 {
-        return 302 /api/login/?uri=$request_uri;
+        return 302 /api/login/index.html?uri=$request_uri;
     }
 
     location /ng_stats {
@@ -141,7 +141,6 @@ server {
         deny all;
         access_log off;
     }
-
 
     location /inv/monitor/ {
         proxy_pass http://noc-web;
@@ -184,7 +183,6 @@ server {
     location /api/auth/ {
         internal;
         proxy_pass http://login;
-        rewrite  ^/api/auth/(.*)  /$1 break;
         # internal;
         gzip on;
         gzip_types text/css text/x-js;
@@ -201,8 +199,6 @@ server {
     # Login service api
     location /api/login/ {
         proxy_pass http://login;
-        rewrite  ^/api/login/(.*)  /$1 break;
-        # internal;
         gzip on;
         gzip_types text/css text/x-js;
         proxy_set_header Host $http_host;
@@ -220,7 +216,6 @@ server {
     location /api/card/ {
         proxy_pass http://card;
         auth_request /api/auth/auth/;
-        rewrite  ^/api/card/(.*)  /$1 break;
         # internal;
         gzip on;
         gzip_types text/css text/x-js;
@@ -242,7 +237,6 @@ server {
     location /api/mrt/ {
         proxy_pass http://mrt;
         auth_request /api/auth/auth/;
-        # rewrite  ^/api/mrt/(.*)  /$1 break;
         # internal;
         gzip on;
         gzip_types text/css text/x-js;
@@ -265,7 +259,6 @@ server {
     location /api/bi/ {
         proxy_pass http://bi;
         auth_request /api/auth/auth/;
-        rewrite  ^/api/bi/(.*)  /$1 break;
         # internal;
         gzip on;
         gzip_types text/css text/x-js;
@@ -287,7 +280,6 @@ server {
     location /api/grafanads/ {
         proxy_pass http://grafanads;
         auth_request /api/auth/auth/;
-        rewrite  ^/api/grafanads/(.*)  /$1 break;
         # internal;
         gzip on;
         gzip_types text/css text/x-js;

@@ -130,14 +130,14 @@ Ext.define("NOC.inv.map.Application", {
         me.inspectorPanel = Ext.create("Ext.panel.Panel", {
             app: me,
             layout: "card",
-            autoScroll: true,
+            scrollable: true,
+            width: 200,
+            dock: "right",
             items: [
                 me.segmentInspector,
                 me.managedObjectInspector,
                 me.linkInspector
-            ],
-            dock: "right",
-            width: 200
+            ]
         });
 
         me.mapPanel = Ext.create("NOC.inv.map.MapPanel", {
@@ -146,7 +146,12 @@ Ext.define("NOC.inv.map.Application", {
             listeners: {
                 scope: me,
                 mapready: me.onMapReady,
-                changed: me.onChanged
+                changed: me.onChanged,
+                renderdone: function() {
+                    me.segmentInspector.scaleContentToFit();
+                    me.linkInspector.scaleContentToFit();
+                    me.managedObjectInspector.scaleContentToFit();
+                }
             }
         });
 
@@ -191,6 +196,16 @@ Ext.define("NOC.inv.map.Application", {
             }
         });
 
+        me.miniMapButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.map,
+            tooltip: __("Hide miniMap"),
+            enableToggle: true,
+            listeners: {
+                scope: me,
+                toggle: me.onMiniMap
+            }
+        });
+
         Ext.apply(me, {
             dockedItems: [
                 {
@@ -213,6 +228,7 @@ Ext.define("NOC.inv.map.Application", {
                         "-",
                         me.viewStpButton,
                         "->",
+                        me.miniMapButton,
                         me.legendButton
                     ]
                 },
@@ -248,9 +264,13 @@ Ext.define("NOC.inv.map.Application", {
 
     onMapReady: function() {
         var me = this;
+
         if(me.getCmd() === "history") {
             me.loadSegment(me.noc.cmd.args[0]);
         }
+        me.segmentInspector.createMini(me.mapPanel);
+        me.managedObjectInspector.createMini(me.mapPanel);
+        me.linkInspector.createMini(me.mapPanel);
     },
 
     onSelectSegment: function(combo, record, opts) {
@@ -271,7 +291,7 @@ Ext.define("NOC.inv.map.Application", {
             me.segmentInspector
         );
         if(me.currentSegmentId) {
-            me.segmentInspector.preview(me.currentSegmentId);
+            me.segmentInspector.preview('segment', me.currentSegmentId, null);
         }
     },
 
@@ -280,7 +300,7 @@ Ext.define("NOC.inv.map.Application", {
         me.inspectorPanel.getLayout().setActiveItem(
             me.managedObjectInspector
         );
-        me.managedObjectInspector.preview(me.currentSegmentId, objectId);
+        me.managedObjectInspector.preview('managedobject', me.currentSegmentId, objectId);
     },
 
     inspectLink: function(linkId) {
@@ -288,7 +308,7 @@ Ext.define("NOC.inv.map.Application", {
         me.inspectorPanel.getLayout().setActiveItem(
             me.linkInspector
         );
-        me.linkInspector.preview(me.currentSegmentId, linkId);
+        me.linkInspector.preview('link', me.currentSegmentId, linkId);
     },
 
     onEdit: function() {
@@ -337,7 +357,6 @@ Ext.define("NOC.inv.map.Application", {
     onNewLayout: function(btn, ev) {
         var me = this,
             forceSpring = ev.shiftKey;
-        console.log(arguments);
         Ext.Msg.show({
             title: __("Reset Layout"),
             message: __("Would you like to reset current layout and generate new?"),
@@ -364,8 +383,16 @@ Ext.define("NOC.inv.map.Application", {
     onLegend: function() {
         var me = this;
 
+        me.segmentInspector.onLegend();
         me.linkInspector.onLegend();
         me.managedObjectInspector.onLegend();
-        me.segmentInspector.onLegend();
+    },
+
+    onMiniMap: function() {
+        var me = this;
+
+        me.segmentInspector.onMiniMap();
+        me.linkInspector.onMiniMap();
+        me.managedObjectInspector.onMiniMap();
     }
 });
