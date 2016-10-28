@@ -98,7 +98,7 @@ class UIService(Service):
         Initialize additional application handlers
         """
         return super(UIService, self).get_handlers() + [
-            (r"^/$", UIHandler, {
+            (r"^/api/%s/index.html$" % self.name, UIHandler, {
                 "service": self
             })
         ]
