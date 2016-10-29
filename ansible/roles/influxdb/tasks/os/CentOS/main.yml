@@ -13,7 +13,7 @@
   template:
     src: os/CentOS/etc/yum.repos.d/influxdb.repo.j2
     dest: /etc/yum.repos.d/influxdb.repo
-   tags:
+  tags:
     - repo
 
 - name: Install CentOS packages
