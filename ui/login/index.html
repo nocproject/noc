@@ -3,29 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>NOC Login</title>
-    <!-- Load used packages -->
-    <link rel="stylesheet" href="{{ hashed("/ui/pkg/webix/webix.css") }}" type="text/css">
-    <script src="{{ hashed("/ui/pkg/webix/webix.js") }}" type="text/javascript"></script>
-    <!-- application css -->
-    <link rel="stylesheet" href="{{ hashed("/ui/common/app.css") }}" type="text/css">
-    <link rel="stylesheet" href="{{ hashed("/ui/login/app.css") }}" type="text/css">
+    <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/classic/theme-gray/resources/theme-gray-all.css" />
+    <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/packages/charts/classic/classic/resources/charts-all.css" />
+    <script type="text/javascript" src="/ui/pkg/extjs/ext-all.js"></script>
+    <script type="text/javascript" src="/ui/pkg/extjs/classic/theme-gray/theme-gray.js"></script>
     <!-- l10n -->
     <link rel="gettext" href="{{ hashed("/ui/" + name + "/translations/%s.json" % language) }}" lang="{{ language }}">
     <!-- Initialize RPC application -->
     <script src="/api/login/sdl.js" type="text/javascript"></script>
     <!-- Load application -->
     {% raw mergecache([
-        "/ui/common/gettext.js",
-        "/ui/common/init.js",
-        "/ui/common/rpc.js",
-        "/ui/login/app/ui.js",
-        "/ui/login/app/logic.js"
+        "/ui/common/gettext.js"
     ]) %}
 </head>
 <body>
-    <script type="text/javascript" charset="utf-8">
-        NOC.login.app.original_uri = "{{ request.arguments['uri'][0] }}";
-        webix.ready(NOC.login.app.logic.init);
-    </script>
+    <script type="text/javascript" src="/ui/login/app/app.js"></script>
 </body>
 </html>
