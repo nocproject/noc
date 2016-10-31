@@ -37,6 +37,7 @@
   shell: "grafana-cli --pluginsDir {{ noc_root }}/var/db/grafana_plugins plugins install grafana-simple-json-datasource"
   args:
     creates: "{{ noc_root }}/var/db/grafana_plugins/grafana-simple-json-datasource/src/datasource.js"
+  notify: restart grafana
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
