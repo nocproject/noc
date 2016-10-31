@@ -1,10 +1,15 @@
 ---
 - name: Add CentOS Nginx repo
-  yum:
-    name: "http://nginx.org/packages/centos/{{ ansible_distribution_major_version }}/noarch/RPMS/nginx-release-centos-{{ ansible_distribution_major_version }}-0.el{{ ansible_distribution_major_version }}.ngx.noarch.rpm"
-    state: present
+  yum_repository:
+    name: nginx
+    description: CentOS Nginx repo
+    baseurl: http://nginx.org/packages/centos/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+    gpgcheck: yes
+    gpgkey: http://nginx.org/packages/keys/nginx_signing.key
+    enabled: yes
   environment:
     http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
   tags:
     - repo
 
@@ -40,3 +45,7 @@
     name: "{{ nginx_system_service }}"
     enabled: yes
     state: started
+
+- include: "firewall.yml"
+  tags:
+    - firewall
