@@ -45,7 +45,6 @@ services:
     required_assets:
       - web
       - card
-      - login
 
   grafana:
     description: Graphana server
@@ -123,8 +122,7 @@ services:
   login:
     description: Login
     level: global
-    required_assets:
-      - login
+
 
   mailsender:
     description: SMTP mail sender

@@ -1,9 +1,0 @@
-{
-  "url": "https://cdn.getnoc.com/npkg/",
-  "packages": [
-    {
-      "name": "webix",
-      "version": "3.1.2"
-    }
-  ]
-}
