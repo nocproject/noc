@@ -45,3 +45,7 @@
     name: "{{ nginx_system_service }}"
     enabled: yes
     state: started
+
+- include: "firewall.yml"
+  tags:
+    - firewall
