@@ -1,11 +1,13 @@
 [Unit]
 Description=NOC Node Service
+Documentation=https://kb.nocproject.org/display/SITE/NOC
 After=network.target
 
 [Service]
 Type=forking
 ExecStart={{ noc_root }}/bin/supervisord -c {{ noc_root }}/etc/supervisord.conf
 ExecReload={{ noc_root }}/bin/supervisorctl serialrestart all
+Restart={{ noc_root }}/bin/supervisorctl restart all
 ExecStop={{ noc_root }}/bin/supervisorctl shutdown
 WorkingDirectory={{ noc_root }}
 KillMode=process
@@ -13,4 +15,4 @@ Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-Alias=noc.service
+
