@@ -11,19 +11,7 @@
 
 - name: Add firewall permissions for nodes
   firewalld:
-    rich_rule: "rule family='ipv4' source address={{ item.value.address }} accept"
-    permanent: true
-    state: enabled
-    immediate: true
-  with_dict: "{{ noc_config.nodes }}"
-  when: "firewalld_state.stdout == 'active'"
-  tags:
-    - config
-    - firewall
-
-- name: Add firewall permissions for tower
-  firewalld:
-    rich_rule: "rule family='ipv4' source address={{ tower_ip }} accept"
+    service: https
     permanent: true
     state: enabled
     immediate: true
@@ -31,4 +19,3 @@
   tags:
     - config
     - firewall
-
