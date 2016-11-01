@@ -56,20 +56,6 @@
   tags:
     - soft_restart
 
-- name: Force start on Debian/Ubuntu
-  shell: systemctl start "{{ noc_system_service }}"
-  when: '"Debian" in ansible_distribution'
-
-- name: Enable NOC node
-  service:
-    name: "{{ noc_system_service }}"
-    enabled: yes
-  changed_when: False
-  ignore_errors: yes
-  when: '"Debian" in ansible_distribution'
-  tags:
-    - restart
-
 - name: Restart NOC node
   service:
     name: "{{ noc_system_service }}"

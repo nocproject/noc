@@ -299,12 +299,22 @@
   tags:
     - config
 
+- name: create noc.conf
+  file:
+    state: touch
+    name: "{{ noc_root }}/etc/noc.conf"
+    owner: "{{ noc_user }}"
+  tags:
+    - config
+
 - name: Set up noc.conf
   ini_file:
     dest: "{{noc_root}}/etc/noc.conf"
     section: "{{item.section}}"
     option: "{{item.option}}"
     value: "{{item.value}}"
+    # works with ansible 2.2+ but brokes 2.1. have to be enabled in 2017
+    #create: yes
   with_items:
     - section: main
       option: secret_key
