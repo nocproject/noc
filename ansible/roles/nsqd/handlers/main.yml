@@ -1,3 +1,6 @@
 ---
 - name: restart nsqd
-  service: name=nsqd state=restarted
+  become: yes
+  service:
+    name: nsqd
+    state: restarted

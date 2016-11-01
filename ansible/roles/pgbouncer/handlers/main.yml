@@ -1,10 +1,12 @@
 ---
 - name: reload telegraf
+  become: yes
   service:
     name: telegraf
     state: reloaded
 
 - name: reload pgbouncer
+  become: yes
   service:
     name: pgbouncer
     state: reloaded
