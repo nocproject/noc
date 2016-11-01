@@ -2,6 +2,7 @@
   command: /bin/systemctl daemon-reload
 
 - name: reload telegraf
+  become: yes
   service:
     name: telegraf
     state: reloaded

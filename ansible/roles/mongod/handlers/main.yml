@@ -1,14 +1,17 @@
 - name: restart mongod
+  become: yes
   service:
     name: "{{ mongod_system_service }}"
     state: restarted
 
 - name: restart mongod-arbiter
+  become: yes
   service:
     name: "{{ mongod_arbiter_system_service }}"
     state: restarted
 
 - name: reload telegraf
+  become: yes
   service:
     name: telegraf
     state: reloaded
