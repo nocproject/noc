@@ -32,6 +32,14 @@ class ReportForm(forms.Form):
         label=_("Filter by Ping status"),
         required=False
     )
+    profile_check_only = forms.BooleanField(
+        label=_("Profile check only"),
+        required=False
+    )
+    failed_scripts_only = forms.BooleanField(
+        label=_("Failed discovery only"),
+        required=False
+    )
 
 
 class ReportFilterApplication(SimpleReport):
@@ -45,10 +53,20 @@ class ReportFilterApplication(SimpleReport):
         )
     }
 
-    def get_data(self, request, pool="default", obj_profile=None, avail_status=None, **kwargs):
+    def get_data(self, request, pool="default", obj_profile=None,
+                 avail_status=None, profile_check_only=None, failed_scripts_only=None, **kwargs):
         data = []
-        job_logs = get_db()["noc.joblog"].find({"$and": [{"problems": {"$ne": {  }}},
-                                                         {"problems": {"$exists": "true"}}]})
+        if profile_check_only:
+            job_logs = get_db()["noc.joblog"].find({"$or": [{"problems.suggest_cli": {"$exists": True}},
+                                                            {"problems.suggest_snmp": {"$exists": True}}]},
+                                                   {"_id": 1, "problems.suggest_snmp": 1, "problems.suggest_cli": 1})
+        elif failed_scripts_only:
+            job_logs = get_db()["noc.joblog"].find({"$and": [{"problems": {"$exists": "true", "$ne": {  }}},
+                                                             {"problems.suggest_snmp": {"$exists": False}},
+                                                             {"problems.suggest_cli": {"$exists": False}}]})
+        else:
+            job_logs = get_db()["noc.joblog"].find({"problems": {"$exists": True, "$ne": {  }}})
+
         for discovery in job_logs:
             mo = ManagedObject.objects.filter(id=int(discovery["_id"].split("-")[2]), pool=pool)
             if not request.user.is_superuser:
