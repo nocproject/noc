@@ -5,4 +5,4 @@
     state: restarted
 
 - name: systemd daemon-reload
-  command: /usr/bin/systemctl daemon-reload
+  command: systemctl daemon-reload
