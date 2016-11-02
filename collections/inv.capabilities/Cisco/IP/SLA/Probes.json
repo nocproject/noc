@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | IP | SLA | Probes",
+    "$collection": "inv.capabilities",
+    "uuid": "25f74737-026a-4360-b530-d34e057f97b9",
+    "description": "Number of discovered IP SLA probes",
+    "type": "int",
+    "card_template": null
+}

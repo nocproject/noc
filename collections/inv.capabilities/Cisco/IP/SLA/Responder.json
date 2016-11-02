@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | IP | SLA | Responder",
+    "$collection": "inv.capabilities",
+    "uuid": "038da7ba-648e-4d5c-ad15-845655324910",
+    "description": "Configured IP SLA responder",
+    "type": "bool",
+    "card_template": null
+}
