@@ -35,8 +35,7 @@ class Script(BaseScript):
         "^\s*Address\s+(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
     rx_inst1 = re.compile(
         "^\s*Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
-        "^\s*Address\s+(?P<root_id>\S+)\s*\n"
-        "^\s*This switch is the root\s*\n", re.MULTILINE)
+        "^\s*Address\s+(?P<root_id>\S+)\s*\n", re.MULTILINE)
     rx_vlans = re.compile("^0\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
     rx_port = re.compile(
         "^\s*Port (?P<interface>\S+) (?:enabled|disabled)\s*\n"

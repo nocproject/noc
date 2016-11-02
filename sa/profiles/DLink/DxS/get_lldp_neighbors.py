@@ -67,6 +67,8 @@ class Script(BaseScript):
                     "interface alias": 1,
                     # DES-3526 6.00 B48 and DES-3526 6.00 B49
                     "nterface alias": 1,
+                    # DES-3200-28 1.85.B008
+                    "nterface_alias": 1,
                     "port component": 2,
                     "mac address": 3,
                     "macaddress": 3,

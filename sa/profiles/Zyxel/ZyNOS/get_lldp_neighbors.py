@@ -119,7 +119,7 @@ class Script(BaseScript):
                             "other": 1, "repeater": 2, "bridge": 4,
                             "wlan-access-point": 8, "router": 16, "telephone": 32,
                             "docsis-cable-device": 64, "station-only": 128
-                        }[c]
+                        }[c.lower()]
             n["remote_capabilities"] = cap
 
             #Get system name
