@@ -64,6 +64,7 @@ class Script(BaseScript):
         "GigabitEthernet": "physical",
         "FastEthernet": "physical",
         "Ethernet": "physical",
+        "Cascade": "physical",
         "Logic-Channel": "tunnel",
         "LoopBack": "loopback",
         "MEth": "management",

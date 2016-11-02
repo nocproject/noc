@@ -70,13 +70,13 @@ class Script(BaseScript):
     rx_mstp_instance = re.compile(r"^\s*(\d+)\s+(.+)?", re.MULTILINE)
 
     rx_mstp0_bridge = re.compile(
-        r"CIST\sBridge\s+:(?P<bridge_priority>\d+)\.(?P<bridge_id>\S+).+?"
-        r"CIST\sRoot/ERPC\s+:(?P<root_priority>\d+)\.(?P<root_id>\S+)\s",
+        r"CIST\sBridge\s+:(?P<bridge_priority>\d+)(\s|)\.(?P<bridge_id>\S+).+?"
+        r"CIST\sRoot/ERPC\s+:(?P<root_priority>\d+)(\s|)\.(?P<root_id>\S+)\s",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     rx_mstp_bridge = re.compile(
-        r"MSTI\sBridge\sID\s+:(?P<bridge_priority>\d+)\.(?P<bridge_id>\S+).+?"
-        r"MSTI\sRegRoot/[IE]RPC\s+:(?P<root_priority>\d+)\.(?P<root_id>\S+)\s",
+        r"MSTI\sBridge\sID\s+:(?P<bridge_priority>\d+)(\s|)\.(?P<bridge_id>\S+).+?"
+        r"MSTI\sRegRoot/[IE]RPC\s+:(?P<root_priority>\d+)(\s|)\.(?P<root_id>\S+)\s",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     rx_mstp0_interfaces = re.compile(
