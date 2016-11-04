@@ -68,8 +68,8 @@ class Profile(BaseProfile):
             il = interface.lower()
         else:
             il = interface.name.lower()
-        if il.startswith("NDE_"):
-            return interface
+        if il.startswith("nde_"):
+            return "NDE_" + interface[4:]
         if il.startswith("dot11radio"):
             return "Dot11Radio" + interface[10:]
         if il.startswith("bdi"):
@@ -163,6 +163,7 @@ class Profile(BaseProfile):
         "MF": "aggregated",  # Multilink Frame Relay
         "Mf": "aggregated",  # Multilink Frame Relay
         "Mu": "aggregated",  # Multilink-group interface
+        "ND": "other",      # Netflow Data Exporter
         "PO": "physical",  # Packet OC-3 Port Adapter
         "Po": "aggregated",  # Port-channel/Portgroup
         "R": "aggregated",  # @todo: fix
