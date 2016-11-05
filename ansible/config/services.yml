@@ -208,12 +208,12 @@ config:
     batch_size:
       label: Write batch size (metrics)
       type: int
-      default: 100
+      default: 1000
 
     metrics_buffer:
       label: Metrics buffer size (metrics)
       type: int
-      default: 500
+      default: 90000
 
   classifier:
     lookup_solution:
