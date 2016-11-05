@@ -29,17 +29,17 @@ class LinkDashboard(BaseDashboard):
     def render(self):
         mos = self.object
         context = {
-            "device_a": mos.managed_objects[0].name,
-            "device_b": mos.managed_objects[1].name,
+            "device_a": mos.interfaces[0].managed_object.name,
+            "device_b": mos.interfaces[1].managed_object.name,
             "interface_a": {
                 "name": mos.interfaces[0].name,
                 "descr": mos.interfaces[0].description or mos.interfaces[0].name},
             "interface_b": {
                 "name": mos.interfaces[1].name,
-                "descr": mos.interfaces[0].description or mos.interfaces[1].name},
+                "descr": mos.interfaces[1].description or mos.interfaces[1].name},
             "segment": mos.managed_objects[0].segment.id,
             "device_a_id": mos.managed_objects[0].id,
-            "device_b_id": mos.managed_objects[0].id,
+            "device_b_id": mos.managed_objects[1].id,
         }
         self.logger.info("Context with data: %s" % context)
         PM_TEMPLATE_PATH = "templates/ddash/"
