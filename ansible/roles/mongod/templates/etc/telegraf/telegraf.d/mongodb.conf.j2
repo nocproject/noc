@@ -8,6 +8,7 @@
   # we use 127.0.0.1 hre because of it will be launched on each mongodb server
   #
   servers = ["mongodb://{{ noc_mongo_admin_user }}:{{ noc_mongo_admin_password }}@127.0.0.1:27017/admin"]
+  gather_perdb_stats = true
 
 
 [[inputs.procstat]]
