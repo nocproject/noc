@@ -47,7 +47,6 @@ class Script(BaseScript):
     }
 
     def execute(self, **kwargs):
-        self.capabilities[self.CAP_SLA_SYNTAX] = 0
         if not self.has_capability(self.CAP_SLA_SYNTAX, allow_zero=True):
             return []
         cfg = self.cli(
