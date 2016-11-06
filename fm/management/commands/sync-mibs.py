@@ -18,7 +18,7 @@ import time
 from django.core.management.base import BaseCommand, CommandError
 import ujson
 ## NOC modules
-from noc.fm.models import MIB
+from noc.fm.models.mib import MIB
 
 
 class Command(BaseCommand):

@@ -15,7 +15,8 @@ import gzip
 from django.core.management.base import BaseCommand, CommandError
 import ujson
 ## NOC modules
-from noc.fm.models import MIB, MIBData
+from noc.fm.models.mib import MIB
+from noc.fm.models.mibdata import MIBData
 
 
 class Command(BaseCommand):

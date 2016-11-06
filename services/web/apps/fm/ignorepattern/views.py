@@ -8,8 +8,8 @@
 
 ## NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
-from noc.fm.models import IgnorePattern
-from noc.fm.models import get_event
+from noc.fm.models.ignorepattern import IgnorePattern
+from noc.fm.models.utils import get_event
 from noc.core.translation import ugettext as _
 
 

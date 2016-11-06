@@ -10,7 +10,9 @@
 import re
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.fm.models import MIB, ActiveEvent, EventClass, MIB
+from noc.fm.models.eventclass import EventClass
+from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.mib import MIB
 from noc.core.translation import ugettext as _
 
 
