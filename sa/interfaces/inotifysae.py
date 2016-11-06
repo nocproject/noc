@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, StringParameter, BooleanParameter
 
 
 class INotifySAE(Interface):

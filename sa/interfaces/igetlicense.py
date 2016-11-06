@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, DictParameter
 
 
 class IGetLicense(Interface):

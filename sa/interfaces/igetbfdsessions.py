@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC Modules
-from base import *
+from base import (Interface, DictListParameter, IPParameter,
+                  InterfaceNameParameter, StringParameter, IntParameter, ListOfParameter)
 
 
 class IGetBFDSessions(Interface):

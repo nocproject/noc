@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import Interface, ListOfParameter, DictParameter, InterfaceNameParameter, StringParameter
 
 
 class IGetPortchannel(Interface):

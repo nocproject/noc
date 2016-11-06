@@ -7,7 +7,9 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import (Interface, DictParameter, ListOfParameter,
+                  VLANIDMapParameter, MACAddressParameter, InterfaceNameParameter,
+                  StringParameter, IntParameter, BooleanParameter)
 
 
 class IGetSpanningTree(Interface):

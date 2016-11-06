@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, IntParameter, BooleanParameter
 
 
 class IPeriodicTask(Interface):

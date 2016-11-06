@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, DictParameter, ListOfParameter, StringParameter, InterfaceNameParameter
 
 
 class IGetFDPNeighbors(Interface):

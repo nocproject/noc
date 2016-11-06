@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import (Interface, StringParameter, InterfaceNameParameter, ListOfParameter,
+                  DictParameter, IPv4Parameter, MACAddressParameter)
 
 
 class IGetARP(Interface):

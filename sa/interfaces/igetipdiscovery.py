@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import (Interface, ListOfParameter, DictParameter, InterfaceNameParameter,
+                  RDParameter, StringParameter, IPParameter, MACAddressParameter)
 
 
 class IGetIPDiscovery(Interface):

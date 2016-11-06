@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import Interface, InstanceOfParameter, StringParameter, BooleanParameter
 
 
 class IDispositionCondition(Interface):
