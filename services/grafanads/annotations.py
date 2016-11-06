@@ -14,6 +14,7 @@ import tornado.web
 import tornado.gen
 import ujson
 import dateutil.parser
+from dateutil import tz
 ## NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
@@ -32,10 +33,15 @@ class AnnotationsHandler(tornado.web.RequestHandler):
         except ValueError as e:
             raise tornado.web.HTTPError(400, "Bad request")
         #
-        f = dateutil.parser.parse(req["range"]["from"], ignoretz=True)
-        t = dateutil.parser.parse(req["range"]["to"], ignoretz=True)
+        f = dateutil.parser.parse(req["range"]["from"], ignoretz=False)
+        t = dateutil.parser.parse(req["range"]["to"], ignoretz=False)
         if f > t:
             t, f = f, t
+        # Convert from UTC
+        t = t.astimezone(tz.tzlocal())
+        f = f.astimezone(tz.tzlocal())
+        t = t.replace(tzinfo=None)
+        f = f.replace(tzinfo=None)
         # Annotation to return in reply
         ra = req.get("annotation")
         #
@@ -66,7 +72,7 @@ class AnnotationsHandler(tornado.web.RequestHandler):
                     "$lte": t
                 }
             else:
-                q["$or"] =  [
+                q["$or"] = [
                     {
                         "timestamp": {
                             "$gte": f,
