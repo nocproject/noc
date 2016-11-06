@@ -750,17 +750,35 @@ class BaseScript(object):
         """
         return self.has_capability("SNMP | Bulk")
 
-    def has_capability(self, capability):
+    def has_capability(self, capability, allow_zero=False):
         """
-        Shech whether equipment supports capability
+        Check whether equipment supports capability
         """
-        return bool(self.capabilities.get(capability))
+        if allow_zero:
+            return self.capabilities.get(capability) is not None
+        else:
+            return bool(self.capabilities.get(capability))
 
     def ignored_exceptions(self, iterable):
         """
         Context manager to silently ignore specified exceptions
         """
         return IgnoredExceptionsContextManager(iterable)
+
+    def iter_pairs(self, g, offset=0):
+        """
+        Convert iterable g to a pairs
+        i.e.
+        [1, 2, 3, 4] -> [(1, 2), (3, 4)]
+        :param g: Iterable
+        :param offset: Skip first recirds
+        :return:
+        """
+        g = iter(g)
+        if offset:
+            for _ in range(offset):
+                g.next()
+        return itertools.izip(g, g)
 
 
 class ScriptsHub(object):
