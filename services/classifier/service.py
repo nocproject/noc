@@ -24,9 +24,13 @@ import bson
 from noc.core.service.base import Service
 from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
-from noc.fm.models import (EventClassificationRule,
-                           EventClass, MIB, EventLog, CloneClassificationRule,
-                           ActiveEvent, Enumeration)
+from noc.fm.models.eventclassificationrule import EventClassificationRule
+from noc.fm.models.eventclass import EventClass
+from noc.fm.models.eventlog import EventLog
+from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.mib import MIB
+from noc.fm.models.cloneclassificationrule import CloneClassificationRule
+from noc.fm.models.enumeration import Enumeration
 from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
 import noc.inv.models.interface

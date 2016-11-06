@@ -11,7 +11,10 @@ import datetime
 ## NOC modules
 from noc.lib.scheduler.autointervaljob import AutoIntervalJob
 from noc.settings import config
-from noc.fm.models import EventClass, ActiveEvent, ArchivedEvent
+from noc.fm.models.eventclass import EventClass
+from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.archivedevent import ArchivedEvent
+
 
 class ArchiveJob(AutoIntervalJob):
     name = "fm.archive"

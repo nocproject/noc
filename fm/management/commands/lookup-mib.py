@@ -11,7 +11,7 @@ import re
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.fm.models import MIB
+from noc.fm.models.mib import MIB
 
 
 class Command(BaseCommand):

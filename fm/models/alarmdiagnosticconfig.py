@@ -16,8 +16,9 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ReferenceField, IntField
 import cachetools
 ## NOC modules
-from noc.fm.models.alarmclass import AlarmClass
-from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
+from alarmclass import AlarmClass
+from alarmdiagnostic import AlarmDiagnostic
+from utils import get_alarm
 from noc.sa.models.action import Action
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.lib.nosql import ForeignKeyField
@@ -239,4 +240,3 @@ def on_clear(alarm, cfg, *args, **kwargs):
     AlarmDiagnosticConfig.get_diag(a, cfg, "C")
 
 ##
-from noc.fm.models.utils import get_alarm
