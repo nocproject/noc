@@ -175,6 +175,28 @@ class Script(BaseScript):
         self.execute_platform(caps)
         return caps
 
+    def get_syntax_variant(self, commands):
+        """
+        Executes commands until correct syntax found
+        :param commands: list of commands
+        :return: Index of first working command or None, if none working
+        """
+        for i, cmd in enumerate(commands):
+            try:
+                self.cli(cmd)
+                return i
+            except (BaseScript.CLIOperationError, BaseScript.CLISyntaxError):
+                pass
+        return None
+
+    def apply_capability(self, name, value):
+        """
+        Apply capability to capabilities immediately
+        :param name:
+        :param value:
+        :return:
+        """
+        self.capabilities[name] = value
 
 def false_on_cli_error(f):
     @functools.wraps(f)
