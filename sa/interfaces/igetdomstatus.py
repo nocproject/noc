@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import (Interface, ListOfParameter, InterfaceNameParameter,
+                  DictParameter, FloatParameter, NoneParameter)
 
 
 class IGetDOMStatus(Interface):

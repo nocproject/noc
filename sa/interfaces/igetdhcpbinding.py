@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import (Interface, ListOfParameter, DictParameter, IPv4Parameter,
+                  MACAddressParameter, DateTimeParameter, StringParameter)
 
 
 class IGetDHCPBinding(Interface):

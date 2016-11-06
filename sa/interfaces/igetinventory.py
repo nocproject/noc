@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import (Interface, DictListParameter, StringParameter, BooleanParameter, FloatParameter,
+                  StringListParameter, REStringParameter)
 
 
 class IGetInventory(Interface):

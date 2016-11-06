@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import Interface, DictListParameter, StringParameter, IntParameter
 
 
 class IGetActivatorInfo(Interface):

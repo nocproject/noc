@@ -8,7 +8,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import (Interface, ListOfParameter, DictParameter,
+                  IPParameter, StringParameter, BooleanParameter)
 
 
 class IPingCheck(Interface):

@@ -5,7 +5,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import (Interface, IPParameter, DictParameter,
+                  IntParameter, BooleanParameter, StringParameter, FloatParameter)
 
 
 class IPing(Interface):

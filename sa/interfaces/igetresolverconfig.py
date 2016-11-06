@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import (Interface, DictParameter, ListOfParameter,
+                  IPParameter, StringParameter, StringListParameter)
 
 
 class IGetResolverConfig(Interface):

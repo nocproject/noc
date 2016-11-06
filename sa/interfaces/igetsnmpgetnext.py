@@ -8,7 +8,8 @@
 """
 """
 ## NOC modules
-from base import *
+from base import (Interface, ListOfParameter, OIDParameter,
+                  StringParameter, IntParameter, BooleanParameter, NoneParameter)
 
 
 class IGetSNMPGetNext(Interface):

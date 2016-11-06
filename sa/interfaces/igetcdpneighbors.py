@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import (Interface, DictParameter, ListOfParameter, StringParameter,
+                  InterfaceNameParameter, IPParameter)
 
 
 class IGetCDPNeighbors(Interface):

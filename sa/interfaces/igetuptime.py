@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import Interface, FloatParameter, NoneParameter
 
 
 class IGetUptime(Interface):
