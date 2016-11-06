@@ -7,9 +7,12 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import datetime
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import IntField, BooleanField
+from mongoengine.fields import IntField, BooleanField, DateTimeField
+from noc.fm.models.outage import Outage
 
 
 class ObjectStatus(Document):
@@ -23,6 +26,8 @@ class ObjectStatus(Document):
     # True - object is Up
     # False - object is Down
     status = BooleanField()
+    # Last update
+    last = DateTimeField()
 
     def __unicode__(self):
         return u"%s: %s" % (self.object, self.status)
@@ -36,6 +41,21 @@ class ObjectStatus(Document):
             return d["status"]
         else:
             return True
+
+    @classmethod
+    def get_last_status(cls, object):
+        """
+        Returns last registred status and update time
+        :param object: Managed Object id
+        :return: last status, last update or None
+        """
+        d = ObjectStatus._get_collection().find_one({
+            "object": object.id
+        })
+        if d:
+            return d["status"], d.get("last")
+        else:
+            return None, None
 
     @classmethod
     def get_statuses(cls, objects):
@@ -53,13 +73,13 @@ class ObjectStatus(Document):
 
     @classmethod
     def set_status(cls, object, status, ts=None):
-        from noc.fm.models.outage import Outage
-
+        ts = ts or datetime.datetime.now()
         ObjectStatus._get_collection().update({
             "object": object.id
         }, {
             "$set": {
-                "status": status
+                "status": status,
+                "last": ts
             }
         }, upsert=True)
         Outage.register_outage(object, not status, ts=ts)
