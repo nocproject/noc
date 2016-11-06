@@ -123,7 +123,7 @@ class BaseScript(object):
             )()
         self.credentials = credentials or {}
         self.version = version or {}
-        self.capabilities = capabilities
+        self.capabilities = capabilities or {}
         self.timeout = timeout or self.get_timeout()
         self.start_time = None
         self.args = self.clean_input(args or {})
