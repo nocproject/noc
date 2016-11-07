@@ -341,9 +341,10 @@ class ManagedObject(Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return ManagedObject.objects.get(id=id)
-        except ManagedObject.DoesNotExist:
+        mo = ManagedObject.objects.filter(id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
             return None
 
     def get_absolute_url(self):
