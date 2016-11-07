@@ -34,5 +34,5 @@ class Profile(BaseProfile):
         Gigabit Ethernet 2
         """
         if interface.startswith("Giga"):
-            return "GBE-" + interface.replace(" ", "")[16:]
+            return "GBE-" + interface.replace(" ", "")[15:]
         return interface
