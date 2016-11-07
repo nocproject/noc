@@ -43,7 +43,8 @@ class Script(BaseScript):
     # IOS to interface type conversion
     # @todo: Add other types
     TEST_TYPES = {
-        "icmp-echo": "icmp-echo"
+        "icmp-echo": "icmp-echo",
+        "icmp-jitter": "icmp-echo"
     }
 
     def execute(self, **kwargs):
