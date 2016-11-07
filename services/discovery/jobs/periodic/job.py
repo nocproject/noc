@@ -22,6 +22,9 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     context_version = 1
 
     def handler(self, **kwargs):
+        if self.object.auth_profile and self.object.auth_profile.type == "S":
+            self.logger.info("Invalid credentials. Stopping")
+            return
         self.reboot_detected = False
         if self.object.object_profile.enable_periodic_discovery_uptime:
             UptimeCheck(self).run()

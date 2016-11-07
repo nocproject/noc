@@ -48,6 +48,11 @@ class BoxDiscoveryJob(MODiscoveryJob):
             ProfileCheck(self).run()
         if self.object.auth_profile and self.object.auth_profile.enable_suggest:
             SuggestCLICheck(self).run()
+        if self.object.auth_profile and self.object.auth_profile.type == "S":
+            self.logger.info(
+                "Cannot choose valid credentials. Stopping"
+            )
+            return
         if self.object.object_profile.enable_box_discovery_version:
             VersionCheck(self).run()
         if self.object.object_profile.enable_box_discovery_caps:
