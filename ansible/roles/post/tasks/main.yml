@@ -82,7 +82,7 @@
     body_format: json
     validate_certs: no
     body:
-      name: default
+      name: nocdb
       type: influxdb
       url: "http://{{ noc_config.services.influxdb.0 }}"
       access: proxy
