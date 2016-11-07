@@ -63,7 +63,7 @@ class SLACheck(DiscoveryCheck):
                     deleted.add(t.name)
                     continue
                 nn = nt[t.name]
-                for a in ("type", "target", "hw_timestamp"):
+                for a in ("description", "type", "target", "hw_timestamp"):
                     v = getattr(t, a)
                     if nn[a] != v:
                         self.logger.info(
@@ -88,6 +88,7 @@ class SLACheck(DiscoveryCheck):
             probe = SLAProbe(
                 managed_object=self.object,
                 name=p["name"],
+                description=p.get("description"),
                 tests=[
                     SLAProbeTest(name=t["name"],
                                  type=t["type"],
