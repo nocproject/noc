@@ -3,7 +3,7 @@
   become: yes
   service:
     name: telegraf
-    state: reloaded
+    state: restarted
 
 - name: reload pgbouncer
   become: yes
