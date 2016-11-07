@@ -8,13 +8,6 @@
 
 # Third-party modules
 from bson import ObjectId
-# NOC modules
-from activeevent import ActiveEvent
-from archivedevent import ArchivedEvent
-from failedevent import FailedEvent
-from newevent import NewEvent
-from activealarm import ActiveAlarm
-from archivedalarm import ArchivedAlarm
 
 
 def get_event(event_id):
@@ -71,3 +64,11 @@ def get_severity(alarms):
         if not al:
             break
     return severity
+
+# NOC modules
+from activeevent import ActiveEvent
+from archivedevent import ArchivedEvent
+from failedevent import FailedEvent
+from newevent import NewEvent
+from activealarm import ActiveAlarm
+from archivedalarm import ArchivedAlarm
