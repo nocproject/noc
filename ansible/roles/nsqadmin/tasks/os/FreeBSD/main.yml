@@ -1,12 +1,6 @@
 ---
-- name: Create rc.d directory
-  file: path=/usr/local/etc/rc.d state=directory mode=0755
-
 - name: Install nsqadmin init script
   template: src="os/FreeBSD/etc/rc.d/nsqadmin.j2" dest="/usr/local/etc/rc.d/nsqadmin" mode="a+rx"
-
-- name: Ensure /etc/rc.conf exists
-  file: path=/etc/rc.conf state=touch
 
 - name: Enable NSQADMIN system service
   service: name="nsqadmin" enabled=yes
