@@ -328,7 +328,7 @@ class ManagedObject(Model):
             self._cache[name] = cw
             return cw
 
-    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __init__(self, *args, **kwargs):
         super(ManagedObject, self).__init__(*args, **kwargs)
