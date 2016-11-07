@@ -468,12 +468,11 @@ class CorrelatorService(Service):
         :return: ActiveEvent instance or None
         """
         self.logger.info("[%s] Lookup event", event_id)
-        try:
-            return ActiveEvent.objects.get(id=event_id)
-        except ActiveEvent.DoesNotExist:
+        e = ActiveEvent.objects.filter(id=event_id).first()
+        if not e:
             self.logger.info("[%s] Event not found, skipping", event_id)
             self.perf_metrics["event_lookup_failed"] += 1
-            return None
+        return e
 
     def dispose_event(self, e):
         """
