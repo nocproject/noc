@@ -5,8 +5,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, VLANIDParameter,
-                  StringParameter, StringListParameter, BooleanParameter)
+from base import (Interface, VLANIDParameter, StringParameter, 
+                  StringListParameter, BooleanParameter)
 
 
 class IAddVlan(Interface):
