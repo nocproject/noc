@@ -10,3 +10,4 @@
   with_items:
     - /var/run/grafana3
     - /var/log/grafana3
+  notify: restart grafana
