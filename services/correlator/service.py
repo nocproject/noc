@@ -11,8 +11,8 @@
 import sys
 import datetime
 import re
-import Queue
 from collections import defaultdict
+from threading import Lock
 ## Third-party modules
 import tornado.gen
 ## NOC modules
@@ -48,10 +48,9 @@ class CorrelatorService(Service):
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         self.scheduler = None
-        self.correlate_queue = Queue.Queue()
+        self.correlate_lock = defaultdict(Lock)
 
     def on_activate(self):
-        self.get_executor("max").submit(self.correlator_worker)
         self.scheduler = Scheduler(
             self.name,
             reset_running=True,
@@ -303,16 +302,23 @@ class CorrelatorService(Service):
             a.alarm_class.name, a.id, a.vars
         )
         self.perf_metrics["alarm_raise"] += 1
-        self.correlate_queue.put((r, a))
-
-    def correlator_worker(self):
-        self.logger.info("Starting correlator worker thread")
-        while True:
-            r, a = self.correlate_queue.get()
-            try:
-                self.correlate(r, a)
-            except Exception:
-                error_report()
+        with self.correlate_lock[a.managed_object.pool.name]:
+            self.correlate(r, a)
+        # Notify about new alarm
+        if not a.root:
+            a.managed_object.event(a.managed_object.EV_ALARM_RISEN, {
+                "alarm": a,
+                "subject": a.subject,
+                "body": a.body,
+                "symptoms": a.alarm_class.symptoms,
+                "recommended_actions": a.alarm_class.recommended_actions,
+                "probable_causes": a.alarm_class.probable_causes
+            }, delay=a.alarm_class.get_notification_delay())
+        # Gather diagnostics when necessary
+        AlarmDiagnosticConfig.on_raise(a)
+        # Watch for escalations, when necessary
+        if not a.root:
+            AlarmEscalation.watch_escalations(a)
 
     def correlate(self, r, a):
         # RCA
@@ -351,21 +357,6 @@ class CorrelatorService(Service):
             a.delete()
             self.perf_metrics["alarm_drop"] += 1
             return
-        # Notify about new alarm
-        if not a.root:
-            a.managed_object.event(a.managed_object.EV_ALARM_RISEN, {
-                "alarm": a,
-                "subject": a.subject,
-                "body": a.body,
-                "symptoms": a.alarm_class.symptoms,
-                "recommended_actions": a.alarm_class.recommended_actions,
-                "probable_causes": a.alarm_class.probable_causes
-            }, delay=a.alarm_class.get_notification_delay())
-        # Gather diagnostics when necessary
-        AlarmDiagnosticConfig.on_raise(a)
-        # Watch for escalations, when necessary
-        if not a.root:
-            AlarmEscalation.watch_escalations(a)
 
     def clear_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
