@@ -666,7 +666,7 @@ class ManagedObject(Model):
         return ObjectStatus.get_status(self)
 
     def get_last_status(self):
-        return ObjectStatus.get_last_status()
+        return ObjectStatus.get_last_status(self)
 
     def set_status(self, status, ts=None):
         ObjectStatus.set_status(self, status, ts=ts)
