@@ -530,6 +530,21 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("On serial change")
                                         } */
                                     ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("SLA"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        padding: "4 8 0 0"
+                                    },
+                                    items: [
+                                        {
+                                            name: "enable_box_discovery_sla",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("SLA")
+                                        }
+                                    ]
                                 }
                             ]
                         },
