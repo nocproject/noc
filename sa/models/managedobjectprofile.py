@@ -135,6 +135,8 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_stp = models.BooleanField(default=False)
     # L2 topology using UDLD
     enable_box_discovery_udld = models.BooleanField(default=False)
+    # Enable SLA probes discovery
+    enable_box_discovery_sla = models.BooleanField(default=False)
     # Enable periodic discovery.
     # Periodic discovery launched repeatedly
     enable_periodic_discovery = models.BooleanField(default=True)

@@ -101,35 +101,44 @@ class DiscoveryCheck(object):
         checks = self.job.attrs.get("_checks", set())
         return not checks or self.name in checks
 
+    def has_required_script(self):
+        return (not self.required_script or
+                self.required_script in self.object.scripts)
+
+    def has_required_capabilities(self):
+        if not self.required_capabilities:
+            return True
+        caps = self.object.get_caps()
+        for cn in self.required_capabilities:
+            if cn not in caps:
+                self.logger.info(
+                    "Object hasn't required capability '%s'. "
+                    "Skipping",
+                    cn
+                )
+                return False
+            v = caps[cn]
+            if not v:
+                self.logger.info(
+                    "Capability '%s' is disabled. Skipping",
+                    cn
+                )
+                return False
+        return True
+
     def run(self):
         if not self.is_enabled():
             self.logger.info("Check is disabled. Skipping")
             return
         with self.job.check_timer(self.name):
             # Check required scripts
-            if (self.required_script and
-                    self.required_script not in self.object.scripts):
+            if not self.has_required_script():
                 self.logger.info("%s script is not supported. Skipping",
                                  self.required_script)
                 return
             # Check required capabilities
-            if self.required_capabilities:
-                caps = self.object.get_caps()
-                for cn in self.required_capabilities:
-                    if cn not in caps:
-                        self.logger.info(
-                            "Object hasn't required capability '%s'. "
-                            "Skipping",
-                            cn
-                        )
-                        return
-                    v = caps[cn]
-                    if not v:
-                        self.logger.info(
-                            "Capability '%s' is disabled. Skipping",
-                            cn
-                        )
-                        return
+            if not self.has_required_capabilities():
+                return
             # Run check
             try:
                 self.handler()
