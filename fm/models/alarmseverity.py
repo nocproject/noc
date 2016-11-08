@@ -2,10 +2,13 @@
 ##----------------------------------------------------------------------
 ## AlarmSeverity model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+from threading import Lock
+import operator
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, UUIDField)
@@ -15,6 +18,8 @@ from noc.main.models.style import Style
 from noc.lib.nosql import ForeignKeyField
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
+
+id_lock = Lock()
 
 
 class AlarmSeverity(Document):
@@ -37,17 +42,34 @@ class AlarmSeverity(Document):
     sound = StringField(default="alarm")
     volume = IntField(default=100)
 
+    _id_cache = cachetools.TTLCache(maxsize=50, ttl=60)
+    _order_cache = cachetools.TTLCache(maxsize=1, ttl=60)
+
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return AlarmSeverity.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_order_cache"), lock=lambda _: id_lock)
+    def get_ordered(cls):
+        """
+        Returns list of severities ordered in acvending order
+        :return:
+        """
+        return list(AlarmSeverity.objects.order_by("severity"))
 
     @classmethod
     def get_severity(cls, severity):
         """
         Returns Alarm Severity instance corresponding to numeric value
         """
-        s = cls.objects.filter(severity__lte=severity).order_by("-severity").first()
-        if not s:
-            s = cls.objects.order_by("severity").first()
+        for s in reversed(cls.get_ordered()):
+            if severity >= s.severity:
+                return s
         return s
 
     @classmethod
