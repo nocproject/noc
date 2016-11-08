@@ -28,6 +28,11 @@ Ext.define('NOC.LoginView', {
         , padding: 15
         , reference: 'loginForm'
         , fixed: true
+        , border: false
+        , bodyStyle: {
+            background: '#e0e0e0',
+            padding: '10px'
+        }
         , autoEl: {
             tag: 'form'
         }
