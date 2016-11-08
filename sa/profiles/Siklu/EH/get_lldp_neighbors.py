@@ -61,7 +61,13 @@ class Script(BaseScript):
             if not section:
                 continue
             name, cfg = self.parse_section(section)
-            # Hack. We use port_id for chassis_id 
+            # Hack. We use port_id for chassis_id
+            if "port-id" not in cfg:
+                r += [{
+                    "local_interface": name,
+                    "neighbors": []
+                }]
+                return r
             neighbor = {
                 "remote_chassis_id": cfg["port-id"],
                 "remote_chassis_id_subtype": self.CHASSIS_TYPES[cfg["chassis-id-subtype"]],
