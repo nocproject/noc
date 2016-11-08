@@ -10,6 +10,7 @@
 from collections import namedtuple
 ## Third-party modules
 import six
+from noc.core.clickhouse.dictionary import Dictionary
 
 
 class OP(object):
@@ -41,6 +42,23 @@ class OP(object):
             if self.prefix:
                 r = "%s%s" % (self.prefix, r)
             return r
+
+
+def f_lookup(seq):
+    """
+    $lookup (dictionary, id [,field])
+    :param seq:
+    :return:
+    """
+    dict_name = seq[0]
+    dc = Dictionary.get_dictionary_class(dict_name)
+    if len(seq) == 2:
+        field_name = dc._fields_order[0]
+    else:
+        field_name = seq[2]
+    t = dc.get_field_type(field_name)
+    id_expr = to_sql(seq[1])
+    return "dictGet%s('%s', '%s', %s)" % (t, field_name, id_expr)
 
 
 OP_MAP = {
@@ -82,7 +100,9 @@ OP_MAP = {
     "$sum": OP(min=1, max=1, function="SUM"),
     "$avg": OP(min=1, max=1, function="AVG"),
     "$uniq": OP(min=1, max=1, function="UNIQ"),
-    "$median": OP(min=1, max=1, function="MEDIAN")
+    "$median": OP(min=1, max=1, function="MEDIAN"),
+    # Dictionary lookup
+    "$lookup": OP(min=2, max=3, convert=f_lookup)
 }
 
 
