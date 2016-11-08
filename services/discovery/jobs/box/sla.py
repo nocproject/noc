@@ -52,11 +52,19 @@ class SLACheck(DiscoveryCheck):
                 self.logger.info("[%s] Removing probe", p.name)
                 p.delete()
                 continue
+            changed = False
             nt = {}
+            d = n[p.name].get("description")
+            if p.description != d:
+                self.logger.info(
+                    "[%s] Changing description: %s -> %s",
+                    p.name, p.description, d
+                )
+                p.description = d
+                changed = True
             for t in n[p.name]["tests"]:
                 nt[t["name"]] = t
             deleted = set()
-            changed = False
             for t in p.tests:
                 if t.name not in nt:
                     # Schedule test to remove
@@ -88,6 +96,7 @@ class SLACheck(DiscoveryCheck):
             probe = SLAProbe(
                 managed_object=self.object,
                 name=p["name"],
+                description=p.get("description"),
                 tests=[
                     SLAProbeTest(name=t["name"],
                                  type=t["type"],

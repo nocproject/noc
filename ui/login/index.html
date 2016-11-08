@@ -12,11 +12,9 @@
     <!-- Initialize RPC application -->
     <script src="/api/login/sdl.js" type="text/javascript"></script>
     <!-- Load application -->
-    {% raw mergecache([
-        "/ui/common/gettext.js"
-    ]) %}
+    <script src="{{ hashed("/ui/common/gettext.js") }}"></script>
 </head>
 <body>
-    <script type="text/javascript" src="/ui/login/app/app.js"></script>
+    <script type="text/javascript" src="{{ hashed("/ui/login/app/app.js") }}"></script>
 </body>
 </html>

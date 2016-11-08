@@ -101,7 +101,7 @@ class AlarmCard(BaseCard):
             "maintenance": mainteinance,
             "lon": mo.x,
             "lat": mo.y,
-            "zoom": mo.zoom
+            "zoom": mo.default_zoom
         }
         return r
 
