@@ -14,7 +14,7 @@ import os
 import re
 import itertools
 import operator
-from threading import RLock
+from threading import Lock
 ## Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
@@ -60,7 +60,7 @@ Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
 Version = namedtuple("Version", ["profile", "vendor", "platform", "version"])
 
-id_lock = RLock()
+id_lock = Lock()
 
 logger = logging.getLogger(__name__)
 
