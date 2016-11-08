@@ -170,3 +170,13 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
         :return:
         """
         raise NotImplementedError()
+
+    @classmethod
+    def get_field_type(cls, name):
+        """
+        Returns field type
+
+        :param name:
+        :return:
+        """
+        return cls._fields[name].db_type
