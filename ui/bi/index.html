@@ -18,11 +18,9 @@
     <script src="{{ hashed("/ui/pkg/dcjs/dc.min.js") }}"></script>
     <!-- Initialize RPC application -->
     <script src="/api/bi/sdl.js" type="text/javascript"></script>
-    {% raw mergecache([
-        "/ui/common/gettext.js",
-        "/ui/common/init.js",
-        "/ui/common/rpc.js"
-    ]) %}
+    <script src="{{ hashed("/ui/common/gettext.js") }}"></script>
+    <script src="{{ hashed("/ui/common/init.js") }}"></script>
+    <script src="{{ hashed("/ui/common/rpc.js") }}"></script>
     <script src="{{ hashed("/ui/bi/js/dashboard.js") }}"></script>
 </head>
 <body>
