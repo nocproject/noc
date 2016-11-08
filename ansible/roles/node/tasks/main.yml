@@ -223,8 +223,6 @@
       owner: "{{noc_user}}"
     - name: var/etc/noc
       owner: root
-    - name: var/ui/cache
-      owner: "{{ noc_user }}"
     - name: lib/python2.7/site-packages/__pycache__
       owner: "{{ noc_user }}"
     - name: var/reports
