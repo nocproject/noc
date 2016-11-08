@@ -17,6 +17,7 @@ Ext.define('NOC.LoginView', {
     , modal: true
     , defaultListenerScope: true
     , defaultFocus: 'user'
+    , defaultButton: 'okButton'
     , referenceHolder: true
     , requires: [
         'Ext.form.Panel',
@@ -69,6 +70,7 @@ Ext.define('NOC.LoginView', {
             // }
         }, {
             xtype: 'button'
+            , reference: 'okButton'
             , margin: '15 0 0 200'
             , width: 50
             , formBind: true
