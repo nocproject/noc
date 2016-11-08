@@ -101,5 +101,7 @@ class Script(BaseScript):
             }]
             match = self.rx_tag.search(config)
             if match:
-                r[-1]["description"] = match.group("tag").strip()
+                tag = match.group("tag").strip()
+                if tag:
+                    r[-1]["description"] = tag
         return r
