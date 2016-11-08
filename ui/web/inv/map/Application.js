@@ -134,8 +134,7 @@ Ext.define("NOC.inv.map.Application", {
             collapsible: true,
             collapseMode: undefined,
             header: false,
-            hideCollapseTool: true,
-            height: 335
+            hideCollapseTool: true
         });
 
         me.miniMapPanel = Ext.create("NOC.inv.map.MiniMap", {
@@ -144,8 +143,7 @@ Ext.define("NOC.inv.map.Application", {
             collapsible: true,
             collapseMode: undefined,
             header: false,
-            hideCollapseTool: true,
-            height: 300
+            hideCollapseTool: true
         });
 
         me.basketPanel = Ext.create("NOC.inv.map.Basket", {
@@ -156,7 +154,6 @@ Ext.define("NOC.inv.map.Application", {
             collapseMode: undefined,
             header: false,
             hideCollapseTool: true,
-            height: 300,
             listeners: {
                 scope: me,
                 createmaintaince: function(data) {
