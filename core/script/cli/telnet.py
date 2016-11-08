@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Telnet CLI
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -20,6 +20,8 @@ WILL = chr(0xFB)
 SB = chr(0xFA)
 SE = chr(0xF0)
 NAWS = chr(0x1F)
+AO = chr(0xF5)
+AYT = chr(0xF6)
 
 IAC_CMD = {
     DO: "DO",
@@ -27,6 +29,8 @@ IAC_CMD = {
     WILL: "WILL",
     WONT: "WONT"
 }
+
+IGNORED_CMD = set([AO, AYT])
 
 TELNET_OPTIONS = {
     0: "BINARY",
@@ -109,6 +113,9 @@ class TelnetIOStream(IOStream):
                 elif right[0] == IAC:
                     # <IAC> <IAC> leads to single <IAC>
                     r += [IAC]
+                    chunk = right[1:]
+                elif right[0] in IGNORED_CMD:
+                    # Ignore command
                     chunk = right[1:]
                 elif right[0] != SB:
                     # Process IAC <cmd> <opt>

@@ -15,6 +15,7 @@ from base import (Interface, DictListParameter, StringParameter,
 class IGetSLAProbes(Interface):
     """
     name: Unique probe name
+    description: Probe description
     tests: List of configured tests
         name: Unique test name
         type: Test type
@@ -22,6 +23,7 @@ class IGetSLAProbes(Interface):
     """
     returns = DictListParameter(attrs={
         "name": StringParameter(),
+        "description": StringParameter(required=False),
         "tests": DictListParameter(attrs={
             "name": StringParameter(),
             "type": StringParameter(choices=[

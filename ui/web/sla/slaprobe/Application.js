@@ -29,6 +29,11 @@ Ext.define("NOC.sla.slaprobe.Application", {
                 {
                     text: __("Name"),
                     dataIndex: "name",
+                    width: 100
+                },
+                {
+                    text: __("Description"),
+                    dataIndex: "description",
                     flex: 1
                 }
             ],

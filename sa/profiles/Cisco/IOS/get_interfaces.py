@@ -12,7 +12,8 @@ import re
 from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces, InterfaceTypeError
+from noc.sa.interfaces.base import InterfaceTypeError
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.profiles.Cisco.IOS import uBR
 
 

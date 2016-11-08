@@ -311,15 +311,6 @@ server {
         access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
-    # Minified JS files
-    location ^~ /ui/cache/ {
-        alias {{ noc_root }}/var/ui/cache/;
-        gzip on;
-        gzip_types text/css text/x-js;
-        access_log  {{ nginx_log_dir }}/static.access.log noc_format;
-
-    }
-
     # UI files
     location ^~ /ui/ {
         alias {{ noc_root }}/ui/;

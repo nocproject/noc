@@ -49,11 +49,12 @@ def check_down(alarm):
 def close_oo_alarm(alarm_id, timestamp, *args, **kwargs):
     logger.info("[close_oo_alarm|%s] Closing alarm", alarm_id)
     alarm = get_alarm(alarm_id)
-    if alarm.status == "C":
+    if alarm.status != "A":
         logger.info("[close_oo_alarm|%s] Already closed, skipping",
                     alarm_id)
+        return
     alarm.clear_alarm(
         message="Cleared as out-of-order",
-        timestamp=timestamp
+        ts=timestamp
     )
     metrics["oo_pings_closed"] += 1

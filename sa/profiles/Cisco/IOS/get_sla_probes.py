@@ -40,11 +40,22 @@ class Script(BaseScript):
         re.MULTILINE
     )
 
+    rx_target1 = re.compile(
+        "Target address: (?P<target>\S+)",
+        re.MULTILINE
+    )
+
+    rx_tag = re.compile(
+        "Tag:\s*(?P<tag>[^\n]+)\n",
+        re.MULTILINE
+    )
+
     # IOS to interface type conversion
     # @todo: Add other types
     TEST_TYPES = {
         "icmp-echo": "icmp-echo",
-        "icmp-jitter": "icmp-echo"
+        "icmp-jitter": "icmp-echo",
+        "echo": "icmp-echo"
     }
 
     def execute(self, **kwargs):
@@ -67,10 +78,12 @@ class Script(BaseScript):
             type = match.group("type")
             match = self.rx_target.search(config)
             if not match:
-                self.logger.error(
-                    "Cannot find target for IP SLA probe %s. Ignoring",
-                    name
-                )
+                match = self.rx_target1.search(config)
+                if not match:
+                    self.logger.error(
+                        "Cannot find target for IP SLA probe %s. Ignoring",
+                        name
+                    )
             if type not in self.TEST_TYPES:
                 self.logger.error(
                     "Unknown test type %s for IP SLA probe %s. Ignoring",
@@ -86,4 +99,9 @@ class Script(BaseScript):
                     "target": target
                 }]
             }]
+            match = self.rx_tag.search(config)
+            if match:
+                tag = match.group("tag").strip()
+                if tag:
+                    r[-1]["description"] = tag
         return r

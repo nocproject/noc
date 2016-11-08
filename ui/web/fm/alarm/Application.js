@@ -9,6 +9,9 @@ console.debug("Defining NOC.fm.alarm.Application");
 Ext.define("NOC.fm.alarm.Application", {
     extend: "NOC.core.Application",
     layout: "card",
+    mixins: [
+        "NOC.core.Export"
+    ],
     STATUS_MAP: {
         A: "Active",
         C: "Archived"
@@ -196,7 +199,7 @@ Ext.define("NOC.fm.alarm.Application", {
                 {
                     text: __("All"),
                     pressed: true,
-                    tooltip: __("Show all alarms"),
+                    tooltip: __("Show all alarms")
                 }
             ],
             listeners: {
@@ -239,6 +242,14 @@ Ext.define("NOC.fm.alarm.Application", {
                     handler: me.onContextMenuRefresh
                 },
                 {
+                    text: __("Save screen"),
+                    glyph: NOC.glyph.arrow_down,
+                    scope: me,
+                    handler: function() {
+                        this.save(me.gridPanel, "alarms.csv")
+                    }
+                },
+                {
                     text: __("Filter"),
                     glyph: NOC.glyph.filter,
                     menu: [
@@ -272,13 +283,13 @@ Ext.define("NOC.fm.alarm.Application", {
             itemId: "grid-panel",
             stateful: true,
             stateId: "fm.alarm-grid",
-            plugins: [
-                {
-                    ptype: "bufferedrenderer"
-                    //trailingBufferZone: 50,
-                    //leadingBufferZone: 50
-                }
-            ],
+            // plugins: [
+            //     {
+            //         ptype: "bufferedrenderer"
+            //         //trailingBufferZone: 50,
+            //         //leadingBufferZone: 50
+            //     }
+            // ],
             dockedItems: [
                 {
                     xtype: "form",

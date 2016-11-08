@@ -14,7 +14,7 @@ import os
 import re
 import itertools
 import operator
-from threading import RLock
+from threading import Lock
 ## Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
@@ -60,7 +60,7 @@ Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
 Version = namedtuple("Version", ["profile", "vendor", "platform", "version"])
 
-id_lock = RLock()
+id_lock = Lock()
 
 logger = logging.getLogger(__name__)
 
@@ -328,7 +328,7 @@ class ManagedObject(Model):
             self._cache[name] = cw
             return cw
 
-    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __init__(self, *args, **kwargs):
         super(ManagedObject, self).__init__(*args, **kwargs)
@@ -341,9 +341,10 @@ class ManagedObject(Model):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return ManagedObject.objects.get(id=id)
-        except ManagedObject.DoesNotExist:
+        mo = ManagedObject.objects.filter(id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
             return None
 
     def get_absolute_url(self):
@@ -454,7 +455,8 @@ class ManagedObject(Model):
             "super_password" in self.changed_fields or
             "snmp_ro" in self.changed_fields or
             "snmp_rw" in self.changed_fields or
-            "profile_name" in self.changed_fields
+            "profile_name" in self.changed_fields or
+            "pool" in self.changed_fields
         ):
             CredentialsCache.invalidate(self)
             if "profile_name" in self.changed_fields:
@@ -666,7 +668,7 @@ class ManagedObject(Model):
         return ObjectStatus.get_status(self)
 
     def get_last_status(self):
-        return ObjectStatus.get_last_status()
+        return ObjectStatus.get_last_status(self)
 
     def set_status(self, status, ts=None):
         ObjectStatus.set_status(self, status, ts=ts)

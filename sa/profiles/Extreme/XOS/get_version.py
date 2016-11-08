@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Extreme.XOS.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -13,7 +13,7 @@ import re
 
 rx_platform = re.compile(r"Card type:\s+(?P<platform>\S+)",
     re.MULTILINE | re.DOTALL)
-rx_version = re.compile(r"EXOS version:\s+(?P<version>\S+)",
+rx_version = re.compile(r"(EXOS )?[Vv]ersion:\s+(?P<version>\S+)",
     re.MULTILINE | re.DOTALL)
 
 

@@ -12,6 +12,10 @@ Ext.define("NOC.core.ModelApplication", {
         "NOC.core.ModelStore",
         "NOC.core.InlineModelStore"
     ],
+    mixins: [
+        "NOC.core.Export"
+    ],
+
     layout: "card",
     search: false,
     filters: null,
@@ -129,7 +133,18 @@ Ext.define("NOC.core.ModelApplication", {
             handler: me.onNewRecord
         });
 
-        gridToolbar.push(me.searchField, me.refreshButton, me.createButton);
+        me.exportButton = Ext.create("Ext.button.Button", {
+            itemId: "export",
+            text: __("Export"),
+            glyph: NOC.glyph.arrow_down,
+            tooltip: __("Save screen"),
+            scope: me,
+            handler: function() {
+                this.save(this.grid, "managed_objects.csv");
+            }
+    });
+
+        gridToolbar.push(me.searchField, me.refreshButton, me.createButton, me.exportButton);
         // admin actions
         if(me.actions || me.hasGroupEdit) {
             gridToolbar.push(me.createActionMenu());
@@ -327,11 +342,11 @@ Ext.define("NOC.core.ModelApplication", {
             stateful: true,
             stateId: me.appName + "-grid",
             plugins: [
-                {
-                    ptype: "bufferedrenderer"
-                    //trailingBufferZone: 50,
-                    //leadingBufferZone: 50
-                }
+            //     {
+            //         ptype: "bufferedrenderer"
+            //         //trailingBufferZone: 50,
+            //         //leadingBufferZone: 50
+            //     }
             ],
             selModel: selModel,
             dockedItems: gridToolbars,
