@@ -9,10 +9,6 @@ console.debug('Defining NOC.inv.map.inspectors.Inspector');
 Ext.define('NOC.inv.map.inspectors.Inspector', {
     extend: 'Ext.panel.Panel',
 
-    requires: [
-        'NOC.inv.map.Legend'
-    ],
-
     title: undefined,
     scrollable: true,
     bodyStyle: {
@@ -20,7 +16,6 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
     },
 
     layout: 'border',
-    miniPaper: null,
     width: 200,
 
     initComponent: function() {
@@ -28,30 +23,12 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
             region: 'north'
         });
 
-        this.legend = Ext.create('NOC.inv.map.Legend', {
-            hidden: true,
-            region: 'south'
-        });
-
-        this.miniMap = Ext.create('Ext.Component', {
-            region: 'south',
-            height: 300,
-            border: 2,
-            style: {
-                borderColor: 'black',
-                borderStyle: 'solid',
-                background: "#ecf0f1"
-            }
-        });
-
         Ext.apply(this, {
             defaults: {
                 padding: 4
             },
             items: [
-                this.infoText,
-                this.miniMap,
-                this.legend
+                this.infoText
             ]
         });
         this.callParent();
@@ -64,10 +41,6 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
             url += objectId + '/';
         }
 
-        if(this.miniPaper) {
-            var w = this.width;
-            var h = this.miniMap.getHeight();
-        }
         Ext.Ajax.request({
             url: url,
             method: "GET",
@@ -78,45 +51,6 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
                 this.enableButtons(values);
             }
         });
-    },
-
-    createMini: function(mapPanel){
-        this.paperEl = this.miniMap.el.dom;
-        this.paper = mapPanel.paper;
-        var w = this.width;
-        var h = this.miniMap.getHeight() - 10;
-
-        this.miniPaper = new joint.dia.Paper({
-            el: this.paperEl,
-            height: h,
-            width: w,
-            model: mapPanel.graph,
-            gridSize: 1,
-            interactive: false
-        });
-        this.miniPaper.on('blank:pointerdown', function(evt, x, y) {
-            mapPanel.items.first().scrollTo(x, y);
-        });
-    },
-
-    onLegend: function() {
-        this.visibleToggle(this.legend);
-    },
-
-    onMiniMap: function() {
-        this.visibleToggle(this.miniMap);
-    },
-
-    visibleToggle: function(element) {
-        if(element.isVisible()) {
-            element.hide();
-        } else {
-            element.show()
-        }
-    },
-
-    scaleContentToFit: function() {
-        this.miniPaper.scaleContentToFit();
     },
 
     enableButtons: Ext.emptyFn

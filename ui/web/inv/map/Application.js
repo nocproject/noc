@@ -12,7 +12,7 @@ Ext.define("NOC.inv.map.Application", {
         "NOC.inv.networksegment.TreeCombo",
         "NOC.inv.map.MapPanel"
     ],
-
+    rightWidth: 200,
     zoomLevels: [
         [0.25, "25%"],
         [0.5, "50%"],
@@ -127,16 +127,62 @@ Ext.define("NOC.inv.map.Application", {
             }
         );
 
+        me.legendPanel = Ext.create("NOC.inv.map.Legend", {
+            collapsed: true,
+            region: 'south',
+            width: this.rightWidth,
+            collapsible: true,
+            collapseMode: undefined,
+            header: false,
+            hideCollapseTool: true
+        });
+
+        me.miniMapPanel = Ext.create("NOC.inv.map.MiniMap", {
+            region: 'south',
+            width: this.rightWidth,
+            collapsible: true,
+            collapseMode: undefined,
+            header: false,
+            hideCollapseTool: true
+        });
+
+        me.basketPanel = Ext.create("NOC.inv.map.Basket", {
+            collapsed: true,
+            region: 'south',
+            width: this.rightWidth,
+            collapsible: true,
+            collapseMode: undefined,
+            header: false,
+            hideCollapseTool: true,
+            listeners: {
+                scope: me,
+                createmaintaince: function(data) {
+                    me.mapPanel.newMaintaince(data.items);
+                }
+            }
+        });
+
         me.inspectorPanel = Ext.create("Ext.panel.Panel", {
             app: me,
             layout: "card",
+            region: "center",
             scrollable: true,
-            width: 200,
-            dock: "right",
             items: [
                 me.segmentInspector,
                 me.managedObjectInspector,
                 me.linkInspector
+            ]
+        });
+
+        me.rightPanel = Ext.create("Ext.panel.Panel", {
+            layout: "border",
+            dock: "right",
+            width: this.rightWidth,
+            items: [
+                me.inspectorPanel,
+                me.basketPanel,
+                me.miniMapPanel,
+                me.legendPanel
             ]
         });
 
@@ -147,10 +193,13 @@ Ext.define("NOC.inv.map.Application", {
                 scope: me,
                 mapready: me.onMapReady,
                 changed: me.onChanged,
+                openbasket: function() {
+                    if(me.basketPanel.collapsed) {
+                        me.basketButton.setPressed();
+                    }
+                },
                 renderdone: function() {
-                    me.segmentInspector.scaleContentToFit();
-                    me.linkInspector.scaleContentToFit();
-                    me.managedObjectInspector.scaleContentToFit();
+                    me.miniMapPanel.scaleContentToFit();
                 }
             }
         });
@@ -188,7 +237,7 @@ Ext.define("NOC.inv.map.Application", {
 
         me.legendButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.info,
-            tooltip: __("Show legend"),
+            tooltip: __("Show/Hide legend"),
             enableToggle: true,
             listeners: {
                 scope: me,
@@ -198,11 +247,22 @@ Ext.define("NOC.inv.map.Application", {
 
         me.miniMapButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.map,
-            tooltip: __("Hide miniMap"),
+            tooltip: __("Show/Hide miniMap"),
             enableToggle: true,
+            pressed: true,
             listeners: {
                 scope: me,
                 toggle: me.onMiniMap
+            }
+        });
+
+        me.basketButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.shopping_basket,
+            tooltip: __("Show/Hide basket"),
+            enableToggle: true,
+            listeners: {
+                scope: me,
+                toggle: me.onBasket
             }
         });
 
@@ -228,11 +288,12 @@ Ext.define("NOC.inv.map.Application", {
                         "-",
                         me.viewStpButton,
                         "->",
+                        me.basketButton,
                         me.miniMapButton,
                         me.legendButton
                     ]
                 },
-                me.inspectorPanel
+                me.rightPanel
             ],
             items: [me.mapPanel]
         });
@@ -268,9 +329,7 @@ Ext.define("NOC.inv.map.Application", {
         if(me.getCmd() === "history") {
             me.loadSegment(me.noc.cmd.args[0]);
         }
-        me.segmentInspector.createMini(me.mapPanel);
-        me.managedObjectInspector.createMini(me.mapPanel);
-        me.linkInspector.createMini(me.mapPanel);
+        me.miniMapPanel.createMini(me.mapPanel);
     },
 
     onSelectSegment: function(combo, record, opts) {
@@ -381,18 +440,14 @@ Ext.define("NOC.inv.map.Application", {
     },
 
     onLegend: function() {
-        var me = this;
-
-        me.segmentInspector.onLegend();
-        me.linkInspector.onLegend();
-        me.managedObjectInspector.onLegend();
+        this.legendPanel.toggleCollapse();
     },
 
     onMiniMap: function() {
-        var me = this;
+        this.miniMapPanel.toggleCollapse();
+    },
 
-        me.segmentInspector.onMiniMap();
-        me.linkInspector.onMiniMap();
-        me.managedObjectInspector.onMiniMap();
+    onBasket: function() {
+        this.basketPanel.toggleCollapse();
     }
 });
