@@ -1,5 +1,5 @@
 {
-    "name": "Huawei | VRP | Security | Authentication | Login Failed (SYSLOG) #4",
+    "name": "Huawei | VRP | Security | Authentication | Login Failed #4 (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "7665063d-08a9-4630-a419-4a17b97be5e0",
     "description": "%%01SSH/4/SSH_FAIL(l)[47]:Failed to login through SSH. (IP=172.25.127.55, UserName=qqq, Times=3, FailedReason=User public key authentication failed)",
