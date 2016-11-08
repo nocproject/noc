@@ -7,11 +7,13 @@
 console.debug('Defining NOC.inv.map.Legend');
 
 Ext.define('NOC.inv.map.Legend', {
-    extend: 'Ext.container.Container',
+    extend: 'Ext.panel.Panel',
+    alias: 'widget.legend',
 
     items: [
         {
             xtype: 'box',
+            padding: '0 5',
             html: __('Legend')
         },
         {

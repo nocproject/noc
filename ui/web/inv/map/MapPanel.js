@@ -161,6 +161,13 @@ Ext.define("NOC.inv.map.MapPanel", {
                     scope: me,
                     handler: me.onNodeMenuNewMaintaince,
                     menuOn: 'managedobject'
+                },
+                {
+                    text: __("Add to group"),
+                    glyph: NOC.glyph.shopping_basket,
+                    scope: me,
+                    handler: me.onNodeMenuAddToBasket,
+                    menuOn: 'managedobject'
                 }
             ]
         });
@@ -210,7 +217,6 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight));
         me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight));
         me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
-        //me.createContextMenus();
         me.fireEvent("mapready");
     },
 
@@ -892,21 +898,17 @@ Ext.define("NOC.inv.map.MapPanel", {
         );
     },
 
-    onNodeMenuNewMaintaince: function() {
-        var me = this,
-            objectId = Number(me.nodeMenuObject);
+    newMaintaince: function(objects) {
         var args = {
-            direct_objects: [{
-                object: objectId,
-                object__label: me.objectNodes[objectId].attributes.attrs.text.text
-            }],
-            subject: __('created from map at ') +  me.objectNodes[objectId].attributes.attrs.text.text + ' ' + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
+            direct_objects: objects,
+            subject: __('created from map at ') + Ext.Date.format(new Date(), 'd.m.Y H:i P'),
             contacts: NOC.username,
             start_date: Ext.Date.format(new Date(), 'd.m.Y'),
             start_time: Ext.Date.format(new Date(), 'H:i'),
             stop_time: '12:00',
             suppress_alarms: true
         };
+
         Ext.create('NOC.maintainance.maintainancetype.LookupField')
             .getStore()
             .load({
@@ -922,6 +924,30 @@ Ext.define("NOC.inv.map.MapPanel", {
                     });
                 }
             });
+    },
+
+    onNodeMenuNewMaintaince: function() {
+        var me = this,
+            objectId = Number(me.nodeMenuObject);
+        me.newMaintaince([{
+            object: objectId,
+            object__label: me.objectNodes[objectId].attributes.attrs.text.text
+        }]);
+    },
+
+    onNodeMenuAddToBasket: function() {
+        var me = this,
+            objectId = Number(me.nodeMenuObject);
+        var store = Ext.data.StoreManager.lookup('basketStore');
+
+        if(store.getCount() === 0){
+            me.fireEvent("openbasket");
+        }
+        store.add({
+            id: objectId,
+            object: objectId,
+            object__label: me.objectNodes[objectId].attributes.attrs.text.text
+        });
     },
 
     setStp: function(status) {
