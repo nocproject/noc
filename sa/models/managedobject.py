@@ -455,7 +455,8 @@ class ManagedObject(Model):
             "super_password" in self.changed_fields or
             "snmp_ro" in self.changed_fields or
             "snmp_rw" in self.changed_fields or
-            "profile_name" in self.changed_fields
+            "profile_name" in self.changed_fields or
+            "pool" in self.changed_fields
         ):
             CredentialsCache.invalidate(self)
             if "profile_name" in self.changed_fields:
