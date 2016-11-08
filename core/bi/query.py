@@ -58,7 +58,7 @@ def f_lookup(seq):
         field_name = seq[2]
     t = dc.get_field_type(field_name)
     id_expr = to_sql(seq[1])
-    return "dictGet%s('%s', '%s', %s)" % (t, field_name, id_expr)
+    return "dictGet%s('%s', '%s', %s)" % (t, dict_name, field_name, id_expr)
 
 
 OP_MAP = {
