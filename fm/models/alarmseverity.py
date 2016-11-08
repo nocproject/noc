@@ -9,6 +9,7 @@
 ## Python modules
 from threading import Lock
 import operator
+from itertools import izip
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, UUIDField)
@@ -43,7 +44,8 @@ class AlarmSeverity(Document):
     volume = IntField(default=100)
 
     _id_cache = cachetools.TTLCache(maxsize=50, ttl=60)
-    _order_cache = cachetools.TTLCache(maxsize=1, ttl=60)
+    _order_cache = {}
+    _weight_cache = {}
 
     def __unicode__(self):
         return self.name
@@ -61,6 +63,22 @@ class AlarmSeverity(Document):
         :return:
         """
         return list(AlarmSeverity.objects.order_by("severity"))
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_weight_cache"), lock=lambda _: id_lock)
+    def get_weights(cls):
+        """
+        Returns list of (weight, alpha)
+        :return:
+        """
+        sevs = cls.get_ordered()
+        weights = [s.min_weight for s in sevs]
+        severities = [s.severity for s in sevs]
+        dw = [float(w1 - w0) for w0, w1 in izip(weights, weights[1:])]
+        ds = [float(s1 - s0) for s0, s1 in izip(severities, severities[1:])]
+        alpha = [(s / w if w else 0) for s, w in izip(ds, dw)]
+        alpha += [alpha[-1]]
+        return severities, weights, alpha
 
     @classmethod
     def get_severity(cls, severity):
@@ -104,26 +122,6 @@ class AlarmSeverity(Document):
                     return max(i - 1, 0)
             return i
 
-        # Build caches
-        if not hasattr(cls, "_weights"):
-            cls._weights = []
-            cls._severities = []
-            cls._alpha = []
-            lw = 0
-            for i, s in enumerate(AlarmSeverity.objects.order_by("severity")):
-                cw = s.min_weight or lw
-                lw = w
-                cls._weights += [cw]
-                cls._severities += [s.severity]
-                if i:
-                    ds = float(cls._severities[i] - cls._severities[i - 1])
-                    dw = float(cls._weights[i] - cls._weights[i - 1])
-                    if dw:
-                        cls._alpha += [ds / dw]
-                    else:
-                        cls._alpha += [0]
-            if cls._alpha:
-                cls._alpha += [cls._alpha[-1]]
-        # Calculate severities
-        i = find(cls._weights, w)
-        return cls._severities[i] + int(cls._alpha[i] * (w - cls._weights[i]))
+        severities, weights, alpha = cls.get_weights()
+        i = find(weights, w)
+        return severities[i] + int(alpha[i] * (w - weights[i]))
