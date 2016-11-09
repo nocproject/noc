@@ -88,7 +88,10 @@ class Command(BaseCommand):
             path = os.path.join(self.PREFIX, "%s.json" % u)
             if not os.path.exists(path):
                 self.stderr.write("Crashinfo not found: %s\n" % u)
-                continue
+                if os.path.exists(u):
+                    path = u
+                else:
+                    continue
             with open(path) as f:
                 data = ujson.load(f)
             self.stdout.write(data["traceback"])
