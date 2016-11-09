@@ -1,7 +1,7 @@
 {
-    "name": "Juniper | JUNOS | Config | Config Changed #1 (SYSLOG)",
-    "uuid": "40c9b7bf-7865-4b97-9ce3-fcef7a7493bb",
-    "description": "Jul 21 08:04:55 mgd[1106]: UI_DBASE_LOGIN_EVENT: User 'noc' entering configuration mode",
+    "name": "Juniper | JUNOS | Config | Config Changed (SYSLOG)",
+    "uuid": "40ee9143-5717-4ae1-9975-09deb92cc7bb",
+    "description": "Nov  8 22:14:23 pmo-dsw01 mgd[21775]: UI_COMMIT_COMPLETED: commit complete",
     "event_class__name": "Config | Config Changed",
     "preference": 1000,
     "patterns": [
@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "UI_DBASE_LOGIN_EVENT: User '(?P<user>.+?)' entering configuration mode$"
+            "value_re": "UI_COMMIT_COMPLETED: commit complete$"
         }
     ]
 }
