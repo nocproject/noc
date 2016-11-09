@@ -16,10 +16,10 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
     },
 
     layout: 'border',
-    width: 200,
 
     initComponent: function() {
         this.infoText = Ext.create("Ext.container.Container", {
+            height: 500,
             region: 'north'
         });
 
