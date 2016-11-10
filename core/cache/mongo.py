@@ -14,6 +14,7 @@ import bson
 ## NOC modules
 from base import BaseCache
 from noc.lib.nosql import get_db
+from noc.core.config.base import config
 
 
 class MongoCache(BaseCache):
@@ -56,6 +57,7 @@ class MongoCache(BaseCache):
         :return:
         """
         k = self.make_key(key, version)
+        ttl = ttl or config.memcached_default_ttl
         expires = datetime.datetime.now() + datetime.timedelta(seconds=ttl)
         self.get_collection().update({
             self.KEY_FIELD: k
