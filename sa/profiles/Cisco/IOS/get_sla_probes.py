@@ -46,7 +46,7 @@ class Script(BaseScript):
     )
 
     rx_tag = re.compile(
-        "Tag:\s*(?P<tag>[^\n]+)\n",
+        "Tag: *(?P<tag>[^\n]+)\n",
         re.MULTILINE
     )
 
