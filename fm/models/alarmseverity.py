@@ -72,7 +72,7 @@ class AlarmSeverity(Document):
         :return:
         """
         sevs = cls.get_ordered()
-        weights = [s.min_weight for s in sevs]
+        weights = [(s.min_weight or 0) for s in sevs]
         severities = [s.severity for s in sevs]
         dw = [float(w1 - w0) for w0, w1 in izip(weights, weights[1:])]
         ds = [float(s1 - s0) for s0, s1 in izip(severities, severities[1:])]
