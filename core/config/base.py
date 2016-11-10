@@ -43,7 +43,10 @@ class BaseConfig(object):
         "geocoding_google_key": 0,
         "geocoding_google_language": "en",
         # Alarm escalations
-        "tt_escalation_limit": 10
+        "tt_escalation_limit": 10,
+        # Memcached settings
+        "memcached_pool_size": 8,
+        "memcached_default_ttl": 86400
     }
 
     def __init__(self):
@@ -76,6 +79,9 @@ class BaseConfig(object):
         self.geocoding_google_language = None
         #
         self.tt_escalation_limit = None
+        #
+        self.memcached_pool_size = None
+        self.memcached_default_ttl = None
         #
         self.load()
 
@@ -160,6 +166,18 @@ class BaseConfig(object):
             url += ["/%s" % self.mongo_db]
             self._mongo_connection_args["host"] = "".join(url)
         return self._mongo_connection_args
+
+    @property
+    def cache_class(self):
+        memcached_hosts = self.get_service("memcached")
+        if memcached_hosts:
+            return "noc.core.cache.memcached.MemcachedCache"
+        else:
+            return "noc.core.cache.mongo.MongoCache"
+
+    @property
+    def memcached_hosts(self):
+        return self.get_service("memcached")
 
 
 # Config singleton
