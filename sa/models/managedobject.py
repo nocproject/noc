@@ -471,7 +471,7 @@ class ManagedObject(Model):
             ObjectPath.refresh(self)
             if "container" in self.changed_fields:
                 x, y, zoom = self.container.get_coordinates_zoom()
-                ManagedObject.filter(id=self.id).update(
+                ManagedObject.objects.filter(id=self.id).update(
                     x=x,
                     y=y,
                     default_zoom=zoom
