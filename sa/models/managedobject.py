@@ -51,6 +51,7 @@ from noc.inv.models.object import Object
 from credcache import CredentialsCache
 from objectpath import ObjectPath
 from noc.core.defer import call_later
+from noc.core.cache.decorator import cachedmethod
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
@@ -258,94 +259,29 @@ class ManagedObject(Model):
     BOX_DISCOVERY_JOB = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
     PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
 
-    ## object.scripts. ...
-    class ScriptsProxy(object):
-        class CallWrapper(object):
-            def __init__(self, obj, name):
-                self.name = name
-                self.object = obj
-
-            def __call__(self, **kwargs):
-                return MTManager.run(self.object, self.name, kwargs)
-
-        def __init__(self, obj):
-            self._object = obj
-            self._cache = {}
-
-        def __getattr__(self, name):
-            if name in self._cache:
-                return self._cache[name]
-            if not script_loader.has_script("%s.%s" % (
-                    self._object.profile_name, name)):
-                raise AttributeError("Invalid script %s" % name)
-            cw = ManagedObject.ScriptsProxy.CallWrapper(self._object, name)
-            self._cache[name] = cw
-            return cw
-
-        def __getitem__(self, item):
-            return getattr(self, item)
-
-        def __contains__(self, item):
-            """
-            Check object has script name
-            """
-            if "." not in item:
-                # Normalize to full name
-                item = "%s.%s" % (self._object.profile_name, item)
-            return script_loader.has_script(item)
-
-        def __iter__(self):
-            return itertools.imap(
-                    lambda y: y.split(".")[-1],
-                    itertools.ifilter(
-                            lambda x: x.startswith(self._object.profile_name + "."),
-                            script_loader.iter_scripts()
-                    )
-            )
-
-
-    class ActionsProxy(object):
-        class CallWrapper(object):
-            def __init__(self, obj, name, action):
-                self.name = name
-                self.object = obj
-                self.action = action
-
-            def __call__(self, **kwargs):
-                return self.action.execute(self.object, **kwargs)
-
-        def __init__(self, obj):
-            self._object = obj
-            self._cache = {}
-
-        def __getattr__(self, name):
-            if name in self._cache:
-                return self._cache[name]
-            a = Action.objects.filter(name=name).first()
-            if not a:
-                raise AttributeError(name)
-            cw = ManagedObject.ActionsProxy.CallWrapper(self._object, name, a)
-            self._cache[name] = cw
-            return cw
-
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
-
-    def __init__(self, *args, **kwargs):
-        super(ManagedObject, self).__init__(*args, **kwargs)
-        self.scripts = ManagedObject.ScriptsProxy(self)
-        self.actions = ManagedObject.ActionsProxy(self)
 
     def __unicode__(self):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    @cachedmethod(operator.attrgetter("_id_cache"),
+                  key="managedobject-id-%s",
+                  lock=lambda _: id_lock)
     def get_by_id(cls, id):
         mo = ManagedObject.objects.filter(id=id)[:1]
         if mo:
             return mo[0]
         else:
             return None
+
+    @property
+    def scripts(self):
+        return ScriptsProxy(self)
+
+    @property
+    def actions(self):
+        return ActionsProxy(self)
 
     def get_absolute_url(self):
         return site.reverse("sa:managedobject:change", self.id)
@@ -1042,6 +978,77 @@ class ManagedObjectAttribute(Model):
 
     def on_save(self):
         CredentialsCache.invalidate(self.managed_object)
+
+
+## object.scripts. ...
+class ScriptsProxy(object):
+    class CallWrapper(object):
+        def __init__(self, obj, name):
+            self.name = name
+            self.object = obj
+
+        def __call__(self, **kwargs):
+            return MTManager.run(self.object, self.name, kwargs)
+
+    def __init__(self, obj):
+        self._object = obj
+        self._cache = {}
+
+    def __getattr__(self, name):
+        if name in self._cache:
+            return self._cache[name]
+        if not script_loader.has_script("%s.%s" % (
+                self._object.profile_name, name)):
+            raise AttributeError("Invalid script %s" % name)
+        cw = ScriptsProxy.CallWrapper(self._object, name)
+        self._cache[name] = cw
+        return cw
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def __contains__(self, item):
+        """
+        Check object has script name
+        """
+        if "." not in item:
+            # Normalize to full name
+            item = "%s.%s" % (self._object.profile_name, item)
+        return script_loader.has_script(item)
+
+    def __iter__(self):
+        return itertools.imap(
+                lambda y: y.split(".")[-1],
+                itertools.ifilter(
+                        lambda x: x.startswith(self._object.profile_name + "."),
+                        script_loader.iter_scripts()
+                )
+        )
+
+
+class ActionsProxy(object):
+    class CallWrapper(object):
+        def __init__(self, obj, name, action):
+            self.name = name
+            self.object = obj
+            self.action = action
+
+        def __call__(self, **kwargs):
+            return self.action.execute(self.object, **kwargs)
+
+    def __init__(self, obj):
+        self._object = obj
+        self._cache = {}
+
+    def __getattr__(self, name):
+        if name in self._cache:
+            return self._cache[name]
+        a = Action.objects.filter(name=name).first()
+        if not a:
+            raise AttributeError(name)
+        cw = ActionsProxy.CallWrapper(self._object, name, a)
+        self._cache[name] = cw
+        return cw
 
 ## Avoid circular references
 from useraccess import UserAccess

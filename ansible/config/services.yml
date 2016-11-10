@@ -128,10 +128,10 @@ services:
     description: SMTP mail sender
     level: global
 
-  redis:
+  memcached:
     description: Caching layer
     level: global
-    port: 6379
+    port: 11211
 
   bi:
     description: Reports
