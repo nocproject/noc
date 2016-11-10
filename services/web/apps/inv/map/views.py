@@ -11,6 +11,7 @@ from collections import defaultdict
 import urllib
 import json
 import datetime
+import threading
 ## Third-party modules
 import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -32,9 +33,11 @@ from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
 from noc.core.influxdb.client import InfluxDBClient
-from noc.inv.caches.interface.tagstoid import interface_tags_to_id
 from noc.core.config.base import config
 from noc.core.translation import ugettext as _
+from noc.core.cache.decorator import cachedmethod
+
+tags_lock = threading.RLock()
 
 
 class MapApplication(ExtApplication):
@@ -355,6 +358,34 @@ class MapApplication(ExtApplication):
                 r[o] |= self.ST_MAINTAINANCE
         return r
 
+    @classmethod
+    @cachedmethod(
+        key="managedobject-name-to-id-%s",
+        lock=lambda _: tags_lock
+    )
+    def managedobject_name_to_id(cls, name):
+        r = ManagedObject.objects.filter(name=name).values_list("id")
+        if r:
+            return r[0][0]
+        else:
+            return None
+
+    @classmethod
+    @cachedmethod(
+        key="interface-tags-to-id-%s-%s",
+        lock=lambda _: tags_lock
+    )
+    def interface_tags_to_id(cls, object_name, interface_name):
+        mo = cls.managedobject_name_to_id(object_name)
+        i = Interface._get_collection().find_one({
+            "managed_object": mo,
+            "name": interface_name
+        })
+        if i:
+            return i["_id"]
+        else:
+            return None
+
     @view(
         url="^metrics/$", method=["POST"],
         access="read", api=True,
@@ -385,9 +416,15 @@ class MapApplication(ExtApplication):
             tag_id[qt(m["tags"])] = m["id"]
             if "object" in m["tags"] and "interface" in m["tags"]:
                 try:
-                    if_ids[interface_tags_to_id[m["tags"]]] = m["id"]
+                    if_ids[
+                        self.interface_tags_to_id(
+                            m["tags"]["object"],
+                            m["tags"]["interface"]
+                        )
+                    ] = m["id"]
                 except KeyError:
                     pass
+        # @todo: Get last values from cache
         for m in m_objects:
             for o in m_objects[m]:
                 query += [
