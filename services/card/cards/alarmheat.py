@@ -16,7 +16,6 @@ from base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.gis.models.layer import Layer
-from noc.inv.models.object import Object
 from noc.inv.models.objectconnection import ObjectConnection
 
 
@@ -59,7 +58,7 @@ class AlarmHeatCard(BaseCard):
         east = float(self.handler.get_argument("e"))
         north = float(self.handler.get_argument("n"))
         south = float(self.handler.get_argument("s"))
-        active_layers= [l for l in self.get_pop_layers() if l.min_zoom <= zoom and l.max_zoom >= zoom]
+        active_layers = [l for l in self.get_pop_layers() if l.min_zoom <= zoom <= l.max_zoom]
         alarms = []
         services = {}
         subscribers = {}
@@ -69,16 +68,16 @@ class AlarmHeatCard(BaseCard):
         else:
             qs = ActiveAlarm.objects.filter(adm_path__in=self.get_user_domains())
         for a in qs.only("id", "managed_object", "direct_subscribers", "direct_services"):
-            mo = a.managed_object
             s_sub = SummaryItem.items_to_dict(a.direct_subscribers)
             s_service = SummaryItem.items_to_dict(a.direct_services)
+            mo = a.managed_object
             if mo.x and mo.y:
                 w = ServiceSummary.get_weight({
                     "subscriber": s_sub,
                     "service": s_service
                 })
                 # @todo: Check west/south hemisphere
-                if west <= mo.x <= east and south <= mo.y <= north:
+                if active_layers and west <= mo.x <= east and south <= mo.y <= north:
                     segments.add(mo.segment)
             else:
                 w = 0
@@ -110,7 +109,7 @@ class AlarmHeatCard(BaseCard):
                     "$in": [l.id for l in active_layers]
                 },
                 "line": {
-                    "$geoWithin": {
+                    "$geoIntersects": {
                         "$geometry": bbox
                     }
                 }
