@@ -71,12 +71,12 @@ class Script(BaseScript):
 
     rx_mstp0_bridge = re.compile(
         r"CIST\sBridge\s+:(?P<bridge_priority>\d+)(\s|)\.(?P<bridge_id>\S+).+?"
-        r"CIST\sRoot/ERPC\s+:(?P<root_priority>\d+)(\s|)\.(?P<root_id>\S+)\s",
+        r"CIST\sRoot/ERPC\s+:(?P<root_priority>\d+)(\s*|)\.(?P<root_id>\S+)\s",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     rx_mstp_bridge = re.compile(
         r"MSTI\sBridge\sID\s+:(?P<bridge_priority>\d+)(\s|)\.(?P<bridge_id>\S+).+?"
-        r"MSTI\sRegRoot/[IE]RPC\s+:(?P<root_priority>\d+)(\s|)\.(?P<root_id>\S+)\s",
+        r"MSTI\sRegRoot/[IE]RPC\s+:(?P<root_priority>\d+)(\s*|)\.(?P<root_id>\S+)\s",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     rx_mstp0_interfaces = re.compile(
@@ -136,6 +136,8 @@ class Script(BaseScript):
         #
         interfaces = {}
         for instance_id in iv:
+            if instance_id not in ports:
+                continue
             for I in self.cli("display stp instance %s" % instance_id).split("-------\[")[0:]:
                 # instance_id = int(instance_id)
                 if instance_id == 0:
