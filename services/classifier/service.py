@@ -718,7 +718,11 @@ class ClassifierService(Service):
                 event.id, event.managed_object.name,
                 event.managed_object.address
             )
-            self.pub("correlator.dispose", {"event_id": str(event.id)})
+            # @todo: Use config.pool instead
+            self.pub(
+                "correlator.dispose.%s" % event.managed_object.pool.name,
+                {"event_id": str(event.id)}
+            )
             return CR_DISPOSED
         elif rule.is_unknown:
             return CR_UNKNOWN

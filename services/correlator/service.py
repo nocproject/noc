@@ -38,6 +38,8 @@ import utils
 
 class CorrelatorService(Service):
     name = "correlator"
+    pooled = True
+    process_name = "noc-%(name).10s-%(pool).3s"
 
     def __init__(self):
         super(CorrelatorService, self).__init__()
@@ -60,7 +62,7 @@ class CorrelatorService(Service):
         )
         self.scheduler.correlator = self
         self.subscribe(
-            "correlator.dispose",
+            "correlator.dispose.%s" % self.config.pool,
             "dispose",
             self.on_dispose_event,
             max_in_flight=self.config.max_threads
@@ -224,7 +226,6 @@ class CorrelatorService(Service):
         discriminator, vars = r.get_vars(e)
         if r.unique:
             assert discriminator is not None
-            # @todo: unneeded SQL lookup here
             a = ActiveAlarm.objects.filter(
                 managed_object=managed_object.id,
                 discriminator=discriminator).first()

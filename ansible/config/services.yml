@@ -57,7 +57,7 @@ services:
 
   correlator:
     description: Correlator
-    level: global
+    level: pool
 
   pmwriter:
     description: PMWriter
