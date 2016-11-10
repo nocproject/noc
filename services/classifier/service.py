@@ -49,6 +49,7 @@ from exception import InvalidPatternException, EventProcessingFailed
 from cloningrule import CloningRule
 from rule import Rule
 from noc.core.handler import get_handler
+from noc.core.cache.base import cache
 
 ##
 ## Exceptions
@@ -717,6 +718,12 @@ class ClassifierService(Service):
                 "[%s|%s|%s] Disposing",
                 event.id, event.managed_object.name,
                 event.managed_object.address
+            )
+            # Heat up cache
+            cache.set(
+                "activeent-%s" % event.id,
+                event,
+                ttl=900
             )
             # @todo: Use config.pool instead
             self.pub(
