@@ -464,12 +464,13 @@ class CorrelatorService(Service):
 
     def lookup_event(self, event_id):
         """
-        Lookup event by id
+        Lookup event by id.
+        Uses cache heating effect from classifier
         :param event_id:
         :return: ActiveEvent instance or None
         """
         self.logger.info("[%s] Lookup event", event_id)
-        e = ActiveEvent.objects.filter(id=event_id).first()
+        e = ActiveEvent.get_by_id(event_id)
         if not e:
             self.logger.info("[%s] Event not found, skipping", event_id)
             self.perf_metrics["event_lookup_failed"] += 1
