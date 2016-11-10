@@ -26,7 +26,7 @@ class Command(BaseCommand):
         "box": [
             "profile", "version", "caps", "interface",
             "id", "config", "asset", "vlan", "nri",
-            "oam", "lldp", "cdp", "stp"
+            "oam", "lldp", "cdp", "stp", "sla"
         ],
         "periodic": [
             "uptime", "interfacestatus",
