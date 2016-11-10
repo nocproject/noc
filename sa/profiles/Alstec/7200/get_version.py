@@ -20,17 +20,23 @@ class Script(BaseScript):
     cache = True
 
     rx_ver = re.compile(
-        r"^Machine Type\.+ ALS24300 System - 16 GE, 4\s*\n"
-        r"^\s+GE/Stack\s*\n"
+        r"^Machine Type\.+ ALS24.+\n"
+        r"^\s+(?:\S+\s+)?GE/Stack\s*\n"
         r"^Burned In MAC Address\.+ (?P<mac>\S+)\s*\n"
-        r"^Software Version\.+ (?P<version>\S+)",
-        re.MULTILINE | re.DOTALL)
+        r"^Software Version\.+ (?P<version>\S+)\s*\n"
+        r"(^Bootloader Version\.+ (?P<bootprom>\S+)\s*\n)?",
+        re.MULTILINE)
 
     def execute(self):
         v = self.cli("show version")
         match = self.rx_ver.search(v)
-        return {
-            "vendor": "Alsitec",
+        r = {
+            "vendor": "Alstec",
             "platform": "7200",
             "version": match.group("version")
         }
+        if match.group("bootprom"):
+            r["attributes"] = {}
+            r["attributes"]["Boot PROM"] = match.group("bootprom")
+
+        return r
