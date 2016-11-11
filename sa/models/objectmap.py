@@ -134,6 +134,8 @@ class ObjectMap(Document):
         Returns a dict of IP -> object id for syslog sources
         """
         om = cls.get_object_mappings(pool)
+        if not om:
+            return {}
         return dict((k.replace("_", "."), om["syslog_sources"][k])
                     for k in om["syslog_sources"])
 
@@ -143,6 +145,8 @@ class ObjectMap(Document):
         Returns a dict of IP -> object id for trap sources
         """
         om = cls.get_object_mappings(pool)
+        if not om:
+            return {}
         return dict((k.replace("_", "."), om["trap_sources"][k])
                     for k in om["trap_sources"])
 
@@ -152,6 +156,8 @@ class ObjectMap(Document):
         Returns a dict of IP -> {"id": ..., "status": ..., "interval": ...}
         """
         om = cls.get_object_mappings(pool)
+        if not om:
+            return {}
         return dict((k.replace("_", "."), om["ping_sources"][k])
                     for k in om["ping_sources"])
 
