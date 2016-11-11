@@ -61,6 +61,7 @@
    - libcurl-devel
    - libffi
    - libffi-devel
+   - libmemcached
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

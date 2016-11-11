@@ -7,7 +7,6 @@
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   with_items:
     - memcached
-    - libmemcached11
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

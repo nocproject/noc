@@ -6,7 +6,6 @@
     update_cache: yes
   with_items:
     - memcached
-    - libmemcached
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
