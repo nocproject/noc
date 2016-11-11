@@ -14,8 +14,8 @@ from mongoengine.fields import (ListField, StringField, ReferenceField,
 from noc.inv.models.capability import Capability
 from managedobject import ManagedObject
 from noc.lib.nosql import ForeignKeyField
-from noc.sa.models.credcache import CredentialsCache
 from noc.core.model.decorator import on_save
+from noc.core.cache.base import cache
 
 
 class CapsItem(EmbeddedDocument):
@@ -40,7 +40,7 @@ class ObjectCapabilities(Document):
         return "%s caps" % self.object.name
 
     def on_save(self):
-        CredentialsCache.invalidate(self.object)
+        cache.delete("cred-%s" % self.object.id)
 
     @classmethod
     def get_capabilities(cls, object):

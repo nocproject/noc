@@ -48,10 +48,10 @@ from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete
 from noc.inv.models.object import Object
-from credcache import CredentialsCache
 from objectpath import ObjectPath
 from noc.core.defer import call_later
 from noc.core.cache.decorator import cachedmethod
+from noc.core.cache.base import cache
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
@@ -347,6 +347,11 @@ class ManagedObject(Model):
                                                 Q(id=self.id)).exists()]
 
     def on_save(self):
+        # Invalidate caches
+        deleted_cache_keys = [
+            "managedobject-id-%s" % self.id,
+            "managedobject-name-to-id-%s" % self.name
+        ]
         # IPAM sync
         if self.object_profile.sync_ipam:
             self.sync_ipam()
@@ -394,7 +399,7 @@ class ManagedObject(Model):
             "profile_name" in self.changed_fields or
             "pool" in self.changed_fields
         ):
-            CredentialsCache.invalidate(self)
+            deleted_cache_keys += ["cred-%s" % self.id]
             if "profile_name" in self.changed_fields:
                 self.reset_platform()
         # Rebuild paths
@@ -436,6 +441,8 @@ class ManagedObject(Model):
         self.ensure_discovery_jobs()
         # Rebuild selector cache
         SelectorCache.rebuild_for_object(self)
+        #
+        cache.delete_many(deleted_cache_keys)
         # Clear alarm when necessary
         if (
             not self.initial_data["id"] is None and
@@ -977,7 +984,7 @@ class ManagedObjectAttribute(Model):
         return u"%s: %s" % (self.managed_object, self.key)
 
     def on_save(self):
-        CredentialsCache.invalidate(self.managed_object)
+        cache.delete("cred-%s" % self.managed_object.id)
 
 
 ## object.scripts. ...
