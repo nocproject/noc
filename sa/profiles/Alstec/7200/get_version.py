@@ -28,7 +28,7 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute(self):
-        v = self.cli("show version")
+        v = self.cli("show version", cached=True)
         match = self.rx_ver.search(v)
         r = {
             "vendor": "Alstec",

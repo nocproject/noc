@@ -27,6 +27,7 @@ class Script(BaseScript):
             and (interface != match.group("interface")):
                 continue
             r.append(match.groupdict())
+        """
         cards = self.profile.fill_cards(self)
         for c in cards:
             if c["s"]:
@@ -46,4 +47,5 @@ class Script(BaseScript):
                             "interface": "1/%s" % match.group("interface")
                         }]
                 self.cli("quit")
+        """
         return r
