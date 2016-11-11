@@ -5,3 +5,6 @@ mongo_user: mongod
 pycurl_ssl_library: nss
 postgres_system_service: postgresql-{{ postgresql_version }}
 redis_daemon: redis
+
+memcahed_user: memcached
+memcahed_conf: "/etc/sysconfig/memcached"
