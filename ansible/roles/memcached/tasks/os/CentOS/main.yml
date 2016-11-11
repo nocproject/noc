@@ -1,0 +1,22 @@
+---
+- name: Install memcached
+  yum:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+  with_items:
+    - memcached
+    - libmemcached
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
+
+
+- name: Install memcached limits file
+  template:
+    src: "etc/security/limits.d/memcached_limits.conf.j2"
+    dest: "/etc/security/limits.d/memcached_limits.conf"
+  tags:
+    - config

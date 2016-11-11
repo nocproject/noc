@@ -1,0 +1,23 @@
+---
+- name: Install memcached
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+  with_items:
+    - memcached
+    - libmemcached11
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
+
+
+- name: Install memcached limits file
+  template:
+    src: "etc/security/limits.d/memcached_limits.conf.j2"
+    dest: "/etc/security/limits.d/memcached_limits.conf"
+  tags:
+    - config
