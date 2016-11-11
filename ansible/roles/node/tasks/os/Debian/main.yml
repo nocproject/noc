@@ -21,6 +21,7 @@
     - apt-transport-https
     - libffi6
     - libffi-dev
+    - libmemcached11
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
