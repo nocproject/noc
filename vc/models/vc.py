@@ -8,10 +8,13 @@
 
 ## Python modules
 import re
+import operator
+from threading import Lock
 ## Django modules
 from django.db import models
 ## Third-party modules
 from mongoengine.queryset import Q as MEQ
+import cachetools
 ## NOC modules
 from error import InvalidLabelException, MissedLabelException
 from vcdomain import VCDomain
@@ -21,10 +24,13 @@ from noc.project.models.project import Project
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
+from noc.core.cache.decorator import cachedmethod
 
 ## Regular expressions
 rx_vc_underline = re.compile("\s+")
 rx_vc_empty = re.compile(r"[^a-zA-Z0-9\-_]+")
+
+id_lock = Lock()
 
 
 @full_text_search
@@ -56,12 +62,25 @@ class VC(models.Model):
                               null=True)
     tags = TagsField("Tags", null=True, blank=True)
 
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
     def __unicode__(self):
         s = u"%s %d" % (self.vc_domain, self.l1)
         if self.l2:
             s += u"/%d" % self.l2
         s += u": %s" % self.name
         return s
+
+    @classmethod
+    @cachedmethod(operator.attrgetter("_id_cache"),
+                  key="vc-id-%s",
+                  lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        mo = VC.objects.filter(id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
+            return None
 
     def get_absolute_url(self):
         return site.reverse("vc:vc:change", self.id)
