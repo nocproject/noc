@@ -107,7 +107,6 @@ Ext.define("NOC.inv.map.Application", {
             "NOC.inv.map.inspectors.SegmentInspector",
             {
                 app: me,
-                width: this.rightWidth,
                 readOnly: me.readOnly
             }
         );
@@ -116,7 +115,6 @@ Ext.define("NOC.inv.map.Application", {
             "NOC.inv.map.inspectors.ManagedObjectInspector",
             {
                 app: me,
-                width: this.rightWidth,
                 readOnly: me.readOnly
             }
         );
@@ -125,7 +123,6 @@ Ext.define("NOC.inv.map.Application", {
             "NOC.inv.map.inspectors.LinkInspector",
             {
                 app: me,
-                width: this.rightWidth,
                 readOnly: me.readOnly
             }
         );
