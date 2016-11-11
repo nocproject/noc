@@ -12,12 +12,15 @@ from collections import defaultdict
 from mongoengine import Q
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
-from noc.vc.models import VC, VCDomain, VCFilter
+from noc.vc.models.vcdomain import VCDomain
+from noc.vc.models.vcfilter import VCFilter
+from noc.vc.models.vc import VC
 from noc.inv.models.subinterface import SubInterface
+from noc.lib.ip import IP
 from noc.sa.interfaces.base import DictParameter, ModelParameter, ListOfParameter,\
     IntParameter, StringParameter
-from noc.vc.caches import vcinterfacescount, vcprefixes
 from noc.core.translation import ugettext as _
+from noc.core.cache.decorator import cachedmethod
 
 
 class VCApplication(ExtModelApplication):
@@ -67,12 +70,56 @@ class VCApplication(ExtModelApplication):
         except KeyError:
             q[None] = [x]
 
+    @cachedmethod(
+        key="vc-interface-count-%s"
+    )
+    def get_vc_interfaces_count(self, vc_id):
+        vc = VC.get_by_id(vc_id)
+        if not vc:
+            return 0
+        objects = vc.vc_domain.managedobject_set.values_list("id", flat=True)
+        l1 = vc.l1
+        n = SubInterface.objects.filter(
+            Q(managed_object__in=objects) &
+            (
+                Q(untagged_vlan=l1, enabled_afi=["BRIDGE"]) |
+                Q(tagged_vlans=l1, enabled_afi=["BRIDGE"]) |
+                Q(vlan_ids=l1)
+            )
+        ).count()
+        return n
+
+    @cachedmethod(
+        key="vc-prefixes-%s"
+    )
+    def get_vc_prefixes(self, vc_id):
+        vc = VC.get_by_id(vc_id)
+        if not vc:
+            return []
+        objects = vc.vc_domain.managedobject_set.values_list("id", flat=True)
+        ipv4 = set()
+        ipv6 = set()
+        # @todo: Exact match on vlan_ids
+        for si in SubInterface.objects.filter(
+            Q(managed_object__in=objects) &
+            Q(vlan_ids=vc.l1) &
+            (Q(enabled_afi=["IPv4"]) | Q(enabled_afi=["IPv6"]))
+        ).only("enabled_afi", "ipv4_addresses", "ipv6_addresses"):
+            if "IPv4" in si.enabled_afi:
+                ipv4.update([IP.prefix(ip).first
+                          for ip in si.ipv4_addresses])
+            if "IPv6" in si.enabled_afi:
+                ipv6.update([IP.prefix(ip).first
+                          for ip in si.ipv6_addresses])
+        p = [str(x.first) for x in sorted(ipv4)]
+        p += [str(x.first) for x in sorted(ipv6)]
+        return p
+
     def field_interfaces_count(self, obj):
-        n = vcinterfacescount.get(obj)
-        return str(n) if n else "-"
+        return self.get_vc_interfaces_count(obj)
 
     def field_prefixes(self, obj):
-        p = vcprefixes.get(obj)
+        p = self.get_vc_prefixes(obj)
         if p:
             return ", ".join(p)
         else:
@@ -169,7 +216,6 @@ class VCApplication(ExtModelApplication):
         ic = sum(len(x["interfaces"]) for x in untagged)
         ic += sum(len(x["interfaces"]) for x in tagged)
         ic += sum(len(x["interfaces"]) for x in l3)
-        vcinterfacescount.set(ic, vc)
         #
         return {
             "untagged": sorted(untagged,
