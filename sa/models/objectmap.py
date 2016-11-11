@@ -152,6 +152,8 @@ class ObjectMap(Document):
         Returns a dict of IP -> {"id": ..., "status": ..., "interval": ...}
         """
         om = cls.get_object_mappings(pool)
+        if not om:
+            return {}
         return dict((k.replace("_", "."), om["ping_sources"][k])
                     for k in om["ping_sources"])
 
