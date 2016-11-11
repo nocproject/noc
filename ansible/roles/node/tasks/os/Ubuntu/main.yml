@@ -19,6 +19,7 @@
     - libcurl4-openssl-dev
     - libffi6
     - libffi-dev
+    - libmemcached11
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
