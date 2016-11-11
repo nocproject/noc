@@ -1,4 +1,5 @@
 - name: reload systemd
+  become: yes
   command: /bin/systemctl daemon-reload
 
 - name: reload telegraf
