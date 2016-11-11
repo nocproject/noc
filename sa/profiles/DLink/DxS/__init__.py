@@ -16,11 +16,11 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "DLink.DxS"
     pattern_more = "CTRL\+C.+?a A[Ll][Ll]"
-    pattern_unpriveleged_prompt = r"\S+:(3|6|user|operator)# ?"
+    pattern_unpriveleged_prompt = r"(?P<hostname>\S+):(3|6|user|operator)# ?"
     pattern_syntax_error = \
         r"(Available commands|Next possible completions|Ambiguous token):"
     command_super = "enable admin"
-    pattern_prompt = r"(?P<hostname>\S+(:\S+)*)#"
+    pattern_prompt = r"(?P<hostname>\S+)(?!:(3|6|user|operator))#"
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
