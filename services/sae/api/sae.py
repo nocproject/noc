@@ -12,7 +12,7 @@ import tornado.gen
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
 from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.sa.models.credcache import CredentialsCache
+from noc.core.cache.decorator import cachedmethod
 
 
 class SAEAPI(API):
@@ -79,16 +79,12 @@ class SAEAPI(API):
              data["version"], args, timeout]
         )
 
+    @cachedmethod(
+        key="cred-%s"
+    )
     def get_object_data(self, object_id):
-        d = CredentialsCache.get(object_id)
-        if not d:
-            d = self.resolve_data(object_id)
-            CredentialsCache.set(object_id, d)
-        return d
-
-    def resolve_data(self, object_id):
         """
-        Worker to resolve
+        Worker to resolve credentials
         """
         object_id = int(object_id)
         # Get Object's attributes
