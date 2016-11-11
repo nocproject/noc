@@ -22,6 +22,7 @@
     - libffi6
     - libffi-dev
     - libmemcached11
+    - libmemcached-dev
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
