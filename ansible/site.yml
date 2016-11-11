@@ -103,6 +103,13 @@
         - redis
         - external
 
+    - role: memcached
+      become: yes
+      when: "{{ has_svc_memcached | default(False) }}"
+      tags:
+        - memcached
+        - external
+
     - role: migrate
       become: yes
       when: "{{ has_svc_mongod_master | default(False) }}"

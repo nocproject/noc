@@ -466,3 +466,13 @@ config:
       type: int
       label: Pgbouncer max clients
       default: 3000
+
+  memcached:
+    max_clients:
+      type: int
+      label: memcached max clients
+      default: 1024
+    max_memory:
+      type: int
+      label: memcached max memory
+      default: 64
