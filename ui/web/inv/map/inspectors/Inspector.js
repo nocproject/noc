@@ -10,29 +10,21 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
     extend: 'Ext.panel.Panel',
 
     title: undefined,
-    scrollable: true,
+    scrollable: 'vertical',
     bodyStyle: {
         background: '#c0c0c0'
     },
+    defaults: {
+        padding: 4
+    },
+    items: [{
+        scrollable: false,
+        xtype: 'container',
+        height: 500,
+        region: 'north'
+    }],
 
     layout: 'border',
-
-    initComponent: function() {
-        this.infoText = Ext.create("Ext.container.Container", {
-            height: 500,
-            region: 'north'
-        });
-
-        Ext.apply(this, {
-            defaults: {
-                padding: 4
-            },
-            items: [
-                this.infoText
-            ]
-        });
-        this.callParent();
-    },
 
     preview: function(name, segmentId, objectId) {
         var url = '/inv/map/' + segmentId + '/info/' + name + '/';
