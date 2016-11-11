@@ -408,13 +408,6 @@ enable_google_roadmap = false
 http_proxy =
 https_proxy =
 ftp_proxy =
-#
-# Cache settings
-#
-[cache]
-sa_managedobjectselector_object_ids = 60
-vc_vcinterfacescount = 3600
-vc_vcprefixes = 3600
 
 [version_inventory]
 # Enable version discovery process
