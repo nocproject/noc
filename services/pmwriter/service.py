@@ -169,7 +169,7 @@ class PMWriterService(Service):
         if self.last_ts:
             self.speed = float(nm - self.last_metrics) / (t - self.last_ts)
             self.logger.info(
-                "Feeding speed: %.2fmetrics/sec, buffer size", self.speed, len(self.buffer)
+                "Feeding speed: %.2fmetrics/sec, buffer size %d", self.speed, len(self.buffer)
             )
         self.last_metrics = nm
         self.last_ts = t
