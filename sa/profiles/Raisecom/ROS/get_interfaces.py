@@ -22,18 +22,18 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_vlans = re.compile(r"""
-        Port:\s(?P<name>\d+)\s*\n
-        Administrative\sMode:\s*(?P<adm_mode>.*)\n
-        Operational\sMode:\s*(?P<op_mode>.*)\n
-        Access\sMode\sVLAN:\s*(?P<untagged_vlan>.*)\n
-        Administrative\sAccess\sEgress\sVLANs:\s*(?P<mvr_vlan>.*)\n
-        Operational\sAccess\sEgress\sVLANs:\s*(?P<op_eg_vlan>.*)\n
-        Trunk\sNative\sMode\sVLAN:\s*(?P<trunk_native_vlan>.*)\n
-        Trunk\sNative\sVLAN:\s*(?P<trunk_native_vlan_mode>.*)\n
-        Administrative\sTrunk\sAllowed\sVLANs:\s*(?P<adm_trunk_allowed_vlan>.*)\n
-        Operational\sTrunk\sAllowed\sVLANs:\s*(?P<op_trunk_allowed_vlan>.*)\n
-        Administrative\sTrunk\sUntagged\sVLANs:\s*(?P<adm_trunk_untagged_vlan>.*)\n
-        Operational\sTrunk\sUntagged\sVLANs:\s*(?P<op_trunk_untagged_vlan>.*)
+        \s*(?P<name>\d+)\s*\n
+        \s*Administrative\sMode:\s*(?P<adm_mode>.*)\n
+        \s*Operational\sMode:\s*(?P<op_mode>.*)\n
+        \s*Access\sMode\sVLAN:\s*(?P<untagged_vlan>.*)\n
+        \s*Administrative\sAccess\sEgress\sVLANs:\s*(?P<mvr_vlan>.*)\n
+        \s*Operational\sAccess\sEgress\sVLANs:\s*(?P<op_eg_vlan>.*)\n
+        \s*Trunk\sNative\sMode\sVLAN:\s*(?P<trunk_native_vlan>.*)\n
+        \s*Trunk\sNative\sVLAN:\s*(?P<trunk_native_vlan_mode>.*)\n
+        \s*Administrative\sTrunk\sAllowed\sVLANs:\s*(?P<adm_trunk_allowed_vlan>.*)\n
+        \s*Operational\sTrunk\sAllowed\sVLANs:\s*(?P<op_trunk_allowed_vlan>.*)\n
+        \s*Administrative\sTrunk\sUntagged\sVLANs:\s*(?P<adm_trunk_untagged_vlan>.*)\n
+        \s*Operational\sTrunk\sUntagged\sVLANs:\s*(?P<op_trunk_untagged_vlan>.*)
         """, re.VERBOSE)
     rx_iface = re.compile(
         r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+"
@@ -81,7 +81,7 @@ class Script(BaseScript):
 
         vlans = []
         v = self.cli("show interface port switchport")
-        for section in v.split("\n\n"):
+        for section in v.split("Port"):
             if not section:
                 continue
             vlans.append(self.parse_vlans(section))
