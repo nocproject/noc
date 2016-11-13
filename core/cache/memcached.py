@@ -93,7 +93,7 @@ class MemcachedCache(BaseCache):
 
     def delete_many(self, keys, version=None):
         with self.pool.reserve() as c:
-            c.delete_many(
+            c.delete_multi(
                 [self.make_key(k, version) for k in keys]
             )
 
