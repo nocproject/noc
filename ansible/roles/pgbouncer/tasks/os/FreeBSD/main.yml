@@ -1,1 +1,15 @@
 ---
+- name: Install pgbouncer
+  pkgng: name="pgbouncer" state=present
+  tags:
+    - requirements
+
+- name: Create pgbouncer directories
+  file:
+    path: "{{ item }}"
+    owner: "{{postgres_user}}"
+    mode: 0700
+    state: directory
+  with_items:
+    - /var/log/pgbouncer/
+    - /var/run/pgbouncer/
