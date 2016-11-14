@@ -16,7 +16,7 @@ from noc.main.models.authldapdomain import AuthLDAPDomain
 class LdapBackend(BaseAuthBackend):
     def authenticate(self, user=None, password=None, **kwargs):
         # Get domain
-        user, domain = self.split_user_domain(user)
+        domain, user = self.split_user_domain(user)
         ldap_domain = AuthLDAPDomain.get_by_name(domain)
         if not ldap_domain:
             self.logger.error(
@@ -27,10 +27,10 @@ class LdapBackend(BaseAuthBackend):
                 "Invalid LDAP domain '%s'" % domain
             )
         # Get servers
-        server_pool = self.get_server_pool(domain)
+        server_pool = self.get_server_pool(ldap_domain)
         if not server_pool:
             raise self.LoginError(
-                "No active servers configured for domain '%s'" % doman
+                "No active servers configured for domain '%s'" % domain
             )
         # Connect and bind
         connect = ldap3.Connection(
@@ -53,7 +53,10 @@ class LdapBackend(BaseAuthBackend):
                 )
             )
             if not connect.bind():
-                self.logger.error("Cannot bind as %s to search groups")
+                self.logger.error(
+                    "Cannot bind as %s to search groups",
+                    ldap_domain.bind_user
+                )
                 connect = None
         # Get user information
         user_info = self.get_user_info(connect, ldap_domain, user)
@@ -61,11 +64,11 @@ class LdapBackend(BaseAuthBackend):
         user_info["domain"] = domain
         user_info["is_active"] = True
         # Get user groups
-        user_groups = set(self.get_user_groups(connect, ldap_domain, user))
-        if ldap_domain.required_group and ldap_domain.required_group not in user_groups:
+        user_groups = set(self.get_user_groups(connect, ldap_domain, user_info))
+        if ldap_domain.require_group and ldap_domain.require_group not in user_groups:
             self.logger.error(
                 "User %s is not a member of required group %s",
-                user, ldap_domain.required_group
+                user, ldap_domain.require_group
             )
             raise self.LoginError("Login is not permitted")
         if ldap_domain.deny_group:
@@ -110,7 +113,7 @@ class LdapBackend(BaseAuthBackend):
             if not s.is_active:
                 continue
             kwargs = {
-                "host": s.addres
+                "host": s.address
             }
             if s.port:
                 kwargs["port"] = s.port
@@ -125,7 +128,7 @@ class LdapBackend(BaseAuthBackend):
             return None
         pool = ldap3.ServerPool(
             servers,
-            ldap3.POOLING_STRATEGY_ROUND_ROBIN_ACTIVE
+            ldap3.POOLING_STRATEGY_ROUND_ROBIN
         )
         return pool
 
@@ -138,8 +141,10 @@ class LdapBackend(BaseAuthBackend):
         :return:
         """
         if ldap_domain.type == "ad":
+            if "\\" not in user and "@" not in user:
+                user = "%s\%s" % (ldap_domain.name, user)
             kwargs = {
-                "user": "%s\%s" % (ldap_domain.name, user),
+                "user": user,
                 "authentication": ldap3.NTLM
             }
         else:
@@ -155,6 +160,9 @@ class LdapBackend(BaseAuthBackend):
         }
         if not connection:
             return user_info
+        usf = ldap_domain.get_user_search_filter() % {"user": user}
+        self.logger.debug("User search from %s: %s",
+                          ldap_domain.root, usf)
         connection.search(
             ldap_domain.root,
             ldap_domain.get_user_search_filter() % {"user": user},
@@ -170,9 +178,12 @@ class LdapBackend(BaseAuthBackend):
     def get_user_groups(self, connection, ldap_domain, user_info):
         if not connection:
             return []
+        gsf = ldap_domain.get_group_search_filter() % user_info
+        self.logger.debug("Group search from %s: %s",
+                          ldap_domain.root, gsf)
         connection.search(
             ldap_domain.root,
-            ldap_domain.get_group_search_filter() % user_info,
+            gsf,
             ldap3.SUBTREE,
             attributes=["cn"]
         )
