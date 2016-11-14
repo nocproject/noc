@@ -295,10 +295,10 @@ config:
       type: str
       default: en
 
-    method:
-      label: Authentication method
+    methods:
+      label: Authentication methods
       type: str
-      default: noc.services.login.backends.local.LocalBackend
+      default: local
 
     session_ttl:
       label: Session TTL (days)
@@ -311,10 +311,6 @@ config:
 
     radius_secret:
       label: RADIUS Secret
-      type: str
-
-    ldap_server:
-      label: LDAP Server
       type: str
 
     pam_service:

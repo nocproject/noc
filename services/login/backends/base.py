@@ -8,11 +8,20 @@
 
 ## Python modules
 import logging
+from threading import Lock
+import operator
+import inspect
+## Third-party modules
+import cachetools
+
+id_lock = Lock()
 
 
 class BaseAuthBackend(object):
     class LoginError(Exception):
         pass
+
+    _methods = {}
 
     def __init__(self, service):
         self.service = service
@@ -30,9 +39,7 @@ class BaseAuthBackend(object):
         Change credentials.
         Raise LoginError when failed
         """
-        raise self.LoginError(
-            "Cannot change credentials with selected method"
-        )
+        raise NotImplementedError
 
     def ensure_user(self, username, is_active=True, **kwargs):
         from django.contrib.auth.models import User
@@ -73,3 +80,27 @@ class BaseAuthBackend(object):
             self.logger.info("Removing user %s from group %s",
                              user.username, group.groupname)
             user.groups.remove(group)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_methods"), lock=lambda _: id_lock)
+    def get_backend(cls, name):
+        m = None
+        for mm in [
+            "noc.custom.services.login.backends.%s" % name,
+            "noc.services.login.backends.%s" % name
+        ]:
+            try:
+                m = __import__(mm, {}, {}, "*")
+            except ImportError as e:
+                pass
+        if m is None:
+            return None
+        for a in dir(m):
+            o = getattr(m, a)
+            if (
+                inspect.isclass(o) and
+                issubclass(o, BaseAuthBackend) and
+                o.__module__ == m.__name__
+            ):
+                return o
+        return None
