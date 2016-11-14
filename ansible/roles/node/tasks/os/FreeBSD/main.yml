@@ -26,4 +26,7 @@
 - name: Enable NOC system service
   service: name="{{ noc_system_service }}" enabled=yes
 
+- name: Create newsyslog.conf.d directory
+  file: path=/usr/local/etc/newsyslog.conf.d state=directory mode=0755
+
 - include: "telegraf.yml"
