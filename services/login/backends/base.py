@@ -52,6 +52,7 @@ class BaseAuthBackend(object):
                 username=username,
                 is_active=is_active
             )
+            u.set_unusable_password()
             changed = True
         for k, v in [("is_active", is_active)]:
             cv = getattr(u, k)
