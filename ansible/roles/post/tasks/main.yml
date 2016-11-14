@@ -91,7 +91,7 @@
       user: "{{noc_influxdb_user}}"
       password: "{{ noc_influxdb_password }}"
       jsonData:
-        timeInterval: 300
+        timeInterval: ">300s"
   ignore_errors: yes
   register: ids
   changed_when: ids.status != 500
