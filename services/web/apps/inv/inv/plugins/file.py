@@ -12,7 +12,7 @@ import datetime
 from base import InvPlugin
 from noc.inv.models.object import Object
 from noc.inv.models.objectfile import ObjectFile
-from noc.main.models import MIMEType
+from noc.main.models.mimetype import MIMEType
 
 
 class FilePlugin(InvPlugin):
