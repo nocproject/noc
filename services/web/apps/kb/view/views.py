@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from noc.lib.app.application import Application,HasPerm
 from noc.kb.models.kbentry import KBEntry
 from noc.kb.models.kbentryattachment import KBEntryAttachment
-from noc.main.models import MIMEType
+from noc.main.models.mimetype import MIMEType
 ##
 ## View application
 ##
