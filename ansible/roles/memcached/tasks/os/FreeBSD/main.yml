@@ -1,1 +1,5 @@
 ---
+- name: Install memcached
+  pkgng: name="memcached" state=present
+  tags:
+    - requirements
