@@ -31,6 +31,8 @@ class Job(object):
     enabled = True
     # Model/Document class referenced by key
     model = None
+    # Use model.get_by_id for dereference
+    use_get_by_id = False
     # Group name. Only one job from group can be started
     # if is not None
     group_name = None
@@ -192,23 +194,27 @@ class Job(object):
         """
         Retrieve referenced object from database
         """
-        if self.model:
+        if self.model and self.use_get_by_id:
+            self.object = self.model.get_by_id(self.attrs[self.ATTR_KEY])
+            if not self.object:
+                return False
+        elif self.model:
             q = self.get_defererence_query()
             if q is None:
                 return False
             try:
                 # Resolve object
                 self.object = self.model.objects.get(**q)
-                # Adjust logging
-                self.logger.set_prefix(
-                    "%s][%s][%s" % (
-                        self.scheduler.name,
-                        self.name,
-                        self.get_display_key()
-                    )
-                )
             except self.model.DoesNotExist:
                 return False
+        # Adjust logging
+        self.logger.set_prefix(
+            "%s][%s][%s" % (
+                self.scheduler.name,
+                self.name,
+                self.get_display_key()
+            )
+        )
         return True
 
     def get_display_key(self):
