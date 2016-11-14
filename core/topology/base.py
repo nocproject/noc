@@ -68,6 +68,7 @@ class BaseTopology(object):
             "type": "managedobject",
             "id": mo.id,
             "name": mo.name,
+            "address": mo.address,
             "role": self.get_role(mo),
             "shape": shape,
             "shape_width": sw,
