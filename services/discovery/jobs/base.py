@@ -30,6 +30,7 @@ from noc.core.service.rpc import RPCError
 
 class MODiscoveryJob(PeriodicJob):
     model = ManagedObject
+    use_get_by_id = True
     use_offset = True
 
     def __init__(self, *args, **kwargs):
