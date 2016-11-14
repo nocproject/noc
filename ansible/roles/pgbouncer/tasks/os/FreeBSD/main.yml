@@ -4,6 +4,11 @@
   tags:
     - requirements
 
+- name: Setting pgbouncer flags
+  lineinfile: dest=/etc/rc.conf regexp=^pgbouncer_conf= line="pgbouncer_conf=\"/usr/local/etc/pgbouncer/pgbouncer.ini\""
+  tags:
+    - config
+
 - name: Create pgbouncer directories
   file:
     path: "{{ item }}"
@@ -13,3 +18,4 @@
   with_items:
     - /var/log/pgbouncer/
     - /var/run/pgbouncer/
+    - /usr/local/etc/pgbouncer/
