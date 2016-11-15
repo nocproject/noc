@@ -55,6 +55,7 @@ class CorrelatorService(Service):
     def on_activate(self):
         self.scheduler = Scheduler(
             self.name,
+            pool=self.config.pool,
             reset_running=True,
             ioloop=self.ioloop,
             submit_threshold=100,
