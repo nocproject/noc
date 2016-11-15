@@ -115,8 +115,8 @@ class PMWriterService(Service):
                 continue
             if len(self.buffer) < bs and self.speed:
                 sleep_time = int((bs - len(self.buffer)) / self.speed)
-                if sleep_time > 1:
-                    sleep_time = 1
+                if sleep_time > self.MAX_DELAY:
+                    sleep_time = self.MAX_DELAY
                 self.logger.info("Waiting for buffer for %f seconds. Current buff size %d",
                                  (bs - len(self.buffer)) / self.speed, len(self.buffer))
                 self.perf_metrics["slept_time"] += sleep_time
