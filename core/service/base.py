@@ -445,6 +445,8 @@ class Service(object):
             # Current process uptime
             "uptime": time.time() - self.start_time
         }
+        if self.pooled:
+            r["pool"] = self.config.pool
         if self.executors:
             for x in self.executors:
                 r["threadpool_%s_qsize" % x] = self.executors[x]._work_queue.qsize()
