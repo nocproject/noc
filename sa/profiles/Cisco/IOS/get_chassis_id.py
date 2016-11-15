@@ -85,7 +85,7 @@ class Script(BaseScript):
         r"MAC Address block size\s*:\s*(?P<count>\d+)",
         re.DOTALL)
 
-    @BaseScript.match(platform__regex=r"ASR100[01]")
+    @BaseScript.match(platform__regex=r"ASR100[0-4]")
     def execute_IOSXE(self):
         v = self.cli("show diag chassis eeprom detail")
         macs = []
