@@ -39,7 +39,7 @@ class LoginService(UIService):
     ]
 
     def iter_methods(self):
-        for m in self.config.method.split(","):
+        for m in self.config.methods.split(","):
             yield m.strip()
 
     def authenticate(self, handler, credentials):
