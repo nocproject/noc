@@ -53,49 +53,65 @@ class ReportFilterApplication(SimpleReport):
         )
     }
 
+
+
     def get_data(self, request, pool="default", obj_profile=None,
                  avail_status=None, profile_check_only=None, failed_scripts_only=None, **kwargs):
         data = []
-        if profile_check_only:
-            job_logs = get_db()["noc.joblog"].find({"$or": [{"problems.suggest_cli": {"$exists": True}},
-                                                            {"problems.suggest_snmp": {"$exists": True}}]},
-                                                   {"_id": 1, "problems.suggest_snmp": 1, "problems.suggest_cli": 1})
-        elif failed_scripts_only:
-            job_logs = get_db()["noc.joblog"].find({"$and": [{"problems": {"$exists": "true", "$ne": {  }}},
+
+        mos = ManagedObject.objects.filter(pool=pool)
+        if not request.user.is_superuser:
+            mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
+        if obj_profile:
+            mos = mos.filter(object_profile=obj_profile)
+
+        mos = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" % mo.id for mo in mos]
+
+        n = 0
+        while mos[(0 + n):(10000 + n)]:
+            if profile_check_only:
+                job_logs = get_db()["noc.joblog"].aggregate([{"$match":{"_id": {"$in": mos[(0 + n):(10000 + n)]}}},
+                                                             {"$match": {"$or": [{"problems.suggest_cli": {"$exists": True}},
+                                                                                 {"problems.suggest_snmp": {"$exists": True}}]
+                                                                         }},
+                                                             {"$project":{"_id": 1,
+                                                                          "problems.suggest_snmp": 1,
+                                                                          "problems.suggest_cli": 1}}
+                                                             ])
+
+            elif failed_scripts_only:
+                job_logs = get_db()["noc.joblog"].aggregate([{"$match":{"_id": {"$in": mos[(0 + n):(10000 + n)]}}},
+                                                             {"$match":{"$and": [{"problems": {"$exists": "true", "$ne": {  }}},
                                                              {"problems.suggest_snmp": {"$exists": False}},
-                                                             {"problems.suggest_cli": {"$exists": False}}]})
-        else:
-            job_logs = get_db()["noc.joblog"].find({"problems": {"$exists": True, "$ne": {  }}})
+                                                             {"problems.suggest_cli": {"$exists": False}}]}}])
+            else:
+                job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"problems": {"$exists": True, "$ne": {  }},
+                                                             "_id": {"$in": mos[(0 + n):(10000 + n)]}}}])
 
-        for discovery in job_logs:
-            mo = ManagedObject.objects.filter(id=int(discovery["_id"].split("-")[2]), pool=pool)
-            if not request.user.is_superuser:
-                mo = ManagedObject.objects.filter(id=int(discovery["_id"].split("-")[2]),
-                                                  pool=pool,
-                                                  administrative_domain__in=UserAccess.get_domains(request.user))
-            if obj_profile:
-                mo = mo.filter(object_profile=obj_profile)
-            if not mo:
-                continue
-            if avail_status:
-                if not mo[0].get_status():
-                    continue
-            for method in discovery["problems"]:
+            for discovery in job_logs["result"]:
 
-                data += [
-                    (
-                        mo[0].name,
-                        mo[0].address,
-                        mo[0].get_status(),
-                        method,
-                        discovery["problems"][method]
-                    )
-                ]
+                mo = ManagedObject.get_by_id(int(discovery["_id"].split("-")[2]))
+                if avail_status:
+                    if not mo.get_status():
+                        continue
+                for method in discovery["problems"]:
+
+                    data += [
+                        (
+                            mo.name,
+                            mo.address,
+                            mo.profile_name,
+                            mo.get_status(),
+                            method,
+                            discovery["problems"][method]
+                        )
+                    ]
+            n += 10000
 
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"), _("Address"),
+                _("Managed Object"), _("Address"), _("Profile"),
                 TableColumn(_("Avail"), format="bool"),
                 _("Discovery"), _("Error")
             ],
