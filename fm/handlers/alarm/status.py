@@ -41,6 +41,7 @@ def check_down(alarm):
         "noc.fm.handlers.alarm.status.close_oo_alarm",
         delay=OO_CLOSE_DELAY,
         scheduler="correlator",
+        pool=alarm.managed_object.pool.name,
         alarm_id=alarm.id,
         timestamp=last
     )

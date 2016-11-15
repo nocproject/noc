@@ -198,6 +198,7 @@ class ActiveAlarm(nosql.Document):
                 call_later(
                     "noc.services.correlator.wait_tt.wait_tt",
                     scheduler="correlator",
+                    pool=self.managed_object.pool.name,
                     alarm_id=self.id
                 )
             return
@@ -264,6 +265,7 @@ class ActiveAlarm(nosql.Document):
             call_later(
                 "noc.services.correlator.escalation.notify_close",
                 scheduler="correlator",
+                pool=self.managed_object.pool.name,
                 alarm_id=self.id,
                 tt_id=self.escalation_tt,
                 subject=subject,
@@ -284,6 +286,7 @@ class ActiveAlarm(nosql.Document):
             call_later(
                 "noc.services.correlator.escalation.check_close_consequence",
                 scheduler="correlator",
+                pool=self.managed_object.pool.name,
                 delay=t,
                 alarm_id=self.id
             )
