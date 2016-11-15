@@ -4,3 +4,4 @@ mongo_arbiter_pid: /var/run/mongodb-arbiter.pid
 mongo_db_path: /var/lib/mongodb/
 mongo_pid: /var/run/mongodb.pid
 nginx_user: www-data
+pgbouncer_path_pid: /var/run/postgresql
