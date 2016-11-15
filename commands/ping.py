@@ -61,7 +61,7 @@ class Command(BaseCommand):
         # Ping
         if os.environ.get("NOC_LIBUV"):
             from tornaduv import UVLoop
-            self.logger.warn("Using libuv")
+            self.stderr.write("Using libuv\n")
             tornado.ioloop.IOLoop.configure(UVLoop)
         self.ioloop = IOLoop.current()
         self.ping = Ping(io_loop=self.ioloop)
