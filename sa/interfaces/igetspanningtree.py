@@ -62,7 +62,7 @@ class IGetSpanningTree(Interface):
                 # Interface state
                 "state": StringParameter(choices=[
                     "disabled", "discarding", "learning", "forwarding",
-                    "broken", "listen", "unknown", "loopback"]),
+                    "broken", "listen", "unknown", "loopback", "blocking"]),
                 # Interface role
                 "role": StringParameter(choices=[
                     "disabled", "alternate", "backup", "root",
