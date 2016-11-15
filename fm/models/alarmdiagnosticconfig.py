@@ -136,6 +136,7 @@ class AlarmDiagnosticConfig(Document):
             call_later(
                 "noc.fm.models.alarmdiagnosticconfig.on_raise",
                 scheduler="correlator",
+                pool=alarm.managed_object.pool.name,
                 delay=delay,
                 alarm=alarm.id,
                 cfg=r_cfg[delay]
@@ -178,6 +179,7 @@ class AlarmDiagnosticConfig(Document):
             call_later(
                 "noc.fm.models.alarmdiagnosticconfig.on_clear",
                 scheduler="correlator",
+                pool=alarm.managed_object.pool.name,
                 delay=delay,
                 alarm=alarm.id,
                 cfg=cfg[delay]

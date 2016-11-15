@@ -112,6 +112,7 @@ class AlarmEscalation(Document):
                 )
                 call_later(
                     "noc.services.correlator.escalation.escalate",
+                    pool=alarm.managed_object.pool.name,
                     delay=delay,
                     scheduler="correlator",
                     alarm_id=alarm.id,

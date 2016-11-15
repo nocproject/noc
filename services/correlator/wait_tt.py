@@ -53,7 +53,6 @@ def wait_tt(alarm_id):
             "noc.services.correlator.wait_tt.wait_tt",
             delay=CHECK_INTERVAL,
             scheduler="correlator",
+            pool=alarm.managed_object.pool.name,
             alarm_id=alarm_id
         )
-
-
