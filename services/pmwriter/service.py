@@ -116,9 +116,9 @@ class PMWriterService(Service):
             if len(self.buffer) < bs and self.speed:
                 sleep_time = int((bs - len(self.buffer)) / self.speed)
                 if sleep_time > self.MAX_DELAY:
-                    sleep_time = self.MAX_DELAY
+                    sleep_time = int(self.MAX_DELAY)
                 self.logger.info("Waiting for buffer for %f seconds. Current buff size %d",
-                                 (bs - len(self.buffer)) / self.speed, len(self.buffer))
+                                 sleep_time, len(self.buffer))
                 self.perf_metrics["slept_time"] += sleep_time
                 yield tornado.gen.sleep(sleep_time)
             batch, self.buffer = self.buffer[:bs], self.buffer[bs:]
