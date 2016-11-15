@@ -27,7 +27,7 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8", bulk=True):  # IF-MIB
+                    "1.3.6.1.2.1.2.2.1.8"):  # IF-MIB
                     if n[:2] == 'fa' or n[:2] == 'gi' or n[:2] == 'te':
                         if interface:
                             if n == interface:
