@@ -8,7 +8,7 @@ reporting-disabled = true
   bind-address = ":8088"
   retention-autocreate = true
   logging-enabled = true
-  pprof-enabled = false
+  pprof-enabled = true  # more details
   lease-duration = "1m0s"
 
 [data]
@@ -19,12 +19,12 @@ reporting-disabled = true
   query-log-enabled = false
   cache-max-memory-size = 1048576000
   cache-snapshot-memory-size = 26214400
-  # cache-snapshot-write-cold-duration = "0h10m0s"
   cache-snapshot-write-cold-duration = "0h10m0s"
   compact-full-write-cold-duration = "4h0m0s"
   max-points-per-block = 0
   data-logging-enabled = true
   max-series-per-database = 0
+  max-values-per-tag = 0    # 1.1 default
 
 [coordinator]
   force-remote-mapping = false
@@ -34,9 +34,11 @@ reporting-disabled = true
   shard-mapper-timeout = "5s"
   max-concurrent-queries = 0
   query-timeout = "0"
-  max-select-point = 0
+  max-select-point = 1000   # have to be checked. speedup enhancement
   max-select-series = 0
   max-select-buckets = 0
+  max-concurrent-queries = 20
+  query-timeout = "10s"     # kill long running threads
 
 [retention]
   enabled = true
@@ -48,14 +50,14 @@ reporting-disabled = true
   advance-period = "30m0s"
 
 [admin]
-  enabled = true
+  enabled = false   # will be disabled after 1.1
   bind-address = ":8083"
   https-enabled = false
   https-certificate = "/etc/ssl/influxdb.pem"
   Version = ""
 
 [monitor]
-  store-enabled = true
+  store-enabled = false # already stored via telegraf
   store-database = "_internal"
   store-interval = "10s"
 
@@ -85,6 +87,9 @@ reporting-disabled = true
   separator = "."
   udp-read-buffer = 0
 
+[[opentsdb]]
+  enabled = false
+
 [[udp]]
   enabled = false
   bind-address = ":8089"
@@ -100,4 +105,4 @@ reporting-disabled = true
 [continuous_queries]
   log-enabled = true
   enabled = true
-  run-interval = "1s"
+  run-interval = "1m"
