@@ -23,7 +23,7 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.8", bulk=True):  # IF-MIB
+                    "1.3.6.1.2.1.2.2.1.8"):  # IF-MIB
                     if n[:3] == 'Aux' or n[:4] == 'Vlan' \
                     or n[:10] == 'InLoopBack':
                         continue

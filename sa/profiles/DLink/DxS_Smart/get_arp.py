@@ -33,7 +33,6 @@ class Script(BaseScript):
                 for ip, mac, i in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.3",
                                                         "1.3.6.1.2.1.4.22.1.2",
                                                         "1.3.6.1.2.1.4.22.1.1",
-                                                        bulk=True,
                                                         cached=True):  # IP-MIB
                     r += [{"ip": ip, "mac": mac, "interface": self.snmp.get(
                         "1.3.6.1.2.1.2.2.1.2" + '.' + i, cached=True)}]
