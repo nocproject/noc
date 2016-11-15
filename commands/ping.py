@@ -8,6 +8,7 @@
 
 ## Python modules
 import argparse
+import os
 # Third-party modules
 from tornado.ioloop import IOLoop
 import tornado.gen
@@ -58,6 +59,10 @@ class Command(BaseCommand):
                 except OSError as e:
                     self.die("Cannot read file %s: %s\n" % (fn, e))
         # Ping
+        if os.environ.get("NOC_LIBUV"):
+            from tornaduv import UVLoop
+            self.logger.warn("Using libuv")
+            tornado.ioloop.IOLoop.configure(UVLoop)
         self.ioloop = IOLoop.current()
         self.ping = Ping(io_loop=self.ioloop)
         self.jobs = jobs
