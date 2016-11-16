@@ -915,7 +915,25 @@ Ext.define("NOC.inv.map.MapPanel", {
             {
                 args: [
                     {mode: 'Object'},
-                    {object: objectId, object__label: me.objectNodes[objectId].attributes.attrs.text.text}
+                    [{object: objectId, object__label: me.objectNodes[objectId].attributes.attrs.text.text}]
+                ]
+            }
+        );
+    },
+
+    addToMaintaince: function(objects) {
+        var elements = [];
+        Ext.Array.forEach(objects, function(item) {
+            elements.push({object: item.get('object'), object__label: item.get('object__label')});
+        });
+        console.log(elements);
+        NOC.run(
+            'NOC.inv.map.Maintainance',
+            'Add To Maintainance',
+            {
+                args: [
+                    {mode: 'Object'},
+                    elements
                 ]
             }
         );
@@ -981,7 +999,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             me.fireEvent("openbasket");
         }
         Ext.each(this.graph.getElements(), function(e) {
-            if('managedobject' === e.get('id').split(':')[0]){
+            if('managedobject' === e.get('id').split(':')[0]) {
                 var objectId = Number(e.get('id').split(':')[1]);
                 store.add({
                     id: objectId,

@@ -26,5 +26,11 @@ Ext.define('NOC.inv.map.BasketController', {
         var grid = this.getView();
 
         grid.fireEvent('createmaintaince', grid.getStore().getData());
+    },
+
+    onAddToMaintainceClick: function() {
+        var grid = this.getView();
+
+        grid.fireEvent('addtomaintaince', grid.getStore().getData());
     }
 });

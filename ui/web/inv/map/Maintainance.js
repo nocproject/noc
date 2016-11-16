@@ -31,17 +31,26 @@ Ext.define('NOC.inv.map.Maintainance', {
             model: me.model,
             data: []
         });
+        me.modeLabel = me.noc.args[1].length > 1 ? me.noc.args[0].mode + 's' : me.noc.args[0].mode;
         me.dockMaintainance = Ext.create('Ext.form.Panel', {
             dock: 'top',
             bodyPadding: 10,
             items: [
                 {
                     xtype: 'container',
+                    scrollable: 'vertical',
                     style: {
                         'font-size': '15px',
                         'padding-bottom': '10'
                     },
-                    html: me.makeLabel(me.noc.args[0].mode, me.noc.args[1].object__label)
+                    tpl: [
+                        '<div style="padding-bottom: 5px">' + __("Add") + '&nbsp;<b>{mode}:</b><br/>' + '</div>',
+                        '<tpl for="elements">',
+                            '<div style="padding-left: 20px">{object__label}</div>',
+                        '</tpl>',
+                        '<div style="padding-top: 5px">' + __("to maintainance") + '</div>'
+                    ],
+                    data: {mode: me.modeLabel, elements: me.noc.args[1]}
                 },
                 {
                     xtype: 'searchfield',
@@ -121,7 +130,7 @@ Ext.define('NOC.inv.map.Maintainance', {
         me.buttons = [{
             scope: me,
             handler: me.addToMaintainance,
-            text: __('Add ') + me.noc.args[0].mode
+            text: __('Add ') + me.modeLabel
         }];
         Ext.apply(me, {
             buttonAlign: 'center',
@@ -142,15 +151,9 @@ Ext.define('NOC.inv.map.Maintainance', {
             return;
         }
         if('Object' === me.noc.args[0].mode) {
-            selected[0].data.direct_objects.push({
-                object__label: me.noc.args[1].object__label,
-                object: me.noc.args[1].object
-            });
+            selected[0].data.direct_objects = selected[0].data.direct_objects.concat(me.noc.args[1]);
         } else if('Segment' === me.noc.args[0].mode) {
-            selected[0].data.direct_segments.push({
-                segment__label: me.noc.args[1].object__label,
-                segment: me.noc.args[1].object
-            });
+            selected[0].data.direct_segments = selected[0].data.direct_segments.concat(me.noc.args[1]);
         } else {
             NOC.error(__('Unknows mode :') + me.noc.args[0].mode);
             return;
@@ -228,9 +231,5 @@ Ext.define('NOC.inv.map.Maintainance', {
         var me = this;
         me.dockMaintainance.down('#filterField').setValue('');
         me.loadData();
-    },
-
-    makeLabel: function(name, value) {
-        return __("Add ") + "<b>" + name + "</b> '" + value + __("' to maintainance");
     }
 });
