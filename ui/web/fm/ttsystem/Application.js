@@ -45,7 +45,7 @@ Ext.define("NOC.fm.ttsystem.Application", {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
-                    allowBlank: false
+                    allowBlank: true
                 },
                 {
                     name: "connection",
