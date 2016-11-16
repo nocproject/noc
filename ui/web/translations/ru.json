@@ -7,8 +7,8 @@
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-10-11 12:52+0500",
-        "POT-Creation-Date": "2016-10-11 12:32+0500",
+        "PO-Revision-Date": "2016-11-16 09:57+0500",
+        "POT-Creation-Date": "2016-11-16 09:32+0500",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
@@ -93,6 +93,10 @@
     "Add to collections?": [
         null,
         "Добавить в коллекцию?"
+    ],
+    "Add to group": [
+        null,
+        "Добавить в группу"
     ],
     "Address": [
         null,
@@ -278,6 +282,14 @@
         null,
         "Цвет фона"
     ],
+    "Bind Password": [
+        null,
+        "Привязка пароля"
+    ],
+    "Bind User": [
+        null,
+        "Привязка пользователя"
+    ],
     "Bind filter": [
         null,
         "Фильтр привязки"
@@ -402,6 +414,10 @@
         null,
         "По терминирующему сервисы"
     ],
+    "By State": [
+        null,
+        "По состоянию"
+    ],
     "By Tags": [
         null,
         "По тэгам"
@@ -465,6 +481,10 @@
     "Cellar": [
         null,
         "Подвал"
+    ],
+    "Cells": [
+        null,
+        "Ячейка"
     ],
     "Center to object": [
         null,
@@ -758,6 +778,10 @@
         null,
         "Страна"
     ],
+    "Covered Objects": [
+        null,
+        "Накрытые объекты"
+    ],
     "Create": [
         null,
         "Создать"
@@ -862,6 +886,10 @@
         null,
         "Удалить объект"
     ],
+    "Delete object(s)": [
+        null,
+        "Удалить объект(ы)"
+    ],
     "Delete record?": [
         null,
         "Удалить запись?"
@@ -869,6 +897,10 @@
     "Deleted": [
         null,
         "Удаленный"
+    ],
+    "Deny Group": [
+        null,
+        "Запретить группу"
     ],
     "Description": [
         null,
@@ -990,10 +1022,6 @@
         null,
         "Ошибка при сохранении записи!"
     ],
-    "Error!": [
-        null,
-        "Ошибка!"
-    ],
     "Escalation Time": [
         null,
         "Время эскалации"
@@ -1058,6 +1086,10 @@
         null,
         "Истекает"
     ],
+    "Export": [
+        null,
+        "Экспорт"
+    ],
     "Expression": [
         null,
         "Выражение"
@@ -1065,6 +1097,10 @@
     "Extension": [
         null,
         "Расширение"
+    ],
+    "Extra Small": [
+        null,
+        "Очень маленький"
     ],
     "FQDN Template": [
         null,
@@ -1554,6 +1590,10 @@
         null,
         "Групповые действия"
     ],
+    "Groups": [
+        null,
+        "Группы"
+    ],
     "Habitated": [
         null,
         "Жилое"
@@ -1565,6 +1605,14 @@
     "Handlers": [
         null,
         "Обработчики"
+    ],
+    "Header": [
+        null,
+        "Заголовок"
+    ],
+    "Height": [
+        null,
+        "Высота"
     ],
     "Help": [
         null,
@@ -1758,6 +1806,10 @@
         null,
         "Ключ RE"
     ],
+    "LDAP Group DN": [
+        null,
+        "DN Группы LDAP"
+    ],
     "Label": [
         null,
         "Метка"
@@ -1769,6 +1821,10 @@
     "Language": [
         null,
         "Язык"
+    ],
+    "Large": [
+        null,
+        "Большой"
     ],
     "Last Changed": [
         null,
@@ -1873,6 +1929,10 @@
     "Local Description": [
         null,
         "Локальное описание"
+    ],
+    "Local Group": [
+        null,
+        "Локальная группа"
     ],
     "Local Interface": [
         null,
@@ -2013,6 +2073,10 @@
     "Max. Zoom": [
         null,
         "Макс.Увел."
+    ],
+    "Medium": [
+        null,
+        "Средний"
     ],
     "Members": [
         null,
@@ -2422,14 +2486,6 @@
         null,
         "Порт"
     ],
-    "Pos. Front": [
-        null,
-        "Поз. спереди"
-    ],
-    "Pos. Rear": [
-        null,
-        "Поз. сздади"
-    ],
     "Postal Code": [
         null,
         "Почтовый индекс"
@@ -2505,6 +2561,10 @@
     "Profile": [
         null,
         "Профиль"
+    ],
+    "Profile Check Rule Name": [
+        null,
+        "Имя правила определения профиля"
     ],
     "Profile saved": [
         null,
@@ -2646,6 +2706,10 @@
         null,
         "Требует подтверждения"
     ],
+    "Require Group": [
+        null,
+        "Требует группу"
+    ],
     "Reset": [
         null,
         "Сброс"
@@ -2738,6 +2802,10 @@
         null,
         "Повернуть"
     ],
+    "Row": [
+        null,
+        "Строка"
+    ],
     "Rules": [
         null,
         "Правила"
@@ -2773,6 +2841,10 @@
     "Save changes": [
         null,
         "Сохранить изменения"
+    ],
+    "Save screen": [
+        null,
+        "Сохранить экран"
     ],
     "Saved": [
         null,
@@ -2934,6 +3006,10 @@
         null,
         "Серийный №"
     ],
+    "Servers": [
+        null,
+        "Сервера"
+    ],
     "Service": [
         null,
         "Сервис"
@@ -3050,10 +3126,6 @@
         null,
         "Загрузка интерфейсов"
     ],
-    "Show legend": [
-        null,
-        "Показать легенду"
-    ],
     "Show map": [
         null,
         "Карта"
@@ -3078,6 +3150,18 @@
         null,
         "Статичная карта"
     ],
+    "Show/Hide basket": [
+        null,
+        "Показать/Скрыть тележку"
+    ],
+    "Show/Hide legend": [
+        null,
+        "Показать/Скрыть легенду"
+    ],
+    "Show/Hide miniMap": [
+        null,
+        "Показать/Скрыть миникарту"
+    ],
     "Sibling": [
         null,
         "Родственники"
@@ -3089,6 +3173,10 @@
     "Slaves": [
         null,
         "Дополн."
+    ],
+    "Small": [
+        null,
+        "Маленький"
     ],
     "Solution": [
         null,
@@ -3454,10 +3542,6 @@
         null,
         "Топология"
     ],
-    "Total": [
-        null,
-        "Общее"
-    ],
     "Total: ": [
         null,
         "Итого:"
@@ -3477,6 +3561,10 @@
     "UUID": [
         null,
         "Идентификатор"
+    ],
+    "Under maintaintance": [
+        null,
+        "Активаен  РНР"
     ],
     "Underlined": [
         null,
@@ -3502,6 +3590,10 @@
         null,
         "Отсоединить интерфейс"
     ],
+    "Unselect All": [
+        null,
+        "Отменить выделение"
+    ],
     "Untag.": [
         null,
         "Нетэгированный"
@@ -3517,6 +3609,10 @@
     "Uptime": [
         null,
         "Время работы"
+    ],
+    "Use TLS": [
+        null,
+        "Использовать TLS"
     ],
     "User": [
         null,
@@ -3710,6 +3806,10 @@
         null,
         "баланс"
     ],
+    "basket empty": [
+        null,
+        "тележка пуста"
+    ],
     "cluster": [
         null,
         "кластер"
@@ -3757,6 +3857,10 @@
     "name": [
         null,
         "имя"
+    ],
+    "oper down": [
+        null,
+        "порт в дауне"
     ],
     "origin": [
         null,
