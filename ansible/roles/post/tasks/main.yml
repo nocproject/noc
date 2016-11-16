@@ -8,6 +8,7 @@
     chdir: "{{ noc_root }}"
   tags:
     - config
+    - noc_config
 
 - name: restart telegraf
   service:
@@ -48,6 +49,7 @@
   tags:
     - config
     - soft_restart
+    - noc_config
 
 - name: Serial NOC restart
   shell: "{{ noc_root }}/noc ctl serialrestart all"
