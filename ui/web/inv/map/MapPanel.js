@@ -525,6 +525,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             })
         });
         me.paper.fitToContent();
+        me.setPaperDimension();
     },
     //
     save: function() {
