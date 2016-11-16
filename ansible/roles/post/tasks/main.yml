@@ -24,6 +24,7 @@
   tags:
     - config
     - soft_restart
+    - noc_config
 
 - name: Create alerta blackout
   uri:
