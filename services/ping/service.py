@@ -10,6 +10,7 @@
 ## Python modules
 import functools
 import time
+import datetime
 import socket
 import struct
 import os
@@ -21,6 +22,7 @@ import tornado.httpclient
 from noc.core.service.base import Service
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
+from probesetting import ProbeSetting
 
 
 class PingService(Service):
@@ -39,11 +41,9 @@ class PingService(Service):
         self.send_callback = None
         self.mappings_callback = None
         self.metrics_callback = None
-        self.source_map = {}  # IP -> {id, interval, status}
-        self.ping_tasks = {}  # IP -> PeriodicCallback
+        self.probes = {}  # address -> ProbeSetting
         self.omap = None
         self.ping = None
-        self.report_rtt = {}  # address -> (name | None)
 
     @tornado.gen.coroutine
     def on_activate(self):
@@ -115,7 +115,7 @@ class PingService(Service):
             self.logger.error("Failed to get object mappings: %s", e)
             return
         #
-        xd = set(self.source_map)
+        xd = set(self.probes)
         if self.config.global_n_instances > 1:
             nd = set(x for x in sm if is_my_task(x))
         else:
@@ -129,9 +129,9 @@ class PingService(Service):
             self.create_probe(d, sm[d])
         # update probe
         for d in xd & nd:
-            if self.source_map[d]["interval"] != sm[d]["interval"] or self.source_map[d]["report_rtt"] != sm[d]["report_rtt"]:
+            if self.probes[d].is_differ(sm[d]):
                 self.update_probe(d, sm[d])
-        self.perf_metrics["ping_objects"] = len(self.ping_tasks)
+        self.perf_metrics["ping_objects"] = len(self.probes)
 
     def on_object_map_change(self, topic):
         self.logger.info("Object mappings changed. Rerequesting")
@@ -142,51 +142,52 @@ class PingService(Service):
         Create new ping probe
         """
         self.logger.info("Create probe: %s (%ds)", ip, data["interval"])
-        self.source_map[ip] = data
+        ps = ProbeSetting(address=ip, **data)
+        self.probes[ip] = ps
         pt = PeriodicOffsetCallback(
-            functools.partial(self.ping_check, ip),
-            data["interval"] * 1000
+            functools.partial(self.ping_check, ps),
+            ps.interval * 1000
         )
+        ps.task = pt
         pt.start()
-        self.ping_tasks[ip] = pt
-        if data["report_rtt"]:
-            self.report_rtt[ip] = data["name"]
-        else:
-            self.report_rtt[ip] = None
         self.perf_metrics["ping_probe_create"] += 1
 
     def delete_probe(self, ip):
-        if ip not in self.source_map:
+        if ip not in self.probes:
             return
         self.logger.info("Delete probe: %s", ip)
-        pt = self.ping_tasks.pop(ip)
-        pt.stop()
-        del self.source_map[ip]
-        del self.report_rtt[ip]
+        ps = self.probes[ip]
+        ps.task.stop()
+        ps.task = None
+        del self.probes[ip]
         self.perf_metrics["ping_probe_delete"] += 1
 
     def update_probe(self, ip, data):
         self.logger.info("Update probe: %s (%ds)", ip, data["interval"])
-        self.source_map[ip]["interval"] = data["interval"]
-        self.ping_tasks[ip].set_callback_time(data["interval"] * 1000)
-        if data["report_rtt"]:
-            self.report_rtt[ip] = data["name"]
-        else:
-            self.report_rtt[ip] = None
+        ps = self.probes[ip]
+        if ps.interval != data["interval"]:
+            ps.task.set_callback_time(data["interval"] * 1000)
+        self.probes[ip].update(**data)
         self.perf_metrics["ping_probe_update"] += 1
 
     @tornado.gen.coroutine
-    def ping_check(self, address):
+    def ping_check(self, ps):
         """
         Perform ping check and set result
         """
         def q(s):
             return s.replace(" ", "\\ ").replace(",", "\\,")
 
-        if address not in self.ping_tasks:
+        address = ps.address
+        t0 = time.time()
+        if address not in self.probes:
             return
         self.perf_metrics["ping_check_total"] += 1
-        t0 = time.time()
+        if ps.time_cond:
+            dt = datetime.datetime.fromtimestamp(t0)
+            if not eval(ps.time_cond, {"T": dt}):
+                self.perf_metrics["ping_check_skips"] += 1
+                return
         rtt = yield self.ping.ping_check_rtt(
             address,
             count=self.config.max_packets,
@@ -197,16 +198,15 @@ class PingService(Service):
             self.perf_metrics["ping_check_success"] += 1
         else:
             self.perf_metrics["ping_check_fail"] += 1
-        smd = self.source_map.get(address)
-        if s is not None and smd and s != smd["status"]:
+        if s is not None and ps and s != ps.status:
             self.logger.info(
                 "[%s] Changing status to %s",
                 address, s
             )
-            smd["status"] = s
+            ps.status = s
             result = "success" if s else "failed"
             self.register_message(
-                smd["id"],
+                ps.id,
                 t0,
                 {
                     "source": "system",
@@ -217,14 +217,12 @@ class PingService(Service):
             )
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
         # Send RTT metrics
-        if rtt is not None:
-            name = self.report_rtt.get(address)
-            if name:
-                self.register_metrics([
-                    "Ping\\ |\\ RTT,object=%s value=%s %s" % (
-                        q(name), rtt, int(time.time())
-                    )
-                ])
+        if rtt is not None and ps.report_rtt:
+            self.register_metrics([
+                "Ping\\ |\\ RTT,object=%s value=%s %s" % (
+                    q(ps.name), rtt, int(time.time())
+                )
+            ])
 
 if __name__ == "__main__":
     PingService().start()

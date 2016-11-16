@@ -24,7 +24,7 @@ class OMapAPI(API):
         """
         Returns a dict of ip -> object id for syslog sources
         """
-        p = Pool.objects.filter(name=pool).first()
+        p = Pool.get_by_name(pool)
         if not p:
             return {}
         return ObjectMap.get_syslog_sources(p)
@@ -35,7 +35,7 @@ class OMapAPI(API):
         """
         Returns a dict of ip -> object id for trap sources
         """
-        p = Pool.objects.filter(name=pool).first()
+        p = Pool.get_by_name(pool)
         if not p:
             return {}
         return ObjectMap.get_trap_sources(p)
@@ -46,7 +46,7 @@ class OMapAPI(API):
         """
         Returns a dict of ip -> {"id": ..., "status": ..., "interval": ...}
         """
-        p = Pool.objects.filter(name=pool).first()
+        p = Pool.get_by_name(pool)
         if not p:
             return {}
         return ObjectMap.get_ping_sources(p)
