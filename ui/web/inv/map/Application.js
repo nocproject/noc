@@ -166,6 +166,9 @@ Ext.define("NOC.inv.map.Application", {
                 scope: me,
                 createmaintaince: function(data) {
                     me.mapPanel.newMaintaince(data.items);
+                },
+                addtomaintaince: function(data) {
+                    me.mapPanel.addToMaintaince(data.items)
                 }
             }
         });

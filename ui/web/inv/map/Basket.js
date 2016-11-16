@@ -46,8 +46,17 @@ Ext.define('NOC.inv.map.Basket', {
         },
         {
             xtype: 'button',
+            tooltip: __("Add to exist maintaince"),
+            glyph: NOC.glyph.plus,
+            handler: 'onAddToMaintainceClick',
+            bind: {
+                disabled: '{!hasRecords}'
+            }
+        },
+        {
+            xtype: 'button',
             tooltip: __("Create new maintaince"),
-            glyph: NOC.glyph.wrench,
+            glyph: NOC.glyph.file,
             handler: 'onCreateMaintainceClick',
             bind: {
                 disabled: '{!hasRecords}'
