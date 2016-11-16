@@ -252,7 +252,10 @@
     - config
 
 - name: Update site.py
-  replace: dest="{{noc_root}}/lib/python/site.py" regexp="encoding = \"ascii"\" replace="encoding = \"utf-8\""
+  replace:
+    dest: "{{noc_root}}/lib/python/site.py"
+    regexp: "encoding = \"ascii"\"
+    replace: "encoding = \"utf-8\""
   when: sitecustomizes.stat.exists == True
 
 - name: Compile bytecode
@@ -287,6 +290,7 @@
     dest: "{{ noc_root }}/etc/noc.yml"
   tags:
     - config
+    - noc_config
 
 - name: Setup supervisor config
   template:
@@ -298,6 +302,7 @@
     - etc/config/supervisor/unix_http_server.conf.j2
   tags:
     - config
+    - noc_config
 
 - name: create noc.conf
   file:
@@ -306,6 +311,7 @@
     owner: "{{ noc_user }}"
   tags:
     - config
+    - noc_config
 
 - name: Set up noc.conf
   ini_file:
@@ -351,6 +357,7 @@
       value: "{{ noc_installation_name }}"
   tags:
     - config
+    - noc_config
 
 - name: Tune sysctl.conf for node
   sysctl:
