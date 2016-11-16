@@ -29,6 +29,7 @@ class Pool(Document):
     discovery_reschedule_limit = IntField(default=50)
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
+    _name_cache = cachetools.TTLCache(1000, ttl=60)
     reschedule_lock = threading.Lock()
     reschedule_ts = {}  # pool id -> timestamp
 
@@ -40,6 +41,14 @@ class Pool(Document):
     def get_by_id(cls, id):
         try:
             return Pool.objects.get(id=id)
+        except Pool.DoesNotExist:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        try:
+            return Pool.objects.get(name=name)
         except Pool.DoesNotExist:
             return None
 
