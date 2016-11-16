@@ -56,14 +56,13 @@ Ext.define("NOC.inv.map.Application", {
 
         me.reloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
-            text: __("Reload"),
+            tooltip: __("Reload"),
             scope: me,
             handler: me.onReload
         });
 
         me.editButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.edit,
-            text: __("Edit"),
             enableToggle: true,
             disabled: true,
             tooltip: __("Edit map"),
@@ -81,7 +80,7 @@ Ext.define("NOC.inv.map.Application", {
 
         me.saveButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.save,
-            text: __("Save"),
+            tooltip: __("Save"),
             disabled: true,
             scope: me,
             handler: me.onSave
@@ -89,18 +88,27 @@ Ext.define("NOC.inv.map.Application", {
 
         me.revertButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.undo,
-            text: __("Revert"),
+            tooltip: __("Revert"),
             disabled: true,
             scope: me,
             handler: me.onRevert
         });
 
         me.newLayoutButton = Ext.create("Ext.button.Button", {
-            glyph: NOC.glyph.repeat,
-            text: __("New layout"),
+            glyph: NOC.glyph.medkit,
+            tooltip: __("New layout"),
             disabled: me.readOnly,
             scope: me,
             handler: me.onNewLayout
+        });
+
+        me.addressIPButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.tag,
+            tooltip: __("Name/IP device"),
+            enableToggle: true,
+            disabled: me.readOnly,
+            scope: me,
+            handler: me.onChangeName
         });
 
         me.segmentInspector = Ext.create(
@@ -227,7 +235,6 @@ Ext.define("NOC.inv.map.Application", {
 
         me.viewStpButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.sitemap,
-            text: __("STP"),
             enableToggle: true,
             disabled: true,
             tooltip: __("Show STP topology"),
@@ -282,6 +289,7 @@ Ext.define("NOC.inv.map.Application", {
                         me.revertButton,
                         me.newLayoutButton,
                         me.rotateButton,
+                        me.addressIPButton,
                         "-",
                         me.viewMapButton,
                         me.viewLoadButton,
@@ -314,6 +322,7 @@ Ext.define("NOC.inv.map.Application", {
         me.editButton.setDisabled(me.readOnly);
         me.editButton.setPressed(false);
         me.saveButton.setDisabled(true);
+        me.newLayoutButton.setDisabled(true);
         me.rotateButton.setDisabled(true);
         me.revertButton.setDisabled(true);
         me.inspectSegment();
@@ -399,6 +408,7 @@ Ext.define("NOC.inv.map.Application", {
         var me = this;
         if(me.editButton.pressed) {
             me.saveButton.setDisabled(me.readOnly);
+            me.newLayoutButton.setDisabled(me.readOnly);
             me.revertButton.setDisabled(me.readOnly);
         }
     },
@@ -432,6 +442,11 @@ Ext.define("NOC.inv.map.Application", {
     onRotate: function() {
         var me = this;
         me.mapPanel.onRotate();
+    },
+
+    onChangeName: function() {
+      var me = this;
+        me.mapPanel.changeLabelText(me.addressIPButton.pressed);
     },
 
     onStp: function() {

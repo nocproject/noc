@@ -34,19 +34,19 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     svgDefaultFilters: [
         '<filter id="highlight">' +
-            '<feGaussianBlur stdDeviation="4" result="coloredBlur"/>' +
-            '<feMerge>' +
-                '<feMergeNode in="coloredBlur"/>' +
-                '<feMergeNode in="SourceGraphic"/>' +
-            '</feMerge>' +
+        '<feGaussianBlur stdDeviation="4" result="coloredBlur"/>' +
+        '<feMerge>' +
+        '<feMergeNode in="coloredBlur"/>' +
+        '<feMergeNode in="SourceGraphic"/>' +
+        '</feMerge>' +
         '</filter>',
 
         '<filter id="glow" filterUnits="userSpaceOnUse">' +
-            '<feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>' +
-            '<feMerge>' +
-                '<feMergeNode in="coloredBlur"/>' +
-                '<feMergeNode in="SourceGraphic"/>' +
-            '</feMerge>' +
+        '<feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>' +
+        '<feMerge>' +
+        '<feMergeNode in="coloredBlur"/>' +
+        '<feMergeNode in="SourceGraphic"/>' +
+        '</feMerge>' +
         '</filter>'
     ],
 
@@ -93,7 +93,7 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     resizeHandles: 'onResize',
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this;
 
         me.shapeRegistry = NOC.inv.map.ShapeRegistry;
@@ -171,13 +171,24 @@ Ext.define("NOC.inv.map.MapPanel", {
                 }
             ]
         });
+        me.segmentMenu = Ext.create("Ext.menu.Menu", {
+            items: [
+                {
+                    text: __("Add all objects to group"),
+                    glyph: NOC.glyph.shopping_basket,
+                    scope: me,
+                    handler: me.onSegmentMenuAddToBasket,
+                    menuOn: ['managedobject', 'link']
+                }
+            ]
+        });
         me.nodeMenuObject = null;
         me.nodeMenuObjectType = null;
         //
         me.callParent();
     },
 
-    afterRender: function () {
+    afterRender: function() {
         var me = this;
         me.callParent();
         new_load_scripts([
@@ -188,7 +199,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     },
 
     // Initialize JointJS Map
-    initMap: function () {
+    initMap: function() {
         var me = this,
             dom = me.items.first().el.dom;
         me.graph = new joint.dia.Graph;
@@ -217,6 +228,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight));
         me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight));
         me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
+        me.paper.on("blank:contextmenu", Ext.bind(me.onSegmentContextMenu, me));
         me.fireEvent("mapready");
     },
 
@@ -303,16 +315,19 @@ Ext.define("NOC.inv.map.MapPanel", {
             sclass, node;
 
         sclass = me.shapeRegistry.getShape(data.shape);
+        var name = joint.util.breakText(data.name.split("#")[0], {width: data.shape_width * 1.8});
         node = new sclass({
             id: data.type + ":" + data.id,
             external: data.external,
+            name: name,
+            address: data.address,
             position: {
                 x: data.x,
                 y: data.y
             },
             attrs: {
                 text: {
-                    text: data.name.split("#")[0]
+                    text: name
                 },
                 image: {
                     width: data.shape_width,
@@ -337,7 +352,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     createLink: function(data) {
         var me = this,
             cfg, src, dst, connector,
-            getConnectionStyle=function(bw) {
+            getConnectionStyle = function(bw) {
                 for(var i = 0; i < me.bwStyle.length; i++) {
                     var s = me.bwStyle[i];
                     if(s[0] <= bw) {
@@ -447,6 +462,14 @@ Ext.define("NOC.inv.map.MapPanel", {
                 break;
         }
     },
+
+    onSegmentContextMenu: function(evt) {
+        var me = this;
+
+        evt.preventDefault();
+        me.segmentMenu.showAt(evt.clientX, evt.clientY);
+    },
+
     onContextMenu: function(view, evt, x, y) {
         var me = this;
 
@@ -557,7 +580,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             failure: function() {
                 NOC.error(__("Failed to save data"));
             }
-     });
+        });
     },
 
     getObjectStatus: function() {
@@ -676,12 +699,12 @@ Ext.define("NOC.inv.map.MapPanel", {
     //
     svgFilterTpl: new Ext.XTemplate(
         '<filter id="{id}">',
-            '<feColorMatrix type="matrix" color-interpolation-filters="sRGB" ',
-            'values="',
-                '{r0} 0    0    0 {r1} ',
-                '0    {g0} 0    0 {g1} ',
-                '0    0    {b0} 0 {b1} ',
-                '0    0    0    1 0    " />',
+        '<feColorMatrix type="matrix" color-interpolation-filters="sRGB" ',
+        'values="',
+        '{r0} 0    0    0 {r1} ',
+        '0    {g0} 0    0 {g1} ',
+        '0    0    {b0} 0 {b1} ',
+        '0    0    0    1 0    " />',
         '</filter>'
     ),
     //
@@ -785,26 +808,26 @@ Ext.define("NOC.inv.map.MapPanel", {
                 td = Math.max(sOut, dIn);
                 // Target to destination
                 dt = Math.max(sIn, dOut);
-                if (bw) {
+                if(bw) {
                     // Link utilization
                     lu = 0.0;
-                    if (bw.in) {
+                    if(bw.in) {
                         lu = Math.max(lu, dt / bw.in);
                     }
-                    if (bw.out) {
+                    if(bw.out) {
                         lu = Math.max(lu, td / bw.out);
                     }
                     // Apply proper style according to load
-                    for (var i = 0; i < me.luStyle.length; i++) {
+                    for(var i = 0; i < me.luStyle.length; i++) {
                         var t = me.luStyle[i][0],
                             style = me.luStyle[i][1];
-                        if (lu >= t) {
+                        if(lu >= t) {
                             cfg = {};
                             cfg = Ext.apply(cfg, style);
                             luStyle = cfg;
                             link.attr({
                                 ".connection": cfg,
-                                '.': { filter: { name: 'dropShadow', args: { dx: 1, dy: 1, blur: 2 } } }
+                                '.': {filter: {name: 'dropShadow', args: {dx: 1, dy: 1, blur: 2}}}
                             });
                             break;
                         }
@@ -812,10 +835,10 @@ Ext.define("NOC.inv.map.MapPanel", {
                 }
                 // Show balance point
                 tb = td + dt;
-                if (tb > 0) {
+                if(tb > 0) {
                     balance = td / tb;
                     link.label(0, {position: balance});
-                    if (luStyle) {
+                    if(luStyle) {
                         luStyle.fill = luStyle.stroke;
                         luStyle.visibility = "visible";
                         luStyle.text = "\uf111";
@@ -940,13 +963,32 @@ Ext.define("NOC.inv.map.MapPanel", {
             objectId = Number(me.nodeMenuObject);
         var store = Ext.data.StoreManager.lookup('basketStore');
 
-        if(store.getCount() === 0){
+        if(store.getCount() === 0) {
             me.fireEvent("openbasket");
         }
         store.add({
             id: objectId,
             object: objectId,
             object__label: me.objectNodes[objectId].attributes.attrs.text.text
+        });
+    },
+
+    onSegmentMenuAddToBasket: function() {
+        var me = this;
+        var store = Ext.data.StoreManager.lookup('basketStore');
+
+        if(store.getCount() === 0) {
+            me.fireEvent("openbasket");
+        }
+        Ext.each(this.graph.getElements(), function(e) {
+            if('managedobject' === e.get('id').split(':')[0]){
+                var objectId = Number(e.get('id').split(':')[1]);
+                store.add({
+                    id: objectId,
+                    object: objectId,
+                    object__label: me.objectNodes[objectId].attributes.attrs.text.text
+                });
+            }
         });
     },
 
@@ -1088,6 +1130,18 @@ Ext.define("NOC.inv.map.MapPanel", {
                 h = Ext.Array.max([contentBB.height, me.getHeight()]);
             }
             me.paper.setDimensions(w, h);
+        }
+    },
+
+    changeLabelText: function(showIPAddress) {
+        if(showIPAddress) {
+            Ext.each(this.graph.getElements(), function(e) {
+                e.attr('text/text', e.get('address'));
+            });
+        } else {
+            Ext.each(this.graph.getElements(), function(e) {
+                e.attr('text/text', e.get('name'));
+            });
         }
     }
 });

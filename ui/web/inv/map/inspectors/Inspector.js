@@ -17,14 +17,6 @@ Ext.define('NOC.inv.map.inspectors.Inspector', {
     defaults: {
         padding: 4
     },
-    items: [{
-        scrollable: false,
-        xtype: 'container',
-        height: 500,
-        region: 'north'
-    }],
-
-    layout: 'border',
 
     preview: function(name, segmentId, objectId) {
         var url = '/inv/map/' + segmentId + '/info/' + name + '/';
