@@ -38,6 +38,8 @@ if os.environ.get("NOC_LIBUV"):
                 return self.callback()
             except Exception as e:
                 self.io_loop.handle_callback_exception(self.callback)
+            finally:
+                self.io_loop._loop.update_time()
 
         def start(self):
             if not self._timer:
