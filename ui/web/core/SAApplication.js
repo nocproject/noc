@@ -98,9 +98,9 @@ Ext.define('NOC.core.SAApplication', {
             html: 'filter fields',
             collapsed: true,
             border: true,
-            collapsible: true,
             animCollapse: false,
             collapseMode: 'mini',
+            hideCollapseTool: true,
             split: true,
             resizable: true
         });
@@ -126,10 +126,11 @@ Ext.define('NOC.core.SAApplication', {
     createSelectPanel: function() {
         var me = this,
             selectionGrid, selectedGrid, selectionGridStateId, selectedGridStateId,
-            selectionGridHasSelection, selectedGridHasSelection, selectedGridHasRecords;
+            selectionGridHasSelection, selectedGridHasSelection, selectedGridHasRecords,
+            appName = me.appId.replace('.', '_');
 
-        selectionGridStateId = Ext.String.format('{0}-select-grid', me.appId || 'name');
-        selectedGridStateId = Ext.String.format('{0}-selected-grid', me.appId || 'name');
+        selectionGridStateId = Ext.String.format('{0}-select-grid', appName || 'name');
+        selectedGridStateId = Ext.String.format('{0}-selected-grid', appName || 'name');
         selectionGridHasSelection = '{!' + selectionGridStateId + '.selection}';
         selectedGridHasSelection = '{!' + selectedGridStateId + '.selection}';
         selectedGridHasRecords = '{!hasRecords}';
@@ -330,14 +331,15 @@ Ext.define('NOC.core.SAApplication', {
     //
     createConfigPanel: function() {
         var me = this,
-            selectedGrid;
+            selectedGrid,
+            appName = me.appId.replace('.', '_');
 
         selectedGrid = Ext.create("Ext.grid.Panel", {
             bind: '{selected}',
             border: false,
             scrollable: true,
             stateful: true,
-            stateId: me.appId + "-selected-grid",
+            stateId: appName + "-selected-grid",
             region: 'west',
             width: "50%",
             columns: me.cols,
@@ -389,7 +391,8 @@ Ext.define('NOC.core.SAApplication', {
     //
     createProgressPanel: function() {
         var me = this,
-            selectedGrid;
+            selectedGrid,
+            appName = me.appId.replace('.', '_');
 
         me.progressState = {
             xtype: 'segmentedbutton',
@@ -402,28 +405,28 @@ Ext.define('NOC.core.SAApplication', {
                     pressed: true,
                     value: 'w',
                     bind: {
-                        text: __('<span>Waiting <span class="noc-badge noc-badge-waiting">{progressState.w}</span></span>')
+                        text: '<span>' + __('Waiting') + '&nbsp;<span class="noc-badge noc-badge-waiting">{progressState.w}</span></span>'
                     }
                 },
                 {
                     pressed: true,
                     value: 'r',
                     bind: {
-                        text: __('<span>Running <span class="noc-badge noc-badge-running">{progressState.r}</span></span>')
+                        text: '<span>' + __('Running') + '&nbsp;<span class="noc-badge noc-badge-running">{progressState.r}</span></span>'
                     }
                 },
                 {
                     pressed: true,
                     value: 'f',
                     bind: {
-                        text: __('<span>Failed <span class="noc-badge noc-badge-failed">{progressState.f}</span></span>')
+                        text: '<span>' + __('Failed') + '&nbsp;<span class="noc-badge noc-badge-failed">{progressState.f}</span></span>'
                     }
                 },
                 {
                     pressed: true,
                     value: 's',
                     bind: {
-                        text: __('<span>Success <span class="noc-badge noc-badge-success">{progressState.s}</span></span>')
+                        text: '<span>' + __('Success') + '&nbsp;<span class="noc-badge noc-badge-success">{progressState.s}</span></span>'
                     }
                 }
             ],
@@ -446,7 +449,7 @@ Ext.define('NOC.core.SAApplication', {
             stateful: true,
             region: 'west',
             width: "50%",
-            stateId: me.appId + "-selected-grid",
+            stateId: appName + "-selected-grid",
             selModel: {
                 mode: 'SINGLE',
                 selType: 'checkboxmodel'
