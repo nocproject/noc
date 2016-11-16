@@ -43,7 +43,9 @@ class ObjectMap(Document):
         def aq(s):
             return s.replace(".", "_")
 
+        from noc.main.models.timepattern import TimePattern
         from noc.sa.models.managedobject import ManagedObject
+
         logger.info("Updating object mappings for pool %s", pool.name)
         syslog_sources = {}
         trap_sources = {}
@@ -90,18 +92,23 @@ class ObjectMap(Document):
         ).only(
             "id", "address",
             "name",
+            "time_pattern__id",
             "object_profile",
             "object_profile__ping_interval",
             "object_profile__report_ping_rtt"
         ):
             if mo.object_profile.ping_interval and mo.object_profile.ping_interval > 0:
-                ping_sources[aq(mo.address)] = {
+                rr = {
                     "id": mo.id,
                     "interval": mo.object_profile.ping_interval,
                     "report_rtt": mo.object_profile.report_ping_rtt,
                     "status": None,
                     "name": mo.name
                 }
+                if mo.time_pattern:
+                    rr["time_expr"] = TimePattern.get_code(mo.time_pattern.id)
+                ping_sources[aq(mo.address)] = rr
+
         # Resolve object statuses
         oids = dict((d["id"], q) for q, d in ping_sources.iteritems())
         for o in [x for x, y in ObjectStatus.get_statuses(list(oids)).iteritems() if not y]:
@@ -175,8 +182,7 @@ class ObjectMap(Document):
 
 
 def invalidate(pool_name):
-    try:
-        pool = Pool.objects.get(name=pool_name)
-    except Pool.DoesNotExist:
+    pool = Pool.get_by_name(pool_name)
+    if not pool:
         return
     ObjectMap.rebuild_pool(pool)

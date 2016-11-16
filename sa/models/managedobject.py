@@ -381,7 +381,8 @@ class ManagedObject(Model):
             "syslog_source_type" in self.changed_fields or
             "syslog_source_ip" in self.changed_fields or
             "address" in self.changed_fields or
-            "pool" in self.changed_fields
+            "pool" in self.changed_fields or
+            "time_pattern" in self.changed_fields
         ):
             ObjectMap.invalidate(self.pool)
         # Invalidate credentials cache
