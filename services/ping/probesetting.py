@@ -30,9 +30,9 @@ class ProbeSetting(object):
         self.id = id
         self.address = address
         self.name = name
-        self.interval = interval,
+        self.interval = interval
         self.status = status,
-        self.report_rtt = report_rtt,
+        self.report_rtt = report_rtt
         self.time_expr = time_expr
         self.time_cond = self.compile(time_expr)
         self.task = None
@@ -51,7 +51,7 @@ class ProbeSetting(object):
         )
 
     @classmethod
-    @cachetools.cachedmethod(tp_cache)
+    @cachetools.cachedmethod(lambda _: tp_cache)
     def compile(cls, src):
         if src:
             try:
