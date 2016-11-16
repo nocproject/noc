@@ -11,7 +11,7 @@ import os
 import hashlib
 import logging
 ## Third-party modules
-import tornado.httpserver
+import tornado.web
 # NOC modules
 from base import Service
 
