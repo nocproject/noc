@@ -47,7 +47,7 @@ class MemcachedCache(BaseCache):
         :return:
         """
         k = self.make_key(key, version)
-        with self.pool.reserve(block=True)() as c:
+        with self.pool.reserve(block=True) as c:
             v = c.get(k)
         if v is None:
             return default
@@ -65,17 +65,17 @@ class MemcachedCache(BaseCache):
         """
         k = self.make_key(key, version)
         ttl = ttl or config.memcached_default_ttl
-        with self.pool.reserve(block=True)() as c:
+        with self.pool.reserve(block=True) as c:
             c.set(k, value, ttl)
 
     def delete(self, key, version=None):
         k = self.make_key(key, version)
-        with self.pool.reserve(block=True)() as c:
+        with self.pool.reserve(block=True) as c:
             c.delete(k)
 
     def get_many(self, keys, version=None):
         k = [self.make_key(x, version) for x in keys]
-        with self.pool.reserve(block=True)() as c:
+        with self.pool.reserve(block=True) as c:
             r = c.get_multi(k)
         if r:
             m = dict(zip(k, keys))
@@ -85,14 +85,14 @@ class MemcachedCache(BaseCache):
 
     def set_many(self, data, ttl=None, version=None):
         ttl = ttl or config.memcached_default_ttl
-        with self.pool.reserve(block=True)() as c:
+        with self.pool.reserve(block=True) as c:
             c.set_multi(
                 dict((self.make_key(k, version), data[k]) for k in data),
                 ttl
             )
 
     def delete_many(self, keys, version=None):
-        with self.pool.reserve(block=True)() as c:
+        with self.pool.reserve(block=True) as c:
             c.delete_multi(
                 [self.make_key(k, version) for k in keys]
             )
@@ -105,10 +105,10 @@ class MemcachedCache(BaseCache):
 
     def incr(self, key, delta=1, version=None):
         k = self.make_key(key, version)
-        with self.pool.reserve(block=True)() as c:
+        with self.pool.reserve(block=True) as c:
             return c.incr(k, delta)
 
     def decr(self, key, delta=1, version=None):
         k = self.make_key(key, version)
-        with self.pool.reserve(block=True)() as c:
+        with self.pool.reserve(block=True) as c:
             return c.decr(k, delta)
