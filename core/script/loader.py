@@ -52,6 +52,14 @@ class ScriptLoader(object):
                     return None
                 if os.path.exists(
                         os.path.join(
+                            "custom", "sa", "profiles", vendor, system,
+                            "%s.py" % sn
+                        )
+                ):
+                    # Custom script
+                    module_name = "noc.custom.sa.profiles.%s" % name
+                elif os.path.exists(
+                        os.path.join(
                             "sa", "profiles", vendor, system,
                             "%s.py" % sn
                         )
@@ -117,6 +125,14 @@ class ScriptLoader(object):
                         if s.strip()
                     ]
                     ns.add("Generic.Host.%s" % gn)
+        # Load custom scripts
+        profiles = set()
+        for path in glob.glob("custom/sa/profiles/*/*/*.py"):
+            vendor, system, name = path.split(os.sep)[-3:]
+            name = name[:-3]
+            if name != "__init__":           
+                ns.add("%s.%s.%s" % (vendor, system, name))
+                profiles.add("%s.%s" % (vendor, system))   
         # Load common scripts
         profiles = set()
         for path in glob.glob("sa/profiles/*/*/*.py"):
