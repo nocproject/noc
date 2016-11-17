@@ -121,7 +121,7 @@ server {
     ssl_stapling on;
     ssl_stapling_verify on;
 
-    client_max_body_size 8m;
+    client_max_body_size 32m;
 
     access_log  {{ nginx_log_dir }}/noc.access.log noc_format;
     error_log  {{ nginx_log_dir }}/noc.error.log;
