@@ -57,6 +57,7 @@ class CorrelatorService(Service):
             self.name,
             pool=self.config.pool,
             reset_running=True,
+            max_threads=self.config.max_threads,
             ioloop=self.ioloop,
             submit_threshold=100,
             max_chunk=100
