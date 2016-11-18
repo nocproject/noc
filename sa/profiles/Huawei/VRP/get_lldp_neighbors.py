@@ -58,8 +58,9 @@ class Script(BaseScript):
 
     CAPS = {
         "na": 0, "other": 1, "repeater": 2, "bridge": 4,
-        "wlan": 8, "router": 16, "telephone": 32,
-        "cable": 64, "station": 128
+        "wlan": 8, "wlanaccesspoint": 8, "router": 16,
+        "telephone": 32, "cable": 64, "docsiscabledevice": 64,
+        "station": 128, "stationonly": 128
     }
 
     @BaseScript.match()
