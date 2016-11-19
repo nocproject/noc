@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class LinkedPoP(object):
     def __init__(self, pop_id):
-        self.pop = Object.objects.filter(id=pop_id).first()
+        self.pop = Object.get_by_id(pop_id)
 
     def iter_db_links(self):
         """
@@ -26,7 +26,7 @@ class LinkedPoP(object):
         """
         for c, remote, _ in self.pop.get_genderless_connections(
                 "links"):
-            yield c, remote, c.data["level"]
+            yield c, remote, remote.get_data("pop", "level")
 
     def get_pop_objects(self, root=None):
         """
