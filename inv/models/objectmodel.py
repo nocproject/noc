@@ -8,6 +8,8 @@
 
 ## Python modules
 import os
+from threading import Lock
+import operator
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, DictField,
@@ -24,6 +26,8 @@ from noc.main.models.doccategory import category
 from noc.lib.nosql import PlainReferenceField
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+
+id_lock = Lock()
 
 
 class ObjectModelConnection(EmbeddedDocument):
@@ -113,10 +117,15 @@ class ObjectModel(Document):
     plugins = ListField(StringField(), required=False)
     category = ObjectIdField()
 
-    om_cache = {}
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lambda _: id_lock)
+    def get_by_id(cls, id):
+        return ObjectModel.objects.filter(id=id).first()
 
     def get_data(self, interface, key):
         v = self.data.get(interface, {})
