@@ -116,10 +116,10 @@ class VCApplication(ExtModelApplication):
         return p
 
     def field_interfaces_count(self, obj):
-        return self.get_vc_interfaces_count(obj)
+        return self.get_vc_interfaces_count(obj.id)
 
     def field_prefixes(self, obj):
-        p = self.get_vc_prefixes(obj)
+        p = self.get_vc_prefixes(obj.id)
         if p:
             return ", ".join(p)
         else:
