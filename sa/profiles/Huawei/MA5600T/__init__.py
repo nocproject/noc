@@ -17,7 +17,7 @@ class Profile(BaseProfile):
     pattern_username = r"^>[>\s]User name(|\s\([<\s\w]+\)):"
     pattern_password = r"^>[>\s](?:User )?[Pp]assword(|\s\([<\s\w]+\)):"
     pattern_more = [
-        (r"^---- More \( Press 'Q' to break \) ----", " "),
+        (r"---- More \( Press 'Q' to break \) ----", " "),
         (r"\[<frameId/slotId>\]", "\n"),
         (r"\(y/n\) \[n\]", "y\n"),
         (r"\[to\]\:", "\n"),
