@@ -19,6 +19,7 @@ Heatmap.prototype.initialize = function () {
     this.map.on("moveend", function() {me.poll_data();});
     this.heatmap = null;
     this.topology = null;
+    this.pops = null;
     // Set up OSM layer
     var osm = L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -50,7 +51,24 @@ Heatmap.prototype.poll_data = function () {
         e = bbox.getEast(),
         n = bbox.getNorth(),
         s = bbox.getSouth(),
-        zoom = me.map.getZoom();
+        zoom = me.map.getZoom(),
+        onEachPoP = function(feature, layer) {
+            if(feature.properties && feature.properties.objects) {
+                var text = ["Alarms: " + feature.properties.alarms, ""];
+                text = text.concat(feature.properties.objects.map(function(v) {
+                    return "<a target=_ href='/api/card/view/managedobject/" + v.id +"/'>" + v.name + "</a>";
+                }));
+                layer.bindPopup(text.join("<br/>"));
+            }
+        },
+        popOptions = {
+            radius: 3,
+            fillColor: "#ff7800",
+            color: "#000000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        };
     $.ajax("/api/card/view/alarmheat/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s).done(function(data) {
         // Replace heatmap
         var heat_data = [];
@@ -62,9 +80,22 @@ Heatmap.prototype.poll_data = function () {
         //
         if(me.topology) {
             me.map.removeLayer(me.topology);
+            me.topology = null;
         }
         if(data.links) {
             me.topology = L.geoJSON(data.links).addTo(me.map);
+        }
+        //
+        if(me.pops) {
+            me.map.removeLayer(me.pops);
+        }
+        if(data.pops) {
+            me.pops = L.geoJSON(data.pops, {
+                pointToLayer: function(feature, latlng) {
+                    return L.circleMarker(latlng, popOptions)
+                },
+                onEachFeature: onEachPoP
+            }).addTo(me.map);
         }
         //
         if(me.heatmap) {
