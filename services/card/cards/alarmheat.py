@@ -8,6 +8,7 @@
 
 ## Python modules
 import operator
+from collections import defaultdict
 ## Third-party modules
 import cachetools
 import geojson
@@ -35,6 +36,7 @@ class AlarmHeatCard(BaseCard):
     default_template_name = "alarmheat"
 
     _layer_cache = {}
+    TOOLTIP_LIMIT = 5
 
     def get_data(self):
         return {}
@@ -64,6 +66,7 @@ class AlarmHeatCard(BaseCard):
         services = {}
         subscribers = {}
         segments = set()
+        t_data = defaultdict(list)
         if self.current_user.is_superuser:
             qs = ActiveAlarm.objects.all()
         else:
@@ -79,6 +82,7 @@ class AlarmHeatCard(BaseCard):
                 })
                 # @todo: Check west/south hemisphere
                 if active_layers and west <= mo.x <= east and south <= mo.y <= north:
+                    t_data[mo.x, mo.y] += [(mo, w)]
                     segments.add(mo.segment)
             else:
                 w = 0
@@ -92,6 +96,7 @@ class AlarmHeatCard(BaseCard):
             update_dict(services, s_service)
             update_dict(subscribers, s_sub)
         links = None
+        o_seen = set()
         if segments and active_layers:
             seen = set(
                 ManagedObject.objects.filter(
@@ -123,14 +128,43 @@ class AlarmHeatCard(BaseCard):
             }):
                 for c in d["line"]["coordinates"]:
                     if tuple(c) in seen:
+                        o_seen.add(tuple(c))
                         lines += [d["line"]]
             if lines:
                 links = geojson.FeatureCollection(features=lines)
+        points = None
+        if t_data and active_layers:
+            points = []
+            for x, y in t_data:
+                if (x, y) not in o_seen:
+                    continue
+                mos = {}
+                for mo, w in t_data[x, y]:
+                    if mo not in mos:
+                        mos[mo] = w
+                mos = sorted(mos, key=lambda z: mos[z], reverse=True)[:self.TOOLTIP_LIMIT]
+                points += [
+                    geojson.Feature(
+                        geometry=geojson.Point(
+                            coordinates=[x, y]
+                        ),
+                        properties={
+                            "alarms": len(t_data[x, y]),
+                            "objects": [{
+                                "id": mo.id,
+                                "name": mo.name,
+                                "address": mo.address
+                            } for mo in mos]
+                        }
+                    )
+                ]
+            points = geojson.FeatureCollection(features=points)
         return {
             "alarms": alarms,
             "summary": self.f_glyph_summary({
                 "service": services,
                 "subscriber": subscribers
             }),
-            "links": links
+            "links": links,
+            "pops": points
         }
