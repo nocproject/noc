@@ -15,6 +15,7 @@ import geojson
 from base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+from noc.sa.models.managedobject import ManagedObject
 from noc.gis.models.layer import Layer
 from noc.inv.models.objectconnection import ObjectConnection
 
@@ -92,9 +93,11 @@ class AlarmHeatCard(BaseCard):
             update_dict(subscribers, s_sub)
         links = None
         if segments and active_layers:
-            seen = set()
-            for s in segments:
-                seen |= set(s.managed_objects.values_list("x", "y"))
+            seen = set(
+                ManagedObject.objects.filter(
+                    segment__in=list(segments)
+                ).values_list("x", "y")
+            )
             bbox = geojson.Polygon([[
                 [west, north],
                 [east, north],
