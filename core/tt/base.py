@@ -28,7 +28,8 @@ class BaseTTSystem(object):
         self.logger = logging.getLogger("tt.%s" % self.name)
 
     def create_tt(self, queue, obj, reason=None,
-                  subject=None, body=None, login=None):
+                  subject=None, body=None, login=None,
+                  timestamp=None):
         """
         Create TT
         :param queue: ticket queue
@@ -37,6 +38,7 @@ class BaseTTSystem(object):
         :param subject: TT Subject
         :param body: TT body
         :param login: User login
+        :param timestamp: Escalated alarm timestamp
         :returns: TT id as string
         :raises TTError:
         """
