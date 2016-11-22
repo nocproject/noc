@@ -60,26 +60,6 @@ postgresql_hba_path: /var/lib/pgsql/data/pg_hba.conf
 apt_cache_valid_time: 86400
 pycurl_ssl_library: openssl
 
-redis_user: redis
-redis_group: redis
-redis_daemon: redis-server
-redis_conf_path: "{{noc_root}}/var/etc/redis"
-
-redis_loglevel: "notice"
-redis_logfile: /var/log/redis/redis-server.log
-# Set to an empty set to disable persistence (saving the DB to disk).
-redis_save:
-  - 900 1
-  - 300 10
-  - 60 10000
-
-redis_rdbcompression: "yes"
-redis_dbfilename: dump.rdb
-redis_maxmemory_policy: "noeviction"
-redis_maxmemory_samples: 5
-redis_appendonly: "no"
-redis_appendfsync: "everysec"
-
 memcahed_user: memcache
 memcahed_log_file: /var/log/memcached.log
 memcahed_conf: /etc/memcached.conf
