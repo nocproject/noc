@@ -141,7 +141,7 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/node.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ {{ pip_extra_args | default('') }} --upgrade"
   environment:
     PYCURL_SSL_LIBRARY: "{{ pycurl_ssl_library | default('openssl')}}"
     http_proxy: "{{http_proxy}}"
@@ -156,7 +156,7 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/prod.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ {{ pip_extra_args | default('') }} --upgrade"
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
@@ -169,7 +169,7 @@
     chdir: "{{ noc_root }}"
     requirements: "requirements/python-2.6.txt"
     virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
+    extra_args: "{{ pip_extra_args | default('') }} --upgrade"
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
