@@ -20,6 +20,7 @@ from noc.inv.models.interface import Interface
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.pm.models.metrictype import MetricType
+from noc.sla.models.slaprobe import SLAProbe
 
 
 MAX31 = 0x7FFFFFFFL
@@ -76,6 +77,12 @@ class MetricsCheck(DiscoveryCheck):
                 m.high_warn,
                 m.high_error
             ]
+        return r
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_slaprofile_metrics"), lock=lambda _: metrics_lock)
+    def get_slaprofile_metrics(cls, p_id):
+        r = {}
         return r
 
     def handler(self):
@@ -138,6 +145,11 @@ class MetricsCheck(DiscoveryCheck):
                         "scope": "i"
                     }
                 i_thresholds[metric][i["name"]] = ipr[metric]
+        # Get SLA metrics
+        # @todo: Check object has SLA probes
+        if True:
+            for p in SLAProbe.objects.filter(managed_object=self.object.id):
+                pass
         # Collect metrics
         self.logger.debug("Collecting metrics: %s hints: %s",
                           metrics, hints)

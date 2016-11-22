@@ -32,3 +32,7 @@ class Script(GetMetricsScript):
             )
         ],
     })
+
+    def collect_profile_metrics(self, metrics):
+        if self.has_capability("Cisco | IP | SLA | Probes"):
+            pass
