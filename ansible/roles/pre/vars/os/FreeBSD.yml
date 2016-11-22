@@ -26,4 +26,3 @@ postgres_path: /usr/local/bin/postgres
 postgres_user: pgsql
 postgresql_conf_path: /usr/local/pgsql/data/postgresql.conf
 postgresql_hba_path: /usr/local/pgsql/data/pg_hba.conf
-redis_daemon: redis
