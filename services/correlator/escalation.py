@@ -172,7 +172,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                                     reason=pre_reason,
                                     subject=subject,
                                     body=body,
-                                    login="correlator"
+                                    login="correlator",
+                                    timestamp=alarm.timestamp
                                 )
                                 ctx["tt"] = "%s:%s" % (tt_system.name, tt_id)
                                 alarm.escalate(ctx["tt"], close_tt=a.close_tt)
@@ -203,6 +204,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                             except tts.TTError as e:
                                 log("Failed to create TT: %s", e)
                                 metrics["escalation_tt_fail"] += 1
+                                alarm.log_message(
+                                    "Failed to escalate: %s" % e,
+                                    to_save=True
+                                )
                         else:
                             log("Cannot find pre reason")
                             metrics["escalation_tt_fail"] += 1
