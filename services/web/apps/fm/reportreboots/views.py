@@ -62,6 +62,8 @@ class ReportRebootsApplication(SimpleReport):
 
     def get_data(self, request, interval, from_date=None, to_date=None, **kwargs):
         interval = int(interval)
+        if not from_date:
+            interval = 1
         if interval:
             ts = datetime.datetime.now() - datetime.timedelta(days=interval)
             match = {

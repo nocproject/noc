@@ -64,6 +64,8 @@ class ReportOutagesApplication(SimpleReport):
 
     def get_data(self, request, duration, from_date=None, to_date=None, **kwargs):
         now = datetime.datetime.now()
+        if not from_date:
+            duration = 1
         if int(duration):
             self.logger.info("Use duration\n")
             d = datetime.timedelta(seconds=int(duration))
