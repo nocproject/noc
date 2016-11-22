@@ -31,7 +31,7 @@ class TTCard(BaseCard):
             tt = tts.get_tt(tt_id)
         except NotImplementedError:
             # TTSystem does not support TT preview, redirect to alarm
-            return self.redirect_to_alarm(tt_id)
+            return self.redirect_to_alarm(id)
         if tt:
             tt["tt_system_name"] = tts_name
             tt["full_id"] = id
