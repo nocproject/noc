@@ -406,22 +406,6 @@ config:
       type: bool
       default: true
 
-  redis:
-    redis_timeout:
-      type: int
-      label: Timeout
-      default: 300
-
-    redis_db_dir:
-      type: str
-      label: Redis db directory
-      default: /var/lib/redis
-
-    redis_max_memory:
-      type: int
-      label: Redis Max memory in bytes
-      default: 0
-
   nsqd:
     max_messages_in_memory:
       type: int

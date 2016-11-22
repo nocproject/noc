@@ -96,13 +96,6 @@
         - notebook
         - external
 
-    - role: redis
-      become: yes
-      when: "{{ has_svc_redis | default(False) }}"
-      tags:
-        - redis
-        - external
-
     - role: memcached
       become: yes
       when: "{{ has_svc_memcached | default(False) }}"
