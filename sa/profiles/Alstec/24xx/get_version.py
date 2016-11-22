@@ -21,7 +21,7 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"^System Description\s+:\s+(?P<platform>\S+).+\n"
-        r"^Bootloader Version\s+:\s+(CFE )?(?P<bootprom>\S+)\s*\n"
+        r"^Bootloader\sVersion\s+:\s+(CFE |U-Boot )?(?P<bootprom>\S+)(\s\(.+\)|)\s*\n"
         r"^OS Version.+\n"
         r"^Software version\s+:\s+(?P<version>\S+)\s*\n"
         r"Software type\s+:\s+(?P<fwt>\S+)\s*\n",
