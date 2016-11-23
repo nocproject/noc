@@ -104,7 +104,11 @@ class InterfaceCheck(DiscoveryCheck):
             fi["forwarding_instance"] for fi in result
         )
         self.resolve_ifindexes()
-        self.update_caps()
+        self.update_caps({
+            "DB | Interfaces": Interface.objects.filter(
+                managed_object=self.object.id
+            ).count()
+        })
 
     def submit_forwarding_instance(self, name, type, rd, vr):
         if name == "default":
@@ -351,13 +355,3 @@ class InterfaceCheck(DiscoveryCheck):
                 self.logger.info("Set ifindex for %s: %s", n, i)
                 iface.ifindex = i
                 iface.save()  # Signals will be sent
-
-    def update_caps(self):
-        """
-        Set up additinal capabilities
-        """
-        self.object.update_caps({
-            "DB | Interfaces": Interface.objects.filter(
-                managed_object=self.object.id
-            ).count()
-        })
