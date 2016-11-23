@@ -52,11 +52,15 @@ class InfluxDBClient(object):
             c.close()
         try:
             data = ujson.loads(buff.getvalue())
-        except ValueError, why:
-            raise ValueError("Failed to decode JSON: %s" % why)
+        except ValueError as e:
+            raise ValueError("Failed to decode JSON: %s" % e)
+        if type(data) == dict and "error" in data:
+            raise ValueError(data["error"])
         for qr in data["results"]:
             if not qr:
                 continue
+            if "error" in qr:
+                raise ValueError(qr["error"])
             for sv in qr["series"]:
                 for v in sv["values"]:
                     values = sv.get("tags", {}).copy()
