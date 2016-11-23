@@ -55,10 +55,7 @@ class SLAProfile(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return SLAProfile.objects.get(id=id)
-        except SLAProfile.DoesNotExist:
-            return None
+        return SLAProfile.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

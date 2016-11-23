@@ -67,10 +67,7 @@ class NetworkSegment(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return NetworkSegment.objects.get(id=id)
-        except NetworkSegment.DoesNotExist:
-            return None
+        return NetworkSegment.objects.filter(id=id).first()
 
     @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
     def get_path(self):
