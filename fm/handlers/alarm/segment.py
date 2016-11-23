@@ -45,6 +45,9 @@ def check_segment_redundancy(alarm):
     seg = mo.segment
     if not seg.is_redundant or not seg.lost_redundancy:
         return
+    u = ObjectUplink.uplinks_for_object(mo)
+    if len(u) < 2:
+        return
     seg_objects = [long(x) for x in seg.managed_objects.values_list("id", flat=True)]
     alarms = [
         d["managed_object"]
