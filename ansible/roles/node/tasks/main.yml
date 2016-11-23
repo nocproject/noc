@@ -141,12 +141,13 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/node.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ {{ pip_extra_args | default('') }} --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   environment:
     PYCURL_SSL_LIBRARY: "{{ pycurl_ssl_library | default('openssl')}}"
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"
+    CFLAGS: "{{ pip_extra_args | default('') }}"
   when: node_check.changed
   tags:
     - requirements
@@ -156,10 +157,11 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/prod.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ {{ pip_extra_args | default('') }} --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
+    CFLAGS: "{{ pip_extra_args | default('') }}"
   when: "'prod' in noc_env_type"
   tags:
     - requirements
@@ -169,10 +171,11 @@
     chdir: "{{ noc_root }}"
     requirements: "requirements/python-2.6.txt"
     virtualenv: "{{ noc_root }}"
-    extra_args: "{{ pip_extra_args | default('') }} --upgrade"
+    extra_args: "--upgrade"
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
+    CFLAGS: "{{ pip_extra_args | default('') }}"
   when: "ansible_python_version.startswith('2.6')"
   tags:
     - requirements
