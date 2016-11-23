@@ -20,6 +20,7 @@ from noc.inv.models.interface import Interface
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.pm.models.metrictype import MetricType
+from noc.sla.models.slaprofile import SLAProfile
 from noc.sla.models.slaprobe import SLAProbe
 
 
@@ -61,13 +62,15 @@ class MetricsCheck(DiscoveryCheck):
 
     AC_PM_THRESHOLDS = AlarmClass.objects.get(name="NOC | PM | Out of Thresholds")
 
+    SLA_CAPS = ["Cisco | IP | SLA | Probes"]
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_profile_metrics"), lock=lambda _: metrics_lock)
     def get_interface_profile_metrics(cls, p_id):
         r = {}
-        ipr = InterfaceProfile.objects.filter(id=p_id).first()
+        ipr = InterfaceProfile.get_by_id(id=p_id)
         if not ipr:
-            return None
+            return r
         for m in ipr.metrics:
             if not m.is_active or m.metric_type.scope != "i":
                 continue
@@ -83,6 +86,18 @@ class MetricsCheck(DiscoveryCheck):
     @cachetools.cachedmethod(operator.attrgetter("_slaprofile_metrics"), lock=lambda _: metrics_lock)
     def get_slaprofile_metrics(cls, p_id):
         r = {}
+        spr = SLAProfile.get_by_id(p_id)
+        if not spr:
+            return r
+        for m in spr.metrics:
+            if not m.is_active or m.metric_type.scope != "p":
+                continue
+            r[m.metric_type.name] = [
+                m.low_error,
+                m.low_warn,
+                m.high_warn,
+                m.high_error
+            ]
         return r
 
     def handler(self):
@@ -95,7 +110,8 @@ class MetricsCheck(DiscoveryCheck):
         self.logger.info("Collecting metrics")
         # Get interface configurations
         hints = {
-            "ifindexes": {}
+            "ifindexes": {},
+            "probes": {}
         }
         # <metric type name> -> {interfaces: [....], scope}
         metrics = {}
@@ -146,10 +162,32 @@ class MetricsCheck(DiscoveryCheck):
                     }
                 i_thresholds[metric][i["name"]] = ipr[metric]
         # Get SLA metrics
-        # @todo: Check object has SLA probes
-        if True:
+        if self.has_any_capability(self.SLA_CAPS):
             for p in SLAProbe.objects.filter(managed_object=self.object.id):
-                pass
+                if not p.profile:
+                    self.logger.debug("Probe %s has no profile. Skipping", p.name)
+                    continue
+                pm = self.get_slaprofile_metrics(p.id)
+                if not pm:
+                    self.logger.debug(
+                        "Probe %s has profile '%s' with no configured metrics. "
+                        "Skipping", p.name, p.profile.name
+                    )
+                    continue
+                for metric in pm:
+                    if metric in metrics:
+                        metric[metrics]["probes"] += [p.name]
+                    else:
+                        metrics[metric] = {
+                            "probes": [p.name],
+                            "scope": "p"
+                        }
+                hints["probes"][p.name] = {
+                    "tests": [{
+                        "name": t.name,
+                        "type": t.type
+                    } for t in p.tests]
+                }
         # Collect metrics
         self.logger.debug("Collecting metrics: %s hints: %s",
                           metrics, hints)
