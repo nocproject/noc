@@ -34,13 +34,10 @@ def topology_rca(alarm, seen=None):
     o_id = alarm.managed_object.id
     # Get neighbor objects
     neighbors = set()
-    uplinks = []
-    ou = ObjectUplink.objects.filter(object=o_id).first()
-    if ou and ou.uplinks:
-        uplinks = ou.uplinks
+    uplinks = ObjectUplink.uplinks_for_object(o_id)
+    if uplinks:
         neighbors.update(uplinks)
-    for du in ObjectUplink.objects.filter(uplinks=o_id):
-        neighbors.add(du.object)
+    neighbors.update(ObjectUplink.neighbors_for_object(o_id))
     if not neighbors:
         logger.info("[%s] No neighbors found. Exiting", alarm.id)
         return
