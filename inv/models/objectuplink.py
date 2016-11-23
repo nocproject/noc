@@ -36,7 +36,8 @@ class ObjectUplink(Document):
     def uplinks_for_object(cls, object):
         if hasattr(object, "id"):
             object = object.id
-        for d in ObjectUplink._get_collection().find({"_id": object}):
+        d = ObjectUplink._get_collection().find_one({"_id": object}, {"_id": 0, "uplinks": 1})
+        if d:
             return d["uplinks"]
         return []
 
