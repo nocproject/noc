@@ -43,6 +43,7 @@ class MODiscoveryJob(PeriodicJob):
         )
         self.check_timings = []
         self.problems = {}  # check -> problem
+        self.caps = None
 
     def schedule_next(self, status):
         if self.check_timings:
@@ -76,6 +77,20 @@ class MODiscoveryJob(PeriodicJob):
     def set_problem(self, name, problem):
         self.problems[name] = problem
 
+    def get_caps(self):
+        """
+        Return object's capabilities
+        :return:
+        """
+        if self.caps is not None:
+            self.caps = self.object.get_caps()
+        return self.caps
+
+    def update_caps(self, caps):
+        self.object.update_caps(caps)
+        if self.caps is not None:
+            self.caps.update(caps)
+
 
 class DiscoveryCheck(object):
     name = None
@@ -106,10 +121,25 @@ class DiscoveryCheck(object):
         return (not self.required_script or
                 self.required_script in self.object.scripts)
 
+    def get_caps(self):
+        return self.job.get_caps()
+
+    def update_caps(self, caps):
+        self.job.update_caps(caps)
+
+    def has_capability(self, cap):
+        return bool(self.get_caps().get(cap))
+
+    def has_any_capability(self, caps):
+        for c in caps:
+            if self.has_capability(c):
+                return True
+        return False
+
     def has_required_capabilities(self):
         if not self.required_capabilities:
             return True
-        caps = self.object.get_caps()
+        caps = self.get_caps()
         for cn in self.required_capabilities:
             if cn not in caps:
                 self.logger.info(

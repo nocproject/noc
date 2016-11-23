@@ -23,4 +23,4 @@ class CapsCheck(DiscoveryCheck):
         result = self.object.scripts.get_capabilities()
         self.logger.info("Received capabilities: \n%s",
             json.dumps(result, indent=4))
-        self.object.update_caps(result)
+        self.update_caps(result)
