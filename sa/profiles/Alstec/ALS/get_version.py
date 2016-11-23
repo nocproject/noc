@@ -21,7 +21,7 @@ class Script(BaseScript):
     rx_ver = re.compile(
         r"^\s*SW version\s+(?P<version>\S+).*\n"
         r"^\s*Boot version\s+(?P<bootprom>\S+).*\n"
-        r"^\s*HW version\s+(?P<hardware>\S+).*\n", re.MULTILINE)
+        r"(^\s*HW version\s+(?P<hardware>\S+).*\n)?", re.MULTILINE)
     rx_platform = re.compile(
         r"^\s*System Description:\s+(?P<platform>.+)\n", re.MULTILINE)
     rx_serial = re.compile(
@@ -34,10 +34,11 @@ class Script(BaseScript):
             "vendor": "Alstec",
             "version": match.group("version"),
             "attributes": {
-                "Boot PROM": match.group("bootprom"),
-                "HW version": match.group("hardware")
+                "Boot PROM": match.group("bootprom")
             }
         }
+        if match.group("hardware"):
+            r["attributes"]["HW version"] = match.group("hardware")
         v = self.cli("show system", cached=True)
         match = self.re_search(self.rx_platform, v)
         platform = match.group("platform")
