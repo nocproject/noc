@@ -58,6 +58,45 @@ Ext.define("NOC.sla.slaprofile.Application", {
                             flex: 1,
                             editor: "pm.metrictype.LookupField",
                             renderer: NOC.render.Lookup("metric_type")
+                        },
+                        {
+                            text: __("Active"),
+                            dataIndex: "is_active",
+                            width: 50,
+                            renderer: NOC.render.Bool,
+                            editor: "checkbox"
+                        },
+                        {
+                            text: __("Low Error"),
+                            dataIndex: "low_error",
+                            width: 60,
+                            editor: "textfield",
+                            align: "right",
+                            renderer: NOC.render.Size
+                        },
+                        {
+                            text: __("Low Warn"),
+                            dataIndex: "low_warn",
+                            width: 60,
+                            editor: "textfield",
+                            align: "right",
+                            renderer: NOC.render.Size
+                        },
+                        {
+                            text: __("High Warn"),
+                            dataIndex: "high_warn",
+                            width: 60,
+                            editor: "textfield",
+                            align: "right",
+                            renderer: NOC.render.Size
+                        },
+                        {
+                            text: __("High Error"),
+                            dataIndex: "high_error",
+                            width: 60,
+                            editor: "textfield",
+                            align: "right",
+                            renderer: NOC.render.Size
                         }
                     ]
                 }

@@ -11,9 +11,9 @@ from threading import RLock
 import operator
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, BooleanField,
-                                ReferenceField, ListField,
-                                EmbeddedDocumentField)
+from mongoengine.fields import (
+    StringField, BooleanField, FloatField, ReferenceField, ListField,
+    EmbeddedDocumentField)
 import cachetools
 ## NOC modules
 from noc.main.models.style import Style
@@ -26,7 +26,10 @@ id_lock = RLock()
 class SLAProfileMetrics(EmbeddedDocument):
     metric_type = ReferenceField(MetricType, required=True)
     is_active = BooleanField()
-    # @todo: Thresholds
+    low_error = FloatField(required=False)
+    low_warn = FloatField(required=False)
+    high_warn = FloatField(required=False)
+    high_error = FloatField(required=False)
 
 
 class SLAProfile(Document):
