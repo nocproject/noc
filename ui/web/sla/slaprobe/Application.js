@@ -27,9 +27,15 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     renderer: NOC.render.Lookup("managed_object")
                 },
                 {
-                    text: __("Name"),
+                    text: __("Probe"),
                     dataIndex: "name",
                     width: 100
+                },
+                {
+                    text: __("Profile"),
+                    dataIndex: "profile",
+                    width: 150,
+                    renderer: NOC.render.Lookup("profile")
                 },
                 {
                     text: __("Description"),
@@ -52,7 +58,7 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     allowBlank: false
                 },
                 {
-                    name: "profille",
+                    name: "profile",
                     xtype: "sla.slaprofile.LookupField",
                     fieldLabel: __("Profile"),
                     allowBlank: true
