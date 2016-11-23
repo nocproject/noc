@@ -8,7 +8,7 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
-    CFLAGS: "{{ pip_extra_args | default('') }}"
+    CFLAGS: "{{ pip_cflags | default('') }}"
   tags:
     - requirements
 
