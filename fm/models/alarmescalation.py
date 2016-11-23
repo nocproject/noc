@@ -24,6 +24,7 @@ from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.selectorcache import SelectorCache
 from noc.lib.nosql import ForeignKeyField
 from noc.core.defer import call_later
 
@@ -105,17 +106,27 @@ class AlarmEscalation(Document):
     @classmethod
     def watch_escalations(cls, alarm):
         for esc in cls.get_class_escalations(alarm.alarm_class):
-            for delay in esc.delays:
+            for e_item in esc.escalations:
+                # Check administrative domain
+                if (e_item.administrative_domain and
+                        e_item.administrative_domain.id not in alarm.adm_path):
+                    continue
+                # Check severity
+                if e_item.min_severity and alarm.severity < e_item.min_severity:
+                    continue
+                # Check selector
+                if e_item.selector and not SelectorCache.is_in_selector(alarm.managed_object, e_item.selector):
+                    continue
                 logger.debug(
                     "[%s] Watch for %s after %s seconds",
-                    alarm.id, esc.name, delay
+                    alarm.id, esc.name, e_item.delay
                 )
                 call_later(
                     "noc.services.correlator.escalation.escalate",
                     pool=alarm.managed_object.pool.name,
-                    delay=delay,
+                    delay=e_item.delay,
                     scheduler="correlator",
                     alarm_id=alarm.id,
                     escalation_id=esc.id,
-                    escalation_delay=delay
+                    escalation_delay=e_item.delay
                 )
