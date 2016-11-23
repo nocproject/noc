@@ -15,19 +15,16 @@
   tags:
     - requirements
 
-- name: Create rc.d directory
-  file: path=/usr/local/etc/rc.d state=directory mode=0755
+- name: Create required directories
+  file: path={{item}} state=directory mode=0755
+  with_items:
+    - /usr/local/etc/rc.d
+    - /usr/local/etc/newsyslog.conf.d
 
 - name: Install supervisord init script
   template: src="os/FreeBSD/etc/rc.d/noc.j2" dest="/usr/local/etc/rc.d/{{ noc_system_service }}" mode="a+rx"
 
-- name: Ensure /etc/rc.conf exists
-  file: path=/etc/rc.conf state=touch
-
 - name: Enable NOC system service
   service: name="{{ noc_system_service }}" enabled=yes
-
-- name: Create newsyslog.conf.d directory
-  file: path=/usr/local/etc/newsyslog.conf.d state=directory mode=0755
 
 - include: "telegraf.yml"

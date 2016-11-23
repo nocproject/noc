@@ -3,11 +3,12 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/login-radius.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external {{ pip_extra_args | default('') }} --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
   when: "False"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+    CFLAGS: "{{ pip_extra_args | default('') }}"
   tags:
     - requirements
 
@@ -16,11 +17,12 @@
     chdir: "{{noc_root}}"
     requirements: "requirements/login-ldap.txt"
     virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external {{ pip_extra_args | default('') }} --upgrade"
+    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
   when: "False"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+    CFLAGS: "{{ pip_extra_args | default('') }}"
   tags:
     - requirements
 
