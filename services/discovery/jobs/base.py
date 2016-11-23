@@ -82,7 +82,7 @@ class MODiscoveryJob(PeriodicJob):
         Return object's capabilities
         :return:
         """
-        if self.caps is not None:
+        if self.caps is None:
             self.caps = self.object.get_caps()
         return self.caps
 
