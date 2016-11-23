@@ -1,5 +1,5 @@
 ---
-- name: Install Telegraf packages
+- name: Install telegraf packages
   pkgng: name="telegraf" state=present
 
 - name: Create telegraf directories
