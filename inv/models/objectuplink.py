@@ -25,7 +25,8 @@ class ObjectUplink(Document):
     object = IntField(primary_key=True)
     uplinks = ListField(IntField())
 
-    _object_cache = cachetools.TTLCache(1000, ttl=60)
+    _object_cache = cachetools.TTLCache(1000, ttl=300)
+    _neighbor_cache = cachetools.TTLCache(1000, ttl=300)
 
     @classmethod
     def update_uplinks(cls, umap):
@@ -53,6 +54,20 @@ class ObjectUplink(Document):
         if hasattr(object, "id"):
             object = object.id
         return cls._uplinks_for_object(object)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_neighbor_cache"), lock=lambda _: id_lock)
+    def _neighbors_for_object(cls, object_id):
+        n = set()
+        for d in ObjectUplink._get_collection().find({"uplinks": object_id}, {"_id": 1}):
+            n.add(d["_id"])
+        return list(n)
+
+    @classmethod
+    def neighbors_for_object(cls, object):
+        if hasattr(object, "id"):
+            object = object.id
+        return cls._neighbors_for_object(object)
 
     @classmethod
     def uplinks_for_objects(cls, objects):
