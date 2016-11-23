@@ -60,7 +60,7 @@ class Script(GetMetricsScript):
                     )
 
     rx_ipsla_probe = re.compile(
-        r"(?:IPSLA operation id:|Round Trip Time for.+Index)\s+(\d+)",
+        r"(?:IPSLA operation id:|Round Trip Time \(RTT\) for.+Index)\s+(\d+)",
         re.MULTILINE
     )
 
@@ -77,11 +77,11 @@ class Script(GetMetricsScript):
         :return:
         """
         v = self.cli("show ip sla statistics")
-        r = self.rx_ipsla_probe.split(v)
-        if len(r) < 3:
+        r_v = self.rx_ipsla_probe.split(v)
+        if len(r_v) < 3:
             return {}
         r = defaultdict(dict)
-        for probe_id, data in zip(r[1::2], r[2::2]):
+        for probe_id, data in zip(r_v[1::2], r_v[2::2]):
             match = self.rx_ipsla_latest_rtt.search(data)
             if not match:
                 continue
