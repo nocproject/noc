@@ -36,6 +36,7 @@ from noc.core.influxdb.client import InfluxDBClient
 from noc.core.config.base import config
 from noc.core.translation import ugettext as _
 from noc.core.cache.decorator import cachedmethod
+from noc.core.influxdb.client import InfluxDBClient
 
 tags_lock = threading.RLock()
 
@@ -407,13 +408,10 @@ class MapApplication(ExtApplication):
             return "|".join(["%s=%s" % (v, t[v]) for v in sorted(t)])
 
         # Build query
-        query = []
-        m_objects = defaultdict(set)  # metric -> [object, ...]
-        tag_id = {}
+        tag_id = {}  # object, interface -> id
         if_ids = {}  # id -> port id
+        mlst = []  # (metric, object, interface)
         for m in metrics:
-            m_objects[m["metric"]].add(m["tags"]["object"])
-            tag_id[qt(m["tags"])] = m["id"]
             if "object" in m["tags"] and "interface" in m["tags"]:
                 try:
                     if_ids[
@@ -422,32 +420,20 @@ class MapApplication(ExtApplication):
                             m["tags"]["interface"]
                         )
                     ] = m["id"]
+                    tag_id[m["object"], m["interface"]] = m["id"]
+                    mlst += [(m["metric"], m["object"], m["interface"])]
                 except KeyError:
                     pass
         # @todo: Get last values from cache
-        for m in m_objects:
-            for o in m_objects[m]:
-                query += [
-                    "SELECT object, last(value) "
-                    "FROM \"%s\" "
-                    "WHERE object='%s' "
-                    "GROUP BY object, interface" % (
-                        q(m),
-                        q(o)
-                    )
-                ]
-        if not query:
+        if not mlst:
             return {}
-        query = ";".join(query)
-        client = tornado.httpclient.HTTPClient()
-        response = client.fetch(
-            "http://%s/query?db=%s&q=%s" % (
-                config.get_service("influxdb", limit=1)[0],
-                config.influx_db,
-                urllib.quote(query)
-            )
-        )
-        data = json.loads(response.body)
+        query = "; ".join([
+            "SELECT object, interface, last(value) AS value "
+            "FROM \"%s\" "
+            "WHERE object = '%s' AND interface = '%s' " % (
+                q(m), q(o), q(i)
+            ) for m, o, i in mlst
+        ])
         r = {}
         # Apply interface statuses
         for d in Interface._get_collection().find(
@@ -467,17 +453,17 @@ class MapApplication(ExtApplication):
                 "oper_status": d.get("oper_status", True)
             }
         # Apply metrics
-        for qr in data["results"]:
-            if not qr:
-                continue
-            for sv in qr["series"]:
-                pid = tag_id.get(qt(sv["tags"]))
+        client = InfluxDBClient()
+        try:
+            for rq in client.query(query):
+                pid = tag_id.get((rq["object"], rq["interface"]))
                 if not pid:
                     continue
                 if pid not in r:
                     r[pid] = {}
-                if sv["name"] not in r[pid]:
-                    r[pid][sv["name"]] = sv["values"][0][-1]
+                r[pid][rq["_name"]] = rq["value"]
+        except ValueError as e:
+            self.logger.error("[influxdb] Query error: %s" % e)
         return r
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"],
