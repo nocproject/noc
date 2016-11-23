@@ -72,7 +72,7 @@ Ext.define("NOC.sa.runcommands.Application", {
             "args": {
                 "commands": [
                     // @todo: Split lines
-                    me.commandsField.getValue()
+                    me.commandsField.getValue().split("\n")
                 ]
             }
         }
