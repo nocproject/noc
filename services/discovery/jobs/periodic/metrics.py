@@ -44,6 +44,7 @@ class MetricsCheck(DiscoveryCheck):
     required_script = "get_metrics"
 
     _profile_metrics = cachetools.TTLCache(1000, 60)
+    _slaprofile_metrics = cachetools.TTLCache(1000, 60)
 
     S_OK = 0
     S_WARN = 1
