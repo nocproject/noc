@@ -6,9 +6,15 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+from threading import Lock
+import operator
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField, ListField
+import cachetools
+
+id_lock = Lock()
 
 
 class ObjectUplink(Document):
@@ -18,6 +24,8 @@ class ObjectUplink(Document):
     }
     object = IntField(primary_key=True)
     uplinks = ListField(IntField())
+
+    _object_cache = cachetools.TTLCache(1000, ttl=60)
 
     @classmethod
     def update_uplinks(cls, umap):
@@ -33,13 +41,18 @@ class ObjectUplink(Document):
         bulk.execute()
 
     @classmethod
-    def uplinks_for_object(cls, object):
-        if hasattr(object, "id"):
-            object = object.id
-        d = ObjectUplink._get_collection().find_one({"_id": object}, {"_id": 0, "uplinks": 1})
+    @cachetools.cachedmethod(operator.attrgetter("_object_cache"), lock=lambda _: id_lock)
+    def _uplinks_for_object(cls, object_id):
+        d = ObjectUplink._get_collection().find_one({"_id": object_id}, {"_id": 0, "uplinks": 1})
         if d:
             return d["uplinks"]
         return []
+
+    @classmethod
+    def uplinks_for_object(cls, object):
+        if hasattr(object, "id"):
+            object = object.id
+        return cls._uplinks_for_object(object)
 
     @classmethod
     def uplinks_for_objects(cls, objects):
