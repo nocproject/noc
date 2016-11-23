@@ -70,10 +70,7 @@ Ext.define("NOC.sa.runcommands.Application", {
         return {
             "script": "commands",
             "args": {
-                "commands": [
-                    // @todo: Split lines
-                    me.commandsField.getValue().split("\n")
-                ]
+                "commands":  me.commandsField.getValue().split("\n")
             }
         }
     }
