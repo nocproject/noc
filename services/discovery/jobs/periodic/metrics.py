@@ -168,7 +168,7 @@ class MetricsCheck(DiscoveryCheck):
                 if not p.profile:
                     self.logger.debug("Probe %s has no profile. Skipping", p.name)
                     continue
-                pm = self.get_slaprofile_metrics(p.id)
+                pm = self.get_slaprofile_metrics(p.profile.id)
                 if not pm:
                     self.logger.debug(
                         "Probe %s has profile '%s' with no configured metrics. "
@@ -177,7 +177,7 @@ class MetricsCheck(DiscoveryCheck):
                     continue
                 for metric in pm:
                     if metric in metrics:
-                        metric[metrics]["probes"] += [p.name]
+                        metrics[metric]["probes"] += [p.name]
                     else:
                         metrics[metric] = {
                             "probes": [p.name],
