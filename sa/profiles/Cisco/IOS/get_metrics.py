@@ -60,12 +60,12 @@ class Script(GetMetricsScript):
                     )
 
     rx_ipsla_probe = re.compile(
-        r"IPSLA operation id:\s+(\d+)",
+        r"(?:IPSLA operation id:|Round Trip Time for.+Index)\s+(\d+)",
         re.MULTILINE
     )
 
     rx_ipsla_latest_rtt = re.compile(
-        r"Latest RTT:\s+(\d+ milliseconds|\S+)"
+        r"Latest RTT:\s+(\d+)"
     )
 
     def get_ip_sla_metrics(self):
@@ -86,7 +86,5 @@ class Script(GetMetricsScript):
             if not match:
                 continue
             rtt = match.group(1)
-            if rtt.endswith("milliseconds"):
-                rtt = rtt.split()[0]
-                r[probe_id]["rtt"] = float(rtt) / 1000.0
+            r[probe_id]["rtt"] = float(rtt) / 1000.0
         return r
