@@ -101,6 +101,10 @@ class Profile(BaseProfile):
         # Serial0/1/0:15-Signaling -> Serial0/1/0:15
         if il.startswith("se") and "-" in interface:
             interface = interface.split("-")[0]
+        # Control Plane Interface
+        # @todo: Does it relates to CPP?
+        if il == "Control Plane Interface":
+            return "Control Plane Interface"
         # Fake name. Used only with FM
         if il == "all":
             return "all"
