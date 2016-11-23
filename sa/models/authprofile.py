@@ -63,7 +63,7 @@ class AuthProfile(models.Model):
 
     def on_save(self):
         if not self.enable_suggest:
-            cache.delete([
+            cache.delete_many([
                 "cred-%s" % x
                 for x in self.managedobject_set.values_list("id", flat=True)
             ])
