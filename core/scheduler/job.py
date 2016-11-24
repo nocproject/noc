@@ -102,7 +102,7 @@ class Job(object):
         self.context = {}
 
     def load_context(self, data):
-        self.context = data
+        self.context = data or {}
         self.init_context()
 
     def init_context(self):
