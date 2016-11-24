@@ -284,10 +284,11 @@ class Scheduler(object):
                 if cjobs:
                     try:
                         ctx = self.cache.get_many(cjobs)
-                        for k in ctx:
-                            cjobs[k].load_context(ctx[k])
                     except Exception as e:
                         self.logger.error("Failed to restore context: %s", e)
+                        ctx = {}
+                    for k in cjobs:
+                        cjobs[k].load_context(ctx.get(k, {}))
                 #
                 for job in rjobs:
                     executor.submit(job.run)
