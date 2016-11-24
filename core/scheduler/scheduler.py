@@ -100,16 +100,19 @@ class Scheduler(object):
             self.reset_running()
         self.ensure_indexes()
         if self.use_cache:
-            from noc.core.cache.base import cache
-            self.cache = cache
-            self.cache_thread = threading.Thread(
-                target=self.cache_worker,
-                name="cache_worker"
-            )
-            self.cache_thread.setDaemon(True)
-            self.cache_thread.start()
+            self.run_cache_thread()
         self.logger.info("Running scheduler")
         self.ioloop.spawn_callback(self.scheduler_loop)
+
+    def run_cache_thread(self):
+        from noc.core.cache.base import cache
+        self.cache = cache
+        self.cache_thread = threading.Thread(
+            target=self.cache_worker,
+            name="cache_worker"
+        )
+        self.cache_thread.setDaemon(True)
+        self.cache_thread.start()
 
     def get_collection(self):
         """
@@ -276,19 +279,23 @@ class Scheduler(object):
                         r["nModified"], len(jids)
                     )
                 # Fetch contexts
-                cjobs = dict(
-                    (j.get_context_cache_key(), j)
-                    for j in rjobs
-                    if j.context_version
-                )
+                # version -> key -> job
+                cjobs = {}
+                for j in rjobs:
+                    if not j.context_version:
+                        continue
+                    if j.context_version not in cjobs:
+                        cjobs[j.context_version] = {}
+                    cjobs[j.context_version][j.get_context_cache_key()] = j
                 if cjobs:
-                    try:
-                        ctx = self.cache.get_many(cjobs)
-                    except Exception as e:
-                        self.logger.error("Failed to restore context: %s", e)
-                        ctx = {}
-                    for k in cjobs:
-                        cjobs[k].load_context(ctx.get(k, {}))
+                    for v in cjobs:
+                        try:
+                            ctx = self.cache.get_many(cjobs[v], version=v)
+                        except Exception as e:
+                            self.logger.error("Failed to restore context: %s", e)
+                            ctx = {}
+                        for k in cjobs[v]:
+                            cjobs[k].load_context(ctx.get(k, {}))
                 #
                 for job in rjobs:
                     executor.submit(job.run)
@@ -445,7 +452,7 @@ class Scheduler(object):
             else:
                 # Apply operations
                 if set_ops:
-                    for version, data in six.iteritems(set_ops):
+                    for version, data in set_ops.items():
                         try:
                             self.cache.set_many(
                                 data, version=version,

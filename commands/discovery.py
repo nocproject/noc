@@ -8,6 +8,7 @@
 
 ## Python modules
 import argparse
+import time
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
@@ -99,9 +100,9 @@ class Command(BaseCommand):
         job_args["_checks"] = checks
         job = get_handler(jcls)(scheduler, job_args)
         if job.context_version:
-            ckey = job.get_context_cache_key()
-            self.stdout.write("Getting job context from %s\n" % ckey)
-            ctx = cache.get(ckey)
+            ctx_key = job.get_context_cache_key()
+            self.stdout.write("Loading job context from %s\n" % ctx_key)
+            ctx = cache.get(ctx_key, version=job.context_version)
             if not ctx:
                 self.stdout.write("Job context is empty\n")
             job.load_context(ctx)
@@ -110,6 +111,15 @@ class Command(BaseCommand):
         if scheduler.service.metrics:
             for m in scheduler.service.metrics:
                 self.stdout.write("Collected metric: %s\n" % m)
+        if job.context_version and job.context:
+            scheduler.run_cache_thread()
+            self.stdout.write("Saving job context to %s\n" % ctx_key)
+            scheduler.cache_set(
+                key=ctx_key,
+                value=job.context,
+                version=job.context_version
+            )
+            time.sleep(2)
 
 
 class ServiceStub(object):
