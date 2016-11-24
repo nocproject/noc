@@ -83,25 +83,33 @@ class Command(BaseCommand):
     def run_job(self, job, mo, checks):
         scheduler = Scheduler("discovery", pool=mo.pool.name)
         scheduler.service = ServiceStub()
-        job_args = {
-            Job.ATTR_KEY: mo.id,
-            "_checks": checks
-        }
-        job = get_handler(self.jcls[job])(scheduler, job_args)
-        if self.requires_context(job, checks):
-            ctx = cache.get(job.get_context_key())
+        jcls = self.jcls[job]
+        # Try to dereference job
+        job_args = scheduler.get_collection().find_one({
+            Job.ATTR_CLASS: jcls,
+            Job.ATTR_KEY: mo.id
+        })
+        if job_args:
+            self.stdout.write("Job ID: %s\n" % job_args["_id"])
+        else:
+            job_args = {
+                Job.ATTR_ID: "fakeid",
+                Job.ATTR_KEY: mo.id
+            }
+        job_args["_checks"] = checks
+        job = get_handler(jcls)(scheduler, job_args)
+        if job.context_version:
+            ckey = job.get_context_cache_key()
+            self.stdout.write("Getting job context from %s\n" % ckey)
+            ctx = cache.get(ckey)
+            if not ctx:
+                self.stdout.write("Job context is empty\n")
             job.load_context(ctx)
         job.dereference()
         job.handler()
         if scheduler.service.metrics:
             for m in scheduler.service.metrics:
                 self.stdout.write("Collected metric: %s\n" % m)
-
-    def requires_context(self, job, checks):
-        """
-        Returns True if job uses context
-        """
-        return job == "periodic" and (not checks or "metrics" in checks)
 
 
 class ServiceStub(object):
