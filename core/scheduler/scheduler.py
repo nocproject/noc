@@ -277,7 +277,7 @@ class Scheduler(object):
                     )
                 # Fetch contexts
                 cjobs = dict(
-                    (j.get_context_key(), j)
+                    (j.get_context_cache_key(), j)
                     for j in rjobs
                     if j.context_version
                 )
@@ -447,12 +447,13 @@ class Scheduler(object):
                 if set_ops:
                     for version, data in six.iteritems(set_ops):
                         try:
-                            self.cache.set_many(data, version=version,
-                                           ttl=DEFAULT_TTL)
+                            self.cache.set_many(
+                                data, version=version,
+                                ttl=DEFAULT_TTL)
                             del set_ops[version]
                         except Exception as e:
                             self.logger.error("Error writing cache: %s", e)
-            last = t0
+                last = t0
 
     def cache_set(self, key, value, version):
         assert self.cache_thread, "Cache management thread is not started"
