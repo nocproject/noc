@@ -10,11 +10,14 @@
 import logging
 import datetime
 import random
+import Queue
+import threading
 ## Third-party modules
 import pymongo.errors
 import tornado.gen
 import tornado.ioloop
 from concurrent.futures import ThreadPoolExecutor
+import six
 ## NOC modules
 from job import Job
 from noc.lib.nosql import get_db
@@ -31,7 +34,7 @@ class Scheduler(object):
     def __init__(self, name, pool=None, reset_running=False,
                  max_threads=5, ioloop=None, check_time=1000,
                  submit_threshold=None, max_chunk=None,
-                 filter=None):
+                 filter=None, use_cache=None):
         """
         Create scheduler
         :param name: Unique scheduler name
@@ -81,6 +84,10 @@ class Scheduler(object):
         self.to_shutdown = False
         self.min_sleep = float(check_time) / self.UPDATES_PER_CHECK / 1000.0
         self.jobs_burst = []
+        self.use_cache = use_cache
+        self.cache = None
+        self.cache_thread = None
+        self.cache_queue = Queue.Queue()
 
     def run(self):
         """
@@ -92,6 +99,15 @@ class Scheduler(object):
         if self.to_reset_running:
             self.reset_running()
         self.ensure_indexes()
+        if self.use_cache:
+            from noc.core.cache.base import cache
+            self.cache = cache
+            self.cache_thread = threading.Thread(
+                target=self.cache_worker,
+                name="cache_worker"
+            )
+            self.cache_thread.setDaemon(True)
+            self.cache_thread.start()
         self.logger.info("Running scheduler")
         self.ioloop.spawn_callback(self.scheduler_loop)
 
@@ -259,6 +275,20 @@ class Scheduler(object):
                         "Failed to update all running statuses: %d of %d",
                         r["nModified"], len(jids)
                     )
+                # Fetch contexts
+                cjobs = dict(
+                    (j.get_context_key(), j)
+                    for j in rjobs
+                    if j.context_version
+                )
+                if cjobs:
+                    try:
+                        ctx = self.cache.get_many(cjobs)
+                        for k in ctx:
+                            cjobs[k].load_context(ctx[k])
+                    except Exception as e:
+                        self.logger.error("Failed to restore context: %s", e)
+                #
                 for job in rjobs:
                     executor.submit(job.run)
                     n += 1
@@ -332,7 +362,9 @@ class Scheduler(object):
         self.get_collection().update(q, op, upsert=True)
 
     def set_next_run(self, jid, status=None, ts=None, delta=None,
-                     duration=None, context=None, context_version=None):
+                     duration=None,
+                     context=None, context_version=None,
+                     context_key=None):
         """
         Reschedule job and set next run time
         :param jid: Job id
@@ -369,9 +401,11 @@ class Scheduler(object):
             elif status == Job.E_EXCEPTION:
                 inc_op[Job.ATTR_FAULTS] = 1
         if context_version is not None:
-            set_op[Job.ATTR_CONTEXT_VERSION] = context_version
-            set_op[Job.ATTR_CONTEXT] = context
-
+            self.cache_set(
+                key=context_key,
+                value=context,
+                version=context_version
+            )
         op = {}
         if set_op:
             op["$set"] = set_op
@@ -386,3 +420,41 @@ class Scheduler(object):
             r = self.get_collection().update(q, op)
             if not r["ok"] or r["nModified"] != 1:
                 self.logger.error("Failed to set next run for job %s", jid)
+
+    def cache_worker(self):
+        self.logger.info("Starting cache worker thread")
+        set_ops = {}  # version -> key -> value
+        SEND_INTERVAL = 0.25
+        DEFAULT_TTL = 7 * 24 * 3600
+        last = 0
+        while True:
+            t0 = self.ioloop.time()
+            timeout = min(last + SEND_INTERVAL - t0, SEND_INTERVAL)
+            if timeout > 0:
+                # Collect operations
+                try:
+                    key, value, version = self.cache_queue.get(
+                        block=True, timeout=timeout
+                    )
+                    if version not in set_ops:
+                        set_ops[version] = {}
+                    set_ops[version][key] = value
+                except Queue.Empty:
+                    pass
+            else:
+                # Apply operations
+                if set_ops:
+                    for version, data in six.iteritems(set_ops):
+                        try:
+                            self.cache.set_many(data, version=version,
+                                           ttl=DEFAULT_TTL)
+                            del set_ops[version]
+                        except Exception as e:
+                            self.logger.error("Error writing cache: %s", e)
+            last = t0
+
+    def cache_set(self, key, value, version):
+        assert self.cache_thread, "Cache management thread is not started"
+        self.cache_queue.put(
+            (key, value, version)
+        )
