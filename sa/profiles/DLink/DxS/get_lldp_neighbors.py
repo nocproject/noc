@@ -57,6 +57,7 @@ class Script(BaseScript):
                     "mac address": 4,
                     "macaddress": 4,
                     "network address": 5,
+                    "network_address": 5,
                     "interface name": 6,
                     "local": 7
                 }[m.group("chassis_id_subtype").strip().lower()]
