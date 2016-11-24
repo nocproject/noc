@@ -49,6 +49,44 @@ class Script(BaseScript):
         r"(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\S+\s+\S+\s+(?:\d+|\-)\s+(?:\d+|\-)\s+"
         r"(?P<admin_status>up|down)\s*$", re.MULTILINE)
 
+    type = {
+        "Vlan": 48,
+        "GPON": 125,
+        "EPON": 126,
+        "TDME1": 97,
+        "ATM": 4,
+        "ADSL": 6,
+        "VDSL2": 124,
+        "SHDSL": 44,
+        "Eth": 7,
+        "IMA": 39,
+        "IMALink": 51,
+        "Trunk": 54,
+        "BITS": 96,
+        "xDSLchan": 123,
+        "DOCSISup": 59,
+        "DOCSISdown": 60,
+        "DOCSISport": 61
+    }
+
+    def snmp_index(self, int_type, shelfID, slotID, intNum):
+        """
+        Huawei MA5600T&MA5603T port -> ifindex converter
+        """
+
+        type_id = self.type[int_type]
+        index = type_id << 25
+        index += shelfID << 19
+        index += slotID << 13
+        if int_type in ["Vlan"]:
+            index += intNum
+        elif int_type in ["xDSLchan", "DOCSISup", "DOCSISdown"]:
+            index += intNum << 5
+        else:
+            index += intNum << 5
+
+        return index
+
     def execute(self):
         interfaces = []
         vlans = []
@@ -62,11 +100,13 @@ class Script(BaseScript):
                     ifname = "0/%d/%d" % (i, int(match.group("port")))
                     admin_status = match.group("admin_status") == "active"
                     oper_status = match.group("oper_status") == "online"
+                    ifindex = self.snmp_index("Eth", 0, i, int(match.group("port")))
                     iface = {
                         "name": ifname,
                         "type": "physical",
                         "admin_status": admin_status,
                         "oper_status": oper_status,
+                        "snmp_ifindex": ifindex,
                         "subinterfaces": [{
                             "name": ifname,
                             "admin_status": admin_status,
@@ -131,9 +171,14 @@ class Script(BaseScript):
                             found = True
                             break
                     if not found:
+                        if ports[i]["t"] == "VDSL":
+                            ifindex = self.snmp_index("VDSL2", 0, i, port)
+                        else:
+                            ifindex = self.snmp_index(ports[i]["t"], 0, i, port)
                         iface = {
                             "name": ifname,
                             "type": "physical",
+                            "snmp_ifindex": ifindex,
                             "subinterfaces": [sub]
                         }
                         for o in oper_states:
