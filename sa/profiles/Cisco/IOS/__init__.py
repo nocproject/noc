@@ -103,7 +103,7 @@ class Profile(BaseProfile):
             interface = interface.split("-")[0]
         # Control Plane Interface
         # @todo: Does it relates to CPP?
-        if il == "Control Plane Interface":
+        if il == "control plane interface":
             return "Control Plane Interface"
         # Fake name. Used only with FM
         if il == "all":
