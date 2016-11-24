@@ -55,6 +55,7 @@ class Script(BaseScript):
                 "remote_chassis_id": match.group("ch_id"),
                 "remote_port_subtype": {
                         "ifAlias": 1,
+                        "macAddress": 3,
                         "ifName": 5,
                         "local": 7
                     }[match.group("port_id_subtype")],
