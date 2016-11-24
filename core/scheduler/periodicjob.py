@@ -50,17 +50,20 @@ class PeriodicJob(Job):
                 # To next interval
                 t0 += interval
             ts = datetime.datetime.fromtimestamp(t0)
-            if self.context_version is not None:
-                ctx = self.context_dumps()
+            if self.context_version:
+                ctx = self.context or None
+                ctx_key = self.get_context_cache_key()
             else:
                 ctx = None
+                ctx_key = None
             self.scheduler.set_next_run(
                 self.attrs[self.ATTR_ID],
                 status=status,
                 ts=ts,
                 duration=self.duration,
                 context_version=self.context_version,
-                context=ctx
+                context=ctx,
+                context_key=ctx_key
             )
         else:
             # Remove broken job
