@@ -28,9 +28,8 @@ class Script(BaseScript):
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
         ports = self.profile.fill_ports(self)
-        #print "%s\n" % ports
-        #quit()
         adsl_port = "adsl"
+        vdsl_port = "port"  # Need more examples
         gpon_port = "gpon"
         ethernet_port = "ethernet"
         for i in range(len(ports)):
@@ -46,6 +45,12 @@ class Script(BaseScript):
                     except self.CLISyntaxError:
                         v = self.cli("display mac-address port 0/%d/%d" % (i, p))
                         adsl_port = "port"
+                if (ports[i]["t"] == "VDSL"):
+                    try:
+                        v = self.cli("display mac-address %s 0/%d/%d" % (vdsl_port, i, p))
+                    except self.CLISyntaxError:
+                        v = self.cli("display mac-address port 0/%d/%d" % (i, p))
+                        vdsl_port = "port"
                 if (ports[i]["t"] == "GPON"):
                     try:
                         v = self.cli("display mac-address %s 0/%d/%d" % (gpon_port, i, p))
