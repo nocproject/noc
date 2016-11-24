@@ -14,6 +14,7 @@ from noc.core.handler import get_handler
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
+from noc.core.cache.base import cache
 
 
 class Command(BaseCommand):
@@ -86,17 +87,10 @@ class Command(BaseCommand):
             Job.ATTR_KEY: mo.id,
             "_checks": checks
         }
-        if self.requires_context(job, checks):
-            d = scheduler.get_collection().find_one({
-                Job.ATTR_CLASS: self.jcls[job],
-                Job.ATTR_KEY: mo.id
-
-            }, {
-                Job.ATTR_CONTEXT: 1
-            })
-            if d and d[Job.ATTR_CONTEXT]:
-                job_args[Job.ATTR_CONTEXT] = d[Job.ATTR_CONTEXT]
         job = get_handler(self.jcls[job])(scheduler, job_args)
+        if self.requires_context(job, checks):
+            ctx = cache.get(job.get_context_key())
+            job.load_context(ctx)
         job.dereference()
         job.handler()
         if scheduler.service.metrics:
