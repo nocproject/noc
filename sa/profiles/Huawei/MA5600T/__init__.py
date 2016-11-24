@@ -38,7 +38,7 @@ class Profile(BaseProfile):
 
     rx_slots = re.compile("^\s*\d+", re.MULTILINE)
     rx_ports = re.compile(
-        "^\s*\d+\s+(?P<type>ADSL|GPON|10GE|GE|FE)\s+.+?"
+        "^\s*\d+\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE)\s+.+?"
         "(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated)",
          re.MULTILINE)
 

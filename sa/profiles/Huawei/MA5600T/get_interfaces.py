@@ -45,8 +45,8 @@ class Script(BaseScript):
         r"adl\s+0/\d+\s*/(?P<port>\d+)\s+(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\d+\s+"
         r"(?P<admin_status>\S+)\s*\n", re.MULTILINE)
     rx_sp = re.compile(
-        r"^\s*\d+\s+(?P<vlan>\d+)\s+\S+\s+(:?adl|gpon)\s+0/\d+\s*/(?P<port>\d+)\s+"
-        r"(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\S+\s+\S+\s+\d+\s+\d+\s+"
+        r"^\s*\d+\s+(?P<vlan>\d+)\s+\S+\s+(:?adl|vdl||gpon)\s+0/\d+\s*/(?P<port>\d+)\s+"
+        r"(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\S+\s+\S+\s+(?:\d+|\-)\s+(?:\d+|\-)\s+"
         r"(?P<admin_status>up|down)\s*$", re.MULTILINE)
 
     def execute(self):
@@ -85,10 +85,14 @@ class Script(BaseScript):
                         iface["subinterfaces"][0]["untagged"] = untagged
                         iface["subinterfaces"][0]["tagged"] = tagged
                     interfaces += [iface]
-            if ports[i]["t"] in ["ADSL", "GPON"]:
+            if ports[i]["t"] in ["ADSL", "VDSL", "GPON"]:
                 oper_states = []
+                if ports[i]["t"] == "VDSL":
+                    p_type = "vdsl"
+                else:
+                    p_type = "adsl"
                 try:
-                    v = self.cli("display adsl port state 0/%d\r\n" % i)
+                    v = self.cli("display %s port state 0/%d\r\n" % (p_type, i))
                     for match in self.rx_adsl_state.finditer(v):
                         oper_states += [{
                             "name": "0/%d/%d" % (i, int(match.group("port"))),
