@@ -295,7 +295,7 @@ class Scheduler(object):
                             self.logger.error("Failed to restore context: %s", e)
                             ctx = {}
                         for k in cjobs[v]:
-                            cjobs[k].load_context(ctx.get(k, {}))
+                            cjobs[v][k].load_context(ctx.get(k, {}))
                 #
                 for job in rjobs:
                     executor.submit(job.run)
