@@ -28,6 +28,7 @@ class IGetSLAProbes(Interface):
             "name": StringParameter(),
             "type": StringParameter(choices=[
                 "icmp-echo",
+                "path-jitter",
                 "udp-echo",
                 "http-get",
                 "dns",
