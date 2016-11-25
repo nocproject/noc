@@ -46,6 +46,7 @@ class Script(BaseScript):
             platform = "ALS-62000 L2"
         r["platform"] = platform
         v = self.cli("show system id", cached=True)
-        match = self.re_search(self.rx_serial, v)
-        r["attributes"]["Serial Number"] = match.group("serial")
+        match = self.rx_serial.search(v)
+        if match:
+            r["attributes"]["Serial Number"] = match.group("serial")
         return r
