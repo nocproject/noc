@@ -54,6 +54,7 @@ class Script(BaseScript):
     # @todo: Add other types
     TEST_TYPES = {
         "icmp-echo": "icmp-echo",
+        "path-jitter": "path-jitter",
         "icmp-jitter": "icmp-echo",
         "echo": "icmp-echo"
     }
