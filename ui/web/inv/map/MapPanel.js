@@ -524,7 +524,6 @@ Ext.define("NOC.inv.map.MapPanel", {
                 y: pos.x
             })
         });
-        me.paper.fitToContent();
         me.setPaperDimension();
     },
     //
@@ -883,7 +882,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     setZoom: function(zoom) {
         var me = this;
         me.paper.scale(zoom, zoom);
-        me.paper.fitToContent();
         me.setPaperDimension();
     },
 
@@ -1130,11 +1128,9 @@ Ext.define("NOC.inv.map.MapPanel", {
 
     onResize: function(width, height) {
         var me = this;
-        me.setPaperDimension();
         if('paper' in me) {
-            me.paper.fitToContent();
+            me.setPaperDimension();
         }
-        me.setPaperDimension();
     },
 
     setPaperDimension: function() {
@@ -1143,12 +1139,16 @@ Ext.define("NOC.inv.map.MapPanel", {
             h = me.getHeight();
 
         if(me.paper) {
+            me.paper.fitToContent();
             var contentBB = me.paper.getContentBBox();
-            if(contentBB !== undefined) {
+            if(contentBB && contentBB.width && contentBB.height) {
                 w = Ext.Array.max([contentBB.width, me.getWidth()]);
                 h = Ext.Array.max([contentBB.height, me.getHeight()]);
+                // ToDo may by use paper padding?
+                var padding = 15;
+                me.paper.setOrigin((-1) * contentBB.x + padding, (-1) * contentBB.y + padding);
+                me.paper.setDimensions(w + padding * 2, h + padding * 2);
             }
-            me.paper.setDimensions(w, h);
         }
     },
 
