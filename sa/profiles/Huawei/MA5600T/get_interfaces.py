@@ -48,6 +48,9 @@ class Script(BaseScript):
         r"^\s*\d+\s+(?P<vlan>\d+)\s+\S+\s+(:?adl|vdl||gpon)\s+0/\d+\s*/(?P<port>\d+)\s+"
         r"(?P<vpi>\d+)\s+(?P<vci>\d+)\s+\S+\s+\S+\s+(?:\d+|\-)\s+(?:\d+|\-)\s+"
         r"(?P<admin_status>up|down)\s*$", re.MULTILINE)
+    rx_stp = re.compile(
+        r"^\s*\d+\s+(?P<port>0/\s*\d+/\s*\d+)\s+\d+\s+\d+\s+Enabled\s+",
+        re.MULTILINE)
 
     type = {
         "Vlan": 48,
@@ -87,9 +90,18 @@ class Script(BaseScript):
 
         return index
 
+    def get_stp(self):
+        r = []
+        for match in self.rx_stp.finditer(self.cli("display stp\r\n")):
+            port = match.group("port").replace(" ", "")
+            if port not in r:
+                r += [port]
+        return r
+
     def execute(self):
         interfaces = []
         vlans = []
+        stp_ports = self.get_stp()
         display_pvc = False
         display_service_port = False
         ports = self.profile.fill_ports(self)
@@ -107,6 +119,7 @@ class Script(BaseScript):
                         "admin_status": admin_status,
                         "oper_status": oper_status,
                         "snmp_ifindex": ifindex,
+                        "enabled_protocols": [],
                         "subinterfaces": [{
                             "name": ifname,
                             "admin_status": admin_status,
@@ -114,6 +127,8 @@ class Script(BaseScript):
                             "enabled_afi": ["BRIDGE"]
                         }]
                     }
+                    if ifname in stp_ports:
+                        iface["enabled_protocols"] += ["STP"]
                     v = self.cli("display port vlan %s" % ifname)
                     m = self.rx_vlan.search(v)
                     if m:
@@ -167,6 +182,8 @@ class Script(BaseScript):
                     found = False
                     for iface in interfaces:
                         if ifname == iface["name"]:
+                            if "vlan_ids" in sub:
+                                sub["name"] = "%s.%d" % (sub["name"], sub["vlan_ids"])
                             iface["subinterfaces"] += [sub]
                             found = True
                             break
@@ -175,6 +192,8 @@ class Script(BaseScript):
                             ifindex = self.snmp_index("VDSL2", 0, i, port)
                         else:
                             ifindex = self.snmp_index(ports[i]["t"], 0, i, port)
+                        if "vlan_ids" in sub:
+                            sub["name"] = "%s.%d" % (sub["name"], sub["vlan_ids"])
                         iface = {
                             "name": ifname,
                             "type": "physical",
