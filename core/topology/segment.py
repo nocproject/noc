@@ -8,7 +8,7 @@
 
 ## Python modules
 import operator
-import operator
+import logging
 ## Third-party modules
 import networkx as nx
 import numpy as np
@@ -20,6 +20,8 @@ from noc.inv.models.link import Link
 from layout.ring import RingLayout
 from layout.spring import SpringLayout
 from layout.tree import TreeLayout
+
+logger = logging.getLogger(__name__)
 
 
 class SegmentTopology(BaseTopology):
@@ -294,10 +296,11 @@ def update_uplinks(segment_id):
     from noc.inv.models.networksegment import NetworkSegment
     from noc.inv.models.objectuplink import ObjectUplink
 
-    try:
-        segment = NetworkSegment.objects.get(id=segment_id)
-    except NetworkSegment.DoesNotExist:
+    segment = NetworkSegment.get_by_id(segment_id)
+    if not segment:
+        logger.warning("Segment with id: %s does not exist" % segment_id)
         return
+
     st = SegmentTopology(segment)
     ObjectUplink.update_uplinks(
         st.get_object_uplinks()
