@@ -122,6 +122,7 @@ class Script(BaseScript):
             match = self.rx_ifindex.search(l)
             if match:
                 sub["snmp_ifindex"] = match.group("ifindex")
+                iface["snmp_ifindex"] = match.group("ifindex")
             # get description
             match = self.rx_description.search(l)
             if match:
