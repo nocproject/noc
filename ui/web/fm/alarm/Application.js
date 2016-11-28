@@ -56,7 +56,7 @@ Ext.define("NOC.fm.alarm.Application", {
         me.autoreloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
             enableToggle: true,
-            pressed: true,
+            pressed: false,
             tooltip: __("Toggle autoreload"),
             listeners: {
                 scope: me,
@@ -65,9 +65,9 @@ Ext.define("NOC.fm.alarm.Application", {
         });
 
         me.soundButton = Ext.create("Ext.button.Button", {
-            glyph: NOC.glyph.volume_up,
+            glyph: NOC.glyph.volume_off,
             enableToggle: true,
-            pressed: true,
+            pressed: false,
             tooltip: __("Toggle sound"),
             listeners: {
                 scope: me,
