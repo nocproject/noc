@@ -67,8 +67,14 @@ class BaseExtractor(object):
         t0 = time.time()
         data = []
         n = 0
+        seen = set()
         for row in self.iter_data():
             row = self.clean(row)
+            if row[0] in seen:
+                self.logger.error("Duplicated row truncated: %r", row)
+                continue
+            else:
+                seen.add(row[0])
             data += [[q(x) for x in row]]
             n += 1
             if n % self.REPORT_INTERVAL == 0:
