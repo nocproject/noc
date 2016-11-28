@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Cisco.IOS.get_spanning_tree
+## Huawei.VRP.get_spanning_tree
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
