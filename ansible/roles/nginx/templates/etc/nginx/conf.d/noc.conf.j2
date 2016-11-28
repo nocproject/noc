@@ -236,6 +236,7 @@ server {
     # mrt service api
     location /api/mrt/ {
         proxy_pass http://mrt;
+        proxy_read_timeout 900;
         auth_request /api/auth/auth/;
         # internal;
         gzip on;
