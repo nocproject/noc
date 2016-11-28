@@ -15,6 +15,8 @@ def fix():
     for p in Pool.objects.all():
         s = Scheduler("discovery", pool=p.name)
         c = s.get_collection()
+        if not c.count():
+            continue
         # Remove unused schedules fields
         c.update({
             "jcls": "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
@@ -24,4 +26,4 @@ def fix():
                 "ctv": ""
             }
         }, multi=True)
-        c.database.command("compact", c.name)
+        c.database.command({"compact": c.name, "force": True})
