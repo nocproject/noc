@@ -17,7 +17,6 @@ import pymongo.errors
 import tornado.gen
 import tornado.ioloop
 from concurrent.futures import ThreadPoolExecutor
-import six
 ## NOC modules
 from job import Job
 from noc.lib.nosql import get_db
@@ -290,7 +289,7 @@ class Scheduler(object):
                 if cjobs:
                     for v in cjobs:
                         try:
-                            ctx = self.cache.get_many(cjobs[v], version=v)
+                            ctx = self.cache.get_many(cjobs[v], version=v) or {}
                         except Exception as e:
                             self.logger.error("Failed to restore context: %s", e)
                             ctx = {}
