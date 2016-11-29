@@ -103,7 +103,7 @@ class MetricsCheck(DiscoveryCheck):
 
     def handler(self):
         def q(s):
-            return s.replace(" ", "\\ ").replace(",", "\\,")
+            return s.replace(" ", "\\ ").replace(",", "\\,").replace("=", "\\=")
 
         def q_tags(t):
             return ",".join("%s=%s" % (q(s), q(t[s])) for s in sorted(t))

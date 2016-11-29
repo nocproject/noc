@@ -176,7 +176,7 @@ class PingService(Service):
         Perform ping check and set result
         """
         def q(s):
-            return s.replace(" ", "\\ ").replace(",", "\\,")
+            return s.replace(" ", "\\ ").replace(",", "\\,").replace("=", "\\=")
 
         address = ps.address
         t0 = time.time()
@@ -198,7 +198,7 @@ class PingService(Service):
             self.perf_metrics["ping_check_success"] += 1
         else:
             self.perf_metrics["ping_check_fail"] += 1
-        if s is not None and ps and s != ps.status:
+        if ps and s != ps.status:
             self.logger.info(
                 "[%s] Changing status to %s",
                 address, s
