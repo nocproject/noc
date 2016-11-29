@@ -20,7 +20,7 @@ class Script(BaseScript):
     cache = True
 
     rx_ver = re.compile(
-        r"^Machine Type\.+ ALS24.+\n"
+        r"^Machine Type\.+ (?:ALS24|VDSL2-24).+\n"
         r"^\s+(?:\S+\s+)?GE/Stack\s*\n"
         r"^Burned In MAC Address\.+ (?P<mac>\S+)\s*\n"
         r"^Software Version\.+ (?P<version>\S+)\s*\n"
