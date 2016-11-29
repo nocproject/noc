@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Huawei.VRP.get_spanning_tree
+## Cisco.IOS.get_spanning_tree
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
@@ -33,6 +33,9 @@ class Script(BaseScript):
             R = R.split()
             interface = self.profile.convert_interface_name(R[1])
             protection = R[-1]
+            if R[0] == "(*)":
+                # Skip Last string (*) ....
+                continue
             instance_id = int(R[0])
             if instance_id not in ports:
                 ports[instance_id] = {}
@@ -70,12 +73,12 @@ class Script(BaseScript):
     rx_mstp_instance = re.compile(r"^\s*(\d+)\s+(.+)?", re.MULTILINE)
 
     rx_mstp0_bridge = re.compile(
-        r"CIST\sBridge\s+:(?P<bridge_priority>\d+)(\s|)\.(?P<bridge_id>\S+).+?"
+        r"CIST\sBridge\s+:(?P<bridge_priority>\d+)(\s*|)\.(?P<bridge_id>\S+).+?"
         r"CIST\sRoot/ERPC\s+:(?P<root_priority>\d+)(\s*|)\.(?P<root_id>\S+)\s",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     rx_mstp_bridge = re.compile(
-        r"MSTI\sBridge\sID\s+:(?P<bridge_priority>\d+)(\s|)\.(?P<bridge_id>\S+).+?"
+        r"MSTI\sBridge\sID\s+:(?P<bridge_priority>\d+)(\s*|)\.(?P<bridge_id>\S+).+?"
         r"MSTI\sRegRoot/[IE]RPC\s+:(?P<root_priority>\d+)(\s*|)\.(?P<root_id>\S+)\s",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
@@ -83,7 +86,7 @@ class Script(BaseScript):
         r"^----\[Port(?P<port_id>\d+)\((?P<interface>\S+)\)\]\[(?P<state>\S+)\].+?"
         r"\s+Port\sProtocol\s+:(?P<status>\S+).+?"
         r"\s+Port\sRole\s+:(?P<role>\S+).+?"
-        r"\s+Port\sPriority\s+:(?P<priority>\d+).+?"
+        r"\s+Port\sPriority\s+:(?P<priority>\d+).*?"
         r"\s+Port\sCost\((?:Dot1T |Legacy)\)\s+:.+?Active=(?P<cost>\d+).+?"
         r"\s+(Desg\.|Designated)\sBridge/Port\s+:(?P<designated_bridge_priority>\d+)\."
         r"(?P<designated_bridge_id>\S+)\s/\s(?P<designated_port_id>\S+).*?"
@@ -94,10 +97,10 @@ class Script(BaseScript):
     rx_mstp_interfaces = re.compile(
         r"----\[Port(?P<port_id>\d+)\((?P<interface>\S+)\)\]\[(?P<state>\S+)\].+?"
         r"\s+Port\sRole\s+:(?P<role>\S+).+?"
-        r"\s+Port\sPriority\s+:(?P<priority>\d+).+?"
+        r"\s+Port\sPriority\s+:(?P<priority>\d+).*?"
         r"\s+Port\sCost\(Dot1T \)\s+:.+?Active=(?P<cost>\d+).+?"
         r"\s+(Desg\.|Designated)\sBridge/Port\s+:(?P<designated_bridge_priority>\d+)\."
-        r"(?P<designated_bridge_id>\S+)\s/\s(?P<designated_port_id>\S+).+?",
+        r"(?P<designated_bridge_id>\S+)\s/\s(?P<designated_port_id>\S+).*?",
         re.MULTILINE | re.IGNORECASE)
 
     def process_mstp(self):
