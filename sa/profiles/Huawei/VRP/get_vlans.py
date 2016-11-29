@@ -38,12 +38,17 @@ class Script(BaseScript):
                             "name":v.strip().rstrip('\x00')
                         }]
                 else:
+                    tmp_vlan = []
                     for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1",
                         bulk=True):  # dot1qVlanStaticName
+                        vlan_id = int(oid.split(".")[-1])
+                        if vlan_id in tmp_vlan:
+                            break
                         result += [{
-                            "vlan_id":int(oid.split(".")[-1]),
-                            "name":v.strip().rstrip('\x00')
+                            "vlan_id": vlan_id,
+                            "name": v.strip().rstrip('\x00')
                         }]
+                        tmp_vlan += [vlan_id]
                 if result:
                     return sorted(
                         result, lambda x, y: cmp(x["vlan_id"], y["vlan_id"])
