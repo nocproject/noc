@@ -42,14 +42,14 @@ class Script(BaseScript):
         r"(^IP Address\.+ (?P<ip_address1>\S+)\s*\n)?"
         r"(^Subnet Mask\.+ (?P<ip_subnet1>\S+)\s*\n)?"
         r"^Default Gateway\.+ \S+\s*\n"
-        r"^IPv6 Administrative Mode\.+ \S+\s*\n"
-        r"^IPv6 Prefix is\s*\.+ (?P<ipv6_address>\S+)\s*\n"
+        r"(^IPv6 Administrative Mode\.+ \S+\s*\n)?"
+        r"(^IPv6 Prefix is\s*\.+ (?P<ipv6_address>\S+)\s*\n)?"
         r"^Burned In MAC Address\.+ (?P<mac>\S+)\s*\n"
         r"^Locally Administered MAC address\.+ \S+\s*\n"
         r"^MAC Address Type.+\n"
         r"^Configured IPv4 Protocol\.+ \S+\s*\n"
-        r"^Configured IPv6 Protocol\.+ \S+\s*\n"
-        r"^IPv6 AutoConfig Mode\.+ \S+\s*\n"
+        r"(^Configured IPv6 Protocol\.+ \S+\s*\n)?"
+        r"(^IPv6 AutoConfig Mode\.+ \S+\s*\n)?"
         r"^Management VLAN ID\.+ (?P<vlan_id>\d+)\s*\n"
         r"(^Additional Management VLAN ID\.+ (?P<vlan_id1>\d+))?",
         re.MULTILINE | re.IGNORECASE)
@@ -117,12 +117,15 @@ class Script(BaseScript):
                 "name": "0/0",
                 "admin_status": True,
                 "oper_status": True,
-                "enabled_afi": ['IPv4', 'IPv6'],
+                "enabled_afi": ['IPv4'],
                 "ipv4_addresses": [ip_address],
-                "ipv6_addresses": [match.group("ipv6_address")],
                 "vlan_ids": [int(match.group("vlan_id"))]
             }]
         }
+        if match.group("ipv6_address"):
+            iface["subinterfaces"][0]["ipv6_addresses"] = \
+            [match.group("ipv6_address")]
+            iface["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
         if match.group("ip_address1") \
         and match.group("ip_address1") != "0.0.0.0":
             ip_address = match.group("ip_address1")
