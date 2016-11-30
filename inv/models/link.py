@@ -155,6 +155,3 @@ class Link(Document):
     def update_topology(self):
         for mo in self.managed_objects:
             mo.update_topology()
-
-##
-from object import Object
