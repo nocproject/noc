@@ -254,6 +254,7 @@ class EventClass(Document):
     category = fields.ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _handlers_cache = {}
 
     def __unicode__(self):
@@ -263,6 +264,11 @@ class EventClass(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return EventClass.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        return EventClass.objects.filter(name=name).first()
 
     def get_handlers(self):
         @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
