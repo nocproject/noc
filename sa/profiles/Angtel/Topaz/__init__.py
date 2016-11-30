@@ -23,3 +23,8 @@ class Profile(BaseProfile):
     pattern_more = "More: <space>,  Quit: q or CTRL+Z, One line: <return>"
     command_more = "a"
     command_exit = "exit"
+
+    def setup_session(self, script):
+        # Do not erase this.
+        # Account, obtained through RADIUS required this.
+        script.cli("enable")
