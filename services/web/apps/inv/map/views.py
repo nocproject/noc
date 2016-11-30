@@ -253,14 +253,12 @@ class MapApplication(ExtApplication):
                 query += [
                     "SELECT object, interface, last(value) "
                     "FROM \"Interface | Load | In\" "
-                    "WHERE object='%s' AND interface='%s' "
-                    "GROUP BY object, interface" % (
+                    "WHERE object='%s' AND interface='%s' " % (
                         mo.name, i.name
                     ),
                     "SELECT object, interface, last(value) "
                     "FROM \"Interface | Load | Out\" "
-                    "WHERE object='%s' AND interface='%s' "
-                    "GROUP BY object, interface" % (
+                    "WHERE object='%s' AND interface='%s' "  % (
                         mo.name, i.name
                     )
                 ]
