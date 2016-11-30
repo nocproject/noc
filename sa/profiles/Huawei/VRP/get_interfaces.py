@@ -121,6 +121,8 @@ class Script(BaseScript):
             return {}
         stp = []
         for l in v.splitlines():
+            if not l:
+                continue
             stp += [l.split()[1]]
         stp.pop(0)
         return stp
