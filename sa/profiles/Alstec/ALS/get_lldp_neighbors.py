@@ -39,7 +39,6 @@ class Script(BaseScript):
             v = self.cli("show lldp neighbors")
         except self.CLISyntaxError:
             raise self.NotSupportedError()
-        # @todo Replace empty string in table row (\n\n to \n)
         v = v.replace("\n\n", "\n")
         for l in parse_table(v):
             if not l[0]:
@@ -66,7 +65,7 @@ class Script(BaseScript):
                             port_id_subtype = 3
                         except ValueError:
                             port_id_subtype = 7
-                caps = sum([self.CAPS[s] for s in d[4]])
+                caps = sum([self.CAPS[s.strip()] for s in d[4].split(",")])
 
                 neighbor = {
                     "remote_chassis_id": chassis_id,
