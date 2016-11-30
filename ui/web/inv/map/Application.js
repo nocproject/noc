@@ -106,7 +106,7 @@ Ext.define("NOC.inv.map.Application", {
             glyph: NOC.glyph.tag,
             tooltip: __("Name/IP device"),
             enableToggle: true,
-            disabled: me.readOnly,
+            // disabled: me.readOnly,
             scope: me,
             handler: me.onChangeName
         });
@@ -292,8 +292,8 @@ Ext.define("NOC.inv.map.Application", {
                         me.revertButton,
                         me.newLayoutButton,
                         me.rotateButton,
-                        me.addressIPButton,
                         "-",
+                        me.addressIPButton,
                         me.viewMapButton,
                         me.viewLoadButton,
                         "-",
