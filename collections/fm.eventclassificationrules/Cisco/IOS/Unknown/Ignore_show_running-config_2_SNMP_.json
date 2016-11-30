@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Unknown | Ignore show running-config #2 (SNMP)",
+    "uuid": "d4678688-c2ab-4fdd-8941-02b8cfe329e6",
+    "description": "CISCO-CONFIG-MAN-MIB::ciscoConfigManMIBNotificationPrefix trap",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 3000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-CONFIG-MAN-MIB::ciscoConfigManMIBNotificationPrefix$"
+        }
+    ]
+}
