@@ -25,6 +25,11 @@ import httpclient  # Setup global httpclient
 
 logger = logging.getLogger(__name__)
 
+# Connection time
+CONNECT_TIMEOUT = 20
+# Total request time
+REQUEST_TIMEOUT = 3600
+
 
 class RPCProxy(object):
     """
@@ -81,7 +86,9 @@ class RPCProxy(object):
                         "Content-Type": "text/json"
                     },
                     follow_redirects=False,
-                    raise_error=False
+                    raise_error=False,
+                    connect_timeout=CONNECT_TIMEOUT,
+                    request_timeout=REQUEST_TIMEOUT
                 )
             except socket.error as e:
                 if e.args[0] in RETRY_SOCKET_ERRORS:
