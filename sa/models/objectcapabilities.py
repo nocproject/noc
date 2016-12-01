@@ -59,7 +59,7 @@ class ObjectCapabilities(Document):
         if oc:
             for c in oc["caps"]:
                 lv = c.get("local_value")
-                v = lv if lv else c.get("discovered_value")
+                v = lv if lv is not None else c.get("discovered_value")
                 if v is not None:
                     # Resolve capability name
                     cc = Capability.get_by_id(c["capability"])
