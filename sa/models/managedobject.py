@@ -792,63 +792,15 @@ class ManagedObject(Model):
         """
         Returns a dict of effective object capabilities
         """
-        from objectcapabilities import ObjectCapabilities
         return ObjectCapabilities.get_capabilities(self)
 
-    def update_caps(self, caps, local=False):
+    def update_caps(self, caps, source):
         """
         Update existing capabilities with a new ones.
         :param caps: dict of caps name -> caps value
+        :param source: Source name
         """
-        from objectcapabilities import ObjectCapabilities, CapsItem
-
-        to_save = False
-        ocaps = ObjectCapabilities.objects.filter(object=self).first()
-        if not ocaps:
-            ocaps = ObjectCapabilities(object=self)
-            to_save = True
-        # Index existing capabilities
-        cn = {}
-        for c in ocaps.caps:
-            cn[c.capability.name] = c
-        # Add missed capabilities
-        for mc in set(caps) - set(cn):
-            c = Capability.get_by_name(mc)
-            if c:
-                cn[mc] = CapsItem(
-                    capability=c,
-                    discovered_value=None, local_value=None
-                )
-                to_save = True
-        nc = []
-        for c in sorted(cn):
-            cc = cn[c]
-            if c in caps:
-                if local:
-                    if cc.local_value != caps[c]:
-                        logger.info(
-                            "[%s] Setting local capability %s = %s",
-                            self.name, c, caps[c]
-                        )
-                        cc.local_value = caps[c]
-                        to_save = True
-                else:
-                    if cc.discovered_value != caps[c]:
-                        logger.info(
-                            "[%s] Setting discovered capability %s = %s",
-                            self.name, c, caps[c]
-                        )
-                        cc.discovered_value = caps[c]
-                        to_save = True
-            nc += [cc]
-        # Remove deleted capabilities
-        ocaps.caps = [
-            c for c in nc
-            if (c.discovered_value is not None or
-                c.local_value is not None)
-        ]
-        if to_save:
-            ocaps.save()  # forces probe rebuild
+        return ObjectCapabilities.update_capabilities(self, caps, source)
 
     def disable_discovery(self):
         """
@@ -1054,6 +1006,6 @@ class ActionsProxy(object):
 from useraccess import UserAccess
 from groupaccess import GroupAccess
 from objectnotification import ObjectNotification
-from noc.inv.models.capability import Capability
 from action import Action
 from selectorcache import SelectorCache
+from objectcapabilities import ObjectCapabilities

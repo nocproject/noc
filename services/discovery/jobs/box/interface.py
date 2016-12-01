@@ -108,7 +108,7 @@ class InterfaceCheck(DiscoveryCheck):
             "DB | Interfaces": Interface.objects.filter(
                 managed_object=self.object.id
             ).count()
-        })
+        }, source="interface")
 
     def submit_forwarding_instance(self, name, type, rd, vr):
         if name == "default":
