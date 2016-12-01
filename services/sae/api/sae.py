@@ -11,6 +11,7 @@ import tornado.gen
 ## NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.core.cache.decorator import cachedmethod
 
