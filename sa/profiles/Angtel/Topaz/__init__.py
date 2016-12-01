@@ -11,6 +11,7 @@
 import re
 ## NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.script.base import BaseScript
 
 
 class Profile(BaseProfile):
@@ -27,4 +28,7 @@ class Profile(BaseProfile):
     def setup_session(self, script):
         # Do not erase this.
         # Account, obtained through RADIUS required this.
-        script.cli("enable")
+        try:
+            script.cli("enable")
+        except BaseScript.CLISyntaxError:
+            pass
