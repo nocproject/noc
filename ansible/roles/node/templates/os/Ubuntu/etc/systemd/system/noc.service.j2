@@ -12,6 +12,7 @@ ExecStop={{ noc_root }}/bin/supervisorctl shutdown
 WorkingDirectory={{ noc_root }}
 KillMode=process
 Restart=on-failure
+TimeoutStopSec=240
 
 [Install]
 WantedBy=multi-user.target
