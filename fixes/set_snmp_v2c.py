@@ -16,4 +16,4 @@ def fix():
         if caps.get("SNMP") and not caps.get("SNMP | v1") and not caps.get("SNMP | v2c"):
             mo.update_caps({
                 "SNMP | v2c": True
-            })
+            }, source="caps")

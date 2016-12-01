@@ -45,6 +45,11 @@ Ext.define("NOC.sa.managedobject.CapsPanel", {
                     renderer: me.renderValue
                 },
                 {
+                    text: __("Source"),
+                    dataIndex: "source",
+                    width: 100
+                },
+                {
                     text: __("Description"),
                     dataIndex: "description",
                     flex: 1

@@ -86,10 +86,8 @@ class MODiscoveryJob(PeriodicJob):
             self.caps = self.object.get_caps()
         return self.caps
 
-    def update_caps(self, caps):
-        self.object.update_caps(caps)
-        if self.caps is not None:
-            self.caps.update(caps)
+    def update_caps(self, caps, source):
+        self.caps = self.object.update_caps(caps, source=source)
 
 
 class DiscoveryCheck(object):
@@ -124,8 +122,8 @@ class DiscoveryCheck(object):
     def get_caps(self):
         return self.job.get_caps()
 
-    def update_caps(self, caps):
-        self.job.update_caps(caps)
+    def update_caps(self, caps, source):
+        self.job.update_caps(caps, source)
 
     def has_capability(self, cap):
         return bool(self.get_caps().get(cap))
