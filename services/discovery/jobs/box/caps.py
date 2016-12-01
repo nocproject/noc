@@ -6,7 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-import json
+## Third-party modules
+import ujson
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 
@@ -22,5 +23,5 @@ class CapsCheck(DiscoveryCheck):
         self.logger.info("Checking capabilities")
         result = self.object.scripts.get_capabilities()
         self.logger.info("Received capabilities: \n%s",
-            json.dumps(result, indent=4))
+            ujson.dumps(result, indent=4))
         self.update_caps(result)

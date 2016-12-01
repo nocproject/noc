@@ -802,13 +802,6 @@ class ManagedObject(Model):
         """
         from objectcapabilities import ObjectCapabilities, CapsItem
 
-        def get_cap(name):
-            if name in ccache:
-                return ccache[name]
-            c = Capability.objects.filter(name=name).first()
-            ccache[name] = c
-            return c
-
         to_save = False
         ocaps = ObjectCapabilities.objects.filter(object=self).first()
         if not ocaps:
@@ -816,12 +809,11 @@ class ManagedObject(Model):
             to_save = True
         # Index existing capabilities
         cn = {}
-        ccache = {}
         for c in ocaps.caps:
             cn[c.capability.name] = c
         # Add missed capabilities
         for mc in set(caps) - set(cn):
-            c = get_cap(mc)
+            c = Capability.get_by_name(mc)
             if c:
                 cn[mc] = CapsItem(
                     capability=c,
