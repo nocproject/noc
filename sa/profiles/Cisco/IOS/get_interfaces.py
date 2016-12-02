@@ -367,7 +367,7 @@ class Script(BaseScript):
             if match.group("encaps"):
                 encaps = match.group("encaps")
                 if encaps[:6] == "802.1Q":
-                    sub["vlan_ids"] = [encaps.split(",")[1].split()[2][:-1]]
+                    sub["vlan_ids"] = [encaps.split(",")[1].split()[2].replace(".", "")]
             # uBR ?
             if ifname in pvm:
                 sub["vlan_ids"] = pvm[ifname]
