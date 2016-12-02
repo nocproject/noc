@@ -13,6 +13,7 @@ from collections import defaultdict
 import operator
 ## Third-party modules
 import cachetools
+from pymongo import ReadPreference
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -146,7 +147,7 @@ class MetricsCheck(DiscoveryCheck):
             "name": 1,
             "ifindex": 1,
             "profile": 1
-        }):
+        }, read_preference=ReadPreference.SECONDARY_PREFERRED):
             ipr = self.get_interface_profile_metrics(i["profile"])
             self.logger.debug("Interface %s. ipr=%s", i["name"], ipr)
             if not ipr:

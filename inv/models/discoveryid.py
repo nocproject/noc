@@ -12,6 +12,7 @@ from mongoengine.queryset import DoesNotExist
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ListField,
                                 EmbeddedDocumentField)
+from pymongo import ReadPreference
 ## NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
@@ -99,7 +100,7 @@ class DiscoveryID(Document):
                         }
                     }
                 }
-            }, {"_id": 0, "object": 1})
+            }, {"_id": 0, "object": 1}, read_preference=ReadPreference.SECONDARY_PREFERRED)
             if r:
                 return ManagedObject.get_by_id(r["object"])
             # Fallback to interface search
@@ -110,7 +111,7 @@ class DiscoveryID(Document):
                 }, {
                     "_id": 0,
                     "managed_object": 1
-                })
+                }, read_preference=ReadPreference.SECONDARY_PREFERRED)
             )
             if len(o) == 1:
                 return ManagedObject.get_by_id(list(o)[0])
@@ -131,7 +132,7 @@ class DiscoveryID(Document):
                     "_id": 0,
                     "managed_object": 1,
                     "ipv4_addresses": 1
-                })
+                }, read_preference=ReadPreference.SECONDARY_PREFERRED)
                 if has_ip(ipv4_address, d["ipv4_addresses"])
             )
             if len(o) == 1:
