@@ -22,6 +22,6 @@ class CapsCheck(DiscoveryCheck):
     def handler(self):
         self.logger.info("Checking capabilities")
         result = self.object.scripts.get_capabilities()
-        self.logger.info("Received capabilities: \n%s",
-            ujson.dumps(result, indent=4))
+        self.logger.debug("Received capabilities: \n%s",
+                          ujson.dumps(result, indent=4))
         self.update_caps(result, source="caps")
