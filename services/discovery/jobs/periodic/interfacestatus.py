@@ -11,6 +11,7 @@ import threading
 import operator
 ## Third-party modules
 import cachetools
+from pymongo import ReadPreference
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
@@ -59,7 +60,8 @@ class InterfaceStatusCheck(DiscoveryCheck):
             for i in Interface.objects.filter(
                 managed_object=self.object.id,
                 type="physical",
-                profile__in=self.get_profiles(None)
+                profile__in=self.get_profiles(None),
+                read_preference=ReadPreference.SECONDARY_PREFERRED
             )
         )
         if not interfaces:
