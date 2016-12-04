@@ -73,3 +73,4 @@ setup(
                  Extension("noc/speedup/ip", ["speedup/ip.c"])],
     zip_safe=False
 )
+
