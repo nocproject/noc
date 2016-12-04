@@ -13,7 +13,7 @@ Ext.define("NOC.inv.map.SelectIconForm", {
     requires: [
         "NOC.main.ref.stencil.LookupField"
     ],
-    title: "Select Shape",
+    title: __("Select Shape"),
     autoShow: true,
     closable: false,
     modal: true,

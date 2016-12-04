@@ -25,7 +25,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
         var me = this;
         me.store = Ext.create("NOC.vc.vc.AddInterfacesStore");
         Ext.apply(me, {
-            title: Ext.String.format("Add interfaces to VC {0} ({1})",
+            title: Ext.String.format(__("Add interfaces to VC") + " {0} ({1})",
                                      me.vc.name, me.vc.l1),
             items: [
                 {
@@ -74,7 +74,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                             items: [
                                 {
                                     glyph: NOC.glyph.minus_circle,
-                                    tooltip: "Delete",
+                                    tooltip: __("Delete"),
                                     handler: me.onDeleteRecord
                                 }
                             ]
@@ -161,7 +161,7 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                 scope: me,
                 success: me.processTaskResult,
                 failure: function() {
-                    NOC.error("Failed to apply interface settings");
+                    NOC.error(__("Failed to apply interface settings"));
                 }
             });
             stopped = false;
@@ -176,10 +176,10 @@ Ext.define("NOC.vc.vc.AddInterfacesForm", {
                     success = false;
             });
             if(success) {
-                NOC.info("All interface settings has been applied successfully");
+                NOC.info(__("All interface settings has been applied successfully"));
                 me.close();
             } else {
-                NOC.error("Failed to apply some interfaces settings");
+                NOC.error(__("Failed to apply some interfaces settings"));
                 me.showErrors();
             }
         }

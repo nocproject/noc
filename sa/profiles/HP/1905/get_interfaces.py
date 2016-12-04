@@ -41,7 +41,7 @@ class Script(BaseScript):
             try:
                 admin_status = {}
                 for n, s in self.snmp.join_tables("1.3.6.1.2.1.31.1.1.1.1",
-                    "1.3.6.1.2.1.2.2.1.7", bulk=True):  # IF-MIB
+                    "1.3.6.1.2.1.2.2.1.7"):  # IF-MIB
                     if n[:3] == 'Aux' or n[:4] == 'Vlan' \
                     or n[:11] == 'InLoopBack':
                         continue

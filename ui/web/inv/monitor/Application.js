@@ -20,7 +20,7 @@ Ext.define("NOC.inv.monitor.Application", {
 
         me.refreshButton = Ext.create("Ext.button.Button", {
             text: __("Refresh"),
-            tooltip: "Refresh data",
+            tooltip: __("Refresh data"),
             glyph: NOC.glyph.refresh,
             scope: me,
             handler: me.loadData
@@ -85,7 +85,7 @@ Ext.define("NOC.inv.monitor.Application", {
                 me.store.loadData(data);
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     }

@@ -33,24 +33,28 @@ Ext.define("NOC.fm.event.EventPanel", {
             layout: "fit",
             items: [{
                 xtype: "container",
-                autoScroll: true,
+                scrollable: true,
+                tpl: '<div class="{row_class}">\n    <u><b>{subject}</b></u><br/>\n    <b>Class:</b> {event_class__label})<br/>\n    <b>Object:</b> {managed_object__label} ({managed_object_address},\n    {managed_object_platform}, {managed_object_version})\n    <b>Segment:</b> {segment}<br/>\n    <b>Timestamp:</b> {timestamp}<br/>\n    <b>Tags:</b>\n    <tpl foreach="tags">\n        <span class="x-display-tag">{.}</span>\n    </tpl>\n</div>\n',
                 padding: 4
             }]
         });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
-            title: "Overview",
-            autoScroll: true
+            title: __("Overview"),
+            scrollable: true,
+            tpl: '<div class="noc-tp"><b>{subject}</b><br/><pre>{body}</pre></div>'
         });
 
         me.helpPanel = Ext.create("Ext.panel.Panel", {
-            title: "Help",
-            autoScroll: true
+            title: __("Help"),
+            scrollable: true,
+            tpl: '<div class="noc-tp"><b>Symptoms:</b><br/><pre>{symptoms}</pre><br/><b>Probable Causes:</b><br/><pre>{probable_causes}</pre><br/><b>Recommended Actions:</b><br/><pre>{recommended_actions}</pre><br/></div>'
         });
 
         me.dataPanel = Ext.create("Ext.panel.Panel", {
-            title: "Data",
-            autoScroll: true
+            title: __("Data"),
+            scrollable: true,
+            tpl: '<div class="noc-tp">\n    <table border="0">\n        <tpl if="vars && vars.length">\n            <tr>\n                <th colspan="3">Event Variables</th>\n            </tr>\n            <tpl foreach="vars">\n                <tr>\n                    <td><b>{[values[0]]}</b></td>\n                    <td>{[values[1]]}</td>\n                    <td><i>{[values[2]]}</i></td>\n                </tr>\n            </tpl>\n        </tpl>\n        <tpl if="resolved_vars && resolved_vars.length">\n            <tr>\n                <th colspan="3">Resolved Variables</th>\n            </tr>\n            <tpl foreach="resolved_vars">\n                <tr>\n                    <td><b>{[values[0]]}</b></td>\n                    <td>{[values[1]]}</td>\n                    <td><i>{[values[2]]}</i></td>\n                </tr>\n            </tpl>\n        </tpl>\n        <tpl if="raw_vars && raw_vars.length">\n            <tr>\n                <th colspan="3">Raw Variables</th>\n            </tr>\n            <tpl foreach="raw_vars">\n                <tr>\n                    <td><b>{[values[0]]}</b></td>\n                    <td colspan="2">{[values[1]]}</td>\n                </tr>\n            </tpl>\n        </tpl>\n    </table>\n</div>'
         });
 
         me.logStore = Ext.create("Ext.data.Store", {
@@ -76,7 +80,7 @@ Ext.define("NOC.fm.event.EventPanel", {
         });
 
         me.logPanel = Ext.create("Ext.grid.Panel", {
-            title: "Log",
+            title: __("Log"),
             store: me.logStore,
             autoScroll: true,
             columns: [
@@ -125,7 +129,7 @@ Ext.define("NOC.fm.event.EventPanel", {
             data: []
         });
         me.alarmsPanel = Ext.create("Ext.grid.Panel", {
-            title: "Alarms",
+            title: __("Alarms"),
             store: me.alarmsStore,
             autoScroll: true,
             columns: [
@@ -264,17 +268,17 @@ Ext.define("NOC.fm.event.EventPanel", {
                 me.updateData(data);
             },
             failure: function() {
-                NOC.error("Failed to get event");
+                NOC.error(__("Failed to get event"));
             }
         });
         me.app.setHistoryHash(eventId);
     },
     //
-    updatePanel: function(panel, template, enabled, data) {
+    updatePanel: function (panel, enabled, data) {
         panel.setDisabled(!enabled);
         panel.setVisible(enabled);
         if(enabled) {
-            panel.update("<div class='noc-tp'>" + template(data) + "</div>");
+            panel.update(data);
         }
     },
     //
@@ -286,15 +290,11 @@ Ext.define("NOC.fm.event.EventPanel", {
         //
         me.eventIdField.setValue(me.data.id);
         //
-        me.topPanel.items.first().update(
-            me.app.templates.SummaryPanel(me.data)
-        );
+        me.topPanel.items.first().update(me.data);
         //
-        me.updatePanel(me.overviewPanel, me.app.templates.Overview,
-            data.subject, data);
-        me.updatePanel(me.helpPanel, me.app.templates.Help,
-            data.symptoms, data);
-        me.updatePanel(me.dataPanel, me.app.templates.Data,
+        me.updatePanel(me.overviewPanel, data.subject, data);
+        me.updatePanel(me.helpPanel, data.symptoms, data);
+        me.updatePanel(me.dataPanel,
             (data.vars && data.vars.length)
                 || (data.raw_vars && data.raw_vars.length)
                 || (data.resolved_vars && data.resolved_vars.length),
@@ -381,7 +381,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 });
             },
             failure: function() {
-                NOC.error("Failed to post message");
+                NOC.error(__("Failed to post message"));
             }
         });
     },
@@ -409,7 +409,7 @@ Ext.define("NOC.fm.event.EventPanel", {
                 me.showEvent(me.data.id);
             },
             failure: function() {
-                NOC.error("Failed to reclassify");
+                NOC.error(__("Failed to reclassify"));
             }
         });
     },

@@ -25,8 +25,7 @@ Ext.define("NOC.core.modelfilter.Lookup", {
                 listeners: {
                     scope: me,
                     select: me.onChange,
-                    clear: me.onChange,
-                    blur: me.onChange
+                    clear: me.onChange
                 }
             });
 
@@ -44,5 +43,12 @@ Ext.define("NOC.core.modelfilter.Lookup", {
         if(v)
             r[me.name] = v;
         return r;
+    },
+
+    setFilter: function (filter) {
+        var me = this;
+        if (me.name in filter) {
+            me.combo.setValue(filter[me.name]);
+        }
     }
 });

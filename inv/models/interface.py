@@ -13,6 +13,8 @@ import logging
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, BooleanField,
                                 ListField, DateTimeField, ReferenceField)
+from pymongo import ReadPreference
+
 ## NOC Modules
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from interfaceprofile import InterfaceProfile
@@ -148,7 +150,8 @@ class Interface(Document):
             }
         else:
             q = {"interfaces": self.id}
-        return bool(Link._get_collection().find_one(q))
+        return bool(Link._get_collection().find_one(q,
+                                                    read_preference=ReadPreference.SECONDARY_PREFERRED))
 
     def unlink(self):
         """

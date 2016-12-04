@@ -11,7 +11,7 @@ Ext.define("NOC.ip.vrf.VRFImportForm", {
     requires: [
         "NOC.ip.vrfgroup.LookupField"
     ],
-    title: "Select VRFs to import",
+    title: __("Select VRFs to import"),
     autoShow: true,
     modal: true,
     app: null,
@@ -72,7 +72,7 @@ Ext.define("NOC.ip.vrf.VRFImportForm", {
                             items: [
                                 {
                                     glyph: NOC.glyph.minus_circle,
-                                    tooltip: "Delete",
+                                    tooltip: __("Delete"),
                                     handler: function(grid, rowIndex, colIndex) {
                                         grid.getStore().removeAt(rowIndex);
                                     }
@@ -153,7 +153,7 @@ Ext.define("NOC.ip.vrf.VRFImportForm", {
                 // @todo: Unmask
                 this.close();
                 Ext.Msg.show({
-                    title: "Success!",
+                    title: __("Success!"),
                     msg: Ext.String.format("{0} new VRFs has been imported",
                                            r.imported),
                     buttons: Ext.Msg.OK
@@ -189,7 +189,7 @@ Ext.define("NOC.ip.vrf.VRFImportForm", {
                 });
                 // Check new VRFs found
                 if(d.length == 0) {
-                    NOC.info("No new VRFs found");
+                    NOC.info(__("No new VRFs found"));
                     me.close();
                 } else {
                     // Load to store

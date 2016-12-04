@@ -13,7 +13,8 @@ import operator
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
 ## NOC modules
-from noc.lib.app.simplereport import SimpleReport
+from noc.lib.app.simplereport import SimpleReport, PredefinedReport
+from noc.sa.models.useraccess import UserAccess
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.managedobject import ManagedObject
@@ -26,13 +27,15 @@ class ReportForm(forms.Form):
         (1, _("1 day")),
         (7, _("1 week")),
         (30, _("1 month"))
-    ])
+    ], label=_("Interval"))
     from_date = forms.CharField(
         widget=AdminDateWidget,
+        label=_("From Date"),
         required=False
     )
     to_date = forms.CharField(
         widget=AdminDateWidget,
+        label=_("To Date"),
         required=False
     )
 
@@ -40,9 +43,28 @@ class ReportForm(forms.Form):
 class ReportEscalationsApplication(SimpleReport):
     title = _("Escalations")
     form = ReportForm
+    predefined_reports = {
+        "1d": PredefinedReport(
+            _("Escalations (1 day)"), {
+                "interval": 1
+            }
+        ),
+        "7d": PredefinedReport(
+            _("Escalations (7 days)"), {
+                "interval": 7
+            }
+        ),
+        "30d": PredefinedReport(
+            _("Escalations (30 day)"), {
+                "interval": 30
+            }
+        )
+    }
 
-    def get_data(self, interval, from_date, to_date, **kwargs):
+    def get_data(self, request, interval, from_date=None, to_date=None, **kwargs):
         interval = int(interval)
+        if not from_date:
+            interval = 1
         if interval:
             ts = datetime.datetime.now() - datetime.timedelta(days=interval)
             q = {
@@ -65,10 +87,14 @@ class ReportEscalationsApplication(SimpleReport):
         q["escalation_tt"] = {
             "$exists": True
         }
+        if not request.user.is_superuser:
+            q["adm_path"] = {"$in": UserAccess.get_domains(request.user)}
         data = []
         for ac in (ActiveAlarm, ArchivedAlarm):
             for d in ac._get_collection().find(q):
                 mo = ManagedObject.get_by_id(d["managed_object"])
+                if not mo:
+                    continue
                 data += [(
                     d["timestamp"].strftime("%Y-%m-%d %H:%M:%S"),
                     d["escalation_ts"].strftime("%Y-%m-%d %H:%M:%S"),

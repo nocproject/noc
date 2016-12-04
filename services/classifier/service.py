@@ -26,10 +26,10 @@ from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.eventclass import EventClass
-from noc.fm.models.mib import MIB
 from noc.fm.models.eventlog import EventLog
-from noc.fm.models.cloneclassificationrule import CloneClassificationRule
 from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.mib import MIB
+from noc.fm.models.cloneclassificationrule import CloneClassificationRule
 from noc.fm.models.enumeration import Enumeration
 from noc.fm.models.eventtrigger import EventTrigger
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -49,6 +49,7 @@ from exception import InvalidPatternException, EventProcessingFailed
 from cloningrule import CloningRule
 from rule import Rule
 from noc.core.handler import get_handler
+from noc.core.cache.base import cache
 
 ##
 ## Exceptions
@@ -718,7 +719,17 @@ class ClassifierService(Service):
                 event.id, event.managed_object.name,
                 event.managed_object.address
             )
-            self.pub("correlator.dispose", {"event_id": str(event.id)})
+            # Heat up cache
+            cache.set(
+                "activeent-%s" % event.id,
+                event,
+                ttl=900
+            )
+            # @todo: Use config.pool instead
+            self.pub(
+                "correlator.dispose.%s" % event.managed_object.pool.name,
+                {"event_id": str(event.id)}
+            )
             return CR_DISPOSED
         elif rule.is_unknown:
             return CR_UNKNOWN

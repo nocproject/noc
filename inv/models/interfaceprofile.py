@@ -84,18 +84,12 @@ class InterfaceProfile(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return InterfaceProfile.objects.get(id=id)
-        except InterfaceProfile.DoesNotExist:
-            return None
+        return InterfaceProfile.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
-        try:
-            return InterfaceProfile.objects.get(name=name)
-        except InterfaceProfile.DoesNotExist:
-            return None
+        return InterfaceProfile.objects.filter(name=name).first()
 
     @classmethod
     def get_default_profile(cls):

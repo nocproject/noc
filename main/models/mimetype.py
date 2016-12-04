@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Database triggers
+## Database models for main module
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Django modules
+## Third-party modules
 from django.db import models
+## NOC modules
 from noc.lib.validators import check_extension, check_mimetype
 
 
@@ -15,8 +16,9 @@ class MIMEType(models.Model):
     """
     MIME Type mapping
     """
-
     class Meta:
+        app_label = "main"
+        db_table = "main_mimetype"
         verbose_name = "MIME Type"
         verbose_name_plural = "MIME Types"
         ordering = ["extension"]

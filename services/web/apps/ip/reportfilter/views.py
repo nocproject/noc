@@ -19,7 +19,7 @@ from noc.peer.models import AS
 
 
 class ReportFilterApplication(SimpleReport):
-    title = "Filter"
+    title = _("Filter")
 
     def get_form(self):
         class RForm(forms.Form):

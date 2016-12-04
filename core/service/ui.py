@@ -12,12 +12,6 @@ import hashlib
 import logging
 ## Third-party modules
 import tornado.web
-import tornado.template
-import tornado.httpserver
-try:
-    import jsmin
-except ImportError:
-    jsmin = None
 # NOC modules
 from base import Service
 
@@ -27,8 +21,6 @@ logger = logging.getLogger("ui")
 class UIHandler(tornado.web.RequestHandler):
     hash = None
     PREFIX = os.getcwd()
-    CACHE_ROOT = "var/ui/cache"
-    CACHE_URL = "/ui/cache/"
 
     def initialize(self, service, *args, **kwargs):
         self.service = service
@@ -42,38 +34,12 @@ class UIHandler(tornado.web.RequestHandler):
         language = self.service.config.language
         return self.render(
             index_path,
-            mergecache=self.mergecache,
             hashed=self.hashed,
             request=self.request,
             language=language,
             name=self.name,
             service=self.service
         )
-
-    def mergecache(self, jslist):
-        if self.hash is None:
-            logger.debug("Calculating JS hash")
-            r = []
-            for path in jslist:
-                p = path
-                if p.startswith("/"):
-                    p = p[1:]
-                p = os.path.join(self.PREFIX, p)
-                with open(p) as f:
-                    r += [f.read()]
-            js = "\n".join(r)
-            if jsmin:
-                ssize = len(js)
-                js = jsmin.jsmin(js)
-                logger.info("Minifying JS: %s -> %s", ssize, len(js))
-            self.hash = hashlib.sha256(js).hexdigest()[:8]
-            cache_path = os.path.join(self.CACHE_ROOT, "%s.js" % self.hash)
-            if not os.path.isfile(cache_path):
-                logger.info("Writing cached JS to %s", cache_path)
-                with open(cache_path, "w") as f:
-                    f.write(js)
-        return "<script src=\"/ui/cache/%s.js\" " \
-               "type=\"text/javascript\"></script>" % self.hash
 
     def hashed(self, url):
         """
@@ -86,7 +52,7 @@ class UIHandler(tornado.web.RequestHandler):
             u = url[1:]
         path = os.path.join(self.PREFIX, u)
         if not os.path.exists(path):
-            return "00000000"
+            return "%s?%s" % (url, "00000000")
         with open(path) as f:
             hash = hashlib.sha256(f.read()).hexdigest()[:8]
         return "%s?%s" % (url, hash)
@@ -98,7 +64,7 @@ class UIService(Service):
         Initialize additional application handlers
         """
         return super(UIService, self).get_handlers() + [
-            (r"^/$", UIHandler, {
+            (r"^/api/%s/index.html$" % self.name, UIHandler, {
                 "service": self
             })
         ]

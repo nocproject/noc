@@ -8,8 +8,6 @@
 
 ## Python modules
 import datetime
-## Third-party modules
-import cachetools
 ## NOC modules
 from base import BaseCard
 from noc.fm.models.ttsystem import TTSystem
@@ -22,20 +20,18 @@ class TTCard(BaseCard):
     name = "tt"
     default_template_name = "tt"
 
-    tts_cache = cachetools.TTLCache(
-        maxsize=100,
-        ttl=60,
-        missing=lambda x: TTSystem.objects.filter(name=x).first()
-    )
-
     def dereference(self, id):
         if ":" not in id:
             return None
         tts_name, tt_id = id.split(":", 1)
-        tts = self.tts_cache[tts_name]
+        tts = TTSystem.get_by_name(tts_name)
         if not tts:
             return None
-        tt = tts.get_system().get_tt(tt_id)
+        try:
+            tt = tts.get_tt(tt_id)
+        except NotImplementedError:
+            # TTSystem does not support TT preview, redirect to alarm
+            return self.redirect_to_alarm(id)
         if tt:
             tt["tt_system_name"] = tts_name
             tt["full_id"] = id
@@ -69,3 +65,21 @@ class TTCard(BaseCard):
                     }
                 }]
         return r
+
+    def redirect_to_alarm(self, tt_id):
+        """
+        Find first alarm relative to URL
+        :param tt_id:
+        :return:
+        """
+        a = ActiveAlarm.objects.filter(
+            escalation_tt=tt_id
+        ).order_by("timestamp").only("id").first()
+        if not a:
+            a = ArchivedAlarm.objects.filter(
+                escalation_tt=tt_id
+            ).order_by("timestamp").only("id").first()
+        if a:
+            self.redirect("/api/card/view/alarm/%s/" % a.id)
+        else:
+            return None

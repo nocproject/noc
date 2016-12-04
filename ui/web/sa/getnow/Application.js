@@ -11,10 +11,10 @@ Ext.define("NOC.sa.getnow.Application", {
         "NOC.core.QuickRepoPreview"
     ],
     pollingInterval: 3000,
-    layout: "card",
+    layout: 'border',
     rowClassField: "row_class",
     historyHashPrefix: null,
-    restUrl: "/sa/managedobject/{{id}}/repo/cfg/",
+    restUrl: '/sa/managedobject/{0}/repo/cfg/',
     theme: "default",
     syntax: "groovy",
     taskStates: {},
@@ -31,6 +31,7 @@ Ext.define("NOC.sa.getnow.Application", {
     initComponent: function () {
         var me = this,
             bs = Math.ceil(screen.height / 24);
+
         me.pollingTaskHandler = Ext.bind(me.pollingTask, me);
         me.store = Ext.create("NOC.core.ModelStore", {
             model: "NOC.sa.getnow.Model",
@@ -46,7 +47,7 @@ Ext.define("NOC.sa.getnow.Application", {
         me.rawButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.android,
             text: __("Raw"),
-            tooltip: "Raw",
+            tooltip: __("Raw"),
             scope: me,
             handler: me.onRaw
         });
@@ -113,46 +114,47 @@ Ext.define("NOC.sa.getnow.Application", {
             }
         });
 
-        me.cmContainer = Ext.create({
-            xtype: "container",
-            layout: "fit",
-            tpl: [
-                '<div id="{cmpId}-cmEl" class="{cmpCls}" style="{size}"></div>'
-            ],
-            data: {
-                cmpId: me.id,
-                cmpCls: Ext.baseCSSPrefix
-                    + "codemirror "
-                    + Ext.baseCSSPrefix
-                    + "html-editor-wrap "
-                    + Ext.baseCSSPrefix
-                    + "html-editor-input",
-                size: "width:100%;height:100%"
-            }
-        });
+        // me.cmContainer = Ext.create({
+        //     xtype: "container",
+        //     layout: "fit",
+        //     tpl: [
+        //         '<div id="{cmpId}-cmEl" class="{cmpCls}" style="{size}"></div>'
+        //     ],
+        //     data: {
+        //         cmpId: me.id,
+        //         cmpCls: Ext.baseCSSPrefix
+        //             + "codemirror "
+        //             + Ext.baseCSSPrefix
+        //             + "html-editor-wrap "
+        //             + Ext.baseCSSPrefix
+        //             + "html-editor-input",
+        //         size: "width:100%;height:100%"
+        //     }
+        // });
 
-        me.currentDeviceLabel = Ext.create("Ext.form.Label", {
-            layout: {type: 'hbox', align: 'middle'}
-        });
+        // me.currentDeviceLabel = Ext.create("Ext.form.Label", {
+        //     layout: {type: 'hbox', align: 'middle'}
+        // });
 
         me.quickRepoPreview = Ext.create("NOC.core.RepoPreview", {
             app: me,
-            previewName: "{{name}} config",
-            restUrl: "/sa/managedobject/{{id}}/repo/cfg/",
-            historyHashPrefix: "config"
+            region: 'east',
+            width: '60%',
+            previewName: '{0} config',
+            restUrl: '/sa/managedobject/{0}/repo/cfg/',
+            historyHashPrefix: 'config'
         });
 
         me.gridpanel = Ext.create("Ext.grid.Panel", {
-            region: "west",
-            split: true,
+            region: 'west',
             store: me.store,
-            width: 530,
+            width: '40%',
             selModel: me.selModel,
             listeners: {
-                'rowdblclick': function (grid, index, rec) {
-                    me.currentDeviceId = index.get("id");
-                    me.currentDeviceLabel.setText(index.get("name"));
-                    me.quickRepoPreview.preview({"data": index});
+                rowdblclick: function (grid, record, rec) {
+                    me.currentDeviceId = record.get("id");
+                    me.currentDeviceLabel = record.get("name");
+                    me.quickRepoPreview.preview(record);
                 }
             },
             columns: [
@@ -160,13 +162,13 @@ Ext.define("NOC.sa.getnow.Application", {
                     xtype: 'gridcolumn',
                     text: __("ID"),
                     dataIndex: "id",
-                    width: 30
+                    width: 60
                 },
                 {
                     xtype: 'gridcolumn',
                     dataIndex: 'name',
                     text: 'Managed object',
-                    width: 60
+                    width: 120
                 },
                 {
                     xtype: 'gridcolumn',
@@ -225,39 +227,24 @@ Ext.define("NOC.sa.getnow.Application", {
         });
 
         Ext.apply(me, {
+            tbar: [
+                me.managedObject,
+                me.saProfile,
+                me.administrativeDomain,
+                me.resetFilter,
+                "-",
+                me.getConfigNow,
+                "-",
+                me.rawButton
+            ],
             items: [
-                {
-                    xtype: 'panel',
-                    resizable: false,
-                    layout: 'border',
-                    collapsed: false,
-                    manageHeight: false,
-                    dockedItems: [
-                        {
-                            xtype: 'toolbar',
-                            dock: 'top',
-                            items: [
-                                me.managedObject,
-                                me.saProfile,
-                                me.administrativeDomain,
-                                me.resetFilter,
-                                "-",
-                                me.getConfigNow,
-                                "-",
-                                me.rawButton
-                            ]
-                        }
-                    ],
-                    items: [
-                        me.gridpanel,
-                        me.quickRepoPreview
-                    ]
-                }
+                me.gridpanel,
+                me.quickRepoPreview
             ]
         });
         me.callParent();
         me.getStylesInfo();
-        me.urlTemplate = Handlebars.compile(me.restUrl);
+        me.urlTemplate = '/sa/managedobject/{0}/repo/cfg/';
     },
     onCloseApp: function() {
         var me = this;
@@ -278,7 +265,7 @@ Ext.define("NOC.sa.getnow.Application", {
             method: "GET",
             scope: me,
             failure: function () {
-                NOC.error("Failed to run tasks");
+                NOC.error(__("Failed to run tasks"));
             },
             success: function(response) {
                 var data = Ext.decode(response.responseText);
@@ -350,7 +337,7 @@ Ext.define("NOC.sa.getnow.Application", {
                 "names": ['box']
             },
             failure: function () {
-                NOC.error("Failed to run tasks");
+                NOC.error(__("Failed to run tasks"));
             }
         });
     },

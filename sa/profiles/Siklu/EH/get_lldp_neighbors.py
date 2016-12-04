@@ -19,6 +19,26 @@ class Script(BaseScript):
     name = "Siklu.EH.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
+    CHASSIS_TYPES = {
+        "macaddress": 4,
+        "mac address": 4,
+        "network-addr": 4,
+        "interfacename": 6,
+        "interface name": 6,
+        "local": 7
+    }
+
+    PORT_TYPES = {
+        "interfacealias": 1,
+        "interface alias": 1,
+        "macaddress": 3,
+        "mac address": 3,
+        "mac-addr": 3,
+        "interfacename": 5,
+        "interface name": 5,
+        "local": 7
+    }
+
     rx_ecfg = re.compile(
         r"^(?P<cmd>\S+)\s+(?P<name>\S+)\s+\d+\s+(?P<key>\S+)\s*:(?P<value>.*?)$",
         re.MULTILINE)
@@ -41,15 +61,18 @@ class Script(BaseScript):
             if not section:
                 continue
             name, cfg = self.parse_section(section)
+            # Hack. We use port_id for chassis_id
+            if "port-id" not in cfg:
+                r += [{
+                    "local_interface": name,
+                    "neighbors": []
+                }]
+                return r
             neighbor = {
-                "remote_chassis_id": cfg["chassis-id"],
-                "remote_chassis_id_subtype": {
-                    "network-addr": 5
-                }[cfg["chassis-id-subtype"]],
+                "remote_chassis_id": cfg["port-id"],
+                "remote_chassis_id_subtype": self.CHASSIS_TYPES[cfg["chassis-id-subtype"]],
                 "remote_port": cfg["port-id"],
-                "remote_port_subtype": {
-                    "mac-addr": 3
-                }[cfg["port-id-subtype"]]
+                "remote_port_subtype": self.PORT_TYPES[cfg["port-id-subtype"]]
             }
             if "port-descr" in cfg:
                 neighbor["remote_port_description"] = cfg["port-descr"]

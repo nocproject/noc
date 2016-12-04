@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from noc.lib.app.modelapplication import ModelApplication
-from noc.kb.models import KBGlobalBookmark
+from noc.kb.models.kbglobalbookmark import KBGlobalBookmark
 ##
 ## KBGlobalBookmark admin
 ##

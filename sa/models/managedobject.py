@@ -14,12 +14,14 @@ import os
 import re
 import itertools
 import operator
-from threading import RLock
+from threading import Lock
 ## Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
-                              ForeignKey, IntegerField, SET_NULL)
+                              ForeignKey, IntegerField, FloatField,
+                              SET_NULL)
 from django.contrib.auth.models import User, Group
 import cachetools
+import six
 ## NOC modules
 from administrativedomain import AdministrativeDomain
 from authprofile import AuthProfile
@@ -28,6 +30,7 @@ from objectstatus import ObjectStatus
 from objectmap import ObjectMap
 from terminationgroup import TerminationGroup
 from noc.main.models.pool import Pool
+from noc.main.models.timepattern import TimePattern
 from noc.main.models.pyrule import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.networksegment import NetworkSegment
@@ -45,9 +48,10 @@ from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete
 from noc.inv.models.object import Object
-from credcache import CredentialsCache
 from objectpath import ObjectPath
 from noc.core.defer import call_later
+from noc.core.cache.decorator import cachedmethod
+from noc.core.cache.base import cache
 from noc.config import config
 
 
@@ -57,7 +61,7 @@ Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
 Version = namedtuple("Version", ["profile", "vendor", "platform", "version"])
 
-id_lock = RLock()
+id_lock = Lock()
 
 logger = logging.getLogger(__name__)
 
@@ -195,6 +199,12 @@ class ManagedObject(Model):
     # Stencils
     shape = CharField("Shape", blank=True, null=True,
         choices=stencil_registry.choices, max_length=128)
+    #
+    time_pattern = ForeignKey(
+        TimePattern,
+        null=True, blank=True,
+        on_delete=SET_NULL
+    )
     # pyRules
     config_filter_rule = ForeignKey(
         PyRule,
@@ -221,6 +231,10 @@ class ManagedObject(Model):
         "Max. Scripts",
         null=True, blank=True,
         help_text="Concurrent script session limits")
+    # Latitude and longitude, copied from container
+    x = FloatField(null=True, blank=True)
+    y = FloatField(null=True, blank=True)
+    default_zoom = IntegerField(null=True, blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
@@ -245,93 +259,29 @@ class ManagedObject(Model):
     BOX_DISCOVERY_JOB = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
     PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
 
-    ## object.scripts. ...
-    class ScriptsProxy(object):
-        class CallWrapper(object):
-            def __init__(self, obj, name):
-                self.name = name
-                self.object = obj
-
-            def __call__(self, **kwargs):
-                return MTManager.run(self.object, self.name, kwargs)
-
-        def __init__(self, obj):
-            self._object = obj
-            self._cache = {}
-
-        def __getattr__(self, name):
-            if name in self._cache:
-                return self._cache[name]
-            if not script_loader.has_script("%s.%s" % (
-                    self._object.profile_name, name)):
-                raise AttributeError("Invalid script %s" % name)
-            cw = ManagedObject.ScriptsProxy.CallWrapper(self._object, name)
-            self._cache[name] = cw
-            return cw
-
-        def __getitem__(self, item):
-            return getattr(self, item)
-
-        def __contains__(self, item):
-            """
-            Check object has script name
-            """
-            if "." not in item:
-                # Normalize to full name
-                item = "%s.%s" % (self._object.profile_name, item)
-            return script_loader.has_script(item)
-
-        def __iter__(self):
-            return itertools.imap(
-                    lambda y: y.split(".")[-1],
-                    itertools.ifilter(
-                            lambda x: x.startswith(self._object.profile_name + "."),
-                            script_loader.iter_scripts()
-                    )
-            )
-
-
-    class ActionsProxy(object):
-        class CallWrapper(object):
-            def __init__(self, obj, name, action):
-                self.name = name
-                self.object = obj
-                self.action = action
-
-            def __call__(self, **kwargs):
-                return self.action.execute(self.object, **kwargs)
-
-        def __init__(self, obj):
-            self._object = obj
-            self._cache = {}
-
-        def __getattr__(self, name):
-            if name in self._cache:
-                return self._cache[name]
-            a = Action.objects.filter(name=name).first()
-            if not a:
-                raise AttributeError(name)
-            cw = ManagedObject.ActionsProxy.CallWrapper(self._object, name, a)
-            self._cache[name] = cw
-            return cw
-
-    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
-
-    def __init__(self, *args, **kwargs):
-        super(ManagedObject, self).__init__(*args, **kwargs)
-        self.scripts = ManagedObject.ScriptsProxy(self)
-        self.actions = ManagedObject.ActionsProxy(self)
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    @cachedmethod(operator.attrgetter("_id_cache"),
+                  key="managedobject-id-%s",
+                  lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return ManagedObject.objects.get(id=id)
-        except ManagedObject.DoesNotExist:
+        mo = ManagedObject.objects.filter(id=id)[:1]
+        if mo:
+            return mo[0]
+        else:
             return None
+
+    @property
+    def scripts(self):
+        return ScriptsProxy(self)
+
+    @property
+    def actions(self):
+        return ActionsProxy(self)
 
     def get_absolute_url(self):
         return site.reverse("sa:managedobject:change", self.id)
@@ -397,6 +347,11 @@ class ManagedObject(Model):
                                                 Q(id=self.id)).exists()]
 
     def on_save(self):
+        # Invalidate caches
+        deleted_cache_keys = [
+            "managedobject-id-%s" % self.id,
+            "managedobject-name-to-id-%s" % self.name
+        ]
         # IPAM sync
         if self.object_profile.sync_ipam:
             self.sync_ipam()
@@ -405,7 +360,7 @@ class ManagedObject(Model):
             self.event(self.EV_NEW, {"object": self})
         # Remove discovery jobs from old pool
         if "pool" in self.changed_fields and self.initial_data["id"]:
-            pool_name = Pool.get_name_by_id(self.initial_data["pool"])
+            pool_name = Pool.get_by_id(self.initial_data["pool"]).name
             Job.remove(
                 "discovery",
                 self.BOX_DISCOVERY_JOB,
@@ -426,7 +381,8 @@ class ManagedObject(Model):
             "syslog_source_type" in self.changed_fields or
             "syslog_source_ip" in self.changed_fields or
             "address" in self.changed_fields or
-            "pool" in self.changed_fields
+            "pool" in self.changed_fields or
+            "time_pattern" in self.changed_fields
         ):
             ObjectMap.invalidate(self.pool)
         # Invalidate credentials cache
@@ -441,9 +397,10 @@ class ManagedObject(Model):
             "super_password" in self.changed_fields or
             "snmp_ro" in self.changed_fields or
             "snmp_rw" in self.changed_fields or
-            "profile_name" in self.changed_fields
+            "profile_name" in self.changed_fields or
+            "pool" in self.changed_fields
         ):
-            CredentialsCache.invalidate(self)
+            deleted_cache_keys += ["cred-%s" % self.id]
             if "profile_name" in self.changed_fields:
                 self.reset_platform()
         # Rebuild paths
@@ -454,6 +411,13 @@ class ManagedObject(Model):
             "container" in self.changed_fields
         ):
             ObjectPath.refresh(self)
+            if self.container and "container" in self.changed_fields:
+                x, y, zoom = self.container.get_coordinates_zoom()
+                ManagedObject.objects.filter(id=self.id).update(
+                    x=x,
+                    y=y,
+                    default_zoom=zoom
+                )
         if self.initial_data["id"] and "container" in self.changed_fields:
             # Move object to another container
             if self.container:
@@ -461,10 +425,25 @@ class ManagedObject(Model):
                     o.container = self.container.id
                     o.log("Moved to container %s (%s)" % (self.container, self.container.id))
                     o.save()
+        # Rebuild summary
+        if "object_profile" in self.changed_fields:
+            self.segment.update_summary()
+        # Rebuild segment access
+        if self.initial_data["id"] is None:
+            self.segment.update_access()
+        elif "segment" in self.changed_fields:
+            iseg = self.initial_data["segment"]
+            if iseg and isinstance(iseg, six.string_types):
+                iseg = NetworkSegment.get_by_id(iseg)
+            if iseg:
+                iseg.update_access()
+            self.segment.update_access()
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache
         SelectorCache.rebuild_for_object(self)
+        #
+        cache.delete_many(deleted_cache_keys)
         # Clear alarm when necessary
         if (
             not self.initial_data["id"] is None and
@@ -631,6 +610,9 @@ class ManagedObject(Model):
 
     def get_status(self):
         return ObjectStatus.get_status(self)
+
+    def get_last_status(self):
+        return ObjectStatus.get_last_status(self)
 
     def set_status(self, status, ts=None):
         ObjectStatus.set_status(self, status, ts=ts)
@@ -810,71 +792,15 @@ class ManagedObject(Model):
         """
         Returns a dict of effective object capabilities
         """
-        from objectcapabilities import ObjectCapabilities
         return ObjectCapabilities.get_capabilities(self)
 
-    def update_caps(self, caps, local=False):
+    def update_caps(self, caps, source):
         """
         Update existing capabilities with a new ones.
         :param caps: dict of caps name -> caps value
+        :param source: Source name
         """
-        from objectcapabilities import ObjectCapabilities, CapsItem
-
-        def get_cap(name):
-            if name in ccache:
-                return ccache[name]
-            c = Capability.objects.filter(name=name).first()
-            ccache[name] = c
-            return c
-
-        to_save = False
-        ocaps = ObjectCapabilities.objects.filter(object=self).first()
-        if not ocaps:
-            ocaps = ObjectCapabilities(object=self)
-            to_save = True
-        # Index existing capabilities
-        cn = {}
-        ccache = {}
-        for c in ocaps.caps:
-            cn[c.capability.name] = c
-        # Add missed capabilities
-        for mc in set(caps) - set(cn):
-            c = get_cap(mc)
-            if c:
-                cn[mc] = CapsItem(
-                    capability=c,
-                    discovered_value=None, local_value=None
-                )
-                to_save = True
-        nc = []
-        for c in sorted(cn):
-            cc = cn[c]
-            if c in caps:
-                if local:
-                    if cc.local_value != caps[c]:
-                        logger.info(
-                            "[%s] Setting local capability %s = %s",
-                            self.name, c, caps[c]
-                        )
-                        cc.local_value = caps[c]
-                        to_save = True
-                else:
-                    if cc.discovered_value != caps[c]:
-                        logger.info(
-                            "[%s] Setting discovered capability %s = %s",
-                            self.name, c, caps[c]
-                        )
-                        cc.discovered_value = caps[c]
-                        to_save = True
-            nc += [cc]
-        # Remove deleted capabilities
-        ocaps.caps = [
-            c for c in nc
-            if (c.discovered_value is not None or
-                c.local_value is not None)
-        ]
-        if to_save:
-            ocaps.save()  # forces probe rebuild
+        return ObjectCapabilities.update_capabilities(self, caps, source)
 
     def disable_discovery(self):
         """
@@ -981,25 +907,6 @@ class ManagedObject(Model):
                     pop_id=pop.id
                 )
 
-    def get_coordinates(self):
-        """
-        Get managed object's coordinates
-        :returns: x (lon), y (lat)
-        """
-        c = self.container
-        while c:
-            x = c.get_data("geopoint", "x")
-            y = c.get_data("geopoint", "y")
-            if x and y:
-                return x, y
-            if c.container:
-                c = Object.get_by_id(c.container)
-                if not c:
-                    break
-            else:
-                break
-        return None, None
-
 
 @on_save
 class ManagedObjectAttribute(Model):
@@ -1022,12 +929,83 @@ class ManagedObjectAttribute(Model):
         return u"%s: %s" % (self.managed_object, self.key)
 
     def on_save(self):
-        CredentialsCache.invalidate(self.managed_object)
+        cache.delete("cred-%s" % self.managed_object.id)
+
+
+## object.scripts. ...
+class ScriptsProxy(object):
+    class CallWrapper(object):
+        def __init__(self, obj, name):
+            self.name = name
+            self.object = obj
+
+        def __call__(self, **kwargs):
+            return MTManager.run(self.object, self.name, kwargs)
+
+    def __init__(self, obj):
+        self._object = obj
+        self._cache = {}
+
+    def __getattr__(self, name):
+        if name in self._cache:
+            return self._cache[name]
+        if not script_loader.has_script("%s.%s" % (
+                self._object.profile_name, name)):
+            raise AttributeError("Invalid script %s" % name)
+        cw = ScriptsProxy.CallWrapper(self._object, name)
+        self._cache[name] = cw
+        return cw
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def __contains__(self, item):
+        """
+        Check object has script name
+        """
+        if "." not in item:
+            # Normalize to full name
+            item = "%s.%s" % (self._object.profile_name, item)
+        return script_loader.has_script(item)
+
+    def __iter__(self):
+        return itertools.imap(
+                lambda y: y.split(".")[-1],
+                itertools.ifilter(
+                        lambda x: x.startswith(self._object.profile_name + "."),
+                        script_loader.iter_scripts()
+                )
+        )
+
+
+class ActionsProxy(object):
+    class CallWrapper(object):
+        def __init__(self, obj, name, action):
+            self.name = name
+            self.object = obj
+            self.action = action
+
+        def __call__(self, **kwargs):
+            return self.action.execute(self.object, **kwargs)
+
+    def __init__(self, obj):
+        self._object = obj
+        self._cache = {}
+
+    def __getattr__(self, name):
+        if name in self._cache:
+            return self._cache[name]
+        a = Action.objects.filter(name=name).first()
+        if not a:
+            raise AttributeError(name)
+        cw = ActionsProxy.CallWrapper(self._object, name, a)
+        self._cache[name] = cw
+        return cw
 
 ## Avoid circular references
 from useraccess import UserAccess
 from groupaccess import GroupAccess
 from objectnotification import ObjectNotification
-from noc.inv.models.capability import Capability
 from action import Action
 from selectorcache import SelectorCache
+from objectcapabilities import ObjectCapabilities

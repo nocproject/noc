@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+import string
 ## NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from base import BaseDashboard
@@ -35,7 +36,7 @@ class ManagedObjectDashboard(BaseDashboard):
                 ):
                     return True
             return False
-
+        refId = string.uppercase[:14]
         # Basic setup
         r = {
             "title": str(self.object.name),
@@ -47,7 +48,10 @@ class ManagedObjectDashboard(BaseDashboard):
                 "to": "now"
             },
             "refresh": "1m",
-            "rows": []
+            "rows": [],
+            "annotations": {
+                "list": []
+            },
         }
         # Add object name and description
         title = [self.object.name, "(%s)" % self.object.address]
@@ -82,7 +86,7 @@ class ManagedObjectDashboard(BaseDashboard):
             r["rows"] += [{
                 "title": profile.name,
                 "showTitle": True,
-                "collapse": False,
+                "collapse": True,
                 "editable": False,
                 "height": "250px",
                 "panels": []
@@ -256,10 +260,75 @@ class ManagedObjectDashboard(BaseDashboard):
                         }
                     ]
                 }]
+                targets = []
+                seriesoverrides = []
+                tags = []
+                id = 0
+                if iface.type == u"aggregated":
+                        agg = Interface.objects.filter(managed_object=self.object.id,
+                                                       aggregated_interface=iface)
+                        for agg_iface in agg:
+                            tags = [{
+                                        "key": "object",
+                                        "operator": "=",
+                                        "value": self.object.name
+                                    },
+                                    {
+                                        "condition": "AND",
+                                        "key": "interface",
+                                        "operator": "=",
+                                        "value": agg_iface.name
+                                    }]
+
+                            targets += [{"alias": "Input",
+                                         "measurement": "Interface | Load | In",
+                                         "query": "SELECT mean(\"value\") "
+                                              "FROM \"Interface | Load | In\" "
+                                              "WHERE "
+                                              "  \"object\" = '%s' "
+                                              "  AND \"interface\" = '%s' "
+                                              "  AND $timeFilter "
+                                              "GROUP BY time($interval) "
+                                              "fill(null)" % (
+                                                  self.object.name,
+                                                  agg_iface.name),
+                                         "refId": refId[id],
+                                         "tags": tags
+                                         }]
+                            targets += [{"alias": "Output",
+                                         "measurement": "Interface | Load | Out",
+                                         "query": "SELECT mean(\"value\") "
+                                              "FROM \"Interface | Load | Out\" "
+                                              "WHERE "
+                                              "  \"object\" = '%s' "
+                                              "  AND \"interface\" = '%s' "
+                                              "  AND $timeFilter "
+                                              "GROUP BY time($interval) "
+                                              "fill(null)" % (
+                                                  self.object.name,
+                                                  agg_iface.name),
+                                         "refId": refId[id+1],
+                                         "tags": tags
+                                         }]
+                        seriesoverrides += [{
+                            "alias": "Input",
+                            "stack": "B",
+                            "transform": "negative-Y"
+                        }]
+                        seriesoverrides += [{
+                            "alias": "Output",
+                            "stack": "A",
+                        }]
+                        r["rows"][-1]["panels"][-1]["seriesOverrides"] = seriesoverrides
+                        r["rows"][-1]["panels"][-1]["targets"] = targets
+                        r["rows"][-1]["panels"][-1]["tags"] = tags
+                        r["rows"][-1]["panels"][-1]["tooltip"]["value_type"] = "individual"
+
+
         r["rows"] += [{
             "title": "Метрики объекта",
             "showTitle": True,
-            "collapse": False,
+            "collapse": True,
             "editable": False,
             "height": "250px",
             "panels": []
@@ -365,6 +434,9 @@ class ManagedObjectDashboard(BaseDashboard):
             mt = MetricType.get_by_id(m["metric_type"])
             if not mt or not m.get("is_active", False):
                 continue
+            ft = mt.measure
+            if mt.measure == "%":
+                ft = "percent"
             r["rows"][-1]["panels"] += [{
                 "span": 6,  # 2-column
                 "lines": True,
@@ -443,7 +515,7 @@ class ManagedObjectDashboard(BaseDashboard):
                 "y-axis": True,
                 "yaxes": [
                     {
-                        "format": "percent",
+                        "format": ft,
                         "label": None,
                         "logBase": 1,
                         "max": None,
@@ -460,6 +532,15 @@ class ManagedObjectDashboard(BaseDashboard):
                     }
                 ]
             }]
+        ann = {
+            "datasource": "NocDS",
+            "enable": False,
+                    "iconColor": "rgba(255, 96, 96, 1)",
+                    "name": "Alarm",
+                    "query": str(self.object.id)
+                }
+
+        r["annotations"]["list"] += [ann]
         if not r["rows"][-1]["panels"]:
             r["rows"].pop(-1)  # Remove empty row
         return r

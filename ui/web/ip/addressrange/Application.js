@@ -167,18 +167,18 @@ Ext.define("NOC.ip.addressrange.Application", {
     ],
     filters: [
         {
-            title: "By Is Active",
+            title: __("By Is Active"),
             name: "is_active",
             ftype: "boolean"
         },
         {  
-            title: "By VRF",   
+            title: __("By VRF"),
             name: "vrf",   
             ftype: "lookup",
             lookup: "ip.vrf"
         },
         {  
-            title: "By Is Locked",   
+            title: __("By Is Locked"),
             name: "is_locked",   
             ftype: "boolean"
         }

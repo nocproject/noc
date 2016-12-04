@@ -30,7 +30,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceStateForm", {
         });
 
         Ext.apply(me, {
-            title: "Change " + me.record.get("name") + " state",
+            title: __("Change") + " " + me.record.get("name") + " " + __("state"),
             items: [
                 {
                     xtype: "form",
@@ -79,7 +79,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceStateForm", {
                 me.close();
             },
             failure: function() {
-                NOC.error("Failed to change state");
+                NOC.error(__("Failed to change state"));
             }
         });
     }

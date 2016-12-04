@@ -61,7 +61,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
 
         me.saveButton = Ext.create("Ext.button.Button", {
             text: __("Save"),
-            tooltip: "Save changes",
+            tooltip: __("Save changes"),
             glyph: NOC.glyph.save,
             disabled: true,
             scope: me,
@@ -70,21 +70,21 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         // Zoom buttons
         me.zoomInButton = Ext.create("Ext.button.Button", {
             text: __("Zoom In"),
-            tooltip: "Zoom In",
+            tooltip: __("Zoom In"),
             glyph: NOC.glyph.search_plus,
             scope: me,
             handler: me.onZoomIn,
         });
         me.zoomOutButton = Ext.create("Ext.button.Button", {
             text: __("Zoom Out"),
-            tooltip: "Zoom Out",
+            tooltip: __("Zoom Out"),
             glyph: NOC.glyph.search_minus,
             scope: me,
             handler: me.onZoomOut,
         });
         me.zoomActualButton = Ext.create("Ext.button.Button", {
             text: __("Zoom Actual"),
-            tooltip: "Zoom Actual",
+            tooltip: __("Zoom Actual"),
             glyph: NOC.glyph.search,
             scope: me,
             handler: me.onZoomActual,
@@ -97,7 +97,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
 
         me.addButton = Ext.create("Ext.button.Button", {
             text: __("Add"),
-            tooltip: "Add",
+            tooltip: __("Add"),
             glyph: NOC.glyph.plus,
             scope: me,
             handler: me.onAddNode
@@ -105,7 +105,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
 
         me.deleteButton = Ext.create("Ext.button.Button", {
             text: __("Delete"),
-            tooltip: "Delete",
+            tooltip: __("Delete"),
             glyph: NOC.glyph.minus,
             scope: me,
             handler: me.onDeleteNode,
@@ -395,7 +395,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             style
         );
         v.wfdata = data;
-        v.nocTooltipTemplate = me.app.templates.NodeTooltip;
+        console.error('removed, code : v.nocTooltipTemplate = me.app.templates.NodeTooltip;');
         v.setConnectable(false);
         // Create ports
         // Input

@@ -45,6 +45,11 @@ Ext.define("NOC.sa.managedobject.CapsPanel", {
                     renderer: me.renderValue
                 },
                 {
+                    text: __("Source"),
+                    dataIndex: "source",
+                    width: 100
+                },
+                {
                     text: __("Description"),
                     dataIndex: "description",
                     flex: 1
@@ -82,7 +87,7 @@ Ext.define("NOC.sa.managedobject.CapsPanel", {
                 me.store.loadData(data);
             },
             failure: function() {
-                NOC.error("Failed to load data");
+                NOC.error(__("Failed to load data"));
             }
         });
     },

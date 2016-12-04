@@ -103,8 +103,8 @@ Ext.define("NOC.fm.alarmseverity.Application", {
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/fm/alarmseverity/{{id}}/json/",
-            previewName: "Alarm Severity: {{name}}"
+            restUrl: new Ext.XTemplate('/fm/alarmseverity/{id}/json/'),
+            previewName: new Ext.XTemplate('Alarm Severity: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
         Ext.apply(me, {

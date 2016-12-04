@@ -12,7 +12,7 @@ Ext.define("NOC.core.RestTemplatePreview", {
     initComponent: function() {
         var me = this;
 
-        me.urlTemplate = Handlebars.compile(me.restUrl);
+        console.error('Handlebars removed : class NOC.core.RestTemplatePreview, code : me.urlTemplate = Handlebars.compile(me.restUrl)');
         me.callParent();
     },
     //
@@ -36,7 +36,7 @@ Ext.define("NOC.core.RestTemplatePreview", {
                 me.items.first().update("<div class='noc-tp'>" + me.template(context) + "</div>");
             },
             failure: function() {
-                NOC.error("Failed to get JSON")
+                NOC.error(__("Failed to get JSON"))
             }
         });
     }

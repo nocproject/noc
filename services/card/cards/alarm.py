@@ -19,6 +19,9 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.servicesummary import SummaryItem
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.alarmdiagnostic import AlarmDiagnostic
+from noc.maintainance.models.maintainance import Maintainance
+from noc.maintainance.models.maintainance import MaintainanceObject
 
 
 class AlarmCard(BaseCard):
@@ -35,7 +38,8 @@ class AlarmCard(BaseCard):
             return None
 
     def get_data(self):
-        now = datetime.datetime.now()
+        if not self.object:
+            return None
         # Get container path
         cp = []
         if self.object.managed_object.container:
@@ -70,6 +74,15 @@ class AlarmCard(BaseCard):
             "service": SummaryItem.items_to_dict(self.object.total_services),
             "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers)
         }
+        # Maintainance
+        mainteinance = Maintainance.objects.filter(
+            is_completed=False,
+            start__lte=datetime.datetime.now(),
+            affected_objects__in=[
+               MaintainanceObject(object=self.object.managed_object)
+            ]
+        )
+        mo = self.object.managed_object
         # Build result
         r = {
             "id": self.object.id,
@@ -83,7 +96,12 @@ class AlarmCard(BaseCard):
             "container_path": cp,
             "log": log,
             "service_summary": service_summary,
-            "alarms": alarms
+            "alarms": alarms,
+            "diagnostic": AlarmDiagnostic.get_diagnostics(self.object),
+            "maintenance": mainteinance,
+            "lon": mo.x,
+            "lat": mo.y,
+            "zoom": mo.default_zoom
         }
         return r
 

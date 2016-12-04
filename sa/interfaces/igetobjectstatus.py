@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import (Interface, ListOfParameter, DictParameter,
+                  StringParameter, BooleanParameter)
 
 
 class IGetObjectStatus(Interface):

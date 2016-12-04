@@ -44,6 +44,7 @@ class Script(BaseScript):
                     "remote_chassis_id_subtype": match.group("chassis_subtype"),
                     "remote_chassis_id": match.group("chassis_id"),
                     "remote_port_subtype": {
+                        "Interface alias": 1,
                         "Local": 7,
                         "Interface": 5,
                         "MAC address": 3

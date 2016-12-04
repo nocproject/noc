@@ -8,12 +8,14 @@
 
 ## Python modules
 import argparse
+import time
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
+from noc.core.cache.base import cache
 
 
 class Command(BaseCommand):
@@ -26,7 +28,7 @@ class Command(BaseCommand):
         "box": [
             "profile", "version", "caps", "interface",
             "id", "config", "asset", "vlan", "nri",
-            "oam", "lldp", "cdp", "stp"
+            "oam", "lldp", "cdp", "stp", "sla"
         ],
         "periodic": [
             "uptime", "interfacestatus",
@@ -82,32 +84,42 @@ class Command(BaseCommand):
     def run_job(self, job, mo, checks):
         scheduler = Scheduler("discovery", pool=mo.pool.name)
         scheduler.service = ServiceStub()
-        job_args = {
-            Job.ATTR_KEY: mo.id,
-            "_checks": checks
-        }
-        if self.requires_context(job, checks):
-            d = scheduler.get_collection().find_one({
-                Job.ATTR_CLASS: self.jcls[job],
+        jcls = self.jcls[job]
+        # Try to dereference job
+        job_args = scheduler.get_collection().find_one({
+            Job.ATTR_CLASS: jcls,
+            Job.ATTR_KEY: mo.id
+        })
+        if job_args:
+            self.stdout.write("Job ID: %s\n" % job_args["_id"])
+        else:
+            job_args = {
+                Job.ATTR_ID: "fakeid",
                 Job.ATTR_KEY: mo.id
-
-            }, {
-                Job.ATTR_CONTEXT: 1
-            })
-            if d and d[Job.ATTR_CONTEXT]:
-                job_args[Job.ATTR_CONTEXT] = d[Job.ATTR_CONTEXT]
-        job = get_handler(self.jcls[job])(scheduler, job_args)
+            }
+        job_args["_checks"] = checks
+        job = get_handler(jcls)(scheduler, job_args)
+        if job.context_version:
+            ctx_key = job.get_context_cache_key()
+            self.stdout.write("Loading job context from %s\n" % ctx_key)
+            ctx = cache.get(ctx_key, version=job.context_version)
+            if not ctx:
+                self.stdout.write("Job context is empty\n")
+            job.load_context(ctx)
         job.dereference()
         job.handler()
         if scheduler.service.metrics:
             for m in scheduler.service.metrics:
                 self.stdout.write("Collected metric: %s\n" % m)
-
-    def requires_context(self, job, checks):
-        """
-        Returns True if job uses context
-        """
-        return job == "periodic" and (not checks or "metrics" in checks)
+        if job.context_version and job.context:
+            scheduler.run_cache_thread()
+            self.stdout.write("Saving job context to %s\n" % ctx_key)
+            scheduler.cache_set(
+                key=ctx_key,
+                value=job.context,
+                version=job.context_version
+            )
+            time.sleep(2)
 
 
 class ServiceStub(object):

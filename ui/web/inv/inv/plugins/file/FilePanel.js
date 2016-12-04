@@ -11,7 +11,7 @@ Ext.define("NOC.inv.inv.plugins.file.FilePanel", {
     requires: [
         "NOC.inv.inv.plugins.file.FileModel"
     ],
-    title: "Files",
+    title: __("Files"),
     closable: false,
     layout: "fit",
     autoScroll: true,
@@ -110,7 +110,7 @@ Ext.define("NOC.inv.inv.plugins.file.FilePanel", {
                 me.preview(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },
@@ -137,7 +137,7 @@ Ext.define("NOC.inv.inv.plugins.file.FilePanel", {
                             me.refresh();
                         },
                         failure: function() {
-                            NOC.error("Failed to delete file");
+                            NOC.error(__("Failed to delete file"));
                         }
                     });
                 }

@@ -52,7 +52,7 @@ Ext.define("NOC.main.customfieldenumgroup.Application", {
         }
     ],
     filters: [{
-        title: "Is Active?",
+        title: __("Is Active?"),
         name: "is_active",
         ftype: "boolean"
     }],

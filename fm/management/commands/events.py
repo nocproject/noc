@@ -17,9 +17,11 @@ from bson import ObjectId
 ## NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.fm.models import ActiveEvent, EventClass, MIB
+from noc.fm.models.activeevent import ActiveEvent
+from noc.fm.models.eventclass import EventClass
+from noc.fm.models.mib import MIB
 from noc.lib.validators import is_oid
-from noc.lib.escape import json_escape, fm_escape
+from noc.lib.escape import json_escape
 
 name2codepoint["#39"] = 39
 rx_cp = re.compile("&(%s);" % "|".join(name2codepoint))

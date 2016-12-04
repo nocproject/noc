@@ -9,19 +9,37 @@ var Heatmap = function () {
 };
 
 Heatmap.prototype.initialize = function () {
+    var me = this,
+        q = this.parseQuerystring(),
+        lon = q.lon ? parseFloat(q.lon) : 37.5077,
+        lat = q.lat ? parseFloat(q.lat) : 55.7766,
+        scale = q.zoom ? parseInt(q.zoom) : 11;
     this.map = L.map("map");
+    // Subscribe to events
+    this.map.on("moveend", function () {
+        me.poll_data();
+    });
     this.heatmap = null;
+    this.topology = null;
+    this.pops = null;
     // Set up OSM layer
     var osm = L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-
         });
     this.map.addLayer(osm);
-    // Select view
-    // @todo: Calculate dynamically
-    this.map.setView([55.7766, 37.5077], 11);
-    // Poll data
-    this.poll_data();
+    // Select view, trigger moveend to poll data
+    this.map.setView([lat, lon], scale);
+};
+
+Heatmap.prototype.parseQuerystring = function () {
+    var q = window.location.search.substring(1),
+        vars = q.split("&"),
+        r = {}, i, pair;
+    for (i = 0; i < vars.length; i++) {
+        pair = vars[i].split("=");
+        r[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+    }
+    return r;
 };
 
 Heatmap.prototype.run = function () {
@@ -29,8 +47,31 @@ Heatmap.prototype.run = function () {
 };
 
 Heatmap.prototype.poll_data = function () {
-    var me = this;
-    $.ajax("/api/card/view/alarmheat/ajax/").done(function(data) {
+    var me = this,
+        bbox = me.map.getBounds(),
+        w = bbox.getWest(),
+        e = bbox.getEast(),
+        n = bbox.getNorth(),
+        s = bbox.getSouth(),
+        zoom = me.map.getZoom(),
+        onEachPoP = function (feature, layer) {
+            if (feature.properties && feature.properties.objects) {
+                var text = ["Alarms: " + feature.properties.alarms, ""];
+                text = text.concat(feature.properties.objects.map(function (v) {
+                    return "<a target=_ href='/api/card/view/managedobject/" + v.id + "/'>" + v.name + "</a>";
+                }));
+                layer.bindPopup(text.join("<br/>"));
+            }
+        },
+        popOptions = {
+            radius: 3,
+            fillColor: "#ff7800",
+            color: "#000000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        };
+    $.ajax("/api/card/view/alarmheat/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s).done(function (data) {
         // Replace heatmap
         var heat_data = [];
         $.each(data.alarms, function(i, v) {
@@ -38,6 +79,27 @@ Heatmap.prototype.poll_data = function () {
                 heat_data.push([v.y, v.x, v.w * 10]);
             }
         });
+        //
+        if (me.topology) {
+            me.map.removeLayer(me.topology);
+            me.topology = null;
+        }
+        if (data.links) {
+            me.topology = L.geoJSON(data.links).addTo(me.map);
+        }
+        //
+        if (me.pops) {
+            me.map.removeLayer(me.pops);
+        }
+        if (data.pops) {
+            me.pops = L.geoJSON(data.pops, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, popOptions)
+                },
+                onEachFeature: onEachPoP
+            }).addTo(me.map);
+        }
+        //
         if(me.heatmap) {
             me.map.removeLayer(me.heatmap);
         }

@@ -10,8 +10,7 @@ Ext.define("NOC.main.timepattern.Application", {
     extend: "NOC.core.ModelApplication",
     uses: [
         "NOC.main.timepattern.Model",
-        "NOC.main.timepattern.TermModel",
-        "NOC.main.timepattern.templates.TestResultTemplate"
+        "NOC.main.timepattern.TermModel"
     ],
     model: "NOC.main.timepattern.Model",
     search: true,
@@ -43,7 +42,7 @@ Ext.define("NOC.main.timepattern.Application", {
     ],
     inlines: [
         {
-            title: "Time Patterns",
+            title: __("Time Patterns"),
             model: "NOC.main.timepattern.TermModel",
             columns: [
                 {
@@ -57,9 +56,9 @@ Ext.define("NOC.main.timepattern.Application", {
     ],
     "actions": [
         {
-            title: "Test selected patterns",
+            title: __("Test selected patterns"),
             action: "test",
-            resultTemplate: "TestResultTemplate",
+            resultTemplate: new Ext.XTemplate('<b>Date:</b> {ts}\n<table border="1">\n    <tr><th>TimePattern</th><th>Result</th></tr>\n    <tpl foreach="result">\n    <tr><td>{name}</td><td><tpl if="result">+<tpl else>-</tpl></td></tr>\n    </tpl>\n</table>'),
             form: [
                 {
                     name: "date",

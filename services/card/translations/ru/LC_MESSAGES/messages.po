@@ -8,19 +8,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-08-09 09:19+0300\n"
-"PO-Revision-Date: 2016-06-14 13:14+0300\n"
+"POT-Creation-Date: 2016-11-16 09:33+0500\n"
+"PO-Revision-Date: 2016-11-16 10:03+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
+"X-Generator: Poedit 1.8.9\n"
 
-#: services/card/cards/base.py:178 services/card/cards/base.py:192
+#: services/card/cards/base.py:191 services/card/cards/base.py:205
 msgid "N/A"
 msgstr "Н/Д"
 
@@ -29,7 +30,7 @@ msgid "Alarm"
 msgstr "Авария"
 
 #: services/card/templates/alarm.html.j2:13
-#: services/card/templates/alarm.html.j2:79
+#: services/card/templates/alarm.html.j2:88
 msgid "Class"
 msgstr "Класс"
 
@@ -37,57 +38,68 @@ msgstr "Класс"
 msgid "Severity"
 msgstr "Серьезность"
 
-#: services/card/templates/alarm.html.j2:46
+#: services/card/templates/alarm.html.j2:55
 msgid "Escalation"
 msgstr "Эскалация"
 
-#: services/card/templates/alarm.html.j2:53
+#: services/card/templates/alarm.html.j2:62
 msgid "Body"
 msgstr "Текст"
 
-#: services/card/templates/alarm.html.j2:57
+#: services/card/templates/alarm.html.j2:66
 msgid "Symptoms"
 msgstr "Симптомы"
 
-#: services/card/templates/alarm.html.j2:61
+#: services/card/templates/alarm.html.j2:70
 msgid "Probable Causes"
 msgstr "Возможная причина"
 
-#: services/card/templates/alarm.html.j2:65
+#: services/card/templates/alarm.html.j2:74
 msgid "Recommended Actions"
 msgstr "Рекомендации"
 
-#: services/card/templates/alarm.html.j2:105
+#: services/card/templates/alarm.html.j2:114
+msgid "Diagnostic"
+msgstr "Диагностика"
+
+#: services/card/templates/alarm.html.j2:131
 msgid "Log"
 msgstr "История"
+
+#: services/card/templates/alarm.html.j2:150
+msgid "Maintenance"
+msgstr "РНР"
 
 #: services/card/templates/alarmheat.html.j2:2
 msgid "Loading ..."
 msgstr "Загрузка ..."
 
+#: services/card/templates/alarm.html.j2:155
 #: services/card/templates/maintainance.html.j2:9
 msgid "Type"
 msgstr "Вид работ"
 
+#: services/card/templates/alarm.html.j2:156
 #: services/card/templates/maintainance.html.j2:13
 msgid "Date"
 msgstr "Дата"
 
-#: services/card/templates/alarm.html.j2:76
+#: services/card/templates/alarm.html.j2:85
 #: services/card/templates/maintainance.html.j2:17
 #: services/card/templates/maintainance.html.j2:36
-#: services/card/templates/managedobject.html.j2:65
+#: services/card/templates/managedobject.html.j2:86
 #: services/card/templates/service.html.j2:72
 #: services/card/templates/tt.html.j2:34
 msgid "Services"
 msgstr "Сервисы"
 
 #: services/card/templates/maintainance.html.j2:21
-#: services/card/templates/managedobject.html.j2:89
+#: services/card/templates/managedobject.html.j2:110
 #: services/card/templates/tt.html.j2:65
 msgid "Description"
 msgstr "Описание"
 
+#: services/card/templates/alarm.html.j2:157
 #: services/card/templates/maintainance.html.j2:25
 #: services/card/templates/service.html.j2:110
 msgid "Contacts"
@@ -97,132 +109,178 @@ msgstr "Контакты"
 msgid "Affected objects"
 msgstr "Затронутое оборудование"
 
-#: services/card/templates/alarm.html.j2:21
-#: services/card/templates/alarm.html.j2:78
-#: services/card/templates/maintainance.html.j2:33
-#: services/card/templates/tt.html.j2:31
-msgid "Object"
-msgstr "Объект"
-
-#: services/card/templates/maintainance.html.j2:35
-#: services/card/templates/managedobject.html.j2:72
-msgid "IP"
-msgstr "IP"
-
 #: services/card/templates/managedobject.html.j2:38
 msgid "Container"
-msgstr ""
+msgstr "Контейнер"
 
-#: services/card/templates/alarm.html.j2:28
+#: services/card/templates/alarm.html.j2:35
 #: services/card/templates/managedobject.html.j2:48
 msgid "Location"
 msgstr "Расположение"
 
-#: services/card/templates/alarm.html.j2:41
+#: services/card/templates/alarm.html.j2:50
 #: services/card/templates/managedobject.html.j2:52
 msgid "Administrative Domain"
 msgstr "Зона ответственности"
 
-#: services/card/templates/alarm.html.j2:37
-#: services/card/templates/managedobject.html.j2:56
-msgid "Segment"
-msgstr "Сегмент"
-
-#: services/card/templates/managedobject.html.j2:80
+#: services/card/templates/managedobject.html.j2:101
 msgid "Version"
 msgstr "Версия"
 
-#: services/card/templates/managedobject.html.j2:83
+#: services/card/templates/managedobject.html.j2:104
 msgid "Recommended"
 msgstr "Рекомендовано"
 
-#: services/card/templates/managedobject.html.j2:93
+#: services/card/templates/managedobject.html.j2:114
 msgid "Service Range"
 msgstr "Диапазон обслуживания"
 
-#: services/card/templates/managedobject.html.j2:97
+#: services/card/templates/managedobject.html.j2:118
 msgid "L2 Terminator"
 msgstr "L2 Терминатор"
 
-#: services/card/templates/managedobject.html.j2:120
+#: services/card/templates/managedobject.html.j2:141
 msgid "L3 Terminator"
 msgstr "L3 Терминатор"
 
-#: services/card/templates/managedobject.html.j2:124
+#: services/card/templates/managedobject.html.j2:145
 msgid "Neighbors"
 msgstr "Соседи"
 
-#: services/card/templates/managedobject.html.j2:129
+#: services/card/templates/managedobject.html.j2:150
 msgid "Local port"
 msgstr "Локальный порт"
 
-#: services/card/templates/managedobject.html.j2:130
+#: services/card/templates/managedobject.html.j2:151
 msgid "Remote object"
 msgstr "Сосед"
 
-#: services/card/templates/managedobject.html.j2:131
+#: services/card/templates/managedobject.html.j2:152
 msgid "Remote port"
 msgstr "Порт соседа"
 
-#: services/card/templates/managedobject.html.j2:197
+#: services/card/templates/managedobject.html.j2:218
 msgid "Admin"
 msgstr "Админ"
 
-#: services/card/templates/managedobject.html.j2:197
+#: services/card/templates/managedobject.html.j2:218
 msgid "Oper"
 msgstr "Опер"
 
-#: services/card/templates/managedobject.html.j2:198
+#: services/card/templates/managedobject.html.j2:219
 msgid "Speed"
 msgstr "Скорость"
 
-#: services/card/templates/managedobject.html.j2:198
+#: services/card/templates/managedobject.html.j2:219
 msgid "Duplex"
 msgstr "Дуплекс"
 
-#: services/card/templates/managedobject.html.j2:200
+#: services/card/templates/managedobject.html.j2:221
 msgid "Errors"
 msgstr "Ошибки"
 
 #: services/card/templates/maintainance.html.j2:34
-#: services/card/templates/managedobject.html.j2:60
-#: services/card/templates/managedobject.html.j2:104
+#: services/card/templates/managedobject.html.j2:81
+#: services/card/templates/managedobject.html.j2:125
 #: services/card/templates/object.html.j2:15
-#: services/card/templates/segment.html.j2:37
+#: services/card/templates/segment.html.j2:69
 msgid "Model"
 msgstr "Модель"
 
 #: services/card/templates/object.html.j2:20
-#: services/card/templates/segment.html.j2:16
+#: services/card/templates/segment.html.j2:30
 msgid "Children"
-msgstr ""
+msgstr "Потомок"
 
-#: services/card/templates/outage.html.j2:2
+#: services/card/templates/outage.html.j2:7
 msgid "Outages Summary"
 msgstr "Оперативная обстановка"
 
 #: services/card/templates/segment.html.j2:10
 msgid "Parent"
-msgstr ""
+msgstr "Родитель"
 
-#: services/card/templates/segment.html.j2:31
-msgid "Objects"
-msgstr ""
+#: services/card/templates/managedobject.html.j2:75
+#: services/card/templates/segment.html.j2:15
+msgid "Redundancy"
+msgstr "Резервирование"
 
-#: services/card/templates/managedobject.html.j2:102
+#: services/card/templates/managedobject.html.j2:62
+#: services/card/templates/managedobject.html.j2:77
+#: services/card/templates/segment.html.j2:19
+#: services/card/templates/segment.html.j2:45
+msgid "Lost redundancy"
+msgstr "Резервирование потеряно"
+
+#: services/card/templates/managedobject.html.j2:64
+#: services/card/templates/managedobject.html.j2:77
+#: services/card/templates/segment.html.j2:21
+#: services/card/templates/segment.html.j2:47
+msgid "Redundant"
+msgstr "Зарезервирован"
+
+#: services/card/templates/managedobject.html.j2:67
+#: services/card/templates/managedobject.html.j2:77
+#: services/card/templates/segment.html.j2:24
+#: services/card/templates/segment.html.j2:50
+msgid "No redundancy"
+msgstr "Нет резервирования"
+
+#: services/card/templates/alarm.html.j2:44
+#: services/card/templates/managedobject.html.j2:56
 #: services/card/templates/segment.html.j2:35
+msgid "Segment"
+msgstr "Сегмент"
+
+#: services/card/templates/segment.html.j2:63
+msgid "Objects"
+msgstr "Объекты"
+
+#: services/card/templates/managedobject.html.j2:123
+#: services/card/templates/segment.html.j2:67
 msgid "Name"
 msgstr "Название"
 
-#: services/card/templates/managedobject.html.j2:103
-#: services/card/templates/segment.html.j2:36
+#: services/card/templates/managedobject.html.j2:124
+#: services/card/templates/segment.html.j2:68
 #: services/card/templates/service.html.j2:97
 msgid "Address"
 msgstr "Адрес"
 
-#: services/card/templates/segment.html.j2:38
+#: services/card/templates/alarm.html.j2:21
+#: services/card/templates/alarm.html.j2:87
+#: services/card/templates/maintainance.html.j2:33
+#: services/card/templates/segmentalarm.html.j2:4
+#: services/card/templates/tt.html.j2:31
+msgid "Object"
+msgstr "Объект"
+
+#: services/card/templates/maintainance.html.j2:35
+#: services/card/templates/managedobject.html.j2:93
+#: services/card/templates/segmentalarm.html.j2:5
+msgid "IP"
+msgstr "IP"
+
+#: services/card/templates/alarm.html.j2:86
+#: services/card/templates/managedobject.html.j2:196
+#: services/card/templates/segmentalarm.html.j2:6
+#: services/card/templates/service.html.j2:134
+#: services/card/templates/tt.html.j2:32
+msgid "Duration"
+msgstr "Продолжительность"
+
+#: services/card/templates/managedobject.html.j2:185
+#: services/card/templates/segmentalarm.html.j2:7
+#: services/card/templates/service.html.j2:178
+#: services/card/templates/tt.html.j2:5
+msgid "TT"
+msgstr "TT"
+
+#: services/card/templates/segment.html.j2:36
+#: services/card/templates/segment.html.j2:70
+#: services/card/templates/segmentalarm.html.j2:8
 msgid "Summary"
-msgstr ""
+msgstr "Сводка"
 
 #: services/card/templates/managedobject.html.j2:13
 #: services/card/templates/service.html.j2:48
@@ -239,12 +297,12 @@ msgstr "Начало"
 msgid "Stop"
 msgstr "Окончание"
 
-#: services/card/templates/managedobject.html.j2:202
+#: services/card/templates/managedobject.html.j2:223
 #: services/card/templates/service.html.j2:78
 msgid "Service"
 msgstr "Сервис"
 
-#: services/card/templates/managedobject.html.j2:201
+#: services/card/templates/managedobject.html.j2:222
 #: services/card/templates/service.html.j2:79
 msgid "Status"
 msgstr "Статус"
@@ -261,7 +319,7 @@ msgstr "Комментарий"
 msgid "Connection"
 msgstr "Связь"
 
-#: services/card/templates/managedobject.html.j2:196
+#: services/card/templates/managedobject.html.j2:217
 #: services/card/templates/service.html.j2:152
 msgid "Port"
 msgstr "Порт"
@@ -278,12 +336,12 @@ msgstr "Терминатор"
 msgid "Session"
 msgstr "Сессия"
 
-#: services/card/templates/managedobject.html.j2:199
+#: services/card/templates/managedobject.html.j2:220
 #: services/card/templates/subscribersession.html.j2:5
 msgid "VLAN"
 msgstr "VLAN"
 
-#: services/card/templates/managedobject.html.j2:76
+#: services/card/templates/managedobject.html.j2:97
 #: services/card/templates/subscribersession.html.j2:6
 msgid "MAC"
 msgstr "MAC"
@@ -296,39 +354,27 @@ msgstr "MAC производителя"
 msgid "No outages detected"
 msgstr "Аварий не зафиксировано"
 
-#: services/card/templates/managedobject.html.j2:164
-#: services/card/templates/service.html.j2:178
-#: services/card/templates/tt.html.j2:5
-msgid "TT"
-msgstr "TT"
-
 #: services/card/templates/tt.html.j2:12
 msgid "Stage"
 msgstr "Этап"
 
-#: services/card/templates/alarm.html.j2:69
-#: services/card/templates/managedobject.html.j2:169
+#: services/card/templates/alarm.html.j2:78
+#: services/card/templates/managedobject.html.j2:190
 #: services/card/templates/tt.html.j2:25
 msgid "Alarms"
 msgstr "Аварии"
 
-#: services/card/templates/alarm.html.j2:75
-#: services/card/templates/managedobject.html.j2:174
+#: services/card/templates/alarm.html.j2:84
+#: services/card/templates/managedobject.html.j2:195
 #: services/card/templates/service.html.j2:133
 #: services/card/templates/tt.html.j2:30
 msgid "Timestamp"
 msgstr "Время"
 
-#: services/card/templates/alarm.html.j2:77
-#: services/card/templates/managedobject.html.j2:175
-#: services/card/templates/service.html.j2:134
-#: services/card/templates/tt.html.j2:32
-msgid "Duration"
-msgstr "Продолжительность"
-
-#: services/card/templates/alarm.html.j2:80
+#: services/card/templates/alarm.html.j2:89
+#: services/card/templates/alarm.html.j2:154
 #: services/card/templates/managedobject.html.j2:18
-#: services/card/templates/managedobject.html.j2:176
+#: services/card/templates/managedobject.html.j2:197
 #: services/card/templates/service.html.j2:53
 #: services/card/templates/service.html.j2:135
 #: services/card/templates/tt.html.j2:33
@@ -346,4 +392,3 @@ msgstr "Финальная диагностика"
 #: services/card/templates/tt.html.j2:81
 msgid "Comments"
 msgstr "Комментарии"
-

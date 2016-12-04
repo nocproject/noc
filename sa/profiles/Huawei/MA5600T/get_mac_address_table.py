@@ -18,7 +18,8 @@ class Script(BaseScript):
     TIMEOUT = 240
 
     rx_line = re.compile(
-        r"^\s*.*(?P<p_type>eth|adl)\s+(?P<mac>\S+)\s+(?P<type>dynamic|static)\s+"
+        r"^\s*.*(?P<p_type>eth|adl|gpon)\s+(?P<mac>\S+)\s+"
+        r"(?P<type>dynamic|static)\s+"
         r"(?P<interfaces>\d+\s*/\d+\s*/\d+)\s+"
         r"(?P<vpi>\d+|\-)\s+(?P<vci>\d+|\-)\s+"
         r"((?P<FLOWTYPE>\d+|\-)\s+(?P<FLOWPARA>\d+|\-)\s+)?(?P<vlan_id>\d+)\s*\n",
@@ -28,6 +29,8 @@ class Script(BaseScript):
         r = []
         ports = self.profile.fill_ports(self)
         adsl_port = "adsl"
+        vdsl_port = "port"  # Need more examples
+        gpon_port = "gpon"
         ethernet_port = "ethernet"
         for i in range(len(ports)):
             p = 0
@@ -42,7 +45,19 @@ class Script(BaseScript):
                     except self.CLISyntaxError:
                         v = self.cli("display mac-address port 0/%d/%d" % (i, p))
                         adsl_port = "port"
-                if (ports[i]["t"] in ["GE", "FE"]):
+                if (ports[i]["t"] == "VDSL"):
+                    try:
+                        v = self.cli("display mac-address %s 0/%d/%d" % (vdsl_port, i, p))
+                    except self.CLISyntaxError:
+                        v = self.cli("display mac-address port 0/%d/%d" % (i, p))
+                        vdsl_port = "port"
+                if (ports[i]["t"] == "GPON"):
+                    try:
+                        v = self.cli("display mac-address %s 0/%d/%d" % (gpon_port, i, p))
+                    except self.CLISyntaxError:
+                        v = self.cli("display mac-address port 0/%d/%d" % (i, p))
+                        gpon_port = "port"
+                if (ports[i]["t"] in ["10GE", "GE", "FE"]):
                     try:
                         v = self.cli("display mac-address %s 0/%d/%d" % (ethernet_port, i, p))
                     except self.CLISyntaxError:

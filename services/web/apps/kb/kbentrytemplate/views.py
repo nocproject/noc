@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 from django.contrib import admin
 from noc.lib.app.modelapplication import ModelApplication
-from noc.kb.models import KBEntryTemplate
+from noc.kb.models.kbentrytemplate import KBEntryTemplate
 ##
 ## KBEntryTemplate admin
 ##

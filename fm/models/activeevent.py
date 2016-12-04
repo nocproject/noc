@@ -2,13 +2,14 @@
 ##----------------------------------------------------------------------
 ## ActiveEvent model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import datetime
 import struct
+from threading import Lock
 ## Django modules
 from django.template import Template, Context
 ## Third-party modules
@@ -20,6 +21,9 @@ from eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib import nosql
 from noc.lib.dateutils import total_seconds
+from noc.core.cache.decorator import cachedmethod
+
+id_lock = Lock()
 
 
 class ActiveEvent(document.Document):
@@ -55,6 +59,15 @@ class ActiveEvent(document.Document):
 
     def __unicode__(self):
         return u"%s" % self.id
+
+    @classmethod
+    @cachedmethod(
+        key="activeevent-%s",
+        lock=lambda _: id_lock,
+        ttl=900
+    )
+    def get_by_id(cls, event_id):
+        return ActiveEvent.objects.filter(id=event_id).first()
 
     def mark_as_new(self, message=None):
         """

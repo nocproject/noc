@@ -25,6 +25,7 @@ from oam import OAMCheck
 from lldp import LLDPCheck
 from stp import STPCheck
 from nri import NRICheck
+from sla import SLACheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -47,6 +48,11 @@ class BoxDiscoveryJob(MODiscoveryJob):
             ProfileCheck(self).run()
         if self.object.auth_profile and self.object.auth_profile.enable_suggest:
             SuggestCLICheck(self).run()
+        if self.object.auth_profile and self.object.auth_profile.type == "S":
+            self.logger.info(
+                "Cannot choose valid credentials. Stopping"
+            )
+            return
         if self.object.object_profile.enable_box_discovery_version:
             VersionCheck(self).run()
         if self.object.object_profile.enable_box_discovery_caps:
@@ -69,6 +75,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             if getattr(self.object.object_profile,
                        "enable_box_discovery_%s" % check.name) and check.name != "nri":
                 check(self).run()
+        if self.object.object_profile.enable_box_discovery_sla:
+            SLACheck(self).run()
 
     def can_run(self):
         return (

@@ -101,7 +101,7 @@ Ext.define("NOC.gis.division.Application", {
     },
     filters: [
         {
-            title: "By Parent",
+            title: __("By Parent"),
             name: "parent",
             ftype: "lookup",
             lookup: "gis.division"

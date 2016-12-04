@@ -5,7 +5,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import (Interface, ListOfParameter, DictParameter,
+                  StringParameter)
 
 
 class IGetTechSupport(Interface):

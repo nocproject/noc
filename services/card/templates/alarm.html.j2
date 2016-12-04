@@ -22,6 +22,12 @@
         <td>
             <a href="/api/card/view/managedobject/{{ managed_object.id }}/">{{ managed_object | managed_object_title }}</a>
             ({{ managed_object.address }}, {{ managed_object.platform }})
+            {{ managed_object | object_console }}
+            {% if lon %}
+            <a href="/api/card/view/alarmheat/0/?lon={{ lon }}&lat={{ lat }}&zoom={{ zoom }}" target="blank">
+            <i class="fa fa-map" title="Heatmap"></i>
+            </a>
+            {% endif %}
         </td>
     </tr>
     <tr>
@@ -35,7 +41,9 @@
     </tr>
     <tr>
         <th scope="row">{{ _("Segment") }}</th>
-        <td>{{ managed_object.segment.name }}</td>
+        <td>
+            <a href="/api/card/view/segment/{{ managed_object.segment.id }}/">{{ managed_object.segment.name }}</a>
+        </td>
     </tr>
     <tr>
         <th scope="row">{{ _("Administrative Domain") }}</th>
@@ -100,6 +108,23 @@
             </table>
         </td>
     </tr>
+    {% if diagnostic %}
+    <tr>
+        <th scope="row">{{ _("Diagnostic") }}</th>
+        <td>
+            {% for d in diagnostic %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                       {{ d["timestamp"] | timestamp }}
+                    </div>
+                    <div class="panel-body" style="white-space: pre-line">
+                        {{ d["data"] | e }}
+                    </div>
+                </div>
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
     {% if log %}
     <tr>
         <th scope="row">{{ _("Log") }}</th>
@@ -116,6 +141,31 @@
                     </div>
                 </div>
             {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
+    {% if maintenance %}
+    <tr>
+        <th scope="row">{{ _("Maintenance") }}</th>
+        <td>
+            <table class="table table-condensed">
+                <thead>
+                <th scope="row">{{ _("Subject") }}</th>
+                <th scope="row">{{ _("Type") }}</th>
+                <th scope="row">{{ _("Date") }}</th>
+                <th scope="row">{{ _("Contacts") }}</th>
+                </thead>
+                <tbody>
+                {% for m in maintenance %}
+                    <tr>
+                        <td>{{ m.type.name }}</td>
+                        <td><a href="/api/card/view/maintainance/{{ m.id }}/">{{ m.subject }}</a></td>
+                        <td>{{ m.start }} - {{ m.stop }}</td>
+                        <td>{{ m.contacts }}</td>
+                    </tr
+                {% endfor %}
+                </tbody>
+            </table>
         </td>
     </tr>
     {% endif %}

@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Juniper.JUNOS.get_interface_status
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -23,6 +23,8 @@ class Script(BaseScript):
     )
 
     def execute(self, interface=None):
+        version = self.scripts.get_version()
+        platform = version["platform"]
         if self.has_snmp():
             try:
                 # Get interface status
@@ -35,6 +37,8 @@ class Script(BaseScript):
                     if interface \
                     and interface == self.profile.convert_interface_name(n):
                         return [{"interface": n, "status": int(s) == 1}]
+                    if not self.profile.valid_interface_name(n, platform):
+                        continue
                     r += [{"interface": n, "status": int(s) == 1}]
                 return r
             except self.snmp.TimeOutError:
@@ -44,12 +48,14 @@ class Script(BaseScript):
         if interface:
             cmd = "show interfaces terse | match \"^%s\" " % interface
         else:
-            cmd = "show interfaces terse | except demux"
+            cmd = "show interfaces terse | except demux | no-more"
 
         for l in self.cli(cmd).splitlines():
             match = self.rx_interface_status.search(l)
             if match:
                 iface = match.group("interface")
+                if not self.profile.valid_interface_name(iface, platform):
+                    continue
                 if not interface or iface == interface:
                     r += [{
                         "interface": iface,

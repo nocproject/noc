@@ -10,9 +10,12 @@
 from collections import defaultdict
 import urllib
 import json
+import datetime
+import threading
 ## Third-party modules
 import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import six
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
@@ -25,13 +28,17 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.lib.stencil import stencil_registry
 from noc.core.topology.segment import SegmentTopology
 from noc.inv.models.discoveryid import DiscoveryID
+from noc.maintainance.models.maintainance import Maintainance
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import (ListOfParameter, IntParameter,
                                     StringParameter, DictListParameter, DictParameter)
 from noc.core.influxdb.client import InfluxDBClient
-from noc.inv.caches.interface.tagstoid import interface_tags_to_id
 from noc.config import config
 from noc.core.translation import ugettext as _
+from noc.core.cache.decorator import cachedmethod
+from noc.core.influxdb.client import InfluxDBClient
+
+tags_lock = threading.RLock()
 
 
 class MapApplication(ExtApplication):
@@ -52,6 +59,10 @@ class MapApplication(ExtApplication):
     ST_ALARM = 2  # Object is reachable, Active alarms
     ST_UNREACH = 3  # Object is unreachable due to other's object failure
     ST_DOWN = 4  # Object is down
+    ST_MAINTAINANCE = 32  # Maintainance bit
+
+    # Maximum object to be shown
+    MAX_OBJECTS = 300
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["GET"],
           access="read", api=True)
@@ -65,6 +76,13 @@ class MapApplication(ExtApplication):
 
         # Find segment
         segment = self.get_object_or_404(NetworkSegment, id=id)
+        if segment.managed_objects.count() > self.MAX_OBJECTS:
+            # Too many objects
+            return {
+                "id": str(segment.id),
+                "name": segment.name,
+                "error": _("Too many objects")
+            }
         # Load settings
         settings = MapSettings.objects.filter(segment=id).first()
         node_hints = {}
@@ -95,7 +113,7 @@ class MapApplication(ExtApplication):
             "id": str(segment.id),
             "name": segment.name,
             "caps": list(topology.caps),
-            "nodes": [q_mo(x) for x in topology.G.node.itervalues()],
+            "nodes": [q_mo(x) for x in six.itervalues(topology.G.node)],
             "links": [topology.G[u][v] for u, v in topology.G.edges()]
         }
         # Parent info
@@ -179,6 +197,12 @@ class MapApplication(ExtApplication):
     def api_info_managedobject(self, request, id, mo_id):
         segment = self.get_object_or_404(NetworkSegment, id=id)
         object = self.get_object_or_404(ManagedObject, id=int(mo_id))
+        s = {
+            1: "telnet",
+            2: "ssh",
+            3: "http",
+            4: "https"
+        }[object.scheme]
         r = {
             "id": object.id,
             "name": object.name,
@@ -191,7 +215,8 @@ class MapApplication(ExtApplication):
                 "id": str(object.segment.id),
                 "name": object.segment.name
             },
-            "caps": object.get_caps()
+            "caps": object.get_caps(),
+            "console_url": "%s://%s/" % (s, object.address)
         }
         return r
 
@@ -228,14 +253,12 @@ class MapApplication(ExtApplication):
                 query += [
                     "SELECT object, interface, last(value) "
                     "FROM \"Interface | Load | In\" "
-                    "WHERE object='%s' AND interface='%s' "
-                    "GROUP BY object, interface" % (
+                    "WHERE object='%s' AND interface='%s' " % (
                         mo.name, i.name
                     ),
                     "SELECT object, interface, last(value) "
                     "FROM \"Interface | Load | Out\" "
-                    "WHERE object='%s' AND interface='%s' "
-                    "GROUP BY object, interface" % (
+                    "WHERE object='%s' AND interface='%s' "  % (
                         mo.name, i.name
                     )
                 ]
@@ -294,10 +317,33 @@ class MapApplication(ExtApplication):
                     r.update([d["_id"] for d in a["result"]])
             return r
 
+        def get_maintainance(objects):
+            """
+            Returns a set of objects currently in maintainance
+            :param objects:
+            :return:
+            """
+            now = datetime.datetime.now()
+            so = set(objects)
+            r = set()
+            for m in Maintainance._get_collection().find({
+                "is_completed": False,
+                "start": {
+                    "$lte": now
+                }
+            }, {
+                "_id": 0,
+                "affected_objects": 1
+            }):
+                mo = set(r["object"] for r in m["affected_objects"])
+                r |= so & mo
+            return r
+
         # Mark all as unknown
         r = dict((o, self.ST_UNKNOWN) for o in objects)
         sr = ObjectStatus.get_statuses(objects)
         sa = get_alarms(objects)
+        mo = get_maintainance(objects)
         for o in sr:
             if sr[o]:
                 # Check for alarms
@@ -307,7 +353,37 @@ class MapApplication(ExtApplication):
                     r[o] = self.ST_OK
             else:
                 r[o] = self.ST_DOWN
+            if o in mo:
+                r[o] |= self.ST_MAINTAINANCE
         return r
+
+    @classmethod
+    @cachedmethod(
+        key="managedobject-name-to-id-%s",
+        lock=lambda _: tags_lock
+    )
+    def managedobject_name_to_id(cls, name):
+        r = ManagedObject.objects.filter(name=name).values_list("id")
+        if r:
+            return r[0][0]
+        else:
+            return None
+
+    @classmethod
+    @cachedmethod(
+        key="interface-tags-to-id-%s-%s",
+        lock=lambda _: tags_lock
+    )
+    def interface_tags_to_id(cls, object_name, interface_name):
+        mo = cls.managedobject_name_to_id(object_name)
+        i = Interface._get_collection().find_one({
+            "managed_object": mo,
+            "name": interface_name
+        })
+        if i:
+            return i["_id"]
+        else:
+            return None
 
     @view(
         url="^metrics/$", method=["POST"],
@@ -330,41 +406,32 @@ class MapApplication(ExtApplication):
             return "|".join(["%s=%s" % (v, t[v]) for v in sorted(t)])
 
         # Build query
-        query = []
-        m_objects = defaultdict(set)  # metric -> [object, ...]
-        tag_id = {}
+        tag_id = {}  # object, interface -> id
         if_ids = {}  # id -> port id
+        mlst = []  # (metric, object, interface)
         for m in metrics:
-            m_objects[m["metric"]].add(m["tags"]["object"])
-            tag_id[qt(m["tags"])] = m["id"]
             if "object" in m["tags"] and "interface" in m["tags"]:
                 try:
-                    if_ids[interface_tags_to_id[m["tags"]]] = m["id"]
+                    if_ids[
+                        self.interface_tags_to_id(
+                            m["tags"]["object"],
+                            m["tags"]["interface"]
+                        )
+                    ] = m["id"]
+                    tag_id[m["object"], m["interface"]] = m["id"]
+                    mlst += [(m["metric"], m["object"], m["interface"])]
                 except KeyError:
                     pass
-        for m in m_objects:
-            for o in m_objects[m]:
-                query += [
-                    "SELECT object, last(value) "
-                    "FROM \"%s\" "
-                    "WHERE object='%s' "
-                    "GROUP BY object, interface" % (
-                        q(m),
-                        q(o)
-                    )
-                ]
-        if not query:
+        # @todo: Get last values from cache
+        if not mlst:
             return {}
-        query = ";".join(query)
-        client = tornado.httpclient.HTTPClient()
-        response = client.fetch(
-            "http://%s/query?db=%s&q=%s" % (
-                config.get_service("influxdb", limit=1)[0],
-                config.influx_db,
-                urllib.quote(query)
-            )
-        )
-        data = json.loads(response.body)
+        query = "; ".join([
+            "SELECT object, interface, last(value) AS value "
+            "FROM \"%s\" "
+            "WHERE object = '%s' AND interface = '%s' " % (
+                q(m), q(o), q(i)
+            ) for m, o, i in mlst
+        ])
         r = {}
         # Apply interface statuses
         for d in Interface._get_collection().find(
@@ -384,17 +451,17 @@ class MapApplication(ExtApplication):
                 "oper_status": d.get("oper_status", True)
             }
         # Apply metrics
-        for qr in data["results"]:
-            if not qr:
-                continue
-            for sv in qr["series"]:
-                pid = tag_id.get(qt(sv["tags"]))
+        client = InfluxDBClient()
+        try:
+            for rq in client.query(query):
+                pid = tag_id.get((rq["object"], rq["interface"]))
                 if not pid:
                     continue
                 if pid not in r:
                     r[pid] = {}
-                if sv["name"] not in r[pid]:
-                    r[pid][sv["name"]] = sv["values"][0][-1]
+                r[pid][rq["_name"]] = rq["value"]
+        except ValueError as e:
+            self.logger.error("[influxdb] Query error: %s" % e)
         return r
 
     @view("^(?P<id>[0-9a-f]{24})/data/$", method=["DELETE"],

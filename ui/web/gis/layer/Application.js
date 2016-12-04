@@ -19,8 +19,8 @@ Ext.define("NOC.gis.layer.Application", {
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/gis/layer/{{id}}/json/",
-            previewName: "Layer: {{name}}"
+            restUrl: new Ext.XTemplate('/gis/layer/{id}/json/'),
+            previewName: new Ext.XTemplate('Layer: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
@@ -105,7 +105,7 @@ Ext.define("NOC.gis.layer.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Zoom",
+                    title: __("Zoom"),
                     layout: "hbox",
                     items: [
                         {
@@ -133,7 +133,7 @@ Ext.define("NOC.gis.layer.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Style",
+                    title: __("Style"),
                     items: [
                         {
                             name: "stroke_color",
@@ -157,7 +157,7 @@ Ext.define("NOC.gis.layer.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Point Style",
+                    title: __("Point Style"),
                     items: [
                         {
                             name: "point_radius",
@@ -187,7 +187,7 @@ Ext.define("NOC.gis.layer.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Line Style",
+                    title: __("Line Style"),
                     items: [
                         {
                             name: "stroke_dashstyle",
@@ -206,7 +206,7 @@ Ext.define("NOC.gis.layer.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Text Style",
+                    title: __("Text Style"),
                     items: [
                         {
                             name: "show_labels",
@@ -220,7 +220,7 @@ Ext.define("NOC.gis.layer.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON

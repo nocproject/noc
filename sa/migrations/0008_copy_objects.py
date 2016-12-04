@@ -22,7 +22,6 @@ class Migration:
             if key is None:
                 return None
             return map[key]
-        db.start_transaction()
         # Fill administrative domains
         location2domain={}
         for id,name,description in db.execute("SELECT id,name,description FROM cm_objectlocation"):
@@ -60,8 +59,7 @@ class Migration:
         db.add_column("cm_objectnotify","group",models.ForeignKey(ObjectGroup,verbose_name="Group",blank=True,null=True))
         for id,category_id,location_id in db.execute("SELECT id,category_id,location_id FROM cm_objectnotify"):
             db.execute("UPDATE cm_objectnotify SET administrative_domain_id=%s,group_id=%s WHERE id=%s",[qget(location2domain,location_id),qget(category2group,category_id),id])
-        db.commit_transaction()
-    
+
     def backwards(self):
         "Write your backwards migration here"
         db.delete_column("cm_config","managed_object_id")

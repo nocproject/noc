@@ -16,8 +16,8 @@ Ext.define("NOC.fm.oidalias.Application", {
         var me = this;
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/fm/oidalias/{{id}}/json/",
-            previewName: "OID Alias: {{name}}"
+            restUrl: new Ext.XTemplate('/fm/oidalias/{id}/json/'),
+            previewName: new Ext.XTemplate('OID Alias: {name}')
         });
 
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
@@ -78,7 +78,7 @@ Ext.define("NOC.fm.oidalias.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON

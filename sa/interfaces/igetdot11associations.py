@@ -5,7 +5,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, ListOfParameter, DictParameter, MACAddressParameter, IPv4Parameter
 
 
 class IGetDot11Associations(Interface):

@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Huawei.VRP.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -24,12 +24,13 @@ class Script(BaseScript):
         cmd = "display mac-address"
         if mac is not None:
             cmd += " %s" % self.profile.convert_mac(mac)
-        version = self.scripts.get_version()["version"].split(".")[0]
-        if version == "3":
+        version = self.profile.fix_version(
+            self.scripts.get_version())
+        if version.startswith("3"):
             rx_line = rx_vrp3line
-        elif self.match_version(version__startswith="5.3"):
+        elif version.startswith("5.3"):
             rx_line = rx_vrp53line
-        elif version == "5":
+        elif version.startswith("5"):
             rx_line = rx_vrp5line
         r = []
         for l in self.cli(cmd).splitlines():

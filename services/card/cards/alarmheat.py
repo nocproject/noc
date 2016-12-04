@@ -7,15 +7,18 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import datetime
 import operator
+from collections import defaultdict
 ## Third-party modules
 import cachetools
+import geojson
 ## NOC modules
 from base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.inv.models.object import Object
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
+from noc.sa.models.managedobject import ManagedObject
+from noc.gis.models.layer import Layer
+from noc.inv.models.objectconnection import ObjectConnection
 
 
 class AlarmHeatCard(BaseCard):
@@ -32,27 +35,18 @@ class AlarmHeatCard(BaseCard):
 
     default_template_name = "alarmheat"
 
+    _layer_cache = {}
+    TOOLTIP_LIMIT = 5
+
     def get_data(self):
         return {}
 
-    def get_object_coords(self, mo):
-        """
-        Get managed object's coordinates
-        """
-        c = mo.container
-        while c:
-            x = c.get_data("geopoint", "x")
-            y = c.get_data("geopoint", "y")
-            if x and y:
-                return x, y
-            if c.container:
-                try:
-                    c = Object.objects.get(id=c.container)
-                except Object.DoesNotExist:
-                    break
-            else:
-                break
-        return None, None
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_layer_cache"))
+    def get_pop_layers(cls):
+        return list(
+            Layer.objects.filter(code__startswith="pop_")
+        )
 
     def get_ajax_data(self, **kwargs):
         def update_dict(d, s):
@@ -62,38 +56,115 @@ class AlarmHeatCard(BaseCard):
                 else:
                     d[k] = s[k]
 
+        zoom = int(self.handler.get_argument("z"))
+        west = float(self.handler.get_argument("w"))
+        east = float(self.handler.get_argument("e"))
+        north = float(self.handler.get_argument("n"))
+        south = float(self.handler.get_argument("s"))
+        active_layers = [l for l in self.get_pop_layers() if l.min_zoom <= zoom <= l.max_zoom]
         alarms = []
         services = {}
         subscribers = {}
+        segments = set()
+        t_data = defaultdict(list)
         if self.current_user.is_superuser:
             qs = ActiveAlarm.objects.all()
         else:
             qs = ActiveAlarm.objects.filter(adm_path__in=self.get_user_domains())
-        for a in qs:
-            mo = a.managed_object
-            x, y = self.get_object_coords(mo)
-            w = 0
+        for a in qs.only("id", "managed_object", "direct_subscribers", "direct_services"):
             s_sub = SummaryItem.items_to_dict(a.direct_subscribers)
             s_service = SummaryItem.items_to_dict(a.direct_services)
-            if x and y:
+            mo = a.managed_object
+            if mo.x and mo.y:
                 w = ServiceSummary.get_weight({
                     "subscriber": s_sub,
                     "service": s_service
                 })
+                # @todo: Check west/south hemisphere
+                if active_layers and west <= mo.x <= east and south <= mo.y <= north:
+                    t_data[mo.x, mo.y] += [(mo, w)]
+                    segments.add(mo.segment)
+            else:
+                w = 0
             alarms += [{
                 "alarm_id": str(a.id),
                 "managed_object": mo.name,
-                "x": x,
-                "y": y,
+                "x": mo.x,
+                "y": mo.y,
                 "w": max(w, 1)
             }]
             update_dict(services, s_service)
             update_dict(subscribers, s_sub)
-
+        links = None
+        o_seen = set()
+        if segments and active_layers:
+            seen = set(
+                ManagedObject.objects.filter(
+                    segment__in=list(segments)
+                ).values_list("x", "y")
+            )
+            bbox = geojson.Polygon([[
+                [west, north],
+                [east, north],
+                [east, south],
+                [west, south],
+                [west, north]
+            ]])
+            lines = []
+            for d in ObjectConnection._get_collection().find({
+                "type": "pop_link",
+                "layer": {
+                    "$in": [l.id for l in active_layers]
+                },
+                "line": {
+                    "$geoIntersects": {
+                        "$geometry": bbox
+                    }
+                }
+            }, {
+                "_id": 0,
+                "connection": 1,
+                "line": 1
+            }):
+                for c in d["line"]["coordinates"]:
+                    if tuple(c) in seen:
+                        o_seen.add(tuple(c))
+                        lines += [d["line"]]
+            if lines:
+                links = geojson.FeatureCollection(features=lines)
+        points = None
+        if t_data and active_layers:
+            points = []
+            for x, y in t_data:
+                if (x, y) not in o_seen:
+                    continue
+                mos = {}
+                for mo, w in t_data[x, y]:
+                    if mo not in mos:
+                        mos[mo] = w
+                mos = sorted(mos, key=lambda z: mos[z], reverse=True)[:self.TOOLTIP_LIMIT]
+                points += [
+                    geojson.Feature(
+                        geometry=geojson.Point(
+                            coordinates=[x, y]
+                        ),
+                        properties={
+                            "alarms": len(t_data[x, y]),
+                            "objects": [{
+                                "id": mo.id,
+                                "name": mo.name,
+                                "address": mo.address
+                            } for mo in mos]
+                        }
+                    )
+                ]
+            points = geojson.FeatureCollection(features=points)
         return {
             "alarms": alarms,
             "summary": self.f_glyph_summary({
                 "service": services,
                 "subscriber": subscribers
-            })
+            }),
+            "links": links,
+            "pops": points
         }

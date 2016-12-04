@@ -29,6 +29,7 @@ from noc.core.service.rpc import RPCError
 
 class MODiscoveryJob(PeriodicJob):
     model = ManagedObject
+    use_get_by_id = True
     use_offset = True
 
     def __init__(self, *args, **kwargs):
@@ -41,6 +42,7 @@ class MODiscoveryJob(PeriodicJob):
         )
         self.check_timings = []
         self.problems = {}  # check -> problem
+        self.caps = None
 
     def schedule_next(self, status):
         if self.check_timings:
@@ -74,6 +76,18 @@ class MODiscoveryJob(PeriodicJob):
     def set_problem(self, name, problem):
         self.problems[name] = problem
 
+    def get_caps(self):
+        """
+        Return object's capabilities
+        :return:
+        """
+        if self.caps is None:
+            self.caps = self.object.get_caps()
+        return self.caps
+
+    def update_caps(self, caps, source):
+        self.caps = self.object.update_caps(caps, source=source)
+
 
 class DiscoveryCheck(object):
     name = None
@@ -100,35 +114,59 @@ class DiscoveryCheck(object):
         checks = self.job.attrs.get("_checks", set())
         return not checks or self.name in checks
 
+    def has_required_script(self):
+        return (not self.required_script or
+                self.required_script in self.object.scripts)
+
+    def get_caps(self):
+        return self.job.get_caps()
+
+    def update_caps(self, caps, source):
+        self.job.update_caps(caps, source)
+
+    def has_capability(self, cap):
+        return bool(self.get_caps().get(cap))
+
+    def has_any_capability(self, caps):
+        for c in caps:
+            if self.has_capability(c):
+                return True
+        return False
+
+    def has_required_capabilities(self):
+        if not self.required_capabilities:
+            return True
+        caps = self.get_caps()
+        for cn in self.required_capabilities:
+            if cn not in caps:
+                self.logger.info(
+                    "Object hasn't required capability '%s'. "
+                    "Skipping",
+                    cn
+                )
+                return False
+            v = caps[cn]
+            if not v:
+                self.logger.info(
+                    "Capability '%s' is disabled. Skipping",
+                    cn
+                )
+                return False
+        return True
+
     def run(self):
         if not self.is_enabled():
             self.logger.info("Check is disabled. Skipping")
             return
         with self.job.check_timer(self.name):
             # Check required scripts
-            if (self.required_script and
-                    self.required_script not in self.object.scripts):
+            if not self.has_required_script():
                 self.logger.info("%s script is not supported. Skipping",
                                  self.required_script)
                 return
             # Check required capabilities
-            if self.required_capabilities:
-                caps = self.object.get_caps()
-                for cn in self.required_capabilities:
-                    if cn not in caps:
-                        self.logger.info(
-                            "Object hasn't required capability '%s'. "
-                            "Skipping",
-                            cn
-                        )
-                        return
-                    v = caps[cn]
-                    if not v:
-                        self.logger.info(
-                            "Capability '%s' is disabled. Skipping",
-                            cn
-                        )
-                        return
+            if not self.has_required_capabilities():
+                return
             # Run check
             try:
                 self.handler()
@@ -196,9 +234,9 @@ class DiscoveryCheck(object):
         """
         Returns Interface instance
         """
-        self.logger.debug("Remote port name: %s", name)
         mo = mo or self.object
         name = mo.profile.convert_interface_name(name)
+        self.logger.debug("Searching port by name: %s:%s", mo.name, name)
         key = (mo, name)
         if key not in self.if_name_cache:
             i = Interface.objects.filter(
@@ -212,8 +250,8 @@ class DiscoveryCheck(object):
         """
         Returns Interface instance referred by MAC address
         """
-        self.logger.debug("Remote port MAC: %s", mac)
         mo = mo or self.object
+        self.logger.debug("Searching port by MAC: %s:%s", mo.name, mac)
         key = (mo, mac)
         if key not in self.if_mac_cache:
             li = list(Interface.objects.filter(
@@ -232,8 +270,8 @@ class DiscoveryCheck(object):
         """
         Returns Interface instance referred by IP address
         """
-        self.logger.debug("Remote port IP: %s", ip)
         mo = mo or self.object
+        self.logger.debug("Searching port by IP: %s:%s", mo.name, ip)
         key = (mo, ip)
         if key not in self.if_ip_cache:
             li = list(Interface.objects.filter(
@@ -306,14 +344,16 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         # remote object -> [(local, remote), ..]
         candidates = defaultdict(set)
         loops = {}  # first interface, second interface
+        problems = {}
         # Check local side
         for li, ro, ri in self.iter_neighbors(self.object):
             # Resolve remote object
             remote_object = self.get_neighbor(ro)
             if not remote_object:
+                problems[li] = "Remote object '%s' is not found" % str(ro)
                 self.logger.info(
                     "Remote object '%s' is not found. Skipping",
-                    ro
+                    str(ro)
                 )
                 continue
             # Resolve remote interface name
@@ -322,11 +362,17 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 ri
             )
             if not remote_interface:
+                problems[li] = "Cannot resolve remote interface %s:%r. Skipping" % (remote_object.name, ri)
                 self.logger.info(
                     "Cannot resolve remote interface %s:%r. Skipping",
                     remote_object.name, ri
                 )
                 continue
+            else:
+                self.logger.debug(
+                    "Resolve remote interface as %s:%r",
+                    remote_object.name, ri
+                )
             # Detecting loops
             if remote_object.id == self.object.id:
                 loops[li] = remote_interface
@@ -361,14 +407,25 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             for li, ro_id, ri in self.iter_neighbors(remote_object):
                 ro = self.get_neighbor(ro_id)
                 if not ro or ro.id != self.object.id:
+                    self.logger.debug("Candidates check %s %s %s %s" % (li, ro_id, ro, ri))
                     continue  # To other objects
                 remote_interface = self.get_remote_interface(
                     self.object,
                     ri
                 )
                 if remote_interface:
+                    self.logger.debug(
+                        "Resolve local interface as %s:%r",
+                        self.object.name, ri
+                    )
                     confirmed.add((remote_interface, li))
+                self.logger.debug(
+                    "Candidates: %s, Confirmed: %s",
+                    candidates[remote_object],
+                    confirmed
+                )
             for l, r in candidates[remote_object] - confirmed:
+                problems[l] = "Pending link: %s - %s:%s" % (l, remote_object, r)
                 self.reject_link(
                     self.object, l,
                     remote_object, r
@@ -378,6 +435,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     self.object, l,
                     remote_object, r
                 )
+        if problems:
+            self.set_problem(problems)
 
     def iter_neighbors(self, mo):
         """
@@ -619,6 +678,23 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return
         #
         if lpolicy in ("O", "R") and rpolicy in ("O", "R"):
+            # Unlink when necessary
+            if llink:
+                try:
+                    li.unlink()
+                except ValueError as e:
+                    self.logger.info(
+                        "Failed to unlink %s: %s" % (llink, e)
+                    )
+                    return
+            if rlink:
+                try:
+                    ri.unlink()
+                except ValueError as e:
+                    self.logger.info(
+                        "Failed to unlink %s: %s" % (llink, e)
+                    )
+                    return
             self.logger.info(
                 "Linking: %s:%s -- %s:%s",
                 local_object.name, local_interface,
@@ -734,10 +810,10 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         if not ri:
             self.logger.info(
                 "Cannot unlink: %s:%s -- %s:%s. "
-                "Interface %s is not discovered",
+                "Interface %s:%s is not discovered",
                 local_object.name, local_interface,
                 remote_object.name, remote_interface,
-                remote_interface
+                remote_object.name, remote_interface
             )
             return
         # Get existing links

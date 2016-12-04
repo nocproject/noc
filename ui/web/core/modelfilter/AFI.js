@@ -51,5 +51,10 @@ Ext.define("NOC.core.modelfilter.AFI", {
         if(this._value !== null)
             r[this.name] = this._value;
         return r;
+    },
+
+    setFilter: function (filter) {
+        var me = this;
+        console.warn('setting a value for the field AFI is not implemented');
     }
 });

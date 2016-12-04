@@ -7,137 +7,126 @@
 console.debug("Defining NOC.inv.map.inspectors.ManagedObjectInspector");
 
 Ext.define("NOC.inv.map.inspectors.ManagedObjectInspector", {
-    extend: "Ext.panel.Panel",
+    extend: "NOC.inv.map.inspectors.Inspector",
     title: __("Object Inspector"),
-    autoScroll: true,
-        bodyStyle: {
-        background: "#c0c0c0"
-    },
+
+    tpl: [
+        '<b>Name:</b>&nbsp;{[Ext.htmlEncode(values.name)]}<br/>',
+        '<b>Address:</b>&nbsp;{address}<br/>',
+        '<b>Profile:</b>&nbsp;{[Ext.htmlEncode(values.profile)]}<br/>',
+        '<tpl if="platform">',
+            '<b>Platform:</b>&nbsp;{[Ext.htmlEncode(values.platform)]}<br/>',
+        '</tpl>',
+        '<tpl if="external">',
+            '<b>Segment:</b>&nbsp;{[Ext.htmlEncode(values.external_segment.name)]}<br/>',
+        '</tpl>',
+        '<tpl if="description">',
+            '<b>Description:</b>&nbsp;{[Ext.htmlEncode(values.description)]}<br/>',
+        '</tpl>'
+    ],
 
     initComponent: function() {
-        var me = this;
-        me.infoText = Ext.create("Ext.container.Container", {
-            padding: 4
-        });
-
-        me.lookButton = Ext.create("Ext.button.Button", {
+        this.lookButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.pencil,
-            scope: me,
+            scope: this,
             tooltip: __("Edit"),
-            handler: me.onLook,
+            handler: this.onLook,
             disabled: true
         });
 
-        me.cardButton = Ext.create("Ext.button.Button", {
+        this.cardButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.eye,
-            scope: me,
+            scope: this,
             tooltip: __("View card"),
-            handler: me.onMOCard,
+            handler: this.onMOCard,
             disabled: true
         });
 
-        me.segmentButton = Ext.create("Ext.button.Button", {
+        this.segmentButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.location_arrow,
-            scope: me,
+            scope: this,
             tooltip: __("Jump to Segment"),
-            handler: me.onJumpSegment,
+            handler: this.onJumpSegment,
             disabled: true
         });
 
-        me.dashboardButton = Ext.create("Ext.button.Button", {
+        this.dashboardButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.line_chart,
-            scope: me,
+            scope: this,
             tooltip: __("Show dashboard"),
-            handler: me.onDashboard,
+            handler: this.onDashboard,
             disabled: true
         });
 
-        Ext.apply(me, {
-            items: [
-                me.infoText
-            ],
+        this.consoleButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.terminal,
+            scope: this,
+            tooltip: __("Console"),
+            handler: this.onConsole,
+            disabled: true
+        });
+
+        Ext.apply(this, {
             dockedItems: [{
                 xtype: "toolbar",
                 dock: "top",
                 items: [
-                    me.cardButton,
-                    me.lookButton,
-                    me.segmentButton,
-                    me.dashboardButton
+                    this.cardButton,
+                    this.lookButton,
+                    this.segmentButton,
+                    this.dashboardButton,
+                    this.consoleButton
                 ]
             }]
         });
-        me.callParent();
-    },
-
-    preview: function(segmentId, objectId) {
-        var me = this;
-        Ext.Ajax.request({
-            url: "/inv/map/" + segmentId + "/info/managedobject/" + objectId + "/",
-            method: "GET",
-            scope: me,
-            mask: me,
-            success: function(response) {
-                me.applyData(Ext.decode(response.responseText))
-            }
-        });
-    },
-
-    applyData: function(data) {
-        var me = this,
-            t;
-
-        t = "<b>Name:</b> " + Ext.htmlEncode(data.name);
-        t += "<br><b>Address:</b> " + data.address;
-        t += "<br><b>Profile:</b> " + Ext.htmlEncode(data.profile);
-        if(data.platform && data.platform.length) {
-            t += "<br><b>Platform:</b> " + Ext.htmlEncode(data.platform);
-        }
-        if(data.external) {
-            t += "<br><b>Segment:</b> " + Ext.htmlEncode(data.external_segment.name);
-            me.externalSegmentId = data.external_segment.id;
-            me.segmentButton.setDisabled(false);
-        } else {
-            me.externalSegmentId = null;
-            me.segmentButton.setDisabled(true);
-        }
-        if(data.description && data.description.length) {
-            t += "<br><b>Description:</b><br>" + Ext.htmlEncode(data.description);
-        }
-        me.infoText.setHtml(t);
-        me.currentObjectId = data.id;
-        me.lookButton.setDisabled(false);
-        me.cardButton.setDisabled(false);
-        me.dashboardButton.setDisabled(false);
+        this.callParent();
     },
 
     onLook: function() {
-        var me = this;
-        if(me.currentObjectId) {
-            NOC.launch("sa.managedobject", "history", {args: [me.currentObjectId]});
+        if(this.currentObjectId) {
+            NOC.launch("sa.managedobject", "history", {args: [this.currentObjectId]});
         }
     },
 
     onJumpSegment: function() {
-        var me = this;
-        me.app.loadSegment(me.externalSegmentId);
+        this.app.loadSegment(this.externalSegmentId);
     },
 
     onMOCard: function() {
-        var me = this;
-        if(me.currentObjectId) {
+        if(this.currentObjectId) {
             window.open(
-                "/api/card/view/managedobject/" + me.currentObjectId + "/"
+                "/api/card/view/managedobject/" + this.currentObjectId + "/"
             );
         }
     },
 
     onDashboard: function() {
-        var me = this;
-        if(me.currentObjectId) {
+        if(this.currentObjectId) {
             window.open(
-                "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.currentObjectId
+                "/ui/grafana/dashboard/script/noc.js?dashboard=mo&id=" + this.currentObjectId
             );
+        }
+    },
+
+    onConsole: function() {
+        window.open(this.consoleUrl);
+    },
+
+    enableButtons: function(data) {
+        this.lookButton.setDisabled(false);
+        this.cardButton.setDisabled(false);
+        this.dashboardButton.setDisabled(false);
+        this.consoleButton.setDisabled(false);
+
+        this.currentObjectId = data.id;
+        this.consoleUrl = data.console_url;
+
+        if(data.external) {
+            this.externalSegmentId = data.external_segment.id;
+            this.segmentButton.setDisabled(false);
+        } else {
+            this.externalSegmentId = null;
+            this.segmentButton.setDisabled(true);
         }
     }
 });

@@ -12,8 +12,7 @@ Ext.define("NOC.wf.workflow.Application", {
         "NOC.wf.workflow.Model",
         "NOC.wf.solution.LookupField",
         "NOC.wf.workflow.LanesModel",
-        "NOC.wf.workflow.VariablesModel",
-        "NOC.wf.workflow.templates.NodeTooltip"
+        "NOC.wf.workflow.VariablesModel"
     ],
     model: "NOC.wf.workflow.Model",
     columns: [
@@ -100,7 +99,7 @@ Ext.define("NOC.wf.workflow.Application", {
     ],
     inlines: [
         {
-            title: "Variables",
+            title: __("Variables"),
             model: "NOC.wf.workflow.VariablesModel",
             columns: [
                 {
@@ -137,7 +136,7 @@ Ext.define("NOC.wf.workflow.Application", {
             ]
         },
         {
-            title: "Lanes",
+            title: __("Lanes"),
             model: "NOC.wf.workflow.LanesModel",
             columns: [
                 {
@@ -165,7 +164,7 @@ Ext.define("NOC.wf.workflow.Application", {
                     itemId: "wfedit",
                     text: __("WF Editor"),
                     glyph: NOC.glyph.pencil,
-                    tooltip: "Workflow Editor",
+                    tooltip: __("Workflow Editor"),
                     scope: me,
                     handler: me.onWFEditor
                 }

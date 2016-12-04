@@ -13,11 +13,13 @@ from auth import AuthRequestHandler
 from logout import LogoutRequestHandler
 from api.login import LoginAPI
 from noc.core.handler import get_handler
+from noc.services.login.backends.base import BaseAuthBackend
+from noc.config import config
 
 
 class LoginService(UIService):
     name = "login"
-    process_name = "noc-%(name).10s-%(instance).2s"
+    process_name = "noc-%(name).10s-%(instance).3s"
     api = [
         LoginAPI
     ]
@@ -25,8 +27,8 @@ class LoginService(UIService):
 
     def get_handlers(self):
         return super(LoginService, self).get_handlers() + [
-            ("^/auth/$", AuthRequestHandler, {"service": self}),
-            ("^/logout/$", LogoutRequestHandler)
+            ("^/api/auth/auth/$", AuthRequestHandler, {"service": self}),
+            ("^/api/login/logout/$", LogoutRequestHandler)
         ]
 
     # Fields excluded from logging
@@ -37,67 +39,73 @@ class LoginService(UIService):
         "retype_password"
     ]
 
+    def iter_methods(self):
+        for m in self.config.login.methods.split(","):
+            yield m.strip()
+
     def authenticate(self, handler, credentials):
         """
         Authenticate user. Returns True when user is authenticated
         """
-        method = self.config.login.method
-        try:
-            backend = get_handler(method)(self)
-        except Exception as e:
-            self.logger.error(
-                "Failed to initialize '%s' backend: %s",
-                method, e
-            )
-            return False
         c = credentials.copy()
         for f in self.HIDDEN_FIELDS:
             if f in c:
                 c[f] = "***"
-        self.logger.info("Authenticating credentials %s using method %s",
-                         c, method)
-        try:
-            backend.authenticate(**credentials)
-        except backend.LoginError as e:
-            self.logger.error("Login failed for %s: %s", c, e)
-            return False
-        self.logger.info("Authorized")
-        # Set cookie
-        handler.set_secure_cookie(
-            "noc_user",
-            credentials.get("user"),
-            expires_days=self.config.login.session_ttl / 86400
-        )
-        return True
+        le = "No active auth methods"
+        for method in self.iter_methods():
+            bc = BaseAuthBackend.get_backend(method)
+            if not bc:
+                self.logger.error("Cannot initialize backend '%s'", method)
+                continue
+            backend = bc(self)
+            self.logger.info(
+                "Authenticating credentials %s using method %s",
+                c, method
+            )
+            try:
+                backend.authenticate(**credentials)
+            except backend.LoginError as e:
+                le = str(e)
+                continue
+            self.logger.info("Authorized credentials: %s", c)
+            # Set cookie
+            handler.set_secure_cookie(
+                "noc_user",
+                credentials.get("user"),
+                expires_days=self.config.login.session_ttl / 86400
+            )
+            return True
+        self.logger.error("Login failed for %s: %s", c, le)
+        return False
 
     def change_credentials(self, handler, credentials):
         """
         Change credentials. Return true when credentials changed
         """
-        method = self.config.login.method
-        try:
-            backend = get_handler(method)(self)
-        except Exception as e:
-            self.logger.error(
-                "Failed to initialize '%s' backend: %s",
-                method, e
-            )
-            return False
         c = credentials.copy()
         for f in self.HIDDEN_FIELDS:
             if f in c:
                 c[f] = "***"
-        self.logger.info("Changing credentials %s using method %s",
-                         c, method)
-        try:
-            backend.change_credentials(**credentials)
-        except backend.LoginError as e:
-            self.logger.error(
-                "Failed to change credentials for %s: %s", c, e
-            )
-            return False
-        self.logger.info("Changed")
-        return True
+        r = False
+        for method in self.iter_methods():
+            bc = BaseAuthBackend.get_backend(method)
+            if not bc:
+                self.logger.error("Cannot initialize backend '%s'", method)
+                continue
+            backend = bc(self)
+            self.logger.info("Changing credentials %s using method %s",
+                             c, method)
+            try:
+                backend.change_credentials(**credentials)
+                r = True
+            except NotImplementedError:
+                continue
+            except backend.LoginError as e:
+                self.logger.error(
+                    "Failed to change credentials for %s: %s", c, e
+                )
+            self.logger.info("Changed user credentials: %s", c)
+        return r
 
 if __name__ == "__main__":
     LoginService().start()

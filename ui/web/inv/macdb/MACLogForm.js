@@ -96,7 +96,7 @@ Ext.define("NOC.inv.macdb.MACLogForm", {
                 var r = Ext.decode(response.responseText);
                 //me.store.clear();
                 if(!r || !r.length) {
-                    NOC.info("No MAC history found");
+                    NOC.info(__("No MAC history found"));
                 } else {
                     me.grid.setTitle(Ext.String.format(" MAC {0} history",
                         me.currentMAC));
@@ -104,7 +104,7 @@ Ext.define("NOC.inv.macdb.MACLogForm", {
                 }
             },
             failure: function() {
-                NOC.error("Failed to get MAC history");
+                NOC.error(__("Failed to get MAC history"));
             }
         });
     },

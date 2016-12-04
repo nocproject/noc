@@ -58,9 +58,10 @@ class Script(BaseScript):
 
         # Get ports in vlans
         r = []
-        if self.match_version(version__startswith="5.3"):
+        version = self.profile.fix_version(self.scripts.get_version())
+        if version.startswith("5.3"):
             v = self.cli("display port allow-vlan")
-        elif self.match_version(version__startswith="3.10"):
+        elif version.startswith("3.10"):
             rx_line = re.compile(
                r"""
                (?P<interface>\S+)\scurrent\sstate

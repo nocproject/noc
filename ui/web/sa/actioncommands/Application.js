@@ -20,8 +20,8 @@ Ext.define("NOC.sa.actioncommands.Application", {
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/sa/actioncommands/{{id}}/json/",
-            previewName: "Action Commands: {{name}}"
+            restUrl: new Ext.XTemplate('/sa/actioncommands/{id}/json/'),
+            previewName: new Ext.XTemplate('Action Commands: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
@@ -129,7 +129,7 @@ Ext.define("NOC.sa.actioncommands.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
@@ -142,13 +142,13 @@ Ext.define("NOC.sa.actioncommands.Application", {
 
     filters: [
         {
-            title: "By SA Profile",
+            title: __("By SA Profile"),
             name: "profile",
             ftype: "lookup",
             lookup: "main.ref.profile"
         },
         {
-            title: "By Action",
+            title: __("By Action"),
             name: "action",
             ftype: "lookup",
             lookup: "sa.action"

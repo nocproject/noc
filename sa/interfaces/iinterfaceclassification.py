@@ -8,7 +8,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import Interface, Parameter, NoneParameter, StringParameter
 
 
 class IInterfaceClassification(Interface):

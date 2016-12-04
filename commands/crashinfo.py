@@ -88,13 +88,22 @@ class Command(BaseCommand):
             path = os.path.join(self.PREFIX, "%s.json" % u)
             if not os.path.exists(path):
                 self.stderr.write("Crashinfo not found: %s\n" % u)
-                continue
+                if os.path.exists(u):
+                    path = u
+                else:
+                    continue
             with open(path) as f:
                 data = ujson.load(f)
             self.stdout.write(data["traceback"])
             self.stdout.write("\n\n")
 
     def handle_clear(self, clear_uuids, *args, **options):
+        if clear_uuids == "all":
+            clear_uuids = [
+                fn[:-5]
+                for fn in os.listdir(self.PREFIX)
+                if fn.endswith(".json")
+            ]
         for u in clear_uuids:
             path = os.path.join(self.PREFIX, "%s.json" % u)
             if not os.path.exists(path):

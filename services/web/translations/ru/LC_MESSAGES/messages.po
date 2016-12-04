@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-09-15 20:07+0500\n"
-"PO-Revision-Date: 2016-09-15 20:27+0500\n"
+"POT-Creation-Date: 2016-11-16 09:32+0500\n"
+"PO-Revision-Date: 2016-11-16 09:49+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -26,8 +26,21 @@ msgid "All"
 msgstr "Все"
 
 #: lib/app/reportapplication.py:55
+#: services/web/apps/fm/reportalarmdetail/views.py:30
 msgid "Reports"
 msgstr "Отчеты"
+
+#: lib/app/simplereport.py:488
+msgid "Print"
+msgstr "Печать"
+
+#: services/web/apps/bi/__init__.py:12
+msgid "BI"
+msgstr ""
+
+#: services/web/apps/bi/dashboardlayout/views.py:20
+msgid "Dashboard Layout"
+msgstr ""
 
 #: services/web/apps/cm/__init__.py:12
 msgid "Configuration Management"
@@ -48,6 +61,14 @@ msgstr "Уведомления по объектам"
 #: services/web/apps/cm/prefixlist/views.py:25
 msgid "Prefix Lists"
 msgstr "Списки префиксов"
+
+#: services/web/apps/cm/reportlatestchanges/views.py:17
+msgid "Type"
+msgstr "Тип"
+
+#: services/web/apps/cm/reportlatestchanges/views.py:18
+msgid "In Days"
+msgstr "В днях"
 
 #: services/web/apps/cm/reportlatestchanges/views.py:23
 msgid "Latest Changes"
@@ -88,7 +109,7 @@ msgstr "Правила валидации"
 
 #: services/web/apps/crm/__init__.py:12
 msgid "CRM"
-msgstr ""
+msgstr "Учёт клиентов"
 
 #: services/web/apps/crm/subscriber/views.py:19
 msgid "Subscriber"
@@ -176,11 +197,11 @@ msgstr "Сводка по зонам NS"
 msgid "Fault Management"
 msgstr "Управление авариями"
 
-#: services/web/apps/fm/alarm/views.py:37
+#: services/web/apps/fm/alarm/views.py:42
 msgid "Alarm"
 msgstr "Авария"
 
-#: services/web/apps/fm/alarm/views.py:38
+#: services/web/apps/fm/alarm/views.py:43
 msgid "Alarms"
 msgstr "Аварии"
 
@@ -196,6 +217,10 @@ msgstr "Классы аварий"
 #: services/web/apps/fm/alarmclassconfig/views.py:20
 msgid "Alarm Class Config"
 msgstr "Настройка класса аварий"
+
+#: services/web/apps/fm/alarmdiagnosticconfig/views.py:20
+msgid "Alarm Diagnostic"
+msgstr "Диагностика аварий"
 
 #: services/web/apps/fm/alarmescalation/views.py:19
 #: services/web/apps/fm/alarmescalation/views.py:20
@@ -254,7 +279,7 @@ msgstr "Правила игнорирования событий"
 #: services/web/apps/fm/ignorepattern/views.py:20
 #: services/web/apps/fm/ignorepattern/views.py:21
 msgid "Ignore Patterns"
-msgstr "Маски игнорирования"
+msgstr "Шаблоны игнорирования"
 
 #: services/web/apps/fm/mib/views.py:22 services/web/apps/fm/mib/views.py:23
 msgid "MIB"
@@ -275,106 +300,159 @@ msgstr "Монитор FM"
 msgid "OID Aliases"
 msgstr "Синонимы OID"
 
-#: services/web/apps/fm/reportalarmdetail/views.py:29
 #: services/web/apps/fm/reportalarmdetail/views.py:30
+#: services/web/apps/fm/reportalarmdetail/views.py:31
 msgid "Alarm Detail"
 msgstr "Детали аварии"
 
-#: services/web/apps/fm/reportavailability/views.py:22
+#: services/web/apps/fm/reportavailability/views.py:31
+#: services/web/apps/fm/reportreboots/views.py:29
+msgid "Inteval"
+msgstr "Интервал"
+
+#: services/web/apps/fm/reportavailability/views.py:45
+#: services/web/apps/fm/reportoutages/views.py:137
 msgid "Availability"
 msgstr "Доступность"
 
-#: services/web/apps/fm/reportclassificationquality/views.py:16
+#: services/web/apps/fm/reportavailability/views.py:49
+msgid "Availability (1 day)"
+msgstr "Доступность (за 1 день)"
+
+#: services/web/apps/fm/reportavailability/views.py:54
+msgid "Availability (7 days)"
+msgstr "Доступность (за 7 дней)"
+
+#: services/web/apps/fm/reportavailability/views.py:59
+msgid "Availability (30 day)"
+msgstr "Доступность (за 30 дней)"
+
+#: services/web/apps/fm/reportavailability/views.py:117
+msgid "Adm. Domain"
+msgstr "З.О."
+
+#: services/web/apps/fm/reportavailability/views.py:119
+msgid "Day"
+msgstr "Дней"
+
+#: services/web/apps/fm/reportclassificationquality/views.py:17
 msgid "Classification Quality"
 msgstr "Качество классификации"
 
-#: services/web/apps/fm/reportclassificationrule/views.py:21
-#: services/web/apps/sa/reportobjectsummary/views.py:42
-#: services/web/apps/sa/reportobjectsummary/views.py:53
-#: services/web/apps/sa/reportobjectsummary/views.py:74
-msgid "Profile"
-msgstr "Профиль"
-
-#: services/web/apps/fm/reportescalations/views.py:25
-#: services/web/apps/fm/reportreboots/views.py:23
+#: services/web/apps/fm/reportavailability/views.py:27
+#: services/web/apps/fm/reportescalations/views.py:26
+#: services/web/apps/fm/reportoutages/views.py:27
+#: services/web/apps/fm/reportreboots/views.py:25
 msgid "Range"
 msgstr "Диапазон"
 
-#: services/web/apps/fm/reportescalations/views.py:26
-#: services/web/apps/fm/reportreboots/views.py:24
+#: services/web/apps/fm/reportavailability/views.py:28
+#: services/web/apps/fm/reportescalations/views.py:27
+#: services/web/apps/fm/reportoutages/views.py:28
+#: services/web/apps/fm/reportreboots/views.py:26
 msgid "1 day"
 msgstr "1 день"
 
-#: services/web/apps/fm/reportescalations/views.py:27
-#: services/web/apps/fm/reportreboots/views.py:25
+#: services/web/apps/fm/reportavailability/views.py:29
+#: services/web/apps/fm/reportescalations/views.py:28
+#: services/web/apps/fm/reportoutages/views.py:29
+#: services/web/apps/fm/reportreboots/views.py:27
 msgid "1 week"
 msgstr "1 неделя"
 
-#: services/web/apps/fm/reportescalations/views.py:28
-#: services/web/apps/fm/reportreboots/views.py:26
+#: services/web/apps/fm/reportavailability/views.py:30
+#: services/web/apps/fm/reportescalations/views.py:29
+#: services/web/apps/fm/reportoutages/views.py:30
+#: services/web/apps/fm/reportreboots/views.py:28
 msgid "1 month"
 msgstr "1 месяц"
 
-#: services/web/apps/fm/reportescalations/views.py:41
+#: services/web/apps/fm/reportescalations/views.py:30
+msgid "Interval"
+msgstr "Интервал"
+
+#: services/web/apps/fm/reportavailability/views.py:34
+#: services/web/apps/fm/reportescalations/views.py:33
+#: services/web/apps/fm/reportoutages/views.py:34
+#: services/web/apps/fm/reportreboots/views.py:32
+msgid "From Date"
+msgstr "С"
+
+#: services/web/apps/fm/reportavailability/views.py:39
+#: services/web/apps/fm/reportescalations/views.py:38
+#: services/web/apps/fm/reportoutages/views.py:39
+#: services/web/apps/fm/reportreboots/views.py:37
+msgid "To Date"
+msgstr "По"
+
+#: services/web/apps/fm/reportescalations/views.py:44
 msgid "Escalations"
 msgstr "Эскалации"
 
-#: services/web/apps/fm/reportescalations/views.py:87
+#: services/web/apps/fm/reportescalations/views.py:48
+msgid "Escalations (1 day)"
+msgstr "Эскалации (за 1 день)"
+
+#: services/web/apps/fm/reportescalations/views.py:53
+msgid "Escalations (7 days)"
+msgstr "Эскалации (за 7 дней)"
+
+#: services/web/apps/fm/reportescalations/views.py:58
+msgid "Escalations (30 day)"
+msgstr "Эскалации (за 30 дней)"
+
+#: services/web/apps/fm/reportescalations/views.py:111
 msgid "Timestamp"
 msgstr "Время"
 
-#: services/web/apps/fm/reportescalations/views.py:88
+#: services/web/apps/fm/reportescalations/views.py:112
 msgid "Escalation Timestamp"
 msgstr "Время эскалации"
 
-#: services/web/apps/fm/reportescalations/views.py:89
-#: services/web/apps/fm/reportreboots/views.py:93
-#: services/web/apps/sa/reportfaileddiscovery/views.py:65
+#: services/web/apps/fm/reportavailability/views.py:118
+#: services/web/apps/fm/reportescalations/views.py:113
+#: services/web/apps/fm/reportoutages/views.py:133
+#: services/web/apps/fm/reportreboots/views.py:127
+#: services/web/apps/inv/reportdiscoverycaps/views.py:47
+#: services/web/apps/inv/reportdiscoverypoison/views.py:65
+#: services/web/apps/sa/reportfaileddiscovery/views.py:114
 msgid "Managed Object"
 msgstr "Объекты управления"
 
-#: services/web/apps/fm/reportescalations/views.py:90
-#: services/web/apps/ip/ipam/views.py:822
-#: services/web/apps/sa/reportfaileddiscovery/views.py:65
-msgid "Address"
-msgstr "Адрес"
-
-#: services/web/apps/fm/reportescalations/views.py:91
-#: services/web/apps/sa/reportobjectsummary/views.py:74
-#: services/web/apps/sa/reportobjectsummary/views.py:80
-msgid "Platform"
-msgstr "Платформа"
-
-#: services/web/apps/fm/reportescalations/views.py:92
+#: services/web/apps/fm/reportescalations/views.py:116
 msgid "Segment"
 msgstr "Сегмент"
 
-#: services/web/apps/fm/reportescalations/views.py:93
+#: services/web/apps/fm/reportescalations/views.py:117
 msgid "TT"
 msgstr ""
 
-#: services/web/apps/fm/reportescalations/views.py:94
+#: services/web/apps/fm/reportescalations/views.py:118
 msgid "Objects"
 msgstr "Объекты"
 
 #: services/web/apps/crm/subscriber/views.py:20
-#: services/web/apps/fm/reportescalations/views.py:95
+#: services/web/apps/fm/reportescalations/views.py:119
 msgid "Subscribers"
 msgstr "Абоненты"
 
-#: services/web/apps/fm/reporteventsummary/views.py:20
+#: services/web/apps/fm/reporteventsummary/views.py:23
 msgid "By Event Class"
 msgstr "По классу события"
 
-#: services/web/apps/fm/reporteventsummary/views.py:21
+#: services/web/apps/fm/reporteventsummary/views.py:24
 msgid "By Managed Object"
 msgstr "По объектам"
 
-#: services/web/apps/fm/reporteventsummary/views.py:23
+#: services/web/apps/fm/reporteventsummary/views.py:26
 msgid "By Status"
 msgstr "По статусу"
 
-#: services/web/apps/fm/reporteventsummary/views.py:32
+#: services/web/apps/fm/reporteventsummary/views.py:31
+msgid "Report type"
+msgstr "Тип отчёта"
+
+#: services/web/apps/fm/reporteventsummary/views.py:35
 msgid "Event Summary"
 msgstr "Сводка событий"
 
@@ -386,38 +464,78 @@ msgstr "Иерархия событий и аварий"
 msgid "Local Classification Rules (JSON)"
 msgstr "Локальные правила классификации"
 
-#: services/web/apps/fm/reportmibs/views.py:16
+#: services/web/apps/fm/reportmibs/views.py:17
 msgid "Installed MIBs"
 msgstr "Установленные MIB"
 
-#: services/web/apps/fm/reportmissedmibs/views.py:18
+#: services/web/apps/fm/reportmissedmibs/views.py:20
 msgid "Missed MIBs"
-msgstr "Пропущенные MIB"
+msgstr "Ошибочные MIB"
+
+#: services/web/apps/fm/reportoutages/views.py:31
+msgid "Duration"
+msgstr "Продолжительность"
 
 #: services/web/apps/fm/outage/views.py:15
 #: services/web/apps/fm/outage/views.py:16
-#: services/web/apps/fm/reportoutages/views.py:32
+#: services/web/apps/fm/reportoutages/views.py:45
 msgid "Outages"
 msgstr "Оперативная обстановка"
 
-#: services/web/apps/fm/reportoverlappedoids/views.py:16
+#: services/web/apps/fm/reportoutages/views.py:49
+msgid "Outages (1 day)"
+msgstr "Оперативная обстановка (за 1 день)"
+
+#: services/web/apps/fm/reportoutages/views.py:54
+msgid "Outages (7 days)"
+msgstr "Оперативная обстановка (за 7 дней)"
+
+#: services/web/apps/fm/reportoutages/views.py:59
+msgid "Outages (30 day)"
+msgstr "Оперативная обстановка (за 30 дней)"
+
+#: services/web/apps/fm/reportoutages/views.py:134
+msgid "Managed"
+msgstr "Управляемый"
+
+#: services/web/apps/fm/reportoutages/views.py:136
+msgid "Downtime"
+msgstr "Время простоя"
+
+#: services/web/apps/fm/reportoutages/views.py:138
+msgid "Downs"
+msgstr "Простои"
+
+#: services/web/apps/fm/reportoverlappedoids/views.py:17
 msgid "Overlapped MIB OIDs"
 msgstr "Пересекающиеся OID"
 
-#: services/web/apps/fm/reportreboots/views.py:39
-#: services/web/apps/fm/reportreboots/views.py:94
+#: services/web/apps/fm/reportreboots/views.py:43
+#: services/web/apps/fm/reportreboots/views.py:128
 msgid "Reboots"
 msgstr "Перезагрузки"
+
+#: services/web/apps/fm/reportreboots/views.py:47
+msgid "Reboots (1 day)"
+msgstr "Перезагрузки (за 1 день)"
+
+#: services/web/apps/fm/reportreboots/views.py:52
+msgid "Reboots (7 days)"
+msgstr "Перезагрузки (за 7 дней)"
+
+#: services/web/apps/fm/reportreboots/views.py:57
+msgid "Reboot (30 day)"
+msgstr "Перезагрузки (за 30 дней)"
 
 #: services/web/apps/fm/reportrulesbyprofile/views.py:19
 msgid "Rules by Profile"
 msgstr "Правила по профилю"
 
-#: services/web/apps/fm/reportrulesetsummary/views.py:18
+#: services/web/apps/fm/reportrulesetsummary/views.py:19
 msgid "Ruleset Summary"
-msgstr "Свока по правилам"
+msgstr "Сводка по набору правил"
 
-#: services/web/apps/fm/reportunclassifiedoids/views.py:16
+#: services/web/apps/fm/reportunclassifiedoids/views.py:18
 msgid "Unclassified Trap OIDs"
 msgstr "Неклассифицированные OID трапов"
 
@@ -483,15 +601,20 @@ msgstr "Улицы"
 #: services/web/apps/inv/__init__.py:13 services/web/apps/inv/inv/views.py:26
 #: services/web/apps/inv/inv/views.py:27
 msgid "Inventory"
-msgstr "Инвентарь"
+msgstr "Учет объектов"
 
 #: services/web/apps/inv/capability/views.py:20
 msgid "Capability"
-msgstr "Свойство"
+msgstr "Способность"
 
 #: services/web/apps/inv/capability/views.py:21
+#: services/web/apps/inv/reportdiscoverycaps/views.py:47
 msgid "Capabilities"
-msgstr "Свойства"
+msgstr "Способности"
+
+#: services/web/apps/inv/card/views.py:15 services/web/apps/inv/card/views.py:16
+msgid "Cards"
+msgstr "Карточки"
 
 #: services/web/apps/inv/connectionrule/views.py:21
 #: services/web/apps/inv/connectionrule/views.py:22
@@ -518,11 +641,6 @@ msgstr ""
 msgid "Firmware Policy"
 msgstr "Политика Firmware"
 
-#: services/web/apps/inv/interface/views.py:30
-#: services/web/apps/inv/interface/views.py:31
-msgid "Interfaces"
-msgstr "Интерфейсы"
-
 #: services/web/apps/inv/interfaceclassificationrule/views.py:19
 msgid "Interface Classification Rule"
 msgstr "Правило классификации интерфейсов"
@@ -547,9 +665,13 @@ msgstr ""
 msgid "Mac DB"
 msgstr ""
 
-#: services/web/apps/inv/map/views.py:41 services/web/apps/inv/map/views.py:42
+#: services/web/apps/inv/map/views.py:47 services/web/apps/inv/map/views.py:48
 msgid "Network Map"
 msgstr "Карта сети"
+
+#: services/web/apps/inv/map/views.py:83
+msgid "Too many objects"
+msgstr "Слишком много объектов"
 
 #: services/web/apps/inv/modelinterface/views.py:19
 msgid "Model Interface"
@@ -571,11 +693,11 @@ msgstr "Отображение моделей"
 msgid "Monitor"
 msgstr "Монитор"
 
-#: services/web/apps/inv/networksegment/views.py:20
+#: services/web/apps/inv/networksegment/views.py:21
 msgid "Network Segment"
 msgstr "Сегмент сети"
 
-#: services/web/apps/inv/networksegment/views.py:21
+#: services/web/apps/inv/networksegment/views.py:22
 msgid "Network Segments"
 msgstr "Сегменты сети"
 
@@ -590,37 +712,104 @@ msgstr "Сравнить спецификации"
 
 #: services/web/apps/inv/reportdiscovery/views.py:24
 msgid "Discovery Summary"
-msgstr "Итог discovery"
+msgstr "Сводка опроса"
 
-#: services/web/apps/inv/reportdiscoveryproblem/views.py:21
-msgid "Discovery Problems"
-msgstr "Проблемы discovery"
+#: services/web/apps/inv/reportdiscoverycaps/views.py:34
+msgid "Discovery Object Caps"
+msgstr "Найденные возможности оборудования"
 
-#: services/web/apps/inv/reportdiscoveryproblem/views.py:34
+#: services/web/apps/inv/reportdiscoverycaps/views.py:47
+msgid "Object"
+msgstr "Объект"
+
+#: services/web/apps/inv/reportdiscoverypoison/views.py:17
+msgid "Discovery ID cache poison"
+msgstr "Дубликаты в кэше Идентификаторов"
+
+#: services/web/apps/inv/reportdiscoverypoison/views.py:48
+msgid "Duplicate MO"
+msgstr "Дублирование объекта"
+
+#: services/web/apps/inv/reportdiscoverypoison/views.py:50
+msgid "MO is move"
+msgstr "Объект был перемещён"
+
+#: services/web/apps/inv/reportdiscoverypoison/views.py:66
+msgid "is managed"
+msgstr "Управляемый"
+
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:25
+msgid "Managed Objects Pools"
+msgstr "Пулы"
+
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:31
+msgid "Discovery Topology Problems"
+msgstr "Отчёт по проблемам топологии"
+
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:52
 msgid "Profile check failed"
-msgstr "Не определился профиль"
+msgstr "Профиль не определён"
 
-#: services/web/apps/inv/reportdiscoveryproblem/views.py:44
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:62
 msgid "No interfaces"
 msgstr "Нет интерфейсов"
 
-#: services/web/apps/inv/reportdiscoveryproblem/views.py:51
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:69
 msgid "No links"
 msgstr "Нет линков"
 
-#: services/web/apps/inv/reportdiscoveryproblem/views.py:59
+#: services/web/apps/inv/reportdiscoveryproblem/views.py:77
 msgid "No uplinks"
 msgstr "Нет аплинков"
 
-#: services/web/apps/inv/reportobjectsserial/views.py:27
+#: services/web/apps/inv/reportobjectsserial/views.py:23
 #: services/web/apps/sa/managedobjectselector/views.py:21
 #: services/web/apps/sa/managedobjectselector/views.py:22
 msgid "Managed Object Selector"
 msgstr "Селекторы"
 
+#: services/web/apps/inv/reportobjectsserial/views.py:29
+msgid "Managed Object Serial Number"
+msgstr "Серийные номера."
+
+#: services/web/apps/inv/reportobjectsserial/views.py:41
+msgid "SW Version"
+msgstr "Версия ПО"
+
+#: services/web/apps/inv/reportobjectsserial/views.py:41
+msgid "Serial"
+msgstr "Серийный номер"
+
+#: services/web/apps/fm/reportavailability/views.py:118
+#: services/web/apps/fm/reportescalations/views.py:114
+#: services/web/apps/fm/reportoutages/views.py:133
+#: services/web/apps/fm/reportreboots/views.py:127
+#: services/web/apps/inv/reportdiscoverycaps/views.py:47
+#: services/web/apps/inv/reportdiscoverypoison/views.py:65
+#: services/web/apps/inv/reportobjectsserial/views.py:41
+#: services/web/apps/ip/ipam/views.py:822
+#: services/web/apps/sa/reportfaileddiscovery/views.py:114
+msgid "Address"
+msgstr "Адрес"
+
+#: services/web/apps/fm/reportavailability/views.py:118
+#: services/web/apps/fm/reportescalations/views.py:115
+#: services/web/apps/fm/reportoutages/views.py:133
+#: services/web/apps/inv/reportobjectsserial/views.py:41
+#: services/web/apps/sa/reportobjectsummary/views.py:124
+#: services/web/apps/sa/reportobjectsummary/views.py:130
+msgid "Platform"
+msgstr "Платформа"
+
+#: services/web/apps/inv/reportobjectsserial/views.py:41
+#: services/web/apps/sa/managedobject/views.py:57
+#: services/web/apps/sa/managedobject/views.py:58
+msgid "Managed Objects"
+msgstr "Список объектов"
+
 #: services/web/apps/inv/reportobjectsummary/views.py:17
 msgid "Inventory Object Summary"
-msgstr "Сводка по инвернаризации объектов"
+msgstr "Сводка по инвентаризации объектов"
 
 #: services/web/apps/inv/reportpartnumbers/views.py:17
 msgid "Part Numbers"
@@ -675,12 +864,12 @@ msgstr "Перенаправлено в %(prefix)s"
 #: services/web/apps/ip/ipam/views.py:435
 #, python-format
 msgid "Bookmark set to %(prefix)s"
-msgstr "Закладка сделана %(prefix)s"
+msgstr "Закладка установлена на %(prefix)s"
 
 #: services/web/apps/ip/ipam/views.py:438
 #, python-format
 msgid "Bookmark removed from %(prefix)s"
-msgstr "Закладка удалена из %(prefix)s"
+msgstr "Закладка удалена с %(prefix)s"
 
 #: services/web/apps/ip/ipam/views.py:451
 #, python-format
@@ -726,7 +915,7 @@ msgstr ""
 
 #: services/web/apps/ip/ipam/views.py:490 services/web/apps/ip/ipam/views.py:683
 msgid "Enable IP Discovery"
-msgstr "Разрешить поиск IP"
+msgstr "Включить опрос IP"
 
 #: services/web/apps/ip/ipam/views.py:525
 #, python-format
@@ -791,11 +980,11 @@ msgstr "Выбрать, если адрес принадлежит интерф�
 
 #: services/web/apps/ip/ipam/views.py:884
 msgid "Address is already exists"
-msgstr "Такой адрес уже есть"
+msgstr "Адрес уже существует"
 
 #: services/web/apps/ip/ipam/views.py:901
 msgid "Invalid Managed Object"
-msgstr "Неверный управляемый объект"
+msgstr "Неверный объект"
 
 #: services/web/apps/ip/ipam/views.py:930 services/web/apps/ip/ipam/views.py:1047
 #: services/web/apps/ip/ipam/views.py:1129
@@ -820,7 +1009,7 @@ msgstr "Нет свободных адресов"
 #: services/web/apps/ip/ipam/views.py:1076
 #, python-format
 msgid "Address %(address)s changed"
-msgstr "Адрес %(address)s изменён"
+msgstr "Адрес %(address)s был изменён"
 
 #: services/web/apps/ip/ipam/views.py:1139
 #, python-format
@@ -854,6 +1043,10 @@ msgstr "Выделенные блоки"
 msgid "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
 msgstr "Выделенные блоки в VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
 
+#: services/web/apps/ip/reportdiscoveredprefixes/views.py:16
+msgid "Discovered Prefixes"
+msgstr "Найдено префиксов"
+
 #: services/web/apps/dns/reportmissedp2p/views.py:23
 #: services/web/apps/ip/ipam/views.py:450
 #: services/web/apps/ip/reportallocated/views.py:30
@@ -874,6 +1067,10 @@ msgstr "Префикс не найден"
 #, python-format
 msgid "All allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
 msgstr "Все выделенные блоки в VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+
+#: services/web/apps/ip/reportfilter/views.py:21
+msgid "Filter"
+msgstr "Фильтр"
 
 #: services/web/apps/ip/reportallocated/views.py:25
 #: services/web/apps/ip/reportexpanded/views.py:24
@@ -930,7 +1127,7 @@ msgstr "Теги"
 
 #: services/web/apps/ip/reportfree/views.py:31
 msgid "VRF Required"
-msgstr ""
+msgstr "Требуется VRF"
 
 #: services/web/apps/ip/reportfree/views.py:45
 msgid "Free Blocks"
@@ -940,6 +1137,18 @@ msgstr "Свободные блоки"
 #, python-format
 msgid "Free blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
 msgstr "Свободные блоки в VRF %(vrf)s (IPv%(afi)s), %(prefix)svrf"
+
+#: services/web/apps/ip/reporthistory/views.py:24
+msgid "History"
+msgstr "История"
+
+#: services/web/apps/ip/reportipamsummary/views.py:15
+msgid "IPAM Summary"
+msgstr ""
+
+#: services/web/apps/ip/reportipusage/views.py:16
+msgid "IP Usage"
+msgstr ""
 
 #: services/web/apps/ip/reportsummary/views.py:78
 #, python-format
@@ -954,9 +1163,23 @@ msgstr "Размер"
 msgid "%"
 msgstr ""
 
+#: services/web/apps/ip/reportvpnstatus/views.py:18
+msgid "VPN Status"
+msgstr ""
+
+#: services/web/apps/ip/reportvpnstatus/views.py:42
+msgid "Managed. Object"
+msgstr ""
+
+#: services/web/apps/inv/interface/views.py:30
+#: services/web/apps/inv/interface/views.py:31
+#: services/web/apps/ip/reportvpnstatus/views.py:42
+msgid "Interfaces"
+msgstr "Интерфейсы"
+
 #: services/web/apps/ip/routeimport/views.py:73
 msgid "Import Connected"
-msgstr "Импорт"
+msgstr "Импортировать подключённые"
 
 #: services/web/apps/ip/tools/views.py:30
 msgid "Tools"
@@ -1009,14 +1232,19 @@ msgstr "Группы VRF"
 msgid "Knowledge Base"
 msgstr "База знаний"
 
+#: services/web/apps/inv/reportdiscoverycaps/views.py:53
 #: services/web/apps/main/__init__.py:11
 msgid "Main"
-msgstr "Главное"
+msgstr "Основное"
 
 #: services/web/apps/main/audittrail/views.py:19
 #: services/web/apps/main/audittrail/views.py:20
 msgid "Audit Trail"
 msgstr "Аудит событий"
+
+#: services/web/apps/main/authldapdomain/views.py:20
+msgid "LDAP Domains"
+msgstr ""
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:22
 msgid "CIR(bps). K, M and G suffixes can be used"
@@ -1042,7 +1270,7 @@ msgstr ""
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:49
 msgid "Integer is required"
-msgstr "Целочисленное значение"
+msgstr "Требуется Целочисленное значение"
 
 #: services/web/apps/main/calculator/calculators/cir2cbr.py:56
 msgid "CIR/CAR(bps) to Burst-rate"
@@ -1076,7 +1304,7 @@ msgstr ""
 msgid "Checkpoint has been set"
 msgstr "Контрольная точка установлена"
 
-#: services/web/apps/main/csv/views.py:25 services/web/apps/main/csv/views.py:28
+#: services/web/apps/main/csv/views.py:24 services/web/apps/main/csv/views.py:27
 msgid "CSV Export/Import"
 msgstr "Импорт/экспорт CSV"
 
@@ -1095,7 +1323,7 @@ msgstr ""
 msgid "DB Triggers"
 msgstr "Триггеры БД"
 
-#: services/web/apps/main/desktop/views.py:281
+#: services/web/apps/main/desktop/views.py:285
 msgid "Failed to change credentials"
 msgstr "Не удалось сменить пароль"
 
@@ -1143,14 +1371,15 @@ msgstr "Таблицы префиксов"
 msgid "PyRule"
 msgstr ""
 
-#: services/web/apps/main/refbook/views.py:20
-#: services/web/apps/main/refbook/views.py:23
+#: services/web/apps/main/refbook/views.py:21
+#: services/web/apps/main/refbook/views.py:24
+#: services/web/apps/main/refbookadmin/views.py:41
 msgid "Reference Books"
 msgstr "Справочники"
 
 #: services/web/apps/main/reportbackups/views.py:16
 msgid "Backup Status"
-msgstr "Статус backup"
+msgstr "Статус резервного копирования"
 
 #: services/web/apps/main/reportdbsummary/views.py:14
 msgid "Database Summary"
@@ -1159,6 +1388,11 @@ msgstr "Статус БД"
 #: services/web/apps/main/reportloc/views.py:20
 msgid "Lines Of Code"
 msgstr ""
+
+#: services/web/apps/main/reportsubscription/views.py:20
+#: services/web/apps/main/reportsubscription/views.py:21
+msgid "Report Subscription"
+msgstr "Подписка на отчёты"
 
 #: services/web/apps/main/reportsystemversion/views.py:20
 msgid "System Version"
@@ -1226,7 +1460,7 @@ msgstr "Обновление"
 
 #: services/web/apps/main/user/views.py:23
 msgid "Username"
-msgstr "Имя"
+msgstr "Имя пользователя"
 
 #: services/web/apps/main/user/views.py:24
 msgid "Required. 75 characters or fewer.  Letters, digits and @/./+/-/_ only"
@@ -1245,6 +1479,9 @@ msgid ""
 "Raw passwords are not stored, so there is no way to see this user's password, "
 "but you can change the password using <a href=\"password/\">this form</a>."
 msgstr ""
+"В открытом виде пароль не хранится, поэтому вы не можете увидеть пароль этого "
+"пользователя, но вы можете изменить пароль, используя <a href=\"password/"
+"\">эту форму</a>."
 
 #: services/web/apps/main/user/views.py:58
 msgid "Personal info"
@@ -1276,7 +1513,7 @@ msgstr "Пользователи"
 msgid "User Profile"
 msgstr "Профиль пользователя"
 
-#: services/web/apps/main/welcome/views.py:18
+#: services/web/apps/main/welcome/views.py:22
 msgid "Welcome"
 msgstr "Добро пожаловать"
 
@@ -1296,7 +1533,7 @@ msgstr "Типы РНР"
 
 #: services/web/apps/peer/__init__.py:13
 msgid "Peering Management"
-msgstr ""
+msgstr "Управление ПИРами"
 
 #: services/web/apps/peer/asset/views.py:21
 #: services/web/apps/peer/asset/views.py:22
@@ -1316,23 +1553,24 @@ msgstr "Типы community"
 #: services/web/apps/peer/maintainer/views.py:21
 #: services/web/apps/peer/maintainer/views.py:22
 msgid "Maintainers"
-msgstr ""
+msgstr "Специалист по эксплуатации"
 
 #: services/web/apps/peer/organisation/views.py:19
 #: services/web/apps/peer/organisation/views.py:20
 msgid "Organisations"
-msgstr ""
+msgstr "Организации"
 
 #: services/web/apps/peer/peer/views.py:24
 #: services/web/apps/peer/peer/views.py:25
 msgid "Peers"
-msgstr ""
+msgstr "Пиры"
 
 #: services/web/apps/peer/peergroup/views.py:19
 #: services/web/apps/peer/peergroup/views.py:20
 msgid "Peer Groups"
-msgstr ""
+msgstr "Группы пиров"
 
+#: services/web/apps/bi/dashboardlayout/views.py:20
 #: services/web/apps/cm/errortype/views.py:20
 #: services/web/apps/cm/objectnotify/views.py:24
 #: services/web/apps/cm/validationpolicy/views.py:20
@@ -1344,6 +1582,7 @@ msgstr ""
 #: services/web/apps/dns/dnszoneprofile/views.py:20
 #: services/web/apps/fm/alarmclass/views.py:21
 #: services/web/apps/fm/alarmclassconfig/views.py:20
+#: services/web/apps/fm/alarmdiagnosticconfig/views.py:20
 #: services/web/apps/fm/alarmescalation/views.py:20
 #: services/web/apps/fm/alarmseverity/views.py:20
 #: services/web/apps/fm/alarmtrigger/views.py:20
@@ -1371,7 +1610,7 @@ msgstr ""
 #: services/web/apps/inv/interfaceprofile/views.py:20
 #: services/web/apps/inv/modelinterface/views.py:20
 #: services/web/apps/inv/modelmapping/views.py:20
-#: services/web/apps/inv/networksegment/views.py:21
+#: services/web/apps/inv/networksegment/views.py:22
 #: services/web/apps/inv/objectmodel/views.py:24
 #: services/web/apps/inv/technology/views.py:20
 #: services/web/apps/inv/vendor/views.py:21
@@ -1380,7 +1619,8 @@ msgstr ""
 #: services/web/apps/ip/prefixaccess/views.py:20
 #: services/web/apps/ip/routeimport/views.py:73
 #: services/web/apps/ip/vrfgroup/views.py:20
-#: services/web/apps/main/csv/views.py:28
+#: services/web/apps/main/authldapdomain/views.py:20
+#: services/web/apps/main/csv/views.py:27
 #: services/web/apps/main/customfield/views.py:20
 #: services/web/apps/main/customfieldenumgroup/views.py:21
 #: services/web/apps/main/dbtrigger/views.py:20
@@ -1392,7 +1632,9 @@ msgstr ""
 #: services/web/apps/main/pool/views.py:20
 #: services/web/apps/main/prefixtable/views.py:23
 #: services/web/apps/main/pyrule/views.py:22
-#: services/web/apps/main/refbook/views.py:23
+#: services/web/apps/main/refbook/views.py:24
+#: services/web/apps/main/refbookadmin/views.py:41
+#: services/web/apps/main/reportsubscription/views.py:21
 #: services/web/apps/main/resourcestate/views.py:20
 #: services/web/apps/main/schedule/views.py:82
 #: services/web/apps/main/style/views.py:21
@@ -1425,6 +1667,8 @@ msgstr ""
 #: services/web/apps/sa/serviceprofile/views.py:20
 #: services/web/apps/sa/terminationgroup/views.py:41
 #: services/web/apps/sa/useraccess/views.py:20
+#: services/web/apps/sla/slaprobe/views.py:20
+#: services/web/apps/sla/slaprofile/views.py:20
 #: services/web/apps/support/account/views.py:21
 #: services/web/apps/vc/vcbindfilter/views.py:20
 #: services/web/apps/vc/vcdomain/views.py:20
@@ -1467,9 +1711,9 @@ msgstr ""
 msgid "Performance Management"
 msgstr "Анализ производительности"
 
-#: services/web/apps/pm/ddash/views.py:20
+#: services/web/apps/pm/ddash/views.py:22
 msgid "Dynamic Dashboard"
-msgstr ""
+msgstr "Динамический экран"
 
 #: services/web/apps/pm/metrictype/views.py:20
 msgid "Metric Type"
@@ -1481,7 +1725,7 @@ msgstr "Типы метрик"
 
 #: services/web/apps/project/__init__.py:12
 msgid "Project Management"
-msgstr "Управление проектом"
+msgstr "Управление проектами"
 
 #: services/web/apps/ip/ipam/views.py:458 services/web/apps/ip/ipam/views.py:460
 #: services/web/apps/ip/ipam/views.py:648 services/web/apps/ip/ipam/views.py:650
@@ -1496,7 +1740,7 @@ msgstr "Проекты"
 
 #: services/web/apps/sa/__init__.py:12
 msgid "Service Activation"
-msgstr "Сервисы"
+msgstr "Управление объектами"
 
 #: services/web/apps/sa/action/views.py:19
 msgid "Action"
@@ -1508,11 +1752,11 @@ msgstr "Действия"
 
 #: services/web/apps/sa/actioncommands/views.py:21
 msgid "Action Command"
-msgstr "Комманда действия"
+msgstr "Команда действия"
 
 #: services/web/apps/sa/actioncommands/views.py:22
 msgid "Action Commands"
-msgstr "Комманды действий"
+msgstr "Команды действий"
 
 #: services/web/apps/sa/administrativedomain/views.py:19
 #: services/web/apps/sa/administrativedomain/views.py:20
@@ -1535,22 +1779,17 @@ msgstr "Сниппеты"
 #: services/web/apps/sa/getnow/views.py:24
 #: services/web/apps/sa/getnow/views.py:25
 msgid "Get Now"
-msgstr ""
+msgstr "Текущая информация"
 
 #: services/web/apps/sa/groupaccess/views.py:19
 #: services/web/apps/sa/groupaccess/views.py:20
 msgid "Group Access"
-msgstr "Доступ групп"
+msgstr "Права групп"
 
 #: services/web/apps/sa/macreport/views.py:88
 #: services/web/apps/sa/macreport/views.py:89
 msgid "MAC Report"
 msgstr "Отчет по MAC"
-
-#: services/web/apps/sa/managedobject/views.py:57
-#: services/web/apps/sa/managedobject/views.py:58
-msgid "Managed Objects"
-msgstr "Объекты"
 
 #: services/web/apps/sa/managedobjectprofile/views.py:19
 msgid "Managed Object Profile"
@@ -1568,7 +1807,7 @@ msgstr "Настройка MRT"
 #: services/web/apps/sa/objectnotification/views.py:19
 #: services/web/apps/sa/objectnotification/views.py:20
 msgid "Object Notification"
-msgstr "Уведомления объектов"
+msgstr "Уведомления"
 
 #: services/web/apps/sa/profilecheckrule/views.py:19
 msgid "Profile Check Rule"
@@ -1578,131 +1817,208 @@ msgstr "Правило проверки профиля"
 msgid "Profile Check Rules"
 msgstr "Правила проверки профиля"
 
-#: services/web/apps/sa/reportfaileddiscovery/views.py:21
+#: services/web/apps/inv/reportdiscoverycaps/views.py:24
+#: services/web/apps/sa/reportfaileddiscovery/views.py:24
+msgid "Managed Objects Pool"
+msgstr "Пул"
+
+#: services/web/apps/inv/reportdiscoverycaps/views.py:28
+#: services/web/apps/sa/reportfaileddiscovery/views.py:28
+msgid "Managed Objects Profile"
+msgstr "Профили объектов"
+
+#: services/web/apps/sa/reportfaileddiscovery/views.py:32
+msgid "Filter by Ping status"
+msgstr "Отфильтрвовать недоступные (не пингуются)"
+
+#: services/web/apps/sa/reportfaileddiscovery/views.py:36
+msgid "Profile check only"
+msgstr "Вывести только проблемы доступа"
+
+#: services/web/apps/sa/reportfaileddiscovery/views.py:40
+msgid "Failed discovery only"
+msgstr "Исключить из вывода проблемы доступа"
+
+#: services/web/apps/sa/reportfaileddiscovery/views.py:46
 msgid "Failed Discovery"
-msgstr "Проблемы Discovery"
+msgstr "Сбои при опросе"
 
-#: services/web/apps/sa/reportfaileddiscovery/views.py:26
-msgid "Managed Objects Pools"
+#: services/web/apps/sa/reportfaileddiscovery/views.py:50
+msgid "Failed Discovery (default)"
+msgstr "Сбои при опросе (пул по умолчанию)"
+
+#: services/web/apps/fm/reportavailability/views.py:118
+#: services/web/apps/fm/reportclassificationrule/views.py:21
+#: services/web/apps/fm/reportoutages/views.py:133
+#: services/web/apps/inv/reportdiscoverypoison/views.py:66
+#: services/web/apps/sa/reportfaileddiscovery/views.py:114
+#: services/web/apps/sa/reportobjectsummary/views.py:88
+#: services/web/apps/sa/reportobjectsummary/views.py:101
+#: services/web/apps/sa/reportobjectsummary/views.py:124
+msgid "Profile"
+msgstr "Профиль"
+
+#: services/web/apps/sa/reportfaileddiscovery/views.py:115
+msgid "Avail"
 msgstr ""
 
-#: services/web/apps/sa/reportfaileddiscovery/views.py:66
+#: services/web/apps/sa/reportfaileddiscovery/views.py:116
 msgid "Discovery"
-msgstr ""
+msgstr "Опрос"
 
-#: services/web/apps/sa/reportfaileddiscovery/views.py:66
+#: services/web/apps/sa/reportfaileddiscovery/views.py:116
 msgid "Error"
-msgstr ""
+msgstr "Ошибка"
 
 #: services/web/apps/sa/reportfailedscript/views.py:16
 msgid "Failed Scripts"
-msgstr "Скрипты, которые не смогли"
+msgstr "Сбои скриптов"
 
-#: services/web/apps/fm/reporteventsummary/views.py:22
-#: services/web/apps/sa/reportobjectsummary/views.py:19
+#: services/web/apps/fm/reporteventsummary/views.py:25
+#: services/web/apps/sa/reportobjectsummary/views.py:20
 msgid "By Profile"
 msgstr "По профилю"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:20
+#: services/web/apps/sa/reportobjectsummary/views.py:21
 msgid "By Administrative Domain"
 msgstr "По З.О."
 
-#: services/web/apps/sa/reportobjectsummary/views.py:21
+#: services/web/apps/sa/reportobjectsummary/views.py:22
 msgid "By Administrative Domain and Profile"
 msgstr "По З.О. и профилю"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:22
+#: services/web/apps/sa/reportobjectsummary/views.py:23
 msgid "By Tags"
 msgstr "По тегам"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:23
+#: services/web/apps/sa/reportobjectsummary/views.py:24
 msgid "By Platform"
 msgstr "По платформе"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:24
+#: services/web/apps/sa/reportobjectsummary/views.py:25
 msgid "By Version"
 msgstr "По версии"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:36
+#: services/web/apps/sa/reportobjectsummary/views.py:30
+msgid "Report Type"
+msgstr "Тип отчёта"
+
+#: services/web/apps/sa/reportobjectsummary/views.py:37
 msgid "Managed Objects Summary"
 msgstr "Сводка по объектам"
 
+#: services/web/apps/sa/reportobjectsummary/views.py:41
+msgid "Managed Objects Summary (profile)"
+msgstr "Сводка по объектам (по профилю)"
+
 #: services/web/apps/sa/reportobjectsummary/views.py:46
-#: services/web/apps/sa/reportobjectsummary/views.py:53
+msgid "Managed Objects Summary (domain)"
+msgstr "Сводка по объектам (по З.О.)"
+
+#: services/web/apps/sa/reportobjectsummary/views.py:51
+msgid "Managed Objects Summary (domain-profile)"
+msgstr "Сводка по объектам (по З.О. и профилю)"
+
+#: services/web/apps/sa/reportobjectsummary/views.py:56
+msgid "Managed Objects Summary (tag)"
+msgstr "Сводка по объектам (по тэгу)"
+
+#: services/web/apps/sa/reportobjectsummary/views.py:61
+msgid "Managed Objects Summary (platform)"
+msgstr "Сводка по объектам (по платформе)"
+
+#: services/web/apps/sa/reportobjectsummary/views.py:66
+msgid "Managed Objects Summary (version)"
+msgstr "Сводка по объектам (по версии)"
+
+#: services/web/apps/sa/reportobjectsummary/views.py:93
+#: services/web/apps/sa/reportobjectsummary/views.py:101
 msgid "Administrative Domain"
 msgstr "Зона ответственности"
 
 #: services/web/apps/main/tag/views.py:19
-#: services/web/apps/sa/reportobjectsummary/views.py:60
+#: services/web/apps/sa/reportobjectsummary/views.py:109
 msgid "Tag"
 msgstr "Тег"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:80
+#: services/web/apps/sa/reportobjectsummary/views.py:130
 msgid "Version"
 msgstr "Версия"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:19
+#: services/web/apps/sa/reportprofilechecksummary/views.py:20
+#: services/web/apps/sa/reportprofilechecksummary/views.py:23
 msgid "Managed Object Profile Check Summary"
 msgstr "Сводка по статусу объектов"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:34
+#: services/web/apps/sa/reportprofilechecksummary/views.py:62
 msgid "Not Managed"
 msgstr "Не управляемые"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:35
+#: services/web/apps/sa/reportprofilechecksummary/views.py:64
 msgid "Is Managed"
 msgstr "Управляемые"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:36
-msgid "Not Generic.Host is Managed"
-msgstr "Распознанные"
+#: services/web/apps/sa/reportprofilechecksummary/views.py:66
+msgid "Is Managed, object type defined"
+msgstr "Тип устройства определён, опрашивается"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:38
-msgid "Generic.Host is Managed"
-msgstr "Не распознанные"
+#: services/web/apps/sa/reportprofilechecksummary/views.py:67
+msgid "Is Managed, object type defined bad CLI Credential"
+msgstr "Тип устройства определен, но подходят пользователь/пароль"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:39
-msgid "Generic.Host is Managed ping"
-msgstr "Живые"
+#: services/web/apps/sa/reportprofilechecksummary/views.py:68
+msgid "Is Managed, object type undefined"
+msgstr "Тип устройства не определён"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:40
-msgid "Generic.Host is Managed not ping"
-msgstr "Не Живые"
+#: services/web/apps/sa/reportprofilechecksummary/views.py:69
+msgid "Is Managed, object type undefined not ping response"
+msgstr "Тип устройства не определён, т.к. оно недоступно"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:41
-msgid "Generic.Host is Managed bad SNMP Credential"
-msgstr "Не распознанные (не подходит SNMP Community)"
+#: services/web/apps/sa/reportprofilechecksummary/views.py:71
+msgid "Is Managed, object type undefined has ping response"
+msgstr "Тип устройства не определён, но устройство доступно"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:42
-msgid "Generic.Host is Managed bad CLI Credential"
-msgstr "Не распознанные (не подходят пользователь/пароль)"
+#: services/web/apps/sa/reportprofilechecksummary/views.py:72
+msgid "Is Managed, object type undefined bad SNMP Credential"
+msgstr "Тип устройства не определён, т.к. не подходит SNMP Community"
 
-#: services/web/apps/sa/reportprofilechecksummary/views.py:51
+#: services/web/apps/sa/reportprofilechecksummary/views.py:73
+msgid "Is Managed, object type undefined for various reasons"
+msgstr "Тип устройства не определён, по различным причинам"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:75
+msgid "Is Managed, object type Profile is not know"
+msgstr "Тип устройства не определён,т.к. система не смогла подобрать профиль"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:76
+msgid "Is Managed, objects not processed yet"
+msgstr "Тип устройства не определён, т.к. опрос ещё не прошёл"
+
+#: services/web/apps/sa/reportprofilechecksummary/views.py:88
+msgid "PP"
+msgstr ""
+
+#: services/web/apps/fm/reportoutages/views.py:135
+#: services/web/apps/sa/reportprofilechecksummary/views.py:89
 msgid "Status"
 msgstr "Состояние"
 
-#: services/web/apps/sa/reportobjectsummary/views.py:91
-#: services/web/apps/sa/reportprofilechecksummary/views.py:52
+#: services/web/apps/sa/reportobjectsummary/views.py:141
+#: services/web/apps/sa/reportprofilechecksummary/views.py:90
 msgid "Quantity"
 msgstr "Количество"
 
 #: services/web/apps/sa/reportstalediscovery/views.py:21
 msgid "Stale discovery"
-msgstr ""
+msgstr "Зависший опрос"
 
-#: services/web/apps/sa/runcommands/views.py:38
-msgid "Run commands"
-msgstr "Запуск комманд"
-
-#: services/web/apps/sa/runcommands/views.py:39
+#: services/web/apps/sa/runcommands/views.py:15
+#: services/web/apps/sa/runcommands/views.py:16
 msgid "Run Commands"
-msgstr "Запуск комманд"
-
-#: services/web/apps/sa/runcommands/views.py:48
-msgid "Ignore CLI errors and continue execution"
-msgstr "Игнорировать ошибки CLI и продолжить выполнение"
+msgstr "Запуск команд"
 
 #: services/web/apps/sa/runsnippet/views.py:59
+#: services/web/apps/sa/runsnippet/views.py:125
 msgid "Run Snippet"
 msgstr "Запуск сниппета"
 
@@ -1720,7 +2036,7 @@ msgid "Set Untagged"
 msgstr "Удалить тег"
 
 #: services/web/apps/sa/macreport/views.py:89
-#: services/web/apps/sa/runcommands/views.py:39
+#: services/web/apps/sa/runsnippet/views.py:125
 #: services/web/apps/sa/setuntagged/views.py:37
 #: services/web/apps/sa/showswitchports/views.py:47
 #: services/web/apps/sa/switchportvalidation/views.py:92
@@ -1753,16 +2069,28 @@ msgstr "Группы терминации"
 #: services/web/apps/sa/useraccess/views.py:19
 #: services/web/apps/sa/useraccess/views.py:20
 msgid "User Access"
-msgstr "Доступ пользователя"
+msgstr "Права пользователя"
 
 #: services/web/apps/sa/versioninventory/views.py:87
 #: services/web/apps/sa/versioninventory/views.py:88
 msgid "Version Inventory"
+msgstr "Учёт версий"
+
+#: services/web/apps/sla/__init__.py:12
+msgid "SLA"
 msgstr ""
+
+#: services/web/apps/sla/slaprobe/views.py:20
+msgid "SLA Probes"
+msgstr "SLA Пробы"
+
+#: services/web/apps/sla/slaprofile/views.py:20
+msgid "SLA Profiles"
+msgstr "Профиль SLA"
 
 #: services/web/apps/support/__init__.py:12
 msgid "Support"
-msgstr ""
+msgstr "Поддержка"
 
 #: services/web/apps/support/account/views.py:20
 #: services/web/apps/support/account/views.py:21
@@ -1772,17 +2100,17 @@ msgstr "Учетная запись"
 #: services/web/apps/support/crashinfo/views.py:21
 #: services/web/apps/support/crashinfo/views.py:22
 msgid "Crashinfo"
-msgstr ""
+msgstr "Дампы"
 
 #: services/web/apps/vc/__init__.py:11
 msgid "VC Management"
 msgstr "Управление VC"
 
-#: services/web/apps/ip/ipam/views.py:655 services/web/apps/vc/vc/views.py:27
+#: services/web/apps/ip/ipam/views.py:655 services/web/apps/vc/vc/views.py:30
 msgid "VC"
 msgstr ""
 
-#: services/web/apps/vc/vc/views.py:28
+#: services/web/apps/vc/vc/views.py:31
 msgid "Virtual Circuits"
 msgstr ""
 
@@ -1820,3 +2148,30 @@ msgstr "Типы VC"
 
 #~ msgid "Configs"
 #~ msgstr "Конфигурация"
+
+#~ msgid "Not Generic.Host is Managed"
+#~ msgstr "Распознанные"
+
+#~ msgid "Generic.Host is Managed"
+#~ msgstr "Не распознанные"
+
+#~ msgid "Generic.Host is Managed ping"
+#~ msgstr "Живые"
+
+#~ msgid "Generic.Host is Managed not ping"
+#~ msgstr "Не Живые"
+
+#~ msgid "Generic.Host is Managed bad SNMP Credential"
+#~ msgstr "Не распознанные (не подходит SNMP Community)"
+
+#~ msgid "Generic.Host is Managed bad CLI Credential"
+#~ msgstr "Не распознанные (не подходят пользователь/пароль)"
+
+#~ msgid "Run commands"
+#~ msgstr "Запуск комманд"
+
+#~ msgid "Ignore CLI errors and continue execution"
+#~ msgstr "Игнорировать ошибки CLI и продолжить выполнение"
+
+#~ msgid "Discovery Problems"
+#~ msgstr "Проблемы при опросе"

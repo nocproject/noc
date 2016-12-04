@@ -49,11 +49,17 @@ class ProfileCheck(DiscoveryCheck):
         Returns profile for object, or None when not known
         """
         self.result_cache = {}  # (method, param) -> result
+        snmp_result = None
+        http_result = None
         for ruleset in self.get_rules():
             for (method, param), actions in ruleset:
                 result = self.do_check(method, param)
                 if not result:
                     continue
+                if "snmp" in method:
+                    snmp_result = result
+                if "http" in method:
+                    http_result = result
                 for match_method, value, action, profile, rname in actions:
                     if self.is_match(result, match_method, value):
                         self.logger.info("Matched profile: %s (%s)",
@@ -61,6 +67,9 @@ class ProfileCheck(DiscoveryCheck):
                         # @todo: process MAYBE rule
                         return profile
         self.logger.info("Cannot find profile in \"Profile Check Rules\"")
+        if "suggest_snmp" not in self.job.problems and snmp_result:
+            self.set_problem("Not find profile for OID: %s or HTTP string: %s" % (snmp_result, http_result))
+        self.logger.debug("Result %s" % self.job.problems)
         return None
 
     @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)
@@ -81,6 +90,9 @@ class ProfileCheck(DiscoveryCheck):
         self.logger.info("Compiling \"Profile Check rules\"")
         d = {}  # preference -> (method, param) -> [rule, ..]
         for r in ProfileCheckRule.objects.all().order_by("preference"):
+            if "snmp" in r.method and r.param.startswith("."):
+                self.logger.error("Bad SNMP in ruleset \"%s\", Skipping..." % r.name)
+                continue
             if r.preference not in d:
                 d[r.preference] = {}
             k = (r.method, r.param)

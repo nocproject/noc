@@ -65,11 +65,24 @@ class Script(BaseScript):
     rx_ports = re.compile(
         r"^Port\s+\d+\s+\((?P<port>ethernet|adsl\d+)\): (?:Enabled|Disabled)\s*\n",
         re.MULTILINE)
+    rx_stp = re.compile(r"^\s*(?P<port>\S+)\s+V\s+\d+\s+", re.MULTILINE)
+
+    def get_stp(self):
+        try:
+            v = self.cli("switch port mstp show 0")
+        except self.CLISyntaxError:
+            return []
+        r = []
+        for match in self.rx_stp.finditer(v):
+            r += [match.group("port")]
+        return r
+
     def execute(self):
         slots = self.profile.get_slots_n(self)
         interfaces = []
         iface_mac = []
         vlans = []
+        stps = self.get_stp()
         if slots > 1:
             for match in self.rx_vlan1.finditer(self.cli("vlan show")):
                 vlans += [{
@@ -100,6 +113,7 @@ class Script(BaseScript):
                     "type": "physical",
                     "admin_status": admin_status,
                     "oper_status": oper_status,
+                    "enabled_protocols": [],
                     "subinterfaces": [{
                         "name": ifname,
                         "admin_status": admin_status,
@@ -111,6 +125,8 @@ class Script(BaseScript):
                     iface["subinterfaces"][0]["untagged_vlan"] = untagged
                 if tagged:
                     iface["subinterfaces"][0]["tagged_vlans"] = tagged
+                if ifname in stps:
+                    iface["enabled_protocols"] += ["STP"]
                 interfaces += [iface]
                 port_num += 1
             for i in range(1, slots):
@@ -130,13 +146,14 @@ class Script(BaseScript):
                     for iface in interfaces:
                         if iface["name"] == ifname:
                             iface["subinterfaces"] += [{
-                                "name": ifname,
+                                "name": "%s.%s" % (ifname, match.group("pvid")),
                                 "admin_status": iface["admin_status"],
                                 "enabled_afi": ["BRIDGE", "ATM"],
                                 "vlan_ids": int(match.group("pvid")),
                                 "vpi": int(match.group("vpi")),
                                 "vci": int(match.group("vci"))
                             }]
+                            break
                 v = self.cli("lcman show %s" % i)
                 for match in self.rx_ipif_mac.finditer(v):
                     iface_mac += [match.groupdict()]

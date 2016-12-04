@@ -68,7 +68,12 @@ Ext.define("NOC.core.LookupField", {
         }
         me.callParent();
         me.on("specialkey", me.onSpecialKey, me, {delay: 100});
-        me.on("beforequery", me.onBeforeQuery, me);
+        me.on('change', function(element, newValue) {
+            if(newValue === null) {
+                me.clearValue();
+                me.fireEvent('clear');
+            }
+        });
     },
 
     getLookupData: function() {
@@ -81,10 +86,6 @@ Ext.define("NOC.core.LookupField", {
             case e.ESC:
                 me.clearValue();
                 me.fireEvent("clear");
-                break;
-            case e.ENTER:
-                var keyNav = me.getPicker().getNavigationModel();
-                keyNav.selectHighlighted(e);
                 break;
         }
     },

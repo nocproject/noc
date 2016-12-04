@@ -32,8 +32,8 @@ class Script(BaseScript):
         r"^\s+(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+"
         r"(?P<membership>\S+)\s*\n", re.MULTILINE)
     rx_vlan_ipif = re.compile(
-        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+"
-        r"(?:Static|DHCP)\s+Valid")
+        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+(?:Static|DHCP)",
+        re.MULTILINE)
     rx_mac = re.compile(
         r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
     rx_enabled = re.compile(

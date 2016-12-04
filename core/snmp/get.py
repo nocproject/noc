@@ -11,11 +11,12 @@ import random
 from collections import namedtuple
 ## NOC modules
 from ber import BEREncoder, BERDecoder
-from consts import (SNMP_v2c, PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
+from consts import (SNMP_v2c, SNMP_v1,
+                    PDU_GET_REQUEST, PDU_GETNEXT_REQUEST,
                     PDU_RESPONSE, PDU_GETBULK_REQUEST)
 
 
-def _build_pdu(community, pdu_type, oids, request_id):
+def _build_pdu(community, pdu_type, oids, request_id, version=SNMP_v2c):
     """
     Generate SNMP v2c GET/GETNEXT
     :param version:
@@ -23,6 +24,8 @@ def _build_pdu(community, pdu_type, oids, request_id):
     :param oids:
     :return:
     """
+    if version != SNMP_v1 and version != SNMP_v2c:
+        raise NotImplementedError("Unsupported SNMP version")
     e = BEREncoder()
     if not request_id:
         request_id = random.randint(0, 0x7FFFFFFF)
@@ -42,13 +45,13 @@ def _build_pdu(community, pdu_type, oids, request_id):
     ])
     # SNMP v2c PDU
     return e.encode_sequence([
-        e.encode_int(SNMP_v2c),
+        e.encode_int(version),
         e.encode_octet_string(str(community)),
         pdu
     ])
 
 
-def get_pdu(community, oids, request_id=None):
+def get_pdu(community, oids, request_id=None, version=SNMP_v2c):
     """
     Generate SNMP v2c GET PDU
     :param version:
@@ -56,10 +59,10 @@ def get_pdu(community, oids, request_id=None):
     :param oids:
     :return:
     """
-    return _build_pdu(community, PDU_GET_REQUEST, oids, request_id)
+    return _build_pdu(community, PDU_GET_REQUEST, oids, request_id, version)
 
 
-def getnext_pdu(community, oid, request_id=None):
+def getnext_pdu(community, oid, request_id=None, version=SNMP_v2c):
     """
     Generate SNMP v2c GETNEXT PDU
     :param version:
@@ -67,14 +70,16 @@ def getnext_pdu(community, oid, request_id=None):
     :param oids:
     :return:
     """
-    return _build_pdu(community, PDU_GETNEXT_REQUEST, [oid], request_id)
+    return _build_pdu(community, PDU_GETNEXT_REQUEST, [oid], request_id, version)
 
 
 def getbulk_pdu(community, oid, request_id=None,
-                non_repeaters=0, max_repetitions=10):
+                non_repeaters=0, max_repetitions=10, version=SNMP_v2c):
     """
     Generate SNMP v2c GETBULK PDU
     """
+    if version == SNMP_v1:
+        raise ValueError("SNMPv1 does not define GETBULK")
     e = BEREncoder()
     if not request_id:
         request_id = random.randint(0, 0x7FFFFFFF)

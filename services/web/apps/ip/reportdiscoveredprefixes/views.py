@@ -6,13 +6,14 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from django.utils.translation import ugettext_lazy as _
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.inv.models.newprefixdiscoverylog import NewPrefixDiscoveryLog
 
 
 class ReportDiscoveredPrefixes(SimpleReport):
-    title = "Discovered Prefixes"
+    title = _("Discovered Prefixes")
 
     def get_data(self, **kwargs):
         data = [

@@ -205,6 +205,15 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "int"
         },
         {
+            name: "time_pattern",
+            type: "string"
+        },
+        {
+            name: "time_pattern__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "tags",
             type: "auto"
         },

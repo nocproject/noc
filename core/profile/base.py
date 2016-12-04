@@ -115,7 +115,7 @@ class BaseProfile(object):
     # True - send password by characters
     telnet_slow_send_password = False
     # Telnet NAWS negotiation
-    telnet_naws = "\xff\xff\xff\xff"
+    telnet_naws = "\x00\x80\x00\x80"
     # Does the equipment supports bitlength netmasks
     # or netmask should be converted to traditional formats
     requires_netmask_conversion = False
@@ -125,6 +125,15 @@ class BaseProfile(object):
     # i.e noc.cm.parsers.Cisco.IOS.switch.IOSSwitchParser
     # Can be overriden in get_parser method
     default_parser = None
+    # CLI timeouts
+    # Timeout between connection established and login prompt
+    cli_timeout_start = 60
+    # Timeout after user name provided
+    cli_timeout_user = 30
+    # Timeout after password provided
+    cli_timeout_password = 30
+    # Timeout after submitting *command_super*
+    cli_timeout_super = 10
 
     def convert_prefix(self, prefix):
         """
@@ -335,3 +344,7 @@ class BaseProfile(object):
             cls.rx_pattern_operation_error = re.compile(cls.pattern_operation_error)
         else:
             cls.rx_pattern_operation_error = None
+
+    @classmethod
+    def get_telnet_naws(cls):
+        return cls.telnet_naws

@@ -31,7 +31,6 @@ class Script(BaseScript):
                     # Join # IF-MIB::ifIndex, IF-MIB::ifOperStatus
                     for n, s in self.snmp.join_tables("1.3.6.1.2.1.2.2.1.1",
                                                       "1.3.6.1.2.1.2.2.1.8",
-                                                      bulk=True,
                                                       max_index=1023):
                         r.append({
                             "interface": n,

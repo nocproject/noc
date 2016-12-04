@@ -102,7 +102,7 @@ Ext.define("NOC.sa.authprofile.Application", {
     ],
     inlines: [
         {
-            title: "Suggest SNMP",
+            title: __("Suggest SNMP"),
             model: "NOC.sa.authprofile.SuggestSNMPModel",
             columns: [
                 {
@@ -120,7 +120,7 @@ Ext.define("NOC.sa.authprofile.Application", {
             ]
         },
         {
-            title: "Suggest CLI",
+            title: __("Suggest CLI"),
             model: "NOC.sa.authprofile.SuggestCLIModel",
             columns: [
                 {

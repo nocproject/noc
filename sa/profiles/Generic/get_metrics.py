@@ -78,9 +78,25 @@ class Script(BaseScript):
         self.ifindexes = {}
 
     def execute(self, metrics, hints=None):
+        """
+        metrics is the dict of
+        name ->
+            scope:
+                o - object level
+                i - interface level
+                p - profile level
+            interfaces: [list of interface names], for *i* scope
+            probes: [{
+                tests: [{
+                    name
+                    type
+                }
+            }] for *p* scope
+        """
         # Populate ifindexes
         hints = hints or {}
         self.ifindexes = hints.get("ifindexes", {})
+        self.probes = hints.get("probes", {})
         #
         self.collect_profile_metrics(metrics)
         self.collect_snmp_metrics(metrics)

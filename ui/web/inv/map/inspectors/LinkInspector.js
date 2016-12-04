@@ -7,71 +7,61 @@
 console.debug("Defining NOC.inv.map.inspectors.LinkInspector");
 
 Ext.define("NOC.inv.map.inspectors.LinkInspector", {
-    extend: "Ext.panel.Panel",
+    extend: "NOC.inv.map.inspectors.Inspector",
     title: __("Link Inspector"),
-    autoScroll: true,
-    bodyStyle: {
-        background: "#c0c0c0"
-    },
+
+    tpl:[
+        '<tpl for="objects">',
+            '<div class="noc-offset-0"><b>{name}:&nbsp;</b></div>',
+            '<tpl for="interfaces">',
+                '<div class="noc-offset-1">{name}:&nbsp;{status}</div>',
+                '<tpl if="description">',
+                    '<div class="noc-offset-2">{description}</div>',
+                '</tpl>',
+            '</tpl>',
+        '</tpl>',
+        '<b>Discovery:&nbsp;</b>{method}<br>',
+        '<b>Util:&nbsp;</b>{[this.utilization(values.utilisation, parent)]}<br/>',
+        {
+            utilization: function(values) {
+                return values.map(function(v) {
+                    return parseInt(v / 1000000) + "Mbit/s";
+                }).join(" | ");
+            }
+        }
+    ],
 
     initComponent: function() {
-        var me = this;
-
-        me.infoText = Ext.create("Ext.container.Container", {
-            padding: 4
+        this.dashboardButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.line_chart,
+            scope: this,
+            tooltip: __("Show dashboard"),
+            handler: this.onDashboard,
+            disabled: true
         });
 
-        Ext.apply(me, {
-            items: [
-                me.infoText
-            ]
+        Ext.apply(this, {
+            dockedItems: [{
+                xtype: "toolbar",
+                dock: "top",
+                items: [
+                    this.dashboardButton
+                ]
+            }]
         });
-        me.callParent();
+        this.callParent();
     },
 
-    preview: function(segmentId, linkId) {
-        var me = this;
-        Ext.Ajax.request({
-            url: "/inv/map/" + segmentId + "/info/link/" + linkId + "/",
-            method: "GET",
-            scope: me,
-            mask: me,
-            success: function(response) {
-                me.applyData(Ext.decode(response.responseText))
-            }
-        });
+    onDashboard: function() {
+        if(this.currentLinkId) {
+            window.open(
+                '/ui/grafana/dashboard/script/noc.js?dashboard=link&id=' + this.currentLinkId
+            );
+        }
     },
 
-    applyData: function(data) {
-        var me = this,
-            t, ut;
-
-        t = "";
-        Ext.each(data.objects, function(v) {
-            var fmt;
-
-            t += "<div class='noc-offset-0'><b>" + v.name + ":</b></div>";
-            Ext.each(v.interfaces, function(i) {
-                if(i.description) {
-                    fmt = "<div class='noc-offset-1'>{0}: {1}</div><div class='noc-offset-2'>{2}</div>";
-                } else {
-                    fmt = "<div class='noc-offset-1'>{0}: {1}</div>";
-                }
-                t += Ext.String.format(
-                    fmt,
-                    Ext.htmlEncode(i.name),
-                    i.status,
-                    i.description
-                );
-            });
-        });
-        t += "<b>Discovery: </b>" + data.method + "<br>";
-        // Utilisation
-        ut = data.utilisation.map(function(v) {
-            return parseInt(v / 1000000) + "Mbit/s";
-        }).join(" | ");
-        t += "<b>Util: </b>" + ut + "<br>";
-        me.infoText.setHtml(t);
-        me.currentLinkId = data.id;
-    },
+    enableButtons: function(values) {
+        this.currentLinkId = values.id;
+        this.dashboardButton.setDisabled(false);
+    }
 });

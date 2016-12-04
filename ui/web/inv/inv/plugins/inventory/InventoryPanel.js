@@ -13,7 +13,7 @@ Ext.define("NOC.inv.inv.plugins.inventory.InventoryPanel", {
     ],
     app: null,
     autoScroll: true,
-    title: "Inventory",
+    title: __("Inventory"),
 
     initComponent: function() {
         var me = this;

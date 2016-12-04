@@ -135,7 +135,7 @@ Ext.define("NOC.dns.dnszone.Application", {
             ],
             inlines: [
                 {
-                    title: "Records",
+                    title: __("Records"),
                     model: "NOC.dns.dnszone.RecordsModel",
                     columns: [
                         {
@@ -192,7 +192,7 @@ Ext.define("NOC.dns.dnszone.Application", {
                 {
                     text: __("Preview"),
                     glyph: NOC.glyph.search,
-                    tooltip: "Preview zone",
+                    tooltip: __("Preview zone"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onPreviewZone
@@ -203,25 +203,25 @@ Ext.define("NOC.dns.dnszone.Application", {
     },
     filters: [
         {
-            title: "By Profile",
+            title: __("By Profile"),
             name: "profile",
             ftype: "lookup",
             lookup: "dns.dnszoneprofile"
         },
         {
-            title: "By Project",
+            title: __("By Project"),
             name: "project",
             ftype: "lookup",
             lookup: "project.project"
         },
         {
-            title: "By Notification",
+            title: __("By Notification"),
             name: "notification_group",
             ftype: "lookup",
             lookup: "main.notificationgroup"
         },
         {
-            title: "By Tags",
+            title: __("By Tags"),
             name: "tags",
             ftype: "tag"
         }
@@ -229,8 +229,8 @@ Ext.define("NOC.dns.dnszone.Application", {
     preview: {
         xtype: "NOC.core.RepoPreview",
         syntax: "bind",
-        previewName: "Zone: {{name}}",
-        restUrl: "/dns/dnszone/{{id}}/repo/zone/"
+        previewName: 'Zone: {0}',
+        restUrl: '/dns/dnszone/{0}/repo/zone/'
     },
     // Check RRType accepts priority field
     isPrioVisible: function(rrType) {

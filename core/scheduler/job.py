@@ -10,8 +10,6 @@
 import logging
 import time
 import datetime
-import cPickle
-import zlib
 ## Third-party modules
 import tornado.gen
 import bson
@@ -31,17 +29,18 @@ class Job(object):
     enabled = True
     # Model/Document class referenced by key
     model = None
+    # Use model.get_by_id for dereference
+    use_get_by_id = False
     # Group name. Only one job from group can be started
     # if is not None
     group_name = None
-    # Set to True to run handler inside transactional block
-    use_transactions = False
     # Context format version
     # None - do not store context
     # Set to version number otherwise
     # Bump to next number on incompatible context changes
     context_version = None
-
+    #
+    context_cache_key = "jobctx-%(name)s-%(pool)s-%(job_id)s"
     # Collection attributes
     ATTR_ID = "_id"
     ATTR_TS = "ts"
@@ -57,8 +56,6 @@ class Job(object):
     ATTR_RUNS = "runs"  # Number of runs
     ATTR_FAULTS = "f"  # Amount of sequental faults
     ATTR_OFFSET = "o"  # Random offset [0 .. 1]
-    ATTR_CONTEXT = "ctx"  # Pickled job context
-    ATTR_CONTEXT_VERSION = "ctv"  # Stored context format version
 
     # Job states
     S_WAIT = "W"  # Waiting to run
@@ -102,26 +99,11 @@ class Job(object):
             scheduler.logger,
             self.get_display_key()
         )
-        # Deserialize context
-        ctx = self.attrs.get(self.ATTR_CONTEXT)
         self.context = {}
-        if ctx:
-            ctv = self.attrs.get(self.ATTR_CONTEXT_VERSION,
-                                 self.context_version)
-            if ctv == self.context_version:
-                self.logger.debug("Restoring context")
-                try:
-                    self.context = cPickle.loads(zlib.decompress(str(ctx)))
-                except cPickle.UnpicklingError as e:
-                    self.logger.error("Cannot unpickle context: %s", e)
-                except zlib.error:
-                    self.logger.error("Cannot unpack context")
-            else:
-                self.logger.debug(
-                    "Resetting context due to incompatible version"
-                )
-        if self.context_version:
-            self.init_context()
+
+    def load_context(self, data):
+        self.context = data or {}
+        self.init_context()
 
     def init_context(self):
         """
@@ -194,23 +176,27 @@ class Job(object):
         """
         Retrieve referenced object from database
         """
-        if self.model:
+        if self.model and self.use_get_by_id:
+            self.object = self.model.get_by_id(self.attrs[self.ATTR_KEY])
+            if not self.object:
+                return False
+        elif self.model:
             q = self.get_defererence_query()
             if q is None:
                 return False
             try:
                 # Resolve object
                 self.object = self.model.objects.get(**q)
-                # Adjust logging
-                self.logger.set_prefix(
-                    "%s][%s][%s" % (
-                        self.scheduler.name,
-                        self.name,
-                        self.get_display_key()
-                    )
-                )
             except self.model.DoesNotExist:
                 return False
+        # Adjust logging
+        self.logger.set_prefix(
+            "%s][%s][%s" % (
+                self.scheduler.name,
+                self.name,
+                self.get_display_key()
+            )
+        )
         return True
 
     def get_display_key(self):
@@ -293,21 +279,10 @@ class Job(object):
             Job.ATTR_KEY: key
         })
 
-    def context_dumps(self):
-        """
-        Serialize context
-        """
-        if not self.context:
-            return None
-        try:
-            return bson.Binary(
-                zlib.compress(
-                    cPickle.dumps(
-                        self.context,
-                        cPickle.HIGHEST_PROTOCOL
-                    )
-                )
-            )
-        except cPickle.PickleError as e:
-            self.logger.error("Failed to serialize context: %s", e)
-            return None
+    def get_context_cache_key(self):
+        ctx = {
+            "name": self.scheduler.name,
+            "pool": self.scheduler.pool or "global",
+            "job_id": self.attrs[self.ATTR_ID]
+        }
+        return self.context_cache_key % ctx

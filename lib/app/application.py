@@ -132,8 +132,12 @@ class Application(object):
     def __init__(self, site):
         self.site = site
         parts = self.__class__.__module__.split(".")
-        self.module = parts[4]
-        self.app = parts[5]
+        if parts[1] == "custom":
+            self.module = parts[5]
+            self.app = parts[6]
+        else:
+            self.module = parts[4]
+            self.app = parts[5]
         self.module_title = __import__(
             "noc.services.web.apps.%s" % self.module, {}, {},
             ["MODULE_NAME"]
@@ -200,7 +204,10 @@ class Application(object):
         Returns application id
         """
         parts = cls.__module__.split(".")
-        return "%s.%s" % (parts[4], parts[5])
+        if parts[1] == "custom":
+            return "%s.%s" % (parts[5], parts[6])
+        else:
+            return "%s.%s" % (parts[4], parts[5])
 
     @property
     def base_url(self):

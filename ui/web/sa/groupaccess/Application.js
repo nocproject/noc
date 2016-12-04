@@ -54,19 +54,19 @@ Ext.define("NOC.sa.groupaccess.Application", {
     ],
     filters: [
         {
-            title: "By Group",
+            title: __("By Group"),
             name: "group",
             ftype: "lookup",
             lookup: "main.group"
         },
         {
-            title: "By Selector",
+            title: __("By Selector"),
             name: "selector",
             ftype: "lookup",
             lookup: "sa.managedobjectselector"
         },
         {
-            title: "By Administrative Domain",
+            title: __("By Administrative Domain"),
             name: "administrative_domain",
             ftype: "lookup",
             lookup: "sa.administrativedomain"

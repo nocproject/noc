@@ -8,7 +8,8 @@
 """
 """
 ## NOC modules
-from base import *
+from base import Interface, OIDParameter, StringParameter, NoneParameter
+
 
 class IGetSNMPGet(Interface):
     oid = OIDParameter()

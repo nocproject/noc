@@ -8,25 +8,62 @@
 
 ## Python modules
 import operator
+from django import forms
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobject import ManagedObjectProfile
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.objectuplink import ObjectUplink
+from noc.main.models.pool import Pool
+from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
-class ReportDiscoveryProblemApplication(SimpleReport):
-    title = _("Discovery Problems")
+class ReportForm(forms.Form):
+    pool = forms.ModelChoiceField(
+        label=_("Managed Objects Pools"),
+        required=True,
+        queryset=Pool.objects.order_by("name"))
+    obj_profile = forms.ModelChoiceField(
+        label=_("Managed Objects Profile"),
+        required=False,
+        queryset=ManagedObjectProfile.objects.order_by("name"))
 
-    def get_data(self, **kwargs):
+
+class ReportDiscoveryTopologyProblemApplication(SimpleReport):
+    title = _("Discovery Topology Problems")
+    form = ReportForm
+
+    def get_data(self, request, pool, obj_profile=None, **kwargs):
         problems = {}  # id -> problem
-        # Get all managed objects
-        mos = dict(
-            (mo.id, mo)
-            for mo in ManagedObject.objects.filter(is_managed=True)
-        )
+
+        if not obj_profile:
+            # Get all managed objects
+            mos = dict(
+                (mo.id, mo)
+                for mo in ManagedObject.objects.filter(is_managed=True, pool=pool)
+            )
+            if not request.user.is_superuser:
+                mos = dict(
+                    (mo.id, mo)
+                    for mo in ManagedObject.objects.filter(is_managed=True, pool=pool,
+                                                           administrative_domain__in=UserAccess.get_domains(request.user))
+                )
+        else:
+            # Get all managed objects
+            mos = dict(
+                (mo.id, mo)
+                for mo in ManagedObject.objects.filter(is_managed=True, pool=pool, object_profile=obj_profile)
+            )
+            if not request.user.is_superuser:
+                mos = dict(
+                    (mo.id, mo)
+                    for mo in ManagedObject.objects.filter(is_managed=True, pool=pool, object_profile=obj_profile,
+                                                           administrative_domain__in=UserAccess.get_domains(request.user))
+                )
+
         mos_set = set(mos)
         # Get all managed objects with Generic.Host profiles
         for mo in mos:

@@ -11,13 +11,13 @@ import datetime
 import os
 ## Django modules
 from django.http import HttpResponse
+from django.contrib.auth.models import Group
 ## NOC modules
 from noc.settings import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.modelapplication import ModelApplication
 from noc.lib.app.access import PermitLogged
 from noc.lib.version import get_version, get_brand
-from noc.main.models import Group
 from noc.main.models.usersession import UserSession
 from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
@@ -35,30 +35,15 @@ class DesktopApplication(ExtApplication):
         ExtApplication.__init__(self, *args, **kwargs)
         #
         # Parse themes
-        self.default_theme = config.get("customization", "default_theme")
-        self.themes = {}  # id -> {name: , css:}
-        for o in config.options("themes"):
-            if o.endswith(".name"):
-                theme_id = o[:-5]
-                nk = "%s.name" % theme_id
-                ek = "%s.enabled" % theme_id
-                if (config.has_option("themes", nk) and
-                    config.has_option("themes", ek) and
-                    config.getboolean("themes", ek)):
-                    self.themes[theme_id] = {
-                        "id": theme_id,
-                        "name": config.get("themes", nk).strip(),
-                        "css": "/static/pkg/extjs/packages/ext-theme-%s/build/resources/ext-theme-%s-all.css" % (theme_id, theme_id),
-                        "js": "/static/pkg/extjs/packages/ext-theme-%s/build/ext-theme-%s.js" % (theme_id, theme_id)
-                    }
-        # Login restrictions
-        self.restrict_to_group = self.get_group(
-            config.get("authentication", "restrict_to_group"))
-        self.single_session_group = self.get_group(
-            config.get("authentication", "single_session_group"))
-        self.mutual_exclusive_group = self.get_group(
-            config.get("authentication", "mutual_exclusive_group"))
-        self.idle_timeout = config.getint("authentication", "idle_timeout")
+        self.default_theme = "gray"
+        self.themes = {self.default_theme: {
+            "id": self.default_theme,
+            "name": self.default_theme,
+            "css": "/static/pkg/extjs/packages/ext-theme-%s/build/resources/ext-theme-%s-all.css" % (
+                self.default_theme, self.default_theme),
+            "js": "/static/pkg/extjs/packages/ext-theme-%s/build/ext-theme-%s.js" % (
+                self.default_theme, self.default_theme)
+        }}  # id -> {name: , css:}
 
     def get_group(self, name):
         """
@@ -100,37 +85,31 @@ class DesktopApplication(ExtApplication):
                     isinstance(self.site.apps[a], ModelApplication)]
         apps = [a.split(".") for a in sorted(ext_apps)]
         # Prepare settings
-        favicon_url = config.get("customization", "favicon_url")
+        favicon_url = config.customization.favicon
         if favicon_url.endswith(".png"):
             favicon_mime = "image/png"
         elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
             favicon_mime = "image/jpeg"
         else:
             favicon_mime = None
-        if request.user.is_authenticated():
-            enable_search = Permission.has_perm(request.user, "main:search:launch")
-        else:
-            enable_search = False
+
         setup = {
             "system_uuid": cp.system_uuid,
-            "installation_name": config.get("customization",
-                                            "installation_name"),
-            "logo_url": config.get("customization", "logo_url"),
-            "logo_width": config.get("customization", "logo_width"),
-            "logo_height": config.get("customization", "logo_height"),
+            "installation_name": config.installation_name,
+            "logo_url": config.customization.logo_url,
+            "logo_width": config.customization.logo_width,
+            "logo_height": config.customization.logo_height,
             "brand": get_brand(),
-            "branding_color": config.get("customization", "branding_color"),
-            "branding_background_color": config.get("customization", "branding_background_color"),
+            "branding_color": config.customization.branding_color,
+            "branding_background_color": config.customization.branding_background_color,
             "favicon_url": favicon_url,
             "favicon_mime": favicon_mime,
-            "debug_js": config.getboolean("main", "debug_js"),
-            "install_collection": config.getboolean("develop", "install_collection"),
-            "enable_gis_base_osm": config.getboolean("gis", "enable_osm"),
-            "enable_gis_base_google_sat": config.getboolean("gis", "enable_google_sat"),
-            "enable_gis_base_google_roadmap": config.getboolean("gis", "enable_google_roadmap"),
-            "trace_extjs_events": config.getboolean("main", "trace_extjs_events"),
-            "preview_theme": "midnight",
-            "enable_search": enable_search
+            "install_collection": config.web.install_collection,
+            "enable_gis_base_osm": config.gis.enable_osm,
+            "enable_gis_base_google_sat": config.gis.enable_google_sat,
+            "enable_gis_base_google_roadmap": config.gis.enable_google_roadmap,
+            "preview_theme": "midnight"
+
         }
         return self.render(
             request, "desktop.html",
@@ -189,7 +168,7 @@ class DesktopApplication(ExtApplication):
             "first_name": user.first_name,
             "last_name": user.last_name,
             "can_change_credentials": True,
-            "idle_timeout": self.idle_timeout,
+            "idle_timeout": config.login.session_ttl,
             "navigation": {
                 "id": "root",
                 "iconCls": "fa fa-globe",

@@ -52,9 +52,6 @@ Ext.define("NOC.core.Preview", {
             }
         });
         me.callParent();
-        //
-        me.urlTemplate = Handlebars.compile(me.restUrl);
-        me.titleTemplate = Handlebars.compile(me.previewName);
     },
     afterRender: function() {
         var me = this;
@@ -98,9 +95,8 @@ Ext.define("NOC.core.Preview", {
     preview: function(record) {
         var me = this;
         me.currentRecord = record;
-        me.rootUrl = Ext.String.format(me.restUrl, record.get("id"));
-        me.rootUrl = me.urlTemplate(record.data);
-        me.setTitle(me.titleTemplate(record.data));
+        me.rootUrl = me.restUrl.apply(record.data);
+        me.setTitle(me.previewName.apply(record.data));
         me.requestText();
     },
     //
@@ -114,7 +110,7 @@ Ext.define("NOC.core.Preview", {
                 me.renderText(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to get text");
+                NOC.error(__("Failed to get text"));
             }
         });
     },

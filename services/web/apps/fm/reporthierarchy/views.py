@@ -8,10 +8,10 @@
 
 ## NOC modules
 from noc.lib.app.reportapplication import ReportApplication
-from noc.fm.models import EventClass, EventClassCategory,\
-                          AlarmClass, AlarmClassCategory,\
-                          EventClassificationRule
-from noc.core.translation import ugettext as _                          
+from noc.fm.models.eventclass import EventClass, EventClassCategory
+from noc.fm.models.alarmclass import AlarmClass, AlarmClassCategory
+from noc.fm.models.eventclassificationrule import EventClassificationRule
+from noc.core.translation import ugettext as _
 
 
 class HierarchyReportAppplication(ReportApplication):

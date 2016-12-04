@@ -107,8 +107,7 @@ class Script(BaseScript):
                 # Get switchport description
                 port_descr = {}
                 for iface, description in self.snmp.join_tables(
-                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18",
-                        bulk=True):
+                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
                     if iface[:3] == 'Aux' or iface[:4] == 'Vlan' \
                     or iface[:11] == 'InLoopBack' \
                     or iface == 'System':

@@ -23,24 +23,25 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.main.ref.stencil.LookupField",
         "NOC.sa.authprofile.LookupField",
         "NOC.sa.terminationgroup.LookupField",
-        "NOC.inv.networksegment.LookupField"
+        "NOC.inv.networksegment.LookupField",
+        "NOC.main.timepattern.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
     rowClassField: "row_class",
     actions: [
         {
-            title: "Run discovery now",
+            title: __("Run discovery now"),
             action: "run_discovery",
             glyph: NOC.glyph.play
         },
         {
-            title: "Set managed",
+            title: __("Set managed"),
             action: "set_managed",
             glyph: NOC.glyph.check
         },
         {
-            title: "Set unmanaged",
+            title: __("Set unmanaged"),
             action: "set_unmanaged",
             glyph: NOC.glyph.times
         }
@@ -68,7 +69,7 @@ Ext.define("NOC.sa.managedobject.Application", {
             text: __("Dashboard"),
             glyph: NOC.glyph.line_chart,
             scope: me,
-            tooltip: "Show dashboard",
+            tooltip: __("Show dashboard"),
             handler: me.onDashboard
         });
 
@@ -161,8 +162,8 @@ Ext.define("NOC.sa.managedobject.Application", {
         me.ITEM_CONFIG = me.registerItem(
             Ext.create("NOC.core.RepoPreview", {
                 app: me,
-                previewName: "{{name}} config",
-                restUrl: "/sa/managedobject/{{id}}/repo/cfg/",
+                previewName: '{0} config',
+                restUrl: '/sa/managedobject/{0}/repo/cfg/',
                 historyHashPrefix: "config"
             })
         );
@@ -340,7 +341,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     xtype: "fieldset",
                     layout: "hbox",
-                    title: "Role",
+                    title: __("Role"),
                     defaults: {
                         padding: 4
                     },
@@ -366,7 +367,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Location",
+                    title: __("Location"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -415,7 +416,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Access",
+                    title: __("Access"),
                     items: [
                         {
                             xtype: "container",
@@ -466,6 +467,14 @@ Ext.define("NOC.sa.managedobject.Application", {
                                     hideTrigger: true,
                                     minValue: 0,
                                     maxValue: 99
+                                },
+                                {
+                                    name: "time_pattern",
+                                    xtype: "main.timepattern.LookupField",
+                                    fieldLabel: __("Time Pattern"),
+                                    allowBlank: true,
+                                    groupEdit: true,
+                                    uiStyle: "medium"
                                 }
                             ]
                         },
@@ -523,7 +532,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Service",
+                    title: __("Service"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -548,7 +557,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Event Sources",
+                    title: __("Event Sources"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -652,7 +661,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Rules",
+                    title: __("Rules"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -713,79 +722,79 @@ Ext.define("NOC.sa.managedobject.Application", {
     filters: [
         // @todo: By SA Profile
         {
-            title: "By Managed",
+            title: __("By Managed"),
             name: "is_managed",
             ftype: "boolean"
         },
         {
-            title: "By SA Profile",
+            title: __("By SA Profile"),
             name: "profile_name",
             ftype: "lookup",
             lookup: "main.ref.profile"
         },
         {
-            title: "By Obj. Profile",
+            title: __("By Obj. Profile"),
             name: "object_profile",
             ftype: "lookup",
             lookup: "sa.managedobjectprofile"
         },
         {
-            title: "By Adm. Domain",
+            title: __("By Adm. Domain"),
             name: "administrative_domain",
-            ftype: "lookup",
+            ftype: "tree",
             lookup: "sa.administrativedomain"
         },
         {
-            title: "By Segment",
+            title: __("By Segment"),
             name: "segment",
-            ftype: "lookup",
+            ftype: "tree",
             lookup: "inv.networksegment"
         },
         {
-            title: "By Selector",
+            title: __("By Selector"),
             name: "selector",
             ftype: "lookup",
             lookup: "sa.managedobjectselector"
         },
         {
-            title: "By Pool",
+            title: __("By Pool"),
             name: "pool",
             ftype: "lookup",
             lookup: "main.pool"
         },
         {
-            title: "By VRF",
+            title: __("By VRF"),
             name: "vrf",
             ftype: "lookup",
             lookup: "ip.vrf"
         },
         {
-            title: "By VC Domain",
+            title: __("By VC Domain"),
             name: "vc_domain",
             ftype: "lookup",
             lookup: "vc.vcdomain"
         },
         {
-            title: "By Termination Group",
+            title: __("By Termination Group"),
             name: "termination_group",
             ftype: "lookup",
             lookup: "sa.terminationgroup"
         },
         {
-            title: "By Service Terminator",
+            title: __("By Service Terminator"),
             name: "service_terminator",
             ftype: "lookup",
             lookup: "sa.terminationgroup"
         },
         {
-            title: "By Tags",
+            title: __("By Tags"),
             name: "tags",
             ftype: "tag"
         }
     ],
     inlines: [
         {
-            title: "Attributes",
+            title: __("Attributes"),
             model: "NOC.sa.managedobject.AttributesModel",
             columns: [
                 {
@@ -817,7 +826,7 @@ Ext.define("NOC.sa.managedobject.Application", {
         var me = this;
         if(me.currentRecord) {
             window.open(
-                "/ui/grafana/dashboard/script/noc.js?dashboard=managedobject&id=" + me.currentRecord.get("id")
+                "/ui/grafana/dashboard/script/noc.js?dashboard=mo&id=" + me.currentRecord.get("id")
             );
         }
     },

@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ class Script(BaseScript):
         r"Device Type\s+:\s*(?P<platform>\S+).+"
         r"(?:Boot PROM|System [Bb]oot)\s+"
         r"[Vv]ersion\s+:\s*(?:Build\s+)?(?P<bootprom>\S+).+"
-        r"[Ff]irmware [Vv]ersion\s+:\s*(?:Build\s+)?(?P<version>\S+).+"
+        r"[Ff]irmware [Vv]ersion(?: 1)?\s+:\s*(?:Build\s+)?(?P<version>\S+).+"
         r"[Hh]ardware [Vv]ersion\s+:\s*(?P<hardware>\S+)",
         re.MULTILINE | re.DOTALL)
     rx_fwt = re.compile(

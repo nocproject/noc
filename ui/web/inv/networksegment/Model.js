@@ -60,6 +60,11 @@ Ext.define("NOC.inv.networksegment.Model", {
             persist: false
         },
         {
+            name: "is_redundant",
+            type: "boolean",
+            persist: false
+        },
+        {
             name: "tags",
             type: "auto"
         }

@@ -11,7 +11,7 @@ Ext.define("NOC.ip.vrf.MOSelectForm", {
     requires: [
         "NOC.sa.managedobject.LookupField"
     ],
-    title: "Select Object To Import",
+    title: __("Select Object To Import"),
     autoShow: true,
     closable: true,
     modal: true,

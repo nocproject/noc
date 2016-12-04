@@ -37,27 +37,16 @@ class LLDPCheck(TopologyDiscoveryCheck):
         result = mo.scripts.get_lldp_neighbors()
         self.n_cache = {}  # (chassis_id, chassis_subtype) -> object
         for n in result:
-            if len(n["neighbors"]) != 1:
-                ## Not direct link
-                continue
-            nn = n["neighbors"][0]
-            yield (
-                n["local_interface"],
-                (
-                    nn["remote_chassis_id_subtype"],
-                    nn["remote_chassis_id"]
-                ),
-                (
-                    nn["remote_port_subtype"],
-                    nn["remote_port"]
-                )
-            )
+            if len(n["neighbors"]) == 1:
+                nn = n["neighbors"][0]
+                yield n["local_interface"], nn, nn
 
     def get_neighbor(self, neighbor_id):
         """
-        Neighbor id is a pair of (<id type>, <id>)
+        Neighbor id is an lldp neighbor dict
         """
-        chassis_subtype, chassis_id = neighbor_id
+        chassis_subtype = neighbor_id["remote_chassis_id_subtype"]
+        chassis_id = neighbor_id["remote_chassis_id"]
         if chassis_subtype == self.CHASSIS_SUBTYPE_MAC:
             return self.get_neighbor_by_mac(chassis_id)
         elif chassis_subtype == self.CHASSIS_SUBTYPE_NETWORK_ADDRESS:
@@ -94,9 +83,10 @@ class LLDPCheck(TopologyDiscoveryCheck):
 
     def get_remote_interface(self, remote_object, port_id):
         """
-        port id is a pair of (subtype, port id)
+        port id is a lldp neighbor dict
         """
-        port_subtype, port = port_id
+        port_subtype = port_id["remote_port_subtype"],
+        port = port_id["remote_port"]
         if port_subtype == self.PORT_SUBTYPE_ALIAS:
             rp = self.get_interface_by_description(port, remote_object)
         elif port_subtype == self.PORT_SUBTYPE_MAC:
@@ -132,7 +122,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         :param port:
         :return: port name if found, None otherwise.
         """
-        self.logger.debug("Remote port description: %s" % port)
+        self.logger.debug("Searching port by description: %s:%s", object.name, port)
         try:
             i = Interface.objects.filter(
                 managed_object=object.id, description=port)[:2]
@@ -150,7 +140,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         :param port:
         :return:
         """
-        self.logger.debug("Remote port local: %s", port)
+        self.logger.debug("Searching port by local: %s:%s", object.name, port)
         # Try ifindex
         if is_int(port):
             i = Interface.objects.filter(
@@ -189,7 +179,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         :param port:
         :return:
         """
-        self.logger.debug("Remote port unspecified: %s", port)
+        self.logger.debug("Searching port by unspecified: %s:%s", object.name, port)
         # Try to find interface with given name.
         try:
             iface = self.get_interface_by_name(port, object)

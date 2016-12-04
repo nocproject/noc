@@ -14,12 +14,12 @@ Ext.define("NOC.vc.vc.AddFirstFreeForm", {
         "NOC.vc.vcdomain.LookupField",
         "NOC.vc.vcfilter.LookupField"
     ],
-    title: "Add First Free VC",
-    autoShow: true,
-    closable: false,
+    title: __("Add First Free VC"),
+    autoShow: false,
     modal: true,
     app: null,
     closable: true,
+    closeAction: 'hide',
 
     initComponent: function() {
         var me = this;
@@ -74,15 +74,15 @@ Ext.define("NOC.vc.vc.AddFirstFreeForm", {
                 if(!vc) {
                     // No Free VC
                     Ext.Msg.alert("Error", "No free VC found");
-                    me.close();
+                    me.hide();
                     return;
                 }
-                me.close();
                 me.app.newRecord({vc_domain: r.vc_domain, l1: vc});
+                me.hide();
             },
             failure: function() {
-                NOC.error("Failed to get first free VC");
-                me.close();
+                NOC.error(__("Failed to get first free VC"));
+                me.hide();
             }
         });
     }

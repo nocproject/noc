@@ -9,7 +9,12 @@
 
     ],
     "handlers": [
-        "noc.fm.handlers.alarm.managed_object.topology_rca"
+        "noc.fm.handlers.alarm.status.check_down",
+        "noc.fm.handlers.alarm.managed_object.topology_rca",
+        "noc.fm.handlers.alarm.segment.set_segment_redundancy"
+    ],
+    "clear_handlers": [
+        "noc.fm.handlers.alarm.segment.check_segment_redundancy"
     ],
     "subject_template": "Ping Failed",
     "body_template": "Failed to ping managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",

@@ -57,11 +57,16 @@ class RackPlugin(InvPlugin):
                 "shift": c.get_data("rackmount", "shift") or 0
             }]
             if units and pos:
+                if c.get_data("management", "managed"):
+                    mo = c.get_data("management", "managed_object")
+                else:
+                    mo = None
                 r["content"] += [{
                     "id": str(c.id),
                     "units": units,
                     "pos": pos,
                     "name": c.name,
+                    "managed_object_id": mo,
                     "side": side,
                     "shift": c.get_data("rackmount", "shift") or 0
                 }]

@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.interface.L2Panel");
 Ext.define("NOC.inv.interface.L2Panel", {
     extend: "Ext.panel.Panel",
     uses: [],
-    title: "Switchports",
+    title: __("Switchports"),
     closable: false,
     layout: "fit",
 
@@ -31,7 +31,7 @@ Ext.define("NOC.inv.interface.L2Panel", {
                             width: 25,
                             items: [
                                 {
-                                    tooltip: "Show MACs",
+                                    tooltip: __("Show MACs"),
                                     glyph: NOC.glyph.play,
                                     scope: me,
                                     handler: me.showMAC,
@@ -84,7 +84,7 @@ Ext.define("NOC.inv.interface.L2Panel", {
             scope: me,
             success: me.showMACForm,
             failure: function() {
-                NOC.error("Failed to get MACs");
+                NOC.error(__("Failed to get MACs"));
             }
         });
     },
@@ -99,7 +99,7 @@ Ext.define("NOC.inv.interface.L2Panel", {
                     me.currentMAC.get("name"))
             });
         } else {
-            NOC.error("Failed to get MACs");
+            NOC.error(__("Failed to get MACs"));
         }
     }
 });

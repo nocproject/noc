@@ -110,7 +110,7 @@ Ext.define("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
                 me.policiesField.setValue(data);
             },
             failure: function(response) {
-                NOC.error("Cannot get settings");
+                NOC.error(__("Cannot get settings"));
             }
         });
     },
@@ -144,7 +144,7 @@ Ext.define("NOC.cm.validationpolicysettings.ValidationSettingsPanel", {
                 if(data && data.success === false) {
                     NOC.error(data.message);
                 } else {
-                    NOC.error("Error saving record!");
+                    NOC.error(__("Error saving record!"));
                     console.log(response.responseText);
                 }
                 me.unmask();

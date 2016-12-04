@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.inv.plugins.conduits.CreateBlockForm");
 
 Ext.define("NOC.inv.inv.plugins.conduits.CreateBlockForm", {
     extend: "Ext.Window",
-    title: "Create Block",
+    title: __("Create Block"),
     closable: true,
     layout: "fit",
     app: null,

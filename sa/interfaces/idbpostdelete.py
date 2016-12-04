@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, SubclassOfParameter, Parameter
 
 
 class IDBPostDelete(Interface):

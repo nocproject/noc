@@ -25,9 +25,9 @@ class ArchivedAlarm(nosql.Document):
         "allow_inheritance": False,
         "indexes": [
             "root",
-            "control_time",
             "timestamp",
             "managed_object",
+            ("managed_object", "discriminator", "control_time"),
             "escalation_tt",
             "escalation_ts"
         ]

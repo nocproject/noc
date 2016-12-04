@@ -23,11 +23,16 @@ import ujson
 from noc.config import config
 from noc.lib.version import get_branch, get_tip
 from noc.lib.fileutils import safe_rewrite
+from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
     logging.basicConfig()
 
+# CP error reporting
+ENABLE_CP = True
+CP_NEW = "var/cp/crashinfo/new"
+CP_SET_UID = None
 
 def get_lines_from_file(filename, lineno, context_lines,
                         loader=None, module_name=None):
@@ -259,6 +264,33 @@ def error_report(reverse=False, logger=logger):
     fp = error_fingerprint()
     r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)
+    metrics["errors"] += 1
+    if ENABLE_CP:
+        fp = error_fingerprint()
+        path = os.path.join(CP_NEW, fp + ".json")
+        if os.path.exists(path):
+            # Touch file
+            os.utime(path, None)
+        else:
+            metrics["unique_errors"] += 1
+            # @todo: TZ
+            # @todo: Installation ID
+            c = {
+                "ts": datetime.datetime.now().isoformat(),
+                "uuid": fp,
+                # "installation": None,
+                "process": os.path.relpath(sys.argv[0] or sys.executable),
+                "branch": get_branch(),
+                "tip": get_tip(),
+                "traceback": r
+            }
+            try:
+                safe_rewrite(path, ujson.dumps(c))
+                if CP_SET_UID:
+                    os.chown(path, CP_SET_UID, -1)
+                logger.error("Writing CP report to %s", path)
+            except OSError as e:
+                logger.error("Unable to write CP report: %s", e)
     return r
 
 
@@ -300,7 +332,7 @@ def error_fingerprint():
         tb = tb.tb_next
     parts = [
         get_branch(),
-        os.path.relpath(sys.argv[0]),  # Process
+        os.path.relpath(sys.argv[0] or sys.executable),  # Process
         str(t),  # Exception class
         noc_file, noc_function, str(noc_lineno),  # NOC code point
         tb_file, tb_function, str(tb_lineno)  # Absolute code point

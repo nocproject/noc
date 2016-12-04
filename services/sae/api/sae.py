@@ -8,23 +8,22 @@
 
 ## Third-party modules
 import tornado.gen
-from collections import namedtuple
 ## NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectcapabilities import ObjectCapabilities
-from noc.sa.models.credcache import CredentialsCache
+from noc.core.cache.decorator import cachedmethod
 
 
 class SAEAPI(API):
     """
-    Monitoring API
+    SAE API
     """
     name = "sae"
 
-    PREPARE_SQL = """
-      PREPARE sae_mo AS
-            SELECT
+    RUN_SQL = """
+        SELECT
             mo.name, mo.is_managed, mo.profile_name,
             mo.scheme, mo.address, mo.port, mo."user",
             mo.password,
@@ -36,15 +35,14 @@ class SAEAPI(API):
             ARRAY(
               SELECT key || ' := ' || value
               FROM sa_managedobjectattribute
-              WHERE managed_object_id = $1
+              WHERE managed_object_id = %s
             )
         FROM
             sa_managedobject mo
             LEFT JOIN sa_authprofile ap
                 ON (mo.auth_profile_id = ap.id)
-        WHERE mo.id=$1
+        WHERE mo.id = %s
     """
-    RUN_SQL = "EXECUTE sae_mo(%s)"
 
     @api
     @tornado.gen.coroutine
@@ -83,22 +81,18 @@ class SAEAPI(API):
              data["version"], args, timeout]
         )
 
+    @cachedmethod(
+        key="cred-%s"
+    )
     def get_object_data(self, object_id):
-        d = CredentialsCache.get(object_id)
-        if not d:
-            d = self.resolve_data(object_id)
-            CredentialsCache.set(object_id, d)
-        return d
-
-    def resolve_data(self, object_id):
         """
-        Worker to resolve
+        Worker to resolve credentials
         """
         object_id = int(object_id)
         # Get Object's attributes
         with self.service.get_pg_connect() as connection:
             cursor = connection.cursor()
-            cursor.execute(self.RUN_SQL, [object_id])
+            cursor.execute(self.RUN_SQL, [object_id, object_id])
             data = cursor.fetchall()
         if not data:
             raise APIError("Object is not found")

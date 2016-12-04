@@ -30,7 +30,7 @@ class Script(BaseScript):
     rx_platform = re.compile(
         r"^cisco (?P<platform>\S+) \(\S+\) processor( \(revision.+?\))? with",
         re.IGNORECASE | re.MULTILINE)
-    rx_invalid_platforms = re.compile("IOS-XE|EGR|s\d+\S+")
+    rx_invalid_platforms = re.compile("IOS-XE|EGR|Catalyst L3 Switch|s\d+\S+")
 
     def execute(self):
         if self.has_snmp():

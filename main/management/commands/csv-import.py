@@ -12,7 +12,6 @@ import sys
 from optparse import make_option
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
 from django.db import models
 ## NOC modules
 from noc.lib.csvutils import csv_import, IR_FAIL, IR_SKIP, IR_UPDATE
@@ -73,7 +72,6 @@ class Command(BaseCommand):
         except KeyError:
             raise CommandError("Invalid resolve option: %s" % options["resolve"])
         # Begin import
-        transaction.enter_transaction_management()
         for f in args[1:]:
             print "Importing %s" % f
             with open(f) as f:
@@ -83,5 +81,3 @@ class Command(BaseCommand):
                     raise CommandError(error)
                 else:
                     print "... %d rows imported/updated" % count
-        transaction.commit()
-        transaction.leave_transaction_management()

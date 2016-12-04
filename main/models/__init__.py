@@ -8,20 +8,18 @@
 
 ## Python Modules
 from __future__ import with_statement
-import os
+
 import datetime
-import re
-import threading
-import types
-## Django Modules
-from django.utils.translation import ugettext_lazy as _
-from django.db import models, connection
-from django.contrib.auth.models import User, Group
+
+from django.contrib.auth.models import User
 from django.core.validators import MaxLengthValidator
-from django.db.models.signals import class_prepared, pre_save, pre_delete,\
+from django.db import models
+from django.db.models.signals import pre_save, pre_delete,\
                                      post_save, post_delete
-## NOC Modules
+from django.utils.translation import ugettext_lazy as _
 from noc import settings
+from noc.lib.periodic import periodic_registry
+from noc.main.refbooks.downloaders import downloader_registry
 from noc.main.refbooks.downloaders import downloader_registry
 from noc.lib.middleware import get_user, get_request
 from noc.lib.timepattern import TimePattern as TP

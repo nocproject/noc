@@ -10,6 +10,7 @@
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
 
@@ -21,6 +22,12 @@ class NetworkSegmentApplication(ExtDocApplication):
     menu = [_("Setup"), _("Network Segments")]
     model = NetworkSegment
     query_fields = ["name__icontains", "description__icontains"]
+
+    def queryset(self, request, query=None):
+        qs = super(NetworkSegmentApplication, self).queryset(request, query)
+        if not request.user.is_superuser:
+            qs = qs.filter(adm_domains__in=UserAccess.get_domains(request.user))
+        return qs
 
     def instance_to_lookup(self, o, fields=None):
         return {
@@ -37,7 +44,7 @@ class NetworkSegmentApplication(ExtDocApplication):
     def api_get_path(self, request, id):
         o = self.get_object_or_404(NetworkSegment, id=id)
         path = [NetworkSegment.objects.get(id=ns) for ns in o.get_path()]
-        return {"data": [{"level": path.index(p), "id": str(p.id), "label": unicode(p.name)} for p in path]}
+        return {"data": [{"level": path.index(p) + 1, "id": str(p.id), "label": unicode(p.name)} for p in path]}
 
     @view("^(?P<id>[0-9a-f]{24})/effective_settings/$",
           access="read", api=True)

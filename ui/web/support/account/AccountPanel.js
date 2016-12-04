@@ -12,7 +12,7 @@ Ext.define("NOC.support.account.AccountPanel", {
         "NOC.main.ref.country.LookupField"
     ],
     app: null,
-    title: "Account",
+    title: __("Account"),
     layout: "fit",
     autoScroll: true,
     closable: false,
@@ -113,7 +113,7 @@ Ext.define("NOC.support.account.AccountPanel", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Industries",
+                    title: __("Industries"),
                     layout: {
                         type: "table",
                         columns: 2

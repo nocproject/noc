@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## MikroTik.RouterOS.get_arp
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -16,9 +16,17 @@ class Script(BaseScript):
     interface = IGetARP
 
     def execute(self):
-        return [{
-            "ip": r["address"],
-            "mac": r["mac-address"],
-            "interface": r["interface"]
-        } for n, f, r in self.cli_detail(
-            "/ip arp print detail without-paging")]
+        arp = []
+        for n, f, r in self.cli_detail("/ip arp print detail without-paging"):
+            if "mac-address" in r:
+                arp += [{
+                    "ip": r["address"],
+                    "mac": r["mac-address"],
+                    "interface": r["interface"]
+                }]
+            else:
+                arp += [{
+                    "ip": r["address"],
+                    "interface": r["interface"]
+                }]
+        return arp
