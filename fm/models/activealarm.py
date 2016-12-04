@@ -196,9 +196,8 @@ class ActiveAlarm(nosql.Document):
                 self.wait_ts = ts
                 self.log_message("Waiting for TT to close")
                 call_later(
-                    "noc.services.correlator.wait_tt.wait_tt",
-                    scheduler="correlator",
-                    pool=self.managed_object.pool.name,
+                    "noc.services.escalator.wait_tt.wait_tt",
+                    scheduler="escalator",
                     alarm_id=self.id
                 )
             return
@@ -263,9 +262,8 @@ class ActiveAlarm(nosql.Document):
                 subject = "Alarm cleared"
                 body = "Alarm has been cleared"
             call_later(
-                "noc.services.correlator.escalation.notify_close",
-                scheduler="correlator",
-                pool=self.managed_object.pool.name,
+                "noc.services.escalator.escalation.notify_close",
+                scheduler="escalator",
                 alarm_id=self.id,
                 tt_id=self.escalation_tt,
                 subject=subject,
@@ -284,7 +282,7 @@ class ActiveAlarm(nosql.Document):
             if not t:
                 continue
             call_later(
-                "noc.services.correlator.escalation.check_close_consequence",
+                "noc.services.correlator.check.check_close_consequence",
                 scheduler="correlator",
                 pool=self.managed_object.pool.name,
                 delay=t,

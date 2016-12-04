@@ -122,10 +122,9 @@ class AlarmEscalation(Document):
                     alarm.id, esc.name, e_item.delay
                 )
                 call_later(
-                    "noc.services.correlator.escalation.escalate",
-                    pool=alarm.managed_object.pool.name,
+                    "noc.services.escalator.escalation.escalate",
+                    scheduler="escalator",
                     delay=e_item.delay,
-                    scheduler="correlator",
                     alarm_id=alarm.id,
                     escalation_id=esc.id,
                     escalation_delay=e_item.delay
