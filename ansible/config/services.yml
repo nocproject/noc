@@ -123,7 +123,6 @@ services:
     description: Login
     level: global
 
-
   mailsender:
     description: SMTP mail sender
     level: global
@@ -144,6 +143,10 @@ services:
 
   grafanads:
     description: Grafana DataSource
+    level: global
+
+  escalator:
+    description: Alarm escalator
     level: global
 
 config:
@@ -433,6 +436,12 @@ config:
     db_threads:
       type: int
       label: Concurrent query limit per process
+      default: 10
+
+  escalator:
+    max_threads:
+      label: Escalator threads
+      type: int
       default: 10
 
   grafana:
