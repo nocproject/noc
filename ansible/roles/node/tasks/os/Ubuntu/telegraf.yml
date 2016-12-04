@@ -40,3 +40,27 @@
     name: telegraf
     enabled: yes
     state: started
+
+- name: create systemd override dir
+  file:
+    path: "/etc/systemd/system/telegraf.service.d/"
+    state: directory
+  tags:
+    - config
+
+#https://www.freedesktop.org/software/systemd/man/systemd.unit.html#id-1.11.3
+#
+# order will be by filenaming.
+# /etc/systemd/system/pgbouncer.service.d/noc.conf
+#[Service]
+#LimitNOFILE=1000
+# /etc/systemd/system/pgbouncer.service.d/override.conf
+#[Service]
+#LimitNOFILE=5000
+#
+- name: Install telegraf override.conf
+  template:
+    src: "etc/telegraph.override.conf.j2"
+    dest: "/etc/systemd/system/telegraf.service.d/noc.conf"
+  tags:
+    - config

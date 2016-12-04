@@ -1,0 +1,2 @@
+[Service]
+LimitNOFILE={{(noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients', '3000') * 1.1 )| int | abs}}
