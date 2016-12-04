@@ -258,8 +258,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
         if a.stop_processing:
             logger.debug("Stopping processing")
             break
-    logger.info("[%s] Ecalations loop end", alarm_id)
-
+    logger.info("[%s] Escalations loop end", alarm_id)
 
 
 def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt=False):
@@ -314,25 +313,6 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt
             metrics["escalation_notify"] += 1
         else:
             log("Invalid notification group %s", notification_group_id)
-
-
-def check_close_consequence(alarm_id):
-    logger.info("[%s] Checking close", alarm_id)
-    alarm = get_alarm(alarm_id)
-    if alarm is None:
-        logger.info("[%s] Missing alarm, skipping", alarm_id)
-        return
-    if alarm.status == "C":
-        logger.info("[%s] Alarm is closed. Check passed", alarm_id)
-        return
-    # Detach root
-    logger.info("[%s] Alarm is active. Detaching root", alarm_id)
-    alarm.root = None
-    alarm.log_message("Detached from root for not recovered",
-                      to_save=True)
-    metrics["detached_root"] += 1
-    # Trigger escalations
-    AlarmEscalation.watch_escalations(alarm)
 
 
 def get_item(model, **kwargs):
