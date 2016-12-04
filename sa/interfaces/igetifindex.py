@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, InterfaceNameParameter, IntParameter, NoneParameter
 
 
 class IGetIfIndex(Interface):

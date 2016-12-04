@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC Modules
-from base import *
+from base import Interface, Parameter, DictParameter
 
 
 class IGetDiscoveryCustom(Interface):

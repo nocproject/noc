@@ -10,10 +10,10 @@
 import random
 ## NOC modules
 from ber import BEREncoder
-from consts import SNMP_v2c, PDU_SET_REQUEST
+from consts import SNMP_v2c, SNMP_v1, PDU_SET_REQUEST
 
 
-def set_pdu(community, varbinds, request_id=None):
+def set_pdu(community, varbinds, request_id=None, version=SNMP_v2c):
     """
     Generate SNMP v2c SET PDU
     :param version:
@@ -21,6 +21,8 @@ def set_pdu(community, varbinds, request_id=None):
     :param varbinds: List of (oid, value)
     :return:
     """
+    if version != SNMP_v1 and version != SNMP_v2c:
+        raise NotImplementedError("Unsupported SNMP version")
     e = BEREncoder()
     if not request_id:
         request_id = random.randint(0, 0x7FFFFFFF)
@@ -48,7 +50,7 @@ def set_pdu(community, varbinds, request_id=None):
     ])
     # SNMP v2c PDU
     return e.encode_sequence([
-        e.encode_int(SNMP_v2c),
+        e.encode_int(version),
         e.encode_octet_string(community),
         pdu
     ])

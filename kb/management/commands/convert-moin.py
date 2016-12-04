@@ -12,7 +12,6 @@
 from __future__ import with_statement
 from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
-from django.db import transaction,reset_queries
 from django.contrib.auth.models import User
 from noc.main.models.language import Language
 from noc.main.models.databasestorage import database_storage
@@ -35,7 +34,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.encoding=options["encoding"]
         self.pages=os.path.join(args[0],"pages")
-        transaction.enter_transaction_management()
         self.user=User.objects.order_by("id")[0] # Get first created user as owner
         self.language=Language.objects.get(name=options["language"])
         # Find category
@@ -43,13 +41,10 @@ class Command(BaseCommand):
         oc=len(gc.get_objects())
         for page in os.listdir(self.pages):
             self.convert_page(page)
-            reset_queries()
             gc.collect()
             new_oc=len(gc.get_objects())
             self.out("%d leaked objects\n"%(new_oc-oc))
             oc=new_oc
-        transaction.commit()
-        transaction.leave_transaction_management()
     ##
     ## Progress output
     ##

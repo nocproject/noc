@@ -21,6 +21,13 @@ from noc.settings import LANGUAGES
 
 class Command(BaseCommand):
     SERVICES = {
+        "bi": {
+            "messages": [
+                "services/bi/**.py",
+                "services/bi/**.html.j2"
+            ],
+            "messages_js": ["ui/bi/**.js"]
+        },
         "card": {
             "messages": [
                 "services/card/**.py",

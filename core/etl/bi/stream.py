@@ -26,7 +26,7 @@ class Stream(object):
         self.out_path = None
         now = datetime.datetime.now()
         self.fs = "%s-%s" % (
-            self.model.db_table,
+            self.model._meta.db_table,
             now.strftime("%Y-%m-%d-%H-%M-%S-%f")
         )
         self.chunk_size = 0

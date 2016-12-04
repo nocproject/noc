@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, SubclassOfParameter, Parameter, BooleanParameter
 
 
 class IDBPostSave(Interface):

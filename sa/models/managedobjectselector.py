@@ -8,7 +8,7 @@
 
 ## Python modules
 import operator
-from collections import defaultdict
+from threading import Lock
 ## Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -29,6 +29,8 @@ from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL, QTags
 from noc.core.model.decorator import on_delete, on_save
 from noc.core.model.fields import DocumentReferenceField
+
+id_lock = Lock()
 
 
 @on_save
@@ -95,7 +97,7 @@ class ManagedObjectSelector(models.Model):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         try:
             return ManagedObjectSelector.objects.get(id=id)

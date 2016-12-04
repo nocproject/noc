@@ -9,8 +9,7 @@ console.debug("Defining NOC.project.project.Application");
 Ext.define("NOC.project.project.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.project.project.Model",
-        "NOC.project.project.templates.AllocatedResources"
+        "NOC.project.project.Model"
     ],
     model: "NOC.project.project.Model",
     search: true,
@@ -23,7 +22,7 @@ Ext.define("NOC.project.project.Application", {
                     itemId: "resources",
                     text: __("Resources"),
                     glyph: NOC.glyph.list,
-                    tooltip: "Show Allocated resources",
+                    tooltip: __("Show Allocated resources"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onProjectResources

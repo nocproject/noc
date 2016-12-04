@@ -17,7 +17,7 @@ Ext.define("NOC.inv.connectionrule.Application", {
 
     actions: [
         {
-            title: "Get JSON",
+            title: __("Get JSON"),
             action: "json",
             glyph: NOC.glyph.file,
             resultTemplate: "JSON"
@@ -30,8 +30,8 @@ Ext.define("NOC.inv.connectionrule.Application", {
         // JSON Panel
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/inv/connectionrule/{{id}}/json/",
-            previewName: "Connection Rule: {{name}}"
+            restUrl: new Ext.XTemplate('/inv/connectionrule/{id}/json/'),
+            previewName: new Ext.XTemplate('Connection Rule: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
@@ -145,7 +145,7 @@ Ext.define("NOC.inv.connectionrule.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
@@ -157,7 +157,7 @@ Ext.define("NOC.inv.connectionrule.Application", {
 
     filters: [
         {
-            title: "By Is Builtin",
+            title: __("By Is Builtin"),
             name: "is_builtin",
             ftype: "boolean"
         }

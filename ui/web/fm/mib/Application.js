@@ -26,8 +26,8 @@ Ext.define("NOC.fm.mib.Application", {
 
     preview: {
         xtype: "NOC.core.Preview",
-        previewName: "MIB: {{name}}",
-        restUrl: "/fm/mib/{{id}}/text/"
+        previewName: new Ext.XTemplate('MIB: {name}'),
+        restUrl: new Ext.XTemplate('/fm/mib/{id}/text/')
     },
 
     createForm: function() {
@@ -107,7 +107,7 @@ Ext.define("NOC.fm.mib.Application", {
         var me = this;
         me.currentRecord = record;
         me.setFormTitle(me.changeTitle);
-        me.setFormId(me.currentRecord.get(me.idField));
+        // me.setFormId(me.currentRecord.get(me.idField));
         // Show edit form
         me.showForm();
     },
@@ -131,7 +131,7 @@ Ext.define("NOC.fm.mib.Application", {
                 me.treeStore.setRootNode(data);
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },

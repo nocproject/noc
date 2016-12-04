@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-__author__ = 'FeNikS'
 ##----------------------------------------------------------------------
 ## Huawei.VRP.get_inventory
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
+
 # Python modules
 import re
 ## NOC modules
@@ -62,6 +60,12 @@ class Script(BaseScript):
         r"IssueNumber=(?P<issue_number>.*?)\n"
         r"CLEICode=(?P<code>.*?)\n", re.DOTALL | re.MULTILINE | re.VERBOSE | re.IGNORECASE)
 
+    rx_hw = re.compile(
+        r"DEVICE_NAME\s+:\s+(?P<part_no>\S+)\s*\n"
+        r"DEVICE_SERIAL_NUMBER\s+:\s+(?P<serial>\S+)\s*\n"
+        r"MAC_ADDRESS\s+:\s+(?P<mac>\S+)\s*\n"
+        r"MANUFACTURING_DATE\s+:\s+(?P<mdate>\S+)\s*\n", re.MULTILINE)
+
     def parse_item_content(self, item, number, item_type):
         """Parse display elabel block"""
         date_check = re.compile("\d+-\d+-\d+")
@@ -97,6 +101,8 @@ class Script(BaseScript):
 
     def part_parse(self, type, slot_num, subcard_num=""):
         v = self.cli("display elabel slot %s %s" % (slot_num or "", subcard_num))
+        # Avoid of rotten devices, where part_on contains 0xFF characters
+        v = v.decode("ascii", "ignore")
         r = []
 
         if type == "CHASSIS":
@@ -206,6 +212,20 @@ class Script(BaseScript):
         slot_num = 0
 
         items = self.get_inv()
+        if not items:
+            try:
+                match = self.rx_hw.search(self.cli("display device manuinfo"))
+            except self.CLISyntaxError:
+                return []
+            if match:
+                return [{
+                    "type": "CHASSIS",
+                    "vendor": "HUAWEI",
+                    "serial": match.group("serial"),
+                    "part_no": [match.group("part_no")],
+                    "revision": None,
+                    "mfg_date": match.group("mdate")
+                }]
         for i in items:
             if i["type"] == "CHASSIS":
                 objects.extend(self.part_parse(i["type"], i["number"]))

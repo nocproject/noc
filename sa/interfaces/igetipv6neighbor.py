@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import (Interface, ListOfParameter, StringParameter, DictParameter,
+                  InterfaceNameParameter, IPv6Parameter, MACAddressParameter)
 
 
 class IGetIPv6Neighbor(Interface):

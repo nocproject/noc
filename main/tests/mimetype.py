@@ -10,7 +10,7 @@
 from __future__ import with_statement
 ## NOC modules
 from noc.lib.test import ModelTestCase
-from noc.main.models import MIMEType
+from noc.main.models.mimetype import MIMEType
 from noc.lib.validators import ValidationError
 
 

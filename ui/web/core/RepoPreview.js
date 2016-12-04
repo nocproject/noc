@@ -93,14 +93,14 @@ Ext.define("NOC.core.RepoPreview", {
         me.reloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
             text: __("Reload"),
-            tooltip: "Reload",
+            tooltip: __("Reload"),
             scope: me,
             handler: me.onReload
         });
 
         me.nextDiffButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.arrow_up,
-            tooltip: "Next change",
+            tooltip: __("Next change"),
             disabled: true,
             scope: me,
             handler: me.onNextDiff
@@ -108,7 +108,7 @@ Ext.define("NOC.core.RepoPreview", {
 
         me.prevDiffButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.arrow_down,
-            tooltip: "Previous change",
+            tooltip: __("Previous change"),
             disabled: true,
             scope: me,
             handler: me.onPrevDiff
@@ -116,7 +116,7 @@ Ext.define("NOC.core.RepoPreview", {
 
         me.swapRevButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.exchange,
-            tooltip: "Swap revisions",
+            tooltip: __("Swap revisions"),
             disabled: true,
             scope: me,
             handler: me.onSwapRev
@@ -124,7 +124,7 @@ Ext.define("NOC.core.RepoPreview", {
 
         me.lastDayButton = Ext.create("Ext.button.Button", {
             text: __("Day"),
-            tooltip: "Last day's changes",
+            tooltip: __("Last day's changes"),
             toogleGroup: "diffrange",
             scope: me,
             handler: me.onLastPressed,
@@ -133,7 +133,7 @@ Ext.define("NOC.core.RepoPreview", {
 
         me.lastWeekButton = Ext.create("Ext.button.Button", {
             text: __("Week"),
-            tooltip: "Last week's changes",
+            tooltip: __("Last week's changes"),
             toogleGroup: "diffrange",
             scope: me,
             handler: me.onLastPressed,
@@ -142,7 +142,7 @@ Ext.define("NOC.core.RepoPreview", {
 
         me.lastMonthButton = Ext.create("Ext.button.Button", {
             text: __("Month"),
-            tooltip: "Last month's changes",
+            tooltip: __("Last month's changes"),
             toogleGroup: "diffrange",
             scope: me,
             handler: me.onLastPressed,
@@ -194,9 +194,6 @@ Ext.define("NOC.core.RepoPreview", {
             }
         });
         me.callParent();
-        //
-        me.urlTemplate = Handlebars.compile(me.restUrl);
-        me.titleTemplate = Handlebars.compile(me.previewName);
     },
     //
     afterRender: function() {
@@ -244,9 +241,8 @@ Ext.define("NOC.core.RepoPreview", {
             bi = backItem === undefined? me.backItem : backItem;
         me.currentRecord = record;
         me.backItem = bi;
-        // @todo: Replace to superclass call
-        me.rootUrl = me.urlTemplate(record.data);
-        me.setTitle(me.titleTemplate(record.data));
+        me.rootUrl = Ext.String.format(me.restUrl, record.get('id'));
+        me.setTitle(Ext.String.format(me.previewName, record.get('name')));
     },
     //
     preview: function(record, backItem) {
@@ -266,16 +262,16 @@ Ext.define("NOC.core.RepoPreview", {
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText));
                 mask.hide();
-                if(me.historyHashPrefix) {
-                    me.app.setHistoryHash(
-                        me.currentRecord.get("id"),
-                        me.historyHashPrefix
-                    );
-                }
+                // if(me.historyHashPrefix) {
+                //     me.app.setHistoryHash(
+                //         me.currentRecord.get("id"),
+                //         me.historyHashPrefix
+                //     );
+                // }
             },
             failure: function() {
                 mask.hide();
-                NOC.error("Failed to get text");
+                NOC.error(__("Failed to get text"));
             }
         });
     },
@@ -298,7 +294,7 @@ Ext.define("NOC.core.RepoPreview", {
                 Ext.callback(callback, me);
             },
             failure: function() {
-                NOC.error("Failed to get revisions");
+                NOC.error(__("Failed to get revisions"));
             }
         });
     },
@@ -313,16 +309,16 @@ Ext.define("NOC.core.RepoPreview", {
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText));
                 mask.hide();
-                if(me.historyHashPrefix) {
-                    me.app.setHistoryHash(
-                        me.currentRecord.get("id"),
-                        me.historyHashPrefix,
-                        rev
-                    );
-                }
+                // if(me.historyHashPrefix) {
+                //     me.app.setHistoryHash(
+                //         me.currentRecord.get("id"),
+                //         me.historyHashPrefix,
+                //         rev
+                //     );
+                // }
             },
             failure: function() {
-                NOC.error("Failed to get text");
+                NOC.error(__("Failed to get text"));
                 mask.hide();
             }
         });
@@ -338,17 +334,17 @@ Ext.define("NOC.core.RepoPreview", {
             success: function(response) {
                 me.renderText(Ext.decode(response.responseText), "diff");
                 mask.hide();
-                if(me.historyHashPrefix) {
-                    me.app.setHistoryHash(
-                        me.currentRecord.get("id"),
-                        me.historyHashPrefix,
-                        rev1,
-                        rev2
-                    );
-                }
+                // if(me.historyHashPrefix) {
+                //     me.app.setHistoryHash(
+                //         me.currentRecord.get("id"),
+                //         me.historyHashPrefix,
+                //         rev1,
+                //         rev2
+                //     );
+                // }
             },
             failure: function() {
-                NOC.error("Failed to get diff");
+                NOC.error(__("Failed to get diff"));
                 mask.hide();
             }
         });
@@ -465,7 +461,7 @@ Ext.define("NOC.core.RepoPreview", {
             t1 = t0 - button.diffRange * 86400000,
             i1;
         if(i0 === 0 && +store.getAt(0).get("ts") <= t1) {
-            NOC.info("Nothing changed");
+            NOC.info(__("Nothing changed"));
             return;
         }
         for(i1 = i0 + 1; i1 < rl; i1 ++) {

@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import *
+from base import (Interface, ListOfParameter, DictParameter, InterfaceNameParameter,
+                  MACAddressParameter, StringParameter)
 
 
 class IGetOAMStatus(Interface):

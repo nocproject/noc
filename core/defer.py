@@ -16,13 +16,13 @@ from noc.core.scheduler.scheduler import Scheduler
 logger = logging.getLogger(__name__)
 
 
-def call_later(name, delay=None, scheduler="scheduler", **kwargs):
+def call_later(name, delay=None, scheduler="scheduler", pool=None, **kwargs):
     """
     Run callable *name* in scheduler process
     :param name: Full callable name
     :param delay: delay in seconds
     """
-    scheduler = Scheduler(scheduler)
+    scheduler = Scheduler(scheduler, pool=pool)
     data = kwargs or {}
     ts = datetime.datetime.now()
     if delay:

@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.monitor.ScriptsPanel");
 Ext.define("NOC.sa.monitor.ScriptsPanel", {
     extend: "Ext.panel.Panel",
     uses: [],
-    title: "Scripts",
+    title: __("Scripts"),
     closable: false,
     layout: "fit",
 

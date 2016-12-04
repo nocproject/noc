@@ -46,7 +46,7 @@ Ext.define("NOC.vc.vcfilter.Application", {
     ],
     filters: [
         {
-            title: "By VC",
+            title: __("By VC"),
             name: "expression",
             ftype: "vc"
         }

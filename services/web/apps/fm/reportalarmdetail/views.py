@@ -13,6 +13,7 @@ import tempfile
 ## Third-party modules
 from django.http import HttpResponse
 import xlsxwriter
+import bson
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.core.translation import ugettext as _
@@ -26,7 +27,7 @@ from noc.inv.models.object import Object
 
 
 class ReportAlarmDetailApplication(ExtApplication):
-    menu = _("Alarm Detail")
+    menu = _("Reports") + "|" + _("Alarm Detail")
     title = _("Alarm Detail")
 
     SEGMENT_PATH_DEPTH = 7
@@ -37,9 +38,15 @@ class ReportAlarmDetailApplication(ExtApplication):
               "from_date": StringParameter(required=True),
               "to_date": StringParameter(required=True),
               "min_duration": IntParameter(required=False),
+              "min_objects": IntParameter(required=False),
+              "min_subscribers": IntParameter(required=False),
+              "segment": StringParameter(required=False),
+              "columns": StringParameter(required=False),
               "format": StringParameter(choices=["csv", "xlsx"])
           })
-    def api_report(self, request, from_date, to_date, format, min_duration=0):
+    def api_report(self, request, from_date, to_date, format,
+                   min_duration=0, min_objects=0, min_subscribers=0,
+                   segment=None, columns=None):
         def row(row, container_path, segment_path):
             def qe(v):
                 if v is None:
@@ -52,6 +59,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                     return str(v)
                 else:
                     return v
+
             r = [qe(x) for x in row]
             if len(container_path) < self.CONTAINER_PATH_DEPTH:
                 container_path += [""] * (self.CONTAINER_PATH_DEPTH - len(container_path))
@@ -63,31 +71,76 @@ class ReportAlarmDetailApplication(ExtApplication):
                 segment_path = segment_path[:self.SEGMENT_PATH_DEPTH]
             return r + container_path + segment_path
 
-        r = [[
-            "ID",
-            "ROOT_ID",
-            "FROM_TS",
-            "TO_TS",
-            "DURATION_SEC",
-            "OBJECT_NAME",
-            "OBJECT_ADDRESS",
-            "OBJECT_PLATFORM",
-            "ALARM_CLASS",
-            "OBJECTS",
-            "SUBSCRIBERS",
-            "TT",
-            "ESCALATION_TS"
-        ] + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + ["SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]]
+        def translate_row(row, cmap):
+            return [row[i] for i in cmap]
+
+        cols = [
+            "id",
+            "root_id",
+            "from_ts",
+            "to_ts",
+            "duration_sec",
+            "object_name",
+            "object_address",
+            "object_platform",
+            "alarm_class",
+            "objects",
+            "subscribers",
+            "tt",
+            "escalation_ts"
+        ] + ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + ["segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+
+        header_row = [
+         "ID",
+         "ROOT_ID",
+         "FROM_TS",
+         "TO_TS",
+         "DURATION_SEC",
+         "OBJECT_NAME",
+         "OBJECT_ADDRESS",
+         "OBJECT_PLATFORM",
+         "ALARM_CLASS",
+         "OBJECTS",
+         "SUBSCRIBERS",
+         "TT",
+         "ESCALATION_TS"
+        ] + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + ["SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
+
+        if columns:
+            cmap = []
+            for c in columns.split(","):
+                try:
+                    cmap += [cols.index(c)]
+                except ValueError:
+                    continue
+        else:
+            cmap = list(range(len(cols)))
+
+        r = [translate_row(header_row, cmap)]
         q = {
             "timestamp": {
                 "$gte": datetime.datetime.strptime(from_date, "%d.%m.%Y"),
                 "$lt": datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
             }
         }
-        for a in ArchivedAlarm._get_collection().find(q).sort([("timestamp", 1)]):
+        if segment:
+            try:
+                q["segment_path"] = bson.ObjectId(segment)
+            except bson.errors.InvalidId:
+                pass
+        for a in ArchivedAlarm._get_collection().find(q).sort(
+                [("timestamp", 1)]):
             dt = a["clear_timestamp"] - a["timestamp"]
             duration = dt.days * 86400 + dt.seconds
             if duration and duration < min_duration:
+                continue
+            total_objects = sum(
+                ss["summary"] for ss in a["total_objects"])
+            if min_objects and total_objects < min_objects:
+                continue
+            total_subscribers = sum(
+                ss["summary"] for ss in a["total_subscribers"])
+            if min_subscribers and total_subscribers < min_subscribers:
                 continue
             mo = ManagedObject.get_by_id(a["managed_object"])
             if not mo:
@@ -96,11 +149,12 @@ class ReportAlarmDetailApplication(ExtApplication):
             if path:
                 segment_path = [NetworkSegment.get_by_id(s).name
                                 for s in path.segment_path]
-                container_path = [Object.get_by_id(s).name for s in path.container_path]
+                container_path = [Object.get_by_id(s).name for s in
+                                  path.container_path]
             else:
                 segment_path = []
                 container_path = []
-            r += [row([
+            r += [translate_row(row([
                 str(a["_id"]),
                 str(a["root"]) if a.get("root") else "",
                 a["timestamp"],
@@ -110,14 +164,15 @@ class ReportAlarmDetailApplication(ExtApplication):
                 mo.address,
                 mo.platform,
                 AlarmClass.get_by_id(a["alarm_class"]).name,
-                sum(ss["summary"] for ss in a["total_objects"]),
-                sum(ss["summary"] for ss in a["total_subscribers"]),
+                total_objects,
+                total_subscribers,
                 a.get("escalation_tt"),
                 a.get("escalation_ts")
-            ], container_path, segment_path)]
+            ], container_path, segment_path), cmap)]
         if format == "csv":
             response = HttpResponse(content_type="text/csv")
-            response["Content-Disposition"] = "attachment; filename=\"alarms.csv\""
+            response[
+                "Content-Disposition"] = "attachment; filename=\"alarms.csv\""
             writer = csv.writer(response)
             writer.writerows(r)
             return response
@@ -130,8 +185,10 @@ class ReportAlarmDetailApplication(ExtApplication):
                         ws.write(rn, cn, c)
                 ws.autofilter(0, 0, rn, cn)
                 wb.close()
-                response = HttpResponse(content_type="application/x-ms-excel")
-                response["Content-Disposition"] = "attachment; filename=\"alarms.xlsx\""
+                response = HttpResponse(
+                    content_type="application/x-ms-excel")
+                response[
+                    "Content-Disposition"] = "attachment; filename=\"alarms.xlsx\""
                 with open(f.name) as ff:
                     response.write(ff.read())
                 return response

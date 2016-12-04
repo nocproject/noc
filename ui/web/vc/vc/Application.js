@@ -13,8 +13,7 @@ Ext.define("NOC.vc.vc.Application", {
         "NOC.main.style.LookupField",
         "NOC.main.resourcestate.LookupField",
         "NOC.project.project.LookupField",
-        "NOC.vc.vcdomain.LookupField",
-        "NOC.vc.vc.templates.VCInterfaces"
+        "NOC.vc.vcdomain.LookupField"
     ],
     model: "NOC.vc.vc.Model",
     search: true,
@@ -22,35 +21,35 @@ Ext.define("NOC.vc.vc.Application", {
 
     filters: [
         {
-            title: "By VC Domain",
+            title: __("By VC Domain"),
             name: "vc_domain",
             ftype: "lookup",
             lookup: "vc.vcdomain"
         },
         {
-            title: "By State",
+            title: __("By State"),
             name: "state",
             ftype: "lookup",
             lookup: "main.resourcestate"
         },
         {
-            title: "By Project",
+            title: __("By Project"),
             name: "project",
             ftype: "lookup",
             lookup: "project.project"
         },
         {
-            title: "By VC Filter",
+            title: __("By VC Filter"),
             name: "l1",
             ftype: "vcfilter"
         },
         {
-            title: "By Tags",
+            title: __("By Tags"),
             name: "tags",
             ftype: "tag"
         },
         {
-            title: "By Style",
+            title: __("By Style"),
             name: "style",
             ftype: "lookup",
             lookup: "main.style"
@@ -59,6 +58,10 @@ Ext.define("NOC.vc.vc.Application", {
     //
     initComponent: function() {
         var me = this;
+
+        me.addFirstFreeForm = Ext.create("NOC.vc.vc.AddFirstFreeForm", {app: me});
+        me.MOSelectForm = Ext.create("NOC.vc.vc.MOSelectForm", {app: me});
+
         Ext.apply(me, {
             columns: [
                 {
@@ -187,7 +190,7 @@ Ext.define("NOC.vc.vc.Application", {
                     itemId: "create_first",
                     text: __("Add First Free"),
                     glyph: NOC.glyph.plus_circle,
-                    tooltip: "Add first free VC",
+                    tooltip: __("Add first free VC"),
                     hasAccess: NOC.hasPermission("create"),
                     scope: me,
                     handler: me.onFirstNewRecord
@@ -196,7 +199,7 @@ Ext.define("NOC.vc.vc.Application", {
                     itemId: "import",
                     text: __("Import"),
                     glyph: NOC.glyph.level_down,
-                    tooltip: "Import VCs",
+                    tooltip: __("Import VCs"),
                     hasAccess: NOC.hasPermission("import"),
                     menu: {
                         xtype: "menu",
@@ -222,7 +225,7 @@ Ext.define("NOC.vc.vc.Application", {
                     itemId: "interfaces",
                     text: __("VC Interfaces"),
                     glyph: NOC.glyph.list,
-                    tooltip: "Show VC interfaces",
+                    tooltip: __("Show VC interfaces"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onVCInterfaces
@@ -231,7 +234,7 @@ Ext.define("NOC.vc.vc.Application", {
                     itemId: "add_interfaces",
                     text: __("Add Interfaces"),
                     glyph: NOC.glyph.plus_circle,
-                    tooltip: "Add interfaces to VC",
+                    tooltip: __("Add interfaces to VC"),
                     hasAccess: NOC.hasPermission("set_untagged"),
                     scope: me,
                     handler: me.onAddVCInterfaces
@@ -241,19 +244,22 @@ Ext.define("NOC.vc.vc.Application", {
         me.ITEM_VC_INTERFACES = me.registerItem(
             Ext.create("NOC.core.TemplatePreview", {
                 app: me,
-                previewName: "Interfaces in VC {{name}} ({{vc_domain__label}} VLAN {{l1}})",
-                template: me.templates.VCInterfaces
+                previewName: new Ext.XTemplate('Interfaces in VC {name} ({vc_domain__label} VLAN {l1})'),
+                template: new Ext.XTemplate('<div class="noc-tp">\n    <table class="noc-report">\n        <!-- Untagged interfaces -->\n        <tpl if="interfaces.untagged.length">\n        <tr><th colspan="2">Untagged interfaces</th>\n            <tpl foreach="interfaces.untagged">\n        <tr>\n            <td style="width: 200px">{managed_object_name}</td>\n            <td>\n                <tpl foreach="interfaces">{name}, </tpl>\n            </td>\n        </tr>\n        </tpl>\n        </tpl>\n        <!-- Tagged interfaces -->\n        <tpl if="interfaces.tagged.length">\n        <tr><th colspan="2">Tagged interfaces</th>\n            <tpl foreach="interfaces.tagged">\n        <tr>\n            <td style="width: 200px">{managed_object_name}</td>\n            <td>\n                <tpl foreach="interfaces">{name}, </tpl>\n            </td>\n        </tr>\n        </tpl>\n        </tpl>\n        <!-- L3 interfaces -->\n        <tpl if="interfaces.l3.length">\n        <tr><th colspan="2">L3 interfaces</th>\n            <tpl foreach="interfaces.l3">\n        <tr>\n            <td style="width: 200px">{managed_object_name}</td>\n            <td>\n                <tpl foreach="interfaces">\n                {ipv4_addresses}\n                {ipv6_addresses}\n                </tpl>\n            </td>\n        </tr>\n        </tpl>\n        </tpl>\n    </table>\n</div>')
             })
         );
         me.callParent();
     },
     onFirstNewRecord: function() {
         var me = this;
-        Ext.create("NOC.vc.vc.AddFirstFreeForm", {app: me});
+
+        me.addFirstFreeForm.show();
     },
     //
     onImportVLANSFromSwitch: function() {
-        Ext.create("NOC.vc.vc.MOSelectForm", {app: this});
+        var me = this;
+
+        me.MOSelectForm.show();
     },
     //
     runImportFromSwitch: function(vc_domain, managed_object, vc_filter) {
@@ -278,12 +284,12 @@ Ext.define("NOC.vc.vc.Application", {
                     scope: me,
                     success: me.processImportFromSwitch,
                     failure: function() {
-                        NOC.error("Failed to import VLANs")
+                        NOC.error(__("Failed to import VLANs"))
                     }
                 });
             },
             failure: function() {
-                NOC.error("Failed to get VC Filter");
+                NOC.error(__("Failed to get VC Filter"));
             }
         });
     },
@@ -326,14 +332,14 @@ Ext.define("NOC.vc.vc.Application", {
             success: function(response) {
                 var r = Ext.decode(response.responseText);
                 if(!r.tagged && !r.untagged && !r.l3) {
-                    NOC.info("No interfaces found");
+                    NOC.info(__("No interfaces found"));
                 } else {
                     var item = me.showItem(me.ITEM_VC_INTERFACES);
                     item.preview(record, {interfaces: r});
                 }
             },
             failure: function() {
-                NOC.error("Failed to get interfaces");
+                NOC.error(__("Failed to get interfaces"));
             }
         });
     },

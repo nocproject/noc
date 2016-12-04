@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
+from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript, false_on_cli_error
 
 
 class Script(BaseScript):
@@ -20,3 +20,16 @@ class Script(BaseScript):
         caps["MikroTik | RouterOS | License | Level"] = c["nlevel"]
         if c.get("upgradable-to"):
             caps["MikroTik | RouterOS | License | Upgradable To"] = c["upto"]
+
+    def has_cdp(self):
+        """
+        Check box has cdp enabled
+        """
+        return True
+
+    @false_on_cli_error
+    def has_ipv6(self):
+        """
+        Check box has lldp enabled
+        """
+        return bool(self.cli_detail("/ipv6 nd print detail without-paging"))

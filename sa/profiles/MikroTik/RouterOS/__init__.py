@@ -4,7 +4,7 @@
 ## OS:     RouterOS
 ## Compatible: 3.14 and above
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -86,6 +86,9 @@ class Profile(BaseProfile):
                 ns[-1] += " %s" % l.strip()
         # Parse
         f = "".join(flags)
+        # Some commands do not show flags
+        if not f:
+            f = "X"
         rx = re.compile(
             r"^\s*(?P<line>\d+)\s+"
             r"(?P<flags>[%s]+(?:\s+[%s]+)*\s+)?"

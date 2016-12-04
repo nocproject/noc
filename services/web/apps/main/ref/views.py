@@ -9,18 +9,21 @@
 ## Python modules
 import os
 import re
+import operator
 ## Django modules
 from django.db import models
 ## Third-party modules
 from mongoengine.base.common import _document_registry
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.app.site import site
 from noc.sa.interfaces.base import interface_registry
 from noc.lib.stencil import stencil_registry
 from noc import settings
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.cm.validators.base import validator_registry
 from noc.core.profile.loader import loader as profile_loader
+from noc.core.script.loader import loader as script_loader
 from noc.core.translation import ugettext as _
 
 
@@ -64,6 +67,17 @@ class RefAppplication(ExtApplication):
             "id": n,
             "label": n
         } for n in profile_loader.iter_profiles()]
+
+    def build_script(self):
+        """
+        Profile names
+        :return: (script name, script name)
+        """
+        s = set(x.split(".")[-1] for x in script_loader.iter_scripts())
+        return [{
+            "id": n,
+            "label": n
+        } for n in sorted(s)]
 
     def build_stencil(self):
         """
@@ -183,10 +197,22 @@ class RefAppplication(ExtApplication):
             key=lambda x: x["label"]
         )
 
+    def _build_report(self):
+        return sorted((
+            {
+                "id": r_id,
+                "label": r.title
+            } for r_id, r in site.iter_predefined_reports()),
+            key=operator.itemgetter("label")
+        )
+
     @view(url="^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):
         if ref not in self.refs:
-            return self.response_not_found()
+            if ref == "report":
+                self.refs["report"] = self._build_report()
+            else:
+                return self.response_not_found()
         # return self.refs[ref]
         q = dict((str(k), v[0] if len(v) == 1 else v)
                  for k, v in request.GET.lists())

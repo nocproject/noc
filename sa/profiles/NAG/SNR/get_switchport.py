@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## NAG.SNR.get_switchport
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -52,8 +52,8 @@ class Script(BaseScript):
                 port_vlans = {}
                 for v in self.snmp.get_tables(
                     ["1.3.6.1.2.1.17.7.1.4.2.1.3",
-                    "1.3.6.1.2.1.17.7.1.4.2.1.4",
-                    "1.3.6.1.2.1.17.7.1.4.2.1.5"], bulk=True):
+                        "1.3.6.1.2.1.17.7.1.4.2.1.4",
+                        "1.3.6.1.2.1.17.7.1.4.2.1.5"], bulk=True):
                     tagged = v[2]
                     untagged = v[3]
 
@@ -90,8 +90,7 @@ class Script(BaseScript):
                 # Get switchport description
                 port_descr = {}
                 for iface, description in self.snmp.join_tables(
-                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18",
-                    bulk=True):
+                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18"):
                     port_descr.update({iface: description})
             except self.snmp.TimeOutError:
                     raise Exception("Not implemented")

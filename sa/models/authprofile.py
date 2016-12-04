@@ -8,15 +8,16 @@
 
 ## Python modules
 import operator
-from threading import RLock
+from threading import Lock
 ## Third-party modules
 from django.db import models
 import cachetools
 ## NOC modules
 from noc.core.model.decorator import on_save
-from credcache import CredentialsCache
+from noc.core.cache.base import cache
 
-id_lock = RLock()
+id_lock = Lock()
+
 
 @on_save
 class AuthProfile(models.Model):
@@ -62,9 +63,10 @@ class AuthProfile(models.Model):
 
     def on_save(self):
         if not self.enable_suggest:
-            CredentialsCache.invalidate(
-                self.managedobject_set.values_list("id", flat=True)
-            )
+            cache.delete_many([
+                "cred-%s" % x
+                for x in self.managedobject_set.values_list("id", flat=True)
+            ])
 
     @property
     def enable_suggest(self):

@@ -83,7 +83,7 @@ Ext.define("NOC.inv.networksegment.EffectiveSettingsPanel", {
                 me.store.sort("key", "ASC");
             },
             failure: function() {
-                NOC.error("Failed to load data");
+                NOC.error(__("Failed to load data"));
             }
         });
     },

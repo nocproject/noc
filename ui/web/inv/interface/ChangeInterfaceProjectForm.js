@@ -30,7 +30,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceProjectForm", {
         });
 
         Ext.apply(me, {
-            title: "Change " + me.record.get("name") + " project",
+            title: __("Change") + " " + me.record.get("name") + " " + _("project"),
             items: [
                 {
                     xtype: "form",
@@ -79,7 +79,7 @@ Ext.define("NOC.inv.interface.ChangeInterfaceProjectForm", {
                 me.close();
             },
             failure: function() {
-                NOC.error("Failed to change project");
+                NOC.error(__("Failed to change project"));
             }
         });
     }

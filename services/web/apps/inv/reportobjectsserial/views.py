@@ -9,44 +9,36 @@
 """
 
 from django import forms
+## NOC modules
 from noc.lib.app.simplereport import SimpleReport
-from noc.inv.models.objectmodel import ObjectModel
-from noc.inv.models.object import Object
-from noc.core.translation import ugettext as _
-from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject
+from noc.inv.models.object import Object
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.core.translation import ugettext as _
 
+
+class ReportForm(forms.Form):
+    sel = forms.ModelChoiceField(
+            label=_("Managed Object Selector"),
+            required=True,
+            queryset=ManagedObjectSelector.objects.order_by("name"))
 
 
 class ReportFilterApplication(SimpleReport):
-    title = "ManagedObject Serial Number"
+    title = _("Managed Object Serial Number")
+    form = ReportForm
 
-    def get_form(self):
-        class RForm(forms.Form):
-            sel = forms.ModelChoiceField(
-                label=_("Managed Object Selector"),
-                required=True,
-                queryset=ManagedObjectSelector.objects.order_by("name"))
+    def get_data(self, request, sel):
 
-        self.customize_form(RForm, "mo_sel", search=True)
-        return RForm
-
-    def get_data(self, **kwargs):
-
-        # cf = CustomField.table_fields("ip_prefix")
-        q = {}
-        for k in kwargs:
-            v = kwargs[k]
-            if v:
-                if k == "description":
-                    q[k + "__icontains"] = v
-                else:
-                    q[k] = v
+        qs = ManagedObject.objects
+        if not request.user.is_superuser:
+            qs = ManagedObject.objects.filter(administrative_domain__in=UserAccess.get_domains(request.user))
 
         # Get all managed objects by selector
-        mos_list = ManagedObject.objects.filter(q["sel"].Q)
+        mos_list = qs.filter(sel.Q)
 
-        columns = ["Managed Objects", "Address", "Platform", "SW Version", "Serial"]
+        columns = [_("Managed Objects"), _("Address"), _("Platform"), _("SW Version"), _("Serial")]
         data = []
 
         for mo in mos_list:

@@ -143,7 +143,7 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
                 }
             },
             failure: function() {
-                NOC.error("Failed to run command");
+                NOC.error(__("Failed to run command"));
             }
         });
     },

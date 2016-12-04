@@ -8,8 +8,9 @@
 
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
-from noc.fm.models import (AlarmClass, EventClass,
-                           EventClassificationRule)
+from noc.fm.models.eventclass import EventClass
+from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.core.collection.base import Collection
 from noc.core.translation import ugettext as _
 

@@ -8,7 +8,7 @@ console.debug("Defining NOC.vc.vc.VCImportForm");
 
 Ext.define("NOC.vc.vc.VCImportForm", {
     extend: "Ext.Window",
-    title: "Select VCs to import",
+    title: __("Select VCs to import"),
     autoShow: true,
     closable: false,
     modal: true,
@@ -57,7 +57,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                             items: [
                                 {
                                     glyph: NOC.glyph.times_circle_o,
-                                    tooltip: "Delete",
+                                    tooltip: __("Delete"),
                                     handler: function(grid, rowIndex, colIndex) {
                                         grid.getStore().removeAt(rowIndex);
                                     }
@@ -117,7 +117,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                 // @todo: Unmask
                 this.close();
                 Ext.Msg.show({
-                    title: "Success!",
+                    title: __("Success!"),
                     msg: Ext.String.format("{0} new VCs has been imported",
                                            r.imported),
                     buttons: Ext.Msg.OK
@@ -126,7 +126,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
             },
             failure: function() {
                 // @todo: Unmask
-                NOC.error("Failed to save VCs");
+                NOC.error(__("Failed to save VCs"));
             }
         });
     },
@@ -190,7 +190,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                 d = d.filter(filter);
                 // Check new VCs found
                 if(d.length == 0) {
-                    NOC.info("No new VCs found");
+                    NOC.info(__("No new VCs found"));
                     me.close();
                 } else {
                     // Load to store
@@ -198,7 +198,7 @@ Ext.define("NOC.vc.vc.VCImportForm", {
                 }
             },
             failure: function() {
-                NOC.error("Failed to get existing VC ids");
+                NOC.error(__("Failed to get existing VC ids"));
                 me.close();
             }
         });

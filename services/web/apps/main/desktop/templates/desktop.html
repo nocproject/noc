@@ -11,7 +11,8 @@
         <!-- favicon -->
         {% if setup.favicon_mime %}<link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />{% endif %}
         <!-- CSS -->
-        <link rel="stylesheet" type="text/css" id="theme" href="/ui/pkg/extjs/classic/theme-gray/resources/theme-gray-all.css" />
+        <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/classic/theme-gray/resources/theme-gray-all.css" />
+        <link rel="stylesheet" type="text/css" href="/ui/pkg/extjs/packages/charts/classic/classic/resources/charts-all.css" />
         <link rel="stylesheet" type="text/css" href="/static/css/noc-extjs.css" />
         <link rel="stylesheet" type="text/css" href="/ui/pkg/jsmessage/themes/message_default.css" />
         <link rel="stylesheet" type="text/css" href="/static/css/noc/ux.css" />
@@ -24,11 +25,11 @@
         <!-- l10n -->
         <link rel="gettext" href="/ui/web/translations/{{ language }}.json" lang="{{ language }}">
         <!-- JS -->
-        <script type="text/javascript" src="/ui/pkg/handlebars/handlebars.min.js"></script>
         <script type="text/javascript" src="/static/js/logging.js"></script>
         <script type="text/javascript" src="/static/js/noc/jsloader.js"></script>
         <script type="text/javascript" src="/ui/pkg/extjs/ext-all.js"></script>
         <script type="text/javascript" src="/ui/pkg/extjs/classic/theme-gray/theme-gray.js"></script>
+        <script type="text/javascript" src="/ui/pkg/extjs/packages/charts/classic/charts.js"></script>
         <script type="text/javascript" src="/ui/pkg/jsmessage/message.js"></script>
         <script type="text/javascript" src="/ui/pkg/jquery/jquery.min.js"></script>
         <script type="text/javascript" src="/ui/pkg/codemirror/lib/codemirror.js"></script>
@@ -38,6 +39,7 @@
         <script type="text/javascript" src="/ui/pkg/codemirror/addon/selection/active-line.js"></script>
         <script type="text/javascript" src="/ui/pkg/codemirror/addon/mode/loadmode.js"></script>
         <script type="text/javascript" src="/ui/pkg/codemirror/addon/edit/matchbrackets.js"></script>
+        <script type="text/javascript" src="/ui/pkg/filesaver/filesaver.min.js"></script>
         <!-- NOC modules -->
         <script type="text/javascript" src="/ui/common/gettext.js"></script>
         <script type="text/javascript" src="/static/js/noc/colors.js"></script>
@@ -71,7 +73,8 @@
                         "enable_google_sat": {% if setup.enable_gis_base_google_sat %}true{% else %}false{% endif %},
                         "enable_google_roadmap": {% if setup.enable_gis_base_google_roadmap %}true{% else %}false{% endif %}
                     }
-                }
+                },
+                traceExtJSEvents: {% if setup.trace_extjs_events %}true{% else %}false{% endif %}
             };
             NOC.templates = {};
             Ext.setGlyphFontFamily("FontAwesome");

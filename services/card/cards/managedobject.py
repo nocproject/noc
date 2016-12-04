@@ -9,6 +9,7 @@
 ## Python modules
 import datetime
 import operator
+import re
 ## Third-party modules
 from django.db.models import Q
 ## NOC modules
@@ -49,6 +50,8 @@ class ManagedObjectCard(BaseCard):
         return self.object.object_profile.card or "managedobject"
 
     def get_data(self):
+        if not self.object:
+            return None
         # @todo: Stage
         # @todo: Service range
         # @todo: Open TT
@@ -109,6 +112,13 @@ class ManagedObjectCard(BaseCard):
             uplinks = set(uplinks.uplinks)
         else:
             uplinks = set()
+        if len(uplinks) > 1:
+            if self.object.segment.lost_redundancy:
+                redundancy = "L"
+            else:
+                redundancy = "R"
+        else:
+            redundancy = "N"
         links = []
         for l in Link.object_links(self.object):
             local_interfaces = []
@@ -228,7 +238,8 @@ class ManagedObjectCard(BaseCard):
             "links": links,
             "alarms": alarm_list,
             "interfaces": interfaces,
-            "maintainance": maintainance
+            "maintainance": maintainance,
+            "redundancy": redundancy
         }
         return r
 
@@ -251,6 +262,16 @@ class ManagedObjectCard(BaseCard):
             q |= Q(address=query)
         if ".*" in query and is_ipv4(query.replace(".*", ".1")):
             q |= Q(address__regex=query.replace(".", "\\.").replace("*", "[0-9]+"))
+        elif set("+*[]()") & set(query):
+            # Maybe regular expression
+            try:
+                # Check syntax
+                # @todo: PostgreSQL syntax differs from python one
+                re.compile(query)
+                q |= Q(name__regex=query)
+                q |= Q(address__regex=query)
+            except re.error:
+                pass
         if is_int(query):
             q |= Q(id=int(query))
         try:
@@ -261,7 +282,7 @@ class ManagedObjectCard(BaseCard):
         except ValueError:
             pass
         if not handler.current_user.is_superuser:
-            q = Q(administrative_domain__in=handler.get_user_domains())
+            q &= Q(administrative_domain__in=handler.get_user_domains())
         r = []
         for mo in ManagedObject.objects.filter(q):
             r += [{

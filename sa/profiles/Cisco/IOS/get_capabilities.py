@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import re
 ## NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
@@ -20,6 +22,23 @@ class Script(BaseScript):
         "BRAS | L2TP": mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 2],
         "BRAS | PPTP": mib["CISCO-VPDN-MGMT-MIB::cvpdnSystemTunnelTotal", 3]
     }
+
+    CAP_SLA_SYNTAX = "Cisco | IOS | Syntax | IP SLA"
+
+    SYNTAX_IP_SLA_APPLICATION = [
+        "show ip sla application",
+        "show ip sla monitor application"
+    ]
+
+    SYNTAX_IP_SLA_RESPONDER = [
+        "show ip sla responder",
+        "show ip sla monitor responder"
+    ]
+
+    SYNTAX_IP_SLA_CONFIGURATION = [
+        "show ip sla configuration",
+        "show ip sla monitor configuration"
+    ]
 
     @false_on_cli_error
     def has_lldp(self):
@@ -51,7 +70,56 @@ class Script(BaseScript):
         Check box has stp enabled
         """
         r = self.cli("show spanning-tree summary")
-        if "No spanning tree instance exists" in r \
-        or "No spanning tree instances exist" in r:
+        if ("No spanning tree instance exists" in r
+            or "No spanning tree instances exist" in r):
             return False
         return True
+
+    @false_on_cli_error
+    def has_ipv6(self):
+        """
+        Check box has IPv6 ND enabled
+        """
+        self.cli("show ipv6 neighbors")
+        return True
+
+    rx_ip_sla_responder = re.compile(
+        r"IP SLA Monitor Responder is:\s*(?P<state>\S+)",
+        re.MULTILINE | re.IGNORECASE
+    )
+
+    @false_on_cli_error
+    def has_ip_sla_responder(self):
+        r = self.cli(
+            self.SYNTAX_IP_SLA_RESPONDER[self.capabilities[self.CAP_SLA_SYNTAX]]
+        )
+        match = self.rx_ip_sla_responder.search(r)
+        if match:
+            return "enabled" in match.group("state").lower()
+        else:
+            return False
+
+    rx_ip_sla_probe_entry = re.compile("Entry Number: \d+",
+                                       re.IGNORECASE | re.MULTILINE)
+
+    @false_on_cli_error
+    def get_ip_sla_probes(self):
+        r = self.cli(
+            self.SYNTAX_IP_SLA_CONFIGURATION[self.capabilities[self.CAP_SLA_SYNTAX]]
+        )
+        return sum(1 for _ in self.rx_ip_sla_probe_entry.finditer(r))
+
+    def execute_platform(self, caps):
+        # Check IP SLA status
+        sla_v = self.get_syntax_variant(self.SYNTAX_IP_SLA_APPLICATION)
+        if sla_v is not None:
+            # Set syntax
+            self.apply_capability(self.CAP_SLA_SYNTAX, sla_v)
+            caps[self.CAP_SLA_SYNTAX] = sla_v
+            # IP SLA responder
+            if self.has_ip_sla_responder():
+                caps["Cisco | IP | SLA | Responder"] = True
+            # IP SLA Probes
+            np = self.get_ip_sla_probes()
+            if np:
+                caps["Cisco | IP | SLA | Probes"] = np

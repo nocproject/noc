@@ -247,7 +247,7 @@ Ext.define("NOC.sa.managedobjectselector.Application", {
             ],
             inlines: [
                 {
-                    title: "Filter by attributes",
+                    title: __("Filter by attributes"),
                     model: "NOC.sa.managedobjectselector.AttributesModel",
                     columns: [
                         {

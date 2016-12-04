@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, ListParameter
+
 
 class IGetList(Interface):
     returns = ListParameter()

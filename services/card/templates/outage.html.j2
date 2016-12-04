@@ -1,3 +1,8 @@
+<style>
+.seglink {
+    color: #c0c0c0;
+}
+</style>
 <div class="outage-header">
     {{ _("Outages Summary") }}
     <a href="/api/card/view/totaloutage/1/" style="color: black">{{ summary | glyph_summary }}</a>
@@ -9,6 +14,7 @@
         <div class="outage-segment">
             {{ segment["summary"] | glyph_summary }}<br>
             {{ segment["segment"].name }}
+            <a href="/api/card/view/segmentalarm/{{ segment["segment"].id }}/" class="seglink"><i class="fa fa-eye"></i></a>
         </div>
         <div class="outage-segment-detail">
             {{ loop(segment["segments"]) }}

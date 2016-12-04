@@ -14,8 +14,8 @@ from noc.core.translation import ugettext as _
 ## Report Form
 ##
 class ReportForm(forms.Form):
-    repo=forms.ChoiceField(label="Type",choices=[("prefix-list","prefix-list")])
-    days=forms.IntegerField(label="In Days",min_value=1)
+    repo=forms.ChoiceField(label=_("Type"),choices=[("prefix-list","prefix-list")])
+    days=forms.IntegerField(label=_("In Days"),min_value=1)
 ##
 ##
 ##

@@ -128,7 +128,7 @@ class TrapCollectorService(Service):
         Periodic task to request object mappings
         """
         self.logger.debug("Requesting object mappings")
-        sm = yield self.omap.get_syslog_mappings(
+        sm = yield self.omap.get_trap_mappings(
             self.config.pool
         )
         if sm != self.source_map:

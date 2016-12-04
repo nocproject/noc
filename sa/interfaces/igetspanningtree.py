@@ -7,7 +7,9 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import (Interface, DictParameter, ListOfParameter,
+                  VLANIDMapParameter, MACAddressParameter, InterfaceNameParameter,
+                  StringParameter, IntParameter, BooleanParameter)
 
 
 class IGetSpanningTree(Interface):
@@ -60,7 +62,7 @@ class IGetSpanningTree(Interface):
                 # Interface state
                 "state": StringParameter(choices=[
                     "disabled", "discarding", "learning", "forwarding",
-                    "broken", "listen", "unknown", "loopback"]),
+                    "broken", "listen", "unknown", "loopback", "blocking"]),
                 # Interface role
                 "role": StringParameter(choices=[
                     "disabled", "alternate", "backup", "root",

@@ -16,6 +16,7 @@ from django.db.models import Q
 ## Third-party modules
 import gridfs
 import ujson
+from mongoengine.queryset import Q as MQ
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.sa.models.managedobject import (ManagedObject,
@@ -32,8 +33,7 @@ from noc.lib.app.repoinline import RepoInline
 from noc.main.models.resourcestate import ResourceState
 from noc.project.models.project import Project
 from noc.vc.models.vcdomain import VCDomain
-from sa.models.objectcapabilities import ObjectCapabilities
-from mongoengine.queryset import Q as MQ
+from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.lib.text import split_alnum
 from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.cm.models.objectfact import ObjectFact
@@ -659,9 +659,8 @@ class ManagedObjectApplication(ExtModelApplication):
                     "capability": c.capability.name,
                     "description": c.capability.description,
                     "type": c.capability.type,
-                    "discovered_value": c.discovered_value,
-                    "local_value": c.local_value,
-                    "value": c.local_value if c.local_value is not None else c.discovered_value
+                    "value": c.value,
+                    "source": c.source
                 }]
         return sorted(r, key=lambda x: x["capability"])
 

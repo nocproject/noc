@@ -63,7 +63,7 @@ Ext.define("NOC.sa.monitor.Application", {
             poolsData = [],
             scriptsData = [];
         if(!result[0].status) {
-            NOC.error("Failed to get data");
+            NOC.error(__("Failed to get data"));
             return;
         }
         Ext.each(result[0].result, function(r) {

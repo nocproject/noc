@@ -234,3 +234,82 @@ TABLE {
 .noc-welcome-body h2 {
     font-size: 10pt;
 }
+/*
+ * Statuses
+ */
+.noc-status-waiting > td {
+    background-color: #7f8c8d !important;
+}
+.noc-status-running > td {
+    background-color: #f0c330 !important;
+}
+.noc-status-success > td {
+    background-color: #39ca74 !important;
+}
+.noc-status-failed > td {
+    background-color: #be3a31 !important;
+}
+
+.noc-mrt-section {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.noc-mrt-result {
+    padding-left: 8px;
+    font-family: "Courier New", Courier, monospace;
+    white-space: pre;
+}
+
+.noc-alarm-subject {
+    font-weight: bold;
+    border-bottom: 1px solid #808080;
+}
+
+.noc-alarm-timestamp {
+    float: right;
+}
+
+.noc-alarm-label {
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+.noc-alarm-label:after {
+    content: ": "
+}
+
+/*
+ * Badge
+ */
+.noc-badge {
+    height: 15px;
+    width: 30px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    display: inline-block;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.noc-badge-waiting {
+    background-color: #7f8c8d
+}
+
+.noc-badge-running {
+    background-color: #f0c330
+}
+
+.noc-badge-success {
+    background-color: #39ca74
+}
+
+.noc-badge-failed {
+    background-color: #be3a31
+}
+
+.noc-mrt-section {
+    font-weight: bold;
+    text-decoration: underline;
+}
+

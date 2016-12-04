@@ -16,8 +16,7 @@ Ext.define("NOC.main.desktop.Application", {
         "Ext.ux.form.DictField",
         "Ext.ux.form.ColorField",
         "Ext.ux.grid.column.GlyphAction",
-        "NOC.core.CMText",
-        "NOC.main.desktop.templates.About"
+        "NOC.core.CMText"
     ],
 
     initComponent: function() {
@@ -105,7 +104,7 @@ Ext.define("NOC.main.desktop.Application", {
                 });
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },
@@ -157,14 +156,17 @@ Ext.define("NOC.main.desktop.Application", {
             return;
         }
         //
-        var url = "/" + app.replace(".", "/") + "/launch_info/";
+        // skip saved hash
+        var index = app.indexOf('?')
+            , _app = index === -1 ? app : app.substr(0, index)
+            , url = "/" + _app.replace(".", "/") + "/launch_info/";
         Ext.Ajax.request({
             url: url,
             method: "GET",
             scope: me,
             success: function(response) {
                 var li = Ext.decode(response.responseText),
-                    params = {};
+                    params = {filterValuesUrl: app};
                 if(cmd) {
                     params.cmd = Ext.merge({}, data);
                     params.cmd.cmd = cmd;
@@ -175,9 +177,11 @@ Ext.define("NOC.main.desktop.Application", {
                     li.title,
                     params
                 );
+                // restore saved hash
+                Ext.History.setHash(app);
             },
             failure: function() {
-                NOC.error("Failed to launch application " + app);
+                NOC.error(__("Failed to launch application ") + " " + app);
             }
         });
     },
@@ -261,11 +265,11 @@ Ext.define("NOC.main.desktop.Application", {
                 if (status) {
                     me.onLogin();
                 } else {
-                    NOC.error("Login failed");
+                    NOC.error(__("Login failed"));
                 }
             },
             failure: function(response) {
-                NOC.error("Login failed");
+                NOC.error(__("Login failed"));
             }
         });
     },

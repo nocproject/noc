@@ -22,7 +22,9 @@ class Script(BaseScript):
         "host": 1,
         "eth0": 2,
         "eth1": 3,
-        "eth2": 4
+        "eth2": 4,
+        "eth3": 5,
+        "eth4": 6
     }
 
     rx_ecfg = re.compile(
@@ -83,7 +85,10 @@ class Script(BaseScript):
             if not section:
                 continue
             name, cfg = self.parse_section(section)
-            ip_addr = "%s/%s" % (cfg["ip-addr"], cfg["prefix-len"])
+            ip = cfg["ip-addr"]
+            if "static" in ip:
+                ip = ip.replace("static", "").strip()
+            ip_addr = "%s/%s" % (ip, cfg["prefix-len"])
             i = {
                 "name": name,
                 "type": "SVI",

@@ -6,10 +6,16 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import datetime
+import zlib
+## Third-party modules
+import ujson
 ## NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
 from noc.core.bi.models.reboots import Reboots
+from noc.bi.models.dashboard import Dashboard
 
 
 class BIAPI(API):
@@ -82,18 +88,112 @@ class BIAPI(API):
             }]
         return r
 
+    @executor("query")
     @api
-    def query(self, datasource, filter, fields):
+    def query(self, query):
         """
         Perform query and return result
-        :param datasource: Name of datasource
-        :param filter:
-        :param fields:
-            List of dicts
-            * name -- field name
-            * expr -- Optional expression
-            * alias
-            * agg -- Aggregation function
+        :param query: Dict containing fields
+            datasource - name of datasource
+            see model.query for the rest
         :return:
         """
-        raise NotImplementedError()
+        if "datasource" not in query:
+            raise APIError("No datasource")
+        model = Model.get_model_class(query["datasource"])
+        if not model:
+            raise APIError("Invalid datasource")
+        return model.query(query)
+
+    def get_user(self):
+        return self.handler.current_user.username
+
+    @executor("query")
+    @api
+    def list_dashboards(self, q=None):
+        """
+        Returns list of user dashboards. Each item is a dict of
+        * id
+        * title
+        * description
+        * tags
+        * owner
+        * created
+        * changed
+        @todo: Access control
+        :param q:
+        :return:
+        """
+        return [{
+            "id": str(d.id),
+            "title": str(d.title),
+            "description": str(d.descr),
+            "tags": str(d.tags),
+            "owner": d.owner,
+            "created": d.created.isoformat(),
+            "changed": d.changed.isoformat()
+        } for d in Dashboard.objects.filter(
+            owner=self.get_user()
+        ).exclude("config")]
+
+    def _get_dashboard(self, id):
+        """
+        Returns dashboard or None
+        :param id:
+        :return:
+        """
+        return Dashboard.objects.filter(
+            owner=self.get_user(),
+            id=id
+        ).first()
+
+    @executor("query")
+    @api
+    def get_dashboard(self, id):
+        """
+        Returns dashboard config by id
+        :param id:
+        :return:
+        """
+        d = self._get_dashboard(id)
+        if d:
+            return ujson.loads(zlib.decompress(d.config))
+        else:
+            return None
+
+    @executor("query")
+    @api
+    def set_dashboard(self, config):
+        """
+        Save dashboard config.
+        :param config:
+        :return: datshboard id
+        """
+        if "id" in config:
+            d = self._get_dashboard(config["id"])
+            if not d:
+                raise APIError("Dashboard not found")
+        else:
+            d = Dashboard(owner=self.get_user())
+        d.format = config.get("format", 1)
+        d.config = zlib.compress(ujson.dumps(config))
+        d.changed = datetime.datetime.now()
+        d.title = config.get("title")  # @todo: Generate title
+        d.description = config.get("description")
+        d.tags = config.get("tags", [])
+        d.save()
+        return str(d.id)
+
+    @executor("query")
+    @api
+    def remove_dashboard(self, id):
+        """
+        Remove user dashboard
+        :param id:
+        :return:
+        """
+        d = self._get_dashboard(id)
+        if d:
+            d.delete()
+        else:
+            raise APIError("Dashboard not found")

@@ -1,0 +1,36 @@
+{% macro ports(port_type) -%}
+{% set comma = joiner(",") -%}
+{
+  "current": {
+    "selected": true,
+    "tags": [],
+    "text": "{{port_type["ports"][0]["descr"] | default(port_type["ports"][0]["name"])}}",
+    "value": [
+      "{{port_type["ports"][0]["name"]}}"
+     ]
+  },
+  "datasource": null,
+  "hide": 0,
+  "includeAll": true,
+  "label": "{{port_type.name}}",
+  "multi": true,
+  "name": "{{port_type.type}}",
+  "options": [
+    {
+      "selected": false,
+      "text": "All",
+      "value": "$__all"
+    },
+    {%for port in port_type.ports -%}
+    {{ comma() }}{
+      "selected": false,
+      "text": "{% if port.descr %}{{port.name}} ({{port.descr}}){%else%}{{port.name}}{%endif%}",
+      "value": "{{port.name}}"
+    }
+    {%- endfor %}
+   ],
+  "query": "{%- for port in port_type.ports %}{{port.name}},{% endfor %}",
+  "refresh": 0,
+  "type": "custom"
+}
+{%- endmacro %}

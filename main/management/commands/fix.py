@@ -206,7 +206,7 @@ class Command(BaseCommand):
             if o.id in caps:
                 o.update_caps({
                     "DB | Interfaces": caps[o.id]
-                })
+                }, source="interface")
 
     def fix_not_managed_alarms(self):
         """

@@ -12,6 +12,8 @@ import datetime
 import smtplib
 import socket
 from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
 from email.header import Header
 ## Third-party modules
 import pytz
@@ -21,6 +23,7 @@ from noc.core.service.base import Service
 
 class MailSenderService(Service):
     name = "mailsender"
+    process_name = "noc-%(name).10s-%(instance).3s"
 
     def __init__(self, *args, **kwargs):
         super(MailSenderService, self).__init__(*args, **kwargs)
@@ -34,7 +37,7 @@ class MailSenderService(Service):
             handler=self.on_message
         )
 
-    def on_message(self, message, address, subject, body, **kwargs):
+    def on_message(self, message, address, subject, body, attachments=None, **kwargs):
         self.logger.info(
             "[%s] Receiving message: %s (%s) [%s, attempt %d]",
             message.id, subject, address,
@@ -43,25 +46,39 @@ class MailSenderService(Service):
             ),
             message.attempts
         )
-        return self.send_mail(message.id, address, subject, body)
+        return self.send_mail(message.id, address, subject, body, attachments)
 
-    def send_mail(self, message_id, address, subject, body):
+    def send_mail(self, message_id, address, subject, body, attachments=None):
         """
         Send mail message
         :param message_id: NSQ Message id
         :param address: Mail address
         :param subject: Mail subject
         :param body: mail body
+        :param attachments: List of dict with filename and data keys
         :returns: sending status as boolean
         """
+        attachments = attachments or []
         now = datetime.datetime.now(self.tz)
         md = now.strftime("%a, %d %b %Y %H:%M:%S %z")
         from_address = self.config.from_address
-        message = MIMEText(body, _charset="utf-8")
+        message = MIMEMultipart()
         message["From"] = from_address
         message["To"] = address
         message["Date"] = md
         message["Subject"] = Header(subject, "utf-8")
+        message.attach(
+            MIMEText(body, _charset="utf-8")
+        )
+        for a in attachments:
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(a["data"])
+            part.add_header(
+                "Content-Disposition",
+                "attachment",
+                filename=a["filename"]
+            )
+            message.attach(part)
         msg = message.as_string()
         self.logger.debug("Message: %s", msg)
         # Connect to SMTP server

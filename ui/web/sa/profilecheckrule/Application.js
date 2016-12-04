@@ -19,8 +19,8 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/sa/profilecheckrule/{{id}}/json/",
-            previewName: "Profile Check Rule: {{name}}"
+            restUrl: new Ext.XTemplate('/sa/profilecheckrule/{id}/json/'),
+            previewName: new Ext.XTemplate('Profile Check Rule: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
@@ -107,7 +107,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Match",
+                    title: __("Match"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -158,7 +158,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: "Action",
+                    title: __("Action"),
                     layout: "hbox",
                     defaults: {
                         labelAlign: "top",
@@ -191,7 +191,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON

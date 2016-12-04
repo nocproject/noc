@@ -1,0 +1,13 @@
+{
+  "name": "Orion | NOS",
+  "$collection": "sa.profilecheckrules",
+  "uuid": "10bd1fe0-8e17-44c8-b327-2e0703c98318",
+  "description": "",
+  "preference": 1000,
+  "method": "snmp_v2c_get",
+  "param": ".1.3.6.1.2.1.1.6.0",
+  "match_method": "contains",
+  "value": "Orion Networks international Inc.",
+  "action": "match",
+  "profile": "Orion.NOS"
+}

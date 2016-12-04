@@ -5,7 +5,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, DictParameter, ListOfParameter, StringParameter
 
 
 class IGetConfig(Interface):

@@ -14,6 +14,7 @@ import tornado.httpclient
 ## NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
+from noc.core.script.base import BaseScript
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 
 
@@ -29,7 +30,10 @@ class ActivatorAPI(API):
                capabilities=None,
                version=None,
                args=None,
-               timeout=None):
+               timeout=None,
+               session=None,
+               session_timeout=None,
+               ):
         """
         Execute SA script
         :param name: Script name (with profile)
@@ -47,6 +51,8 @@ class ActivatorAPI(API):
         :param capabilities: Dict of discovered capabilities
         :param version: Dict of discovered version
         :param timeout: Script timeout, in seconds
+        :param session: Unique session id to share CLI stream
+        :param session_timeout: Hold CLI stream up to session_timeout seconds
         """
         script_class = loader.get_script(name)
         if not script_class:
@@ -58,12 +64,14 @@ class ActivatorAPI(API):
             capabilities=capabilities,
             version=version,
             timeout=timeout,
-            name=name
+            name=name,
+            session=session,
+            session_timeout=session_timeout
         )
         try:
             result = script.run()
-        except script.ScriptError, why:
-            raise APIError("Script error: %s" % why.__doc__)
+        except script.ScriptError as e:
+            raise APIError("Script error: %s" % e.__doc__)
         return result
 
     @api
@@ -116,3 +124,8 @@ class ActivatorAPI(API):
         finally:
             client.close()
         raise tornado.gen.Return(result)
+
+    @api
+    @executor("script")
+    def close_session(self, session_id):
+        BaseScript.close_session(session_id)

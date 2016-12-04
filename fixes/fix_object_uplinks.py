@@ -13,7 +13,7 @@ from noc.core.topology.segment import SegmentTopology
 
 
 def fix():
-    for ns in NetworkSegment.objects.all():
+    for ns in NetworkSegment.objects.timeout(False):
         st = SegmentTopology(ns)
         ObjectUplink.update_uplinks(
             st.get_object_uplinks()

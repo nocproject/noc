@@ -10,7 +10,7 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
     extend: "Ext.panel.Panel",
     requires: [
     ],
-    title: "Comment",
+    title: __("Comment"),
     closable: false,
     layout: "fit",
     autoScroll: true,
@@ -93,7 +93,7 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
                 me.displayField.show();
             },
             failure: function() {
-                NOC.error("Failed to save data");
+                NOC.error(__("Failed to save data"));
             }
         });
     }

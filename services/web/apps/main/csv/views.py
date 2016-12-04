@@ -12,7 +12,6 @@ from django.shortcuts import get_object_or_404
 from django import forms
 from django.contrib import admin
 from django.http import HttpResponse
-from django.db import transaction
 from django.db import models
 ## NOC modules
 from noc.lib.app.application import Application, view
@@ -85,9 +84,6 @@ class CSVApplication(Application):
             if form.is_valid():
                 count, error = csv_import(m, request.FILES["file"],
                                         resolution=form.cleaned_data["resolve"])
-                if error:
-                    # Rollback current transaction to be able to send message
-                    transaction.rollback()
                 if count is None:
                     self.message_user(request,
                                       "Error importing data: %s" % error)

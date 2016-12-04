@@ -12,7 +12,8 @@ import re
 from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces, InterfaceTypeError
+from noc.sa.interfaces.base import InterfaceTypeError
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.profiles.Cisco.IOS import uBR
 
 
@@ -312,7 +313,7 @@ class Script(BaseScript):
         for match in self.rx_sh_int.finditer(v):
             full_ifname = match.group("interface")
             ifname = self.profile.convert_interface_name(full_ifname)
-            if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu"]:
+            if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "Co"]:
                 continue
             # NOC-378 - Dirty hack for interface like ATM0/IMA0
             if "/ima" in full_ifname.lower():
@@ -366,7 +367,7 @@ class Script(BaseScript):
             if match.group("encaps"):
                 encaps = match.group("encaps")
                 if encaps[:6] == "802.1Q":
-                    sub["vlan_ids"] = [encaps.split(",")[1].split()[2][:-1]]
+                    sub["vlan_ids"] = [encaps.split(",")[1].split()[2].replace(".", "")]
             # uBR ?
             if ifname in pvm:
                 sub["vlan_ids"] = pvm[ifname]

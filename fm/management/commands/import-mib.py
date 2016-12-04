@@ -11,7 +11,8 @@ from optparse import make_option
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.fm.models import MIB, MIBRequiredException, OIDCollision
+from noc.fm.models.mib import MIB
+from noc.fm.models.error import MIBRequiredException, OIDCollision
 
 
 class Command(BaseCommand):
@@ -25,9 +26,9 @@ class Command(BaseCommand):
         for a in args:
             try:
                 MIB.load(a, force=options.get("force"))
-            except MIBRequiredException, why:
-                raise CommandError(why)
-            except ValueError, why:
-                raise CommandError(why)
-            except OIDCollision, why:
-                raise CommandError(why)
+            except MIBRequiredException as e:
+                raise CommandError(str(e))
+            except ValueError as e:
+                raise CommandError(str(e))
+            except OIDCollision as e:
+                raise CommandError(str(e))

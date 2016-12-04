@@ -2,16 +2,6 @@
 
 currrent_dir=$(pwd)
 
-compile_login () {
-    if [ ! -f ../ui/login/index.html ]; then
-        cd ../ui/src/login
-        echo "Compiling login ..."
-        docker-compose up
-        cd ${currrent_dir}
-    else
-       echo "../ui/src/login/index.html exists. skipping build"
-    fi
-}
 pull_images () {
     echo "Pulling noc images..."
     docker-compose pull dev
@@ -50,17 +40,17 @@ start_sae() {
     echo "Starting SAE..."
     docker-compose up -d sae \
                          discovery \
-                         activator.default \
+                         activator-default \
                          scheduler \
                          omap \
-                         ping.default \
-                         syslogcollector.default \
-                         trapcollector.default
+                         ping-default \
+                         syslogcollector-default \
+                         trapcollector-default
 }
 
 start_web() {
     echo "Starting WEB..."
-    docker-compose up -d web card login grafana front
+    docker-compose up -d web card login grafana grafanads front bi mrt
 }
 
 start_pm() {
@@ -79,7 +69,6 @@ start_fm() {
 start_dbs
 pull_images
 install_npkg
-compile_login
 cytonize
 migrate
 start_sae

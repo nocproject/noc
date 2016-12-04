@@ -32,10 +32,10 @@ class Script(BaseScript):
             for match in self.rx_mac.finditer(cmd):
                 macs += [match.group("mac")]
             macs.sort()
-            return {
-                "first_chassis_mac": macs[0],
-                "last_chassis_mac": macs[-1]
-            }
+            return [{
+                        "first_chassis_mac": f,
+                        "last_chassis_mac": t
+                    } for f, t in self.macs_to_ranges(macs)]
         else:
             cmd = self.cli("show mac-address-table static | i CPU")
             match = self.rx_mac_old.match(cmd)

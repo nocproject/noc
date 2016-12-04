@@ -9,9 +9,13 @@
 ## Python modules
 import threading
 import time
+import operator
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
+import cachetools
+
+id_lock = threading.Lock()
 
 
 class Pool(Document):
@@ -24,8 +28,8 @@ class Pool(Document):
     description = StringField()
     discovery_reschedule_limit = IntField(default=50)
 
-    _name_cache = {}
-
+    _id_cache = cachetools.TTLCache(1000, ttl=60)
+    _name_cache = cachetools.TTLCache(1000, ttl=60)
     reschedule_lock = threading.Lock()
     reschedule_ts = {}  # pool id -> timestamp
 
@@ -33,18 +37,25 @@ class Pool(Document):
         return self.name
 
     @classmethod
-    def get_name_by_id(cls, id):
-        id = str(id)
-        if id not in cls._name_cache:
-            try:
-                cls._name_cache[id] = Pool.objects.get(id=id).name
-            except Pool.DoesNotExist:
-                cls._name_cache[id] = None
-        return cls._name_cache[id]
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        try:
+            return Pool.objects.get(id=id)
+        except Pool.DoesNotExist:
+            return None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        try:
+            return Pool.objects.get(name=name)
+        except Pool.DoesNotExist:
+            return None
 
     def get_delta(self):
         """
-        Get delta for next discovery
+        Get delta for next discovery,
+        Limit runs to discovery_reschedule_limit tasks
         """
         t = time.time()
         dt = 1.0 / float(self.discovery_reschedule_limit)

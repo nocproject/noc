@@ -90,13 +90,14 @@
 
          See https://clickhouse.yandex/reference_en.html#Data%20replication
       -->
-
+    
 
     <!-- Substitutions for parameters of replicated tables.
                    Optional. If you don't use replicated tables, you could omit that.
 
          See https://clickhouse.yandex/reference_en.html#Creating%20replicated%20tables
       -->
+    
 
 
     <!-- Reloading interval for embedded dictionaries, in seconds. Default: 3600. -->

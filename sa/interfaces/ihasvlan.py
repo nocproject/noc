@@ -5,7 +5,7 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import Interface, VLANIDParameter, BooleanParameter
 
 
 class IHasVlan(Interface):

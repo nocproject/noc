@@ -17,7 +17,7 @@ class Outage(Document):
     meta = {
         "collection": "noc.fm.outages",
         "allow_inheritance": False,
-        "indexes": ["object", "start"]
+        "indexes": ["object", ("object", "-start")]
     }
 
     object = IntField()
@@ -42,12 +42,29 @@ class Outage(Document):
         :return:
         """
         ts = ts or datetime.datetime.now()
-        o = cls.objects.filter(object=object.id,
-            start__lte=datetime.datetime.now()).order_by("-start").first()
-        if o and o.is_active and not status:
-            # Close active outage
-            o.stop = ts
-            o.save()
-        elif status and ((o and not o.is_active) or not o):
-            # Create new outage
-            Outage(object=object.id, start=ts, stop=None).save()
+        col = Outage._get_collection()
+        lo = col.find_one({
+            "object": object.id,
+            "start": {
+                "$lte": ts
+            }
+        }, {
+            "_id": 1,
+            "stop": 1
+        }, sort=[("object", 1), ("start", -1)])
+        if not status and lo and not lo.get("stop"):
+            # Close interval
+            col.update({
+                "_id": lo["_id"]
+            }, {
+                "$set": {
+                    "stop": ts
+                }
+            })
+        elif status and (not lo or lo.get("stop")):
+            # New outage
+            col.insert({
+                "object": object.id,
+                "start": ts,
+                "stop": None
+            })

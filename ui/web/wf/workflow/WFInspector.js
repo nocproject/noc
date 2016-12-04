@@ -26,14 +26,14 @@ Ext.define("NOC.wf.workflow.WFInspector", {
 
         me.paramsGrid = Ext.create("Ext.grid.property.Grid", {
             width: 288,
-            title: "Params",
+            title: __("Params"),
             source: {
             }
         });
 
         me.applyButton = Ext.create("Ext.button.Button", {
             text: __("Apply"),
-            tooltip: "Apply changes",
+            tooltip: __("Apply changes"),
             glyph: NOC.glyph.save,
             disabled: true,
             scope: me,
@@ -42,7 +42,7 @@ Ext.define("NOC.wf.workflow.WFInspector", {
 
         me.resetButton = Ext.create("Ext.button.Button", {
             text: __("Reset"),
-            tooltip: "Reset changes",
+            tooltip: __("Reset changes"),
             glyph: NOC.glyph.refresh,
             disabled: true,
             scope: me,

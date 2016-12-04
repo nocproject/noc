@@ -23,13 +23,14 @@ class Script(BaseScript):
     ## Catalyst 2960/3560/3750/3120 on IOS SE
     ## Catalyst 2960 on IOS FX
     ## Catalyst 2950 on IOS EA
+    ## Catalyst 3850 on IOS EX
     ## Single chassis mac
     ##
     rx_small_cat = re.compile(
         r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @BaseScript.match(version__regex=r"SE|EA|EZ|FX")
+    @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX")
     def execute_small_cat(self):
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
@@ -40,13 +41,13 @@ class Script(BaseScript):
         }]
 
     ##
-    ## Cisco Catalyst 4000/4500 Series
+    ## Cisco Catalyst 4000/4500/4500e Series
     ##
     rx_cat4000 = re.compile(
         r"MAC Base = (?P<id>\S+).+MAC Count = (?P<count>\d+)",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    @BaseScript.match(version__regex=r"SG")
+    @BaseScript.match(version__regex=r"SG|\d\d\.\d\d\.\d\d\.E")
     def execute_cat4000(self):
         try:
             v = self.cli("show idprom chassis")
@@ -75,6 +76,31 @@ class Script(BaseScript):
             "first_chassis_mac": match.group("from_id"),
             "last_chassis_mac": match.group("to_id")
         }]
+
+    ##
+    ## IOS XE
+    ##
+    rx_iosxe = re.compile(
+        r"Chassis MAC Address\s*:\s*(?P<mac>\S+)\s+"
+        r"MAC Address block size\s*:\s*(?P<count>\d+)",
+        re.DOTALL)
+
+    @BaseScript.match(platform__regex=r"ASR100[0-4]")
+    def execute_IOSXE(self):
+        v = self.cli("show diag chassis eeprom detail")
+        macs = []
+        for f, t in [(mac, MAC(mac).shift(int(count) - 1))
+                     for mac, count in self.rx_iosxe.findall(v)]:
+            if macs and MAC(f).shift(-1) == macs[-1][1]:
+                macs[-1][1] = t
+            else:
+                macs += [[f, t]]
+        return [
+            {
+                "first_chassis_mac": f,
+                "last_chassis_mac": t
+            } for f, t in macs
+            ]
 
     ##
     ## Other

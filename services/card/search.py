@@ -11,6 +11,7 @@ import tornado.web
 import ujson
 ## NOC modules
 from card import CardRequestHandler
+from noc.sa.models.useraccess import UserAccess
 
 
 class SearchRequestHandler(CardRequestHandler):
@@ -25,3 +26,6 @@ class SearchRequestHandler(CardRequestHandler):
         self.write(
             ujson.dumps(result)
         )
+
+    def get_user_domains(self):
+        return UserAccess.get_domains(self.current_user)

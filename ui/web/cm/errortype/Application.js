@@ -19,8 +19,8 @@ Ext.define("NOC.cm.errortype.Application", {
         me.ITEM_JSON = me.registerItem(
             Ext.create("NOC.core.JSONPreview", {
                 app: me,
-                restUrl: "/cm/errortype/{{id}}/json/",
-                previewName: "Error Type: {{name}}"
+                restUrl: new Ext.XTemplate('/cm/errortype/{id}/json/'),
+                previewName: new Ext.XTemplate('Error Type: {name}')
             })
         );
 
@@ -72,7 +72,7 @@ Ext.define("NOC.cm.errortype.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON

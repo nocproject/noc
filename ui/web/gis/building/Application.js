@@ -164,7 +164,7 @@ Ext.define("NOC.gis.building.Application", {
             ],
             inlines: [
                 {
-                    title: "Addresses",
+                    title: __("Addresses"),
                     model: "NOC.gis.building.AddressesModel",
                     columns: [
                         {
@@ -266,7 +266,7 @@ Ext.define("NOC.gis.building.Application", {
     },
     filters: [
         {
-            title: "By Parent",
+            title: __("By Parent"),
             name: "adm_division",
             ftype: "lookup",
             lookup: "gis.division"

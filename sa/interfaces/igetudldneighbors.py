@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## NOC Modules
-from base import *
+from base import Interface, DictListParameter, InterfaceNameParameter, StringParameter
 
 
 class IGetUDLDNeighbors(Interface):

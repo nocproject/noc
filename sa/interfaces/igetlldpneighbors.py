@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import *
+from base import (Interface, ListOfParameter, DictParameter, StringParameter, IntParameter,
+                  InterfaceNameParameter, MACAddressParameter, IPv4Parameter)
 
 
 ##

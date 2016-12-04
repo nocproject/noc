@@ -11,6 +11,7 @@ import logging
 ## NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.interface import Interface
+from noc.gis.models.layer import Layer
 from noc.inv.models.link import Link
 
 logger = logging.getLogger(__name__)
@@ -18,15 +19,18 @@ logger = logging.getLogger(__name__)
 
 class LinkedPoP(object):
     def __init__(self, pop_id):
-        self.pop = Object.objects.filter(id=pop_id).first()
+        self.pop = Object.get_by_id(pop_id)
 
-    def iter_db_links(self):
+    def iter_db_links(self, level):
         """
-        Yield remote pop, level
+        Yield remote pop, layer
         """
         for c, remote, _ in self.pop.get_genderless_connections(
                 "links"):
-            yield c, remote, c.data["level"]
+            layer = "pop_links%d" % (
+                min(level, remote.get_data("pop", "level")) // 10
+            )
+            yield c, remote, layer
 
     def get_pop_objects(self, root=None):
         """
@@ -49,22 +53,38 @@ class LinkedPoP(object):
         linked = set()
         self.pops = set(self.get_pop_objects())
         self_interfaces = set(
-                i.id for i in Interface.objects.filter(
-                        managed_object__in=self.pops)
+            Interface.objects.filter(
+                managed_object__in=self.pops
+            ).values_list("id")
         )
-        for l in Link.objects.filter(interfaces__in=self_interfaces):
-            ri = (i for i in l.interfaces
-                  if i.id not in self_interfaces)
-            if ri:
-                # Remote link
-                ro = set()
-                for i in ri:
-                    ro.add(i.managed_object.id)
-                if len(ro) == 1 and ro:
-                    for o in Object.get_managed(ro.pop()):
-                        pop = o.get_pop()
-                        if pop and pop not in linked:
-                            linked.add(pop)
+        r_ifaces = set()
+        for ld in Link._get_collection().find(
+                {
+                    "interfaces": {
+                        "$in": list(self_interfaces),
+                    }
+                }, {
+                    "_id": 0,
+                    "interfaces": 1
+                }
+        ):
+            r_ifaces |= set(ld.get("interfaces", []))
+        r_ifaces -= self_interfaces
+        r_mos = set(
+            i["managed_object"] for i in
+            Interface._get_collection().find({
+                "_id": {
+                    "$in": list(r_ifaces)
+                }
+            }, {
+                "_id": 0,
+                "managed_object": 1
+            })
+        )
+        for o in Object.objects.filter(data__management__managed_object__in=r_mos):
+            pop = o.get_pop()
+            if pop:
+                linked.add(pop)
         return linked
 
     def update_links(self):
@@ -72,18 +92,15 @@ class LinkedPoP(object):
             return
         level = self.pop.get_data("pop", "level")
         linked = self.get_linked_pops()
-        for c, pop, l_level in self.iter_db_links():
-            r_level = min(level, l_level)
+        for c, pop, layer in self.iter_db_links(level):
             if pop in linked:
                 # Already linked
-                if r_level != l_level:
-                    # Adjust link level
+                if c.layer.code != layer:
                     logger.info(
-                        "%s - %s. Changing link level to %d",
-                        self.pop, pop, r_level
+                        "%s - %s. Changing link layer from %s to %s",
+                        self.pop, pop, c.layer.code, layer
                     )
-                    c.data["level"] = r_level
-                    c.save()
+                    c.layer = Layer.get_by_code(layer)
                 linked.remove(pop)
             else:
                 # Unlink
@@ -93,7 +110,7 @@ class LinkedPoP(object):
         for pop in linked:
             r_level = min(level, pop.get_data("pop", "level")) // 10
             logger.info(
-                "%s - %s. Linking with level %d",
+                "%s - %s. Linking on layer pop_links%d",
                 self.pop, pop, r_level
             )
             self.pop.connect_genderless(

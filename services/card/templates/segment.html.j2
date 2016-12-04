@@ -11,15 +11,47 @@
         <td><a href="/api/card/view/segment/{{ parent.id }}/">{{ parent.name }}</a></td>
     </tr>
     {% endif %}
+    <tr>
+        <th scope="row">{{ _("Redundancy") }}</th>
+        <td>
+            {% if object.is_redundant %}
+                {% if object.lost_redundancy %}
+                    <i class="fa fa-exclamation-triangle"></i>{{ _("Lost redundancy") }}
+                {% else %}
+                    <i class="fa fa-check"></i>{{ _("Redundant") }}
+                {% endif %}
+            {% else %}
+                <i class="fa fa-times"></i>{{ _("No redundancy") }}
+            {% endif %}
+        </td>
+    </tr>
     {% if children %}
     <tr>
         <th scope="row">{{ _("Children") }}</th>
         <td>
             <table>
+                <thead>
+                    <tr>
+                        <th class="col-sm-10">{{ _("Segment") }}</th>
+                        <th class="col-sm-2">{{ _("Summary") }}</th>
+                    </tr>
+                </thead>
                 <tbody>
                 {% for c in children %}
                 <tr>
-                    <td><a href="/api/card/view/segment/{{ c.id }}/">{{ c.name }}</a></td>
+                    <td><a href="/api/card/view/segment/{{ c.id }}/">
+                        {% if c.object.is_redundant %}
+                            {% if c.object.lost_redundancy %}
+                                <i class="fa fa-exclamation-triangle" title="{{ _("Lost redundancy") }}"></i>
+                            {% else %}
+                                <i class="fa fa-check" title="{{ _("Redundant") }}"></i>
+                            {% endif %}
+                        {% else %}
+                            <i class="fa fa-times" title="{{ _("No redundancy") }}"></i>
+                        {% endif %}
+                        {{ c.name }}</a>
+                    </td>
+                    <td>{{ c["summary"] | glyph_summary }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -30,7 +62,7 @@
     <tr>
         <th scope="row">{{ _("Objects") }}</th>
         <td>
-            <table>
+            <table class="table table-striped">
                 <thead>
                     <th class="col-sm-6">{{ _("Name") }}</th>
                     <th class="col-sm-2">{{ _("Address") }}</th>
@@ -39,9 +71,15 @@
                 </thead>
                 <tbody>
                 {% for o in managed_objects %}
-                <tr>
-                    <td><a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.object | managed_object_title}}</a></td>
-                    <td>{{ o.object.address }}</td>
+                <tr class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[o.status] }}">
+                    <td>
+                        <a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.object | managed_object_title}}</a><br>
+                        <small>{{ o.object | object_location }}</small>
+                    </td>
+                    <td>
+                        {{ o.object.address }}<br/>
+                        {{ o.object | object_console }}
+                    </td>
                     <td>{{ o.object.platform }}</td>
                     <td>{{ o.summary | glyph_summary }}</td>
                 </tr>

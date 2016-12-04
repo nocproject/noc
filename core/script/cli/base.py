@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## CLI FSM
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import socket
 import re
 import functools
+import datetime
 ## Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -29,6 +30,17 @@ class CLI(object):
     CONNECT_RETRIES = 3
     # Timeout after immediate disconnect
     CONNECT_TIMEOUT = 3
+    # compiled capabilities
+    HAS_TCP_KEEPALIVE = hasattr(socket, "SO_KEEPALIVE")
+    HAS_TCP_KEEPIDLE = hasattr(socket, "TCP_KEEPIDLE")
+    HAS_TCP_KEEPINTVL = hasattr(socket, "TCP_KEEPINTVL")
+    HAS_TCP_KEEPCNT = hasattr(socket, "TCP_KEEPCNT")
+    # Time until sending first keepalive probe
+    KEEP_IDLE = 10
+    # Keepalive packets interval
+    KEEP_INTVL = 10
+    # Terminate connection after N keepalive failures
+    KEEP_CNT = 3
 
     class CLIError(Exception):
         pass
@@ -55,6 +67,9 @@ class CLI(object):
         self.pattern_table = None
         self.collected_data = []
         self.tos = tos
+        self.current_timeout = None
+        self.is_closed = False
+        self.close_timeout = None
 
     def close(self):
         if self.iostream:
@@ -63,6 +78,19 @@ class CLI(object):
             self.logger.debug("Closing IOLoop")
             self.ioloop.close(all_fds=True)
             self.ioloop = None
+        self.is_closed = True
+        if self.script.session:
+            self.script.close_session(self.script.session)
+
+    def deferred_close(self, session_timeout):
+        if self.is_closed or not self.iostream:
+            return
+        self.logger.debug("Setting close timeout to %ss",
+                          session_timeout)
+        self.close_timeout = self.ioloop.call_later(
+            session_timeout,
+            self.close
+        )
 
     def create_iostream(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -70,9 +98,35 @@ class CLI(object):
             s.setsockopt(
                 socket.IPPROTO_IP, socket.IP_TOS, self.tos
             )
+        if self.HAS_TCP_KEEPALIVE:
+            s.setsockopt(
+                socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1
+            )
+            if self.HAS_TCP_KEEPIDLE:
+                s.setsockopt(socket.SOL_TCP,
+                             socket.TCP_KEEPIDLE, self.KEEP_IDLE)
+            if self.HAS_TCP_KEEPINTVL:
+                s.setsockopt(socket.SOL_TCP,
+                             socket.TCP_KEEPINTVL, self.KEEP_INTVL)
+            if self.HAS_TCP_KEEPCNT:
+                s.setsockopt(socket.SOL_TCP,
+                             socket.TCP_KEEPCNT, self.KEEP_CNT)
         return self.iostream_class(s, self)
 
+    def set_timeout(self, timeout):
+        if timeout:
+            self.logger.debug("Setting timeout: %ss", timeout)
+            self.current_timeout = datetime.timedelta(seconds=timeout)
+        else:
+            if self.current_timeout:
+                self.logger.debug("Resetting timeouts")
+            self.current_timeout = None
+
     def execute(self, cmd, obj_parser=None, cmd_next=None, cmd_stop=None):
+        if self.close_timeout:
+            self.logger.debug("Removing close timeout")
+            self.ioloop.remove_timeout(self.close_timeout)
+            self.close_timeout = None
         self.buffer = ""
         self.command = cmd
         if not self.ioloop:
@@ -151,8 +205,15 @@ class CLI(object):
         connect_retries = self.CONNECT_RETRIES
         while True:
             try:
-                r = yield self.iostream.read_bytes(self.BUFFER_SIZE,
-                                                   partial=True)
+                f = self.iostream.read_bytes(self.BUFFER_SIZE,
+                                             partial=True)
+                if self.current_timeout:
+                    r = yield tornado.gen.with_timeout(
+                        self.current_timeout,
+                        f
+                    )
+                else:
+                    r = yield f
             except tornado.iostream.StreamClosedError:
                 # Check if remote end closes connection just
                 # after connection established
@@ -180,6 +241,9 @@ class CLI(object):
                     continue
                 else:
                     raise tornado.iostream.StreamClosedError()
+            except tornado.gen.TimeoutError:
+                self.logger.info("Timeout error")
+                raise tornado.gen.TimeoutError()
             self.logger.debug("Received: %r", r)
             # Clean input
             self.buffer += self.cleaned_input(r)
@@ -228,7 +292,7 @@ class CLI(object):
                     self.profile.rx_pattern_syntax_error.search(self.buffer)):
                 self.error = self.script.CLISyntaxError(self.buffer)
                 break
-            # Then check for operaion error
+            # Then check for operation error
             if (self.profile.rx_pattern_operation_error and
                     self.profile.rx_pattern_operation_error.search(self.buffer)):
                 self.error = self.script.CLIOperationError(self.buffer)
@@ -285,7 +349,7 @@ class CLI(object):
                 return
         raise self.InvalidPagerPattern(pg)
 
-    def expect(self, patterns):
+    def expect(self, patterns, timeout=None):
         """
         Send command if not none and set reply patterns
         """
@@ -295,6 +359,7 @@ class CLI(object):
             if not rx:
                 continue
             self.pattern_table[rx] = patterns[pattern_name]
+        self.set_timeout(timeout)
 
     def on_start(self, data=None, match=None):
         self.logger.debug("State: <START>")
@@ -304,7 +369,7 @@ class CLI(object):
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt,
             "pager": self.send_pager_reply
-        })
+        }, self.profile.cli_timeout_start)
 
     def on_username(self, data, match):
         self.logger.debug("State: <USERNAME>")
@@ -317,7 +382,7 @@ class CLI(object):
             "password": self.on_password,
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt
-        })
+        }, self.profile.cli_timeout_user)
 
     def on_password(self, data, match):
         self.logger.debug("State: <PASSWORD>")
@@ -331,7 +396,7 @@ class CLI(object):
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt,
             "pager": self.send_pager_reply
-        })
+        }, self.profile.cli_timeout_password)
 
     def on_unprivileged_prompt(self, data, match):
         self.logger.debug("State: <UNPRIVILEGED_PROMPT>")
@@ -345,7 +410,7 @@ class CLI(object):
             "username": self.on_super_username,
             "password": self.on_super_password,
             "prompt": self.on_prompt
-        })
+        }, self.profile.cli_timeout_super)
 
     def on_failure(self, data, match):
         self.logger.debug("State: <FAILURE>")
@@ -375,7 +440,7 @@ class CLI(object):
             "unprivileged_prompt": self.on_unprivileged_prompt,
             "prompt": self.on_prompt,
             "pager": self.send_pager_reply
-        })
+        }, self.profile.cli_timeout_user)
 
     def on_super_password(self, data, match):
         self.send(
@@ -387,7 +452,7 @@ class CLI(object):
             "password": self.on_failure,
             "pager": self.send_pager_reply,
             "unprivileged_prompt": self.on_failure
-        })
+        }, self.profile.cli_timeout_password)
 
     def build_patterns(self):
         """

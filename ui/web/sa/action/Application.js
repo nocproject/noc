@@ -19,8 +19,8 @@ Ext.define("NOC.sa.action.Application", {
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/sa/action/{{id}}/json/",
-            previewName: "Action: {{name}}"
+            restUrl: new Ext.XTemplate('/sa/action/{id}/json/'),
+            previewName: new Ext.XTemplate('Action: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
@@ -152,7 +152,7 @@ Ext.define("NOC.sa.action.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "Show JSON",
+                    tooltip: __("Show JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON

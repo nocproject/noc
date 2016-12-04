@@ -19,9 +19,8 @@ Ext.define("NOC.core.ModelStore", {
     constructor: function(config) {
         var me = this,
             model = Ext.create(config.model),
-            fields = model.fields.items.concat(config.customFields),
+            fields = model.fields.items.concat(config.customFields || []),
             defaultValues = {};
-
         for(var i=0; i < fields.length; i++) {
             var field = fields[i],
                 dv = field.defaultValue;
@@ -91,7 +90,7 @@ Ext.define("NOC.core.ModelStore", {
                 params: Ext.apply({}, me.filterParams),
                 callback: function(records, operation, success) {
                     if(!success) {
-                        NOC.error("Failed to fetch data!");
+                        NOC.error(__("Failed to fetch data!"));
                     }
                 }
             }, config);

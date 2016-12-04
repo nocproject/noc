@@ -56,7 +56,7 @@ Ext.define("NOC.peer.community.Application", {
     ],
     filters: [
         {
-            title: "By Community Type",
+            title: __("By Community Type"),
             name: "type",
             ftype: "lookup",
             lookup: "peer.communitytype"

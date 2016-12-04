@@ -3,7 +3,7 @@
 ## Vendor: Huawei
 ## OS:     VRP
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -23,8 +23,8 @@ class Profile(BaseProfile):
         (r"^Delete flash:", "y\n\r"),
         (r"^Squeeze flash:", "y\n\r")
     ]
-    pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.\[/`\s]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
-    pattern_syntax_error = r"^Error: | % Wrong parameter found at| % Unrecognized command found at|Error:Too many parameters found"
+    pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.\[/`\s:]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
+    pattern_syntax_error = r"(ERROR: |% Wrong parameter found at|% Unrecognized command found at|Error:Too many parameters found|% Too many parameters found at|% Ambiguous command found at|Error: Unrecognized command found at)"
 
     command_more = " "
     config_volatile = ["^%.*?$"]
@@ -33,6 +33,7 @@ class Profile(BaseProfile):
     command_leave_config = "return"
     command_save_config = "save"
     command_exit = "quit"
+    rogue_chars = [re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
 
     def generate_prefix_list(self, name, pl, strict=True):
         p = "ip ip-prefix %s permit %%s" % name
@@ -77,3 +78,9 @@ class Profile(BaseProfile):
     def clean_spaces(self, config):
         config = self.spaces_rx.sub("", config)
         return config
+
+    def fix_version(self, v):
+        if v["platform"] == "S5628F-HI" and v["version"] == "5.20":
+            # Do not change these numbers. Used in get_switchport script
+            v = "3.10"
+        return v["version"]

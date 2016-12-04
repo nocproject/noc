@@ -6,7 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from base import *
+from base import (Interface, ListOfParameter, DictParameter, InterfaceNameParameter,
+                  VLANIDParameter, StringParameter, BooleanParameter)
 
 
 class ISetSwitchport(Interface):

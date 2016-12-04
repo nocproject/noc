@@ -17,9 +17,9 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
             title;
 
         if(me.groupContainer) {
-            title = "Create new object in '" + me.groupContainer.get("name") + "'";
+            title = __("Create new object in '") + me.groupContainer.get("name") + "'";
         } else {
-            title = "Create new top-level object";
+            title = __("Create new top-level object");
         }
 
         me.form = Ext.create("Ext.form.Panel", {
@@ -110,7 +110,7 @@ Ext.define("NOC.inv.inv.AddObjectForm", {
                 }
             },
             failure: function() {
-                NOC.error("Failed to save");
+                NOC.error(__("Failed to save"));
             }
         });
     }

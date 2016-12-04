@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## fm.alarm application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,24 +10,28 @@
 import os
 import inspect
 import datetime
+## Third-party modules
+import bson
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
+from noc.inv.models.object import Object
+from noc.inv.models.networksegment import NetworkSegment
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.archivedevent import ArchivedEvent
-from noc.fm.models import get_alarm
+from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.selectorcache import SelectorCache
 from noc.main.models import User
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import (ModelParameter, UnicodeParameter,
                                     DateTimeParameter, StringParameter)
 from noc.maintainance.models.maintainance import Maintainance
+from noc.maintainance.models.maintainance import MaintainanceObject
 from noc.sa.models.servicesummary import SummaryItem
-from noc.inv.models.networksegment import NetworkSegment
+from noc.fm.models.alarmplugin import AlarmPlugin
 from noc.core.translation import ugettext as _
 
 
@@ -54,6 +58,11 @@ class AlarmApplication(ExtApplication):
     }
 
     ignored_params = ["status", "_dc"]
+
+    diagnostic_plugin = AlarmPlugin(
+        name="diagnostic",
+        config={}
+    )
 
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
@@ -100,12 +109,10 @@ class AlarmApplication(ExtApplication):
             q["managed_object__in"] = Maintainance.currently_affected()
         del q["maintainance"]
         if "administrative_domain" in q:
-            a = AdministrativeDomain.objects.get(id=q["administrative_domain"])
-            q["managed_object__in"] = a.managedobject_set.values_list("id", flat=True)
+            q["adm_path"] = int(q["administrative_domain"])
             q.pop("administrative_domain")
         if "segment" in q:
-            ns = NetworkSegment.objects.get(id=q["segment"])
-            q["managed_object__in"] = ns.managed_objects.values_list("id", flat=True)
+            q["segment_path"] = bson.ObjectId(q["segment"])
             q.pop("segment")
         if "managedobjectselector" in q:
             s = SelectorCache.objects.filter(selector=q["managedobjectselector"]).values_list("object")
@@ -131,6 +138,13 @@ class AlarmApplication(ExtApplication):
         s = AlarmSeverity.get_severity(o.severity)
         n_events = (ActiveEvent.objects.filter(alarms=o.id).count() +
                     ArchivedEvent.objects.filter(alarms=o.id).count())
+        mtc = o.managed_object.id in Maintainance.currently_affected()
+        if o.status == "C":
+            # For archived alarms
+            mtc = Maintainance.objects.filter(start__lte=o.clear_timestamp, stop__lte=o.timestamp,
+                                              affected_objects__in=[
+                                                       MaintainanceObject(object=o.managed_object)]).count() > 0
+
         d = {
             "id": str(o.id),
             "status": o.status,
@@ -152,6 +166,7 @@ class AlarmApplication(ExtApplication):
             "escalation_tt": o.escalation_tt,
             "platform": o.managed_object.platform,
             "address": o.managed_object.address,
+            "isInMaintenance": mtc,
             "summary": self.f_glyph_summary({
                 "subscriber": SummaryItem.items_to_dict(o.total_subscribers),
                 "service": SummaryItem.items_to_dict(o.total_services)
@@ -207,6 +222,19 @@ class AlarmApplication(ExtApplication):
         d["managed_object_version"] = mo.get_attr("version")
         d["segment"] = mo.segment.name
         d["segment_id"] = str(mo.segment.id)
+        d["segment_path"] = " | ".join(NetworkSegment.get_by_id(p).name for p in NetworkSegment.get_path(mo.segment))
+        if mo.container:
+            cp = []
+            c = mo.container.id
+            while c:
+                try:
+                    o = Object.objects.get(id=c)
+                    if o.container:
+                        cp.insert(0, o.name)
+                    c = o.container
+                except Object.DoesNotExist:
+                    break
+            d["container_path"] = " | ".join(cp)
         d["tags"] = mo.tags
         # Log
         if alarm.log:
@@ -247,15 +275,16 @@ class AlarmApplication(ExtApplication):
             d["is_subscribed"] = user in alarm.subscribers
         # Apply plugins
         plugins = []
-        if alarm.alarm_class.plugins:
-            for p in alarm.alarm_class.plugins:
-                if p.name in self.plugins:
-                    plugin = self.plugins[p.name]
-                    dd = plugin.get_data(alarm, p.config)
-                    if "plugins" in dd:
-                        plugins += dd["plugins"]
-                        del dd["plugins"]
-                    d.update(dd)
+        acp = alarm.alarm_class.plugins or []
+        acp += [self.diagnostic_plugin]
+        for p in acp:
+            if p.name in self.plugins:
+                plugin = self.plugins[p.name]
+                dd = plugin.get_data(alarm, p.config)
+                if "plugins" in dd:
+                    plugins += dd["plugins"]
+                    del dd["plugins"]
+                d.update(dd)
         if plugins:
             d["plugins"] = plugins
         return d

@@ -22,13 +22,13 @@ class Script(BaseScript):
                                     re.MULTILINE | re.IGNORECASE)
     rx_s_line = re.compile(r"(?P<local_if>\d+)\s+[0-9a-f:]+\s+.+?$")
 
-    rx_remote_port = re.compile("^\s+Port id:\s*(?P<remote_if>.+?)\s*$",
+    rx_remote_port = re.compile("^\s+Port id:(?P<remote_if>.*)",
         re.MULTILINE | re.IGNORECASE)
 
-    rx_remote_port_desc = re.compile("^Port Description:\s*(?P<remote_if_desc>.+?)\s*$",
+    rx_remote_port_desc = re.compile("^Port Description:(?P<remote_if_desc>.*)",
         re.MULTILINE | re.IGNORECASE)
 
-    rx_remote_port_subtype = re.compile("^Port id subtype:\s*(?P<remote_if_subtype>.+?)\s*$",
+    rx_remote_port_subtype = re.compile("^Port id subtype:(?P<remote_if_subtype>.*)",
         re.MULTILINE | re.IGNORECASE)
 
     rx_chassis_id = re.compile(r"^\s+Chassis id:\s*(?P<id>\S+)",
@@ -77,10 +77,16 @@ class Script(BaseScript):
 
             #Get remote port
             match = self.re_search(self.rx_remote_port, v)
-            remote_port = match.group("remote_if")
+            remote_port = match.group("remote_if").strip()
 
-            match = self.re_search(self.rx_remote_port_subtype, v)
-            remote_port_subtype_str = match.group('remote_if_subtype')
+            match = self.re_search(self.rx_remote_port_desc, v)
+            remote_port_desc = match.group('remote_if_desc').strip()
+
+            match = self.rx_remote_port_subtype.search(v)
+            if match:
+                remote_port_subtype_str = match.group('remote_if_subtype').strip()
+            else:
+                remote_port_subtype_str = ''
 
             #Get remote port subtype from "Port ID Subtype" field
             if remote_port_subtype_str == 'local-assigned':
@@ -96,11 +102,15 @@ class Script(BaseScript):
                 elif is_int(remote_port):
                     # Actually local(7)
                     remote_port_subtype = 7
+                else:
+                    remote_port_subtype = 128  # PORT_SUBTYPE_UNSPECIFIED
             n = {
                 "remote_port": remote_port,
                 "remote_port_subtype": remote_port_subtype,
                 "remote_chassis_id_subtype": 4
             }
+            if remote_port_desc:
+                n["remote_port_description"] = remote_port_desc
 
             #Get Chassis ID
             match = self.rx_chassis_id.search(v)
@@ -119,7 +129,7 @@ class Script(BaseScript):
                             "other": 1, "repeater": 2, "bridge": 4,
                             "wlan-access-point": 8, "router": 16, "telephone": 32,
                             "docsis-cable-device": 64, "station-only": 128
-                        }[c]
+                        }[c.lower()]
             n["remote_capabilities"] = cap
 
             #Get system name

@@ -103,6 +103,10 @@ Ext.define("NOC.fm.alarmclass.Model", {
             type: "string"
         },
         {
+            name: "recover_time",
+            type: "int"
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

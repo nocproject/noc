@@ -38,7 +38,8 @@ class MetricType(Document):
     scope = StringField(
         choices=[
             ("o", "Object"),
-            ("i", "Interface")
+            ("i", "Interface"),
+            ("p", "Probe")
         ]
     )
     # Measure name, like 'kbit/s'

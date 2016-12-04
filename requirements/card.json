@@ -1,5 +1,5 @@
 {
-  "url": "https://cdn.nocproject.org/pkg/",
+  "url": "https://cdn.getnoc.com/npkg/",
   "packages": [
     {
       "name": "bootstrap",
@@ -7,7 +7,7 @@
     },
     {
       "name": "leaflet",
-      "version": "0.7.7"
+      "version": "1.0.1"
     },
     {
       "name": "leaflet.heat",

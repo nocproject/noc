@@ -143,30 +143,30 @@ Ext.define("NOC.ip.vrf.Application", {
     ],
     filters: [
         {
-            title: "By State",
+            title: __("By State"),
             name: "state",
             ftype: "lookup",
             lookup: "main.resourcestate"
         },
         {
-            title: "By VRF Group",
+            title: __("By VRF Group"),
             name: "vrf_group",
             ftype: "lookup",
             lookup: "ip.vrfgroup"
         },
         {
-            title: "By Project",
+            title: __("By Project"),
             name: "project",
             ftype: "lookup",
             lookup: "project.project"
         },
         {
-            title: "By IPv4",
+            title: __("By IPv4"),
             name: "afi_ipv4",
             ftype: "boolean"
         },
         {
-            title: "By IPv6",
+            title: __("By IPv6"),
             name: "afi_ipv6",
             ftype: "boolean"
         }
@@ -181,7 +181,7 @@ Ext.define("NOC.ip.vrf.Application", {
                     "itemId": "import",
                     text: __("Import"),
                     glyph: NOC.glyph.level_down,
-                    tooltip: "Import VRFs",
+                    tooltip: __("Import VRFs"),
                     checkAccess: NOC.hasPermission("import"),
                     menu: {
                         xtype: "menu",

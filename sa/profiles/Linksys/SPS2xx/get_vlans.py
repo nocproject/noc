@@ -26,8 +26,8 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 for vlan, name in self.snmp.join_tables(
-                    "1.3.6.1.2.1.17.7.1.4.2.1.3", "1.3.6.1.2.1.17.7.1.4.3.1.1",
-                    bulk=True):
+                        "1.3.6.1.2.1.17.7.1.4.2.1.3",
+                        "1.3.6.1.2.1.17.7.1.4.3.1.1"):
                     r += [{"vlan_id": vlan, "name": name}]
                 return r
             except self.snmp.TimeOutError:

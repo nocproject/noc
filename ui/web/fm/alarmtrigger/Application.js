@@ -120,7 +120,7 @@ Ext.define("NOC.fm.alarmtrigger.Application", {
     ],
     filters: [
         {
-            title: "By Enabled",
+            title: __("By Enabled"),
             name: "is_enabled",
             ftype: "boolean"
         }

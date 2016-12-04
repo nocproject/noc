@@ -98,29 +98,29 @@ Ext.define("NOC.ip.prefixaccess.Application", {
     ],
     filters: [
         {
-            title: "By User",
+            title: __("By User"),
             name: "user",
             ftype: "lookup",
             lookup: "main.user"
         },
         {
-            title: "By VRF",
+            title: __("By VRF"),
             name: "vrf",
             ftype: "lookup",
             lookup: "ip.vrf"
         },
         {
-            title: "By AFI",
+            title: __("By AFI"),
             name: "afi",
             ftype: "afi"
         },
         {
-            title: "By Can View",
+            title: __("By Can View"),
             name: "can_view",
             ftype: "boolean"
         },
         {
-            title: "By Can Change",
+            title: __("By Can Change"),
             name: "can_change",
             ftype: "boolean"
         }

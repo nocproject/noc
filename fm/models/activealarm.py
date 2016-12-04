@@ -24,6 +24,7 @@ from noc.sa.models.objectpath import ObjectPath
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
+from noc.lib.debug import error_report
 
 
 class ActiveAlarm(nosql.Document):
@@ -32,7 +33,8 @@ class ActiveAlarm(nosql.Document):
         "allow_inheritance": False,
         "indexes": [
             "timestamp", "discriminator", "root", "-severity",
-            "alarm_class",
+            ("alarm_class", "managed_object"),
+            ("discriminator", "managed_object"),  # @todo: Delete discriminator index
             ("timestamp", "managed_object"),
             "escalation_tt",
             "escalation_ts",
@@ -160,12 +162,25 @@ class ActiveAlarm(nosql.Document):
             self.timestamp = e.timestamp
         else:
             self.last_update = max(self.last_update, e.timestamp)
-        self.save(save_condition={"id": self.id})
+        if self.id:
+            self.save(save_condition={"id": self.id})
+        else:
+            self.save()
         # Update event's list of alarms
         if self.id not in e.alarms:
+            e._get_collection().update({
+                "_id": e.id,
+            }, {
+                "$set": {
+                    "expires": None,
+                },
+                "$push": {
+                    "alarms": self.id
+                }
+            })
             e.alarms.append(self.id)
             e.expires = None
-            e.save()
+            # e.save()
 
     def clear_alarm(self, message, ts=None, force=False):
         """
@@ -183,9 +198,17 @@ class ActiveAlarm(nosql.Document):
                 call_later(
                     "noc.services.correlator.wait_tt.wait_tt",
                     scheduler="correlator",
+                    pool=self.managed_object.pool.name,
                     alarm_id=self.id
                 )
             return
+        if self.alarm_class.clear_handlers:
+            # Process clear handlers
+            for h in self.alarm_class.get_clear_handlers():
+                try:
+                    h(self)
+                except:
+                    error_report()
         log = self.log + [AlarmLog(timestamp=ts, from_status="A",
                                    to_status="C", message=message)]
         a = ArchivedAlarm(
@@ -242,6 +265,7 @@ class ActiveAlarm(nosql.Document):
             call_later(
                 "noc.services.correlator.escalation.notify_close",
                 scheduler="correlator",
+                pool=self.managed_object.pool.name,
                 alarm_id=self.id,
                 tt_id=self.escalation_tt,
                 subject=subject,
@@ -249,8 +273,27 @@ class ActiveAlarm(nosql.Document):
                 notification_group_id=self.clear_notification_group.id if self.clear_notification_group else None,
                 close_tt=self.close_tt
             )
+        # Set checks on all consequences
+        for d in self._get_collection().find({
+            "root": self.id
+        }, {"_id": 1, "alarm_class": 1}):
+            ac = AlarmClass.get_by_id(d["alarm_class"])
+            if not ac:
+                continue
+            t = ac.recover_time
+            if not t:
+                continue
+            call_later(
+                "noc.services.correlator.escalation.check_close_consequence",
+                scheduler="correlator",
+                pool=self.managed_object.pool.name,
+                delay=t,
+                alarm_id=self.id
+            )
         # Clear alarm
         self.delete()
+        # Gather diagnostics
+        AlarmDiagnosticConfig.on_clear(a)
         # Return archived
         return a
 
@@ -420,10 +463,6 @@ class ActiveAlarm(nosql.Document):
         # Clear pending notifications
         # Notification.purge_delayed("alarm:%s" % self.id)
 
-    @classmethod
-    def enable_caching(cls, ttl=600):
-        cls._fields["alarm_class"].set_cache(ttl)
-
     def escalate(self, tt_id, close_tt=False):
         self.escalation_tt = tt_id
         self.escalation_ts = datetime.datetime.now()
@@ -475,5 +514,6 @@ class ActiveAlarm(nosql.Document):
                 yield a
 
 ## Avoid circular references
-# from noc.fm.models.utils import get_alarm
 from archivedalarm import ArchivedAlarm
+from utils import get_alarm
+from alarmdiagnosticconfig import AlarmDiagnosticConfig

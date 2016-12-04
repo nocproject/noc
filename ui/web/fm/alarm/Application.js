@@ -8,13 +8,10 @@ console.debug("Defining NOC.fm.alarm.Application");
 
 Ext.define("NOC.fm.alarm.Application", {
     extend: "NOC.core.Application",
-    requires: [
-        "NOC.fm.alarm.templates.Overview",
-        "NOC.fm.alarm.templates.Help",
-        "NOC.fm.alarm.templates.Data",
-        "NOC.fm.alarm.templates.SummaryPanel"
-    ],
     layout: "card",
+    mixins: [
+        "NOC.core.Export"
+    ],
     STATUS_MAP: {
         A: "Active",
         C: "Archived"
@@ -39,6 +36,13 @@ Ext.define("NOC.fm.alarm.Application", {
                 status: "A",
                 collapse: 1
             },
+            remoteSort: true,
+            sorters: [
+                {
+                    property: 'timestamp',
+                    direction: 'DESC'
+                }
+            ],
             pageSize: bs,
             leadingBufferZone: bs,
             numFromEdge: bs,
@@ -52,7 +56,7 @@ Ext.define("NOC.fm.alarm.Application", {
         me.autoreloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
             enableToggle: true,
-            pressed: true,
+            pressed: false,
             tooltip: __("Toggle autoreload"),
             listeners: {
                 scope: me,
@@ -61,9 +65,9 @@ Ext.define("NOC.fm.alarm.Application", {
         });
 
         me.soundButton = Ext.create("Ext.button.Button", {
-            glyph: NOC.glyph.volume_up,
+            glyph: NOC.glyph.volume_off,
             enableToggle: true,
-            pressed: true,
+            pressed: false,
             tooltip: __("Toggle sound"),
             listeners: {
                 scope: me,
@@ -90,12 +94,13 @@ Ext.define("NOC.fm.alarm.Application", {
             }
         });
 
-        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.LookupField", {
+        me.admdomCombo = Ext.create("NOC.sa.administrativedomain.TreeCombo", {
             fieldLabel: __("Adm. Domain"),
             width: 198,
             listeners: {
-                scope: me, 
+                scope: me,
                 select: me.onChangeFilter,
+                change: me.onChange,
                 clear: me.onChangeFilter
             },
             uiStyle: null
@@ -107,6 +112,7 @@ Ext.define("NOC.fm.alarm.Application", {
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
+                change: me.onChange,
                 clear: me.onChangeFilter
             }
         });
@@ -115,18 +121,20 @@ Ext.define("NOC.fm.alarm.Application", {
             fieldLabel: __("Selector"),
             width: 198,
             listeners: {
-                scope: me, 
+                scope: me,
                 select: me.onChangeFilter,
+                change: me.onChange,
                 clear: me.onChangeFilter
             }   
         }); 
 
-        me.segmentCombo = Ext.create("NOC.inv.networksegment.LookupField", {
+        me.segmentCombo = Ext.create("NOC.inv.networksegment.TreeCombo", {
             fieldLabel: __("Segment"),
             width: 198,
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
+                change: me.onChange,
                 clear: me.onChangeFilter
             }
         });
@@ -137,6 +145,7 @@ Ext.define("NOC.fm.alarm.Application", {
             listeners: {
                 scope: me,
                 select: me.onChangeFilter,
+                change: me.onChange,
                 clear: me.onChangeFilter
             }
         });
@@ -190,7 +199,7 @@ Ext.define("NOC.fm.alarm.Application", {
                 {
                     text: __("All"),
                     pressed: true,
-                    tooltip: __("Show all alarms"),
+                    tooltip: __("Show all alarms")
                 }
             ],
             listeners: {
@@ -233,6 +242,14 @@ Ext.define("NOC.fm.alarm.Application", {
                     handler: me.onContextMenuRefresh
                 },
                 {
+                    text: __("Save screen"),
+                    glyph: NOC.glyph.arrow_down,
+                    scope: me,
+                    handler: function() {
+                        this.save(me.gridPanel, "alarms.csv")
+                    }
+                },
+                {
                     text: __("Filter"),
                     glyph: NOC.glyph.filter,
                     menu: [
@@ -266,13 +283,13 @@ Ext.define("NOC.fm.alarm.Application", {
             itemId: "grid-panel",
             stateful: true,
             stateId: "fm.alarm-grid",
-            plugins: [
-                {
-                    ptype: "bufferedrenderer"
-                    //trailingBufferZone: 50,
-                    //leadingBufferZone: 50
-                }
-            ],
+            // plugins: [
+            //     {
+            //         ptype: "bufferedrenderer"
+            //         //trailingBufferZone: 50,
+            //         //leadingBufferZone: 50
+            //     }
+            // ],
             dockedItems: [
                 {
                     xtype: "form",
@@ -340,7 +357,12 @@ Ext.define("NOC.fm.alarm.Application", {
                     text: __("Status"),
                     dataIndex: "status",
                     width: 50,
-                    renderer: NOC.render.Choices(me.STATUS_MAP),
+                    renderer: function(v, _, record){
+                        var value = NOC.render.Choices(me.STATUS_MAP)(v);
+                        if(record.get('isInMaintenance')) value = '<span title="' + __('Under maintaintance') + '">' +
+                            '<i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;' + value + '</span>';
+                        return value;
+                    },
                     hidden: true
                 },
                 {
@@ -358,9 +380,7 @@ Ext.define("NOC.fm.alarm.Application", {
                     dataIndex: "managed_object",
                     width: 250,
                     renderer: function(v, _, record) {
-                        return record.get("managed_object__label") +
-                            "<br/>" +
-                            record.get("segment__label");
+                        return record.get("managed_object__label") + "<br/>" + record.get("segment__label");
                     }
                 },
                 {
@@ -504,6 +524,13 @@ Ext.define("NOC.fm.alarm.Application", {
         setIf("timestamp__lte", me.toDateField.getValue());
         me.currentQuery = q;
         me.reloadStore();
+    },
+    //
+    onChange: function(element, newValue) {
+        if(newValue === null) {
+            element.clearValue();
+            this.onChangeFilter();
+        }
     },
     // Return Grid's row classes
     getRowClass: function(record, index, params, store) {

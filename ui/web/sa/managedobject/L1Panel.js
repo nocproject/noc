@@ -14,7 +14,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
         "NOC.inv.interfaceprofile.LookupField",
         "NOC.main.resourcestate.LookupField"
     ],
-    title: "Physical",
+    title: __("Physical"),
     closable: false,
     layout: "fit",
     rowClassField: "row_class",
@@ -158,7 +158,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                 // @todo: Set tab
             },
             failure: function() {
-                NOC.error("Failed to set data");
+                NOC.error(__("Failed to set data"));
             }
         });
     },
@@ -166,7 +166,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
     onLinkClick: function(record) {
         var me = this;
         Ext.create("NOC.sa.managedobject.LinkForm", {
-            title: Ext.String.format("Link {0} with", record.get("name")),
+            title: Ext.String.format(__("Link") + " {0} " + __("with"), record.get("name")),
             app: me.app,
             ifaceId: record.get("id"),
             ifName: record.get("name"),

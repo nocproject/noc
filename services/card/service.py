@@ -15,14 +15,16 @@ from search import SearchRequestHandler
 
 class CardService(UIService):
     name = "card"
+    process_name = "noc-%(name).10s-%(instance).3s"
+
     use_translation = True
     use_jinja = True
 
     def get_handlers(self):
         CardRequestHandler.load_cards()
         return super(CardService, self).get_handlers() + [
-            ("^/search/$", SearchRequestHandler),
-            ("^/view/(\S+)/(\S+)/$", CardRequestHandler)
+            ("^/api/card/search/$", SearchRequestHandler),
+            ("^/api/card/view/(\S+)/(\S+)/$", CardRequestHandler)
         ]
 
 if __name__ == "__main__":

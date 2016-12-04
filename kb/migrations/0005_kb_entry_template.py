@@ -1,6 +1,6 @@
 
 from south.db import db
-from noc.kb.models import *
+from noc.kb.models.kbentry import (models, parser_registry)
 
 class Migration:
     

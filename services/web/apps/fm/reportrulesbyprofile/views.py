@@ -11,7 +11,7 @@ import re
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.core.profile.loader import loader as profile_loader
-from noc.fm.models import EventClassificationRule
+from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.core.translation import ugettext as _
 
 

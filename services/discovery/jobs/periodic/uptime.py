@@ -19,9 +19,9 @@ class UptimeCheck(DiscoveryCheck):
     required_script = "get_uptime"
 
     def handler(self):
-        self.logger.info("Checking uptime")
+        self.logger.debug("Checking uptime")
         uptime = self.object.scripts.get_uptime()
-        self.logger.info("Received uptime: %s", uptime)
+        self.logger.debug("Received uptime: %s", uptime)
         if uptime:
             r = Uptime.register(self.object, uptime)
             self.job.reboot_detected = not r

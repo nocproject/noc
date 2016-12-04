@@ -11,7 +11,7 @@ Ext.define("NOC.inv.inv.plugins.file.UploadForm", {
     autoShow: true,
     modal: true,
     app: undefined,
-    title: "Upload Files",
+    title: __("Upload Files"),
     layout: "fit",
     app: null,
 
@@ -71,12 +71,12 @@ Ext.define("NOC.inv.inv.plugins.file.UploadForm", {
                 url: "/inv/inv/" + me.app.currentId + "/plugin/file/upload/",
                 waitMsg: "Uploading files...",
                 success: function(form, action) {
-                    NOC.info("Files has been uploaded");
+                    NOC.info(__("Files has been uploaded"));
                     me.close();
                     me.app.refresh();
                 },
                 failure: function() {
-                    NOC.error("Failed to upload files");
+                    NOC.error(__("Failed to upload files"));
                 }
             });
         }

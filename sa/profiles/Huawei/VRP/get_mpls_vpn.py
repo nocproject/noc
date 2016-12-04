@@ -21,6 +21,13 @@ class Script(BaseScript):
     rx_rd = re.compile(r"^\s+Route Distinguisher :\s+(?P<rd>\S+:\S+|<not set>)\s*", re.IGNORECASE)
     rx_int = re.compile(r"^(?:\s{,4}Interfaces :\s+|\s{6,})(?P<iface>.+?),?\s*$", re.IGNORECASE)
     rx_desc = re.compile(r"^\s+Description :\s+(?P<desc>.*)\s*", re.IGNORECASE)
+    rx_vpn = re.compile(
+        r"^VPN\-Instance :\s+(?P<vrf>\S+)\s*\n"
+        r"^\s+(?P<description>.*)\n"
+        r"^\s+Route-Distinguisher :\s*\n"
+        r"^\s+(?P<rd>\S+:\S+|<not set>)\s*\n"
+        r"^\s+Interfaces :\s*\n"
+        r"^\s+(?P<ifaces>.+)\s*\n", re.MULTILINE)
 
     def execute(self, **kwargs):
         vpns = []
@@ -54,4 +61,18 @@ class Script(BaseScript):
                 if match_desc:
                     vpns[-1]["description"] = match_desc.group("desc").strip()
                     continue
+        if vpns:
+            return vpns
+        # Second attempt
+        for match in self.rx_vpn.finditer(v):
+            vpn = {
+                "type": "VRF",
+                "status": True,
+                "name": match.group("vrf").strip(),
+                "interfaces": match.group("ifaces").strip().split(" ")
+            }
+            description = match.group("description").strip()
+            if description != "No description":
+                vpn["description"] = description
+            vpns += [vpn]
         return vpns

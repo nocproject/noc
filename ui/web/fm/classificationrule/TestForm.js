@@ -74,7 +74,7 @@ Ext.define("NOC.fm.classificationrule.TestForm", {
                 me.onSuccess(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to test rule")
+                NOC.error(__("Failed to test rule"))
             }
         });
     },

@@ -10,7 +10,7 @@
 from django.utils.html import escape
 ## NOC modules
 from noc.lib.app.reportapplication import ReportApplication
-from noc.fm.models import EventClassificationRule
+from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.lib.text import indent
 from noc.main.models.collectioncache import CollectionCache
 from noc.core.translation import ugettext as _

@@ -30,29 +30,39 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         });
 
         me.topPanel = Ext.create("Ext.panel.Panel", {
-            height: 100,
-            bodyPadding: 4,
             layout: "fit",
-            items: [{
-                xtype: "container",
-                autoScroll: true,
-                padding: 4
-            }]
+            bodyPadding: 4,
+            tpl: "<div class='noc-alarm-subject {row_class}'>{subject} [{severity__label}/{severity}]"
+                + "  <span class='noc-alarm-timestamp'>{timestamp} ({duration})</span>"
+                + "</div>"
+                + "<div>"
+                + "<span class='noc-alarm-label'>Object</span> {managed_object__label} "
+                + "<span class='noc-alarm-label'>IP</span> {managed_object_address} "
+                + "<tpl if='managed_object_platform'><span class='noc-alarm-label'>Platform</span> {managed_object_platform} </tpl>"
+                + "<tpl if='managed_object_version'><span class='noc-alarm-label'>Version</span> {managed_object_version} </tpl>"
+                + "</div>"
+                + "<tpl if='segment_path'><div><span class='noc-alarm-label'>Segment</span> {segment_path}"
+                + "</div></tpl>"
+                + "<tpl if='container_path'><div><span class='noc-alarm-label'>Location</span> {container_path}"
+                + "</div></tpl>"
         });
 
         me.overviewPanel = Ext.create("Ext.panel.Panel", {
             title: __("Overview"),
-            autoScroll: true
+            scrollable: true,
+            tpl: '<div class="noc-tp"><b>{subject}</b><br/><pre>{body}</pre></div>'
         });
 
         me.helpPanel = Ext.create("Ext.panel.Panel", {
             title: __("Help"),
-            autoScroll: true
+            scrollable: true,
+            tpl: '<div class="noc-tp"><b>Symptoms:</b><br/><pre>{symptoms}</pre><br/><b>Probable Causes:</b><br/><pre>{probable_causes}</pre><br/><b>Recommended Actions:</b><br/><pre>{recommended_actions}</pre><br/></div>'
         });
 
         me.dataPanel = Ext.create("Ext.panel.Panel", {
             title: __("Data"),
-            autoScroll: true
+            scrollable: true,
+            tpl: '<div class="noc-tp">\n    <table border="0">\n        <tpl if="vars && vars.length">\n            <tr>\n                <th colspan="2">Alarm Variables</th>\n            </tr>\n            <tpl foreach="vars">\n                <tpl foreach=".">\n                    <tr>\n                        <td><b>{$}</b></td>\n                        <td>{.}</td>\n                    </tr>\n                </tpl>\n            </tpl>\n        </tpl>\n        <tpl if="resolved_vars && resolved_vars.length">\n            <tr>\n                <th colspan="2">Resolved Variables</th>\n            </tr>\n            <tpl foreach="resolved_vars">\n                <tpl foreach=".">\n                    <tr>\n                        <td><b>{$}</b></td>\n                        <td>{.}</td>\n                    </tr>\n                </tpl>\n            </tpl>\n        </tpl>\n        <tpl if="raw_vars && raw_vars.length">\n            <tr>\n                <th colspan="2">Raw Variables</th>\n            </tr>\n            <tpl foreach="raw_vars">\n                <tpl foreach=".">\n                    <tr>\n                        <td><b>{$}</b></td>\n                        <td>{.}</td>\n                    </tr>\n                </tpl>\n            </tpl>\n        </tpl>\n    </table>\n</div>'
         });
 
         me.logStore = Ext.create("Ext.data.Store", {
@@ -311,30 +321,26 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
         me.app.setHistoryHash(alarmId);
     },
     //
-    updatePanel: function(panel, template, enabled, data) {
+    updatePanel: function(panel, enabled, data) {
         panel.setDisabled(!enabled);
         panel.setVisible(enabled);
         if(enabled) {
-            panel.update("<div class='noc-tp'>" + template(data) + "</div>");
+            panel.update(data);
         }
     },
     //
     updateData: function(data) {
         var me = this,
-            oldId = me.data ? me.data.id : undefined,
-            o = [];
+            oldId = me.data ? me.data.id : undefined;
+
         me.data = data;
         //
         me.alarmIdField.setValue(me.data.id);
-        me.topPanel.items.first().update(
-            me.app.templates.SummaryPanel(me.data)
-        );
+        me.topPanel.setData(me.data);
         //
-        me.updatePanel(me.overviewPanel, me.app.templates.Overview,
-            data.subject, data);
-        me.updatePanel(me.helpPanel, me.app.templates.Help,
-            data.symptoms, data);
-        me.updatePanel(me.dataPanel, me.app.templates.Data,
+        me.updatePanel(me.overviewPanel, data.subject, data);
+        me.updatePanel(me.helpPanel, data.symptoms, data);
+        me.updatePanel(me.dataPanel,
             (data.vars && data.vars.length)
                 || (data.raw_vars && data.raw_vars.length)
                 || (data.resolved_vars && data.resolved_vars.length),

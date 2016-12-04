@@ -90,7 +90,7 @@ Ext.define("NOC.core.InlineModelStore", {
         config = Ext.Object.merge(config, {
             callback: function(records, operation, success) {
                 if(!success)
-                    NOC.error("Failed to fetch data!");
+                    NOC.error(__("Failed to fetch data!"));
             }
         });
         // Continue loading

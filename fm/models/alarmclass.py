@@ -9,7 +9,7 @@
 ## Python modules
 import hashlib
 import os
-from threading import RLock
+from threading import Lock
 import operator
 ## Third-party modules
 from mongoengine import fields
@@ -21,12 +21,13 @@ from alarmclassvar import AlarmClassVar
 from datasource import DataSource
 from alarmrootcausecondition import AlarmRootCauseCondition
 from alarmclasscategory import AlarmClassCategory
-from alarmclassjob import AlarmClassJob
 from alarmplugin import AlarmPlugin
 from noc.lib.escape import json_escape as q
 from noc.lib.text import quote_safe_path
+from noc.core.handler import get_handler
 
-id_lock = RLock()
+id_lock = Lock()
+handlers_lock = Lock()
 
 
 class AlarmClass(nosql.Document):
@@ -75,10 +76,10 @@ class AlarmClass(nosql.Document):
     # RCA
     root_cause = fields.ListField(
         fields.EmbeddedDocumentField(AlarmRootCauseCondition))
-    # Job descriptions
-    jobs = fields.ListField(fields.EmbeddedDocumentField(AlarmClassJob))
-    #
+    # List of handlers to be called on alarm raising
     handlers = fields.ListField(fields.StringField())
+    # List of handlers to be called on alarm clear
+    clear_handlers = fields.ListField(fields.StringField())
     # Plugin settings
     plugins = fields.ListField(fields.EmbeddedDocumentField(AlarmPlugin))
     # Time in seconds to delay alarm risen notification
@@ -89,18 +90,54 @@ class AlarmClass(nosql.Document):
     control_time1 = fields.IntField(required=False)
     # Control time to reopen alarm after >1 reopen
     control_timeN = fields.IntField(required=False)
+    # Consequence recover time
+    # Root cause will be detached if consequence alarm
+    # will not clear itself in *recover_time*
+    recover_time = fields.IntField(required=False, default=300)
     #
     category = nosql.ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _handlers_cache = {}
+    _clear_handlers_cache = {}
 
     def __unicode__(self):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"))
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return AlarmClass.objects.filter(id=id).first()
+
+    def get_handlers(self):
+        @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
+        def _get_handlers(alarm_class):
+            handlers = []
+            for hh in alarm_class.handlers:
+                try:
+                    h = get_handler(hh)
+                except ImportError:
+                    h = None
+                if h:
+                    handlers += [h]
+            return handlers
+
+        return _get_handlers(self)
+
+    def get_clear_handlers(self):
+        @cachetools.cached(self._clear_handlers_cache, key=lambda x: x.id, lock=handlers_lock)
+        def _get_handlers(alarm_class):
+            handlers = []
+            for hh in alarm_class.clear_handlers:
+                try:
+                    h = get_handler(hh)
+                except ImportError:
+                    h = None
+                if h:
+                    handlers += [h]
+            return handlers
+
+        return _get_handlers(self)
 
     def save(self, *args, **kwargs):
         c_name = " | ".join(self.name.split(" | ")[:-1])
@@ -172,6 +209,11 @@ class AlarmClass(nosql.Document):
             r += ["    \"handlers\": ["]
             r += [",\n\n".join(hh)]
             r += ["    ],"]
+        if self.clear_handlers:
+            hh = ["        \"%s\"" % h for h in self.clear_handlers]
+            r += ["    \"clear_handlers\": ["]
+            r += [",\n\n".join(hh)]
+            r += ["    ],"]
         # Text
         r += ["    \"subject_template\": \"%s\"," % q(c.subject_template)]
         r += ["    \"body_template\": \"%s\"," % q(c.body_template)]
@@ -200,26 +242,6 @@ class AlarmClass(nosql.Document):
                 r[-1] += ","
             r += ["    \"root_cause\": ["]
             r += [",\n".join(rc)]
-            r += ["    ]"]
-        # Jobs
-        if self.jobs:
-            jobs = []
-            for job in self.jobs:
-                jd = ["        {"]
-                jd += ["            \"job\": \"%s\"," % job.job]
-                jd += ["            \"interval\": %d," % job.interval]
-                jd += ["            \"vars\": {"]
-                jv = []
-                for v in job.vars:
-                    jv += ["                \"%s\": \"%s\"" % (v, job.vars[v])]
-                jd += [",\n".join(jv)]
-                jd += ["            }"]
-                jd += ["        }"]
-                jobs += ["\n".join(jd)]
-            if r[-1][-1] != ",":
-                r[-1] += ","
-            r += ["    \"jobs\": ["]
-            r += [",\n".join(jobs)]
             r += ["    ]"]
         # Plugins
         if self.plugins:
@@ -256,6 +278,10 @@ class AlarmClass(nosql.Document):
                 if self.control_timeN:
                     r[-1] += ","
                     r += ["    \"control_timeN\": %d" % self.control_timeN]
+        if self.recover_time:
+            if r[-1][-1] != ",":
+                r[-1] += ","
+            r += ["    \"recover_time\": %d" % self.recover_time]
         # Close
         if r[-1].endswith(","):
             r[-1] = r[-1][:-1]

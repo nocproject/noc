@@ -83,7 +83,7 @@ Ext.define("NOC.main.style.Application", {
     ],
     filters: [
         {
-            title: "By Active",
+            title: __("By Active"),
             name: "is_active",
             ftype: "boolean"
         }

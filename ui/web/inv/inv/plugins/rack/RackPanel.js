@@ -13,8 +13,8 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         "NOC.inv.inv.plugins.rack.RackLoadModel"
     ],
     app: null,
-    autoScroll: true,
-    title: "Rack",
+    scrollable: true,
+    title: __("Rack"),
     layout: "border",
 
     initComponent: function() {
@@ -23,7 +23,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         me.reloadButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.refresh,
             scope: me,
-            tooltip: "Reload",
+            tooltip: __("Reload"),
             handler: me.onReload
         });
 
@@ -51,7 +51,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
         });
 
         me.rackViewPanel = Ext.create("Ext.container.Container", {
-            autoScroll: true,
+            scrollable: true,
             region: "center"
         });
 
@@ -81,13 +81,15 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
                     width: 50
                 },
                 {
-                    text: __("Pos. Front"),
+                    text: __("Front"),
+                    tooltip: __("Position Front"),
                     dataIndex: "position_front",
                     width: 50,
                     editor: "numberfield"
                 },
                 {
-                    text: __("Pos. Rear"),
+                    text: __("Rear"),
+                    tooltip: __("Position Rear"),
                     dataIndex: "position_rear",
                     width: 50,
                     editor: "numberfield"
@@ -142,12 +144,22 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
     //
     preview: function(data) {
         var me = this,
-            r = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide()),
-            dc = Ext.create("Ext.draw.Component", {
-                viewBox: false,
-                items: r,
-                autoScroll: true
+            sprites = NOC.core.Rack.getRack(me, 5, 5, data.rack, data.content, me.getSide()),
+            dc = Ext.create("Ext.draw.Container", {
+                sprites: sprites,
+                height: me.rackViewPanel.getHeight(),
+                listeners: {
+                    spriteclick: function (sprite, event) {
+                        if (sprite.sprite.managed_object_id) {
+                            window.open(
+                                "/api/card/view/managedobject/" + sprite.sprite.managed_object_id + "/"
+                            );
+                        }
+                    }
+                },
+                plugins: ['spriteevents']
             });
+
         me.currentId = data.id;
         me.rackViewPanel.removeAll();
         me.rackViewPanel.add(dc);
@@ -169,7 +181,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
                 me.preview(Ext.decode(response.responseText));
             },
             failure: function() {
-                NOC.error("Failed to get data");
+                NOC.error(__("Failed to get data"));
             }
         });
     },
@@ -212,7 +224,7 @@ Ext.define("NOC.inv.inv.plugins.rack.RackPanel", {
                 me.onReload();
             },
             failure: function() {
-                NOC.error("Failed to save");
+                NOC.error(__("Failed to save"));
             }
         });
     },

@@ -61,9 +61,6 @@ Ext.define("NOC.core.JSONPreview", {
             items: [me.cmContainer]
         });
         me.callParent();
-        //
-        me.urlTemplate = Handlebars.compile(me.restUrl);
-        me.titleTemplate = Handlebars.compile(me.previewName);
     },
     //
     afterRender: function() {
@@ -125,8 +122,8 @@ Ext.define("NOC.core.JSONPreview", {
             me.installButton.setDisabled(true);
             return;
         }
-        var url = me.urlTemplate(record.data);
-        me.setTitle(me.titleTemplate(record.data));
+        var url = me.restUrl.apply(record.data);
+        me.setTitle(me.previewName.apply(record.data));
         me.currentRecord = record;
         Ext.Ajax.request({
             url: url,
@@ -138,7 +135,7 @@ Ext.define("NOC.core.JSONPreview", {
                 me.installButton.setDisabled(!record.get("uuid"));
             },
             failure: function() {
-                NOC.error("Failed to get JSON")
+                NOC.error(__("Failed to get JSON"))
             }
         });
     },
@@ -151,7 +148,7 @@ Ext.define("NOC.core.JSONPreview", {
     onInstallJSON: function() {
         var me = this;
         Ext.Msg.show({
-            title: "Add to collections?",
+            title: __("Add to collections?"),
             msg: Ext.String.format("Would you like to add object to your local {0} collection?", me.app.noc.collection),
             buttons: Ext.Msg.YESNO,
             modal: true,
@@ -162,7 +159,7 @@ Ext.define("NOC.core.JSONPreview", {
                         method: "POST",
                         scope: me,
                         failure: function() {
-                            NOC.error("Failed to save JSON");
+                            NOC.error(__("Failed to save JSON"));
                         }
                     });
                 }

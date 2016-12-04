@@ -32,6 +32,9 @@ class BaseCard(object):
     card_js = []
     card_css = []
 
+    class RedirectError(Exception):
+        pass
+
     def __init__(self, handler, id):
         self.handler = handler
         self.object = self.dereference(id)
@@ -44,9 +47,28 @@ class BaseCard(object):
         return UserAccess.get_domains(self.current_user)
 
     def get_object(self, id):
-        return self.model.objects.get(pk=id)
+        if hasattr(self.model, "get_by_id"):
+            return self.model.get_by_id(id)
+        else:
+            return self.model.objects.get(pk=id)
+
+    @classmethod
+    def redirect(cls, url):
+        """
+        Redirect to another card.
+        Can only be called within dereference method
+        :param url:
+        :return:
+        """
+        raise cls.RedirectError(url)
 
     def dereference(self, id):
+        """
+        Resolve object by id.
+        When redirect method called within, card will be redirected
+        :param id:
+        :return:
+        """
         if self.model:
             try:
                 return self.get_object(id)
@@ -89,7 +111,8 @@ class BaseCard(object):
                         "logical_status": self.f_logical_status,
                         "timestamp": self.f_timestamp,
                         "glyph_summary": self.f_glyph_summary,
-                        "object_location": self.f_object_location
+                        "object_location": self.f_object_location,
+                        "object_console": self.f_object_console
                     })
                     with open(tp) as f:
                         self.template_cache[name] = env.from_string(f.read())
@@ -203,6 +226,18 @@ class BaseCard(object):
         if not path:
             return _("N/A")
         return ", ".join(reversed(path))
+
+    @classmethod
+    def f_object_console(cls, object):
+        s = {
+            1: "telnet",
+            2: "ssh",
+            3: "http",
+            4: "https"
+        }[object.scheme]
+        return "<a href='%s://%s/'><i class='fa fa-terminal'></i> %s</a>" % (
+            s, object.address, s.upper()
+        )
 
     @staticmethod
     def update_dict(s, d):

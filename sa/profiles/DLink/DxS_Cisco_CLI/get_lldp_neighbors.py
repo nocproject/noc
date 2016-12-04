@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## DLink.DxS_Cisco_CLI..get_lldp_neighbors
+## DLink.DxS_Cisco_CLI.get_lldp_neighbors
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
@@ -55,9 +55,6 @@ class Script(BaseScript):
                 "local_interface": match.group("port"),
                 "neighbors": []
             }
-            print "================================================\n"
-            print "%s" % match.group("entities")
-            print "================================================\n"
             for m in self.rx_entity.finditer(match.group("entities")):
                 n = {}
                 n["remote_chassis_id_subtype"] = {

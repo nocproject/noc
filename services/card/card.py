@@ -63,6 +63,8 @@ class CardRequestHandler(UIHandler):
                 data = card.get_ajax_data()
             else:
                 data = card.render()
+        except BaseCard.RedirectError as e:
+            return self.redirect(e.args[0])
         except Exception:
             error_report()
             raise tornado.web.HTTPError(500, "Internal server error")

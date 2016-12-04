@@ -15,7 +15,8 @@ from optparse import make_option
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.fm.models import MIB, MIBData
+from noc.fm.models.mib import MIB
+from noc.fm.models.mibdata import MIBData
 
 
 logger = logging.getLogger("make-cmib")

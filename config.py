@@ -163,8 +163,8 @@ class Config(BaseConfig):
         db_ttl = SecondsParameter(default="5y")
 
     class login(ConfigSection):
-        method = HandlerParameter(
-            default="noc.services.login.backends.local.LocalBackend"
+        methods = StringParameter(
+            default="local"
         )
         session_ttl = SecondsParameter(default="7d")
 
@@ -226,6 +226,11 @@ class Config(BaseConfig):
 
     class trapcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:162")
+
+    class cache(ConfigSection):
+        cache_class = StringParameter(default="noc.core.cache.mongo.MongoCache")
+        default_ttl = IntParameter(default=86400)
+        pool_size = IntParameter(default=8)
 
     def __init__(self):
         self.setup_logging()

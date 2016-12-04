@@ -20,7 +20,7 @@ import noc.core.service.httpclient
 
 class PMWriterService(Service):
     name = "pmwriter"
-    process_name = "noc-%(name).10s-%(instance).2s"
+    process_name = "noc-%(name).10s-%(instance).3s"
 
     MAX_DELAY = 1.0
 
@@ -98,10 +98,17 @@ class PMWriterService(Service):
         bs = self.config.pmwriter.batch_size
         while True:
             if not self.buffer:
+                self.perf_metrics["slept_time"] += int(self.MAX_DELAY)
                 yield tornado.gen.sleep(self.MAX_DELAY)
                 continue
             if len(self.buffer) < bs and self.speed:
-                yield tornado.gen.sleep((bs - len(self.buffer)) / self.speed)
+                sleep_time = int((bs - len(self.buffer)) / self.speed)
+                if sleep_time > self.MAX_DELAY:
+                    sleep_time = int(self.MAX_DELAY)
+                self.logger.info("Waiting for buffer for %f seconds. Current buff size %d",
+                                 sleep_time, len(self.buffer))
+                self.perf_metrics["slept_time"] += sleep_time
+                yield tornado.gen.sleep(sleep_time)
             batch, self.buffer = self.buffer[:bs], self.buffer[bs:]
             body = "\n".join(batch)
             while True:
@@ -131,6 +138,7 @@ class PMWriterService(Service):
                             "Failed to write metrics: %s",
                             response.body
                         )
+                        self.perf_metrics["metrics_spool_failed"] += 1
                 except tornado.httpclient.HTTPError as e:
                     self.logger.error("Failed to spool %d metrics: %s",
                                       len(batch), e)
@@ -145,6 +153,7 @@ class PMWriterService(Service):
                     "Giving chance to recover. Waiting for %.2fms",
                     timeout * 1000
                 )
+                self.perf_metrics["slept_time"] += int(timeout)
                 yield tornado.gen.sleep(timeout)
         # Not reachable
         self.logger.error("Terminating message sender")
@@ -156,10 +165,11 @@ class PMWriterService(Service):
         if self.last_ts:
             self.speed = float(nm - self.last_metrics) / (t - self.last_ts)
             self.logger.info(
-                "Feeding speed: %.2fmetrics/sec", self.speed
+                "Feeding speed: %.2fmetrics/sec, buffer size %d", self.speed, len(self.buffer)
             )
         self.last_metrics = nm
         self.last_ts = t
+
 
 if __name__ == "__main__":
     PMWriterService().start()

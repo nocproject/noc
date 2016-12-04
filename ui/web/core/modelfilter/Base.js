@@ -21,5 +21,7 @@ Ext.define("NOC.core.modelfilter.Base", {
 
     getFilter: function() {
         return {};
-    }
+    },
+
+    setFilter: Ext.emptyFn
 });

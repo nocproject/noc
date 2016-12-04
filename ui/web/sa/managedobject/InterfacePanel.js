@@ -115,7 +115,7 @@ Ext.define("NOC.sa.managedobject.InterfacePanel", {
                 me.tabPanel.setActiveTab(0);
             },
             failure: function() {
-                NOC.error("Failed to load data");
+                NOC.error(__("Failed to load data"));
             }
         });
     },

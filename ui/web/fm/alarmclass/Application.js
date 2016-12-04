@@ -25,8 +25,8 @@ Ext.define("NOC.fm.alarmclass.Application", {
 
         me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
             app: me,
-            restUrl: "/fm/alarmclass/{{id}}/json/",
-            previewName: "Alarm Class: {{name}}"
+            restUrl: new Ext.XTemplate('/fm/alarmclass/{id}/json/'),
+            previewName: new Ext.XTemplate('Alarm Class: {name}')
         });
         me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
@@ -79,7 +79,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                     },
                     items: [
                         {
-                            title: "Text",
+                            title: __("Text"),
                             items: [
                                 {
                                     name: "description",
@@ -125,7 +125,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Severity",
+                            title: __("Severity"),
                             items: [
                                 {
                                     name: "default_severity",
@@ -150,7 +150,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Variables",
+                            title: __("Variables"),
                             items: [
                                 {
                                     name: "vars",
@@ -179,7 +179,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Data Sources",
+                            title: __("Data Sources"),
                             items: [
                                 {
                                     name: "datasources",
@@ -209,7 +209,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Root Cause",
+                            title: __("Root Cause"),
                             items: [
                                 {
                                     name: "root_cause",
@@ -252,7 +252,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Jobs",
+                            title: __("Jobs"),
                             items: [
                                 {
                                     name: "jobs",
@@ -282,17 +282,22 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Handlers",
+                            title: __("Handlers"),
                             items: [
                                 {
                                     xtype: "stringsfield",
                                     name: "handlers",
                                     fieldLabel: __("Handlers")
+                                },
+                                {
+                                    xtype: "stringsfield",
+                                    name: "clear_handlers",
+                                    fieldLabel: __("Clear Handlers")
                                 }
                             ]
                         },
                         {
-                            title: "Plugins",
+                            title: __("Plugins"),
                             items: [
                                 {
                                     xtype: "gridfield",
@@ -317,7 +322,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                             ]
                         },
                         {
-                            title: "Timing",
+                            title: __("Timing"),
                             items: [
                                 {
                                     name: "flap_condition",
@@ -371,6 +376,13 @@ Ext.define("NOC.fm.alarmclass.Application", {
                                     fieldLabel: __("Control Time N"),
                                     allowBlank: true,
                                     uiStyle: "small"
+                                },
+                                {
+                                    name: "recover_time",
+                                    xtype: "numberfield",
+                                    fieldLabel: __("Recover Time"),
+                                    allowBlank: true,
+                                    uiStyle: "small"
                                 }
 
                             ]
@@ -382,7 +394,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
                 {
                     text: __("JSON"),
                     glyph: NOC.glyph.file,
-                    tooltip: "View as JSON",
+                    tooltip: __("View as JSON"),
                     hasAccess: NOC.hasPermission("read"),
                     scope: me,
                     handler: me.onJSON
@@ -394,7 +406,7 @@ Ext.define("NOC.fm.alarmclass.Application", {
     //
     filters: [
         {
-            title: "By Builtin",
+            title: __("By Builtin"),
             name: "is_builtin",
             ftype: "boolean"
         }

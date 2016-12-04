@@ -64,6 +64,13 @@ class STPCheck(TopologyDiscoveryCheck):
         Returns a dict of designated port_id -> name
         """
         dmap = {}
+        if self.required_script not in ro.scripts:
+            self.logger.info(
+                "Remote object '%s' does not support %s script. "
+                "Cannot confirm links",
+                ro.name, self.required_script
+            )
+            return dmap
         result = ro.scripts.get_spanning_tree()
         for i in result["instances"]:
             for iface in i["interfaces"]:

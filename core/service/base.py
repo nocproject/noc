@@ -59,6 +59,8 @@ class Service(object):
     require_nsq_writer = False
     ## List of API instances
     api = []
+    ## Request handler class
+    api_request_handler = APIRequestHandler
     ## Initialize gettext and process *language* configuration
     use_translation = False
     ## Initialize jinja2 templating engine
@@ -156,6 +158,10 @@ class Service(object):
                 "Running service %s", self.name
             )
         try:
+            if os.environ.get("NOC_LIBUV"):
+                from tornaduv import UVLoop
+                self.logger.warn("Using libuv")
+                tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.current()
             self.logger.warn("Activating service")
             self.activate()
@@ -225,15 +231,15 @@ class Service(object):
             )
             handlers += [(
                 url,
-                APIRequestHandler,
+                self.api_request_handler,
                 {"service": self, "api_class": a}
             )]
             # Populate sdl
             sdl[a.name] = a.get_methods()
         if self.api:
             handlers += [
-                ("^/doc/$", DocRequestHandler, {"service": self}),
-                ("^/sdl.js", SDLRequestHandler, {"sdl": sdl})
+                ("^/api/%s/doc/$" % self.name, DocRequestHandler, {"service": self}),
+                ("^/api/%s/sdl.js" % self.name, SDLRequestHandler, {"sdl": sdl})
             ]
         handlers += self.get_handlers()
         addr, port = self.get_service_address()
@@ -295,6 +301,8 @@ class Service(object):
             # Current process uptime
             "uptime": time.time() - self.start_time
         }
+        if self.pooled:
+            r["pool"] = self.config.pool
         if self.executors:
             for x in self.executors:
                 r["threadpool_%s_qsize" % x] = self.executors[x]._work_queue.qsize()

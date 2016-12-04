@@ -29,6 +29,10 @@ Ext.define("NOC.core.modelfilter.Tag", {
                         select: {
                             scope: me,
                             fn: me.onChange
+                        },
+                        change: {
+                            scope: me,
+                            fn: me.onChange
                         }
                     }
                 }
@@ -46,5 +50,13 @@ Ext.define("NOC.core.modelfilter.Tag", {
             r[me.name + "__tags"] = v;
         }
         return r;
+    },
+
+    setFilter: function (filter) {
+        var me = this,
+            name = me.name + "__tags";
+        if (name in filter) {
+            me.tags.setValue(filter[name]);
+        }
     }
 });

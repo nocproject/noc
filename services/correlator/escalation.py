@@ -24,12 +24,14 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.inv.models.objectuplink import ObjectUplink
+from noc.core.config.base import config
 
 
 logger = logging.getLogger(__name__)
 
 
-def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
+def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
     def log(message, *args):
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
@@ -51,17 +53,22 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
     alarm = get_alarm(alarm_id)
     if alarm is None:
         logger.info("[%s] Missing alarm, skipping", alarm_id)
+        metrics["escalation_missed_alarm"] += 1
         return
     if alarm.status == "C":
         logger.info("[%s] Alarm is closed, skipping", alarm_id)
+        metrics["escalation_already_closed"] += 1
         return
     if alarm.root:
         log("[%s] Alarm is not root cause, skipping", alarm_id)
+        metrics["escalation_alarm_is_not_root"] += 1
         return
     #
     escalation = escalation_cache[escalation_id]
     if not escalation:
-        log("Escalation %s is not found, skipping", escalation_id)
+        log("Escalation %s is not found, skipping",
+            escalation_id)
+        metrics["escalation_not_found"] += 1
         return
 
     # Evaluate escalation chain
@@ -70,10 +77,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
         if a.delay != escalation_delay:
             continue  # Try other type
         # Check administrative domain
-        if (
-            a.administrative_domain and
-            mo.administrative_domain.id != a.administrative_domain.id
-        ):
+        if (a.administrative_domain and
+                    a.administrative_domain.id not in alarm.adm_path):
             continue
         # Check severity
         if a.min_severity and alarm.severity < a.min_severity:
@@ -87,7 +92,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
         # Render escalation message
         if not a.template:
             log("No escalation template, skipping")
-            return
+            continue
         # Check global limits
         ets = datetime.datetime.now() - datetime.timedelta(seconds=60)
         ae = ActiveAlarm._get_collection().find({
@@ -100,10 +105,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                 "$gte": ets
             }
         }).count()
-        if ae >= tt_escalation_limit:
+        if ae >= config.tt_escalation_limit:
             logger.error(
                 "Escalation limit exceeded (%s/%s). Skipping",
-                ae, tt_escalation_limit
+                ae, config.tt_escalation_limit
             )
             metrics["escalation_throttled"] += 1
             return
@@ -113,6 +118,17 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
         affected_objects = sorted(alarm.iter_affected(),
                                   key=operator.attrgetter("name"))
         #
+        segment = alarm.managed_object.segment
+        if segment.is_redundant:
+            uplinks = ObjectUplink.uplinks_for_object(alarm.managed_object)
+            lost_redundancy = len(uplinks) > 1
+            affected_subscribers = summary_to_list(segment.total_subscribers, SubscriberProfile)
+            affected_services = summary_to_list(segment.total_services, ServiceProfile)
+        else:
+            lost_redundancy = False
+            affected_subscribers = []
+            affected_services = []
+        #
         ctx = {
             "alarm": alarm,
             "affected_objects": affected_objects,
@@ -120,7 +136,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
             "total_objects": summary_to_list(alarm.total_objects, ManagedObjectProfile),
             "total_subscribers": summary_to_list(alarm.total_subscribers, SubscriberProfile),
             "total_services": summary_to_list(alarm.total_services, ServiceProfile),
-            "tt": None
+            "tt": None,
+            "lost_redundancy": lost_redundancy,
+            "affected_subscribers": affected_subscribers,
+            "affected_services": affected_services
         }
         # Escalate to TT
         if a.create_tt:
@@ -153,7 +172,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                                     reason=pre_reason,
                                     subject=subject,
                                     body=body,
-                                    login="correlator"
+                                    login="correlator",
+                                    timestamp=alarm.timestamp
                                 )
                                 ctx["tt"] = "%s:%s" % (tt_system.name, tt_id)
                                 alarm.escalate(ctx["tt"], close_tt=a.close_tt)
@@ -184,6 +204,10 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
                             except tts.TTError as e:
                                 log("Failed to create TT: %s", e)
                                 metrics["escalation_tt_fail"] += 1
+                                alarm.log_message(
+                                    "Failed to escalate: %s" % e,
+                                    to_save=True
+                                )
                         else:
                             log("Cannot find pre reason")
                             metrics["escalation_tt_fail"] += 1
@@ -234,6 +258,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, tt_escalation_limit):
         if a.stop_processing:
             logger.debug("Stopping processing")
             break
+    logger.info("[%s] Ecalations loop end", alarm_id)
+
 
 
 def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt=False):
@@ -290,6 +316,25 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt
             log("Invalid notification group %s", notification_group_id)
 
 
+def check_close_consequence(alarm_id):
+    logger.info("[%s] Checking close", alarm_id)
+    alarm = get_alarm(alarm_id)
+    if alarm is None:
+        logger.info("[%s] Missing alarm, skipping", alarm_id)
+        return
+    if alarm.status == "C":
+        logger.info("[%s] Alarm is closed. Check passed", alarm_id)
+        return
+    # Detach root
+    logger.info("[%s] Alarm is active. Detaching root", alarm_id)
+    alarm.root = None
+    alarm.log_message("Detached from root for not recovered",
+                      to_save=True)
+    metrics["detached_root"] += 1
+    # Trigger escalations
+    AlarmEscalation.watch_escalations(alarm)
+
+
 def get_item(model, **kwargs):
     if not id:
         return None
@@ -297,6 +342,7 @@ def get_item(model, **kwargs):
         return model.objects.get(**kwargs)
     except model.DoesNotExist:
         return None
+
 
 TTL = 60
 CACHE_SIZE = 256

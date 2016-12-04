@@ -12,7 +12,7 @@ import sys
 import datetime
 import re
 from collections import defaultdict
-import Queue
+from threading import Lock
 ## Third-party modules
 import tornado.gen
 ## NOC modules
@@ -29,15 +29,17 @@ from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmtrigger import AlarmTrigger
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmescalation import AlarmEscalation
+from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 import utils
-from noc.core.defer import call_later
 
 
 class CorrelatorService(Service):
     name = "correlator"
+    pooled = True
+    process_name = "noc-%(name).10s-%(pool).3s"
 
     def __init__(self):
         super(CorrelatorService, self).__init__()
@@ -47,25 +49,22 @@ class CorrelatorService(Service):
         self.triggers = {}  # alarm_class -> [Trigger1, .. , TriggerN]
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
-        self.escalations = defaultdict(list)  # alarm class -> [AlarmEscalation, ..]
-        self.alarm_jobs = {}  # alarm_class -> [JobLauncher, ..]
-        self.handlers = {}  # alamr class id -> [<handler>]
         self.scheduler = None
-        self.correlate_queue = Queue.Queue()
+        self.correlate_lock = defaultdict(Lock)
 
     def on_activate(self):
-        self.get_executor("max").submit(self.correlator_worker)
         self.scheduler = Scheduler(
             self.name,
+            pool=self.config.pool,
             reset_running=True,
+            max_threads=self.config.max_threads,
             ioloop=self.ioloop,
             submit_threshold=100,
             max_chunk=100
         )
         self.scheduler.correlator = self
-        ActiveAlarm.enable_caching(600)
         self.subscribe(
-            "correlator.dispose",
+            "correlator.dispose.%s" % self.config.pool,
             "dispose",
             self.on_dispose_event,
             max_in_flight=self.config.correlator.max_threads
@@ -84,8 +83,6 @@ class CorrelatorService(Service):
         self.load_rules()
         self.load_triggers()
         self.load_rca_rules()
-        self.load_escalation_rules()
-        self.load_handlers()
 
     def load_rules(self):
         """
@@ -152,53 +149,6 @@ class CorrelatorService(Service):
                 self.rca_reverse[rc.root.id] += [rc]
                 n += 1
         self.logger.info("%d RCA Rules have been loaded" % n)
-
-    def load_escalation_rules(self):
-        """
-        Load escalation rules
-        """
-        self.logger.info("Loading escalations")
-        self.escalations = defaultdict(list)
-        n = 0
-        for ae in AlarmEscalation.objects.all():
-            for ac in ae.alarm_classes:
-                self.escalations[ac.alarm_class.id] += [ae]
-                n += 1
-        self.logger.info("%d escalation rules have been loaded", n)
-
-    def load_handlers(self):
-        self.logger.info("Loading handlers")
-        self.handlers = {}
-        for ac in AlarmClass.objects.filter():
-            handlers = ac.handlers
-            if not handlers:
-                continue
-            self.logger.debug("    <%s>: %s", ac.name, ", ".join(handlers))
-            hl = []
-            for h in ac.handlers:
-                # Resolve handler
-                hh = self.resolve_handler(h)
-                if hh:
-                    hh.handler_name = h
-                    hl += [hh]
-                else:
-                    self.logger.error("Disabling faulty handler %s" % h)
-            if hl:
-                self.handlers[ac.id] = hl
-        self.logger.info("Handlers are loaded")
-
-    def resolve_handler(self, h):
-        mn, s = h.rsplit(".", 1)
-        try:
-            m = __import__(mn, {}, {}, s)
-        except ImportError:
-            self.logger.error("Failed to load handler '%s'. Ignoring" % h)
-            return None
-        try:
-            return getattr(m, s)
-        except AttributeError:
-            self.logger.error("Failed to load handler '%s'. Ignoring" % h)
-            return None
 
     def mark_as_failed(self, event):
         """
@@ -278,7 +228,6 @@ class CorrelatorService(Service):
         discriminator, vars = r.get_vars(e)
         if r.unique:
             assert discriminator is not None
-            # @todo: unneeded SQL lookup here
             a = ActiveAlarm.objects.filter(
                 managed_object=managed_object.id,
                 discriminator=discriminator).first()
@@ -346,7 +295,8 @@ class CorrelatorService(Service):
                 )
             ]
         )
-        a.save()
+        # Saved by contribute_event
+        # a.save()
         a.contribute_event(e, open=True)
         self.logger.info(
             "[%s|%s|%s] %s raises alarm %s(%s): %r",
@@ -355,16 +305,23 @@ class CorrelatorService(Service):
             a.alarm_class.name, a.id, a.vars
         )
         self.perf_metrics["alarm_raise"] += 1
-        self.correlate_queue.put((r, a))
-
-    def correlator_worker(self):
-        self.logger.info("Starting correlator worker thread")
-        while True:
-            r, a = self.correlate_queue.get()
-            try:
-                self.correlate(r, a)
-            except Exception:
-                error_report()
+        with self.correlate_lock[a.managed_object.pool.name]:
+            self.correlate(r, a)
+        # Notify about new alarm
+        if not a.root:
+            a.managed_object.event(a.managed_object.EV_ALARM_RISEN, {
+                "alarm": a,
+                "subject": a.subject,
+                "body": a.body,
+                "symptoms": a.alarm_class.symptoms,
+                "recommended_actions": a.alarm_class.recommended_actions,
+                "probable_causes": a.alarm_class.probable_causes
+            }, delay=a.alarm_class.get_notification_delay())
+        # Gather diagnostics when necessary
+        AlarmDiagnosticConfig.on_raise(a)
+        # Watch for escalations, when necessary
+        if not a.root:
+            AlarmEscalation.watch_escalations(a)
 
     def correlate(self, r, a):
         # RCA
@@ -375,20 +332,19 @@ class CorrelatorService(Service):
             # Check alarm is the root cause for existing ones
             self.set_reverse_root_cause(a)
         # Call handlers
-        if a.alarm_class.id in self.handlers:
-            for h in self.handlers[a.alarm_class.id]:
-                try:
-                    has_root = bool(a.root)
-                    h(a)
-                    if not has_root and a.root:
-                        self.logger.info(
-                            "[%s|%s|%s] Set root to %s (handler %s)",
-                            a.id, a.managed_object.name, a.managed_object.address,
-                            a.root, h.handler_name
-                        )
-                except:
-                    error_report()
-                    self.perf_metrics["alarm_handler_errors"] += 1
+        for h in a.alarm_class.get_handlers():
+            try:
+                has_root = bool(a.root)
+                h(a)
+                if not has_root and a.root:
+                    self.logger.info(
+                        "[%s|%s|%s] Set root to %s (handler %s)",
+                        a.id, a.managed_object.name, a.managed_object.address,
+                        a.root, h
+                    )
+            except:
+                error_report()
+                self.perf_metrics["alarm_handler_errors"] += 1
         # Call triggers if necessary
         if r.alarm_class.id in self.triggers:
             for t in self.triggers[r.alarm_class.id]:
@@ -404,30 +360,15 @@ class CorrelatorService(Service):
             a.delete()
             self.perf_metrics["alarm_drop"] += 1
             return
-        # Launch jobs when necessary
-        if a.alarm_class.id in self.alarm_jobs:
-            for job in self.alarm_jobs[r.alarm_class.id]:
-                job.submit(a)
-        # Notify about new alarm
-        if not a.root:
-            a.managed_object.event(a.managed_object.EV_ALARM_RISEN, {
-                "alarm": a,
-                "subject": a.subject,
-                "body": a.body,
-                "symptoms": a.alarm_class.symptoms,
-                "recommended_actions": a.alarm_class.recommended_actions,
-                "probable_causes": a.alarm_class.probable_causes
-            }, delay=a.alarm_class.get_notification_delay())
-        # Watch for escalations, when necessary
-        if not a.root:
-            esc = self.escalations.get(a.alarm_class.id)
-            if esc:
-                self.watch_escalations(a, esc)
 
     def clear_alarm(self, r, e):
         managed_object = self.eval_expression(r.managed_object, event=e)
         if not managed_object:
-            self.logger.debug("Empty managed object, ignoring")
+            self.logger.info(
+                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring",
+                e.id
+            )
+            self.perf_metrics["unknown_object"] += 1
             return
         if r.unique:
             discriminator, vars = r.get_vars(e)
@@ -508,26 +449,45 @@ class CorrelatorService(Service):
         """
         Called on new dispose message
         """
+        self.logger.info("[%s] Receiving message", event_id)
         message.enable_async()
         self.get_executor("max").submit(self.dispose_worker, message, event_id)
 
     def dispose_worker(self, message, event_id):
         self.perf_metrics["alarm_dispose"] += 1
-        self.dispose_event(event_id)
+        try:
+            event = self.lookup_event(event_id)
+            if event:
+                self.dispose_event(event)
+        except Exception:
+            self.perf_metrics["alarm_dispose_error"] += 1
+            error_report()
         self.ioloop.add_callback(message.finish)
 
-    def dispose_event(self, event_id):
+    def lookup_event(self, event_id):
+        """
+        Lookup event by id.
+        Uses cache heating effect from classifier
+        :param event_id:
+        :return: ActiveEvent instance or None
+        """
+        self.logger.info("[%s] Lookup event", event_id)
+        e = ActiveEvent.get_by_id(event_id)
+        if not e:
+            self.logger.info("[%s] Event not found, skipping", event_id)
+            self.perf_metrics["event_lookup_failed"] += 1
+        return e
+
+    def dispose_event(self, e):
         """
         Dispose event according to disposition rule
         """
+        event_id = str(e.id)
         self.logger.info("[%s] Disposing", event_id)
-        try:
-            e = ActiveEvent.objects.get(id=event_id)
-        except ActiveEvent.DoesNotExist:
-            self.logger.info("[%s] Event not found, skipping", event_id)
-            return
         drc = self.rules.get(e.event_class.id)
         if not drc:
+            self.logger.info("[%s] No disposition rules for class %s, skipping",
+                             event_id, e.event_class.name)
             return
         # Apply disposition rules
         for r in drc:
@@ -538,9 +498,11 @@ class CorrelatorService(Service):
             if cond:
                 # Process action
                 if r.action == "drop":
+                    self.logger.info("[%s] Dropped by action", event_id)
                     e.delete()
                     return
                 elif r.action == "ignore":
+                    self.logger.info("[%s] Ignored by action", event_id)
                     return
                 elif r.action == "raise" and r.combo_condition == "none":
                     self.raise_alarm(r, e)
@@ -563,23 +525,7 @@ class CorrelatorService(Service):
                                     self.clear_alarm(br, de)
                 if r.stop_disposition:
                     break
-
-    def watch_escalations(self, alarm, escalations):
-        for esc in escalations:
-            for delay in esc.delays:
-                self.logger.debug(
-                    "[%s] Watch for %s after %s seconds",
-                    alarm.id, esc.name, delay
-                )
-                call_later(
-                    "noc.services.correlator.escalation.escalate",
-                    delay=delay,
-                    scheduler="correlator",
-                    alarm_id=alarm.id,
-                    escalation_id=esc.id,
-                    escalation_delay=delay,
-                    tt_escalation_limit=self.config.tt_escalation_limit
-                )
+        self.logger.info("[%s] Disposition complete", event_id)
 
 if __name__ == "__main__":
     CorrelatorService().start()

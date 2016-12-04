@@ -13,6 +13,7 @@ from collections import defaultdict
 import operator
 ## Third-party modules
 import cachetools
+from pymongo import ReadPreference
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -20,6 +21,8 @@ from noc.inv.models.interface import Interface
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.pm.models.metrictype import MetricType
+from noc.sla.models.slaprofile import SLAProfile
+from noc.sla.models.slaprobe import SLAProbe
 
 
 MAX31 = 0x7FFFFFFFL
@@ -42,6 +45,7 @@ class MetricsCheck(DiscoveryCheck):
     required_script = "get_metrics"
 
     _profile_metrics = cachetools.TTLCache(1000, 60)
+    _slaprofile_metrics = cachetools.TTLCache(1000, 60)
 
     S_OK = 0
     S_WARN = 1
@@ -60,13 +64,15 @@ class MetricsCheck(DiscoveryCheck):
 
     AC_PM_THRESHOLDS = AlarmClass.objects.get(name="NOC | PM | Out of Thresholds")
 
+    SLA_CAPS = ["Cisco | IP | SLA | Probes"]
+
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_profile_metrics"), lock=lambda _: metrics_lock)
     def get_interface_profile_metrics(cls, p_id):
         r = {}
-        ipr = InterfaceProfile.objects.filter(id=p_id).first()
+        ipr = InterfaceProfile.get_by_id(id=p_id)
         if not ipr:
-            return None
+            return r
         for m in ipr.metrics:
             if not m.is_active or m.metric_type.scope != "i":
                 continue
@@ -78,9 +84,27 @@ class MetricsCheck(DiscoveryCheck):
             ]
         return r
 
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_slaprofile_metrics"), lock=lambda _: metrics_lock)
+    def get_slaprofile_metrics(cls, p_id):
+        r = {}
+        spr = SLAProfile.get_by_id(p_id)
+        if not spr:
+            return r
+        for m in spr.metrics:
+            if not m.is_active or m.metric_type.scope != "p":
+                continue
+            r[m.metric_type.name] = [
+                m.low_error,
+                m.low_warn,
+                m.high_warn,
+                m.high_error
+            ]
+        return r
+
     def handler(self):
         def q(s):
-            return s.replace(" ", "\\ ").replace(",", "\\,")
+            return s.replace(" ", "\\ ").replace(",", "\\,").replace("=", "\\=")
 
         def q_tags(t):
             return ",".join("%s=%s" % (q(s), q(t[s])) for s in sorted(t))
@@ -88,7 +112,8 @@ class MetricsCheck(DiscoveryCheck):
         self.logger.info("Collecting metrics")
         # Get interface configurations
         hints = {
-            "ifindexes": {}
+            "ifindexes": {},
+            "probes": {}
         }
         # <metric type name> -> {interfaces: [....], scope}
         metrics = {}
@@ -122,7 +147,7 @@ class MetricsCheck(DiscoveryCheck):
             "name": 1,
             "ifindex": 1,
             "profile": 1
-        }):
+        }, read_preference=ReadPreference.SECONDARY_PREFERRED):
             ipr = self.get_interface_profile_metrics(i["profile"])
             self.logger.debug("Interface %s. ipr=%s", i["name"], ipr)
             if not ipr:
@@ -138,6 +163,33 @@ class MetricsCheck(DiscoveryCheck):
                         "scope": "i"
                     }
                 i_thresholds[metric][i["name"]] = ipr[metric]
+        # Get SLA metrics
+        if self.has_any_capability(self.SLA_CAPS):
+            for p in SLAProbe.objects.filter(managed_object=self.object.id):
+                if not p.profile:
+                    self.logger.debug("Probe %s has no profile. Skipping", p.name)
+                    continue
+                pm = self.get_slaprofile_metrics(p.profile.id)
+                if not pm:
+                    self.logger.debug(
+                        "Probe %s has profile '%s' with no configured metrics. "
+                        "Skipping", p.name, p.profile.name
+                    )
+                    continue
+                for metric in pm:
+                    if metric in metrics:
+                        metrics[metric]["probes"] += [p.name]
+                    else:
+                        metrics[metric] = {
+                            "probes": [p.name],
+                            "scope": "p"
+                        }
+                hints["probes"][p.name] = {
+                    "tests": [{
+                                  "name": t.name,
+                                  "type": t.type
+                              } for t in p.tests]
+                }
         # Collect metrics
         self.logger.debug("Collecting metrics: %s hints: %s",
                           metrics, hints)
