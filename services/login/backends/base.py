@@ -66,6 +66,7 @@ class BaseAuthBackend(object):
         # Check changes
         if changed:
             u.save()
+        return u
 
     def _user_in_group(self, user, group):
         return user.groups.filter(id=group.id).exists()
