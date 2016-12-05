@@ -89,6 +89,7 @@ class LdapBackend(BaseAuthBackend):
         # Final check
         if not user_info["is_active"]:
             raise self.LoginError("Access denied")
+        return u.username
 
     @classmethod
     def split_user_domain(cls, user):
