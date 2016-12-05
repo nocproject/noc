@@ -125,6 +125,14 @@
         - node
         - noc
 
+    - role: escalator
+      become: yes
+      when: "{{ has_svc_escalator | default(False) }}"
+      tags:
+        - escalator
+        - node
+        - noc
+
     - role: web
       become: yes
       when: "{{ has_svc_web | default(False) }}"
