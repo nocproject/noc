@@ -145,5 +145,5 @@ class ObjectCapabilities(Document):
         for ci in new_caps:
             cn = Capability.get_by_id(ci["capability"])
             if cn:
-                caps[cn] = ci.get("value")
+                caps[cn.name] = ci.get("value")
         return caps
