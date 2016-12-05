@@ -87,13 +87,14 @@ class ObjectCapabilities(Document):
         new_caps = []
         seen = set()
         for ci in oc.get("caps", []):
-            cn = Capability.get_by_id(ci["capability"])
+            c = Capability.get_by_id(ci["capability"])
             cs = ci.get("source")
             cv = ci.get("value")
-            if not cn:
+            if not c:
                 logger.info("[%s] Removing unknown capability id %s",
                             o_label, ci["capability"])
                 continue
+            cn = c.name
             seen.add(cn)
             if cs == source:
                 if cn in caps:
