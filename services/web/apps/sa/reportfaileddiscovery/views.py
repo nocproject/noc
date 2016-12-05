@@ -12,6 +12,7 @@ from django import forms
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.lib.nosql import get_db
+from pymongo import ReadPreference
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
@@ -40,6 +41,10 @@ class ReportForm(forms.Form):
         label=_("Failed discovery only"),
         required=False
     )
+    filter_pending_links = forms.BooleanField(
+        label=_("Filter Pending links"),
+        required=False
+    )
 
 
 class ReportFilterApplication(SimpleReport):
@@ -53,10 +58,10 @@ class ReportFilterApplication(SimpleReport):
         )
     }
 
-
-
     def get_data(self, request, pool="default", obj_profile=None,
-                 avail_status=None, profile_check_only=None, failed_scripts_only=None, **kwargs):
+                 avail_status=None, profile_check_only=None,
+                 failed_scripts_only=None, filter_pending_links=None,
+                 **kwargs):
         data = []
 
         mos = ManagedObject.objects.filter(pool=pool)
@@ -70,23 +75,25 @@ class ReportFilterApplication(SimpleReport):
         n = 0
         while mos[(0 + n):(10000 + n)]:
             if profile_check_only:
-                job_logs = get_db()["noc.joblog"].aggregate([{"$match":{"_id": {"$in": mos[(0 + n):(10000 + n)]}}},
+                job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"_id": {"$in": mos[(0 + n):(10000 + n)]}}},
                                                              {"$match": {"$or": [{"problems.suggest_cli": {"$exists": True}},
                                                                                  {"problems.suggest_snmp": {"$exists": True}}]
                                                                          }},
                                                              {"$project":{"_id": 1,
                                                                           "problems.suggest_snmp": 1,
                                                                           "problems.suggest_cli": 1}}
-                                                             ])
+                                                             ], read_preference=ReadPreference.SECONDARY_PREFERRED)
 
             elif failed_scripts_only:
-                job_logs = get_db()["noc.joblog"].aggregate([{"$match":{"_id": {"$in": mos[(0 + n):(10000 + n)]}}},
-                                                             {"$match":{"$and": [{"problems": {"$exists": "true", "$ne": {  }}},
+                job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"_id": {"$in": mos[(0 + n):(10000 + n)]}}},
+                                                             {"$match": {"$and": [{"problems": {"$exists": "true", "$ne": {  }}},
                                                              {"problems.suggest_snmp": {"$exists": False}},
-                                                             {"problems.suggest_cli": {"$exists": False}}]}}])
+                                                             {"problems.suggest_cli": {"$exists": False}}]}}],
+                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
             else:
                 job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"problems": {"$exists": True, "$ne": {  }},
-                                                             "_id": {"$in": mos[(0 + n):(10000 + n)]}}}])
+                                                             "_id": {"$in": mos[(0 + n):(10000 + n)]}}}],
+                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
 
             for discovery in job_logs["result"]:
 
@@ -95,13 +102,18 @@ class ReportFilterApplication(SimpleReport):
                     if not mo.get_status():
                         continue
                 for method in discovery["problems"]:
+                    if filter_pending_links:
+                        if method == "lldp":
+                            if not ("RPC Error" in discovery["problems"][method] or
+                                            "exception" in discovery["problems"][method]):
+                                continue
 
                     data += [
                         (
                             mo.name,
                             mo.address,
                             mo.profile_name,
-                            mo.get_status(),
+                            _("Yes") if mo.get_status() else _("No"),
                             method,
                             discovery["problems"][method]
                         )
@@ -112,7 +124,7 @@ class ReportFilterApplication(SimpleReport):
             title=self.title,
             columns=[
                 _("Managed Object"), _("Address"), _("Profile"),
-                TableColumn(_("Avail"), format="bool"),
+                _("Avail"),
                 _("Discovery"), _("Error")
             ],
             data=data)
