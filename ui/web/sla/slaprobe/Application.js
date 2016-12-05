@@ -38,6 +38,11 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     renderer: NOC.render.Lookup("profile")
                 },
                 {
+                    text: __("Targets"),
+                    dataIndex: "targets",
+                    width: 200
+                },
+                {
                     text: __("Description"),
                     dataIndex: "description",
                     flex: 1
