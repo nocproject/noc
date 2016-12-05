@@ -38,7 +38,7 @@ class Script(BaseScript):
             if interface == "0/0":
                 return []
             cmd += " interface %s" % interface
-            rx_line = rx_iface
+            rx_line = self.rx_iface
         r = []
         for match in rx_line.finditer(self.cli(cmd)):
             if match.group("type") == "Learned":
