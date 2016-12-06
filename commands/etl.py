@@ -147,7 +147,8 @@ class Command(BaseCommand):
                     continue
                 if summary:
                     i, u, d = l.check_diff_summary()
-                    self.stdout.write(self.SUMMARY_MASK % (i, u, d))
+                    self.stdout.write(self.SUMMARY_MASK % (
+                        l.name, i, u, d))
                 else:
                     l.check_diff()
 
