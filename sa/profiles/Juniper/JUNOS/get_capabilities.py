@@ -37,3 +37,15 @@ class Script(BaseScript):
         """
         r = self.scripts.get_oam_status()
         return bool(r)
+
+    @false_on_cli_error
+    def get_rpm_probes(self):
+        i = 0
+        v = self.scripts.get_sla_probes()
+        for p in v:
+            i += len(p["tests"])
+        return i
+
+    def execute_platform(self, caps):
+        np = self.get_rpm_probes()
+        caps["Juniper | RPM | Probes"] = np
