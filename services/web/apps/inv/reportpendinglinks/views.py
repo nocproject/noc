@@ -84,11 +84,11 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                         mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
                         problems[mo_id] = {iface: {
                             "problem": "Not found iface on remote",
-                            "remote_id": "%s %s" % (rmo.name, rmo.profile_name),
+                            "remote_id": "%s; %s ;%s" % (rmo.name, rmo.profile_name, pend_str.group("remote_iface")),
                             "remote_iface": pend_str.group("remote_iface")}}
                         problems[rmo.id] = {pend_str.group("remote_iface"): {
                             "problem": "Not found local iface on remote",
-                            "remote_id": "%s %s" % (mo.name, mo.profile_name),
+                            "remote_id": "%s; %s; %s" % (mo.name, mo.profile_name, pend_str.group("remote_iface")),
                             "remote_iface": pend_str.group("remote_iface")}}
                     # print(discovery["problems"]["lldp"])
                 pass
