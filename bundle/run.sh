@@ -2,6 +2,11 @@
 
 currrent_dir=$(pwd)
 
+start_registrator () {
+    echo "Starting registrator..."
+    docker-compose up -d registrator
+}
+
 pull_images () {
     echo "Pulling noc images..."
     docker-compose pull dev
@@ -28,8 +33,6 @@ migrate() {
 install_npkg() {
     echo "Installing depends card..."
     docker-compose run --rm --entrypoint "./scripts/deploy/install-packages requirements/card.json" dev
-    echo "Installing depends login..."
-    docker-compose run --rm --entrypoint "./scripts/deploy/install-packages requirements/login.json" dev
     echo "Installing depends mib..."
     docker-compose run --rm --entrypoint "./scripts/deploy/install-packages requirements/mib.json" dev
     echo "Installing depends web..."
@@ -39,7 +42,7 @@ install_npkg() {
 start_sae() {
     echo "Starting SAE..."
     docker-compose up -d sae \
-                         discovery \
+                         discovery-default \
                          activator-default \
                          scheduler \
                          omap \
@@ -61,11 +64,12 @@ start_pm() {
 start_fm() {
     echo "Starting FM..."
     docker-compose up -d classifier \
-                         correlator \
+                         correlator-default \
                          mailsender
 }
 
 
+start_registrator
 start_dbs
 pull_images
 install_npkg
