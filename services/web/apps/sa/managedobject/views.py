@@ -19,6 +19,7 @@ import ujson
 from mongoengine.queryset import Q as MQ
 ## NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobject import (ManagedObject,
                                          ManagedObjectAttribute)
 from noc.sa.models.useraccess import UserAccess
@@ -94,6 +95,14 @@ class ManagedObjectApplication(ExtModelApplication):
         return Link.object_links_count(o)
 
     def cleaned_query(self, q):
+        if "administrative_domain" in q:
+            ad = AdministrativeDomain.get_nested_ids(
+                int(q["administrative_domain"])
+            )
+            if ad:
+                del q["administrative_domain"]
+        else:
+            ad = None
         if "selector" in q:
             s = self.get_object_or_404(ManagedObjectSelector,
                                        id=int(q["selector"]))
@@ -103,6 +112,8 @@ class ManagedObjectApplication(ExtModelApplication):
         r = super(ManagedObjectApplication, self).cleaned_query(q)
         if s:
             r["id__in"] = ManagedObject.objects.filter(s.Q)
+        if ad:
+            r["administrative_domain__in"] = ad
         return r
 
     def get_Q(self, request, query):
