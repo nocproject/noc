@@ -84,13 +84,24 @@ class ConsulProtocol(BaseProtocol):
             raise ValueError("Cannot get config")
         # Convert to dict
         data = {}
-        pl = len(self.path) - 1
+        if self.path.endswith("/"):
+            pl = len(self.path) - 1
+        else:
+            pl = len(self.path)
         for i in r:
             if not i.get("Value"):
                 continue
             k = i["Key"][pl:]
             v = i["Value"].decode("base64")
-            data[k.replace("/", ".")] = v
+            if k.count("/") == 0:
+                data[k.replace("/", ".")] = v
+            elif k.count("/") == 1:
+                d = k.split("/")
+                data.update({
+                    d[0]: {
+                        d[1]: v
+                    }
+                })
         # Upload to config
         for name in self.config:
             c = data
@@ -105,4 +116,4 @@ class ConsulProtocol(BaseProtocol):
                 self.config.set_parameter(name, c[parts[-1]])
 
     def dump(self):
-        raise NotImplementedError()
+        raise NotImplementedError
