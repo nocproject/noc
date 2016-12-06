@@ -38,7 +38,7 @@ class Command(BaseCommand):
         check_parser = subparsers.add_parser("check")
         # diff command
         diff_parser = subparsers.add_parser("diff")
-        parser.add_argument(
+        diff_parser.add_argument(
             "--summary",
             action="store_true",
             default=False,
