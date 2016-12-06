@@ -1,5 +1,13 @@
 version: '2'
 services:
+  registrator:
+    image: gliderlabs/registrator:latest
+    restart: always
+    command: -internal=true -cleanup=true -ttl=10 -ttl-refresh 5 consul://0.0.0.0:8500
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    network_mode: host
+
   web:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
     restart: always
@@ -27,6 +35,8 @@ services:
       - ../:/opt/noc
     env_file:
       - .env
+    environment:
+      SERVICE_NAME: login
 
   omap:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -41,6 +51,8 @@ services:
       - backend
     env_file:
       - .env
+    environment:
+      SERVICE_NAME: omap
 
   card:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -55,6 +67,8 @@ services:
       - backend
     env_file:
       - .env
+    environment:
+      SERVICE_NAME: card
 
   sae:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -70,8 +84,10 @@ services:
       - backend
     env_file:
       - .env
+    environment:
+      SERVICE_NAME: sae
 
-  discovery:
+  discovery-default:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
     restart: always
     depends_on:
@@ -91,6 +107,7 @@ services:
       - .env
     environment:
       NOC_POOL: default
+      SERVICE_NAME: discovery-default
 
   mailsender:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -105,6 +122,8 @@ services:
       - backend
     env_file:
       - .env
+    environment:
+      SERVICE_NAME: mailsender
 
 
   scheduler:
@@ -119,6 +138,8 @@ services:
       - backend
     env_file:
       - .env
+    environment:
+      SERVICE_NAME: scheduler
 
   dev:
     image: registry.gitlab.com/nocproject/docker-noc:dev
@@ -148,6 +169,7 @@ services:
       - .env
     environment:
       NOC_POOL: default
+      SERVICE_NAME: ping-default
 
   activator-default:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -161,6 +183,7 @@ services:
       - .env
     environment:
       NOC_POOL: default
+      SERVICE_NAME: activator-default
 
   mrt:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -172,6 +195,8 @@ services:
       - backend
     env_file:
       - .env
+    environment:
+      SERVICE_NAME: mrt
 
   grafanads:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -187,6 +212,8 @@ services:
       - backend
     env_file:
       - .env
+    environment:
+      SERVICE_NAME: grafanads
 
   syslogcollector-default:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -202,6 +229,7 @@ services:
       - .env
     environment:
       NOC_POOL: default
+      SERVICE_NAME: syslogcollector-default
 
   trapcollector-default:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -215,8 +243,11 @@ services:
       - backend
     env_file:
       - .env
+    env_file:
+      - .env
     environment:
       NOC_POOL: default
+      SERVICE_NAME: trapcollector-default
 
   classifier:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
@@ -231,10 +262,13 @@ services:
       - backend
     env_file:
       - .env
+    env_file:
+      - .env
     environment:
       NOC_POOL: default
+      SERVICE_NAME: classifier
 
-  correlator:
+  correlator-default:
     image: registry.gitlab.com/nocproject/docker-noc:upstream
     restart: always
     depends_on:
@@ -249,6 +283,7 @@ services:
       - .env
     environment:
       NOC_POOL: default
+      SERVICE_NAME: correlator-default
 
   front:
     image: nginx:alpine
@@ -270,6 +305,10 @@ services:
       - ../:/opt/noc
     volumes_from:
       - web
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: front
 
   mongo:
     image: freeseacher/mongo:3.2.7
@@ -279,10 +318,12 @@ services:
     networks:
       backend:
         aliases:
-          - mongo-master.docker
+          - mongo-master
     volumes:
       - ../../noc_data/mongo:/data/db
       - ./config/mongo:/data/configdb
+    env_file:
+      - .env
 
   postgres:
     image: freeseacher/postgres:9.4
@@ -313,6 +354,8 @@ services:
       - backend
     env_file:
       - .env
+    environment:
+      SERVICE_NAME: bi
 
   clickhouse:
     image: freeseacher/clickhouse:latest
@@ -330,6 +373,11 @@ services:
          hard: 262144
     networks:
       - backend
+    env_file:
+      - .env
+    environment:
+      SERVICE_9000_IGNORE: 1
+      SERVICE_9009_IGNORE: 1
 
   grafana:
     image: grafana/grafana:3.1.1
@@ -339,6 +387,8 @@ services:
       - ../../noc_data/grafana:/var/lib/grafana
     depends_on:
       - influxdb
+    env_file:
+      - .env
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_PATHS_DATA: /var/lib/grafana
@@ -359,6 +409,8 @@ services:
       - ../:/opt/noc
     env_file:
       - .env
+    environment:
+      SERVICE_NAME: pmwriter
 
   influxdb:
     image: influxdb:1.1.0
@@ -372,6 +424,10 @@ services:
       - ./config/influxdb:/etc/influxdb
       - ../../noc_data/influxdb:/data
     command: influxd -config /etc/influxdb/config.toml
+    env_file:
+      - .env
+    environment:
+      SERVICE_8083_IGNORE: 1
 
   nsqlookupd:
     image: nsqio/nsq
@@ -387,6 +443,8 @@ services:
       - "4161"
     networks:
       - backend
+    env_file:
+      - .env
 
   nsqd:
     image: nsqio/nsq
@@ -400,6 +458,8 @@ services:
     ports:
       - "4150"
       - "4151"
+    env_file:
+      - .env
 
   nsqadmin:
     image: nsqio/nsq
@@ -414,6 +474,8 @@ services:
     command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
     ports:
       - "4171:4171"
+    env_file:
+      - .env
 
 networks:
   backend:
