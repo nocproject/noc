@@ -18,6 +18,8 @@ from noc.core.handler import get_handler
 class Command(BaseCommand):
     CONF = "etc/etl.yml"
 
+    SUMMARY_MASK = "%20s | %8s | %8s | %8s\n"
+
     def add_arguments(self, parser):
         parser.add_argument(
             "--system",
@@ -36,6 +38,12 @@ class Command(BaseCommand):
         check_parser = subparsers.add_parser("check")
         # diff command
         diff_parser = subparsers.add_parser("diff")
+        parser.add_argument(
+            "--summary",
+            action="store_true",
+            default=False,
+            help="Show only summary"
+        )
         diff_parser.add_argument(
             "diffs",
             nargs=argparse.REMAINDER,
@@ -119,11 +127,14 @@ class Command(BaseCommand):
             self.stdout.write("\n".join(summary) + "\n")
         return 1 if n_errors else 0
 
-    def handle_diff(self, system=None, *args, **options):
+    def handle_diff(self, system=None, summary=False, *args, **options):
         from noc.core.etl.loader.chain import LoaderChain
 
         diffs = set(options.get("diffs", []))
         config = self.get_config()
+        if summary:
+            self.stdout.write(self.SUMMARY_MASK % (
+                "Loader", "New", "Updated", "Deleted"))
         for s in config:
             if system and s["system"] not in system:
                 continue
@@ -134,7 +145,11 @@ class Command(BaseCommand):
             for l in chain:
                 if diffs and l.name not in diffs:
                     continue
-                l.check_diff()
+                if summary:
+                    i, u, d = l.check_diff_summary()
+                    self.stdout.write(self.SUMMARY_MASK % (i, u, d))
+                else:
+                    l.check_diff()
 
 if __name__ == "__main__":
     Command().run()
