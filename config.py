@@ -173,6 +173,9 @@ class Config(BaseConfig):
             min=0, max=255,
             default=0
         )
+        global_n_instances = IntParameter(default=1)
+        global_offset = IntParameter(default=1)
+
     class activator(ConfigSection):
         tos = IntParameter(
             min=0, max=255,
@@ -205,18 +208,25 @@ class Config(BaseConfig):
 
     class scheduler(ConfigSection):
         max_threads = IntParameter(default=20)
+        global_n_instances = IntParameter(default=1)
+        global_offset = IntParameter(default=1)
 
     class sae(ConfigSection):
         db_threads = IntParameter(default=20)
+        global_n_instances = IntParameter(default=1)
+        global_offset = IntParameter(default=1)
 
     class classifier(ConfigSection):
         lookup = HandlerParameter(
             default="noc.services.classifier.rulelookup.RuleLookup")
         default_interface_profile = StringParameter(default="default")
+        global_n_instances = IntParameter(default=1)
+        global_offset = IntParameter(default=1)
 
     class discovery(ConfigSection):
         max_threads = IntParameter(default=20)
         global_n_instances = IntParameter(default=1)
+        global_offset = IntParameter(default=1)
 
     class correlator(ConfigSection):
         max_threads = IntParameter(default=20)

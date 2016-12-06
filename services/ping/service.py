@@ -104,7 +104,7 @@ class PingService(Service):
         """
         def is_my_task(d):
             x = struct.unpack("!L", socket.inet_aton(d))[0]
-            return x % self.config.global_n_instances == (self.config.instance + self.config.global_offset)
+            return x % self.config.ping.global_n_instances == (self.config.instance + self.config.ping.global_offset)
 
         self.logger.info("Requesting object mappings")
         try:
@@ -116,7 +116,7 @@ class PingService(Service):
             return
         #
         xd = set(self.probes)
-        if self.config.global_n_instances > 1:
+        if self.config.ping.global_n_instances > 1:
             nd = set(x for x in sm if is_my_task(x))
         else:
             nd = set(sm)

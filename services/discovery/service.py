@@ -45,8 +45,8 @@ class DiscoveryService(Service):
             ifilter = {
                 "key": {
                     "$mod": [
-                        self.config.global_n_instances,
-                        self.config.instance + self.config.global_offset
+                        self.config.discovery.global_n_instances,
+                        self.config.instance + self.config.discovery.global_offset
                     ]
                 }
             }
