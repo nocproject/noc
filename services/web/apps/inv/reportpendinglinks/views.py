@@ -50,7 +50,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
         mos = ManagedObject.objects.filter(is_managed=True, pool=pool)
 
         if not request.user.is_superuser:
-            mos = mos.administrative_domain__in=UserAccess.get_domains(request.user)
+            mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         if obj_profile:
             mos = mos.filter(object_profile=obj_profile)
 
