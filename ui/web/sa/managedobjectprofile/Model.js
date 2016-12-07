@@ -176,6 +176,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "enable_box_discovery_huawei_ndp",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_mikrotik_ndp",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
             name: "enable_box_discovery_fdp",
             xtype: "boolean",
             defaultValue: false

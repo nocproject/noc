@@ -66,3 +66,7 @@ class Script(BaseScript):
         r = self.cli("display dldp")
         return "Global DLDP is not enabled" not in r \
             and "DLDP global status : disable" not in r
+
+    def execute_platform(self, caps):
+        if self.has_ndp:
+            caps["Huawei | NDP"] = True

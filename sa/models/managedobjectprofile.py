@@ -123,7 +123,11 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_bfd = models.BooleanField(default=False)
     # L2 topology using CDP
     enable_box_discovery_cdp = models.BooleanField(default=False)
-    # L2 topology using FDP
+    # L2 topology using Huawei NDP
+    enable_box_discovery_huawei_ndp = models.BooleanField(default=False)
+    # L2 topology using MikroTik NDP
+    enable_box_discovery_mikrotik_ndp = models.BooleanField(default=False)
+    # L2 topology using Foundry FDP
     enable_box_discovery_fdp = models.BooleanField(default=False)
     # L2 topology using LLDP
     enable_box_discovery_lldp = models.BooleanField(default=False)
