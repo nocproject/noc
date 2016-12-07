@@ -15,7 +15,7 @@ from noc.sla.models.slaprobe import SLAProbe, SLAProbeTest
 
 class SLACheck(DiscoveryCheck):
     """
-    Version discovery
+    SLA discovery
     """
     name = "sla"
     required_script = "get_sla_probes"
@@ -24,6 +24,9 @@ class SLACheck(DiscoveryCheck):
         #
         "Cisco.IOS": set([
             "Cisco | IP | SLA | Probes"
+        ]),
+        "Juniper.JUNOS": set([
+            "Juniper | RPM | Probes"
         ]),
         # Fallback
         "Generic.Host": set()
