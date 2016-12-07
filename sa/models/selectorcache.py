@@ -148,7 +148,9 @@ class SelectorCache(Document):
                         vcdomain
                     )
                     bulk.find({"_id": sdata["_id"]}).update({
-                        "vc_domain": vcdomain
+                        "$set": {
+                            "vc_domain": vcdomain
+                        }
                     })
                     nb += 1
                 del old[s]
