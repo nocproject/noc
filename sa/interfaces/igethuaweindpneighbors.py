@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## IGetNDPNeighbors
+## IGetHuaweiNDPNeighbors
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
@@ -11,7 +11,7 @@ from base import (Interface, DictListParameter, StringParameter,
                   InterfaceNameParameter, MACAddressParameter)
 
 
-class IGetNDPNeighbors(Interface):
+class IGetHuaweiNDPNeighbors(Interface):
     """
     Huawei NDP neighbors interface
     """

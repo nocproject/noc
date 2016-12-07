@@ -22,6 +22,7 @@ from config import ConfigCheck
 from asset import AssetCheck
 from vlan import VLANCheck
 from cdp import CDPCheck
+from huawei_ndp import HuaweiNDPCheck
 from oam import OAMCheck
 from lldp import LLDPCheck
 from stp import STPCheck
@@ -36,6 +37,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
         OAMCheck,
         LLDPCheck,
         CDPCheck,
+        HuaweiNDPCheck,
         STPCheck,
         NRICheck
     ]
