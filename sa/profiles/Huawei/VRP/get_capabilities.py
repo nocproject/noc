@@ -40,6 +40,17 @@ class Script(BaseScript):
             and "Global status of LLDP: Disable" not in r
 
     @false_on_cli_error
+    def has_ndp(self):
+        """
+        Check box has NDP enabled
+        """
+        try:
+            r = self.cli("display ndp")
+        except self.CLISyntaxError:
+            return False
+        return "enabled" in r
+
+    @false_on_cli_error
     def has_bfd(self):
         """
         Check box has BFD enabled
@@ -55,4 +66,3 @@ class Script(BaseScript):
         r = self.cli("display dldp")
         return "Global DLDP is not enabled" not in r \
             and "DLDP global status : disable" not in r
-
