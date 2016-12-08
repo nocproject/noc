@@ -21,6 +21,14 @@
         <th scope="row">{{ _("Description") }}</th>
         <td>{{ description }}</td>
     </tr>
+    {% if object.time_pattern %}
+    <tr>
+        <th scope="row" class="col-sm-1">{{ _("Time Pattern") }}</th>
+        <td>
+            <a href="/api/card/view/timepattern/{{ object.time_pattern.id }}/">{{ object.time_pattern.name }}</a>
+        </td>
+    <tr>
+    {% endif %}
     <tr>
         <th scope="row">{{ _("Contacts") }}</th>
         <td>{{ contacts }}</td>
