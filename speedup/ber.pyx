@@ -8,6 +8,7 @@
 
 from libc.stdio cimport snprintf
 
+
 def parse_tlv_header(bytes msg):
     """
     Parse TLV header
@@ -70,7 +71,7 @@ def parse_p_oid(bytes msg):
     "1.3.6.1.2.1.1.5.0"
     """
     cdef unsigned int b, i
-    cdef char v
+    cdef unsigned char v
     cdef char[1024] out
     cdef char* ptr
     cdef char* o_ptr
@@ -83,7 +84,7 @@ def parse_p_oid(bytes msg):
         optr += snprintf(
             optr,
             1024 - (optr - out),
-            "%d.%d",
+            "%u.%u",
             ptr[0] // 40,
             ptr[0] % 40
         )
@@ -94,6 +95,6 @@ def parse_p_oid(bytes msg):
         ptr += 1
         b = (b << 7) + (v & 0x7f)
         if not (v & 0x80):
-            optr += snprintf(optr, 1024 - (optr - out), ".%d", b)
+            optr += snprintf(optr, 1024 - (optr - out), ".%u", b)
             b = 0
     return out
