@@ -1,0 +1,21 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2" class="{{ {"before": "warning", "progress": "danger", "complete": "success"}[status] }}">
+            {{ _("Time Pattern") }}: {{ object.name }}
+        </th>
+    </tr>
+    <tr>
+        <th scope="row" class="col-sm-1">{{ _("Description") }}</th>
+        <td>{{ object.description or "" }}</td>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Terms") }}</th>
+        <td>
+            {% for t in terms %}
+                {{ t }}<br>
+            {% endfor %}
+        </td>
+    </tr>
+</tbody>
+</table>

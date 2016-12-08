@@ -13,7 +13,6 @@ import jinja2
 ## NOC modules
 from base import BaseCard
 from noc.maintainance.models.maintainance import Maintainance
-from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary
 
 
