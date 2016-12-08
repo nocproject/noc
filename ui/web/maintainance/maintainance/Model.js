@@ -58,6 +58,15 @@ Ext.define("NOC.maintainance.maintainance.Model", {
         {
             name: "subject",
             type: "string"
+        },
+        {
+            name: "time_pattern",
+            type: "string"
+        },
+        {
+            name: "time_pattern__label",
+            type: "string",
+            persist: true
         }
     ]
 });

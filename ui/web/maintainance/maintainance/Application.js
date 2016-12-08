@@ -12,7 +12,8 @@ Ext.define("NOC.maintainance.maintainance.Application", {
         "NOC.maintainance.maintainance.Model",
         "NOC.maintainance.maintainancetype.LookupField",
         "NOC.sa.managedobject.LookupField",
-        "NOC.inv.networksegment.LookupField"
+        "NOC.inv.networksegment.LookupField",
+        "NOC.main.timepattern.LookupField"
     ],
     model: "NOC.maintainance.maintainance.Model",
     initComponent: function() {
@@ -48,6 +49,12 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                     dataIndex: "is_completed",
                     width: 25,
                     renderer: NOC.render.Bool
+                },
+                {
+                    text: __("Time Pattern"),
+                    dataIndex: "time_pattern",
+                    width: 150,
+                    renderer: NOC.render.Lookup("time_pattern")
                 },
                 {
                     text: __("Subject"),
@@ -133,6 +140,12 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                     xtype: "textarea",
                     fieldLabel: __("Contacts"),
                     allowBlank: false
+                },
+                {
+                    name: "time_pattern",
+                    xtype: "main.timepattern.LookupField",
+                    fieldLabel: __("Time Pattern"),
+                    allowBlank: true
                 },
                 {
                     name: "suppress_alarms",
