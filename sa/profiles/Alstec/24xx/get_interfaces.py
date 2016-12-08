@@ -35,6 +35,14 @@ class Script(BaseScript):
         r"^MAC Address\.+ (?P<mac>\S+)\s*\n"
         r"^Management VLAN ID\.+ (?P<vlan_id>\d+)\s*\n",
         re.MULTILINE)
+    rx_ip2 = re.compile(
+        r"^IP Address\.+ (?P<ip_address>\S+)\s*?"
+        r"^Subnet Mask\.+ (?P<ip_subnet>\S+)\s*.+"
+        r"^IPv6 address\.+ (?P<ipv6_address>\S+)\s*"
+        r"^MAC Address\.+ (?P<mac>\S+)\s*?"
+        r"^Management VLAN ID\.+ (?P<vlan_id>\d+)\s*\n",
+        re.MULTILINE | re.DOTALL
+    )
 
     def execute(self):
         c = self.scripts.get_config()
@@ -66,7 +74,7 @@ class Script(BaseScript):
                             self.expand_rangelist(match1.group("tagged"))
             interfaces += [iface]
             snmp_ifindex += 1
-        match = self.rx_ip.search(self.cli("show network"))
+        match = self.rx_ip2.search(self.cli("show network"))
         ip_address = match.group("ip_address")
         ip_subnet = match.group("ip_subnet")
         ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
