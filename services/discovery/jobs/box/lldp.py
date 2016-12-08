@@ -85,7 +85,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         """
         port id is a lldp neighbor dict
         """
-        port_subtype = port_id["remote_port_subtype"],
+        port_subtype = port_id["remote_port_subtype"]
         port = port_id["remote_port"]
         if port_subtype == self.PORT_SUBTYPE_ALIAS:
             rp = self.get_interface_by_description(port, remote_object)
