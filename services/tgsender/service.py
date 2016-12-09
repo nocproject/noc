@@ -12,8 +12,10 @@
 import datetime
 import socket
 import json
-import requests
+import urllib
+import urllib2
 import time
+import traceback
 ## NOC modules
 from noc.core.service.base import Service
 from noc.core.perf import metrics
@@ -41,25 +43,34 @@ class TgSenderService(Service):
         )
 
         return self.send_tb(message.id, address, subject, body)
-
-    def make_url_query_string(self, params):
-        return '?' + '&'.join([str(key) + '=' + str(params[key]) for key in params])
-
-    def send_tb(self, message_id, address, subject, body):
-        TOKEN = self.config.token
-        INTERVAL = 2.0
-        URL = 'https://api.telegram.org/bot'
-        time.sleep(INTERVAL)
-        params = self.make_url_query_string({'chat_id': address, 'text': body})
-        req = requests.get(URL + TOKEN + '/sendMessage' + params)
-        if req.json()['ok']:
-            self.logger.info("Send: %s\n" % req.json())
-            metrics["telegram_sended"] += 1
+   
+    def send_tb(self, messages, address, subject, body):  
+        RETRY_TIME = 2.0
+        token = self.config.token
+        data = {'chat_id': address, 'text': body}
+        time.sleep(RETRY_TIME)
+        try:
+            result = urllib2.urlopen("https://api.telegram.org/bot" + token + "/sendMessage", urllib.urlencode(data)).read()
+            check = json.loads(result)
+            self.logger.info("Send: %s\n" % check)
+            metrics["telegram_sended_ok"] += 1
             return True
-        elif req.status_code != 200 or not req.json()['ok']:
-            self.logger.info("Error: %s\n" % req.json())
-            metrics["telegram_failed"] += 1
-            return False
-
+        except urllib2.HTTPError, e:
+            self.logger.info("HTTPError: %s\n" % e.code)
+            metrics["telegram_failed_httperror"] += 1
+            return False   
+        except urllib2.URLError, e:
+            self.logger.info("URLError: %s\n" % e.code)
+            metrics["telegram_failed_urlerror"] += 1
+            return False  
+        except httplib.HTTPException, e:
+            self.logger.info("HTTPException: %s\n" % e.code)
+            metrics["telegram_failed_httpexceprion"] += 1
+            return False  
+        except Exception:
+            self.logger.info("Generic Exception: %s\n" + traceback.format_exc())                   
+            metrics["telegram_failed_exceprion"] += 1
+            return False 
+            
 if __name__ == "__main__":
     TgSenderService().start()
