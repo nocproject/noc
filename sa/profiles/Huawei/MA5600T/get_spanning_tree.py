@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Huawei.MA5600T.get_spanning_tree
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -27,6 +27,8 @@ class Script(BaseScript):
         r"^\s+Bridge\s+Priority\s*:\s*(?P<bridge_priority>\d+)\s+"
         r"MAC Address\s*:\s*(?P<bridge_id>\S+)\s*\n"
         r"^\s+.+\n"
+        r"(^\s+.+\n)?"
+        r"(^\s+.+\n)?"
         r"^\s+IST Root\s+Priority\s*:\s*(?P<root_priority>\d+)\s+"
         r"MAC Address\s*:\s*(?P<root_id>\S+)\s*\n", re.MULTILINE)
     rx_port = re.compile(
@@ -53,7 +55,8 @@ class Script(BaseScript):
         "Alternate Port": "alternate",
         "Designated Port": "designated",
         "Disabled Port": "disabled",
-        "Root Port": "root"
+        "Root Port": "root",
+        "Master Port": "master"
     }
 
     def execute(self):
@@ -90,15 +93,20 @@ class Script(BaseScript):
                 for i in c.split("\n"):
                     match = self.rx_vlans.search(c)
                     if int(match.group("inst")) == instance["id"]:
-                        vlans = match.group("vlans").strip().replace(" ", ",")
+                        vlans = match.group("vlans").strip()
+                        # 90   to   91
+                        vlans = re.sub('\s+to\s+', '-', vlans)
+                        # 90  100
+                        vlans = re.sub('\s{2,}', ' ', vlans)
+                        vlans = vlans.replace(" ", ",")
                         break
                 if vlans == "":
                     vlans = "1-4094"
                 instance["vlans"] = vlans
                 for p in self.rx_port.finditer(inst):
                     ifname = p.group("port").replace(" ", "")
-                    p1 = self.cli("display stp instance %d port %s" % \
-                    (instance["id"], ifname))
+                    p1 = self.cli("display stp instance %d port %s" %
+                                  (instance["id"], ifname))
                     iface = {"interface": ifname}
                     match = self.rx_port_id_state.search(p1)
                     iface["port_id"] = match.group("port_id")
