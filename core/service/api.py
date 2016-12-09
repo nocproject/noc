@@ -73,7 +73,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
             self.CALLING_SERVICE_HEADER,
             "unknown"
         )
-        self.service.logger.info(
+        self.service.logger.debug(
             "[RPC call from %s] %s.%s(%s)",
             calling_service, api.name, method, params
         )
