@@ -131,7 +131,7 @@
       tags:
         - escalator
         - node
-        - noc
+        - noc        
 
     - role: web
       become: yes
@@ -164,6 +164,14 @@
         - mailsender
         - node
         - noc
+
+    - role: tgsender
+      become: yes
+      when: "{{ has_svc_tgsender | default(False) }}"
+      tags:
+        - tgender
+        - node
+        - noc  
 
     - role: omap
       become: yes
