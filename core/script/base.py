@@ -188,8 +188,8 @@ class BaseScript(object):
         Run script
         """
         self.start_time = time.time()
-        self.logger.info("Running. Input arguments: %s, timeout %s",
-                         self.args, self.timeout)
+        self.logger.debug("Running. Input arguments: %s, timeout %s",
+                          self.args, self.timeout)
         # Use cached result when available
         cache_hit = False
         if self.cache and self.parent:
