@@ -58,7 +58,7 @@ class TgSenderService(Service):
             return True
         elif req.status_code != 200 or not req.json()['ok']:
             self.logger.info("Error: %s\n" % req.json())
-            metrics["telegrafm_failed"] += 1
+            metrics["telegram_failed"] += 1
             return False
 
 if __name__ == "__main__":
