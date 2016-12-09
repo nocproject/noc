@@ -1,1 +1,10 @@
 ---
+- name: Setting hostname in rc.conf
+  lineinfile: dest=/etc/rc.conf regexp=^hostname= line="hostname=\"{{ ansible_hostname }}\""
+  tags:
+    - config
+
+- name: Update hostname
+  command: hostname {{ ansible_hostname }}
+  tags:
+    - config
