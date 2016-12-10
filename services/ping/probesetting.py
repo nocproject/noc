@@ -19,6 +19,7 @@ class ProbeSetting(object):
         "name",
         "interval",
         "status",
+        "sent_status",
         "report_rtt",
         "time_expr",
         "time_cond",
@@ -31,7 +32,8 @@ class ProbeSetting(object):
         self.address = address
         self.name = name
         self.interval = interval
-        self.status = status,
+        self.status = status
+        self.sent_status = None
         self.report_rtt = report_rtt
         self.time_expr = time_expr
         self.time_cond = self.compile(time_expr)
