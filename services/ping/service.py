@@ -44,6 +44,7 @@ class PingService(Service):
         self.probes = {}  # address -> ProbeSetting
         self.omap = None
         self.ping = None
+        self.is_throttled = False
 
     @tornado.gen.coroutine
     def on_activate(self):
@@ -52,6 +53,8 @@ class PingService(Service):
             os.nice(-20)
         except OSError as e:
             self.logger.info("Cannot set nice level to -20: %s", e)
+        #
+        self.perf_metrics["down_objects"] = 0
         # Open ping sockets
         self.ping = Ping(self.ioloop, tos=self.config.tos)
         # Register RPC aliases
@@ -77,6 +80,11 @@ class PingService(Service):
         self.mappings_callback.start()
         # Get mappings for the first time
         self.ioloop.add_callback(self.get_object_mappings)
+
+    def get_mon_data(self):
+        r = super(PingService, self).get_mon_data()
+        r["throttled"] = self.is_throttled
+        return r
 
     def register_message(self, object, timestamp, data):
         """
@@ -161,6 +169,8 @@ class PingService(Service):
         ps.task = None
         del self.probes[ip]
         self.perf_metrics["ping_probe_delete"] += 1
+        if ps.status is not None and not ps.status:
+            self.perf_metrics["down_objects"] -= 1
 
     def update_probe(self, ip, data):
         self.logger.info("Update probe: %s (%ds)", ip, data["interval"])
@@ -199,11 +209,39 @@ class PingService(Service):
         else:
             self.perf_metrics["ping_check_fail"] += 1
         if ps and s != ps.status:
+            if s:
+                self.perf_metrics["down_objects"] -= 1
+            else:
+                self.perf_metrics["down_objects"] += 1
+            if self.config.throttle_threshold:
+                # Process throttling
+                down_ratio = (
+                    float(self.perf_metrics["down_objects"]) * 100.0 /
+                    float(self.perf_metrics["ping_objects"])
+                )
+                if self.is_throttled:
+                    restore_ratio = self.config.restore_threshold or self.config.throttle_threshold
+                    if down_ratio <= restore_ratio:
+                        self.logger.info(
+                            "Leaving throttling mode (%s%% <= %s%%)",
+                            down_ratio, restore_ratio
+                        )
+                        self.is_throttled = False
+                        # @todo: Send unthrottling message
+                elif down_ratio > self.config.throttle_threshold:
+                    self.logger.info(
+                        "Entering throttling mode (%s%% > %s%%)",
+                        down_ratio, self.config.throttle_threshold
+                    )
+                    self.is_throttled = True
+                    # @todo: Send throttling message
+            ts = " (Throttled)" if self.is_throttled else ""
             self.logger.info(
-                "[%s] Changing status to %s",
-                address, s
+                "[%s] Changing status to %s%s",
+                address, s, ts
             )
             ps.status = s
+        if ps and not self.is_throttled and s != ps.sent_status:
             result = "success" if s else "failed"
             self.register_message(
                 ps.id,
@@ -215,6 +253,7 @@ class PingService(Service):
                     "result": result
                 }
             )
+            ps.sent_status = s
         self.logger.debug("[%s] status=%s rtt=%s", address, s, rtt)
         # Send RTT metrics
         if rtt is not None and ps.report_rtt:

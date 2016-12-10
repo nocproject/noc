@@ -282,9 +282,19 @@ config:
       default: 3
 
     timeout:
-       label: Ping timeout (ms)
-       type: int
-       default: 1000
+      label: Ping timeout (ms)
+      type: int
+      default: 1000
+
+    throttle_threshold:
+      label: Amount of down objects (in percents) to enter throttling mode
+      type: int
+      default: 0
+
+    restore_threshold:
+      label: Amount of down objects (in percents) to leave throttling mode
+      type: int
+      default: 0
 
   card:
     language:
