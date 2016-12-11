@@ -53,6 +53,8 @@ class AlarmsExtractor(BaseExtractor):
                 total_objects=sum(ss["summary"] for ss in d.get("total_objects", [])),
                 total_services=sum(ss["summary"] for ss in d.get("total_services", [])),
                 total_subscribers=sum(ss["summary"] for ss in d.get("total_subscribers", [])),
+                escalation_ts=d["escalation_ts"],
+                escalation_tt=d["escalation_tt"],
                 managed_object=mo,
                 ip=mo.address,
                 profile=mo.profile_name,
