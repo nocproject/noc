@@ -541,8 +541,8 @@ class Service(object):
         def finish_pub(conn, data):
             if isinstance(data, nsq.Error):
                 self.logger.info(
-                    "Failed to pub to topic '%s': %s. Retry",
-                    topic, data
+                    "Failed to pub to topic '%s'. Retry",
+                    topic
                 )
                 w.io_loop.call_later(
                     self.NSQ_PUB_RETRY_DELAY,
