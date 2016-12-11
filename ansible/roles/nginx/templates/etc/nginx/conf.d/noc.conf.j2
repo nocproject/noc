@@ -11,7 +11,7 @@ http {
 {% if noc_config["services"].get("web", []) %}
 upstream noc-web {
 {% for n in noc_config["services"].get("web", []) %}
-    server {{ n }} weigh={{noc_config['config'].get('web-global-%s' % ansible_hostname, {}).get('weight', 1)}};
+    server {{ n }} weight={{noc_config['config'].get('web-global-%s' % ansible_hostname, {}).get('weight', 1)}};
 {% endfor %}
 }
 {% endif %}
