@@ -43,6 +43,11 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             defaultValue: false
         },
         {
+            name: "allow_lag_mismatch",
+            type: "bool",
+            defaultValue: false
+        },
+        {
             name: "weight",
             type: "int"
         },
