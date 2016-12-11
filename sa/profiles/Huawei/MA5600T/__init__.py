@@ -26,7 +26,7 @@ class Profile(BaseProfile):
     ]
     pattern_unpriveleged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
     pattern_prompt = r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
-    pattern_syntax_error = r"% Unknown command"
+    pattern_syntax_error = r"(% Unknown command|  Incorrect command:)"
     command_more = " "
     config_volatile = ["^%.*?$"]
     command_disable_pager = "scroll 512"
@@ -68,3 +68,10 @@ class Profile(BaseProfile):
             r += [self.get_ports_n(script, i)]
             i += 1
         return r
+
+    def convert_interface_name(self, interface):
+        if " " in interface:
+            return interface.split()[1]
+        if "ethernet" in interface:
+            return interface[8:]
+        return interface
