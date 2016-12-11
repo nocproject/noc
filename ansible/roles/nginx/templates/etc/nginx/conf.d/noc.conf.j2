@@ -19,7 +19,7 @@ upstream noc-web {
 {% if noc_config["services"].get("login", []) %}
 upstream login {
 {% for n in noc_config["services"].get("login", []) %}
-    server {{ n }} weigh={{noc_config['config'].get('login-global-%s' % ansible_hostname, {}).get('weight', 1)}};
+    server {{ n }} weight={{noc_config['config'].get('login-global-%s' % ansible_hostname, {}).get('weight', 1)}};
 {% endfor %}
 }
 {% endif %}
@@ -27,7 +27,7 @@ upstream login {
 {% if noc_config["services"].get("card", []) %}
 upstream card {
 {% for n in noc_config["services"].get("card", []) %}
-    server {{ n }} weigh={{noc_config['config'].get('login-global-%s' % ansible_hostname, {}).get('weight', 1)}};;
+    server {{ n }} weight={{noc_config['config'].get('login-global-%s' % ansible_hostname, {}).get('weight', 1)}};
 {% endfor %}
 }
 {% endif %}
