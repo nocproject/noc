@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""
 ##----------------------------------------------------------------------
 ## Alstec.24xx.get_arp
 ##----------------------------------------------------------------------
@@ -6,16 +7,16 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
-"""
+import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 from noc.lib.text import parse_table
-import re
 
 
 class Script(BaseScript):
-    name = "Alstec.ALS.get_arp"
+    name = "Alstec.24xx.get_arp"
     interface = IGetARP
+
     rx_line = re.compile(
         r"^vlan \d+\s+(?P<interface>\S+)\s+"
         r"(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+"
@@ -40,13 +41,17 @@ class Script(BaseScript):
         ip = self.rx_ip.findall(v)
         mac = self.rx_mac.findall(v)
         gw = self.rx_ip_gw.findall(v)
+
         try:
-            gw_mac = self.cli("show mac-addr-table vlan 1")
+            macs = parse_table(self.cli("show mac-addr-table vlan 1"))
+            mac_gw = macs[0][0]
         except self.CLISyntaxError:
-            gw_mac = None
-        if gw_mac:
-            mac_gw = parse_table(gw_mac)
-            r += [{"ip": gw[0], "mac": mac_gw[0][0]}]
+            macs = parse_table(self.cli("show mac-addr-table"))
+            print(macs)
+            mac_gw = [mac[0] for mac in macs if mac[2] == "1"][0]
+
+        if mac_gw:
+            r += [{"ip": gw[0], "mac": mac_gw}]
         r += [{"ip": ip[0], "mac": mac[0]}]
 
         return r
