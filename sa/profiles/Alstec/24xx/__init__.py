@@ -18,6 +18,6 @@ class Profile(BaseProfile):
     pattern_unpriveleged_prompt = r"^\S+ >"
     pattern_prompt = r"^\S+ #"
     pattern_more = r"^--More-- or \(q\)uit$"
-    pattern_syntax_error = r"^ERROR: Wrong or incomplete command"
+    pattern_syntax_error = r"ERROR: Wrong or incomplete command"
     command_super = "enable"
     command_exit = "quit"
