@@ -43,6 +43,10 @@ class Alarms(Model):
     total_objects = Int64Field()
     total_services = Int64Field()
     total_subscribers = Int64Field()
+    #
+    escalation_ts = DateTimeField()
+    escalation_tt = StringField()
+    #
     managed_object = ReferenceField(ManagedObject)
     ip = IPv4Field()
     profile = ReferenceField(Profile)
