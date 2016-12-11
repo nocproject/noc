@@ -302,11 +302,21 @@ config:
       type: str
       default: en
 
+    weight:
+      label: Http nginx Weight
+      type: int
+      default: 5
+
   login:
     language:
       label: Translation language
       type: str
       default: en
+
+    weight:
+      label: Http nginx Weight
+      type: int
+      default: 5
 
     methods:
       label: Authentication methods
@@ -407,6 +417,10 @@ config:
       label: Translation language
       type: str
       default: en
+    weight:
+      label: Http nginx Weight
+      type: int
+      default: 5
 
   nginx:
     logging:
