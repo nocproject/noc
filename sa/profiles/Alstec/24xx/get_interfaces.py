@@ -38,11 +38,11 @@ class Script(BaseScript):
     rx_ip2 = re.compile(
         r"^IP Address\.+ (?P<ip_address>\S+)\s*?"
         r"^Subnet Mask\.+ (?P<ip_subnet>\S+)\s*.+"
-        r"^IPv6 address\.+ (?P<ipv6_address>\S+)\s*"
-        r"^MAC Address\.+ (?P<mac>\S+)\s*?"
+        r"^(MAC Address|Burned In MAC Address)\.+ (?P<mac>\S+)\s*.+"
         r"^Management VLAN ID\.+ (?P<vlan_id>\d+)\s*\n",
         re.MULTILINE | re.DOTALL
     )
+    rx_ipv6 = re.compile(r"^(IPv6 address|IPv6 Prefix is )\.+ (?P<ipv6_address>\S+)\s*", re.MULTILINE)
 
     def execute(self):
         c = self.scripts.get_config()
@@ -90,7 +90,6 @@ class Script(BaseScript):
                 "oper_status": True,
                 "enabled_afi": ['IPv4', 'IPv6'],
                 "ipv4_addresses": [ip_address],
-                "ipv6_addresses": [match.group("ipv6_address")],
                 "vlan_ids": [int(match.group("vlan_id"))]
             }]
         }]
