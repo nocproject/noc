@@ -192,8 +192,10 @@ class Interface(Document):
                     else:
                         el.delete()
                 #
-                link = Link(interfaces=[self, other],
-                    discovery_method=method)
+                link = Link(
+                    interfaces=[self, other],
+                    discovery_method=method
+                )
                 link.save()
                 return link
             else:
@@ -210,12 +212,24 @@ class Interface(Document):
                     raise ValueError("LAG size mismatch")
                 # Create link
                 if l_members:
-                    link = Link(interfaces=l_members + r_members,
-                        discovery_method=method)
+                    link = Link(
+                        interfaces=l_members + r_members,
+                        discovery_method=method
+                    )
                     link.save()
                     return link
                 else:
                     return
+            elif self.profile.allow_lag_mismatch:
+                l_members = [i for i in self.lag_members if i.oper_status]
+                if len(l_members) > 1:
+                    raise ValueError("More then one active interface in LAG")
+                link = Link(
+                    interfaces=l_members + [other],
+                    discovery_method=method
+                )
+                link.save()
+                return link
             else:
                 raise ValueError("Cannot connect %s interface to %s" % (
                     self.type, other.type))

@@ -68,6 +68,8 @@ class InterfaceProfile(Document):
     mac_discovery = BooleanField(default=False)
     # Collect and keep interface status
     status_discovery = BooleanField(default=False)
+    #
+    allow_lag_mismatch = BooleanField(default=False)
     # Send up/down notifications
     status_change_notification = ForeignKeyField(NotificationGroup,
                                                  required=False)
