@@ -40,6 +40,8 @@ class Profile(BaseProfile):
             if not user.endswith("+ct"):
                 script.credentials["user"] = user + "+ct"
         self.add_script_method(script, "cli_detail", self.cli_detail)
+        #MikroTik Remove duplicates prompt
+        script.cli("")
 
     def cli_detail(self, script, cmd, cached=False):
         """
