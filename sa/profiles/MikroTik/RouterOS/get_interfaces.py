@@ -132,7 +132,7 @@ class Script(BaseScript):
                 i["subinterfaces"] += [self.si]
         # process internal `switch` ports and vlans
         vlan_tags = {}
-        #"RB532", "x86" not support internal switch port
+        # "RB532", "x86", CCR1009 not support internal switch port
         try:
             v = self.cli_detail(
                     "/interface ethernet switch port print detail without-paging")
@@ -146,7 +146,7 @@ class Script(BaseScript):
                     vlan_tags[r["name"]] = False
         except self.CLISyntaxError:
             pass
-        #"RB532", "x86" not support internal switch port
+        # "RB532", "x86", CCR1009 not support internal switch port
         try:
             # Attach subinterfaces with `BRIDGE` AFI to parent
             v = self.cli_detail(
