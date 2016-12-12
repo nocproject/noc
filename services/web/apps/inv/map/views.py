@@ -423,8 +423,8 @@ class MapApplication(ExtApplication):
                             m["tags"]["interface"]
                         )
                     ] = m["id"]
-                    tag_id[m["object"], m["interface"]] = m["id"]
-                    mlst += [(m["metric"], m["object"], m["interface"])]
+                    tag_id[m["tags"]["object"], m["tags"]["interface"]] = m["id"]
+                    mlst += [(m["metric"], m["tags"]["object"], m["tags"]["interface"])]
                 except KeyError:
                     pass
         # @todo: Get last values from cache
