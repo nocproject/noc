@@ -59,10 +59,6 @@ class TgSenderService(Service):
             self.logger.info("HTTPError: %s\n" % e.code)
             metrics["telegram_failed_httperror"] += 1
             return False   
-        except urllib2.URLError, e:
-            self.logger.info("URLError: %s\n" % e.code)
-            metrics["telegram_failed_urlerror"] += 1
-            return False  
         except httplib.HTTPException, e:
             self.logger.info("HTTPException: %s\n" % e.code)
             metrics["telegram_failed_httpexceprion"] += 1
