@@ -286,7 +286,7 @@ class ActiveAlarm(nosql.Document):
                 scheduler="correlator",
                 pool=self.managed_object.pool.name,
                 delay=t,
-                alarm_id=self.id
+                alarm_id=d["_id"]
             )
         # Clear alarm
         self.delete()
