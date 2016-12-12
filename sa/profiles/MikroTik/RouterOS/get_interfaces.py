@@ -92,7 +92,7 @@ class Script(BaseScript):
                 if n in n_ifindex:
                     ifaces[r["name"]]["snmp_ifindex"] = n_ifindex[n]
                 if r["type"].startswith("ipip-") \
-                or r["type"].startswith("eoip") \
+                or r["type"].startswith("eoip-") \
                 or r["type"].startswith("gre-"):
                     self.si = {
                         "name": r["name"],
@@ -104,7 +104,7 @@ class Script(BaseScript):
                     }
                     if r["type"].startswith("ipip-"):
                         self.get_tunnel("IPIP", "R", "IPv4", ifaces)
-                    if r["type"].startswith("eoip"):
+                    if r["type"].startswith("eoip-"):
                         self.get_tunnel("EOIP", "R", "IPv4", ifaces)
                     if r["type"].startswith("gre-"):
                         self.get_tunnel("GRE", "R", "IPv4", ifaces)
