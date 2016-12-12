@@ -67,6 +67,7 @@
     LC_ALL: C
   tags:
     - mercurial
+    - custom
 
 - name: Initialize virtualenv
   pip:
