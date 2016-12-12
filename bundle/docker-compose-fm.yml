@@ -1,0 +1,57 @@
+version: '2'
+services:
+  mailsender:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - nsqlookupd
+      - nsqd
+    command: python ./services/mailsender/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: mailsender
+    dns: ${DNS}
+
+
+  classifier:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    command: python ./services/classifier/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+      SERVICE_NAME: classifier
+    dns: ${DNS}
+
+  correlator-default:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    command: python ./services/correlator/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+      SERVICE_NAME: correlator-default
+    dns: ${DNS}

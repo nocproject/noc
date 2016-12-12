@@ -1,0 +1,103 @@
+version: '2'
+services:
+  omap:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    command: python ./services/omap/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: omap
+    dns: ${DNS}
+
+  sae:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+      - activator-default
+    command: python ./services/sae/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: sae
+    dns: ${DNS}
+
+  scheduler:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - mongo
+    command: python ./services/scheduler/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: scheduler
+    dns: ${DNS}
+
+  activator-default:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/activator/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+      SERVICE_NAME: activator-default
+    dns: ${DNS}
+
+  syslogcollector-default:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/syslogcollector/service.py
+    depends_on:
+      - omap
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+      SERVICE_NAME: syslogcollector-default
+    dns: ${DNS}
+
+  trapcollector-default:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/trapcollector/service.py
+    depends_on:
+      - omap
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+      SERVICE_NAME: trapcollector-default
+    dns: ${DNS}

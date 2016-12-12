@@ -1,21 +1,30 @@
 #!/bin/sh
 
 currrent_dir=$(pwd)
+dckrc="/usr/local/bin/docker-compose -f docker-compose-dbs.yml \
+                -f docker-compose-discovery.yml \
+                -f docker-compose-fm.yml \
+                -f docker-compose-infra.yml \
+                -f docker-compose-ping.yml \
+                -f docker-compose-sae.yml \
+                -f docker-compose-web.yml \
+                -f docker-compose-pm.yml \
+                -f docker-compose.yml"
 
 start_registrator () {
     echo "Starting registrator..."
-    docker-compose up -d registrator
+    ${dckrc} up -d registrator
 }
 
 pull_images () {
     echo "Pulling noc images..."
-    docker-compose pull dev
-    docker-compose pull sae
+    ${dckrc} pull dev
+    ${dckrc} pull sae
 }
 
 start_dbs() {
     echo "starting dbs..."
-    docker-compose up -d mongo \
+    ${dckrc} up -d mongo \
                          postgres \
                          nsqd \
                          nsqlookupd \
@@ -23,25 +32,25 @@ start_dbs() {
 }
 cytonize() {
     echo "Cythonizing..."
-    docker-compose run --rm --entrypoint "/usr/bin/cythonize -i speedup/*.pyx" dev
+    ${dckrc} run --rm --entrypoint "/usr/bin/cythonize -i speedup/*.pyx" dev
 }
 migrate() {
     echo "Loading data to db's..."
-    docker-compose run --rm --entrypoint /opt/noc/bundle/scripts/migrate.sh dev
+    ${dckrc} run --rm --entrypoint /opt/noc/bundle/scripts/migrate.sh dev
 }
 
 install_npkg() {
     echo "Installing depends card..."
-    docker-compose run --rm --entrypoint "./scripts/deploy/install-packages requirements/card.json" dev
+    ${dckrc} run --rm --entrypoint "./scripts/deploy/install-packages requirements/card.json" dev
     echo "Installing depends mib..."
-    docker-compose run --rm --entrypoint "./scripts/deploy/install-packages requirements/mib.json" dev
+    ${dckrc} run --rm --entrypoint "./scripts/deploy/install-packages requirements/mib.json" dev
     echo "Installing depends web..."
-    docker-compose run --rm --entrypoint "./scripts/deploy/install-packages requirements/web.json" dev
+    ${dckrc} run --rm --entrypoint "./scripts/deploy/install-packages requirements/web.json" dev
 }
 
 start_sae() {
     echo "Starting SAE..."
-    docker-compose up -d sae \
+    ${dckrc} up -d sae \
                          discovery-default \
                          activator-default \
                          scheduler \
@@ -53,17 +62,17 @@ start_sae() {
 
 start_web() {
     echo "Starting WEB..."
-    docker-compose up -d web card login grafana grafanads front bi mrt
+    ${dckrc} up -d web card login grafana grafanads front bi mrt
 }
 
 start_pm() {
     echo "Starting PM..."
-    docker-compose up -d influxdb pmwriter
+    ${dckrc} up -d influxdb pmwriter
 }
 
 start_fm() {
     echo "Starting FM..."
-    docker-compose up -d classifier \
+    ${dckrc} up -d classifier \
                          correlator-default \
                          mailsender
 }
