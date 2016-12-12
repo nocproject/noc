@@ -38,15 +38,16 @@ class DiscoveryService(Service):
         #
         if self.config.discovery.global_n_instances > 1:
             self.logger.info(
-                "Enabling distributed mode: Slot %d of %d",
-                self.config.instance + self.config.global_offset,
-                self.config.discovery.global_n_instances
+                "Enabling distributed mode: Slot %d of %d, instance %d, offset, %d",
+                int(self.config.instance) + int(self.config.discovery.global_offset),
+                    int(self.config.discovery.global_n_instances),
+                int(self.config.instance),int(self.config.discovery.global_offset)
             )
             ifilter = {
                 "key": {
                     "$mod": [
-                        self.config.discovery.global_n_instances,
-                        self.config.instance + self.config.discovery.global_offset
+                        int(self.config.discovery.global_n_instances),
+                        int(self.config.instance) + int(self.config.discovery.global_offset)
                     ]
                 }
             }
