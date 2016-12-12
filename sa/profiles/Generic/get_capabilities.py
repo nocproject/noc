@@ -106,12 +106,6 @@ class Script(BaseScript):
         """
         return False
 
-    def has_ndp(self):
-        """
-        Returns True when Huawei NDP is enabled
-        """
-        return False
-
     def has_oam(self):
         """
         Returns True when OAM is enabled
@@ -172,8 +166,6 @@ class Script(BaseScript):
             caps["Network | LLDP"] = True
         if self.has_cdp():
             caps["Network | CDP"] = True
-        if self.has_ndp():
-            caps["Network | NDP"] = True
         if self.has_oam():
             caps["Network | OAM"] = True
         if self.has_udld():
