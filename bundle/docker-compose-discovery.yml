@@ -1,0 +1,51 @@
+version: '2'
+services:
+  discovery-default-0:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+      - nsqlookupd
+      - nsqd
+      - sae
+      - activator-default
+      - scheduler
+    command: python ./services/discovery/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+      SERVICE_NAME: discovery-default
+      NOC_INSTANCE: 0
+      NOC_GLOBAL_OFFSET: 0
+    dns: ${DNS}
+
+  discovery-default-1:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+      - nsqlookupd
+      - nsqd
+      - sae
+      - activator-default
+      - scheduler
+    command: python ./services/discovery/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+      SERVICE_NAME: discovery-default
+      NOC_INSTANCE: 1
+      NOC_GLOBAL_OFFSET: 0
+    dns: ${DNS}

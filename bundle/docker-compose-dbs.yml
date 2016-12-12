@@ -1,0 +1,147 @@
+version: '2'
+services:
+  mongo:
+    image: freeseacher/mongo:3.2.7
+    restart: always
+    depends_on:
+      - registrator
+    # do not add --smallfiles here. it is only for mmap
+    command: --storageEngine wiredTiger --wiredTigerDirectoryForIndexes
+    networks:
+      backend:
+        aliases:
+          - mongo-master
+    volumes:
+      - ../../noc_data/mongo:/data/db
+      - ./config/mongo:/data/configdb
+    env_file:
+      - .env
+    dns: ${DNS}
+    environment:
+      SERVICE_TAGS: node1
+
+  postgres:
+    image: freeseacher/postgres:9.4
+    restart: always
+    depends_on:
+      - registrator
+    volumes:
+      - ../../noc_data/postgres:/var/lib/postgresql/data
+      - ./scripts/postgres_init.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+    networks:
+      backend:
+        aliases:
+          - postgres-master.docker
+    environment:
+      LC_ALL: C.UTF-8
+      SERVICE_TAGS: master,node1
+    env_file:
+      - .env
+    dns: ${DNS}
+
+  clickhouse:
+    image: freeseacher/clickhouse:latest
+    command: /usr/bin/clickhouse-server --config=/etc/clickhouse-server/config.xml
+    volumes:
+      - ./config/clickhouse:/etc/clickhouse-server
+      - ../../noc_data/clickhouse:/opt/clickhouse/data
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    ulimits:
+       nproc: 65535
+       nofile:
+         soft: 262144
+         hard: 262144
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      SERVICE_9000_IGNORE: 1
+      SERVICE_9009_IGNORE: 1
+      SERVICE_NAME: clickhouse
+      SERVICE_TAGS: master
+    dns: ${DNS}
+    environment:
+      SERVICE_TAGS: node1
+
+  influxdb:
+    image: influxdb:1.1.0
+    restart: always
+    networks:
+      - backend
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+    volumes:
+      - ./config/influxdb:/etc/influxdb
+      - ../../noc_data/influxdb:/data
+    command: influxd -config /etc/influxdb/config.toml
+    env_file:
+      - .env
+    environment:
+      SERVICE_8083_IGNORE: 1
+      SERVICE_TAGS: d7,node1
+    dns: ${DNS}
+
+  nsqlookupd:
+    image: nsqio/nsq
+    command: /nsqlookupd
+    restart: always
+    volumes:
+      - ./config/nsqlookupd:/etc/nsqlookupd
+      - ../../noc_data/nsqlookupd:/data
+    depends_on:
+      - nsqd
+    ports:
+      - "4160"
+      - "4161"
+    networks:
+      - backend
+    env_file:
+      - .env
+    dns: ${DNS}
+    environment:
+      SERVICE_TAGS: node1
+
+  nsqd:
+    image: nsqio/nsq
+    restart: always
+    command: /nsqd --lookupd-tcp-address=nsqlookupd:4160
+    volumes:
+      - ./config/nsqd:/etc/nsqd
+      - ../../noc_data/nsqd:/data
+    networks:
+      - backend
+    ports:
+      - "4150"
+      - "4151"
+    env_file:
+      - .env
+    dns: ${DNS}
+    environment:
+      SERVICE_TAGS: master,node1
+
+  nsqadmin:
+    image: nsqio/nsq
+    restart: always
+    volumes:
+      - ./config/nsqadmind:/etc/nsqadmin
+      - ../../noc_data/nsqadmind:/data
+    networks:
+      - backend
+    depends_on:
+      - nsqlookupd
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+    ports:
+      - "4171:4171"
+    env_file:
+      - .env
+    dns: ${DNS}
+    environment:
+      SERVICE_TAGS: admin
+
+networks:
+  backend:
+  frontend:

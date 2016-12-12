@@ -1,0 +1,18 @@
+version: '2'
+services:
+  pmwriter:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/pmwriter/service.py
+    depends_on:
+      - nsqd
+      - influxdb
+    networks:
+      - backend
+    volumes:
+      - ../:/opt/noc
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: pmwriter
+    dns: ${DNS}

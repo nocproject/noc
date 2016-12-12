@@ -1,0 +1,98 @@
+version: '2'
+services:
+  web:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/web/service.py
+    depends_on:
+      - postgres
+      - mongo
+    networks:
+      - backend
+    volumes:
+      - ../:/opt/noc
+    env_file:
+      - .env
+    dns: ${DNS}
+
+  login:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    command: python ./services/login/service.py
+    networks:
+      - backend
+    volumes:
+      - ../:/opt/noc
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: login
+    dns: ${DNS}
+
+  card:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - mongo
+    command: python ./services/card/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: card
+    dns: ${DNS}
+
+  mrt:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/mrt/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: mrt
+    dns: ${DNS}
+
+  grafanads:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - postgres
+      - grafana
+      - mongo
+    command: python ./services/grafanads/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: grafanads
+    dns: ${DNS}
+
+  bi:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    depends_on:
+      - clickhouse
+    command: python ./services/bi/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      SERVICE_NAME: bi
+    dns: ${DNS}

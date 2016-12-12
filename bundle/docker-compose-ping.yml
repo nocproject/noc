@@ -1,0 +1,33 @@
+version: '2'
+services:
+  ping-default-0:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/ping/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+      SERVICE_NAME: ping-default
+      NOC_INSTANCE: 0
+    dns: ${DNS}
+
+  ping-default-1:
+    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    restart: always
+    command: python ./services/ping/service.py
+    volumes:
+      - ../:/opt/noc
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      NOC_POOL: default
+      SERVICE_NAME: ping-default
+      NOC_INSTANCE: 1
+    dns: ${DNS}
