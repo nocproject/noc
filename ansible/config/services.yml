@@ -127,6 +127,10 @@ services:
     description: SMTP mail sender
     level: global
 
+  tgsender:
+    description: Telegram sender
+    level: global
+
   memcached:
     description: Caching layer
     level: global
@@ -489,3 +493,8 @@ config:
       type: int
       label: memcached max memory
       default: 64
+
+  tgsender:
+    token:
+      label: Token
+      type: str
