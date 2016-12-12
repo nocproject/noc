@@ -83,6 +83,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
                         xtype: "combobox",
                         store: [
                             ["mail", "Mail"],
+                            ["tg", "Telegram"],
                             ["file", "File"],
                             ["xmpp", "Jabber"]
                         ]

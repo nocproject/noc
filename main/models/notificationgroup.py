@@ -26,7 +26,8 @@ logger = logging.getLogger(__name__)
 
 
 NOTIFICATION_TOPICS = {
-    "mail": "mailsender"
+    "mail": "mailsender",
+    "tg": "tgsender"
 }
 
 NOTIFICATION_METHOD_CHOICES = [
