@@ -44,10 +44,7 @@ class Script(BaseScript):
         """
         Check box has NDP enabled
         """
-        try:
-            r = self.cli("display ndp")
-        except self.CLISyntaxError:
-            return False
+        r = self.cli("display ndp")
         return "enabled" in r
 
     @false_on_cli_error
@@ -68,5 +65,5 @@ class Script(BaseScript):
             and "DLDP global status : disable" not in r
 
     def execute_platform(self, caps):
-        if self.has_ndp:
+        if self.has_ndp():
             caps["Huawei | NDP"] = True
