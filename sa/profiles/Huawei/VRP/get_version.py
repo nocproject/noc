@@ -55,6 +55,8 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE
     )
 
+    BAD_PLATFORM = ["", "Quidway S5600-HI"]
+
     def execute(self):
         v = ""
         if self.has_snmp():
@@ -64,7 +66,7 @@ class Script(BaseScript):
                 v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
             except self.snmp.TimeOutError:
                 pass
-        if v == "":
+        if v in self.BAD_PLATFORM:
             # Trying CLI
             try:
                 v = self.cli("display version", cached=True)
