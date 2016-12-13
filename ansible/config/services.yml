@@ -495,6 +495,15 @@ config:
       default: 64
 
   tgsender:
+    use_proxy:
+      label: Use Proxy
+      type: bool
+      default: false
+
     token:
       label: Token
       type: str
+   
+    proxy_addres:
+      label: Proxy Addres (https://ip:port) If use auth (https://us:pass@ip:port)
+      type: str  
