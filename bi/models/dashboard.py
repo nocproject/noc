@@ -11,7 +11,7 @@ import datetime
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField, ListField,
-                                IntField)
+                                IntField, BinaryField)
 
 
 class Dashboard(Document):
@@ -33,7 +33,7 @@ class Dashboard(Document):
     # Config format version
     format = IntField(default=1)
     # gzip'ed data
-    config = StringField()
+    config = BinaryField()
     #
     created = DateTimeField(default=datetime.datetime.now)
     changed = DateTimeField(default=datetime.datetime.now)
