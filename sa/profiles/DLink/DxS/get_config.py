@@ -36,9 +36,9 @@ class Script(BaseScript):
         return self.cleaned_config(config)
 
     ##
-    ## DES-1210-28/ME/B2
+    ## DES-1210-28/ME/B2, DES-1210-26/ME, DES-1210-10/ME
     ##
-    @BaseScript.match(platform__regex=r"DES-1210-28\/ME")
+    @BaseScript.match(platform__regex=r"DES-1210-(10|26|28)\/ME")
     def execute_config_current(self):
         config = self.cli("show config current_config")
         config = self.strip_first_lines(config, 4)
