@@ -15,7 +15,6 @@ import json
 import urllib
 import urllib2
 import time
-import traceback
 ## NOC modules
 from noc.core.service.base import Service
 from noc.core.perf import metrics
@@ -43,30 +42,66 @@ class TgSenderService(Service):
         )
 
         return self.send_tb(message.id, address, subject, body)
-   
-    def send_tb(self, messages, address, subject, body):  
+
+    def send_tb(self, messages, address, subject, body):
         RETRY_TIME = 2.0
         token = self.config.token
+        proxy_addres = self.config.proxy_addres
         data = {'chat_id': address, 'text': body}
         time.sleep(RETRY_TIME)
-        try:
-            result = urllib2.urlopen("https://api.telegram.org/bot" + token + "/sendMessage", urllib.urlencode(data)).read()
-            check = json.loads(result)
-            self.logger.info("Send: %s\n" % check)
-            metrics["telegram_sended_ok"] += 1
-            return True
-        except urllib2.HTTPError, e:
-            self.logger.info("HTTPError: %s\n" % e.code)
-            metrics["telegram_failed_httperror"] += 1
-            return False   
-        except httplib.HTTPException, e:
-            self.logger.info("HTTPException: %s\n" % e.code)
-            metrics["telegram_failed_httpexceprion"] += 1
-            return False  
-        except Exception:
-            self.logger.info("Generic Exception: %s\n" + traceback.format_exc())                   
-            metrics["telegram_failed_exceprion"] += 1
-            return False 
-            
+        if self.config.use_proxy:
+            try:
+                proxy = urllib2.ProxyHandler({'https': proxy_addres})
+                auth = urllib2.HTTPBasicAuthHandler()
+                opener = urllib2.build_opener(proxy)
+                urllib2.install_opener(opener)
+                result = urllib2.urlopen("https://api.telegram.org/bot" + token + "/sendMessage",
+                                         urllib.urlencode(data)).read()
+                check = json.loads(result)
+                self.logger.info("Proxy Send: %s\n" % check)
+                metrics["telegram_proxy_sended_ok"] += 1
+                return True
+            except urllib2.HTTPError, e:
+                self.logger.info("Proxy HTTPError: %s\n" % e.code)
+                metrics["telegram_proxy_failed_httperror"] += 1
+                return False
+            except urllib2.URLError, e:
+                self.logger.info("Proxy URLError: %s\n" % e.args)
+                metrics["telegram_proxy_failed_urlerror"] += 1
+                return False      
+            except urllib2.HTTPException, e:
+                self.logger.info("Proxy HTTPException: %s\n" % e.err)
+                metrics["telegram_proxy_failed_urlerror"] += 1
+                return False                         
+            except Exception, e:
+                self.logger.info("Proxy Generic Exception: %s\n" % e.exp)
+                metrics["telegram_proxy_failed_exceprion"] += 1
+                return False
+        else:
+            try:
+                result = urllib2.urlopen("https://api.telegram.org/bot" + token + "/sendMessage",
+                                         urllib.urlencode(data)).read()
+                check = json.loads(result)
+                self.logger.info("Send: %s\n" % check)
+                metrics["telegram_sended_ok"] += 1
+                return True
+            except urllib2.HTTPError, e:
+                self.logger.info("HTTPError: %s\n" % e.code)
+                metrics["telegram_failed_httperror"] += 1
+                return False
+            except urllib2.URLError, e:
+                self.logger.info("URLError: %s\n" % e.args)
+                metrics["telegram_failed_urlerror"] += 1
+                return False      
+            except urllib2.HTTPException, e:
+                self.logger.info("HTTPException: %s\n" % e.err)
+                metrics["telegram_failed_urlerror"] += 1
+                return False                         
+            except Exception, e:
+                self.logger.info("Generic Exception: %s\n" % e.exc)
+                metrics["telegram_proxy_failed_exceprion"] += 1
+                return False
+
+
 if __name__ == "__main__":
     TgSenderService().start()
