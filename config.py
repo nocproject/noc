@@ -78,7 +78,7 @@ class Config(BaseConfig):
         db_engine = StringParameter(
             default="django.db.backends.postgresql_psycopg2"
         )
-        host = StringParameter(default="pg-master")
+        host = StringParameter(default="postgres.service.dc1.consul")
         port = IntParameter(
             min=1, max=65535,
             default=5432
@@ -202,6 +202,9 @@ class Config(BaseConfig):
     class cache(ConfigSection):
         vcinterfacescount = SecondsParameter(default="1h")
         vcprefixes = SecondsParameter(default="1h")
+        cache_class = StringParameter(default="noc.core.cache.mongo.MongoCache")
+        default_ttl = IntParameter(default=86400)
+        pool_size = IntParameter(default=8)
 
     class dns(ConfigSection):
         warn_before_expired = SecondsParameter(default="30d")
@@ -236,11 +239,6 @@ class Config(BaseConfig):
 
     class trapcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:162")
-
-    class cache(ConfigSection):
-        cache_class = StringParameter(default="noc.core.cache.mongo.MongoCache")
-        default_ttl = IntParameter(default=86400)
-        pool_size = IntParameter(default=8)
 
     def __init__(self):
         self.setup_logging()
