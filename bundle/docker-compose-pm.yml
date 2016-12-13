@@ -1,7 +1,7 @@
 version: '2'
 services:
   pmwriter:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/pmwriter/service.py
     depends_on:

@@ -1,7 +1,7 @@
 version: '2'
 services:
   web:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/web/service.py
     depends_on:
@@ -16,7 +16,7 @@ services:
     dns: ${DNS}
 
   login:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - postgres
@@ -33,7 +33,7 @@ services:
     dns: ${DNS}
 
   card:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - postgres
@@ -50,7 +50,7 @@ services:
     dns: ${DNS}
 
   mrt:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/mrt/service.py
     volumes:
@@ -64,7 +64,7 @@ services:
     dns: ${DNS}
 
   grafanads:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - postgres
@@ -82,7 +82,7 @@ services:
     dns: ${DNS}
 
   bi:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - clickhouse

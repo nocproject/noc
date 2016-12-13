@@ -1,7 +1,7 @@
 version: '2'
 services:
   mailsender:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - nsqlookupd
@@ -19,7 +19,7 @@ services:
 
 
   classifier:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - postgres
@@ -39,7 +39,7 @@ services:
     dns: ${DNS}
 
   correlator-default:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - postgres
