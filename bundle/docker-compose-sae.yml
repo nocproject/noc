@@ -1,7 +1,7 @@
 version: '2'
 services:
   omap:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - postgres
@@ -18,7 +18,7 @@ services:
     dns: ${DNS}
 
   sae:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - postgres
@@ -36,7 +36,7 @@ services:
     dns: ${DNS}
 
   scheduler:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - mongo
@@ -52,7 +52,7 @@ services:
     dns: ${DNS}
 
   activator-default:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/activator/service.py
     volumes:
@@ -67,7 +67,7 @@ services:
     dns: ${DNS}
 
   syslogcollector-default:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/syslogcollector/service.py
     depends_on:
@@ -84,7 +84,7 @@ services:
     dns: ${DNS}
 
   trapcollector-default:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/trapcollector/service.py
     depends_on:

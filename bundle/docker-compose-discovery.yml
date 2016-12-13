@@ -1,7 +1,7 @@
 version: '2'
 services:
   discovery-default-0:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - postgres
@@ -26,7 +26,7 @@ services:
     dns: ${DNS}
 
   discovery-default-1:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     depends_on:
       - postgres

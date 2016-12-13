@@ -1,7 +1,7 @@
 version: '2'
 services:
   dev:
-    image: registry.gitlab.com/nocproject/docker-noc:dev
+    image: registry.getnoc.com/noc/noc-docker:dev
     restart: always
     command: sleep 3600
     volumes:

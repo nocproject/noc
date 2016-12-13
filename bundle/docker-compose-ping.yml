@@ -1,7 +1,7 @@
 version: '2'
 services:
   ping-default-0:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/ping/service.py
     volumes:
@@ -17,7 +17,7 @@ services:
     dns: ${DNS}
 
   ping-default-1:
-    image: registry.gitlab.com/nocproject/docker-noc:upstream
+    image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/ping/service.py
     volumes:
