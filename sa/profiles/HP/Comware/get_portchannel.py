@@ -21,7 +21,10 @@ class Script(BaseScript):
         r"^Aggregation Interface: (?P<agg_interface>\S+)", re.MULTILINE)
 
     def execute(self):
-        v = self.cli("display link-aggregation member-port")
+        try:
+            v = self.cli("display link-aggregation member-port")
+        except self.CLISyntaxError:
+            v = self.cli("display link-aggregation verbose")
         r = []
         for match in self.rx_po_members.finditer(v):
             found = False;

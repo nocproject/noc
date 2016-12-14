@@ -20,10 +20,10 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_sh_int = re.compile(
-        r"^\s*(?P<interface>\S+) current state: (?P<oper_status>UP|DOWN|DOWN \( Administratively \))\n"
-        r"(^Line protocol current state: (?P<line_status>UP|UP \(spoofing\)|DOWN|DOWN \( Administratively \))\n)?"
-        r"(^\s*IP Packet Frame Type: PKTFMT_ETHNT_2, Hardware Address: (?P<mac>\S+)\n)?"
-        r"^\s*Description:(?P<descr>[^\n]*)\n",
+        r"^\s*(?P<interface>\S+) current state\s*:\s*(?P<oper_status>UP|DOWN|DOWN \( Administratively \))\s*\n"
+        r"(^\s*Line protocol current state\s*:\s*(?P<line_status>UP|UP \(spoofing\)|DOWN|DOWN \( Administratively \))\s*\n)?"
+        r"(^\s*IP (?:Packet Frame Type:|Sending Frames\' Format is) PKTFMT_ETHNT_2, Hardware Address(?: is|:) (?P<mac>\S+)\s*\n)?"
+        r"^\s*Description\s*:(?P<descr>[^\n]*)\n",
         re.MULTILINE | re.IGNORECASE | re.DOTALL)
     rx_mtu = re.compile("The Maximum Frame Length is (?P<mtu>\d+)")
     rx_port_type = re.compile(
@@ -37,13 +37,15 @@ class Script(BaseScript):
     rx_ip = re.compile(r"Internet Address is (?P<ip>\S+) Primary")
     rx_ips = re.compile(r"Internet Address is (?P<ip>\S+) Sub")
     rx_mac = re.compile(
-        r"IP Packet Frame Type: PKTFMT_ETHNT_2, Hardware Address: (?P<mac>\S+)")
-
+        r"IP (?:Packet Frame Type:|Sending Frames' Format is) PKTFMT_ETHNT_2, Hardware Address(?: is|:) (?P<mac>\S+)")
     rx_sh_vlan = re.compile(
-        r"^(?P<interface>\S+) current state: (?P<oper_status>UP|DOWN|DOWN \( Administratively \))\n"
-        r"^Line protocol current state: (?P<line_status>UP|UP \(spoofing\)|DOWN|DOWN \( Administratively \))\n"
-        r"^Description:(?P<descr>.*?)\n"
-        r"^The Maximum Transmit Unit is (?P<mtu>\d+)\n",
+        r"^(?P<interface>\S+) current state\s*:\s*(?P<oper_status>UP|DOWN|DOWN \( Administratively \))\s*\n"
+        r"^Line protocol current state\s*:\s*(?P<line_status>UP|UP \(spoofing\)|DOWN|DOWN \( Administratively \))\s*\n"
+        r"(^IP (?:Packet Frame Type:|Sending Frames\' Format is) PKTFMT_ETHNT_2, Hardware address(?: is|:) (?P<mac>\S+)\s*\n)?"
+        r"(^Internet Address is (?P<ip>\S+) Primary\s*\n)?"
+        r"(^Internet protocol processing\s*:\s*\S+\s*\n)?"
+        r"^Description\s*:(?P<descr>.*?)\n"
+        r"^The Maximum Transmit Unit is (?P<mtu>\d+)",
         re.MULTILINE)
     rx_name = re.compile(r"^Vlan-interface(?P<vlan>\d+)?")
     rx_isis = re.compile(r"Interface:\s+(?P<iface>\S+)")
