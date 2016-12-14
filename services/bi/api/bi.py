@@ -129,7 +129,7 @@ class BIAPI(API):
         return [{
             "id": str(d.id),
             "title": str(d.title),
-            "description": str(d.descr),
+            "description": str(d.description),
             "tags": str(d.tags),
             "owner": d.owner,
             "created": d.created.isoformat(),
