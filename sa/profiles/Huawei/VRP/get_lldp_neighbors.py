@@ -55,7 +55,8 @@ class Script(BaseScript):
         "mac address": 3,
         "interfacename": 5,
         "interface name": 5,
-        "local": 7
+        "local": 7,
+        "locally assigned": 7
     }
 
     CAPS = {
