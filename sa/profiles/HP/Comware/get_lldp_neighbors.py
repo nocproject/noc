@@ -37,7 +37,7 @@ class Script(BaseScript):
         try:
             v = self.cli("display lldp neighbor-information")
         except self.CLISyntaxError:
-            raise self.NotSupportedError()
+            return []
         for match in self.rx_item.finditer(v):
             i = {"local_interface": match.group("interface"), "neighbors": []}
             n = {}
