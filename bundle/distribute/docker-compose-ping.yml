@@ -4,30 +4,24 @@ services:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/ping/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     environment:
       NOC_POOL: default
       SERVICE_NAME: ping-default
       NOC_INSTANCE: 0
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
 
   ping-default-1:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/ping/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     environment:
       NOC_POOL: default
       SERVICE_NAME: ping-default
       NOC_INSTANCE: 1
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}

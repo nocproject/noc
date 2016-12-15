@@ -3,49 +3,27 @@ services:
   discovery-default-0:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
-    depends_on:
-      - postgres
-      - mongo
-      - nsqlookupd
-      - nsqd
-      - sae
-      - activator-default
-      - scheduler
     command: python ./services/discovery/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     environment:
       NOC_POOL: default
       SERVICE_NAME: discovery-default
       NOC_INSTANCE: 0
       NOC_GLOBAL_OFFSET: 0
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
 
   discovery-default-1:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
-    depends_on:
-      - postgres
-      - mongo
-      - nsqlookupd
-      - nsqd
-      - sae
-      - activator-default
-      - scheduler
     command: python ./services/discovery/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     environment:
       NOC_POOL: default
       SERVICE_NAME: discovery-default
       NOC_INSTANCE: 1
       NOC_GLOBAL_OFFSET: 0
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}

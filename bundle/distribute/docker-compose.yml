@@ -4,20 +4,18 @@ services:
     image: registry.getnoc.com/noc/noc-docker:dev
     restart: always
     command: sleep 3600
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     cap_add:
       - ALL
     environment:
       http_proxy: $http_proxy
       https_proxy: $http_proxy
       SERVICE_NAME: admin
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
 
 networks:
   backend:
+    driver: overlay
   frontend:
