@@ -1,0 +1,30 @@
+{
+  "current": {
+      "selected": true,
+      "text": "{{probes[0].name}}",
+      "value": "{{probes[0].value}}"
+  },
+  "datasource": null,
+  "hide": 0,
+  "includeAll": true,
+  "label": "probe",
+  "multi": true,
+  "name": "probe",
+  "options": [
+    {
+      "selected": false,
+      "text": "All",
+      "value": "$__all"
+    },
+    {%for probe in probes -%}
+    {{ comma() }}{
+      "selected": false,
+      "text": "{{probe.value}}",
+      "value": "{{probe.name}}"
+    }
+    {%- endfor %}
+   ],
+  "query": "{%- for probe in probes %}{{probe.name}},{% endfor %}",
+  "refresh": 0,
+  "type": "custom"
+}

@@ -237,7 +237,10 @@ class MetricsCheck(DiscoveryCheck):
                         key
                     )
                     continue  # Skip the step
-            m["abs_value"] = m["value"] * m["scale"]
+            if m["type"] == "bool":
+                m["abs_value"] = "true" if m["value"] else "false"
+            else:
+                m["abs_value"] = m["value"] * m["scale"]
             self.logger.debug(
                 "[%s] Measured value: %s. Scale: %s. Resuling value: %s",
                 key, m["value"], m["scale"], m["abs_value"]

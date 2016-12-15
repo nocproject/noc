@@ -82,5 +82,5 @@ class Profile(BaseProfile):
     def fix_version(self, v):
         if v["platform"] == "S5628F-HI" and v["version"] == "5.20":
             # Do not change these numbers. Used in get_switchport script
-            v = "3.10"
+            v["version"] = "3.10"
         return v["version"]

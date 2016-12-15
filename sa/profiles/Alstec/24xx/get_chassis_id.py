@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
-    rx_mac = re.compile(r"^MAC Address\.+ (?P<mac>\S+)", re.MULTILINE)
+    rx_mac = re.compile(r"^(MAC Address|Burned In MAC Address)\.+ (?P<mac>\S+)\s*.+", re.MULTILINE)
 
     def execute(self):
         match = self.rx_mac.search(self.cli("show network", cached=True))

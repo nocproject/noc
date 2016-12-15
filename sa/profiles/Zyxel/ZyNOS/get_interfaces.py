@@ -38,8 +38,7 @@ class Script(BaseScript):
         r"Netmask\[(?P<mask>\d+\.\d+\.\d+\.\d+)\],"
         r"\s+VID\[(?P<vid>\d+)\]$", re.MULTILINE)
     rx_ctp = re.compile(
-        r"^\s+(?P<interface>\d+)\s+\S+"
-        r"\s+(?P<state>\S+)\s+\d+"
+        r"^\s+(?P<interface>\d+)\s+\S+\s+Enable\s+\d+"
         r"\s+\d+\s+\d+\s+.+$",
         re.MULTILINE)
     rx_gvrp = re.compile(
@@ -125,12 +124,12 @@ class Script(BaseScript):
             interfaces += [iface]
 
         # Get loopguard
-        ctp = {}
+        ctp = []
         try:
             cmd = self.cli("show loopguard")
             if "LoopGuard Status: Enable" in cmd:
                 for match in self.rx_ctp.finditer(cmd):
-                    ctp[match.group("interface")] = match.group("state")
+                    ctp += [match.group("interface")]
         except self.CLISyntaxError:
             pass
 
@@ -182,9 +181,8 @@ class Script(BaseScript):
             if "description" in swp.keys():
                 iface["description"] = swp["description"]
                 iface["subinterfaces"][0]["description"] = swp["description"]
-            if len(ctp) > 0:
-                if ctp[name] == "Enable":
-                    iface["enabled_protocols"] += ["CTP"]
+            if name in ctp:
+                iface["enabled_protocols"] += ["CTP"]
             if name in gvrp:
                 iface["enabled_protocols"] += ["GVRP"]
             interfaces += [iface]

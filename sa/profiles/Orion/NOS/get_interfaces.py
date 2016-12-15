@@ -30,6 +30,7 @@ class Script(BaseScript):
         r"^Administrative Access Egress VLANs: \S+\s*\n"
         r"^Operational Access Egress VLANs: \S+\s*\n"
         r"^Trunk Native Mode VLAN: (?P<native_vlan>\d+)\s*\n"
+        r"(^Trunk Native VLAN: \S+\s*\n)?"
         r"^Administrative Trunk Allowed VLANs: (?P<vlans>\S+)\s*\n",
         re.MULTILINE)
     rx_enabled = re.compile(

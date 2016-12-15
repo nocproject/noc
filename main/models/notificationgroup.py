@@ -26,7 +26,8 @@ logger = logging.getLogger(__name__)
 
 
 NOTIFICATION_TOPICS = {
-    "mail": "mailsender"
+    "mail": "mailsender",
+    "tg": "tgsender"
 }
 
 NOTIFICATION_METHOD_CHOICES = [
@@ -124,7 +125,8 @@ class NotificationGroup(models.Model):
         return "Cannot translate message"
 
     @classmethod
-    def send_notification(cls, method, address, subject, body):
+    def send_notification(cls, method, address, subject, body,
+                          attachments=None):
         topic = NOTIFICATION_TOPICS.get(method)
         if not topic:
             logging.error("Unknown notification method: %s", method)
@@ -136,13 +138,19 @@ class NotificationGroup(models.Model):
             {
                 "address": address,
                 "subject": subject,
-                "body": body
+                "body": body,
+                "attachments": attachments or []
             }
         )
 
-    def notify(self, subject, body, link=None):
+    def notify(self, subject, body, link=None, attachments=None):
         """
         Send message to active members
+        :param subject: Message subject
+        :param body: Message body
+        :param link: Optional link
+        :param attachments: List of attachments. Each one is a dict
+            with keys *filename* and *data*. *data* is the raw data
         """
         logger.debug("Notify group %s: %s", self.name, subject)
         if not isinstance(subject, dict):
@@ -154,7 +162,8 @@ class NotificationGroup(models.Model):
                 method,
                 params,
                 self.get_effective_message(subject, lang),
-                self.get_effective_message(body, lang)
+                self.get_effective_message(body, lang),
+                attachments
             )
 
     @classmethod

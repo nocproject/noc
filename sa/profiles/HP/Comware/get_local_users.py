@@ -19,14 +19,19 @@ class Script(BaseScript):
     interface = IGetLocalUsers
 
     rx_line = re.compile(
-        r"The contents of local user (?P<username>\S+):\n"
-        r" State:\s+(?P<state>\S+)\n"
-        r" ServiceType:.+?\n"
-        r" Access-limit:.+?\n"
-        r" User-group:\s+\S+\n"
-        r" Bind attributes:\n"
-        r" Authorization attributes:\n"
-        r"  User Privilege:\s+(?P<privilege>\d+)\n",
+        r"^\s*The contents of local user (?P<username>\S+):\n"
+        r"^\s*State:\s+(?P<state>\S+).*?\n"
+        r"(^\s*Idle-cut:.*?\n)?"
+        r"(^\s*ServiceType:.*?\n)?"
+        r"(^\s*Access-limit:.*?\n)?"
+        r"(^\s*Bind location:.*?\n)?"
+        r"(^\s*Vlan ID:.*?\n)?"
+        r"(^\s*IP address:.*?\n)?"
+        r"(^\s*MAC address:.*?\n)?"
+        r"(^\s*User-group:\s+\S+\n)?"
+        r"(^\s*Bind attributes:.*?\n)?"
+        r"(^\s*Authorization attributes:.*?\n)?"
+        r"^\s*User Privilege:\s+(?P<privilege>\d+)\n",
         re.MULTILINE)
 
     def execute(self):

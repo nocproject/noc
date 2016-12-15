@@ -15,6 +15,7 @@ import gzip
 from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
+from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
 from noc.core.clickhouse.connect import connection
 from noc.core.clickhouse.model import Model
 
@@ -23,7 +24,8 @@ class Command(BaseCommand):
     PREFIX = "var/bi"
 
     EXTRACTORS = [
-        RebootsExtractor
+        RebootsExtractor,
+        AlarmsExtractor
     ]
 
     def add_arguments(self, parser):

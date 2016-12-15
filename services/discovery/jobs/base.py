@@ -538,14 +538,14 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             )
             return
         # Check LAGs
-        if li.type == "aggregated" and ri.type != "aggregated":
+        if li.type == "aggregated" and ri.type != "aggregated" and not li.profile.allow_lag_mismatch:
             self.logger.error(
                 "Cannot connect aggregated interface %s:%s to non-aggregated %s:%s",
                 local_object.name, local_interface,
                 remote_object.name, remote_interface
             )
             return
-        if ri.type == "aggregated" and li.type != "aggregated":
+        if ri.type == "aggregated" and li.type != "aggregated" and not ri.profile.allow_lag_mismatch:
             self.logger.error(
                 "Cannot connect aggregated interface %s:%s to non-aggregated %s:%s",
                 remote_object.name, remote_interface,

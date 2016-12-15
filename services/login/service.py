@@ -63,15 +63,15 @@ class LoginService(UIService):
                 c, method
             )
             try:
-                backend.authenticate(**credentials)
+                user = backend.authenticate(**credentials)
             except backend.LoginError as e:
                 le = str(e)
                 continue
-            self.logger.info("Authorized credentials: %s", c)
+            self.logger.info("Authorized credentials %s as user %s", c, user)
             # Set cookie
             handler.set_secure_cookie(
                 "noc_user",
-                credentials.get("user"),
+                user,
                 expires_days=self.config.login.session_ttl / 86400
             )
             return True

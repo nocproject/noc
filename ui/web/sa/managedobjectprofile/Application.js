@@ -479,6 +479,16 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("CDP")
                                         },
                                         {
+                                            name: "enable_box_discovery_huawei_ndp",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Huawei NDP")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_mikrotik_ndp",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("MikroTik NDP")
+                                        },
+                                        {
                                             name: "enable_box_discovery_fdp",
                                             xtype: "checkboxfield",
                                             boxLabel: __("FDP")

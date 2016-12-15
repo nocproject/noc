@@ -17,8 +17,15 @@ class SLAProbeApplication(ExtDocApplication):
     SLAProbe application
     """
     title = "SLA Probe"
-    menu = [_("Setup"), _("SLA Probes")]
+    menu = _("SLA Probes")
     model = SLAProbe
 
     def field_row_class(self, o):
         return o.profile.style.css_class_name if o.profile and o.profile.style else ""
+
+    def field_targets(self, o):
+        r = []
+        for t in o.tests:
+            if t.target:
+                r += ["%s:%s" % (t.type, t.target)]
+        return ", ".join(r)

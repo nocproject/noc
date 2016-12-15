@@ -19,3 +19,4 @@ class PAMBackend(BaseAuthBackend):
                              service=self.service.config.pam_service)
         if not r:
             raise self.LoginError("PAM authentication failed")
+        return user

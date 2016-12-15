@@ -42,3 +42,4 @@ class RADIUSBackend(BaseAuthBackend):
             raise self.LoginError(
                 "RADIUS Authentication failed. Code=%s", reply.code
             )
+        return user

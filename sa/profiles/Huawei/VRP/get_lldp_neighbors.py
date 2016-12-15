@@ -41,6 +41,8 @@ class Script(BaseScript):
     CHASSIS_TYPES = {
         "macaddress": 4,
         "mac address": 4,
+        "networkaddress": 5,
+        "network address": 5,
         "interfacename": 6,
         "interface name": 6,
         "local": 7
@@ -53,7 +55,8 @@ class Script(BaseScript):
         "mac address": 3,
         "interfacename": 5,
         "interface name": 5,
-        "local": 7
+        "local": 7,
+        "locally assigned": 7
     }
 
     CAPS = {

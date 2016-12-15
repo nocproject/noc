@@ -28,7 +28,7 @@ class Command(BaseCommand):
         "box": [
             "profile", "version", "caps", "interface",
             "id", "config", "asset", "vlan", "nri",
-            "oam", "lldp", "cdp", "stp", "sla"
+            "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla"
         ],
         "periodic": [
             "uptime", "interfacestatus",

@@ -102,6 +102,8 @@ class Profile(BaseProfile):
         r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$", re.MULTILINE)
 
     def setup_session(self, script):
+        #Remove duplicates prompt in DLink DGS-3120-24SC ver. 4.04.R004
+        script.cli("")
         # Cache "show switch" command and fetch CLI Paging from it
         match = self.rx_pager.search(script.cli("show switch", cached=True))
         if not match:

@@ -223,6 +223,11 @@ class MapApplication(ExtApplication):
     @view(url="^(?P<id>[0-9a-f]{24})/info/link/(?P<link_id>[0-9a-f]{24})/$", method=["GET"],
           access="read", api=True)
     def api_info_link(self, request, id, link_id):
+        def q(s):
+            if isinstance(s, unicode):
+                s = s.encode("utf-8")
+            return s
+
         segment = self.get_object_or_404(NetworkSegment, id=id)
         link = self.get_object_or_404(Link, id=link_id)
         r = {
@@ -254,12 +259,12 @@ class MapApplication(ExtApplication):
                     "SELECT object, interface, last(value) "
                     "FROM \"Interface | Load | In\" "
                     "WHERE object='%s' AND interface='%s' " % (
-                        mo.name, i.name
+                        q(mo.name), q(i.name)
                     ),
                     "SELECT object, interface, last(value) "
                     "FROM \"Interface | Load | Out\" "
-                    "WHERE object='%s' AND interface='%s' "  % (
-                        mo.name, i.name
+                    "WHERE object='%s' AND interface='%s' " % (
+                        q(mo.name), q(i.name)
                     )
                 ]
         client = InfluxDBClient()
@@ -418,8 +423,8 @@ class MapApplication(ExtApplication):
                             m["tags"]["interface"]
                         )
                     ] = m["id"]
-                    tag_id[m["object"], m["interface"]] = m["id"]
-                    mlst += [(m["metric"], m["object"], m["interface"])]
+                    tag_id[m["tags"]["object"], m["tags"]["interface"]] = m["id"]
+                    mlst += [(m["metric"], m["tags"]["object"], m["tags"]["interface"])]
                 except KeyError:
                     pass
         # @todo: Get last values from cache

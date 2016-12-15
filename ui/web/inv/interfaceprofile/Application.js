@@ -154,6 +154,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         allowBlank: true
                     },
                     {
+                        name: "allow_lag_mismatch",
+                        xtype: "checkbox",
+                        boxLabel: __("Allow LAG mismatch"),
+                        allowBlank: true
+                    },
+                    {
                         name: "status_discovery",
                         xtype: "checkbox",
                         boxLabel: __("Status Discovery"),
