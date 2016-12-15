@@ -10,8 +10,11 @@
 from noc.lib.app.extapplication import ExtApplication
 from noc.lib.app.application import view
 from noc.core.translation import ugettext as _
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.commandsnippet import CommandSnippet
 from noc.sa.models.action import Action
+from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
+                                    DictParameter)
 
 
 class RunCommandsApplication(ExtApplication):
@@ -48,8 +51,7 @@ class RunCommandsApplication(ExtApplication):
     @view(url="^form/action/(?P<action_id>[0-9a-f]{24})/$", method=["GET"],
           access="launch", api=True)
     def api_form_action(self, request, action_id):
-        action = self.get_object_or_404(CommandSnippet,
-                                         id=int(action_id))
+        action = self.get_object_or_404(Action, id=action_id)
         r = []
         for p in action.params:
             cfg = {
@@ -62,4 +64,35 @@ class RunCommandsApplication(ExtApplication):
             else:
                 cfg["xtype"] = "textfield"
             r += [cfg]
+        return r
+
+    @view(url="^render/snippet/(?P<snippet_id>\d+)/$", method=["POST"],
+          validate={
+              "objects": ListOfParameter(
+                  element=ModelParameter(ManagedObject)
+              ),
+              "config": DictParameter()
+          },
+          access="launch", api=True)
+    def api_render_snippet(self, request, snippet_id, objects, config):
+        snippet = self.get_object_or_404(CommandSnippet,
+                                         id=int(snippet_id))
+        r = {}
+        for mo in objects:
+            r[mo.id] = snippet.expand(config)
+        return r
+
+    @view(url="^render/action/(?P<action_id>[0-9a-f]{24})/$", method=["POST"],
+          validate={
+              "objects": ListOfParameter(
+                  element=ModelParameter(ManagedObject)
+              ),
+              "config": DictParameter()
+          },
+          access="launch", api=True)
+    def api_render_snippet(self, request, action_id, objects, config):
+        action = self.get_object_or_404(Action, id=action_id)
+        r = {}
+        for mo in objects:
+            r[mo.id] = action.expand(**config)
         return r
