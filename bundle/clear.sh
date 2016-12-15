@@ -1,14 +1,23 @@
 #!/bin/sh
 
-dckrc="/usr/local/bin/docker-compose -f docker-compose-dbs.yml \
-                -f docker-compose-discovery.yml \
-                -f docker-compose-fm.yml \
-                -f docker-compose-infra.yml \
-                -f docker-compose-ping.yml \
-                -f docker-compose-sae.yml \
-                -f docker-compose-web.yml \
-                -f docker-compose-pm.yml \
-                -f docker-compose.yml"
+MODE=$1
+
+if [ -z ${MODE} ] ; then
+    echo "set mode local or distribute"
+    exit 1
+fi
+
+dckrc="/usr/local/bin/docker-compose \
+                -f ${MODE}/docker-compose-dbs.yml \
+                -f ${MODE}/docker-compose-discovery.yml \
+                -f ${MODE}/docker-compose-fm.yml \
+                -f ${MODE}/docker-compose-infra.yml \
+                -f ${MODE}/docker-compose-ping.yml \
+                -f ${MODE}/docker-compose-sae.yml \
+                -f ${MODE}/docker-compose-web.yml \
+                -f ${MODE}/docker-compose-pm.yml \
+                -f ${MODE}/docker-compose.yml"
+
 ${dckrc} stop # just stop
 ${dckrc} rm -vf # remove containers
 echo "Removing dbs"
