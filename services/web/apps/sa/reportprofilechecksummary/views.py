@@ -41,7 +41,7 @@ class ReportFilterApplication(SimpleReport):
 
             is_managed = ManagedObject.objects.filter(is_managed=True, pool=p).exclude(object_profile__in=mnp_in)
             is_not_man = ManagedObject.objects.filter(is_managed=False, pool=p)
-            is_not_resp = ManagedObject.objects.filter(is_managed=False, pool=p, object_profile__in=mnp_in)
+            is_not_resp = ManagedObject.objects.filter(is_managed=True, pool=p, object_profile__in=mnp_in)
 
             if not request.user.is_superuser:
                 is_managed = is_managed.filter(administrative_domain__in=UserAccess.get_domains(request.user))

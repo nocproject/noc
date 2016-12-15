@@ -36,7 +36,7 @@ class Script(BaseScript):
         Check box has LLDP enabled
         """
         r = self.cli("display lldp local")
-        return "Global LLDP is not enabled" not in r \
+        return "LLDP is not enabled" not in r \
             and "Global status of LLDP: Disable" not in r
 
     @false_on_cli_error
