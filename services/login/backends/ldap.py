@@ -67,8 +67,8 @@ class LdapBackend(BaseAuthBackend):
         user_groups = set(self.get_user_groups(connect, ldap_domain, user_info))
         if ldap_domain.require_group and ldap_domain.require_group not in user_groups:
             self.logger.error(
-                "User %s is not a member of required group %s",
-                user, ldap_domain.require_group
+                "User %s is not a member of required group %s but member of %s",
+                user, ldap_domain.require_group, user_groups
             )
             raise self.LoginError("Login is not permitted")
         if ldap_domain.deny_group:
@@ -89,6 +89,7 @@ class LdapBackend(BaseAuthBackend):
         # Final check
         if not user_info["is_active"]:
             raise self.LoginError("Access denied")
+        return u.username
 
     @classmethod
     def split_user_domain(cls, user):
@@ -171,12 +172,13 @@ class LdapBackend(BaseAuthBackend):
         if not connection.entries:
             self.logger.info("Cannot find user %s", user)
             return user_info
-        user_info["user_dn"] = connection.entries[0].entry_dn
+        user_info["user_dn"] = connection.entries[0].entry_get_dn()
         # @todo: Map additional attributes
         return user_info
 
     def get_user_groups(self, connection, ldap_domain, user_info):
         if not connection:
+            self.logger.debug("No active connection")
             return []
         gsf = ldap_domain.get_group_search_filter() % user_info
         self.logger.debug("Group search from %s: %s",
@@ -187,4 +189,6 @@ class LdapBackend(BaseAuthBackend):
             ldap3.SUBTREE,
             attributes=["cn"]
         )
-        return [e.entry_dn for e in connection.entries]
+        self.logger.debug("Groups found: %s",
+                          [e.entry_get_dn() for e in connection.entries])
+        return [e.entry_get_dn() for e in connection.entries]

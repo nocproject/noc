@@ -657,3 +657,19 @@ class BaseLoader(object):
             else:
                 dump("/", o)
                 dump("\\", n)
+
+    def check_diff_summary(self):
+        i, u, d = 0, 0, 0
+        ns = self.get_new_state()
+        if not ns:
+            return i, u, d
+        current_state = csv.reader(self.get_current_state())
+        new_state = csv.reader(ns)
+        for o, n in self.diff(current_state, new_state):
+            if o is None and n:
+                i += 1
+            elif o and n is None:
+                d += 1
+            else:
+                u += 1
+        return i, u, d

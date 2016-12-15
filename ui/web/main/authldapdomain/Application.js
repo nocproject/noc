@@ -154,13 +154,15 @@ Ext.define("NOC.main.authldapdomain.Application", {
                             text: __("Active"),
                             dataIndex: "is_active",
                             width: 50,
-                            editor: "checkbox"
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool
                         },
                         {
                             text: __("Local Group"),
                             dataIndex: "group",
                             flex: 1,
-                            editor: "main.group.LookupField"
+                            editor: "main.group.LookupField",
+                            renderer: NOC.render.Lookup("group")
                         }
                     ]
                 }

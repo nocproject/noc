@@ -11,6 +11,7 @@ import re
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -83,7 +84,8 @@ class Script(BaseScript):
             trunk = match.group("mode") in ("trunk", "hybrid", "trunking")
             if trunk:
                 vlans = match.group("vlans").strip()
-                if vlans not in ["-", "none"]:
+                if vlans and (vlans not in ["-", "none"]) \
+                  and is_int(vlans[0]):
                     vlans = self.rx_vlan_comment.sub("", vlans)
                     vlans = vlans.replace(" ", ",")
                     tagged = self.expand_rangelist(vlans)

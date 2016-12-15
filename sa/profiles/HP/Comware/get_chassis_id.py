@@ -17,7 +17,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetChassisID
 
-    rx_id = re.compile(r"^MAC_ADDRESS\s+:\s+(?P<id>\S+)",
+    rx_id = re.compile(r"^\s*MAC_ADDRESS\s+:\s+(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
     def execute(self):

@@ -44,7 +44,7 @@ class Script(BaseScript):
                     if match:
                         out_if["members"].append(match.group('interface'))
                 r += [out_if]
-                return r
+            return r
         for l in s.splitlines():
             pc, rest = l.split(" ", 1)
             pc = pc[2:]

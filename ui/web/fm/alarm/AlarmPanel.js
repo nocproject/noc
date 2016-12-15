@@ -296,6 +296,9 @@ Ext.define("NOC.fm.alarm.AlarmPanel", {
             ],
             items: [
                 me.topPanel,
+                {
+                    xtype: 'splitter'
+                },
                 me.tabPanel
             ]
         });

@@ -36,8 +36,16 @@ class Script(BaseScript):
         Check box has LLDP enabled
         """
         r = self.cli("display lldp local")
-        return "Global LLDP is not enabled" not in r \
+        return "LLDP is not enabled" not in r \
             and "Global status of LLDP: Disable" not in r
+
+    @false_on_cli_error
+    def has_ndp(self):
+        """
+        Check box has NDP enabled
+        """
+        r = self.cli("display ndp")
+        return "enabled" in r
 
     @false_on_cli_error
     def has_bfd(self):
@@ -56,3 +64,6 @@ class Script(BaseScript):
         return "Global DLDP is not enabled" not in r \
             and "DLDP global status : disable" not in r
 
+    def execute_platform(self, caps):
+        if self.has_ndp():
+            caps["Huawei | NDP"] = True

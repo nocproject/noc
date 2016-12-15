@@ -21,6 +21,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.lib.nosql import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.inv.models.objectuplink import ObjectUplink
+from noc.main.models.timepattern import TimePattern
 
 
 class MaintainanceObject(EmbeddedDocument):
@@ -49,6 +50,9 @@ class Maintainance(Document):
     is_completed = BooleanField(default=False)
     contacts = StringField()
     suppress_alarms = BooleanField()
+    # Time pattern when maintainance is active
+    # None - active all the time
+    time_pattern = ForeignKeyField(TimePattern)
     # Objects declared to be affected by maintainance
     direct_objects = ListField(EmbeddedDocumentField(MaintainanceObject))
     # Segments declared to be affected by maintainance
@@ -140,6 +144,15 @@ class Maintainance(Document):
                 "$lte": now
             },
             "is_completed": False
+        }, {
+            "_id": 0,
+            "affected_objects": 1,
+            "time_pattern": 1
         }):
+            if d.get("time_pattern"):
+                # Restrict to time pattern
+                tp = TimePattern.get_by_id(d["time_pattern"])
+                if tp and not tp.match(now):
+                    continue
             affected.update([x["object"] for x in d["affected_objects"]])
         return list(affected)

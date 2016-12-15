@@ -63,6 +63,12 @@ class Script(BaseScript):
         "Interface | Packets | Out": [
             ("SNMP | IF-MIB | HC", "IF-MIB::ifHCOutUcastPkts", "counter", 1),
             ("SNMP | IF-MIB", "IF-MIB::ifOutUcastPkts", "counter", 1)
+        ],
+        "Interface | Status | Admin": [
+            ("SNMP | IF-MIB", "IF-MIB::ifAdminStatus", "bool", lambda x: 1 if x == 1 else 0)
+        ],
+        "Interface | Status | Oper": [
+            ("SNMP | IF-MIB", "IF-MIB::ifOperStatus", "bool", lambda x: 1 if x == 1 else 0)
         ]
     }
 

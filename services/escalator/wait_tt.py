@@ -50,9 +50,8 @@ def wait_tt(alarm_id):
     else:
         # Check later
         call_later(
-            "noc.services.correlator.wait_tt.wait_tt",
+            "noc.services.escalator.wait_tt.wait_tt",
+            scheduler="escalator",
             delay=CHECK_INTERVAL,
-            scheduler="correlator",
-            pool=alarm.managed_object.pool.name,
             alarm_id=alarm_id
         )

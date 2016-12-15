@@ -20,6 +20,7 @@ class LocalBackend(BaseAuthBackend):
             raise self.LoginError(_("User does not exists"))
         if not user.check_password(password):
             raise self.LoginError(_("Invalid password"))
+        return user.username
 
     def change_credentials(self, user=None, old_password=None,
                            new_password=None, **kwargs):

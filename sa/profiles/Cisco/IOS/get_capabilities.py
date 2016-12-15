@@ -69,7 +69,7 @@ class Script(BaseScript):
         """
         Check box has stp enabled
         """
-        r = self.cli("show spanning-tree summary")
+        r = self.cli("show spanning-tree")
         if ("No spanning tree instance exists" in r
             or "No spanning tree instances exist" in r):
             return False

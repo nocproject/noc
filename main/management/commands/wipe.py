@@ -130,13 +130,16 @@ class Command(BaseCommand):
         :type o: User
         :return: None
         """
-        from noc.main.models import AuditTrail, NotificationGroupUser,\
-                                    UserProfile, Checkpoint, UserState
+        from noc.main.models.notificationgroup import NotificationGroupUser
+        from noc.main.models.audittrail import AuditTrail
+        from noc.main.models.userprofile import UserProfile
+        from noc.main.models.userstate import UserState
         from noc.sa.models.useraccess import UserAccess
         from noc.fm.models.activealarm import ActiveAlarm
         from noc.ip.models.prefixaccess import PrefixAccess
         from noc.ip.models.prefixbookmark import PrefixBookmark
-        from noc.kb.models import KBEntryPreviewLog, KBUserBookmark
+        from noc.kb.models.kbentrypreviewlog import KBEntryPreviewLog
+        from noc.kb.models.kbuserbookmark import KBUserBookmark
         # Clean UserState
         with self.log("Cleaning user preferences"):
             UserState.objects.filter(user_id=o.id).delete()
@@ -149,9 +152,6 @@ class Command(BaseCommand):
         # Clean User profile
         with self.log("Cleaning user profile"):
             UserProfile.objects.filter(user=o).delete()
-        # Clean Checkpoint
-        with self.log("Cleaning checkpoints"):
-            Checkpoint.objects.filter(user=o).delete()
         # Clean user access
         with self.log("Cleaning management object access"):
             UserAccess.objects.filter(user=o).delete()

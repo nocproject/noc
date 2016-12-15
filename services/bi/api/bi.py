@@ -15,6 +15,7 @@ import ujson
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
 from noc.core.bi.models.reboots import Reboots
+from noc.core.bi.models.alarms import Alarms
 from noc.bi.models.dashboard import Dashboard
 
 
@@ -26,7 +27,8 @@ class BIAPI(API):
 
     # @todo: Replace with dynamic loading
     datasources = [
-        Reboots
+        Reboots,
+        Alarms
     ]
 
     def iter_datasources(self):
@@ -127,7 +129,7 @@ class BIAPI(API):
         return [{
             "id": str(d.id),
             "title": str(d.title),
-            "description": str(d.descr),
+            "description": str(d.description),
             "tags": str(d.tags),
             "owner": d.owner,
             "created": d.created.isoformat(),
