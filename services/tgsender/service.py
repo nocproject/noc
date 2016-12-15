@@ -47,7 +47,7 @@ class TgSenderService(Service):
         RETRY_TIME = 2.0
         token = self.config.token
         proxy_addres = self.config.proxy_addres
-        data = {'chat_id': address, 'text': body}
+        data = {'chat_id': address, 'text': '*'+subject+'*\n'+body,'parse_mode': 'Markdown'}
         time.sleep(RETRY_TIME)
         if self.config.use_proxy:
             try:
