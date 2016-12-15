@@ -105,11 +105,6 @@ TEMPLATE_DIRS = (
     "django/contrib/admin/templates/"
 )
 
-CACHES = {
-    "default": {
-        "BACKEND": "noc.lib.cache.MongoDBCache"
-    }
-}
 
 INSTALLED_APPS = [
     "django.contrib.auth",
