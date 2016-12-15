@@ -1,13 +1,5 @@
 version: '2'
 services:
-  registrator:
-    image: gliderlabs/registrator:latest
-    restart: always
-    command: -internal=true -cleanup=true -ttl=10 -ttl-refresh 5 consul://0.0.0.0:8500
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock
-    network_mode: host
-    dns: ${DNS}
 
   front:
     image: nginx:alpine
@@ -16,12 +8,6 @@ services:
     networks:
       - backend
       - frontend
-    depends_on:
-      - web
-      - login
-      - card
-      - grafana
-      - bi
     ports:
       - "443:443"
     volumes:
@@ -29,12 +15,10 @@ services:
       - ../:/opt/noc
     volumes_from:
       - web
-    env_file:
-      - .env
     environment:
       SERVICE_NAME: front
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
-
 
   grafana:
     image: grafana/grafana:3.1.1
@@ -42,14 +26,11 @@ services:
     volumes:
       - ./config/grafana:/etc/grafana
       - ../../noc_data/grafana:/var/lib/grafana
-    depends_on:
-      - influxdb
-    env_file:
-      - .env
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_PATHS_DATA: /var/lib/grafana
       GF_PATHS_PLUGINS: /var/lib/grafana/plugins
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     networks:
       - backend
     dns: ${DNS}

@@ -4,15 +4,9 @@ services:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/pmwriter/service.py
-    depends_on:
-      - nsqd
-      - influxdb
     networks:
       - backend
-    volumes:
-      - ../:/opt/noc
-    env_file:
-      - .env
     environment:
       SERVICE_NAME: pmwriter
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}

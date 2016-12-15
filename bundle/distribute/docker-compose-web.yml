@@ -4,95 +4,64 @@ services:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/web/service.py
-    depends_on:
-      - postgres
-      - mongo
     networks:
       - backend
-    volumes:
-      - ../:/opt/noc
-    env_file:
-      - .env
+    environment:
+      SERVICE_NAME: web
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
 
   login:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
-    depends_on:
-      - postgres
-      - mongo
     command: python ./services/login/service.py
     networks:
       - backend
-    volumes:
-      - ../:/opt/noc
-    env_file:
-      - .env
     environment:
       SERVICE_NAME: login
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
 
   card:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
-    depends_on:
-      - postgres
-      - mongo
     command: python ./services/card/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     environment:
       SERVICE_NAME: card
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
 
   mrt:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
     command: python ./services/mrt/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     environment:
       SERVICE_NAME: mrt
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
 
   grafanads:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
-    depends_on:
-      - postgres
-      - grafana
-      - mongo
     command: python ./services/grafanads/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     environment:
       SERVICE_NAME: grafanads
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
 
   bi:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
-    depends_on:
-      - clickhouse
     command: python ./services/bi/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     environment:
       SERVICE_NAME: bi
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}

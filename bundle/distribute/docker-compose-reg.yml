@@ -1,0 +1,10 @@
+version: '2'
+services:
+  registrator:
+    image: gliderlabs/registrator:latest
+    restart: always
+    command: -internal=true -cleanup=true -ttl=10 -ttl-refresh 5 consul://0.0.0.0:8500
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    network_mode: host
+    dns: ${DNS}

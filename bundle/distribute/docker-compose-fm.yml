@@ -3,55 +3,35 @@ services:
   mailsender:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
-    depends_on:
-      - nsqlookupd
-      - nsqd
     command: python ./services/mailsender/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     environment:
       SERVICE_NAME: mailsender
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
 
 
   classifier:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
-    depends_on:
-      - postgres
-      - mongo
     command: python ./services/classifier/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
-    env_file:
-      - .env
     environment:
       NOC_POOL: default
       SERVICE_NAME: classifier
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
 
   correlator-default:
     image: registry.getnoc.com/noc/noc-docker:master
     restart: always
-    depends_on:
-      - postgres
-      - mongo
     command: python ./services/correlator/service.py
-    volumes:
-      - ../:/opt/noc
     networks:
       - backend
-    env_file:
-      - .env
     environment:
       NOC_POOL: default
       SERVICE_NAME: correlator-default
+      NOC_CONFIG: consul://${DNS}/noc,env:///NOC
     dns: ${DNS}
