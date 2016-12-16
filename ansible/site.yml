@@ -1,13 +1,12 @@
 ---
-- name: Install and upgrade NOC
-  hosts: nodes
+- name: Common tasks
+  hosts: all
   become: no
   any_errors_fatal: true
   vars_files:
     - [ "vars/main.yml", "vars/local.yml" ]
   vars:
     ansible_tags: "{{ lookup('get_tags') }}"
-
   roles:
     - role: pre
 
@@ -17,54 +16,6 @@
         - node
         - noc
 
-    - role: dev
-      become: yes
-      when: "{{ has_svc_dev | default(False) }} or {{ has_svc_notebook | default(False) }}"
-      tags:
-        - dev
-
-    - role: mongod
-      become: yes
-      when: "{{ has_svc_mongod | default(False) }}"
-      tags:
-        - mongod
-        - external
-
-    - role: postgres
-      become: yes
-      when: "{{ has_svc_postgres | default(False) }}"
-      tags:
-        - postgres
-        - external
-
-    - role: pgbouncer
-      become: yes
-      when: "{{ has_svc_pgbouncer | default(False) }}"
-      tags:
-        - pgbouncer
-        - external
-    - role: influxdb
-      become: yes
-      when: "{{ has_svc_influxdb | default(False) }}"
-      tags:
-        - influxdb
-        - external
-
-    - role: nginx
-      become: yes
-      when: "{{ has_svc_nginx | default(False) }}"
-      tags:
-        - nginx
-        - web
-        - external
-
-    - role: grafana
-      become: yes
-      when: "{{ has_svc_grafana | default(False) }}"
-      tags:
-        - grafana
-        - external
-
     - role: nsqd
       become: yes
       when: "{{ has_svc_nsqd | default(False) }}"
@@ -73,6 +24,112 @@
         - nsqd
         - external
 
+- name: Install and configure mongo
+  hosts: svc-mongod
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+  roles:
+    - role: mongod
+      become: yes
+      when: "{{ has_svc_mongod | default(False) }}"
+      tags:
+        - mongod
+        - external
+
+- name: Install and configure postgres
+  hosts: svc-postgres
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+  roles:
+    - role: postgres
+      become: yes
+      when: "{{ has_svc_postgres | default(False) }}"
+      tags:
+        - postgres
+        - external
+
+- name: Install and configure pgbouncer
+  hosts: svc-pgbouncer
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+  roles:
+    - role: pgbouncer
+      become: yes
+      when: "{{ has_svc_pgbouncer | default(False) }}"
+      tags:
+        - pgbouncer
+        - external
+
+- name: Install and configure influxdb
+  hosts: svc-influxdb
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+  roles:
+    - role: influxdb
+      become: yes
+      when: "{{ has_svc_influxdb | default(False) }}"
+      tags:
+        - influxdb
+        - external
+
+- name: Install and configure nginx
+  hosts: svc-nginx
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+  roles:
+    - role: nginx
+      become: yes
+      when: "{{ has_svc_nginx | default(False) }}"
+      tags:
+        - nginx
+        - web
+        - external
+
+- name: Install and configure grafana
+  hosts: svc-grafana
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+  roles:
+    - role: grafana
+      become: yes
+      when: "{{ has_svc_grafana | default(False) }}"
+      tags:
+        - grafana
+        - external
+
+- name: Install and configure nsqlookupd
+  hosts: svc-nsqlookupd
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+  roles:
     - role: nsqlookupd
       become: yes
       when: "{{ has_svc_nsqlookupd| default(False) }}"
@@ -81,21 +138,15 @@
         - nsqlookupd
         - external
 
-    - role: nsqadmin
-      become: yes
-      when: "{{ has_svc_nsqadmin | default(False) }}"
-      tags:
-        - nsq
-        - nsqadmin
-        - external
-
-    - role: notebook
-      become: yes
-      when: "{{ has_svc_notebook | default(False) }}"
-      tags:
-        - notebook
-        - external
-
+- name: Install and configure memcached
+  hosts: svc-memcached
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+  roles:
     - role: memcached
       become: yes
       when: "{{ has_svc_memcached | default(False) }}"
@@ -103,12 +154,15 @@
         - memcached
         - external
 
-    - role: migrate
-      become: yes
-      when: "{{ has_svc_mongod_master | default(False) }}"
-      tags:
-        - migrate
-
+- name: Install and upgrade NOC
+  hosts: svc-activator,svc-bi,svc-card,svc-classifier,svc-correlator,svc-discovery,svc-escalator,svc-grafanads,svc-login,svc-mailsender,svc-mrt,svc-omap,svc-ping,svc-pmwriter,svc-sae,svc-scheduler,svc-syslogcollector,svc-tgsender,svc-trapcollector,svc-web,
+  become: no
+  any_errors_fatal: false
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+  roles:
     - role: login
       become: yes
       when: "{{ has_svc_login | default(False) }}"
@@ -131,7 +185,7 @@
       tags:
         - escalator
         - node
-        - noc        
+        - noc
 
     - role: web
       become: yes
@@ -171,7 +225,7 @@
       tags:
         - tgender
         - node
-        - noc  
+        - noc
 
     - role: omap
       become: yes
@@ -260,6 +314,52 @@
         - discovery
         - node
         - noc
+
+- name: Install and configure dev tools
+  hosts: svc-dev
+  become: yes
+  any_errors_fatal: false
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+  roles:
+    - role: dev
+      become: yes
+      when: "{{ has_svc_dev | default(False) }} or {{ has_svc_notebook | default(False) }}"
+      tags:
+        - dev
+
+    - role: notebook
+      become: yes
+      when: "{{ has_svc_notebook | default(False) }}"
+      tags:
+        - notebook
+        - external
+
+    - role: nsqadmin
+      become: yes
+      when: "{{ has_svc_nsqadmin | default(False) }}"
+      tags:
+        - nsq
+        - nsqadmin
+        - external
+
+
+- name: Finally
+  hosts: all
+  become: no
+  any_errors_fatal: true
+  vars_files:
+    - [ "vars/main.yml", "vars/local.yml" ]
+  vars:
+    ansible_tags: "{{ lookup('get_tags') }}"
+
+  roles:
+    - role: migrate
+      become: yes
+      tags:
+        - migrate
 
     - role: post
       become: yes
