@@ -23,6 +23,7 @@
     - libffi-dev
     - libmemcached11
     - libmemcached-dev
+    - ca-certificates
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
