@@ -170,7 +170,8 @@ class AlarmApplication(ExtApplication):
             "summary": self.f_glyph_summary({
                 "subscriber": SummaryItem.items_to_dict(o.total_subscribers),
                 "service": SummaryItem.items_to_dict(o.total_services)
-            })
+            }),
+            "total_objects": sum(x.summary for x in o.total_objects)
         }
         if fields:
             d = dict((k, d[k]) for k in fields)
