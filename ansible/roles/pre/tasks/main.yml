@@ -8,12 +8,15 @@
   tags:
     - always
 
-- set_fact:
-    tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0]}}"
+- name: "Loading system-dependend settings"
+  include_vars: "os/{{ ansible_distribution }}.yml"
+  become: yes
   tags:
+    - config
     - always
 
 - set_fact:
+    tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0]}}"
     grafana_pg_password: "{{noc_config['config'].get('grafana-global-%s' % ansible_hostname, {}).get('password', 'grafana')}}"
   tags:
     - always
@@ -43,13 +46,6 @@
   environment:
     https_proxy: "{{http_proxy}}"
   tags:
-    - always
-
-- name: "Loading system-dependend settings"
-  include_vars: "os/{{ ansible_distribution }}.yml"
-  become: yes
-  tags:
-    - config
     - always
 
 - name: "Include OS-specific tasks"
