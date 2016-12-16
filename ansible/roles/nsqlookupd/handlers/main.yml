@@ -4,3 +4,9 @@
   service:
     name: nsqlookupd
     state: restarted
+
+- name: reload telegraf
+  become: yes
+  service:
+    name: telegraf
+    state: restarted
