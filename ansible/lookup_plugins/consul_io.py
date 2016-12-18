@@ -397,7 +397,7 @@ class ConsulInventory(object):
             else:
                 return '%s.node.%s' % (node_name, domain)
         else:
-            return node_data['Address']
+            return node_data['Node']
 
     def add_node_to_map(self, map, name, node):
 
