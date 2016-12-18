@@ -53,6 +53,20 @@
     http_proxy: "{{http_proxy}}"
     CFLAGS: "{{ pip_cflags | default('') }}"
 
+
+- name: Install assets
+  command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
+  args:
+    chdir: "{{ noc_root }}"
+  register: s
+  changed_when: "'CHANGED' in s.stdout"
+  with_items: "{{ required_assets }}"
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
+
 - name: Enable Nginx system service
   service:
     name: "{{ nginx_system_service }}"
