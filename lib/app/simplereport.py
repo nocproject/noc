@@ -566,12 +566,14 @@ class TableSection(ReportSection):
                 n = 1
                 for row in self.data:
                     if type(row) == SectionRow:
+                        writer.writerow(list(row.title))
                         continue
                     writer.writerow([n] + list(row))
                     n += 1
             else:
                 for row in self.data:
                     if type(row) == SectionRow:
+                        writer.writerow(list(row.title))
                         continue
                     writer.writerow(row)
         return f.getvalue()
