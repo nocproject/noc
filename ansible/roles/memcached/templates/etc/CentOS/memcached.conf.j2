@@ -1,5 +1,5 @@
 PORT="11211"
 USER="{{ memcahed_user }}"
-MAXCONN="{{noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('max_clients', '1024')}}"
-CACHESIZE="{{noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('max_memory', '64')}}"
+MAXCONN="{{memcached_max_clients}}"
+CACHESIZE="{{memcached_max_memory}}"
 OPTIONS=""

@@ -23,17 +23,17 @@
   tags:
     - config
 
-- name: Install ssh keys
-  copy:
-    src: "{{ item }}"
-    dest: "{{ noc_root }}/var/etc/ssh/{{ '/'.join(item.split('/')[-2:]) }}"
-    owner: root
-    group: "{{ noc_group }}"
-    mode: 0440
-  with_fileglob:
-    - "{{ tower_ssh_keys }}/*/id_*"
-  tags:
-    - config
+#- name: Install ssh keys
+#  copy:
+#    src: "{{ item }}"
+#    dest: "{{ noc_root }}/var/etc/ssh/{{ '/'.join(item.split('/')[-2:]) }}"
+#    owner: root
+#    group: "{{ noc_group }}"
+#    mode: 0440
+#  with_fileglob:
+#    - "{{ tower_ssh_keys }}/*/id_*"
+#  tags:
+#    - config
 
 - name: Tune sysctl.conf for activator
   sysctl:

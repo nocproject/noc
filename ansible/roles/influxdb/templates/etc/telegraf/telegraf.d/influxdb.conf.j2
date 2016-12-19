@@ -5,7 +5,7 @@
 
   ## Multiple URLs from which to read InfluxDB-formatted JSON
   urls = [
-    "http://{{ noc_config["config"].get("influxdb-global-%s" % ansible_hostname, {}).get("listen", "127.0.0.1:8086")}}/debug/vars"
+    "http://{{influx_addr}}/debug/vars"
   ]
 
 

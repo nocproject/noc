@@ -20,7 +20,7 @@ logfile {{ memcahed_log_file }}
 # Start with a cap of 64 megs of memory. It's reasonable, and the daemon default
 # Note that the daemon will grow to this size, but does not start out holding this much
 # memory
--m {{noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('max_memory', '64')}}
+-m {{memcached_max_memory}}
 
 # Default connection port is 11211
 -p 11211
@@ -35,7 +35,7 @@ logfile {{ memcahed_log_file }}
 -l 0.0.0.0
 
 # Limit the number of simultaneous incoming connections. The daemon default is 1024
--c {{noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('max_clients', '1024')}}
+-c {{memcached_max_clients}}
 
 # Lock down all paged memory. Consult with the README and homepage before you do this
 # -k

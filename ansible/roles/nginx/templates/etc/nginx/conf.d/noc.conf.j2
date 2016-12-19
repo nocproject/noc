@@ -11,7 +11,7 @@ http {
 {% if noc_config["services"].get("web", []) %}
 upstream noc-web {
 {% for n in noc_config["services"].get("web", []) %}
-    server {{ n }} weight={{noc_config['config'].get('web-global-%s' % ansible_hostname, {}).get('weight', 1)}};
+    server {{ n }} weight={{web_weight}};
 {% endfor %}
 }
 {% endif %}
@@ -19,7 +19,7 @@ upstream noc-web {
 {% if noc_config["services"].get("login", []) %}
 upstream login {
 {% for n in noc_config["services"].get("login", []) %}
-    server {{ n }} weight={{noc_config['config'].get('login-global-%s' % ansible_hostname, {}).get('weight', 1)}};
+    server {{ n }} weight={{login_weight}};
 {% endfor %}
 }
 {% endif %}
@@ -27,7 +27,7 @@ upstream login {
 {% if noc_config["services"].get("card", []) %}
 upstream card {
 {% for n in noc_config["services"].get("card", []) %}
-    server {{ n }} weight={{noc_config['config'].get('login-global-%s' % ansible_hostname, {}).get('weight', 1)}};
+    server {{ n }} weight={{card_weight}};
 {% endfor %}
 }
 {% endif %}
@@ -35,7 +35,7 @@ upstream card {
 {% if noc_config["services"].get("mrt", []) %}
 upstream mrt {
 {% for n in noc_config["services"].get("mrt", []) %}
-    server {{ n }};
+    server {{ n }} weight={{mrt_weight}};
 {% endfor %}
 }
 {% endif %}
@@ -43,7 +43,7 @@ upstream mrt {
 {% if noc_config["services"].get("bi", []) %}
 upstream bi {
 {% for n in noc_config["services"].get("bi", []) %}
-    server {{ n }};
+    server {{ n }} weight={{bi_weight}};
 {% endfor %}
 }
 {% endif %}
@@ -59,7 +59,7 @@ upstream notebook {
 {% if noc_config["services"].get("grafana", []) %}
 upstream grafana {
 {% for n in noc_config["services"].get("grafana", []) %}
-    server {{ n }};
+    server {{ n }} weight={{grafana_weight}};
 {% endfor %}
 }
 {% endif %}
@@ -67,13 +67,13 @@ upstream grafana {
 {% if noc_config["services"].get("grafanads", []) %}
 upstream grafanads {
 {% for n in noc_config["services"].get("grafanads", []) %}
-    server {{ n }};
+    server {{ n }} weight={{grafanads_weight}};
 {% endfor %}
 }
 {% endif %}
 
 
-{% if noc_config["config"].get("nginx-global-%s" % ansible_hostname, {}).get("logging") %}
+{% if nginx_json_logging %}
 log_format noc_format '{ "@timestamp": "$time_iso8601", '
                          '"@fields": { '
                          '"remote_addr": "$remote_addr", '
@@ -97,7 +97,7 @@ log_format noc_format '$remote_addr - $remote_user [$time_local] '
 
 {% endif %}
 
-{% if noc_config["config"].get("nginx-global-%s" % ansible_hostname, {}).get("http_redirect") %}
+{% if nginx_http_redirect_enabled %}
 server {
     listen 80;
     server_name {{ noc_web_host }};

@@ -33,7 +33,7 @@ nsqlookupd_tcp_addresses = [
 data_path = "{{noc_root}}/var/db/nsq"
 
 ## number of messages to keep in memory (per topic/channel)
-mem_queue_size = {{ noc_config["config"].get("nsqd-global-%s" % ansible_hostname, {}).get("max_messages_in_memory", 10000) }}
+mem_queue_size = {{nsq_max_messages_in_memory}}
 
 ## number of bytes per diskqueue file before rolling
 max_bytes_per_file = 104857600

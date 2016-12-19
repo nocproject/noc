@@ -94,7 +94,7 @@ server_reset_query = DISCARD ALL
 ;;;
 
 ; total number of clients that can connect
-max_client_conn = {{noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients', '3000')}}
+max_client_conn = {{pgbouncer_max_clients}}
 
 ; default pool size.  20 is good number when transaction pooling
 ; is in use, in session pooling it needs to be the number of
@@ -111,7 +111,7 @@ default_pool_size = 20
 ;reserve_pool_timeout = 3
 
 ; how many total connections to a single database to allow from all pools
-; max_db_connections = {{noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients /10', '300')}}
+; max_db_connections = {{pgbouncer_max_db_connection}}
 ;max_user_connections = 50
 
 ; If off, then server connections are reused in LIFO manner

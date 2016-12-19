@@ -5,5 +5,5 @@ pattern = "memcached"
 [[inputs.memcached]]
 ## An array of address to gather stats about. Specify an ip on hostname
 ## with optional port. ie localhost, 10.0.0.1:11211, etc.
-servers = ["{{ noc_config["config"].get("memcached-global-%s" % ansible_hostname, {}).get("listen", "127.0.0.1:11211")}}"]
+servers = ["{{memcache_address}}"]
 # unix_sockets = ["/var/run/memcached.sock"]
