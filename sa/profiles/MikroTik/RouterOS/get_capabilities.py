@@ -19,7 +19,7 @@ class Script(BaseScript):
         caps["MikroTik | RouterOS | License | SoftwareID"] = c["software-id"]
         caps["MikroTik | RouterOS | License | Level"] = c["nlevel"]
         if c.get("upgradable-to"):
-            caps["MikroTik | RouterOS | License | Upgradable To"] = c["upto"]
+            caps["MikroTik | RouterOS | License | Upgradable To"] = c["upgradable-to"]
 
     def has_cdp(self):
         """
