@@ -1,3 +1,4 @@
 memcached_max_clients: 1024
 memcached_max_files: "{{ (memcached_max_clients * 1.1)  | int | abs}}"
 memcached_max_memory: 64
+memcache_address: 127.0.0.1:11211
