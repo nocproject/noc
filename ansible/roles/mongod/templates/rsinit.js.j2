@@ -21,6 +21,7 @@
         {% endif %}
     });
 {% endfor %}
+{% if "svc-mongod-arbiter" in groups %}
 {% for n in groups["svc-mongod-arbiter"] %}
     members.push({
         _id: 99,
@@ -28,6 +29,7 @@
         arbiterOnly: true
     });
 {% endfor %}
+{% endif %}
 
     status = rs.status();
     if(status.ok) {
