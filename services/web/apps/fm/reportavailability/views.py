@@ -76,7 +76,7 @@ class ReportAvailabilityApplication(SimpleReport):
         # Normalize to percents
         return dict((o, (td - outages[o]) * 100.0 / td) for o in outages)
 
-    def get_data(self, request, interval, from_date=None, to_date=None, **kwargs):
+    def get_data(self, request, interval=1, from_date=None, to_date=None, **kwargs):
         """
         a1 = self.get_availability(1)
         a7 = self.get_availability(7)
