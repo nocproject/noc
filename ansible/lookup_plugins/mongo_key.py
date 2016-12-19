@@ -30,5 +30,7 @@ class LookupModule(LookupBase):
                 with open(path, "w") as f:
                     os.chmod(path, 0o600)
                     f.write(key)
-            ret += [path]
-        return ret
+                return [key]
+            else:
+                with open(path, "r") as f:
+                    return [f.read()]

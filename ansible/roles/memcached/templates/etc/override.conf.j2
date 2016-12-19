@@ -1,2 +1,2 @@
 [Service]
-LimitNOFILE={{(noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('max_clients', 1024) * 1.1 )| int | abs }}
+LimitNOFILE={{memcached_max_files}}

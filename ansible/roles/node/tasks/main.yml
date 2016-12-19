@@ -12,6 +12,7 @@
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     regexp: ".*{{ item }}"
   with_items: "{{ groups['nodes'] }}"
+  when: "consul_datacenter is not defined"
   tags:
     - config
 
@@ -181,19 +182,6 @@
   tags:
     - requirements
 
-- name: Install assets
-  command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
-  args:
-    chdir: "{{ noc_root }}"
-  register: s
-  changed_when: "'CHANGED' in s.stdout"
-  with_items: "{{ required_assets }}"
-  environment:
-    http_proxy: "{{http_proxy}}"
-    https_proxy: "{{http_proxy}}"
-  tags:
-    - requirements
-
 - name: Apply local patches
   command: "{{ noc_root }}/scripts/deploy/apply-patches"
   args:
@@ -328,7 +316,7 @@
   with_items:
     - section: main
       option: secret_key
-      value: "{{ lookup('django_key', tower_data + '/noc/secret.key') }}"
+      value: "{{ django_key }}"
     - section: database
       option: name
       value: "{{ noc_pg_db }}"
@@ -340,7 +328,7 @@
       value: "{{ noc_pg_password }}"
     - section: database
       option: host
-      value: "{% for n in groups['svc-postgres-master'] %}{{n}}{% endfor %}"
+      value: "{{postgres_master}}"
     - section: nosql_database
       option: name
       value: "{{ noc_mongo_db }}"

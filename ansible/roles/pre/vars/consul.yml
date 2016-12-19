@@ -1,0 +1,17 @@
+env: "debian"
+prefix: "noc/{{env}}"
+noc_env_type: "{{ lookup('consul_kv', '{{prefix}}/noc_env_type') }}"
+noc_dc: "dc1"
+noc_metrics_collector:
+django_key: "{{ lookup('consul_kv', '{{prefix}}/django_key') }}"
+supervisorctl_key: "{{ lookup('consul_kv', '{{prefix}}/supervisorctl_key') }}"
+postgres_master: "{{ lookup('consul_kv', '{{prefix}}/pg_master') }}"
+mongo_key: "{{ lookup('consul_kv', '{{prefix}}/mongo_key') }}"
+noc_all_pools: "{{ lookup('consul_kv', '{{prefix}}/pool', recurse=true, list=True) }}"
+noc_config: "{{ lookup('consul_kv', '{{prefix}}/noc_config/', recurse=true, json=True) }}"
+
+grafana_pg_password: "{{ lookup('consul_kv', '{{prefix}}/grafana_pg_password') }}"
+#used for uniq id for mongodb
+# see https://docs.mongodb.com/master/reference/replica-configuration/#rsconf.members[n]._id
+# Values must be between 0 and 255 inclusive
+node_id: "{{ ansible_all_ipv4_addresses.0.split('.')[-1] }}"

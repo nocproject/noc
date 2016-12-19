@@ -25,8 +25,8 @@
     - config
 
 - name: Generating mongo key file
-  copy:
-    src: "{{ lookup('mongo_key', tower_data + '/mongo/mongo.key') }}"
+  template:
+    src: "mongo.key.j2"
     dest: "{{ noc_root }}/var/etc/mongo/mongo.key"
 
 - include: "os/{{ ansible_distribution }}/main.yml"
@@ -84,6 +84,8 @@
 
 - include: "master.yml"
   when: "{{ has_svc_mongod_master  | default(False) }}"
+  tags:
+    - rs_init
 
 - name: Install mongodb monitoring
   template:
