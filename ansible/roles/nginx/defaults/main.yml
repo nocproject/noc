@@ -3,3 +3,10 @@ nginx_http_redirect_enabled: false
 required_assets:
   - card
   - web
+web_weight: 1
+card_weight: 1
+login_weight: 1
+mrt_weight: 1
+bi_weight: 1
+grafana_weight: 1
+grafanads_weight: 1

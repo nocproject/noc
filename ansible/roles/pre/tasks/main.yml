@@ -10,14 +10,27 @@
 
 - name: "Loading system-dependend settings"
   include_vars: "os/{{ ansible_distribution }}.yml"
-  become: yes
   tags:
     - config
     - always
 
 - set_fact:
     tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0]}}"
-    grafana_pg_password: "{{noc_config['config'].get('grafana-global-%s' % ansible_hostname, {}).get('password', 'grafana')}}"
+  tags:
+    - always
+
+- name: "Load variables from consul"
+  include_vars: "consul.yml"
+  when: "consul_datacenter is defined"
+  environment:
+    ANSIBLE_CONSUL_URL: "{{consul_url}}"
+  tags:
+    - config
+    - always
+
+- name: "Load variables from tower"
+  include_vars: "tower.yml"
+  when: "consul_datacenter is not defined"
   tags:
     - always
 
@@ -25,7 +38,6 @@
   set_fact:
     http_proxy: "{{ proxy }}"
   when: "proxy is defined"
-  become: yes
   tags:
     - config
     - always
@@ -41,7 +53,6 @@
   when: "alerta_url and alerta_url is defined and alerta_token is defined and 'prod' in noc_env_type"
   register: alerta_notified
   changed_when: "alerta_notified.status == 201"
-  become: yes
   run_once: true
   environment:
     https_proxy: "{{http_proxy}}"
@@ -50,11 +61,9 @@
 
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
-  become: yes
   tags:
     - config
     - always
-
 
 - name: Stop NOC node
   service:
