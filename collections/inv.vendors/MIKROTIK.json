@@ -1,0 +1,7 @@
+{
+    "name": "MikroTik",
+    "uuid": "f3ae3331-271d-4ad4-986b-6e47eff9b47d",
+    "code": "MIKROTIK",
+    "site": "http://www.mikrotik.com/",
+    "$collection": "inv.vendors"
+}
