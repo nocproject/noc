@@ -45,6 +45,10 @@ class ReportForm(forms.Form):
         label=_("Filter Pending links"),
         required=False
     )
+    filter_none_objects = forms.BooleanField(
+        label=_("Filter None problems"),
+        required=False
+    )
 
 
 class ReportFilterApplication(SimpleReport):
@@ -61,6 +65,7 @@ class ReportFilterApplication(SimpleReport):
     def get_data(self, request, pool="default", obj_profile=None,
                  avail_status=None, profile_check_only=None,
                  failed_scripts_only=None, filter_pending_links=None,
+                 filter_none_objects=None,
                  **kwargs):
         data = []
 
@@ -86,9 +91,10 @@ class ReportFilterApplication(SimpleReport):
 
             elif failed_scripts_only:
                 job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"_id": {"$in": mos[(0 + n):(10000 + n)]}}},
-                                                             {"$match": {"$and": [{"problems": {"$exists": "true", "$ne": {  }}},
-                                                             {"problems.suggest_snmp": {"$exists": False}},
-                                                             {"problems.suggest_cli": {"$exists": False}}]}}],
+                                                             {"$match": {"$and": [
+                                                                 {"problems": {"$exists": "true", "$ne": {  }}},
+                                                                 {"problems.suggest_snmp": {"$exists": False}},
+                                                                 {"problems.suggest_cli": {"$exists": False}}]}}],
                                                             read_preference=ReadPreference.SECONDARY_PREFERRED)
             else:
                 job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"problems": {"$exists": True, "$ne": {  }},
@@ -107,6 +113,9 @@ class ReportFilterApplication(SimpleReport):
                             if not ("RPC Error" in discovery["problems"][method] or
                                             "exception" in discovery["problems"][method]):
                                 continue
+                    if filter_none_objects:
+                        if "RPC Error: Failed: None" in discovery["problems"][method]:
+                            continue
 
                     data += [
                         (
