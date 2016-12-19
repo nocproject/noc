@@ -358,6 +358,7 @@
   roles:
     - role: migrate
       become: yes
+      run_once: true
       tags:
         - migrate
 
