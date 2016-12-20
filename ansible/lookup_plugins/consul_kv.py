@@ -124,7 +124,7 @@ class LookupModule(LookupBase):
                             else:
                                 branch[parts[-1]] = value
                     if "list" in params and params["list"]:
-                        return [resp[d] for d in resp]
+                        return [[resp[d] for d in resp]]
 
                     return [resp]
                 elif results[1]:
