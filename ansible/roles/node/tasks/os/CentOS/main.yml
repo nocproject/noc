@@ -64,7 +64,7 @@
    - libmemcached
    - libmemcached-devel
    - zlib-devel
-    - unzip
+   - unzip
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
