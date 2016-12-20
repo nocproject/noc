@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
 ## Vendor: D-Link
-## OS:     DxS
+## OS:     DxS_Smart
 ## Compatible:
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -194,6 +194,9 @@ def DES1210(v):
 
 
 # DGS-1210-series
+def DGS121010(v):
+    return v["platform"].startswith("DGS-1210-10")
+
 def DGS121048(v):
     return v["platform"].startswith("DGS-1210-48")
 

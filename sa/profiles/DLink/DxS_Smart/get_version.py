@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS_Smart.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -38,7 +38,7 @@ class Script(BaseScript):
                 pass
         else:
             raise self.NotSupportedError()
-        if DES1210(r) or DGS121048(r) or DGS121052(r):
+        if DES1210(r) or DGS121010(r) or DGS121048(r) or DGS121052(r):
             s = self.cli("show switch", cached=True)
             match = self.re_search(self.rx_ver, s)
             r.update({
