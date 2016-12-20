@@ -1,0 +1,5 @@
+---
+galaxy_info:
+  author: Brian Shumate & Aleksey Shirokih
+  description: Consul cluster role
+dependencies: []
