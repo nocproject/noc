@@ -3,7 +3,7 @@
 
 - name: Check bootstrapped state
   stat:
-    path: /etc/consul/.consul_bootstrapped
+    path: "{{consul_config_dir}}/.consul_bootstrapped"
   register: bootstrap_marker
   ignore_errors: true
 
@@ -94,7 +94,7 @@
 
   - name: Bootstrapped marker
     file:
-      dest: /etc/consul/.consul_bootstrapped
+      dest: "{{consul_config_dir}}/.consul_bootstrapped"
       state: touch
 
   - include: ../tasks/tls.yml
