@@ -59,7 +59,9 @@ class Script(BaseScript):
         ifname = self.cli_detail("/interface %s print detail without-paging" % iftype, cached=True)
         for n1, f1, r1 in ifname:
             if self.si["name"] == r1["name"]:
-                tun["local_address"] = r1["local-address"]
+                #in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
+                if "local-address" in r1.keys():
+                    tun["local_address"] = r1["local-address"]
                 tun["remote_address"] = r1["remote-address"]
                 return
 
