@@ -4,7 +4,7 @@
   tags:
     - config
 
-- name: Update hostname
-  command: hostname {{ ansible_hostname }}
-  tags:
-    - config
+#- name: Update hostname
+#  command: hostname {{ ansible_hostname }}
+#  tags:
+#    - config
