@@ -1,13 +1,5 @@
 # Pre-deployment tasks
 ---
-
-- name: Display all variables/facts known for a host
-  debug:
-    var: hostvars[inventory_hostname]
-    verbosity: 8
-  tags:
-    - always
-
 - name: "Loading system-dependend settings"
   include_vars: "os/{{ ansible_distribution }}.yml"
   tags:
@@ -22,7 +14,7 @@
 
 - name: "Load variables from consul"
   include_vars: "consul.yml"
-  when: "consul_url is defined and consul_token is defined"
+  when: consul_env
   environment:
     CONSUL_URL: "{{consul_url}}"
     CONSUL_TOKEN: "{{consul_token}}"
@@ -32,7 +24,7 @@
 
 - name: "Load variables from tower"
   include_vars: "tower.yml"
-  when: "consul_datacenter is not defined"
+  when: not consul_env
   tags:
     - always
 
@@ -43,6 +35,14 @@
   tags:
     - config
     - always
+
+- name: Display all variables/facts known for a host
+  debug:
+    var: hostvars[inventory_hostname]
+    verbosity: 8
+  tags:
+    - always
+
 
 - name: notify alerta of deployment start
   uri:
