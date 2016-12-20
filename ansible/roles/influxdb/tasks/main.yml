@@ -24,10 +24,10 @@
   service: name="{{influxdb_system_service}}" state=restarted
   when: "s1.changed and not s2.changed"
 
-- name: Wait for InfluxDB
+- name: Waiting for influx db to finish restart. timeout 20 minutes
   wait_for:
     port: 8086
-    timeout: 15
+    timeout: 1200
     state: present
 
 - name: Create InfluxDB database
