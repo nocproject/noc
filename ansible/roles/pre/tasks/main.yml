@@ -16,15 +16,16 @@
 
 - set_fact:
     tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0]}}"
-  when: "ansible_connection == 'ssh'"
+  when: "'smart' or 'ssh' in ansible_connection"
   tags:
     - always
 
 - name: "Load variables from consul"
   include_vars: "consul.yml"
-  when: "consul_datacenter is defined"
+  when: "consul_url is defined and consul_token is defined"
   environment:
-    ANSIBLE_CONSUL_URL: "{{consul_url}}"
+    CONSUL_URL: "{{consul_url}}"
+    CONSUL_TOKEN: "{{consul_token}}"
   tags:
     - config
     - always
