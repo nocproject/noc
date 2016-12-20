@@ -16,6 +16,7 @@
 
 - set_fact:
     tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0]}}"
+  when: "ansible_connection == 'ssh'"
   tags:
     - always
 
