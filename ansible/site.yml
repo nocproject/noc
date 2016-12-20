@@ -2,13 +2,19 @@
 - name: Common tasks
   hosts: all
   become: no
-  any_errors_fatal: true
+  any_errors_fatal: false
   vars_files:
     - [ "vars/main.yml", "vars/local.yml" ]
   vars:
     ansible_tags: "{{ lookup('get_tags') }}"
   roles:
     - role: pre
+
+    - role: consul
+      become: yes
+      when: consul_env
+      tags:
+        - consul
 
     - role: node
       become: yes
