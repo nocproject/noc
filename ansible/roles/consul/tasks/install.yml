@@ -8,6 +8,8 @@
   get_url:
     url: "{{ consul_checksum_file_url }}"
     dest: "/tmp/consul_{{ consul_version }}_SHA256SUMS"
+  environment:
+    https_proxy: "{{http_proxy}}"
 
 - name: Get Consul package checksum
   become: no
@@ -27,7 +29,8 @@
     dest: "/tmp/{{consul_version}}/{{ consul_pkg }}"
     checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
     timeout: 42
-
+  environment:
+    https_proxy: "{{http_proxy}}"
 
 - name: Unarchive Consul
   become: no
