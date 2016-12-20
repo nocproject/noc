@@ -189,6 +189,11 @@ def setup_logging():
 if os.getenv('ANSIBLE_INVENTORY_CONSUL_IO_LOG_ENABLED'):
     setup_logging()
 
+if os.getenv('NOC_ENV'):
+    environment = os.getenv('NOC_ENV')
+else:
+    environment = "NOC"
+
 try:
     import json
 except ImportError:
@@ -215,10 +220,7 @@ class ConsulInventory(object):
         self.nodes_by_kv = {}
         self.nodes_by_availability = {}
         self.current_dc = None
-        if os.getenv('NOC_ENV'):
-            self.env = os.getenv('NOC_ENV')
-        else:
-            self.env = "NOC"
+        self.env = environment
 
         config = ConsulConfig()
         self.config = config
@@ -294,11 +296,11 @@ class ConsulInventory(object):
             metadata '''
         node = node_data['Node']
         if self.config.has_config('kv_metadata'):
-            dc = "%s/%s" % (self.config.kv_metadata, 'all')
-            env = "%s/%s" % ("noc", self.env)
-            gen = "%s/%s/%s" % (self.config.kv_metadata, self.current_dc, 'all')
-            host = "%s/%s/%s" % (self.config.kv_metadata, self.current_dc, node['Node'])
-            for path in [dc, env, gen, host]:
+            dc = "%s/%s" % (self.config.kv_metadata, 'all')  # ansible/metadata/<ENV>/all
+            gen = "%s/%s/%s" % (self.config.kv_metadata, self.current_dc, 'all')  # ansible/metadata/<ENV>/DC1/all
+            host = "%s/%s/%s" % (
+            self.config.kv_metadata, self.current_dc, node['Node'])  # ansible/metadata/<ENV>/DC1/node-name
+            for path in [dc, gen, host]:
                 self.load_node_metadata_from_kv(node_data, path)
 
     def load_node_metadata_from_kv(self, node_data, path):
@@ -434,6 +436,7 @@ class ConsulInventory(object):
 
 class ConsulConfig(dict):
     def __init__(self):
+        self.env = environment
         self.read_settings()
         self.read_cli_args()
 
@@ -456,6 +459,8 @@ class ConsulConfig(dict):
             value = None
             if config.has_option('consul', option):
                 value = config.get('consul', option)
+            if option.startswith("kv_"):
+                value = "/".join([value, self.env])
             setattr(self, option, value)
 
     def read_cli_args(self):
@@ -490,9 +495,9 @@ class ConsulConfig(dict):
         token = None
         scheme = 'http'
 
-        if hasattr(self, 'url'):
+        if os.getenv('CONSUL_URL'):
             from urlparse import urlparse
-            o = urlparse(self.url)
+            o = urlparse(os.getenv('CONSUL_URL'))
             if o.hostname:
                 host = o.hostname
             if o.port:
@@ -504,6 +509,8 @@ class ConsulConfig(dict):
             token = self.token
             if not token:
                 token = 'anonymous'
+            elif os.getenv('CONSUL_TOKEN'):
+                token = os.getenv('CONSUL_TOKEN')
         return consul.Consul(host=host, port=port, token=token, scheme=scheme)
 
 
