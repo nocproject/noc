@@ -1,0 +1,9 @@
+---
+- name: Install consul dependencies
+  yum:
+    name: "{{item}}"
+    state: present
+  with_items:
+   - unzip
+  environment:
+    http_proxy: "{{http_proxy}}"

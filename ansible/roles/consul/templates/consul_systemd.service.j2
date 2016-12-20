@@ -1,0 +1,22 @@
+[Unit]
+Description=Consul Agent Service
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+PIDFile={{consul_pid_dir}}/consul.pid
+PermissionsStartOnly=true
+Environment="GOMAXPROCS=`nproc`"
+Restart=on-failure
+User={{ consul_user }}
+Group={{ consul_group }}
+ExecStartPre=-/bin/mkdir {{consul_pid_dir}}
+ExecStartPre=/bin/chown -R {{ consul_user }}:{{ consul_group }} {{consul_pid_dir}}
+ExecStart={{ consul_bin_path }}/consul agent -config-dir {{ consul_config_dir }}/{{consul_node_role}}/ -pid-file={{consul_pid_dir}}/consul.pid
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target
