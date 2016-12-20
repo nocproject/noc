@@ -79,8 +79,10 @@ class LookupModule(LookupBase):
         super(LookupModule, self).__init__(loader, templar, **kwargs)
 
         self.agent_url = 'http://localhost:8500'
-        if os.getenv('ANSIBLE_CONSUL_URL') is not None:
-            self.agent_url = os.environ['ANSIBLE_CONSUL_URL']
+        if os.getenv('CONSUL_URL'):
+            self.agent_url = os.environ['CONSUL_URL']
+        if os.getenv('CONSUL_TOKEN'):
+            self.token = os.environ['CONSUL_TOKEN']
 
     def run(self, terms, variables=None, **kwargs):
 
