@@ -79,7 +79,9 @@ class Profile(BaseProfile):
         return config
 
     def fix_version(self, v):
-        if v["platform"] == "S5628F-HI" and v["version"] == "5.20":
+        # CLI return S5628F-HI as platform, but SNMP return S5628F
+        BAD_PLATFORMS = ["S5628F", "S5628F-HI"]
+        if v["platform"] in BAD_PLATFORMS and v["version"] == "5.20":
             # Do not change these numbers. Used in get_switchport script
             v["version"] = "3.10"
         return v["version"]
