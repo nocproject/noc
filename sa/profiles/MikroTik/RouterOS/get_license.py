@@ -19,7 +19,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetLicense
     rx_lic = re.compile(
-        r"^\s*(?:software|system)-id: (?P<sid>\S+)\n"
+        r"^\s*(?:software|system)-id: (?P<q>\"?)(?P<sid>\S+?)(?P=q)\n"
         r"(^\s*upgradable-to: (?P<upto>\S+)\n)?"
         r"(^\s*nlevel: (?P<nlevel>\d+)\n)?"
         r"(^\s*level: (?P<level>\S+)\n)?"
