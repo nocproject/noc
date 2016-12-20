@@ -17,11 +17,16 @@
     - config
 
 - name: Enable InfluxDB system service
-  service: name="{{influxdb_system_service}}" enabled=yes state=started
+  service:
+    name: "{{influxdb_system_service}}"
+    enabled: yes
+    state: started
   register: s2
 
 - name: Reload InfluxDB config
-  service: name="{{influxdb_system_service}}" state=restarted
+  service:
+    name: "{{influxdb_system_service}}"
+    state: restarted
   when: "s1.changed and not s2.changed"
 
 - name: Waiting for influx db to finish restart. timeout 20 minutes
