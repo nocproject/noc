@@ -4,5 +4,9 @@
   tags:
     - requirements
 
+# Produced `unable to get current rcvar value` error
+#- name: Enable memcached system service
+#  service: name="memcached" enabled=yes state=started
+
 - name: Enable memcached system service
-  service: name="memcached" enabled=yes state=started
+  lineinfile: dest=/etc/rc.conf regexp=^memcached_enable= line=memcached_enable=\"YES\"
