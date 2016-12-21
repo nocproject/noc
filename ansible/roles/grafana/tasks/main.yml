@@ -28,12 +28,12 @@
     enabled: yes
     state: started
 
-- name: Set up dynamic dashboars
+- name: Set up dynamic dashboards
   copy:
     src: noc.js
     dest: "{{ grafana_home }}/public/dashboards/noc.js"
 
-- name: Install grafana simple datasource plugin
+- name: Install Grafana simple datasource plugin
   shell: "grafana-cli --pluginsDir {{ noc_root }}/var/db/grafana_plugins plugins install grafana-simple-json-datasource"
   args:
     creates: "{{ noc_root }}/var/db/grafana_plugins/grafana-simple-json-datasource/src/datasource.js"
