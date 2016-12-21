@@ -17,7 +17,7 @@ mongo_path: /usr/local/bin/mongo
 mongo_pid: /var/db/mongodb/mongod.lock
 mongod_path: /usr/local/bin/mongod
 nginx_conf_path: /usr/local/etc/nginx/nginx.conf
-nginx_log_dir: /var/log
+nginx_log_dir: /var/log/nginx
 nginx_path: /usr/local/sbin/nginx
 nginx_ssl_cert_path: /usr/local/etc/nginx/ssl/noc.crt
 nginx_ssl_key_path: /usr/local/etc/nginx/ssl/noc.key
