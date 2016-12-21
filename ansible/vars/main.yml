@@ -14,6 +14,8 @@ consul_token: "{{lookup('env','CONSUL_TOKEN')}}"
 consul_env: "{% if consul_url and consul_token%}True{%endif%}"
 
 tower_ip: 127.0.0.1
+tower_version: "{{lookup('env','TOWER_VERSION')}}"
+tower_minimum_version: "0.1a64"
 http_proxy:  "" # just default. please set actual variable via tower on DC tab
 
 grafana_group: grafana
