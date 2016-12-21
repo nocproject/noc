@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Zyxel.ZyNOS.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_mac_address_table"
     interface = IGetMACAddressTable
 
-    rx_line = re.compile(r"^(?P<interfaces>\d+)\s+(?P<vlan_id>\d+)\s+"
+    rx_line = re.compile(r"^\s*(?P<interfaces>\d+)\s+(?P<vlan_id>\d+)\s+"
                          r"(?P<mac>\S+)\s+(?P<type>\S+)\s*$", re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
