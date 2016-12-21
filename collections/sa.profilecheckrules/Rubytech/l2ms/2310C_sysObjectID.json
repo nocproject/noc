@@ -1,0 +1,13 @@
+{
+    "name": "Rubytech | ES-2310C",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "c47df2e9-a01c-474e-ad65-3e327aafa961",
+    "description": "SNMPv2-MIB::sysObjectID.0",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.5205.2.23",
+    "action": "match",
+    "profile": "Rubytech.l2ms"
+}
