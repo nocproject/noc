@@ -3,3 +3,6 @@
   pkgng: name="memcached" state=present
   tags:
     - requirements
+
+- name: Enable memcached system service
+  service: name="memcached" enabled=yes state=started
