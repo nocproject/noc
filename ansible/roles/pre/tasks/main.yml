@@ -13,6 +13,7 @@
   tags:
     - always
 
+
 - name: "Load variables from consul"
   include_vars: "consul.yml"
   when: consul_env
@@ -44,6 +45,11 @@
   tags:
     - always
 
+- name: Various env checks
+  include: "checks.yml"
+  tags:
+    - always
+    - env_checks
 
 - name: notify alerta of deployment start
   uri:
