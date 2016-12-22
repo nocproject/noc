@@ -1,17 +1,38 @@
-env: "debian"
-prefix: "noc/{{env}}"
+env: "{{ lookup('env','NOC_ENV')}}"
+noc_dc: "{{ lookup('env','NOC_DC')}}"
+prefix: "noc/{{env}}/{{noc_dc}}"
+
 noc_env_type: "{{ lookup('consul_kv', '{{prefix}}/noc_env_type') }}"
-noc_dc: "dc1"
-noc_metrics_collector:
+
 django_key: "{{ lookup('consul_kv', '{{prefix}}/django_key') }}"
 supervisorctl_key: "{{ lookup('consul_kv', '{{prefix}}/supervisorctl_key') }}"
 postgres_master: "{{ lookup('consul_kv', '{{prefix}}/pg_master') }}"
 mongo_key: "{{ lookup('consul_kv', '{{prefix}}/mongo_key') }}"
 noc_all_pools: "{{ lookup('consul_kv', '{{prefix}}/pool', recurse=true, list=True) }}"
-noc_config: "{{ lookup('consul_kv', '{{prefix}}/noc_config/', recurse=true, json=True) }}"
+noc_config:
+  config: "{{ lookup('consul_kv', '{{prefix}}/service/', recurse=true, json=True, keys=2) }}"
+  pools: "{{ lookup('consul_kv', '{{prefix}}/pools', recurse=true, json=True) }}"
+  #services: ""
+  nodes: "{{ lookup('consul_kv', '{{prefix}}/nodes', recurse=True, json=True) }}"
+
 
 grafana_pg_password: "{{ lookup('consul_kv', '{{prefix}}/grafana_pg_password') }}"
+
 #used for uniq id for mongodb
 # see https://docs.mongodb.com/master/reference/replica-configuration/#rsconf.members[n]._id
 # Values must be between 0 and 255 inclusive
 node_id: "{{ ansible_all_ipv4_addresses.0.split('.')[-1] }}"
+
+#postgres
+noc_pg_db: "{{ lookup('consul_kv', '{{prefix}}/service/postgres/db') }}"
+noc_pg_user: "{{ lookup('consul_kv', '{{prefix}}/service/postgres/user') }}"
+noc_pg_password: "{{ lookup('consul_kv', '{{prefix}}/service/postgres/password') }}"
+
+#mongo
+noc_mongo_db: "{{ lookup('consul_kv', '{{prefix}}/service/mongo/db') }}"
+noc_mongo_user: "{{ lookup('consul_kv', '{{prefix}}/service/mongo/user') }}"
+noc_mongo_password: "{{ lookup('consul_kv', '{{prefix}}/service/mongo/password') }}"
+noc_mongo_admin_password: "{{ lookup('consul_kv', '{{prefix}}/service/mongo/admin_password') }}"
+noc_mongo_admin_user: "{{ lookup('consul_kv', '{{prefix}}/service/mongo/admin_user') | default('root')}}"
+noc_mongo_replicaset: "{{ lookup('consul_kv', '{{prefix}}/service/mongo/replicaset') | default('noc') }}"
+noc_mongo_storageengine: "{{ lookup('consul_kv', '{{prefix}}/service/mongo/storageengine') | default('wiredTiger')}}"
