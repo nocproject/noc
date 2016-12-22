@@ -37,7 +37,7 @@ class ReportFilterApplication(SimpleReport):
                 continue
             data += [SectionRow(name=p.name)]
 
-            mnp_in = ManagedObjectProfile.objects.filter(enable_ping=False)
+            mnp_in = list(ManagedObjectProfile.objects.filter(enable_ping=False))
 
             is_managed = ManagedObject.objects.filter(is_managed=True, pool=p).exclude(object_profile__in=mnp_in)
             is_not_man = ManagedObject.objects.filter(is_managed=False, pool=p)
@@ -51,8 +51,8 @@ class ReportFilterApplication(SimpleReport):
             is_managed_not_generic = is_managed.exclude(profile_name="Generic.Host")
             is_managed_undef = is_managed.filter(profile_name="Generic.Host")
 
-            is_managed_undef_in = [i for i in is_managed_undef.values_list("id", flat=True)]
-            is_managed_not_generic_in = is_managed_not_generic.values_list("id", flat=True)
+            is_managed_undef_in = list(is_managed_undef.values_list("id", flat=True))
+            is_managed_not_generic_in = list(is_managed_not_generic.values_list("id", flat=True))
 
             is_managed_c = is_managed.count()
             is_managed_not_generic_c = len(is_managed_not_generic_in)
