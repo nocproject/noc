@@ -1,6 +1,6 @@
 [databases]
 
-{{noc_pg_db}}= dbname={{noc_pg_db}} host={{ noc_config.services.postgres.0.split(':')[0] }} port=5432 user={{noc_pg_user}} password={{noc_pg_password}}
+{{noc_pg_db}}= dbname={{noc_pg_db}} host={{postgres_host}} port=5432 user={{noc_pg_user}} password={{noc_pg_password}}
 
 ;; Configuration section
 [pgbouncer]
