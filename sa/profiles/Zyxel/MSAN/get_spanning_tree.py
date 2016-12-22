@@ -26,6 +26,8 @@ class Script(BaseScript):
         r"^.+\n"
         r"^.+\n"
         r"^force version\s+: (?P<version>rstp|mstp)\s*\n", re.MULTILINE)
+    rx_mstid = re.compile(
+        r"^\s*(?P<id>\d+) (?P<vlans>[0-9\-\,]+)\s*\n", re.MULTILINE)
     rx_bridge = re.compile(
         r"BridgeID\s+:\s+(?P<bridge_priority>[0-9a-fx]+)-(?P<bridge_id>\S+)")
     rx_root = re.compile(
@@ -61,7 +63,7 @@ class Script(BaseScript):
         if inst_id == 0:
             vlans = "1-4095"
         else:
-            raise self.NotSupportedError()
+            vlans = ""
         inst = {
             "id": inst_id,
             "vlans": vlans,
@@ -102,6 +104,11 @@ class Script(BaseScript):
     def process_rstp(self):
         return self.get_inst(0)
 
+    def process_mstp(self, inst, vlans):
+        i = self.get_inst(inst)
+        i["vlans"] = vlans
+        return i
+
     def execute(self):
         v = self.cli("switch mstp show", cached=True)
         match = self.rx_config.search(v)
@@ -116,5 +123,19 @@ class Script(BaseScript):
                 "instances": [self.process_rstp()]
             }
         else:
-            raise self.NotSupportedError()
+            r = {
+                "mode": "MSTP",
+                "configuration": {
+                    "MSTP": {
+                        "region": match.group("region"),
+                        "revision": int(match.group("revision"))
+                    }
+                },
+                "instances": []
+            }
+            for match1 in self.rx_mstid.finditer(v):
+                r["instances"] += [self.process_mstp(
+                    match1.group("id"),
+                    match1.group("vlans")
+                    )]
         return r
