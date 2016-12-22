@@ -60,10 +60,10 @@ env = "{{noc_env_type}}"
   # Multiple urls can be specified but it is assumed that they are part of the same
   # cluster, this means that only ONE of the urls will be written to each interval.
   # urls = ["udp://localhost:8089"] # UDP endpoint example
-  {% if noc_metrics_collector %}
+  {% if noc_metrics_collector and noc_metrics_collector != '' %}
   urls = ["http://{{ noc_metrics_collector }}"] # required
   {% elif "influxdb" in noc_config.services %}
-  urls = ["http://{{ noc_config.services.influxdb.0 }}"] # required
+  urls = ["{{influx_host}}"] # required
   {% else %}
   urls = []
   {% endif %}
