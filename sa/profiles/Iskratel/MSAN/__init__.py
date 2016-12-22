@@ -26,7 +26,7 @@ class Profile(BaseProfile):
         (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t"),
         (r"--More-- or \(q\)uit", " ")
     ]
-    pattern_syntax_error = r"% Invalid input detected at"
+    pattern_syntax_error = r"% Invalid input detected at|Command not found"
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
@@ -57,7 +57,7 @@ class Profile(BaseProfile):
         r"Manufacturer\.+ .+\n"
         r"Burned In MAC Address\.+ (?P<mac>\S+)\n"
         r"Network Processing Device\.+ .+\n"
-        r"Hardware and CPLD Version\.+ .+\n"
+        r"Hardware and CPLD Version\.+ (?P<hw_ver>\S+)\n"
         r"IPMI Version\.+ (?P<ipmi_ver>\S+)",
         re.MULTILINE)
 
