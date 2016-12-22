@@ -23,14 +23,15 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?\s*#"
     pattern_more = [
         (r"Press any key to continue or ESC to stop scrolling.", " "),
-        (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t")
+        (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t"),
+        (r"--More-- or \(q\)uit", " ")
     ]
     pattern_syntax_error = r"% Invalid input detected at"
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
     command_submit = "\r"
-    rogue_chars = ["\r\x00"]
+    rogue_chars = ["\r", "\x00"]
 
     rx_hw = re.compile(
         r"System Description\.+ ISKRATEL Switching\n"
