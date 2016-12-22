@@ -22,6 +22,12 @@ class Script(BaseScript):
     rx_line = re.compile(
         r"^(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+"
         r"(?P<type>\S+)\s*\n", re.MULTILINE)
+    rx_line2 = re.compile(
+        r"^(?P<mac>\S+)\s+(?P<vlan_id>\d+)\s+(?P<type>\S+)\s*\n",
+        re.MULTILINE)
+    rx_line3 = re.compile(
+        r"^(?P<mac>\S+)\s+(?P<interface>\d+/\d+)\s+(?P<type>\S+)\s*\n",
+        re.MULTILINE)
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show mac-addr-table"
@@ -44,4 +50,34 @@ class Script(BaseScript):
                 "interfaces": [match.group("interface")],
                 "type": mtype
             })
+        if (not r) and (interface is not None):
+            for match in self.rx_line2.finditer(macs):
+                if match.group("type") == "Learned":
+                    mtype = "D"
+                else:
+                    mtype = "S"
+                r.append({
+                    "vlan_id": int(match.group("vlan_id")),
+                    "mac": match.group("mac"),
+                    "interfaces": [interface],
+                    "type": mtype
+                })
+        if (not r):
+            if vlan is None:
+                vlans = self.scripts.get_vlans()
+            else:
+                vlans = [{"vlan_id": vlan}]
+            for v in vlans:
+                macs = self.cli("show mac-addr-table vlan %s" % v["vlan_id"])
+                for match in self.rx_line3.finditer(macs):
+                    if match.group("type") == "Learned":
+                        mtype = "D"
+                    else:
+                        mtype = "S"
+                    r.append({
+                        "vlan_id": int(v["vlan_id"]),
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interface")],
+                        "type": mtype
+                    })
         return r

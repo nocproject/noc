@@ -18,10 +18,21 @@ class Script(BaseScript):
 
     def execute(self):
         v = self.profile.get_hardware(self)
-        return [{
-            "type": "LINECARD",
-            "number": v["number"],
-            "vendor": "ISKRATEL",
-            "part_no": v["part_no"],
-            "serial": v["serial"]
-        }]
+        if "descr" in v:
+            return [{
+                "type": "LINECARD",
+                "number": v["number"],
+                "vendor": "ISKRATEL",
+                "part_no": v["part_no"],
+                "serial": v["serial"],
+                "revision": v["hw_ver"],
+                "description": v["descr"]
+            }]
+        else:
+            return [{
+                "type": "LINECARD",
+                "number": v["number"],
+                "vendor": "ISKRATEL",
+                "part_no": v["part_no"],
+                "serial": v["serial"]
+            }]
