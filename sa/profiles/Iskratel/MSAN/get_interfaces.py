@@ -34,6 +34,9 @@ class Script(BaseScript):
         r"^IP Address\.+ (?P<ip>\S+)\n"
         r"^Subnet Mask\.+ (?P<mask>\S+)\n"
         r"^Burned In MAC Address\.+ (?P<mac>\S+)\n"
+        r"(^.+\n)?"
+        r"(^.+\n)?"
+        r"(^.+\n)?"
         r"^Management VLAN ID\.+ (?P<vlan>\d+)\n",
         re.MULTILINE)
     rx_port = re.compile(
@@ -44,6 +47,12 @@ class Script(BaseScript):
         r"(?P<oper_status>Up|Down)\s+(?:Enable|Disable)\s+"
         r"(?:Enable|Disable)(?P<descr>.*?)\n", re.MULTILINE)
     rx_port1 = re.compile(r"(?P<port>\d+/\d+)/\d+")
+    rx_port2 = re.compile(
+        r"Interface\.+\S+\n"
+        r"ifIndex\.+(?P<ifindex>\d+)\n"
+        r"Description\.+(?P<descr>.*)\n"
+        r"MAC Address\.+(?P<mac>\S+)\n",
+        re.MULTILINE)
     rx_vlan = re.compile(
         r"^(?P<port>\d+/\d+/\d+)\s+(?P<vlan>\d+)\s+", re.MULTILINE)
     rx_vlan1 = re.compile(
@@ -90,8 +99,19 @@ class Script(BaseScript):
                 "enabled_protocols": [],
                 "subinterfaces": []
             }
-            if match.group('descr').strip():
-                i["description"] = match.group('descr').strip()
+            descr = match.group('descr').strip()
+            if descr and not descr.startswith('Short ') \
+            and not descr.startswith('Long '):
+                i["description"] = descr
+            try:
+                c = self.cli("show port description %s" % ifname)
+                match1 = self.rx_port2.search(c)
+                i["snmp_ifindex"] = match1.group("ifindex")
+                i["mac"] = match1.group("mac")
+                if match1.group("descr"):
+                    i["description"] = match1.group("descr")
+            except self.CLISyntaxError:
+                pass
             if pch:
                 for p in pch:
                     if ifname == p["interface"]:
@@ -122,6 +142,10 @@ class Script(BaseScript):
                     "oper_status": match.group('oper_status') == "Up",
                     "enabled_afi": ['BRIDGE']
                 }]
+                if "mac" in i:
+                    i["subinterfaces"][0]["mac"] = i["mac"]
+                if "description" in i:
+                    i["subinterfaces"][0]["description"] = i["description"]
             interfaces += [i]
         for v in self.scripts.get_vlans():
             c = self.cli("show vlan %s" % v["vlan_id"])

@@ -19,12 +19,20 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
+    rx_ver = re.compile(r"Software Version\.+ (?P<version>\S+)")
+
     def execute(self):
         v = self.profile.get_hardware(self)
+        if "api_ver" in v:
+            version = v["api_ver"]
+        else:
+            c = self.cli("show version")
+            match = self.rx_ver.search(c)
+            version = match.group("version")
         return {
             "vendor": "Iskratel",
             "platform": v["platform"],
-            "version": v["api_ver"],
+            "version": version,
             "attributes": {
                 "Serial Number": v["serial"]
             }
