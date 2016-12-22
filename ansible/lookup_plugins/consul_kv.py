@@ -84,6 +84,25 @@ class LookupModule(LookupBase):
         if os.getenv('CONSUL_TOKEN'):
             self.token = os.environ['CONSUL_TOKEN']
 
+    def _read_value(self, r, rv):
+        ret = rv
+        key = r['Key'][len(self.params['key']) - 1:]
+        value = r['Value']
+        parts = key.split("/")
+        branch = ret
+        for part in parts[1:-1]:
+            branch = branch.setdefault(part, {})
+        if self.params["json"]:
+            try:
+                branch[parts[-1]] = json.loads(value)
+                if not isinstance(branch[parts[-1]], dict):
+                    raise ValueError
+            except (ValueError, AttributeError):
+                branch[parts[-1]] = value
+        else:
+            branch[parts[-1]] = value
+        return ret
+
     def run(self, terms, variables=None, **kwargs):
 
         if not HAS_CONSUL:
@@ -96,38 +115,32 @@ class LookupModule(LookupBase):
         values = []
         try:
             for term in terms:
-                params = self.parse_params(term)
-                params.update(kwargs)
-                results = consul_api.kv.get(params['key'],
-                                            token=params['token'],
-                                            index=params['index'],
-                                            recurse=params['recurse'])
-                if params['recurse'] and results:
+                self.params = self.parse_params(term)
+                self.params.update(kwargs)
+                results = consul_api.kv.get(self.params['key'],
+                                            token=self.params['token'],
+                                            index=self.params['index'],
+                                            recurse=self.params['recurse'])
+                if not results[1]:
+                    return []
+                if self.params['recurse']:
                     resp = {}
-                    if isinstance(results[1], list):
-                        for r in results[1]:
-                            if not r['Value']:
-                                continue
-                            key = r['Key'][len(params['key']):]
-                            value = r['Value']
-                            parts = key.split("/")
-                            branch = resp
-                            for part in parts[1:-1]:
-                                branch = branch.setdefault(part, {})
-                            if "json" in params and params["json"]:
-                                try:
-                                    branch[parts[-1]] = json.loads(value)
-                                    if not isinstance(branch[parts[-1]], dict):
-                                        raise ValueError
-                                except (ValueError, AttributeError):
-                                    branch[parts[-1]] = value
-                            else:
-                                branch[parts[-1]] = value
-                    if "list" in params and params["list"]:
+                    for r in results[1]:
+                        if not r['Value'] and self.params["keep_keys"]:
+                            key = resp['Key'].split("/")[self.params['keys']]
+                            resp.update({key: ""})
+                            continue
+                        if not r['Value'] and not self.params["keep_keys"]:
+                            continue
+                        elif r['Value']:
+                            resp.update(self._read_value(r, resp))
+                            continue
+
+                    if self.params["list"]:
                         return [[resp[d] for d in resp]]
 
                     return [resp]
-                elif results[1]:
+                else:
                     # responds with a single or list of result maps
                     if isinstance(results[1], list):
                         for r in results[1]:
@@ -147,7 +160,11 @@ class LookupModule(LookupBase):
             'key': params[0],
             'token': None,
             'recurse': False,
-            'index': None
+            'index': None,
+            'keep_keys': False,
+            'list': False,
+            'json': False,
+            'keys': 1
         }
 
         # parameters specified?
