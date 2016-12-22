@@ -24,3 +24,18 @@
       msg: "tower version is '{{tower_version}}' the minimum version is '{{tower_minimum_version}}'. \n\n\n  See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md  \n\n\n "
     when: "tower_version|version_compare(tower_minimum_version, '<')"
   when: tower_version != ''
+
+- name: No mongodb server set
+  fail:
+    msg: "No mongodb server set. Please setup at least one. "
+  when: "'svc-mongod' not in groups"
+
+- name: No postgres server set
+  fail:
+    msg: "No postgres server set. Please setup one."
+  when: "'svc-postgres' not in groups"
+
+- name: Too many postgres servers seted up.
+  fail:
+    msg: "Too many postgres servers seted up {{groups['svc-postgres'] | count }} on {{groups['svc-postgres']}}"
+  when: "'svc-postgres' in groups and groups['svc-postgres'] | count > 1"
