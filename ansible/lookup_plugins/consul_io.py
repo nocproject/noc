@@ -194,6 +194,11 @@ if os.getenv('NOC_ENV'):
 else:
     environment = "NOC"
 
+if os.getenv('NOC_DC'):
+    dc = os.getenv('NOC_DC')
+else:
+    dc = "NOC"
+
 try:
     import json
 except ImportError:
@@ -224,6 +229,7 @@ class ConsulInventory(object):
 
         config = ConsulConfig()
         self.config = config
+        self.noc_dc = config.noc_dc
 
         self.consul_api = config.get_consul_api()
 
@@ -268,9 +274,15 @@ class ConsulInventory(object):
     def load_data_for_datacenter(self, datacenter):
         '''processes all the nodes in a particular datacenter'''
         index, nodes = self.consul_api.catalog.nodes(dc=datacenter)
-        for node in nodes:
-            self.add_node_to_map(self.nodes_by_datacenter, datacenter, node)
-            self.load_data_for_node(node['Node'], datacenter)
+        env_nodes_path = "noc/%s/nodes" % (self.env)
+        env_nodes_dc_path = "noc/%s/%s/nodes" % (self.env, self.noc_dc)
+        for env_nodes in [env_nodes_dc_path, env_nodes_path]:
+            env_nodes = self.load_from_kv(env_nodes, keys_only=True)
+            if env_nodes:
+                for node in nodes:
+                    if node['Node'] in env_nodes:
+                        self.add_node_to_map(self.nodes_by_datacenter, "-".join(["dc", self.noc_dc]), node)
+                        self.load_data_for_node(node['Node'], datacenter)
 
     def load_data_for_node(self, node, datacenter):
         '''loads the data for a sinle node adding it to various groups based on
@@ -279,13 +291,11 @@ class ConsulInventory(object):
         index, node_data = self.consul_api.catalog.node(node, dc=datacenter)
         node = node_data['Node']
         self.add_node_to_map(self.nodes, 'all', node)
-        self.add_metadata(node_data, "consul_datacenter", datacenter)
-        self.add_metadata(node_data, "consul_nodename", node['Node'])
         self.add_metadata(node_data, "ansible_host", node['Address'])
 
         self.load_groups_from_kv(node_data)
         self.load_metadata_from_kv(node_data)
-        self.load_availability_groups(node_data, datacenter)
+        # self.load_availability_groups(node_data, datacenter)
 
         for name, service in node_data['Services'].items():
             self.load_data_from_service(name, service, node_data)
@@ -299,19 +309,28 @@ class ConsulInventory(object):
             dc = "%s/%s" % (self.config.kv_metadata, 'all')  # ansible/metadata/<ENV>/all
             gen = "%s/%s/%s" % (self.config.kv_metadata, self.current_dc, 'all')  # ansible/metadata/<ENV>/DC1/all
             host = "%s/%s/%s" % (
-            self.config.kv_metadata, self.current_dc, node['Node'])  # ansible/metadata/<ENV>/DC1/node-name
+                self.config.kv_metadata, self.current_dc, node['Node'])  # ansible/metadata/<ENV>/DC1/node-name
             for path in [dc, gen, host]:
-                self.load_node_metadata_from_kv(node_data, path)
+                metadata = self.load_from_kv(path)
+                if not metadata:
+                    continue
+                for k, v in metadata.items():
+                    self.add_metadata(node_data, k, v)
 
-    def load_node_metadata_from_kv(self, node_data, path):
+    def load_from_kv(self, path, keys_only=False):
         ''' load the json dict at the metadata path defined by the kv_metadata value
             and the node name add each entry in the dictionary to the the node's
             metadata '''
+        ret = {}
         index, responce = self.consul_api.kv.get(path, recurse=True)
         if not responce:
             return
         for resp in responce:
             if resp['Value']:
+                if keys_only:
+                    key = resp['Key'].split("/")[-1]
+                    ret.update({key: ""})
+                    continue
                 try:
                     metadata = json.loads(resp['Value'])
                     if not isinstance(metadata, dict):
@@ -321,8 +340,14 @@ class ConsulInventory(object):
                     metadata = {
                         key: resp['Value']
                     }
-                for k, v in metadata.items():
-                    self.add_metadata(node_data, k, v)
+                ret.update(metadata)
+            else:
+                key = resp['Key'].split("/")[-1]
+                metadata = {
+                    key: ""
+                }
+                ret.update(metadata)
+        return ret
 
     def load_groups_from_kv(self, node_data):
         ''' load the comma separated list of groups at the path defined by the
@@ -330,11 +355,13 @@ class ConsulInventory(object):
             group found '''
         node = node_data['Node']
         if self.config.has_config('kv_groups'):
-            key = "%s/%s/%s" % (self.config.kv_groups, self.current_dc, node['Node'])
-            index, groups = self.consul_api.kv.get(key)
-            if groups and groups['Value']:
-                for group in groups['Value'].split(','):
-                    self.add_node_to_map(self.nodes_by_kv, group.strip(), node)
+            key_all = "%s/%s/%s/%s" % (self.config.kv_groups, self.noc_dc, 'groups', 'all')
+            key_node = "%s/%s/%s/%s" % (self.config.kv_groups, self.noc_dc, 'groups', node['Node'])
+            for key in [key_all, key_node]:
+                index, groups = self.consul_api.kv.get(key)
+                if groups and groups['Value']:
+                    for group in groups['Value'].split(','):
+                        self.add_node_to_map(self.nodes_by_kv, group.strip(), node)
 
     def load_data_from_service(self, service_name, service, node_data):
         '''process a service registered on a node, adding the node to a group with
@@ -437,6 +464,7 @@ class ConsulInventory(object):
 class ConsulConfig(dict):
     def __init__(self):
         self.env = environment
+        self.noc_dc = dc
         self.read_settings()
         self.read_cli_args()
 
