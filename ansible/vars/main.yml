@@ -5,7 +5,7 @@
 # packages
 postgresql_version: "9.4"
 mongo_version: "3.2"
-grafana_version: "3.1.1-1470047149"
+grafana_version: "4.0.2-1481203731"
 nsq_version: "0.3.8"
 
 consul_version: "0.7.2"
