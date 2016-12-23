@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS_Smart.get_portchannel
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -42,10 +42,10 @@ class Script(BaseScript):
                         pmib + ".8.1.3.1.1",
                         pmib + ".8.1.3.1.2",
                         pmib + ".8.1.3.1.3"], bulk=True):
-                    oid = "1.3.6.1.2.1.31.1.1.1.1." + v[1]
+                    oid = "1.3.6.1.2.1.31.1.1.1.1." + str(v[1])
                     port = self.snmp.get(oid, cached=True)  # IF-MIB
                     if not port:
-                        oid = "1.3.6.1.2.1.2.2.1.2." + v[1]
+                        oid = "1.3.6.1.2.1.2.2.1.2." + str(v[1])
                         port = self.snmp.get(oid, cached=True)
 #                    s = self.hex_to_bin(v[2])
                     s = hex2bin(v[2])
