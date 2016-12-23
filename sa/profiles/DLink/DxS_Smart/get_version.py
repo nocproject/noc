@@ -10,7 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re
-from noc.sa.profiles.DLink.DxS_Smart import (DES1210, DGS121010,DGS121048, DGS121052)
+from noc.sa.profiles.DLink.DxS_Smart import (DES1210, DGS1210)
 
 
 class Script(BaseScript):
@@ -38,7 +38,7 @@ class Script(BaseScript):
                 pass
         else:
             raise self.NotSupportedError()
-        if DES1210(r) or DGS121010(r) or DGS121048(r) or DGS121052(r):
+        if DES1210(r) or DGS1210(r):
             s = self.cli("show switch", cached=True)
             match = self.re_search(self.rx_ver, s)
             r.update({
