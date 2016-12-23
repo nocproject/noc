@@ -20,9 +20,10 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"system hardware version\s+:\s+(?P<hardware>\S+).+"
-        r"system firmware version\s+:\s+(?P<version>\S+).+system boot"
-        r" version\s+:\s+(?P<bootprom>\S+).+system protocol version\s+:"
-        r"\s+(?P<protover>\S+).+system serial number\s+:\s+(?P<serial>\S+)",
+        r"system firmware version\s+:\s+(?P<version>\S+).+"
+        r"system boot version\s+:\s+(?P<bootprom>\S+).+"
+        r"(system protocol version\s+:\s+(?P<protover>\S+).+)?"
+        r"system serial number\s+:\s+(?P<serial>\S+)",
         re.MULTILINE | re.DOTALL | re.I
     )
     rx_snmp_ver = re.compile(r"^(?P<platform>\S+)\s*", re.DOTALL)
