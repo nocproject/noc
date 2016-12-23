@@ -332,7 +332,7 @@
   roles:
     - role: dev
       become: yes
-      when: "{{ has_svc_dev | default(False) }} or {{ has_svc_notebook | default(False) or consul_env}}"
+      when: "{{ has_svc_dev | default(False) }} or {{ has_svc_notebook | default(False)}} or consul_env"
       tags:
         - dev
 
