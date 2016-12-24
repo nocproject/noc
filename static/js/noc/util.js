@@ -196,7 +196,8 @@ Ext.apply(NOC.render, {
     },
 
     htmlEncode: function(v) {
-        return Ext.util.Format.htmlEncode(v);
+        if(v) return Ext.util.Format.htmlEncode(v);
+        return "NULL";
     },
 
     //
@@ -233,15 +234,20 @@ Ext.apply(NOC.render, {
         header = header.join("");
         return function(value) {
             var r = [header];
-            for(var i = 0; i < value.length; i++) {
-                var row = value[i];
-                r.push("<tr>");
-                for(var j = 0; j < fields.length; j++) {
-                    r.push("<td>");
-                    r.push(renderers[j](row[fields[j]]));
-                    r.push("</td>");
+            if(value) {
+                for(var i = 0; i < value.length; i++) {
+                    var row = value[i];
+                    r.push("<tr>");
+                    for(var j = 0; j < fields.length; j++) {
+                        r.push("<td>");
+                        r.push(renderers[j](row[fields[j]]));
+                        r.push("</td>");
+                    }
+                    r.push("</tr>");
                 }
-                r.push("</tr>");
+            }
+            else {
+                r.push("<tr><td></td></tr>");
             }
             r.push("</table>");
             return r.join("");
