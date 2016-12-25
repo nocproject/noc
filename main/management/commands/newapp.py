@@ -240,7 +240,7 @@ class Command(BaseCommand):
                                 "blank": f.null,
                                 "widget": self.model_map[fc][1]
                             }
-                            if f.default != NOT_PROVIDED:
+                            if f.default != NOT_PROVIDED and not callable(f.default):
                                 fd["default"] = f.default
                             fields += [fd]
                     tv["base_class"] = "ExtModelApplication"
