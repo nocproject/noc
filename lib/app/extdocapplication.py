@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, ReferenceField,
                                 BinaryField)
+from mongoengine.errors import ValidationError
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
@@ -280,8 +281,8 @@ class ExtDocApplication(ExtApplication):
     def api_create(self, request):
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
-        except ValueError, why:
-            return self.response(str(why), status=self.BAD_REQUEST)
+        except ValueError as e:
+            return self.response(str(e), status=self.BAD_REQUEST)
 
         if self.pk in attrs:
             del attrs[self.pk]
@@ -298,7 +299,10 @@ class ExtDocApplication(ExtApplication):
         for k, v in attrs.items():
             if k != self.pk and "__" not in k:
                 setattr(o, k, v)
-        o.save()
+        try:
+            o.save()
+        except ValidationError as e:
+            return self.response({"message": str(e)}, status=self.BAD_REQUEST)
         # Reread result
         o = self.model.objects.get(**{self.pk: o.pk})
         if request.is_extjs:
@@ -344,7 +348,10 @@ class ExtDocApplication(ExtApplication):
         for k in attrs:
             if k != self.pk and "__" not in k:
                 setattr(o, k, attrs[k])
-        o.save()
+        try:
+            o.save()
+        except ValidationError as e:
+            return self.response({"message": str(e)}, status=self.BAD_REQUEST)
         # Reread result
         o = self.model.objects.get(**{self.pk: id})
         if request.is_extjs:
