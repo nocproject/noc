@@ -167,7 +167,8 @@ INSTALLED_APPS = [
     "noc.maintainance",
     "noc.support",
     "noc.bi",
-    "noc.sla"
+    "noc.sla",
+    "noc.phone"
 ]
 # Populate list of locally-installed apps
 apps = config.get("main", "installed_apps").strip()
