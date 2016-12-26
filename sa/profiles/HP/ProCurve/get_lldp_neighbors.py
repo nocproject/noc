@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## HP.ProCurve.get_lldp_neighbors
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -26,6 +26,8 @@ class Script(BaseScript):
     rx_chassis_id = re.compile(r"ChassisType\s*:\s*(\S+).+?ChassisId\s*:\s*([a-zA-Z0-9\.\- ]+)", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_port_id = re.compile(r"^\s*PortId\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_sys_name = re.compile(r"^\s*SysName\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_sys_descr = re.compile(r"^\s*System Descr\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    rx_port_descr = re.compile(r"^\s*PortDescr\s*:\s*(.+?)\s*$", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_cap = re.compile(r"^\s*System Capabilities Enabled\s*:(.*?)$", re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
@@ -77,6 +79,14 @@ class Script(BaseScript):
             match = self.rx_sys_name.search(v)
             if match:
                 n["remote_system_name"] = match.group(1)
+            # Get remote system description
+            match = self.rx_sys_descr.search(v)
+            if match:
+                n["remote_system_description"] = match.group(1)
+            # Get remote port description
+            match = self.rx_port_descr.search(v)
+            if match:
+                n["remote_port_description"] = match.group(1)
             # Get capabilities
             caps = 0
             match = self.rx_cap.search(v)
