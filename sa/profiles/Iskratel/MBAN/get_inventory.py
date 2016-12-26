@@ -20,14 +20,16 @@ class Script(BaseScript):
 
     rx_inv = re.compile(
         r"^\s+(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+"
-        r"(?P<serial>Z\S+)\s+", re.MULTILINE)
+        r"(?P<serial>[NZ]\S+)\s+", re.MULTILINE)
 
     def execute(self):
         match = self.rx_inv.search(self.cli("show board"))
-        return [{
+        r = {
             "type": "LINECARD",
             "number": match.group("number"),
             "vendor": "ISKRATEL",
-            "part_no": match.group("part_no"),
-            "serial": match.group("serial")
-        }]
+            "part_no": match.group("part_no")
+        }
+        if match.group("serial") != "N/A":
+            r["serial"] = match.group("serial")
+        return [r]
