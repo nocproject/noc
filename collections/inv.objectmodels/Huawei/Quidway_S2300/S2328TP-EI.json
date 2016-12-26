@@ -1,9 +1,9 @@
 {
-    "name": "Huawei | Quidway S2300 | S2326TP-EI",
+    "name": "Huawei | Quidway S2300 | S2328TP-EI",
     "$collection": "inv.objectmodels",
-    "uuid": "d335fe4d-e03c-4333-a981-dc1ff3983dfa",
+    "uuid": "094e9dfc-8f28-4796-83b5-c67df9f17c0a",
     "vendor__code": "HUAWEI",
-    "description": "L3 switch with 24 10/100 Base-TX ports, 2 100/1000 Base-X SFP ports, and 2 1000 Base-X SFP ports",
+    "description": "L3 switch with 24 10/100 Base-TX ports, 4 100/1000 Base-X SFP ports",
     "connections": [
         {
             "description": "Power outlet",
@@ -215,15 +215,6 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GigabitEthernet X/0/1 interface",
-            "direction": "s",
-            "gender": "f",
-            "group": "GigabitEthernetX/0/0/1",
-            "name": "GigabitEthernetX/0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
             "description": "GigabitEthernet X/0/1 SFP interface",
             "direction": "i",
             "gender": "f",
@@ -233,13 +224,22 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "GigabitEthernet X/0/2 interface",
-            "direction": "s",
+            "description": "GigabitEthernet X/0/3 SFP interface",
+            "direction": "i",
             "gender": "f",
-            "group": "GigabitEthernetX/0/0/2",
-            "name": "GigabitEthernetX/0/2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "group": "GigabitEthernetX/0/0/3",
+            "name": "GigabitEthernetX/0/3_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet X/0/4 SFP interface",
+            "direction": "i",
+            "gender": "f",
+            "group": "GigabitEthernetX/0/0/4",
+            "name": "GigabitEthernetX/0/4_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "GigabitEthernet X/0/2 SFP interface",
@@ -253,15 +253,15 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["02351366", "CX4Z126AM", "CX22EFFE"]
+            "part_no": ["S2328P-EI-AC"]
         },
         "dimensions": {
             "depth": 220,
-            "height": 43.6,
+            "height": 43,
             "width": 442
         },
         "power": {
-            "power": 15.5
+            "power": 10.47
         },
         "rackmount": {
             "units": 1.0
