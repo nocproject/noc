@@ -98,7 +98,7 @@ class Script(BaseScript):
                     caps |= {
                         "other": 1, "repeater": 2, "bridge": 4,
                         "wlanaccesspoint": 8, "router": 16, "telephone": 32,
-                        "docsis": 64, "station": 128
+                        "docsis": 64, "station": 128, "station-only": 128
                     }[c.lower()]
             n["remote_capabilities"] = caps
             i["neighbors"] += [n]
