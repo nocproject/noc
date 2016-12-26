@@ -29,11 +29,12 @@ class Script(BaseScript):
     def execute(self):
         v = self.scripts.get_inventory()
         match = self.rx_ver.search(self.cli("show version"))
-        return {
+        r = {
             "vendor": "Iskratel",
             "platform": "SGN",
-            "version": match.group("version"),
-            "attributes": {
-                "Serial Number": v[0]["serial"]
-            }
+            "version": match.group("version")
         }
+        if "serial" in v[0]:
+            r["attributes"] = {}
+            r["attributes"]["Serial Number"] = v[0]["serial"]
+        return r
