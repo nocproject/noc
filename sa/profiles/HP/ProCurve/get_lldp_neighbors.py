@@ -58,6 +58,7 @@ class Script(BaseScript):
                 continue
             remote_chassis_id_subtype = {
                 "mac-address": 4,
+                "network-address": 5,
                 "local": 7,  # @todo: check
             }[match.group(1)]
             remote_chassis_id = match.group(2).strip().replace(" ", "")
