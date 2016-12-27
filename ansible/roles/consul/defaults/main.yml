@@ -2,7 +2,7 @@
 # File: defaults/main.yml - Default variables for Consul
 
 ## Core
-consul_arch: "{% if 'x86_64' in ansible_architecture %}amd64{%else%} 386 {%endif%}"
+consul_arch: "{% if 'x86_64' in ansible_architecture %}amd64{%else%}386{%endif%}"
 consul_pkg: "consul_{{ consul_version }}_linux_{{ consul_arch }}.zip"
 consul_zip: "consul_{{ consul_version }}_{{ansible_system | lower}}_{{ consul_arch }}.zip"
 consul_zip_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/{{consul_zip}}"
