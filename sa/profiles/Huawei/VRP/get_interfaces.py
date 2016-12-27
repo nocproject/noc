@@ -61,6 +61,7 @@ class Script(BaseScript):
         "Eth-Trunk": "aggregated",
         "Ip-Trunk": "aggregated",
         "XGigabitEthernet": "physical",
+        "Ten-GigabitEthernet": "physical",
         "GigabitEthernet": "physical",
         "FastEthernet": "physical",
         "Ethernet": "physical",

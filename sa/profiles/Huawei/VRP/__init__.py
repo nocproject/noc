@@ -41,11 +41,14 @@ class Profile(BaseProfile):
         return "undo ip ip-prefix %s\n" % name + "\n".join([p % x.replace("/", " ") for x in pl])
 
     rx_interface_name = re.compile(
-        r"^(?P<type>XGE|GE|Eth|MEth)(?P<number>[\d/]+(\.\d+)?)$")
+        r"^(?P<type>XGE|Ten-GigabitEthernet|GE|Eth|MEth)"
+        r"(?P<number>[\d/]+(\.\d+)?)$")
 
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("XGE2/0/0")
+        'XGigabitEthernet2/0/0'
+        >>> Profile().convert_interface_name("Ten-GigabitEthernet2/0/0")
         'XGigabitEthernet2/0/0'
         >>> Profile().convert_interface_name("GE2/0/0")
         'GigabitEthernet2/0/0'
@@ -58,6 +61,7 @@ class Profile(BaseProfile):
         if not match:
             return s
         return "%s%s" % ({
+            "Ten-GigabitEthernet": "XGigabitEthernet",
             "XGE": "XGigabitEthernet",
             "GE": "GigabitEthernet",
             "Eth": "Ethernet",
