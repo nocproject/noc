@@ -100,7 +100,12 @@ Ext.define("NOC.phone.phonerange.Application", {
                     xtype: "textfield",
                     fieldLabel: __("To Number"),
                     allowBlank: false
-                }                
+                },
+                {
+                    name: "to_allocate_numbers",
+                    xtype: "checkbox",
+                    boxLabel: __("Allocate Numbers")
+                }
             ]
         });
         me.callParent();
