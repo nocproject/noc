@@ -80,7 +80,7 @@ class PhoneNumber(Document):
     def clean(self):
         super(PhoneNumber, self).clean()
         # Change parent
-        self.parent = PhoneRange.get_closest_range(
+        self.phone_range = PhoneRange.get_closest_range(
             dialplan=self.dialplan,
             from_number=self.number
         )
