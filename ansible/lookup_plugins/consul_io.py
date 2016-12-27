@@ -306,10 +306,10 @@ class ConsulInventory(object):
             metadata '''
         node = node_data['Node']
         if self.config.has_config('kv_metadata'):
-            dc = "%s/%s" % (self.config.kv_metadata, 'all')  # ansible/metadata/<ENV>/all
-            gen = "%s/%s/%s" % (self.config.kv_metadata, self.current_dc, 'all')  # ansible/metadata/<ENV>/DC1/all
+            dc = "%s/%s" % (self.config.kv_metadata, 'all')  # noc/<ENV>/all
+            gen = "%s/%s/%s" % (self.config.kv_metadata, self.current_dc, 'all')  # noc/<ENV>/DC1/all
             host = "%s/%s/%s" % (
-                self.config.kv_metadata, self.current_dc, node['Node'])  # ansible/metadata/<ENV>/DC1/node-name
+                self.config.kv_metadata, self.current_dc, node['Node'])  # noc/<ENV>/DC1/node-name
             for path in [dc, gen, host]:
                 metadata = self.load_from_kv(path)
                 if not metadata:
