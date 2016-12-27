@@ -21,7 +21,7 @@ class Migration:
         caps = db["noc.sa.objectcapabilities"]
         if not caps.count():
             return
-        caps.rename("noc.sa.objectcapabilities_old")
+        caps.rename("noc.sa.objectcapabilities_old", dropTarget=True)
         old_caps = db["noc.sa.objectcapabilities_old"]
         new_caps = db["noc.sa.objectcapabilities"]
         sources = {}
@@ -30,12 +30,11 @@ class Migration:
             sources[d["_id"]] = "interface"
 
         CHUNK = 500
-        data = [convert(d) for d in old_caps.find({})]
+        data = [convert(d) for d in old_caps.find({}) if d.get("object")]
         while data:
             chunk, data = data[:CHUNK], data[CHUNK:]
             new_caps.insert(chunk)
         #old_caps.drop()
-
 
     def backwards(self):
         pass
