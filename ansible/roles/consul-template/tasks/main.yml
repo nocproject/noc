@@ -1,0 +1,63 @@
+---
+- name: create consul-template directory structure
+  file:
+    state: directory
+    path: "{{ item }}"
+  with_items:
+    - "{{ consul_template_config_dir }}"
+    - "{{consul_template_templates_dir}}"
+
+- name: check archive stat
+  stat:
+    path: /tmp/{{ consul_template_archive_file }}
+  register: consul_template_archive_stat
+
+- name: download consul-template binary
+  get_url:
+    url: "{{ consul_template_download_url }}"
+    dest: "{{consul_template_dl_dir}}"
+  when: consul_template_archive_stat.stat.exists == False
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: unzip the downloaded package
+  unarchive:
+    src: "{{consul_template_dl_dir}}/{{ consul_template_archive_file }}"
+    dest: "{{consul_template_dl_dir}}"
+    owner: "root"
+    group: "root"
+    copy: False
+    creates: "{{consul_template_dl_dir}}/{{ consul_template_binary }}"
+
+- debug: msg="{{consul_template_dl_dir}}/{{ consul_template_binary }}"
+- name: copy consul-template binary into place
+  copy:
+    src: "{{consul_template_dl_dir}}/{{ consul_template_binary }}"
+    dest: "{{consul_template_bin_path}}/{{ consul_template_binary }}"
+    remote_src: yes
+
+
+- name: Update consul-template permissions
+  file:
+    path: "{{consul_template_bin_path}}/{{ consul_template_binary }}"
+    owner: "{{consul_template_user}}"
+    group: "{{consul_template_group}}"
+    mode: "0755"
+
+- name: consul-template config file
+  template:
+    src: "{{ consul_template_config_file_template }}"
+    dest: "{{consul_template_config_dir}}/{{ consul_template_config_file }}"
+    mode: 0755
+
+- name: copy consul-template systemd service configuration
+  template:
+    src: consul-template.service.j2
+    dest: /etc/systemd/system/consul-template.service
+    mode: 0755
+
+
+- service:
+    name: consul-template
+    state: started
+    enabled: yes
