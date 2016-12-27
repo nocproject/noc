@@ -45,6 +45,12 @@ Ext.define("NOC.phone.phonerange.Application", {
                     width: 100
                 },
                 {
+                    text: __("Allocated"),
+                    dataIndex: "to_allocate_numbers",
+                    width: 50,
+                    renderer: NOC.render.Bool
+                },
+                {
                     text: __("Total"),
                     dataIndex: "total_numbers",
                     align: "right",
@@ -109,5 +115,13 @@ Ext.define("NOC.phone.phonerange.Application", {
             ]
         });
         me.callParent();
-    }
+    },
+    filters: [
+        {
+            title: __("By Dialplan"),
+            name: "dialplan",
+            ftype: "lookup",
+            lookup: "phone.dialplan"
+        }
+    ]
 });
