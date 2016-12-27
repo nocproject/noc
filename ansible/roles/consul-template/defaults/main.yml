@@ -1,0 +1,19 @@
+---
+# defaults file for consul-template
+consul_arch: "{% if 'x86_64' in ansible_architecture %}amd64{%else%}386{%endif%}"
+consul_template_release: "consul-template_{{ consul_template_version }}_{{ansible_system | lower}}_{{consul_arch}}"
+consul_template_archive_file: "{{ consul_template_release }}.zip"
+consul_template_download_url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/{{ consul_template_archive_file }}"
+consul_template_binary: consul-template
+consul_template_config_file_template: consul-template.cfg.j2
+consul_template_config_file: consul-template.cfg
+consul_template_log_file: /var/log/consul-template
+consul_template_log_level: "INFO"
+consul_template_consul_server: "127.0.0.1"
+consul_template_consul_port: "8500"
+consul_template_bin_path: "/usr/bin"
+
+consul_template_dl_dir: "/tmp"
+
+consul_template_user: root
+consul_template_group: root
