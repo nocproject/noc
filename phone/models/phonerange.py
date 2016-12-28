@@ -53,6 +53,7 @@ class PhoneRange(Document):
     # @todo: tags
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
+    _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -62,6 +63,17 @@ class PhoneRange(Document):
                              lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return PhoneRange.objects.filter(id=id).first()
+
+    @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
+    def get_path(self):
+        """
+        Returns list of parent range ids
+        :return:
+        """
+        if self.parent:
+            return self.parent.get_path() + [self.id]
+        else:
+            return [self.id]
 
     @classmethod
     def get_closest_range(cls, dialplan, from_number,
@@ -85,7 +97,7 @@ class PhoneRange(Document):
         if exclude_range:
             q["id__ne"] = exclude_range.id
         return PhoneRange.objects.filter(**q)\
-            .order_by("from_number", "-to_number").first()
+            .order_by("-from_number", "to_number").first()
 
     def clean(self):
         if self.to_number < self.from_number:
@@ -129,6 +141,10 @@ class PhoneRange(Document):
                 "noc.phone.models.phonerange.allocate_numbers",
                 range_id=self.id
             )
+
+    @property
+    def has_children(self):
+        return bool(PhoneRange.objects.filter(parent=self.id).first())
 
     @property
     def total_numbers(self):
