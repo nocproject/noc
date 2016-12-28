@@ -23,5 +23,24 @@ class PhoneRangeApplication(ExtDocApplication):
     parent_field = "parent"
 
     def field_total_numbers(self, o):
-    	return o.total_numbers
+        return o.total_numbers
 
+    def instance_to_lookup(self, o, fields=None):
+        return {
+            "id": str(o.id),
+            "label": unicode(o),
+            "has_children": o.has_children
+        }
+
+    @view("^(?P<id>\d+)/get_path/$",
+          access="read", api=True)
+    def api_get_path(self, request, id):
+        o = self.get_object_or_404(PhoneRange, id=id)
+        path = [PhoneRange.get_by_id(r) for r in o.get_path()]
+        return {
+            "data": [{
+                "id": str(p.id),
+                "level": path.index(p) + 1,
+                "label": unicode(p.name)
+            } for p in path]
+        }

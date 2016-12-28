@@ -69,7 +69,7 @@ class PhoneNumber(Document):
     changed = DateTimeField()
 
     def __unicode__(self):
-        return self.name
+        return self.number
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"),

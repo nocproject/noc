@@ -149,7 +149,7 @@ Ext.define("NOC.phone.phonenumber.Application", {
         {
             title: __("By Range"),
             name: "phone_range",
-            ftype: "lookup",
+            ftype: "tree",
             lookup: "phone.phonerange"
         },
         {
