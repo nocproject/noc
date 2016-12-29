@@ -68,6 +68,8 @@ class PhoneNumber(Document):
     # Last state change
     changed = DateTimeField()
 
+    _id_cache = cachetools.TTLCache(100, ttl=60)
+
     def __unicode__(self):
         return self.number
 
@@ -75,7 +77,7 @@ class PhoneNumber(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
                              lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        return PhoneRange.objects.filter(id=id).first()
+        return PhoneNumber.objects.filter(id=id).first()
 
     def clean(self):
         super(PhoneNumber, self).clean()
@@ -84,3 +86,7 @@ class PhoneNumber(Document):
             dialplan=self.dialplan,
             from_number=self.number
         )
+
+    @property
+    def enum(self):
+        return ".".join(reversed(self.number)) + ".e164.arpa"

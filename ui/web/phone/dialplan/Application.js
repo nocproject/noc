@@ -15,6 +15,14 @@ Ext.define("NOC.phone.dialplan.Application", {
     search: true,
     initComponent: function() {
         var me = this;
+
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -54,8 +62,22 @@ Ext.define("NOC.phone.dialplan.Application", {
                     fieldLabel: __("Description"),
                     allowBlank: true
                 }
+            ],
+
+            formToolbar: [
+                me.cardButton
             ]
         });
         me.callParent();
+    },
+
+    //
+    onCard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/dialplan/" + me.currentRecord.get("id") + "/"
+            );
+        }
     }
 });
