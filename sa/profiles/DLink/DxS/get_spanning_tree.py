@@ -38,7 +38,7 @@ class Script(BaseScript):
         r"^\s*Regional Root Bridge\s+: (?P<rbridge_priority>\d+)\s*/(?P<rbridge_id>\S+)\s*\n"
         r"^\s*Internal Root Cost\s+: (?P<int_root_cost>\d+)\s*\n"
         r"^\s*Designated Bridge\s+: (?P<bridge_priority>\d+)\s*/(?P<bridge_id>\S+)\s*\n"
-        r"^\s*Root Port\s+: (?P<root_port>\d+)\s*\n", re.MULTILINE)
+        r"^\s*Root Port\s+: (?P<root_port>\S+)\s*\n", re.MULTILINE)
     rx_ins1 = re.compile(
         r"^\s*Designated Root Bridge\s+(?P<root_id>\S+)\s+Priority\s+(?P<root_priority>\d+)\s*\n"
         r"(^\s*.*\n)?"
@@ -105,51 +105,17 @@ class Script(BaseScript):
         "Root": "root",
         "NonStp": "nonstp",
     }
+    designated_bridge = ""
 
-    def execute(self):
-        try:
-            c = self.cli("show stp")
-        except self.CLISyntaxError:
-            return {"mode": "None", "instances": []}
-        match = self.rx_stp.search(c)
-        if (not match) or (not match.group("mode")):
-            return {"mode": "None", "instances": []}
-        stp = {
-            "mode": match.group("mode"),
-            "instances": []
-        }
-        c = self.cli("show stp instance")
-        match = self.rx_ins.search(c)
-        if not match:
-            match = self.rx_ins1.search(c)
-            if not match:
-                return {"mode": "None", "instances": []}
-            iface_role = []
-            for match_r in self.rx_iface_role.finditer(c):
-                iface_role[int(match_r.group("iface"))] = {
-                    "role": match_r.group("role"),
-                    "state": match_r.group("status"),
-                    "prio_n": match_r.group("prio_n"),
-                    "type": match_r.group("type").strip()
-                }
-        inst = {
-            "id": 1,
-            "vlans": "1",
-            "root_id": match.group("root_id"),
-            "root_priority": int(match.group("root_priority")),
-            "bridge_id": match.group("bridge_id"),
-            "bridge_priority": int(match.group("bridge_priority")),
-            "interfaces": []
-        }
-        c = c1 = self.cli("show stp ports")
-        for match in self.rx_iface.finditer(c):
+    def parse_stp(self, s):
+        match = self.rx_iface.search(s)
+        if match:
             d_bridge = match.group("d_bridge")
             if d_bridge != "N/A":
                 desg_priority, desg_id = d_bridge.split("/")
                 desg_priority = int(desg_priority, 16)
             else:
-                continue
-                desg_priority, desg_id = None, None
+                desg_priority, desg_id = 128, self.designated_bridge
             iface = {
                 "interface": match.group("iface"),
                 "port_id": "%d.%d" % (int(match.group("priority")), int(match.group("iface"))),
@@ -162,17 +128,16 @@ class Script(BaseScript):
                 "point_to_point": match.group("p2p") == "Yes",
                 "edge": match.group("edge") == "Yes"
             }
-            inst["interfaces"] += [iface]
-        if not inst["interfaces"]:
-            for match in self.rx_iface1.finditer(c):
+        else:
+            match = self.rx_iface1.search(s)
+            if match:
                 d_bridge = match.group("d_bridge")
                 if d_bridge != "N/A":
                     desg_id = d_bridge[6:]
                     desg_priority = d_bridge[:6].replace(":", "")
                     desg_priority = int(desg_priority, 16)
                 else:
-                    continue
-                    desg_priority, desg_id = None, None
+                    desg_priority, desg_id = 128, self.designated_bridge
                 edge = False
                 p2p = False
                 iface = match.group("iface")
@@ -190,7 +155,53 @@ class Script(BaseScript):
                     "point_to_point": p2p,
                     "edge": False
                 }
-                inst["interfaces"] += [iface]
+        if match:
+            key = match.group("iface")
+            return key, iface, s[match.end():]
+        else:
+            return None
 
+    def execute(self):
+        try:
+            c = self.cli("show stp")
+        except self.CLISyntaxError:
+            return {"mode": "None", "instances": []}
+        match = self.rx_stp.search(c)
+        if (not match) or (not match.group("mode")):
+            return {"mode": "None", "instances": []}
+        stp = {
+            "mode": match.group("mode"),
+            "instances": []
+        }
+        c = self.cli("show stp instance\nq", ignore_errors=True)
+        match = self.rx_ins.search(c)
+        if not match:
+            match = self.rx_ins1.search(c)
+            if not match:
+                return {"mode": "None", "instances": []}
+            iface_role = []
+            for match_r in self.rx_iface_role.finditer(c):
+                iface_role[int(match_r.group("iface"))] = {
+                    "role": match_r.group("role"),
+                    "state": match_r.group("status"),
+                    "prio_n": match_r.group("prio_n"),
+                    "type": match_r.group("type").strip()
+                }
+        inst = {
+            "id": 0,
+            "vlans": "1-4095",
+            "root_id": match.group("root_id"),
+            "root_priority": int(match.group("root_priority")),
+            "bridge_id": match.group("bridge_id"),
+            "bridge_priority": int(match.group("bridge_priority")),
+            "interfaces": []
+        }
+        self.designated_bridge = match.group("bridge_id")
+        c = self.cli(
+            "show stp ports", obj_parser=self.parse_stp,
+            cmd_next="n", cmd_stop="q"
+        )
+        for i in c:
+            inst["interfaces"] += [i]
         stp["instances"] += [inst]
         return stp
