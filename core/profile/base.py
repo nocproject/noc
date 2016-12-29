@@ -11,7 +11,7 @@ import re
 ## NOC modules
 from noc.lib.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
-from noc.lib.ecma48 import strip_control_sequences
+from noc.core.ecma48 import strip_control_sequences
 import functools
 
 
