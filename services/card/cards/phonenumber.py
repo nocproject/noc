@@ -23,3 +23,16 @@ class PhoneNumberCard(BaseCard):
             "path": [PhoneRange.get_by_id(p)
                      for p in PhoneRange.get_path(self.object.phone_range)],
         }
+
+    @classmethod
+    def search(cls, handler, query):
+        r = []
+        for p in PhoneNumber.objects.filter(
+            number=query
+        ):
+            r += [{
+                "scope": "phonenumber",
+                "id": str(p.id),
+                "label": "%s: %s" % (p.dialplan.name, p.number)
+            }]
+        return r
