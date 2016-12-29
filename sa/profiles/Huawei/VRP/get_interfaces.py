@@ -78,7 +78,8 @@ class Script(BaseScript):
         "Vlanif": "SVI",
         "Vlan-interface": "SVI",
         "NULL": "null",
-        "RprPos": "unknown"
+        "RprPos": "unknown",
+        "Rpr": "unknown"
     }
 
     def get_ospfint(self):
