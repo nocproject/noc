@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from mongoengine.queryset import Q
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.phone.models.phonerange import PhoneRange
@@ -21,6 +23,7 @@ class PhoneRangeApplication(ExtDocApplication):
     model = PhoneRange
     parent_model = PhoneRange
     parent_field = "parent"
+    query_fields = ["name", "description"]
 
     def field_total_numbers(self, o):
         return o.total_numbers
@@ -44,3 +47,8 @@ class PhoneRangeApplication(ExtDocApplication):
                 "label": unicode(p.name)
             } for p in path]
         }
+
+    def get_Q(self, request, query):
+        q = super(PhoneRangeApplication, self).get_Q(request, query)
+        q |= Q(from_number__lte=query, to_number__gte=query)
+        return q
