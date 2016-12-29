@@ -21,6 +21,14 @@ Ext.define("NOC.phone.phonenumber.Application", {
 
     initComponent: function() {
         var me = this;
+
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -134,6 +142,10 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     fieldLabel: __("Project"),
                     allowBlank: true
                 }
+            ],
+
+            formToolbar: [
+                me.cardButton
             ]
         });
         me.callParent();
@@ -158,5 +170,15 @@ Ext.define("NOC.phone.phonenumber.Application", {
             ftype: "lookup",
             lookup: "phone.numbercategory"
         }
-    ]
+    ],
+
+    //
+    onCard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/phonenumber/" + me.currentRecord.get("id") + "/"
+            );
+        }
+    }
 });
