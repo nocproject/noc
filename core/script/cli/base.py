@@ -26,6 +26,8 @@ class CLI(object):
     iostream_class = None
     BUFFER_SIZE = 1048576
     MATCH_TAIL = 256
+    # Buffer to check missed ECMA control characters
+    MATCH_MISSED_CONTROL_TAIL = 8
     # Retries on immediate disconnect
     CONNECT_RETRIES = 3
     # Timeout after immediate disconnect
@@ -246,7 +248,12 @@ class CLI(object):
                 raise tornado.gen.TimeoutError()
             self.logger.debug("Received: %r", r)
             # Clean input
-            self.buffer += self.cleaned_input(r)
+            if self.buffer.find(
+                    "\x1b",
+                    -self.MATCH_MISSED_CONTROL_TAIL) != -1:
+                self.buffer = self.cleaned_input(self.buffer + r)
+            else:
+                self.buffer += self.cleaned_input(r)
             # Try to find matched pattern
             offset = max(0, len(self.buffer) - self.MATCH_TAIL)
             for rx, handler in self.pattern_table.iteritems():
