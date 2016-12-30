@@ -94,5 +94,5 @@ class RunCommandsApplication(ExtApplication):
         action = self.get_object_or_404(Action, id=action_id)
         r = {}
         for mo in objects:
-            r[mo.id] = action.expand(**config)
+            r[mo.id] = action.expand(mo, **config)
         return r
