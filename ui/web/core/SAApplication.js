@@ -11,7 +11,11 @@ Ext.define('NOC.core.SAApplication', {
     layout: 'card',
 
     requires: [
-        'NOC.core.SAApplicationModel'
+        'NOC.core.SAApplicationModel',
+        'Ext.ux.form.SearchField',
+        'NOC.main.ref.profile.LookupField',
+        'NOC.sa.commandsnippet.LookupField',
+        'NOC.sa.actioncommands.LookupField'
     ],
     stateMap: {
         w: __('Waiting'),
@@ -26,6 +30,8 @@ Ext.define('NOC.core.SAApplication', {
         s: 'noc-status-success',
         f: 'noc-status-failed'
     },
+
+    filterObject: {},
 
     initComponent: function() {
         var me = this,
@@ -84,26 +90,90 @@ Ext.define('NOC.core.SAApplication', {
         me.selectedStore = me.viewModel.get('selected');
         me.selectionStore = Ext.create('NOC.core.ModelStore', {
             model: 'NOC.core.SAApplicationModel',
-            autoLoad: true,
+            autoLoad: false,
             pageSize: bs,
             leadingBufferZone: bs * 5,
             numFromEdge: Math.ceil(bs / 2),
             trailingBufferZone: bs * 5,
             purgePageCount: 10
         });
+
         me.filterPanel = Ext.create('Ext.panel.Panel', {
-            title: 'filters',
-            region: 'west',
+            title: "Filters (doesn't work)",
+            region: 'east',
             width: 300,
-            html: 'filter fields',
             collapsed: true,
             border: true,
             animCollapse: false,
             collapseMode: 'mini',
             hideCollapseTool: true,
             split: true,
-            resizable: true
+            resizable: true,
+            layout: {
+                type: 'vbox',
+                align: 'right'
+            },
+            defaults: {
+                labelAlign: 'top',
+                minWidth: 270,
+                margin: '5 10 0 10'
+            },
+            items: [
+                {
+                    xtype: 'searchfield',
+                    isLookupField: true,
+                    itemId: 'name',  // name of http request query param
+                    fieldLabel: __('Name'),
+                    labelWidth: 50,
+                    triggers: {
+                        clear: {
+                            cls: 'x-form-clear-trigger',
+                            scope: me,
+                            handler: 'cleanFilter'
+                        }
+                    },
+                    listeners: {
+                        scope: me,
+                        specialkey: me.setFilter
+                    }
+                },
+                {
+                    xtype: 'searchfield',
+                    isLookupField: true,
+                    itemId: 'ip', // name of http request query param
+                    fieldLabel: __('IP'),
+                    labelWidth: 50,
+                    triggers: {
+                        clear: {
+                            cls: 'x-form-clear-trigger',
+                            scope: me,
+                            handler: 'cleanFilter'
+                        }
+                    },
+                    listeners: {
+                        scope: me,
+                        specialkey: me.setFilter
+                    }
+                },
+                {
+                    xtype: 'main.ref.profile.LookupField',
+                    itemId: 'profile_name', // name of http request query param
+                    fieldLabel: __('Profile'),
+                    listeners: {
+                        scope: me,
+                        change: me.setFilter
+                    }
+                },
+                {
+                    xtype: 'button',
+                    itemId: 'clean-btn',
+                    minWidth: 50,
+                    text: __('Clean All'),
+                    handler: Ext.bind(me.cleanAllFilters, me)
+                }
+            ]
         });
+        me.restoreFilter();
         me.ITEM_SELECT = me.registerItem(
             me.createSelectPanel()
         );
@@ -148,7 +218,7 @@ Ext.define('NOC.core.SAApplication', {
                 pruneRemoved: false,
                 selType: 'checkboxmodel'
             },
-            region: 'center',
+            region: 'west',
             width: "50%",
             columns: me.cols.concat({
                 xtype: "glyphactioncolumn",
@@ -232,7 +302,7 @@ Ext.define('NOC.core.SAApplication', {
             stateful: true,
             stateId: selectedGridStateId,
             selModel: "checkboxmodel",
-            region: 'east',
+            region: 'center',
             width: "50%",
             columns: [
                 {
@@ -297,6 +367,7 @@ Ext.define('NOC.core.SAApplication', {
             },
             handler: function() {
                 me.showItem(me.ITEM_CONFIG);
+                me.modeField.setValue('commands');
             }
         });
 
@@ -356,6 +427,122 @@ Ext.define('NOC.core.SAApplication', {
             handler: me.onRun
         });
 
+        me.commandField = {
+            xtype: 'textareafield',
+            fieldLabel: __("Commands"),
+            labelAlign: "top",
+            allowBlank: false,
+            name: "cmd",
+            width: '95%',
+            height: 500,
+            scrollable: true,
+            padding: 30,
+            componentId: "commands",
+            itemId: 'commands'
+        };
+
+        me.commandPanel = Ext.create('Ext.form.Panel', {
+            height: 700,
+            width: '100%',
+            border: false,
+            defaults: {
+                margin: 10,
+                padding: 20
+            },
+            listeners: {
+                scope: me,
+                validitychange: function(form, valid) {
+                    me.runButton.setDisabled(!valid);
+                }
+            }
+
+        });
+
+        me.modeField = Ext.create('Ext.form.field.ComboBox', {
+            fieldLabel: __('Mode'),
+            padding: 4,
+            store: {
+                data: [
+                    {value: 'commands', name: __('Run Commands')},
+                    {value: 'snippets', name: __('Run Snippet')},
+                    {value: 'actions', name: __('Run Action')}
+                ]
+            },
+            queryMode: 'local',
+            displayField: 'name',
+            valueField: 'value',
+            listeners: {
+                scope: me,
+                change: function(field, newValue) {
+                    me.actionField.setHidden(true);
+                    me.snippetField.setHidden(true);
+                    if(newValue == 'actions') {
+                        selectedMode(me.actionField);
+                        return;
+                    }
+                    if(newValue == 'snippets') {
+                        selectedMode(me.snippetField);
+                        return;
+                    }
+                    if(newValue == 'commands') {
+                        me.commandPanel.removeAll();
+                        me.commandPanel.add(me.commandField);
+                        return;
+                    }
+                }
+            }
+        });
+
+        var selectedMode = function(field) {
+            me.commandPanel.removeAll();
+            field.setHidden(false);
+            field.setValue('');
+            me.runButton.setDisabled(true);
+        };
+
+        var addField = function(mode, newValue) {
+            if(newValue) {
+                me.idForRender = newValue;
+                Ext.Ajax.request({
+                    url: Ext.String.format('/sa/runcommands/form/{0}/{1}/', mode, newValue),
+
+                    success: function(response) {
+                        var obj = Ext.decode(response.responseText);
+
+                        me.commandPanel.removeAll();
+                        me.commandPanel.add(obj);
+                    },
+
+                    failure: function(response) {
+                        NOC.error(__('server-side failure with status code ' + response.status));
+                    }
+                });
+            }
+        };
+        me.actionField = Ext.create('NOC.sa.action.LookupField', {
+            fieldLabel: __('Actions'),
+            hidden: true,
+            padding: 4,
+            listeners: {
+                scope: me,
+                change: function(field, newValue) {
+                    addField('action', newValue);
+                }
+            }
+        });
+
+        me.snippetField = Ext.create('NOC.sa.commandsnippet.LookupField', {
+            hidden: true,
+            fieldLabel: __('Snippets'),
+            padding: 4,
+            listeners: {
+                scope: me,
+                change: function(field, newValue) {
+                    addField('snippet', newValue);
+                }
+            }
+        });
+
         return Ext.create("Ext.panel.Panel", {
             layout: "border",
             activeItem: 1,
@@ -365,7 +552,15 @@ Ext.define('NOC.core.SAApplication', {
                     region: 'east',
                     width: "50%",
                     border: false,
-                    items: me.getConfigPanel()
+                    defaults: {
+                        width: "80%"
+                    },
+                    items: [
+                        me.modeField,
+                        me.actionField,
+                        me.snippetField,
+                        me.commandPanel
+                    ]
                 }
             ],
             dockedItems: [
@@ -588,14 +783,13 @@ Ext.define('NOC.core.SAApplication', {
         this.viewModel.set(state, this.viewModel.get(state) + step)
     },
 
-    onRun: function() {
+    sendCommands: function(cfg) {
         var me = this,
-            xhr, cfg,
+            xhr,
             params = [],
             offset = 0,
             rxChunk = /^(\d+)\|/;
-        // Get params and check errors
-        cfg = me.getArgs();
+
         me.viewModel.set('progressState.r', 0);
         me.viewModel.set('progressState.w', 0);
         me.viewModel.set('progressState.f', 0);
@@ -688,6 +882,71 @@ Ext.define('NOC.core.SAApplication', {
         };
         xhr.send(JSON.stringify(params));
     },
+
+    onRun: function() {
+        var me = this;
+        var makeRequest = function(mode) {
+            var objects = [];
+            var config = me.commandPanel.getValues();
+
+            me.selectedStore.each(function(record) {
+                objects.push(record.get('id'));
+            });
+
+            for(var key in config) {
+                if(config.hasOwnProperty(key)) {
+                    if(!config[key]) {
+                        delete config[key];
+                    }
+                }
+            }
+            Ext.Ajax.request({
+                method: 'POST',
+                params: JSON.stringify({objects: objects, config: config}),
+                headers: {'Content-Type': 'application/json'},
+                url: Ext.String.format('/sa/runcommands/render/{0}/{1}/', mode, me.idForRender),
+
+                success: function(response) {
+                    var obj = Ext.decode(response.responseText);
+                    var commands = [];
+
+                    for(var key in obj) {
+                        if(obj.hasOwnProperty(key) && obj[key]) {
+                            commands.push({
+                                id: key,
+                                script: "commands",
+                                args: {
+                                    commands: obj[key].split("\n")
+                                }
+                            });
+                        }
+                    }
+                    if(commands.length > 0) {
+                        me.sendCommands(commands);
+                    } else {
+                        NOC.error(__('Empty command'))
+                    }
+                },
+
+                failure: function(response) {
+                    NOC.error(__('server-side failure with status code ' + response.status));
+                }
+            });
+        };
+
+        if('commands' === me.modeField.getValue()) {
+            me.sendCommands({
+                "script": "commands",
+                "args": {
+                    "commands": me.commandPanel.getValues().cmd.split("\n")
+                }
+            });
+        } else if('snippets' === me.modeField.getValue()) {
+            makeRequest('snippet');
+        } else if('actions' === me.modeField.getValue()) {
+            makeRequest('action');
+        }
+    },
     //
     onShowResult: function(grid, record) {
         var me = this;
@@ -709,8 +968,83 @@ Ext.define('NOC.core.SAApplication', {
         this.viewModel.set('total.selected', this.selectedStore.getCount());
     },
 
-    onFilterCollapse: function() {
-        console.log('xxx');
-        // me.filterPanel.collapse();
+    lookupFields: function() {
+        var items = [];
+        Ext.Array.each(this.filterPanel.items.items, function(item) {
+            if(item.isLookupField) {
+                items.push(item);
+            }
+        });
+        return items;
+    },
+
+    restoreFilter: function() {
+        var queryStr = Ext.util.History.getToken().split('?')[1];
+        if(queryStr) {
+            this.filterObject = Ext.Object.fromQueryString(queryStr, true);
+            Ext.Array.each(this.lookupFields(), function(item) {
+                if(item.itemId in this.filterObject) {
+                    item.setValue(this.filterObject[item.itemId]);
+                }
+            }, this);
+            // ToDo after change backend
+            // this.selectionStore.setFilterParams(this.filterObject);
+        }
+        this.selectionStore.load();
+    },
+
+    setFilter: function(field, event) {
+        if('Ext.event.Event' === Ext.getClassName(event)) {
+            if(Ext.EventObject.ENTER === event.getKey()) {
+                this.reloadData(field.itemId, field.getValue());
+            }
+            return;
+        }
+        this.reloadData(field.itemId, field.getValue());
+    },
+
+    cleanAllFilters: function() {
+        console.log('clean all');
+        Ext.History.add(this.appId);
+        this.filterObject = {};
+        Ext.Array.each(this.lookupFields(), function(item) {
+            item.setValue('');
+        });
+        this.reload();
+    },
+
+    cleanFilter: function(field, trigger, event) {
+        var fieldName = field;
+
+        if(Ext.isObject(field) && 'itemId' in field) {
+            field.setValue('');
+            fieldName = field.itemId;
+        }
+        this.reloadData(fieldName, '');
+    },
+
+    reloadData: function(name, value) {
+        if(value && value.length > 0) {
+            if(value === this.filterObject[name]) return;
+            this.filterObject[name] = value;
+        } else {
+            if(name in this.filterObject) {
+                delete this.filterObject[name];
+            } else return;
+        }
+        var token = '', query = Ext.Object.toQueryString(this.filterObject, true);
+        if(query.length > 0) {
+            token = '?' + query;
+        }
+        Ext.History.add(this.appId + token, true);
+        this.reload();
+    },
+
+    reload: function() {
+        // ToDo after change backend
+        console.log('reloading ...');
+        console.log(this.filterObject);
+        // this.selectionStore.setFilterParams(this.filterObject);
+        // this.selectionStore.load();
     }
 });

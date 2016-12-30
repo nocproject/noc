@@ -227,9 +227,9 @@ Ext.define('NOC.inv.map.Maintainance', {
         }
     },
 
-    cleanFilter: function() {
+    cleanFilter: function(field) {
         var me = this;
-        me.dockMaintainance.down('#filterField').setValue('');
+        field.setValue('');
         me.loadData();
     }
 });
