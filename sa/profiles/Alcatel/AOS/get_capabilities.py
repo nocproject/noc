@@ -36,3 +36,16 @@ class Script(BaseScript):
         r = self.cli("show udld configuration")
         match = self.rx_udld.search(r)
         return match and match.group("status") == "enabled"
+
+    @false_on_cli_error
+    def has_stack(self):
+        """
+        Check stack members
+        :return:
+        """
+        v = self.cli("show module")
+        r = [l for l in v.splitlines() if "NI-" in l]
+        return int(r[-1].split()[0].split("-")[-1])
+
+    def execute_platform(self, caps):
+        caps["Stack | Members"] = self.has_stack() if self.has_stack() else 0

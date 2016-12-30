@@ -76,4 +76,4 @@ class Script(BaseScript):
     def execute_platform(self, caps):
         if self.has_ndp():
             caps["Huawei | NDP"] = True
-        caps["Stack | Members"] = self.has_stack()
+        caps["Stack | Members"] = self.has_stack() if self.has_stack() else 0
