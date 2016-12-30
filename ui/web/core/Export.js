@@ -94,8 +94,11 @@ Ext.define("NOC.core.Export", {
             first = renderPlugin.getFirstVisibleRowIndex(),
             last = renderPlugin.getLastVisibleRowIndex(),
             columns = grid.getVisibleColumns();
-
-        var records = grid.getStore().getRange(first, last);
+        try {
+            var records = grid.getStore().getRange(first, last);
+        } catch (e) {
+            return false;
+        }
 
         var blob = new Blob([this.export(records, columns)], {type: "text/plain;charset=utf-8"});
         saveAs(blob, filename);
