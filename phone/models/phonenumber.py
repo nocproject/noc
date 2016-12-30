@@ -7,12 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import re
 from threading import Lock
 import operator
 ## Third-party modules
-from mongoengine.document import Document
-from mongoengine.fields import StringField, DateTimeField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (StringField, DateTimeField, ListField,
+                                EmbeddedDocumentField)
 import cachetools
 ## NOC modules
 from phonerange import PhoneRange
@@ -20,16 +20,25 @@ from numbercategory import NumberCategory
 from noc.sa.models.service import Service
 from dialplan import DialPlan
 from phonenumberprofile import PhoneNumberProfile
-from noc.lib.nosql import PlainReferenceField
+from phonelinktype import PhoneLinkType
 from noc.project.models.project import Project
-from noc.lib.nosql import ForeignKeyField
+from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 
 id_lock = Lock()
 
 
+class LinkedNumber(EmbeddedDocument):
+    type = PlainReferenceField(PhoneLinkType)
+    number = PlainReferenceField("phone.PhoneNumber")
+    description = StringField()
+
+
 class PhoneNumber(Document):
     meta = {
-        "collection": "noc.phonenumbers"
+        "collection": "noc.phonenumbers",
+        "indexes": [
+            "linked_numbers.number"
+        ]
     }
 
     number = StringField()
@@ -67,6 +76,8 @@ class PhoneNumber(Document):
     allocated_till = DateTimeField()
     # Last state change
     changed = DateTimeField()
+    #
+    linked_numbers = ListField(EmbeddedDocumentField(LinkedNumber))
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
 
