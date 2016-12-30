@@ -10,11 +10,10 @@
 import logging
 import sys
 import time
-## Django modules
+## Third-party modules
 from django.db.models import Model
 from django.db import IntegrityError
 import django.db.models.signals
-## Third-party modules
 import pymongo
 from mongoengine.base import *
 from mongoengine import *
@@ -23,6 +22,7 @@ import six
 import bson
 ## NOC modules
 from noc.core.config.base import config
+from noc.models import get_model
 
 logger = logging.getLogger(__name__)
 
@@ -73,8 +73,8 @@ class PlainReferenceField(BaseField):
     """
 
     def __init__(self, document_type, *args, **kwargs):
-        if not isinstance(document_type, basestring):
-            if not issubclass(document_type, (Document, basestring)):
+        if not isinstance(document_type, six.string_types):
+            if not issubclass(document_type, (Document, six.string_types)):
                 raise ValidationError("Argument to PlainReferenceField constructor "
                                       "must be a document class or a string")
         self.document_type_obj = document_type
@@ -83,9 +83,11 @@ class PlainReferenceField(BaseField):
 
     @property
     def document_type(self):
-        if isinstance(self.document_type_obj, basestring):
+        if isinstance(self.document_type_obj, six.string_types):
             if self.document_type_obj == RECURSIVE_REFERENCE_CONSTANT:
                 self.document_type_obj = self.owner_document
+            elif isinstance(self.document_type_obj, six.string_types):
+                self.document_type_obj = get_model(self.document_type_obj)
             else:
                 self.document_type_obj = get_document(self.document_type_obj)
         return self.document_type_obj
@@ -98,7 +100,7 @@ class PlainReferenceField(BaseField):
         # Get value from document instance if available
         value = instance._data.get(self.name)
         # Dereference DBRefs
-        if isinstance(value, ObjectId) or (isinstance(value, basestring) and len(value) == 24):
+        if isinstance(value, ObjectId) or (isinstance(value, six.string_types) and len(value) == 24):
             if self.has_get_by_id is None:
                 self.has_get_by_id = hasattr(self.document_type, "get_by_id")
             if self.has_get_by_id:
