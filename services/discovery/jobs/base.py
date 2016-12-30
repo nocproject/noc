@@ -404,6 +404,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     "Cannot confirm links",
                     remote_object.name, self.required_script
                 )
+                continue
             confirmed = set()
             for li, ro_id, ri in self.iter_neighbors(remote_object):
                 ro = self.get_neighbor(ro_id)

@@ -21,6 +21,14 @@ Ext.define("NOC.phone.phonerange.Application", {
 
     initComponent: function() {
         var me = this;
+
+        me.cardButton = Ext.create("Ext.button.Button", {
+            text: __("Card"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onCard
+        });
+
         Ext.apply(me, {
             columns: [
                 {
@@ -43,6 +51,12 @@ Ext.define("NOC.phone.phonerange.Application", {
                     text: __("To Number"),
                     dataIndex: "to_number",
                     width: 100
+                },
+                {
+                    text: __("Allocated"),
+                    dataIndex: "to_allocate_numbers",
+                    width: 50,
+                    renderer: NOC.render.Bool
                 },
                 {
                     text: __("Total"),
@@ -100,9 +114,35 @@ Ext.define("NOC.phone.phonerange.Application", {
                     xtype: "textfield",
                     fieldLabel: __("To Number"),
                     allowBlank: false
-                }                
+                },
+                {
+                    name: "to_allocate_numbers",
+                    xtype: "checkbox",
+                    boxLabel: __("Allocate Numbers")
+                }
+            ],
+
+            formToolbar: [
+                me.cardButton
             ]
         });
         me.callParent();
+    },
+    filters: [
+        {
+            title: __("By Dialplan"),
+            name: "dialplan",
+            ftype: "lookup",
+            lookup: "phone.dialplan"
+        }
+    ],
+    //
+    onCard: function() {
+        var me = this;
+        if(me.currentRecord) {
+            window.open(
+                "/api/card/view/phonerange/" + me.currentRecord.get("id") + "/"
+            );
+        }
     }
 });

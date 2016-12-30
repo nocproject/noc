@@ -19,3 +19,11 @@ class PhoneNumberApplication(ExtDocApplication):
     title = "Phone Number"
     menu = [_("Phone Number")]
     model = PhoneNumber
+    query_fields = ["number", "description"]
+
+    def instance_to_lookup(self, o, fields=None):
+        return {
+            "id": str(o.id),
+            "label": unicode(o),
+            "dialplan": o.dialplan.name
+        }

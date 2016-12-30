@@ -17,10 +17,10 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Iskratel.MSAN"
-    pattern_username = "([Uu]ser ?([Nn]ame)?|[Ll]ogin): ?"
+    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin)|User: ?"
     # Iskratel do not have "enable_super" command
-    pattern_unpriveleged_prompt = r"^\S+?>"
-    pattern_prompt = r"^\S+?\s*#"
+    # pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_prompt = r"^\S+?\s*[#>]"
     pattern_more = [
         (r"Press any key to continue or ESC to stop scrolling.", " "),
         (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t"),

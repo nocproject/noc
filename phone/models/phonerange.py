@@ -7,29 +7,35 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import re
 from threading import Lock
 import operator
+import logging
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField
+from mongoengine.fields import StringField, BooleanField
 from mongoengine.queryset import Q
 from mongoengine.errors import ValidationError
 import cachetools
 ## NOC modules
 from dialplan import DialPlan
 from phonerangeprofile import PhoneRangeProfile
+from numbercategory import NumberCategory
 from noc.lib.nosql import PlainReferenceField
 from noc.crm.models.supplier import Supplier
 from noc.project.models.project import Project
 from noc.lib.nosql import ForeignKeyField
+from noc.core.model.decorator import on_save
+from noc.core.defer import call_later
 
+logger = logging.getLogger(__name__)
 id_lock = Lock()
 
 
+@on_save
 class PhoneRange(Document):
     meta = {
-        "collection": "noc.phoneranges"
+        "collection": "noc.phoneranges",
+        "indexes": ["parent"]
     }
 
     name = StringField()
@@ -41,11 +47,13 @@ class PhoneRange(Document):
     to_number = StringField()
     supplier = PlainReferenceField(Supplier)
     project = ForeignKeyField(Project)
+    to_allocate_numbers = BooleanField()
     # @todo: softswitch
     # @todo: SBC
     # @todo: tags
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
+    _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -55,6 +63,17 @@ class PhoneRange(Document):
                              lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return PhoneRange.objects.filter(id=id).first()
+
+    @cachetools.cachedmethod(operator.attrgetter("_path_cache"), lock=lambda _: id_lock)
+    def get_path(self):
+        """
+        Returns list of parent range ids
+        :return:
+        """
+        if self.parent:
+            return self.parent.get_path() + [self.id]
+        else:
+            return [self.id]
 
     @classmethod
     def get_closest_range(cls, dialplan, from_number,
@@ -78,7 +97,7 @@ class PhoneRange(Document):
         if exclude_range:
             q["id__ne"] = exclude_range.id
         return PhoneRange.objects.filter(**q)\
-            .order_by("from_number", "-to_number").first()
+            .order_by("-from_number", "to_number").first()
 
     def clean(self):
         if self.to_number < self.from_number:
@@ -103,7 +122,10 @@ class PhoneRange(Document):
             q &= Q(id__ne=self.id)
         rr = PhoneRange.objects.filter(q).first()
         if rr:
-            raise ValidationError("Overlapped ranges: %s - %s" % (rr.from_number, rr.to_number))
+            raise ValidationError(
+                "Overlapped ranges: %s - %s" % (
+                    rr.from_number, rr.to_number)
+            )
         q = {
             "dialplan": self.dialplan,
             "from_number": self.from_number,
@@ -113,9 +135,75 @@ class PhoneRange(Document):
             q["exclude_range"] = self
         self.parent = PhoneRange.get_closest_range(**q)
 
+    def on_save(self):
+        if self.to_allocate_numbers:
+            call_later(
+                "noc.phone.models.phonerange.allocate_numbers",
+                range_id=self.id
+            )
+
+    @property
+    def has_children(self):
+        return bool(PhoneRange.objects.filter(parent=self.id).first())
+
     @property
     def total_numbers(self):
         """
         Total phone numbers in range
         """
         return int(self.to_number) - int(self.from_number) + 1
+
+    def iter_numbers(self):
+        for n in range(
+            int(self.from_number),
+            int(self.to_number) + 1
+        ):
+            yield str(n)
+
+    def allocate_numbers(self):
+        from phonenumber import PhoneNumber
+
+        # Alreacy created numbers
+        existing_numbers = set(PhoneNumber.objects.filter(
+            dialplan=self.dialplan.id,
+            number__gte=self.from_number,
+            number__lte=self.to_number
+        ).values_list("number"))
+        # Nested ranges
+        nrxc = []
+        for r in PhoneRange.objects.filter(parent=self.id):
+            nrxc += ["(x >= '%s' and x <= '%s')" % (
+                r.from_number, r.to_number)]
+        if nrxc:
+            nrx = compile(" or ".join(nrxc), "<string>", "eval")
+        else:
+            nrx = None
+        #
+        cat_rules = [cr for cr in NumberCategory.get_rules() if cr[0] == self.dialplan]
+        # Create numbers
+        for number in self.iter_numbers():
+            if number in existing_numbers:
+                continue
+            if nrx and eval(nrx, {"x": number}):
+                continue
+            category = None
+            for dp, rx_mask, c in cat_rules:
+                if rx_mask.search(number):
+                    category = c
+                    break
+            logger.info("[%s] Create number %s in category %s",
+                        self.name, number, category)
+            n = PhoneNumber(
+                dialplan=self.dialplan,
+                number=number,
+                status="N",
+                category=category
+            )
+            n.save()
+
+
+def allocate_numbers(range_id):
+    range = PhoneRange.get_by_id(range_id)
+    if not range:
+        return
+    range.allocate_numbers()
