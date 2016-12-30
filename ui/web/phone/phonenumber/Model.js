@@ -20,8 +20,18 @@ Ext.define("NOC.phone.phonenumber.Model", {
             type: "string"
         },
         {
+            name: "profile__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "category",
             type: "string"
+        },
+        {
+            name: "category__label",
+            type: "string",
+            persist: false
         },
         {
             name: "protocol",
@@ -49,6 +59,11 @@ Ext.define("NOC.phone.phonenumber.Model", {
             type: "int"
         },
         {
+            name: "project__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "status",
             type: "string",
             defaultValue: "N"
@@ -62,8 +77,22 @@ Ext.define("NOC.phone.phonenumber.Model", {
             type: "string"
         },
         {
+            name: "phone_range__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "dialplan",
             type: "string"
+        },
+        {
+            name: "dialplan__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "linked_numbers",
+            type: "auto"
         }
     ]
 });

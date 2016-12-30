@@ -1,0 +1,134 @@
+<table class="table table-condensed table-hover">
+<tbody>
+</tbody>
+<tr>
+    <th colspan="2">
+        {{ _("Phone Range") }}: {{ object.name }}
+    </th>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Dialplan") }}
+    </th>
+    <td>
+        <a href="/api/card/view/dialplan/{{ object.dialplan.id }}/">{{ object.dialplan.name }}</a>
+        {% if path %}
+            {% for p in path %}
+                /
+                <a href="/api/card/view/phonerange/{{ p.id }}/">{{ p.name }} ({{ p.from_number }} - {{ p.to_number }})</a>
+            {% endfor %}
+        {% endif %}
+    </td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Range") }}
+    </th>
+    <td>
+        {{ object.from_number }} - {{ object.to_number }}
+    </td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Numbers") }}
+    </th>
+    <td>
+        {{ object.total_numbers }}
+    </td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Profile") }}
+    </th>
+    <td>
+        {% if object.profile %}{{ object.profile.name }}{% endif %}
+    </td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Project") }}
+    </th>
+    <td>
+        {% if object.project %}{{ object.project.name }}{% endif %}
+    </td>
+</tr>
+
+<tr>
+    <th scope="row">
+        {{ _("Description") }}
+    </th>
+    <td>
+        {% if object.description %} {{ object.description }} {% endif %}
+    </td>
+</tr>
+<tr>
+    <th scope="row">
+        {{ _("Ranges") }}
+    </th>
+    <td>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-md-3">
+                        {{ _("Range") }}
+                    </th>
+                    <th class="col-md-1">
+                        {{ _("Numbers") }}
+                    </th>
+                    <th class="col-md-8">
+                        {{ _("Description") }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in ranges %}
+                <tr>
+                    <td>
+                        <a href="/api/card/view/phonerange/{{ r.id }}/">{{ r.from_number }} - {{ r.to_number }}</a>
+                    </td>
+                    <td>{{ r.total_numbers }}</td>
+                    <td>{% if r.description %} {{ r.description }} {% endif %}</td>
+                {% endfor %}
+            </tbody>
+        </table>
+    </td>
+</tr>
+{% if numbers %}
+<tr>
+    <th scope="row">
+        {{ _("Numbers") }}
+    </th>
+    <td>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-md-2">
+                        {{ _("Number") }}
+                    </th>
+                    <th class="col-md-1">
+                        {{ _("Status") }}
+                    </th>
+                    <th class="col-md-1">
+                        {{ _("Category") }}
+                    </th>
+                    <th class="col-md-8">
+                        {{ _("Description") }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in numbers %}
+                <tr>
+                    <td>
+                        <a href="/api/card/view/phonenumber/{{ r.id }}/">{{ r.number }}</a>
+                    </td>
+                    <td>{{ r.status }}</td>
+                    <td> {% if r.category %}{{ r.category.name }}{% endif %}</td>
+                    <td>{% if r.description %} {{ r.description }} {% endif %}</td>
+                {% endfor %}
+            </tbody>
+        </table>
+    </td>
+</tr>
+</table>
+{% endif %}

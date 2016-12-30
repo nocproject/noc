@@ -43,7 +43,7 @@ NOCGettext.prototype.set_translation = function(lang) {
         }
     }
     // Reset to english when improperly configured
-    if(!url) {
+    if ((!url) || (url.search("/en.json") != -1)) {
         this.lang = "en";
         this.translations = {};
         return;

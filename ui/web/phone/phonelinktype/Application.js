@@ -1,39 +1,32 @@
 //---------------------------------------------------------------------
-// phone.dialplan application
+// phone.phonelinktype application
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2016 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.phone.dialplan.Application");
+console.debug("Defining NOC.phone.phonelinktype.Application");
 
-Ext.define("NOC.phone.dialplan.Application", {
+Ext.define("NOC.phone.phonelinktype.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.phone.dialplan.Model"
+        "NOC.phone.phonelinktype.Model"
     ],
-    model: "NOC.phone.dialplan.Model",
+    model: "NOC.phone.phonelinktype.Model",
     search: true,
+
     initComponent: function() {
         var me = this;
-
-        me.cardButton = Ext.create("Ext.button.Button", {
-            text: __("Card"),
-            glyph: NOC.glyph.eye,
-            scope: me,
-            handler: me.onCard
-        });
-
         Ext.apply(me, {
             columns: [
                 {
                     text: __("Name"),
                     dataIndex: "name",
-                    width: 100
+                    width: 150
                 },
                 {
-                    text: __("Mask"),
-                    dataIndex: "mask",
-                    width: 150
+                    text: __("Code"),
+                    dataIndex: "code",
+                    width: 100
                 },
                 {
                     text: __("Description"),
@@ -47,14 +40,20 @@ Ext.define("NOC.phone.dialplan.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
-                    uiStyle: "medium",
-                    allowBlank: false
+                    allowBlank: false,
+                    uiStyle: "medium"
                 },
                 {
-                    name: "mask",
+                    name: "code",
                     xtype: "textfield",
-                    fieldLabel: __("Mask"),
-                    allowBlank: false
+                    fieldLabel: __("Code"),
+                    allowBlank: false,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "is_active",
+                    xtype: "checkbox",
+                    boxLabel: __("Active")
                 },
                 {
                     name: "description",
@@ -62,22 +61,8 @@ Ext.define("NOC.phone.dialplan.Application", {
                     fieldLabel: __("Description"),
                     allowBlank: true
                 }
-            ],
-
-            formToolbar: [
-                me.cardButton
             ]
         });
         me.callParent();
-    },
-
-    //
-    onCard: function() {
-        var me = this;
-        if(me.currentRecord) {
-            window.open(
-                "/api/card/view/dialplan/" + me.currentRecord.get("id") + "/"
-            );
-        }
     }
 });

@@ -90,7 +90,7 @@ class RunCommandsApplication(ExtApplication):
               "config": DictParameter()
           },
           access="launch", api=True)
-    def api_render_snippet(self, request, action_id, objects, config):
+    def api_render_action(self, request, action_id, objects, config):
         action = self.get_object_or_404(Action, id=action_id)
         r = {}
         for mo in objects:

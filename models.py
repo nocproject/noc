@@ -267,7 +267,9 @@ _MODELS = {
     # support models
     "support.Crashinfo": "noc.support.models.crashinfo.Crashinfo",
     # bi models
-    "bi.DashboardLayout": "noc.bi.models.dashboardlayout.DashboardLayout"
+    "bi.DashboardLayout": "noc.bi.models.dashboardlayout.DashboardLayout",
+    # phone models
+    "phone.PhoneNumber": "noc.phone.models.phonenumber.PhoneNumber"
 }
 
 FTS_MODELS = [

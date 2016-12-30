@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from mongoengine.queryset import Q
 ## NOC modules
 from noc.lib.app import ExtDocApplication, view
 from noc.phone.models.phonerange import PhoneRange
@@ -21,7 +23,32 @@ class PhoneRangeApplication(ExtDocApplication):
     model = PhoneRange
     parent_model = PhoneRange
     parent_field = "parent"
+    query_fields = ["name", "description"]
 
     def field_total_numbers(self, o):
-    	return o.total_numbers
+        return o.total_numbers
 
+    def instance_to_lookup(self, o, fields=None):
+        return {
+            "id": str(o.id),
+            "label": unicode(o),
+            "has_children": o.has_children
+        }
+
+    @view("^(?P<id>\d+)/get_path/$",
+          access="read", api=True)
+    def api_get_path(self, request, id):
+        o = self.get_object_or_404(PhoneRange, id=id)
+        path = [PhoneRange.get_by_id(r) for r in o.get_path()]
+        return {
+            "data": [{
+                "id": str(p.id),
+                "level": path.index(p) + 1,
+                "label": unicode(p.name)
+            } for p in path]
+        }
+
+    def get_Q(self, request, query):
+        q = super(PhoneRangeApplication, self).get_Q(request, query)
+        q |= Q(from_number__lte=query, to_number__gte=query)
+        return q
