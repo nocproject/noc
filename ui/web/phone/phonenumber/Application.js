@@ -19,6 +19,25 @@ Ext.define("NOC.phone.phonenumber.Application", {
     model: "NOC.phone.phonenumber.Model",
     search: true,
 
+    statusStore: [
+        ["N", "New"],
+        ["F", "Free"],
+        ["A", "Allocated"],
+        ["R", "Reserved"],
+        ["O", "Out-of-order"],
+        ["C", "Cooldown"]
+    ],
+
+    protocolStore: [
+        ["SIP", "SIP"],
+        ["H323", "H.323"],
+        ["SS7", "SS7"],
+        ["MGCP", "MGCP"],
+        ["H247", "H.247"],
+        ["ISDN", "ISDN"],
+        ["Skinny", "Skinny"]
+    ],
+
     initComponent: function() {
         var me = this;
 
@@ -104,14 +123,7 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     xtype: "combobox",
                     fieldLabel: __("Status"),
                     allowBlank: false,
-                    store: [
-                        ["N", "New"],
-                        ["F", "Free"],
-                        ["A", "Allocated"],
-                        ["R", "Reserved"],
-                        ["O", "Out-of-order"],
-                        ["C", "Cooldown"]
-                    ],
+                    store: me.statusStore,
                     uiStyle: "medium"
                 },
                 {
@@ -119,15 +131,7 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     xtype: "combobox",
                     fieldLabel: __("Protocol"),
                     allowBlank: false,
-                    store: [
-                        ["SIP", "SIP"],
-                        ["H323", "H.323"],
-                        ["SS7", "SS7"],
-                        ["MGCP", "MGCP"],
-                        ["H247", "H.247"],
-                        ["ISDN", "ISDN"],
-                        ["Skinny", "Skinny"]
-                    ],
+                    store: me.protocolStore,
                     uiStyle: "medium"
                 },
                 {
@@ -146,31 +150,43 @@ Ext.define("NOC.phone.phonenumber.Application", {
 
             formToolbar: [
                 me.cardButton
+            ],
+
+            filters: [
+                {
+                    title: __("By Dialplan"),
+                    name: "dialplan",
+                    ftype: "lookup",
+                    lookup: "phone.dialplan"
+                },
+                {
+                    title: __("By Range"),
+                    name: "phone_range",
+                    ftype: "tree",
+                    lookup: "phone.phonerange"
+                },
+                {
+                    title: __("By Category"),
+                    name: "category",
+                    ftype: "lookup",
+                    lookup: "phone.numbercategory"
+                },
+                {
+                    title: __("By Status"),
+                    name: "status",
+                    ftype: "choices",
+                    store: me.statusStore
+                },
+                {
+                    title: __("By Protocol"),
+                    name: "protocol",
+                    ftype: "choices",
+                    store: me.protocolStore
+                }
             ]
         });
         me.callParent();
     },
-
-    filters: [
-        {
-            title: __("By Dialplan"),
-            name: "dialplan",
-            ftype: "lookup",
-            lookup: "phone.dialplan"
-        },
-        {
-            title: __("By Range"),
-            name: "phone_range",
-            ftype: "tree",
-            lookup: "phone.phonerange"
-        },
-        {
-            title: __("By Category"),
-            name: "category",
-            ftype: "lookup",
-            lookup: "phone.numbercategory"
-        }
-    ],
 
     //
     onCard: function() {
