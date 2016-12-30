@@ -925,7 +925,6 @@ Ext.define("NOC.inv.map.MapPanel", {
         Ext.Array.forEach(objects, function(item) {
             elements.push({object: item.get('object'), object__label: item.get('object__label')});
         });
-        console.log(elements);
         NOC.run(
             'NOC.inv.map.Maintainance',
             'Add To Maintainance',
