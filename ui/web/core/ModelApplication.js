@@ -184,6 +184,7 @@ Ext.define("NOC.core.ModelApplication", {
                     // @todo: Smarter solution using Ext.Class.alias
                     var ft = {
                         boolean: "NOC.core.modelfilter.Boolean",
+                        choices: "NOC.core.modelfilter.Choices",
                         lookup: "NOC.core.modelfilter.Lookup",
                         vcfilter: "NOC.core.modelfilter.VCFilter",
                         afi: "NOC.core.modelfilter.AFI",
