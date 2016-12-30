@@ -14,7 +14,9 @@ Ext.define("NOC.phone.phonenumber.Application", {
         "NOC.phone.phonenumberprofile.LookupField",
         "NOC.phone.numbercategory.LookupField",
         "NOC.phone.phonerange.LookupField",
-        "NOC.project.project.LookupField"
+        "NOC.project.project.LookupField",
+        "NOC.phone.phonenumber.LookupField",
+        "NOC.phone.phonelinktype.LookupField"
     ],
     model: "NOC.phone.phonenumber.Model",
     search: true,
@@ -145,6 +147,33 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     xtype: "project.project.LookupField",
                     fieldLabel: __("Project"),
                     allowBlank: true
+                },
+                {
+                    name: "linked_numbers",
+                    xtype: "gridfield",
+                    fieldLabel: __("Linked Numbers"),
+                    columns: [
+                        {
+                            text: __("Type"),
+                            dataIndex: "type",
+                            editor: "phone.phonelinktype.LookupField",
+                            renderer: NOC.render.Lookup("type"),
+                            width: 150
+                        },
+                        {
+                            text: __("Number"),
+                            dataIndex: "number",
+                            editor: "phone.phonenumber.LookupField",
+                            renderer: NOC.render.Lookup("number"),
+                            width: 150
+                        },
+                        {
+                            text: __("Description"),
+                            dataIndex: "description",
+                            editor: "textfield",
+                            flex: 1
+                        }
+                    ]
                 }
             ],
 

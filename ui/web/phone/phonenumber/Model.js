@@ -89,6 +89,10 @@ Ext.define("NOC.phone.phonenumber.Model", {
             name: "dialplan__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "linked_numbers",
+            type: "auto"
         }
     ]
 });

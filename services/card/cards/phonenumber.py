@@ -18,10 +18,17 @@ class PhoneNumberCard(BaseCard):
     model = PhoneNumber
 
     def get_data(self):
+        linked_by = []
+        for n in PhoneNumber.objects.filter(linked_numbers__number=self.object.id):
+            for ln in n.linked_numbers:
+                if ln.number.id == self.object.id:
+                    ln.number = n
+                    linked_by += [ln]
         return {
             "object": self.object,
             "path": [PhoneRange.get_by_id(p)
                      for p in PhoneRange.get_path(self.object.phone_range)],
+            "linked_by": linked_by
         }
 
     @classmethod
