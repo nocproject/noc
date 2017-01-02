@@ -14,7 +14,7 @@ consul_token: "{{lookup('env','CONSUL_TOKEN')}}"
 consul_env: "{% if consul_url and consul_token%}True{%endif%}"
 
 consul_template_version: "0.18.0-rc1"
-consul_template_config_dir: "{{etc_prefix}}/consul-template"
+consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
 consul_template_templates_dir: "{{consul_template_config_dir}}/templates"
 
 
