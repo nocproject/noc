@@ -30,7 +30,11 @@
   uri:
     url: "{{alerta_url}}/api/blackout?api-key={{alerta_token}}"
     method: POST
-    body: "{{ alerta_blackout | to_json }}"
+      body:
+        environment: Production
+        service:
+          - supervisord
+        duration: "{{alerta_blackout_duration}}"
     body_format: json
     status_code: 201
     validate_certs: no
@@ -129,7 +133,17 @@
   uri:
     url: "{{alerta_url}}/api/alert?api-key={{alerta_token}}"
     method: POST
-    body: "{{ alerta_deploy_finish | to_json }}"
+    body:
+      resource: tower
+      event: Deploy
+      environment: Production
+      type: AnsibleDeploy
+      attributes:
+        env_name: "{{noc_env}}"
+      service:
+        - NOC
+      status: closed
+      text: "Deployment on {{noc_env}} finished with tags: {{ ansible_tags }}"
     body_format: json
     status_code: 201, 202
     validate_certs: no
