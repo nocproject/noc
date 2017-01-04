@@ -9,6 +9,7 @@
     password: "{{rhel_subscription_password}}"
     autosubscribe: true
   when: "rhel_subscription_username is defined and rhel_subscription_username !=''"
+  become: true
   environment:
     http_proxy: "{{http_proxy}}"
   register: register_done
@@ -16,6 +17,7 @@
 - name: Add Devel repos
   command: "/sbin/subscription-manager repos --enable rhel-7-server-optional-rpms"
   ignore_errors: yes
+  become: true
   environment:
     http_proxy: "{{http_proxy}}"
   when: "register_done.changed==True"
