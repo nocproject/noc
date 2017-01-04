@@ -4,7 +4,7 @@
   become: no
   any_errors_fatal: false
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
+    - "vars/main.yml"
   vars:
     ansible_tags: "{{ lookup('get_tags') }}"
   roles:
@@ -35,9 +35,7 @@
   become: yes
   any_errors_fatal: true
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: consul-template
       when: consul_env
@@ -50,9 +48,7 @@
   become: yes
   any_errors_fatal: true
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: mongod
       become: yes
@@ -66,9 +62,7 @@
   become: yes
   any_errors_fatal: true
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: postgres
       become: yes
@@ -82,9 +76,7 @@
   become: yes
   any_errors_fatal: true
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: pgbouncer
       become: yes
@@ -98,9 +90,7 @@
   become: yes
   any_errors_fatal: true
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: influxdb
       become: yes
@@ -114,9 +104,7 @@
   become: yes
   any_errors_fatal: true
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: nginx
       become: yes
@@ -131,9 +119,7 @@
   become: yes
   any_errors_fatal: true
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: grafana
       become: yes
@@ -147,9 +133,7 @@
   become: yes
   any_errors_fatal: true
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: nsqlookupd
       become: yes
@@ -164,9 +148,7 @@
   become: yes
   any_errors_fatal: true
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: memcached
       become: yes
@@ -180,9 +162,7 @@
   become: no
   any_errors_fatal: false
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: login
       become: yes
@@ -341,9 +321,7 @@
   become: yes
   any_errors_fatal: false
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
   roles:
     - role: dev
       become: yes
@@ -374,9 +352,7 @@
   become: no
   any_errors_fatal: true
   vars_files:
-    - [ "vars/main.yml", "vars/local.yml" ]
-  vars:
-    ansible_tags: "{{ lookup('get_tags') }}"
+    - "vars/main.yml"
 
   roles:
     - role: migrate
