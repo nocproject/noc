@@ -224,7 +224,7 @@
       become: yes
       when: "{{ has_svc_tgsender | default(False) or consul_env}}"
       tags:
-        - tgender
+        - tgsender
         - node
         - noc
 
