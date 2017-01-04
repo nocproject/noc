@@ -401,15 +401,23 @@ config:
       default: /var/lib/influxdb/data/
 
   postgres:
+    postgres_version:
+      type: str
+      label: Postgresql version
+      default: 9.4
+      description: <strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html> docs </a> before changing that field.
+
     postgres_wal_directory:
       type: str
       label: Postgresql wal directory
       default: /var/lib/postgresql/9.4/main/pg_xlog
+      description: Unused
 
     postgres_data_directory:
       type: str
       label: Postgresql data directory
       default: /var/lib/postgresql/9.4/main/
+      description: Unused
 
     postgres_max_clients:
       type: int
