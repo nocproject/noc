@@ -30,11 +30,11 @@
   uri:
     url: "{{alerta_url}}/api/blackout?api-key={{alerta_token}}"
     method: POST
-      body:
-        environment: Production
-        service:
-          - supervisord
-        duration: "{{alerta_blackout_duration}}"
+    body:
+      environment: Production
+      service:
+        - supervisord
+      duration: "{{alerta_blackout_duration}}"
     body_format: json
     status_code: 201
     validate_certs: no
