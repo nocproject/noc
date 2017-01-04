@@ -55,7 +55,18 @@
   uri:
     url: "{{alerta_url}}/api/alert?api-key={{alerta_token}}"
     method: POST
-    body: "{{ alerta_deploy_start | to_json }}"
+    body:
+      resource: tower
+      event: Deploy
+      environment: Production
+      type: AnsibleDeploy
+      attributes:
+        env_name: "{{noc_env}}"
+      service:
+        - NOC
+      status: open
+      severity: informational
+      text: "Deployment on {{noc_env}} started with tags: {{ ansible_tags }}"
     body_format: json
     status_code: 201
     validate_certs: no
