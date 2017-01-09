@@ -76,3 +76,67 @@
         {{ object.enum }}
     </td>
 </tr>
+
+{% if object.linked_numbers %}
+<tr>
+    <th scope="row">
+        {{ _("Linked Numbers") }}
+    </th>
+    <td>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-md-3">{{ _("Type") }}</th>
+                    <th class="col-md-3">{{ _("Number") }}</th>
+                    <th class="col-md-6">{{ _("Description") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for n in object.linked_numbers %}
+                <tr>
+                    <td>{{ n.type.name }}</td>
+                    <td>
+                        <a href='/api/card/view/dialplan/{{ n.number.dialplan.id }}/'>{{ n.number.dialplan.name}}</a>:
+                        <a href='/api/card/view/phonenumber/{{ n.number.id }}/'>{{ n.number.number}}</a>
+                    </td>
+                    <td>{{ n.description }}</td>
+                </tr>
+            {% endfor %}
+            <tbody>
+        </table>
+    </td>
+</tr>
+{% endif %}
+
+{% if linked_by %}
+<tr>
+    <th scope="row">
+        {{ _("Linked By") }}
+    </th>
+    <td>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-md-3">{{ _("Number") }}</th>
+                    <th class="col-md-3">{{ _("Type") }}</th>
+                    <th class="col-md-3">{{ _("Number") }}</th>
+                    <th class="col-md-6">{{ _("Description") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for n in linked_by %}
+                <tr>
+                    <td>
+                        <a href='/api/card/view/dialplan/{{ n.number.dialplan.id }}/'>{{ n.number.dialplan.name}}</a>:
+                        <a href='/api/card/view/phonenumber/{{ n.number.id }}/'>{{ n.number.number}}</a>
+                    </td>
+                    <td>{{ n.type.name }}</td>
+                    <td>{{ object.number }}</td>
+                    <td>{{ n.description }}</td>
+                </tr>
+            {% endfor %}
+            <tbody>
+        </table>
+    </td>
+</tr>
+{% endif %}
