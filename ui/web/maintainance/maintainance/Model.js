@@ -44,6 +44,15 @@ Ext.define("NOC.maintainance.maintainance.Model", {
             type: "boolean"
         },
         {
+            name: "escalate_managed_object",
+            type: "string"
+        },
+        {
+            name: "escalate_managed_object__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "is_completed",
             type: "boolean"
         },
