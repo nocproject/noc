@@ -153,6 +153,12 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                     boxLabel: __("Suppress alarms")
                 },
                 {
+                    name: "escalate_managed_object",
+                    xtype: "sa.managedobject.LookupField",
+                    fieldLabel: __("Escalate to"),
+                    allowBlank: true
+                },
+                {
                     name: "direct_objects",
                     xtype: "gridfield",
                     fieldLabel: __("Objects"),

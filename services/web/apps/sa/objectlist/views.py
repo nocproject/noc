@@ -2,10 +2,12 @@
 ##----------------------------------------------------------------------
 ## sa.objectlist application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Third-party modules
+from django.db.models import Q
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
@@ -22,13 +24,14 @@ class ObjectListApplication(ExtApplication):
         """
         Filter records for lookup
         """
-        if request.user.is_superuser:
-            return self.model.objects.filter(is_managed=True)
-        else:
-            return self.model.filter(
-                is_managed=True,
-                administrative_domain__in=UserAccess.get_domains(request.user)
-            )
+        q = Q(is_managed=True)
+        if not request.user.is_superuser:
+            q &= UserAccess.Q(request.user)
+        if query:
+            sq = ManagedObject.get_search_Q(query)
+            if sq:
+                q &= sq
+        return self.model.objects.filter(q)
 
     def instance_to_dict(self, o, fields=None):
         return {

@@ -14,8 +14,9 @@ from django import forms
 # NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.ip.models import VRF, Prefix
-from noc.lib.validators import *
-from noc.lib.ip import *
+from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
+                                ValidationError)
+from noc.core.ip import IP
 
 
 class ReportForm(forms.Form):

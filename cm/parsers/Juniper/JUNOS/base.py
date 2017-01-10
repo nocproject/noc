@@ -12,7 +12,7 @@ from collections import defaultdict
 ## Third-party modules
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
 ## NOC modules
-from noc.lib.ip import IPv4
+from noc.core.ip import IPv4
 from noc.cm.parsers.base import BaseParser
 from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
 from noc.lib.text import ranges_to_list

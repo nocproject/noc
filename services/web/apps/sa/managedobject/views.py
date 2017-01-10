@@ -2,17 +2,15 @@
 ##----------------------------------------------------------------------
 ## sa.managedobject application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 from collections import defaultdict
 import zlib
-import re
 ## Django modules
 from django.http import HttpResponse
-from django.db.models import Q
 ## Third-party modules
 import gridfs
 import ujson
@@ -44,10 +42,6 @@ from noc.core.scheduler.job import Job
 from noc.core.script.loader import loader as script_loader
 from noc.lib.nosql import get_db
 from noc.core.defer import call_later
-from noc.lib.validators import is_ipv4, is_ipv4_prefix
-from noc.lib.ip import IP
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.inv.models.discoveryid import DiscoveryID
 from noc.core.translation import ugettext as _
 
 
@@ -118,35 +112,9 @@ class ManagedObjectApplication(ExtModelApplication):
 
     def get_Q(self, request, query):
         q = super(ManagedObjectApplication, self).get_Q(request, query)
-        query = query.strip()
-        if query:
-            if ".*" in query and is_ipv4(query.replace(".*", ".1")):
-                q |= Q(address__regex=query.replace(".", "\\.").replace("*", "[0-9]+"))
-            elif set("+*[]()") & set(query):
-                # Maybe regular expression
-                try:
-                    # Check syntax
-                    # @todo: PostgreSQL syntax differs from python one
-                    re.compile(query)
-                    q |= Q(name__regex=query)
-                except re.error:
-                    pass
-            elif is_ipv4(query):
-                # Exact match on IP address
-                q |= Q(address=query)
-            elif is_ipv4_prefix(query):
-                # Match by prefix
-                p = IP.prefix(query)
-                if p.mask >= 20:
-                    q |= Q(address__gte=p.first.address, address__lte=p.last.address)
-            else:
-                try:
-                    mac = MACAddressParameter().clean(query)
-                    mo = DiscoveryID.find_object(mac)
-                    if mo:
-                        q |= Q(pk=mo.pk)
-                except ValueError:
-                    pass
+        sq = ManagedObject.get_search_Q(query)
+        if sq:
+            q |= sq
         return q
 
     def queryset(self, request, query=None):
@@ -648,9 +616,9 @@ class ManagedObjectApplication(ExtModelApplication):
         params = self.deserialize(request.raw_post_data)
         try:
             result = o.scripts[name](**params)
-        except Exception, why:
+        except Exception as e:
             return {
-                "error": str(why)
+                "error": str(e)
             }
         return {
             "result": result

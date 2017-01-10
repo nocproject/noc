@@ -11,7 +11,7 @@ from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.peer.models import Peer
 from noc.lib.tt import admin_tt_url
 from noc.lib.validators import *    
-from noc.lib.ip import IP   
+from noc.core.ip import IP
 from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
                                     StringParameter)
 from noc.core.translation import ugettext as _

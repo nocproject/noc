@@ -17,7 +17,7 @@ from noc.sa.models.commandsnippet import CommandSnippet
 from noc.sa.models.reducetask import ReduceTask
 from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.permission import Permission
-from noc.lib.mac import MAC
+from noc.core.mac import MAC
 from noc.core.translation import ugettext as _
 
 
@@ -202,8 +202,8 @@ class RunSnippetApplication(Application):
             total_tasks = task.maptask_set.count()
             complete_task = task.maptask_set.filter(status="C").count()
             progress = float(complete_task) * 100.0 / float(total_tasks)
-            return self.render_wait(request, subject="Task",
+            return self.render_wait(
+                request, subject="Task",
                 text="Processing task. Please wait ...", progress=progress)
         return self.render(request, "result.html", snippet=snippet,
-            result=result)
-    
+                           result=result)

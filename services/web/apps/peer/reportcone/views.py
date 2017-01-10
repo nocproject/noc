@@ -9,7 +9,7 @@
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn, SectionRow
 from noc.peer.models import Peer, WhoisCache
-from noc.lib.ip import IP
+from noc.core.ip import IP
 from noc.core.translation import ugettext as _
 
 

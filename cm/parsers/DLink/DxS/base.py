@@ -13,7 +13,7 @@ from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
     Literal, delimitedList
 ## NOC modules
 from noc.cm.parsers.base import BaseParser
-from noc.lib.ip import IPv4
+from noc.core.ip import IPv4
 from noc.lib.validators import is_ipv4
 
 
