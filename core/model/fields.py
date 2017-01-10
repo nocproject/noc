@@ -14,7 +14,7 @@ from django.db import models
 ## Third-party modules
 from south.modelsinspector import add_introspection_rules
 ## NOC Modules
-from noc.lib.ip import IP
+from noc.core.ip import IP
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.text import ranges_to_list, list_to_ranges
 

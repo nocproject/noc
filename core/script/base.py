@@ -23,7 +23,7 @@ from context import (ConfigurationContextManager, CacheContextManager,
                      IgnoredExceptionsContextManager)
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.handler import get_handler
-from noc.lib.mac import MAC
+from noc.core.mac import MAC
 from beef import Beef
 
 
