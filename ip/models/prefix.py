@@ -23,7 +23,7 @@ from noc.core.model.fields import TagsField, CIDRField
 from noc.lib.app.site import site
 from noc.lib.validators import (check_ipv4_prefix, check_ipv6_prefix,
                                 ValidationError)
-from noc.lib.ip import IP, IPv4
+from noc.core.ip import IP, IPv4
 from noc.main.models.textindex import full_text_search
 
 

@@ -26,7 +26,7 @@ from noc.ip.models.address import Address
 from noc.ip.models.addressrange import AddressRange
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
-from noc.lib.ip import IPv6
+from noc.core.ip import IPv6
 from noc.lib.validators import is_ipv4, is_ipv6
 from noc.lib.rpsl import rpsl_format
 from noc.dns.utils.zonefile import ZoneFile

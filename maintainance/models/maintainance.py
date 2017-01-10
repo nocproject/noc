@@ -22,6 +22,7 @@ from noc.lib.nosql import ForeignKeyField
 from noc.core.model.decorator import on_save
 from noc.inv.models.objectuplink import ObjectUplink
 from noc.main.models.timepattern import TimePattern
+from noc.core.defer import call_later
 
 
 class MaintainanceObject(EmbeddedDocument):
@@ -50,19 +51,38 @@ class Maintainance(Document):
     is_completed = BooleanField(default=False)
     contacts = StringField()
     suppress_alarms = BooleanField()
-    # Time pattern when maintainance is active
+    # Escalate TT during maintenance
+    escalate_managed_object = ForeignKeyField(ManagedObject)
+    # Time pattern when maintenance is active
     # None - active all the time
     time_pattern = ForeignKeyField(TimePattern)
-    # Objects declared to be affected by maintainance
+    # Objects declared to be affected by maintenance
     direct_objects = ListField(EmbeddedDocumentField(MaintainanceObject))
-    # Segments declared to be affected by maintainance
+    # Segments declared to be affected by maintenance
     direct_segments = ListField(EmbeddedDocumentField(MaintainanceSegment))
-    # All objects affected by maintainance
+    # All objects affected by maintenance
     affected_objects = ListField(EmbeddedDocumentField(MaintainanceObject))
+    # Escalated TT ID in form
+    # <external system name>:<external tt id>
+    escalation_tt = StringField(required=False)
     # @todo: Attachments
 
     def on_save(self):
         self.update_affected_objects()
+        if self.escalate_managed_object:
+            if self.is_completed:
+                call_later(
+                    "noc.services.escalator.maintenance.start_maintenance",
+                    delay=self.start - datetime.datetime.now(),
+                    scheduler="escalator",
+                    maintenance_id=self.id
+                )
+            else:
+                call_later(
+                    "noc.services.escalator.maintenance.close_maintenance",
+                    scheduler="escalator",
+                    maintenance_id=self.id
+                )
 
     def update_affected_objects(self):
         """

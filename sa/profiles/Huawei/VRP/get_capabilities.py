@@ -70,10 +70,14 @@ class Script(BaseScript):
         Check stack members
         :return:
         """
-        r = self.cli("display stack peer")
-        return len([l for l in r.splitlines() if "STACK" in l])
+        r = self.profile.parse_table(self.cli("display stack peer"))
+        return [l[0] for l in r["table"]]
+        # return len([l for l in r.splitlines() if "STACK" in l])
 
     def execute_platform(self, caps):
         if self.has_ndp():
             caps["Huawei | NDP"] = True
-        caps["Stack | Members"] = self.has_stack() if self.has_stack() else 0
+        s = self.has_stack()
+        if s:
+            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+            caps["Stack | Member Ids"] = " | ".join(s)

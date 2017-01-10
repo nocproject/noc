@@ -9,7 +9,7 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.lib.ip import IPv4
+from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.ecma48 import strip_control_sequences
 import functools
@@ -255,6 +255,37 @@ class BaseProfile(object):
             return int(r.split("/", 1)[0])
         else:
             return None
+
+    # Cisco-like translation
+    rx_num1 = re.compile(
+        r"^[a-z]{2}[\- ](?P<number>\d+)/\d+/\d+([\:\.]\S+)?$", re.IGNORECASE)
+    # D-Link-like translation
+    rx_num2 = re.compile(r"^(?P<number>\d+)[\:\/]\d+$")
+
+    def get_stack_number(self, interface_name):
+        """
+        Returns stack number related to interface
+        >>> Profile().get_stack_number("Gi 1/4/15")
+        1
+        >>> Profile().get_stack_number("Lo")
+        >>> Profile().get_stack_number("Te 2/0/1.5")
+        2
+        >>> Profile().get_stack_number("Se 0/1/0:0.10")
+        0
+        >>> Profile().get_stack_number("3:2")
+        3
+        >>> Profile().get_stack_number("3/2")
+        3
+        """
+        match = self.rx_num1.match(interface_name)
+        if match:
+            return int(match.group("number"))
+        else:
+            match = self.rx_num2.match(interface_name)
+            if match:
+                return int(match.group("number"))
+        return None
+
 
     def generate_prefix_list(self, name, pl):
         """

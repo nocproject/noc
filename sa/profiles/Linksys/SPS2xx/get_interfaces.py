@@ -9,7 +9,7 @@
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.ip import IPv4
+from noc.core.ip import IPv4
 import re
 
 

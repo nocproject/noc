@@ -9,13 +9,10 @@
 # Python Modules
 import csv
 import cStringIO
-import datetime
 import subprocess
-# Django Modules
-from django import forms
 # NOC Modules
 from noc.lib.app.application import Application,HasPerm,view
-from noc.lib.ip import *
+from noc.core.ip import IP, IPv4
 from noc.ip.models.address import Address
 from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF

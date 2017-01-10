@@ -9,7 +9,7 @@
 from django.utils.translation import ugettext_lazy as _
 ## NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, TableColumn
-from noc.lib.ip import IP
+from noc.core.ip import IP
 
 
 class ReportIPUsageApplication(SimpleReport):
