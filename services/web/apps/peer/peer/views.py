@@ -10,7 +10,7 @@
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.peer.models import Peer
 from noc.lib.tt import admin_tt_url
-from noc.lib.validators import *    
+from noc.lib.validators import is_prefix
 from noc.core.ip import IP
 from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
                                     StringParameter)
@@ -33,7 +33,7 @@ class PeerApplication(ExtModelApplication):
         ## Check address fields
         if not is_prefix(data["local_ip"]):
             raise ValueError("Invalid 'Local IP Address', must be in x.x.x.x/x form or IPv6 prefix")
-        if not is_prefix(data["remote_ip"]):         
+        if not is_prefix(data["remote_ip"]):
             raise ValueError("Invalid 'Remote IP Address', must be in x.x.x.x/x form or IPv6 prefix")
         if "local_backup_ip" in data and data["local_backup_ip"]:
             if not is_prefix(data["local_backup_ip"]):
@@ -54,19 +54,19 @@ class PeerApplication(ExtModelApplication):
             raise ValueError("All neighboring addresses must have same address family")
         return data
 
-    ##   
+    ##
     ## Change peer status
     ##
-    def set_peer_status(self,request,queryset,status,message):
+    def set_peer_status(self, request, queryset, status, message):
         count=0
         for p in queryset:
-            p.status=status
+            p.status = status
             p.save()
-            count+=1
-        if count==1:
-            return "1 peer marked as %s"%message
+            count += 1
+        if count == 1:
+            return "1 peer marked as %s" % message
         else:
-            return "%d peers marked as %s"%(count,message)
+            return "%d peers marked as %s" % (count, message)
 
     @view(url="^actions/planned/$", method=["POST"],
         access="update", api=True,
@@ -74,19 +74,19 @@ class PeerApplication(ExtModelApplication):
             "ids": ListOfParameter(element=ModelParameter(Peer))
         })
 
-    def api_action_planned(self,request,ids):
-        return self.set_peer_status(request,ids,"P","planned")
-    api_action_planned.short_description="Mark as planned"
+    def api_action_planned(self, request, ids):
+        return self.set_peer_status(request, ids, "P", "planned")
+    api_action_planned.short_description = "Mark as planned"
 
     @view(url="^actions/active/$", method=["POST"],
         access="update", api=True,
         validate={
-            "ids": ListOfParameter(element=ModelParameter(Peer))              
+            "ids": ListOfParameter(element=ModelParameter(Peer))
         })
 
-    def api_action_active(self,request,ids):
-        return self.set_peer_status(request,ids,"A","active")
-    api_action_active.short_description="Mark as active"
+    def api_action_active(self, request, ids):
+        return self.set_peer_status(request, ids, "A", "active")
+    api_action_active.short_description = "Mark as active"
 
     @view(url="^actions/shutdown/$", method=["POST"],
         access="update", api=True,
@@ -94,6 +94,6 @@ class PeerApplication(ExtModelApplication):
             "ids": ListOfParameter(element=ModelParameter(Peer))
         })
 
-    def api_action_shutdown(self,request,ids):
-        return self.set_peer_status(request,ids,"S","shutdown")
-    api_action_shutdown.short_description="Mark as shutdown"
+    def api_action_shutdown(self, request, ids):
+        return self.set_peer_status(request, ids, "S", "shutdown")
+    api_action_shutdown.short_description = "Mark as shutdown"
