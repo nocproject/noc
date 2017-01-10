@@ -1,25 +1,9 @@
 {
-  "url": "https://cdn.getnoc.com/npkg/",
+  "url": "https://cdn.getnoc.com/noc/",
   "packages": [
     {
-      "name": "crossfilter",
-      "version": "1.3.14"
-    },
-    {
-      "name": "dcjs",
-      "version": "1.7.4"
-    },
-    {
-      "name": "d3",
-      "version": "4.2.7"
-    },
-    {
-      "name": "holderjs",
-      "version": "2.9.4"
-    },
-    {
-      "name": "ptsans",
-      "version": "1.2"
+      "name": "bi-runner",
+      "version": "0.0.1"
     }
   ]
 }
