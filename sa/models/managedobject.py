@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ManagedObject
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -38,6 +38,9 @@ from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import INETField, TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.lib.stencil import stencil_registry
+from noc.lib.validators import is_ipv4, is_ipv4_prefix
+from noc.lib.ip import IP
+from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.textindex import full_text_search, TextIndex
 from noc.settings import config
@@ -907,6 +910,42 @@ class ManagedObject(Model):
                     20,
                     pop_id=pop.id
                 )
+
+    @classmethod
+    def get_search_Q(cls, query):
+        query = query.strip()
+        if query:
+            if ".*" in query and is_ipv4(query.replace(".*", ".1")):
+                return Q(address__regex=query.replace(".", "\\.")
+                         .replace("*", "[0-9]+"))
+            elif set("+*[]()") & set(query):
+                # Maybe regular expression
+                try:
+                    # Check syntax
+                    # @todo: PostgreSQL syntax differs from python one
+                    re.compile(query)
+                    return Q(name__regex=query)
+                except re.error:
+                    pass
+            elif is_ipv4(query):
+                # Exact match on IP address
+                return Q(address=query)
+            elif is_ipv4_prefix(query):
+                # Match by prefix
+                p = IP.prefix(query)
+                if p.mask >= 20:
+                    return Q(address__gte=p.first.address,
+                             address__lte=p.last.address)
+            else:
+                try:
+                    mac = MACAddressParameter().clean(query)
+                    from noc.inv.models.discoveryid import DiscoveryID
+                    mo = DiscoveryID.find_object(mac)
+                    if mo:
+                        return Q(pk=mo.pk)
+                except ValueError:
+                    pass
+        return None
 
 
 @on_save
