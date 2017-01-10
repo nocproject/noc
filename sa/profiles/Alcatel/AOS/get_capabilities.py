@@ -9,6 +9,7 @@
 ## Python modules
 import re
 ## NOC modules
+from noc.lib.text import parse_table
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 
@@ -44,8 +45,11 @@ class Script(BaseScript):
         :return:
         """
         v = self.cli("show module")
-        r = [l for l in v.splitlines() if "NI-" in l]
-        return int(r[-1].split()[0].split("-")[-1])
+        v = parse_table(v.replace("\n\n", "\n"))
+        return [l[0].split("-")[1] for l in v if "NI-" in l[0]]
 
     def execute_platform(self, caps):
-        caps["Stack | Members"] = self.has_stack() if self.has_stack() else 0
+        s = self.has_stack()
+        if s:
+            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+            caps["Stack | Member Ids"] = " | ".join(s)
