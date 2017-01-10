@@ -29,3 +29,26 @@ class Script(BaseScript):
         """
         r = self.cli("show bfd session")
         return not "not found or down" in r
+
+    @false_on_cli_error
+    def has_pptp(self):
+        """
+        Check box has PPTP enabled
+        """
+        v = self.cli("show ppp interface summary oper")
+        v = v.splitlines()
+        return v[2].split()[1]
+
+    @false_on_cli_error
+    def has_pppoe(self):
+        """
+        Check box has PPoE enabled
+        """
+        v = self.cli("show pppoe interface summary | include Total")
+        return v.split(":")[1].strip()
+
+    def execute_platform(self, caps):
+        if self.has_pptp():
+            caps["BRAS | PPTP"] = True
+        if self.has_pppoe():
+            caps["BRAS | PPPoE"] = True
