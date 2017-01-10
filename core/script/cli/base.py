@@ -421,7 +421,7 @@ class CLI(object):
 
     def on_failure(self, data, match):
         self.logger.debug("State: <FAILURE>")
-        raise self.CLIError(self.buffer or None)
+        raise self.CLIError(self.buffer or data or None)
 
     def on_prompt(self, data, match):
         self.logger.debug("State: <PROMT>")
