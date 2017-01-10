@@ -19,8 +19,8 @@ import re
 ## ddd   eee     fff
 ## Will be parsed down to the [["a","b","c"],["ddd","eee","fff"]]
 ##
-rx_header_start = re.compile(r"^\s*[-=]+\s+[-=]+")
-rx_col = re.compile(r"^(\s*)([\-]+|[=]+)")
+rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
+rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
 def parse_table(s, allow_wrap=False):
