@@ -89,3 +89,24 @@ class Profile(BaseProfile):
             # Do not change these numbers. Used in get_switchport script
             v["version"] = "3.10"
         return v["version"]
+
+    @staticmethod
+    def parse_table(e):
+        p = {"table": []}
+        is_table = False
+        is_next = False
+        header = []
+        for l in e.splitlines():
+            if not l:
+                continue
+            if "-"*10 in l:
+                is_table = True
+                header = prev_l
+                continue
+            if ":" in l and not is_table:
+                p.update(dict([l.split(":")]))
+            elif is_table:
+                l = l.split()
+                p["table"].append(l)
+            prev_l = l
+        return p
