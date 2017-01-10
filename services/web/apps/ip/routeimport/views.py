@@ -17,7 +17,7 @@ from noc.ip.models.prefix import Prefix
 from noc.ip.models.vrf import VRF
 from noc.lib.widgets import LabelWidget
 from noc.lib.validators import check_prefix
-from noc.lib.ip import IP
+from noc.core.ip import IP
 from noc.core.translation import ugettext as _
 
 
@@ -28,7 +28,7 @@ def reduce_route(task):
     :return:
     """
     from noc.ip.models import VRF, Prefix
-    from noc.lib.ip import IP
+    from noc.core.ip import IP
 
     vrf = VRF.get_global()
     r = {} # prefix -> (description, objects)

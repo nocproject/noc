@@ -1,7 +1,7 @@
 # encoding: utf-8
 from south.db import db
 from django.db import models
-from noc.lib.ip import IPv4
+from noc.core.ip import IPv4
 
 class Migration:
     depends_on = [

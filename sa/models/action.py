@@ -17,7 +17,7 @@ import jinja2
 ## NOC modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
-from noc.lib.ip import IP
+from noc.core.ip import IP
 
 
 class ActionParameter(EmbeddedDocument):

@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 # Python modules
-from __future__ import with_statement
+import re
 from operator import attrgetter, itemgetter
 # Django modules
 from django.utils.translation import ugettext_lazy as _
@@ -16,7 +16,12 @@ from django import forms
 from django.utils.simplejson.encoder import JSONEncoder
 # NOC modules
 from noc.lib.app.application import Application, view
-from noc.lib.ip import *
+from noc.core.ip import IP
+from noc.lib.validators import (is_ipv4, is_ipv4_prefix, is_ipv6,
+                                is_ipv6_prefix, check_ipv4_prefix,
+                                check_ipv6_prefix, check_fqdn,
+                                check_ipv4, check_ipv6, check_prefix,
+                                ValidationError)
 from noc.lib.forms import NOCForm
 from noc.lib.widgets import *
 from noc.lib.colors import *
@@ -379,7 +384,7 @@ class IPAMAppplication(Application):
             if len(p) > 4:
                 return None
             elif len(p) < 4:
-                p = p + ["0"] * (4 - len(p))
+                p += ["0"] * (4 - len(p))
             s = ".".join(p)
             if not is_ipv4(s):
                 return None

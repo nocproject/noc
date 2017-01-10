@@ -10,7 +10,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 ## NOC Modules
-from noc.lib.ip import IP
+from noc.core.ip import IP
 from noc.core.model.fields import CIDRField
 
 

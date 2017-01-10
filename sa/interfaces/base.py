@@ -12,7 +12,7 @@ import types
 import datetime
 ## NOC Modules
 from noc.lib.text import list_to_ranges, ranges_to_list
-from noc.lib.ip import IPv6
+from noc.core.ip import IPv6
 from noc.core.mac import MAC
 from noc.lib.validators import *
 

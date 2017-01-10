@@ -11,7 +11,7 @@ from django.db import models, connection
 ## NOC modules
 from noc.settings import config
 from noc.lib.validators import is_asn
-from noc.lib.ip import IP
+from noc.core.ip import IP
 from noc.peer.tree import optimize_prefix_list, optimize_prefix_list_maxlen
 from noc.lib import nosql
 

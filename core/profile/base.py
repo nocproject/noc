@@ -9,7 +9,7 @@
 ## Python modules
 import re
 ## NOC modules
-from noc.lib.ip import IPv4
+from noc.core.ip import IPv4
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.core.ecma48 import strip_control_sequences
 import functools
