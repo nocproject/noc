@@ -6,7 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 from unittest import TestCase
-from noc.lib.ip import *
+from noc.core.ip import *
 
 ##
 ## Test for IP

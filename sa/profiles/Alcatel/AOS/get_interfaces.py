@@ -12,7 +12,7 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.base import InterfaceTypeError
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.ip import IPv4, IPv6
+from noc.core.ip import IPv4, IPv6
 
 
 def ranges_to_list_str(s):
