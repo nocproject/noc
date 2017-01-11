@@ -156,7 +156,10 @@ class NetworkSegment(Document):
 
     @property
     def has_children(self):
-        return True if NetworkSegment.objects.filter(parent=self.id) else False
+        return bool(
+            NetworkSegment.objects.filter(
+                parent=self.id).only("id").first()
+        )
 
     def set_redundancy(self, status):
         """

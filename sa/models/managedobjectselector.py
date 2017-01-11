@@ -319,21 +319,6 @@ class ManagedObjectSelector(models.Model):
         return self.managed_objects.filter(
             profile_name__in=self.scripts_profiles(scripts))
 
-    def objects_for_user(self, user, scripts=None):
-        """
-        Returns queryset containing selector objects accessible to user,
-        optionally restricted to ones having scripts
-        :param user: User
-        :param scripts: optional list of scripts
-        :return:
-        """
-        from useraccess import UserAccess
-
-        q = UserAccess.Q(user)
-        if scripts:
-            q &= Q(profile_name__in=self.scripts_profiles(scripts))
-        return self.managed_objects.filter(q)
-
     @classmethod
     def resolve_expression(cls, s):
         """
