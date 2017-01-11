@@ -270,31 +270,47 @@ Ext.apply(NOC.render, {
 //
 Ext.apply(NOC.msg, {
     started: function(message) {
-        dhtmlx.message({
-            text: Ext.String.format.apply(this, arguments),
-            type: "started",
-            expire: 2000
+        Ext.toast({
+            html: Ext.String.format.apply(this, arguments),
+            align: 't',
+            closable: false,
+            bodyStyle: {
+                background: '#1E90FF',
+                Color: 'white'
+            }
         });
     },
     complete: function(message) {
-        dhtmlx.message({
-            text: Ext.String.format.apply(this, arguments),
-            type: "complete",
-            expire: 2000
+        Ext.toast({
+            html: Ext.String.format.apply(this, arguments),
+            align: 't',
+            closable: false,
+            bodyStyle: {
+                background: 'green',
+                Color: 'white'
+            }
         });
     },
     failed: function(message) {
-        dhtmlx.message({
-            text: Ext.String.format.apply(this, arguments),
-            type: "failed",
-            expire: 10000
+        Ext.toast({
+            html: Ext.String.format.apply(this, arguments),
+            align: 't',
+            closable: false,
+            bodyStyle: {
+                background: 'red',
+                Color: 'white'
+            }
         });
     },
     info: function(message) {
-        dhtmlx.message({
-            text: Ext.String.format.apply(this, arguments),
-            type: "info",
-            expire: 10000
+        Ext.toast({
+            html: Ext.String.format.apply(this, arguments),
+            align: 't',
+            closable: false,
+            bodyStyle: {
+                background: '#1E90FF',
+                Color: 'white'
+            }
         });
     }
 });
