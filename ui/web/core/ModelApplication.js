@@ -244,6 +244,24 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             }
         ];
+
+        if(me.dashboardIcon){
+            rowItems = rowItems.concat([
+                {
+                    glyph: NOC.glyph.line_chart,
+                    tooltip: __("Show dashboard"),
+                    scope: me,
+                    handler: function(grid, rowIndex) {
+                        var me = this,
+                            record = me.store.getAt(rowIndex);
+
+                        window.open(
+                            '/ui/grafana/dashboard/script/noc.js?dashboard=ipsla&id=' + record.id
+                        );
+                    }
+                }
+            ]);
+        }
         // @todo: Replace with preview api
         if(me.onPreview) {
             rowItems = rowItems.concat([

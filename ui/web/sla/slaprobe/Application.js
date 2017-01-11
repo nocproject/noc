@@ -105,7 +105,8 @@ Ext.define("NOC.sla.slaprobe.Application", {
                         }
                     ]
                 }
-            ]
+            ],
+            dashboardIcon: true
         });
         me.callParent();
     }
