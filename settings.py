@@ -203,7 +203,7 @@ FORCE_LOWERCASE_TAGS = False
 ## Message application setup
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 ## Store sessions in mongodb
-SESSION_ENGINE = "mongoengine.django.sessions"
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 ## X-Forwarded-Proto
 if config.get("main", "x_forwarded_proto"):
     h = config.get("main", "x_forwarded_proto").upper().replace("-", "_")
