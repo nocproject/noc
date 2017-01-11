@@ -320,6 +320,16 @@ server {
         access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
+{% if noc_config["services"].get("bi", []) %}
+    location /ui/bi/editor/ {
+      alias /opt/noc/ui/bi/;
+      try_files $uri /index.html =404;
+      gzip on;
+      gzip_types text/css text/javascript application/x-javascript application/json;
+        access_log  /var/log/nginx/static.access.log noc_format;
+    }
+{% endif %}
+
 {% if noc_config["services"].get("notebook", []) %}
     location ~* ^/notebook/(api/kernels/[^/]+/(channels|iopub|shell|stdin)|terminals/websocket)/? {
         proxy_pass http://notebook;
