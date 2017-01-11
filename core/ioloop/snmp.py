@@ -80,7 +80,7 @@ def snmp_get(address, oids, port=161,
                     )
         else:
             result = resp.varbinds[0][1]
-        logger.debug("[%s] GET result: %s", address, result)
+        logger.debug("[%s] GET result: %r", address, result)
         raise Return(result)
 
 
