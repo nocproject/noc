@@ -110,9 +110,11 @@ Ext.define('NOC.LoginView', {
         Ext.toast({
             html: __('Failed to log in'),
             align: 't',
-            spacing: 0,
-            paddingY: 0,
-            width: '100%'
+            closable: false,
+            bodyStyle: {
+                background: 'red',
+                Color: 'white'
+            }
         });
     }
     , onLoginSuccess: function(response) {
@@ -133,9 +135,11 @@ Ext.define('NOC.LoginView', {
             Ext.toast({
                 html: __('Failed to log in'),
                 align: 't',
-                spacing: 0,
-                paddingY: 0,
-                width: '100%'
+                closable: false,
+                bodyStyle: {
+                    background: 'red',
+                    Color: 'white'
+                }
             });
         }
     }
