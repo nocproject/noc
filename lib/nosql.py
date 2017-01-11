@@ -12,9 +12,6 @@ import sys
 import time
 ## Third-party modules
 from django.db.models import Model
-from django.db import IntegrityError
-import django.db.models.signals
-import pymongo
 from mongoengine.base import *
 from mongoengine import *
 import mongoengine
@@ -205,29 +202,6 @@ class ForeignKeyField(BaseField):
         self.document_type = model
         self.has_get_by_id = hasattr(self.document_type, "get_by_id")
         super(ForeignKeyField, self).__init__(**kwargs)
-        if True:  # not settings.IS_TEST:
-            django.db.models.signals.pre_delete.connect(self.on_ref_delete,
-                                                        sender=model)
-
-    def on_ref_delete(self, sender, instance, **kwargs):
-        """
-        Check referenced object is not deleted
-        :param sender:
-        :param instance:
-        :param using:
-        :return:
-        """
-        if not self.name:
-            return
-        doc = self.document_type
-        if hasattr(doc, "objects"):
-            if doc.objects.filter(**{self.name: instance.id}).first() is not None:
-                raise IntegrityError(
-                    "%r object is referenced from %r" % (instance,
-                                                         doc)
-                )
-        else:
-            pass  # Embedded Document
 
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
@@ -259,8 +233,10 @@ class ForeignKeyField(BaseField):
             # We need the id from the saved object to create the DBRef
             id_ = document.pk
             if id_ is None:
-                raise ValidationError("You can only reference models once "
-                                      "they have been saved to the database")
+                raise ValidationError(
+                    "You can only reference models once "
+                    "they have been saved to the database"
+                )
         else:
             id_ = document
         return id_
