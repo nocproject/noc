@@ -265,6 +265,8 @@
   register: result
   changed_when: "'CHANGED' in result.stdout"
   failed_when: "'ERROR' in result.stdout"
+  tags:
+    - mercurial
 
 - name: Compiling binary modules
   command: ./scripts/deploy/cythonize
@@ -275,6 +277,7 @@
   failed_when: "'ERROR' in result.stdout"
   tags:
     - requirements
+    - mercurial
 
 - name: Generate NOC config
   template:
