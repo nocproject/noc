@@ -245,10 +245,11 @@ Ext.define("NOC.core.ModelApplication", {
             }
         ];
 
-        if(me.openDashboard){
+        if(me.openDashboard) {
             rowItems = rowItems.concat([
                 {
                     glyph: me.openDashboard.icon,
+                    color: me.openDashboard.color,
                     tooltip: me.openDashboard.tooltip,
                     scope: me,
                     handler: function(grid, rowIndex) {
@@ -262,6 +263,29 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             ]);
         }
+
+        if(me.levelFilter) {
+            rowItems = rowItems.concat([
+                {
+                    glyph: me.levelFilter.icon,
+                    color: me.levelFilter.color,
+                    tooltip: me.levelFilter.tooltip,
+                    scope: me,
+                    handler: function(grid, rowIndex) {
+                        var me = this,
+                            record = me.store.getAt(rowIndex);
+
+                        me.currentQuery[me.levelFilter.filter] = record.id;
+                        me.store.setFilterParams(me.currentQuery);
+                        Ext.each(me.filterSetters, function(set) {
+                            set(me.currentQuery);
+                        });
+                        me.reloadStore();
+                    }
+                }
+            ]);
+        }
+
         // @todo: Replace with preview api
         if(me.onPreview) {
             rowItems = rowItems.concat([
