@@ -13,6 +13,9 @@ import operator
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
 import cachetools
+## NOC modules
+from noc.main.models.style import Style
+from noc.lib.nosql import ForeignKeyField
 
 id_lock = Lock()
 
@@ -27,7 +30,7 @@ class PhoneRangeProfile(Document):
     # Cooldown time in days
     # Time when number will be automatically transferred from C to F state
     cooldown = IntField(default=30)
-    # @todo: Categories
+    style = ForeignKeyField(Style)
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
 

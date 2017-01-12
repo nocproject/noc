@@ -35,6 +35,9 @@ class PhoneRangeApplication(ExtDocApplication):
             "has_children": o.has_children
         }
 
+    def field_row_class(self, o):
+        return o.profile.style.css_class_name if o.profile and o.profile.style else ""
+
     @view("^(?P<id>\d+)/get_path/$",
           access="read", api=True)
     def api_get_path(self, request, id):

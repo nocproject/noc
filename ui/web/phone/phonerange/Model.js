@@ -79,6 +79,11 @@ Ext.define("NOC.phone.phonerange.Model", {
         {
             name: "to_allocate_numbers",
             type: "boolean"
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });
