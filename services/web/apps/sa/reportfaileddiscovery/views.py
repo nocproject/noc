@@ -10,12 +10,13 @@
 
 from django import forms
 ## NOC modules
-from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
+from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
@@ -56,65 +57,71 @@ class ReportFilterApplication(SimpleReport):
     form = ReportForm
     predefined_reports = {
         "default": PredefinedReport(
-            _("Failed Discovery (default)"), {
+            _("Failed Discovery 2(default)"), {
                 "pool": Pool.objects.get(name="default")
             }
         )
     }
 
-    def get_data(self, request, pool="default", obj_profile=None,
+    def get_data(self, request, pool=Pool.get_by_name("default"), obj_profile=None,
                  avail_status=None, profile_check_only=None,
                  failed_scripts_only=None, filter_pending_links=None,
                  filter_none_objects=None,
                  **kwargs):
         data = []
+        avail = {}
 
-        mos = ManagedObject.objects.filter(pool=pool)
+        data += [SectionRow(name="Report by %s" % pool.name)]
+        mos = ManagedObject.objects.filter(pool=pool, is_managed=True)
         if not request.user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         if obj_profile:
             mos = mos.filter(object_profile=obj_profile)
+        discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
+        mos_id = list(mos.values_list("id", flat=True))
+        if avail_status:
+            avail = ObjectStatus.get_statuses(mos_id)
 
-        mos = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" % mo.id for mo in mos]
+        if profile_check_only:
+            match = {"$or": [{"job.problems.suggest_cli": {"$exists": True}},
+                             {"job.problems.suggest_snmp": {"$exists": True}}]}
 
-        n = 0
-        while mos[(0 + n):(10000 + n)]:
-            if profile_check_only:
-                job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"_id": {"$in": mos[(0 + n):(10000 + n)]}}},
-                                                             {"$match": {"$or": [{"problems.suggest_cli": {"$exists": True}},
-                                                                                 {"problems.suggest_snmp": {"$exists": True}}]
-                                                                         }},
-                                                             {"$project":{"_id": 1,
-                                                                          "problems.suggest_snmp": 1,
-                                                                          "problems.suggest_cli": 1}}
-                                                             ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+        elif failed_scripts_only:
+            match = {"$and": [
+                {"job.problems": {"$exists": "true", "$ne": {}}},
+                {"job.problems.suggest_snmp": {"$exists": False}},
+                {"job.problems.suggest_cli": {"$exists": False}}]}
+        else:
+            match = {"job.problems": {"$exists": True, "$ne": {  }}}
 
-            elif failed_scripts_only:
-                job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"_id": {"$in": mos[(0 + n):(10000 + n)]}}},
-                                                             {"$match": {"$and": [
-                                                                 {"problems": {"$exists": "true", "$ne": {  }}},
-                                                                 {"problems.suggest_snmp": {"$exists": False}},
-                                                                 {"problems.suggest_cli": {"$exists": False}}]}}],
-                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
-            else:
-                job_logs = get_db()["noc.joblog"].aggregate([{"$match": {"problems": {"$exists": True, "$ne": {  }},
-                                                             "_id": {"$in": mos[(0 + n):(10000 + n)]}}}],
-                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
+        pipeline = [
+            {"$match": {"key": {"$in": mos_id}, "jcls": discovery}},
+            {"$project": {
+                "j_id": {"$concat": ["discovery-", "$jcls", "-", {"$substr": ["$key", 0, -1]}]},
+                "st": True,
+                "key": True}},
+            {"$lookup": {"from": "noc.joblog", "localField": "j_id", "foreignField": "_id", "as": "job"}},
+            {"$project": {"job.problems": True, "st": True, "key": True}},
+            {"$match": match}]
 
-            for discovery in job_logs["result"]:
+        r = get_db()["noc.schedules.discovery.%s" % pool.name].aggregate(pipeline,
+                                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
 
-                mo = ManagedObject.get_by_id(int(discovery["_id"].split("-")[2]))
+        for discovery in r["result"]:
+
+                # mo = ManagedObject.get_by_id(int(discovery["_id"].split("-")[2]))
+                mo = ManagedObject.get_by_id(discovery["key"])
                 if avail_status:
-                    if not mo.get_status():
+                    if not avail.get(discovery["key"], None):
                         continue
-                for method in discovery["problems"]:
+                for method in discovery["job"][0]["problems"]:
                     if filter_pending_links:
                         if method == "lldp":
-                            if not ("RPC Error" in discovery["problems"][method] or
-                                            "exception" in discovery["problems"][method]):
+                            if not ("RPC Error" in discovery["job"][0]["problems"][method]
+                                    or "exception" in discovery["job"][0]["problems"][method]):
                                 continue
                     if filter_none_objects:
-                        if "RPC Error: Failed: None" in discovery["problems"][method]:
+                        if "RPC Error: Failed: None" in discovery["job"][0]["problems"][method]:
                             continue
 
                     data += [
@@ -123,17 +130,17 @@ class ReportFilterApplication(SimpleReport):
                             mo.address,
                             mo.profile_name,
                             _("Yes") if mo.get_status() else _("No"),
+                            discovery["st"].strftime("%d.%m.%Y"),
                             method,
-                            discovery["problems"][method]
+                            discovery["job"][0]["problems"][method]
                         )
                     ]
-            n += 10000
 
         return self.from_dataset(
             title=self.title,
             columns=[
                 _("Managed Object"), _("Address"), _("Profile"),
-                _("Avail"),
+                _("Avail"), _("Last successful discovery"),
                 _("Discovery"), _("Error")
             ],
             data=data)
