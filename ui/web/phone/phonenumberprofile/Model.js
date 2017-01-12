@@ -22,6 +22,20 @@ Ext.define("NOC.phone.phonenumberprofile.Model", {
         {
             name: "description",
             type: "string"
+        },
+        {
+            name: "style",
+            type: "string"
+        },
+        {
+            name: "style__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "row_class",
+            type: "string",
+            persist: false
         }
     ]
 });

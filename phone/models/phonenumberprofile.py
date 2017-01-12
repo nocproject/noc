@@ -11,8 +11,11 @@ from threading import Lock
 import operator
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField
+from mongoengine.fields import StringField
 import cachetools
+## NOC modules
+from noc.main.models.style import Style
+from noc.lib.nosql import ForeignKeyField
 
 id_lock = Lock()
 
@@ -24,6 +27,7 @@ class PhoneNumberProfile(Document):
 
     name = StringField(unique=True)
     description = StringField()
+    style = ForeignKeyField(Style)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
