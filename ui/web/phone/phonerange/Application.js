@@ -63,7 +63,13 @@ Ext.define("NOC.phone.phonerange.Application", {
                     dataIndex: "total_numbers",
                     align: "right",
                     width: 50
-                }                
+                },
+                {
+                    text: __("Supplier"),
+                    dataIndex: "supplier",
+                    flex: 1,
+                    renderer: NOC.render.Lookup("supplier")
+                }
             ],
 
             fields: [
@@ -140,6 +146,18 @@ Ext.define("NOC.phone.phonerange.Application", {
             name: "parent",
             ftype: "tree",
             lookup: "phone.phonerange"
+        },
+        {
+            title: __("By Supplier"),
+            name: "supplier",
+            ftype: "lookup",
+            lookup: "crm.supplier"
+        },
+        {
+            title: __("By Project"),
+            name: "project",
+            ftype: "lookup",
+            lookup: "project.project"
         }
     ],
     //
