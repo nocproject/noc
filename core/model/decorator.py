@@ -10,7 +10,7 @@
 from django.db.models import signals as django_signals
 from mongoengine import signals as mongo_signals
 ## NOC modules
-from models import get_model, get_model_id
+from models import get_model
 
 
 def is_document(klass):
@@ -163,21 +163,21 @@ def on_delete_check(check=None, clean=None, delete=None):
     """
     def on_delete_handler(sender, instance, *args, **kwargs):
         # Raise value error when referred
-        for model, field in iter_models("check"):
+        for model, model_id, field in iter_models("check"):
             for ro in iter_related(instance, model, field):
                 raise ValueError(
                     "Referred from model %s: %s (id=%s)" % (
-                        get_model_id(model),
+                        model_id,
                         unicode(ro),
                         ro.id
                     ))
         # Clean related
-        for model, field in iter_models("clean"):
+        for model, model_id, field in iter_models("clean"):
             for ro in iter_related(instance, model, field):
                 setattr(ro, field, None)
                 ro.save()
         # Delete related
-        for model, field in iter_models("delete"):
+        for model, model_id, field in iter_models("delete"):
             for ro in iter_related(instance, model, field):
                 ro.delete()
 
@@ -189,10 +189,10 @@ def on_delete_check(check=None, clean=None, delete=None):
         nn = "_%s" % name
         c = cfg.get(nn)
         if c is None:
-            c = [(get_model(x[0]), x[1]) for x in cfg["name"]]
+            c = [(get_model(x[0]), x[0], x[1]) for x in cfg[name]]
             cfg[nn] = c
-        for model, field in c:
-            yield model, field
+        for model, model_id, field in c:
+            yield model, model_id, field
 
     def decorator(cls):
         if is_document(cls):
@@ -203,7 +203,8 @@ def on_delete_check(check=None, clean=None, delete=None):
         else:
             django_signals.pre_delete.connect(
                 on_delete_handler,
-                sender=cls
+                sender=cls,
+                weak=False  # Cannot use weak reference due to lost of internal scope
             )
         return cls
 
