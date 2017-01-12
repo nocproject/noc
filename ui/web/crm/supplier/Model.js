@@ -25,8 +25,7 @@ Ext.define("NOC.crm.supplier.Model", {
         },
         {
             name: "tags",
-            type: "auto",
-            defaultValue: <function <lambda> at 0x10f7431b8>
+            type: "auto"
         },
         {
             name: "is_affilated",
