@@ -188,6 +188,10 @@ class ExtModelApplication(ExtApplication):
     def cleaned_query(self, q):
         nq = {}
         for p in q:
+            if p.endswith("__exists"):
+                v = BooleanParameter().clean(q[p])
+                nq[p.replace("__exists", "__isnull")] = not v
+                continue
             if "__" in p:
                 np, lt = p.split("__", 1)
             else:
