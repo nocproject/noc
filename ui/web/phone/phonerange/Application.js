@@ -18,7 +18,6 @@ Ext.define("NOC.phone.phonerange.Application", {
     model: "NOC.phone.phonerange.Model",
     search: true,
     rowClassField: "row_class",
-    treeFilter: "parent",
 
     initComponent: function() {
         var me = this;
@@ -135,6 +134,12 @@ Ext.define("NOC.phone.phonerange.Application", {
             name: "dialplan",
             ftype: "lookup",
             lookup: "phone.dialplan"
+        },
+        {
+            title: __("By Range"),
+            name: "parent",
+            ftype: "tree",
+            lookup: "phone.phonerange"
         }
     ],
     //
