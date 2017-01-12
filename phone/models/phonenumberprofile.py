@@ -7,7 +7,6 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-import re
 from threading import Lock
 import operator
 ## Third-party modules
@@ -25,6 +24,8 @@ class PhoneNumberProfile(Document):
 
     name = StringField(unique=True)
     description = StringField()
+
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __unicode__(self):
         return self.name
