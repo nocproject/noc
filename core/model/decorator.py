@@ -9,6 +9,17 @@
 ## Third-party modules
 from django.db.models import signals as django_signals
 from mongoengine import signals as mongo_signals
+## NOC modules
+from models import get_model, get_model_id
+
+
+def is_document(klass):
+    """
+    Check klass is Document instance
+    :param cls:
+    :return:
+    """
+    return isinstance(klass._meta, dict)
 
 
 def _get_field_snapshot(sender, instance):
@@ -53,7 +64,7 @@ def on_save(cls):
            ...
     """
     if hasattr(cls, "on_save"):
-        if isinstance(cls._meta, dict):
+        if is_document(cls):
             mongo_signals.post_save.connect(
                 _on_document_save_handler,
                 sender=cls
@@ -88,7 +99,7 @@ def on_delete(cls):
            ...
     """
     if hasattr(cls, "on_delete"):
-        if isinstance(cls._meta, dict):
+        if is_document(cls):
             mongo_signals.pre_delete.connect(
                 _on_document_delete_handler,
                 sender=cls
@@ -123,3 +134,82 @@ def on_init(cls):
         sender=cls
     )
     return cls
+
+
+def on_delete_check(check=None, clean=None, delete=None):
+    """
+    Class decorator to check and process constraints before
+    trying to delete documents
+
+
+    @on_delete_check(
+        # Raise ValueError if related documents contain any records
+        check=[
+            ("sa.ManagedObjectSelector", "managed_object"),
+            ....
+        ],
+        # Replace model.field value with None
+        clean=[
+            ("model", "field"),
+            ...
+        ],
+        # Remove records referred by deleted one
+        delete=[
+            ("model", "field")
+        ]
+    )
+
+    :return:
+    """
+    def on_delete_handler(sender, instance, *args, **kwargs):
+        # Raise value error when referred
+        for model, field in iter_models("check"):
+            for ro in iter_related(instance, model, field):
+                raise ValueError(
+                    "Referred from model %s: %s (id=%s)" % (
+                        get_model_id(model),
+                        unicode(ro),
+                        ro.id
+                    ))
+        # Clean related
+        for model, field in iter_models("clean"):
+            for ro in iter_related(instance, model, field):
+                setattr(ro, field, None)
+                ro.save()
+        # Delete related
+        for model, field in iter_models("delete"):
+            for ro in iter_related(instance, model, field):
+                ro.delete()
+
+    def iter_related(object, model, field):
+        for ro in model.objects.filter(**{field: object.id}):
+            yield ro
+
+    def iter_models(name):
+        nn = "_%s" % name
+        c = cfg.get(nn)
+        if c is None:
+            c = [(get_model(x[0]), x[1]) for x in cfg["name"]]
+            cfg[nn] = c
+        for model, field in c:
+            yield model, field
+
+    def decorator(cls):
+        if is_document(cls):
+            mongo_signals.pre_delete.connect(
+                on_delete_handler,
+                sender=cls
+            )
+        else:
+            django_signals.pre_delete.connect(
+                on_delete_handler,
+                sender=cls
+            )
+        return cls
+
+    cfg = {
+        "check": check or [],
+        "clean": clean or [],
+        "delete": delete or []
+    }
+    return decorator
