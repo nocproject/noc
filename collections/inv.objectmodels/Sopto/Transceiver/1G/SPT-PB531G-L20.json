@@ -1,9 +1,9 @@
 {
-    "name": "Sopto | Transceiver | 1G |  SPT-PB531G-L20",
+    "name": "Sopto | Transceiver | 1G | SPT-PB531G-L20",
     "$collection": "inv.objectmodels",
     "uuid": "971c0eed-8795-40bb-93dc-447bb7eeabc1",
     "vendor__code": "SOPTO",
-    "description": "PT-PB531G-L20\n\nhttp://www.fiber-optic-modules.com/ru/products/spt-pb351g-l20d",
+    "description": "PT-PB531G-L20 http://www.fiber-optic-modules.com/ru/products/spt-pb351g-l20d",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -37,4 +37,3 @@
         }
     }
 }
-

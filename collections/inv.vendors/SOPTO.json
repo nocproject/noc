@@ -1,8 +1,7 @@
 {
     "name": "Sopto",
     "uuid": "ac6c01ef-6297-468c-9554-ad4f9d831bf2",
-    "code": "Sopto",
+    "code": "SOPTO",
     "site": "http://www.fiber-optic-modules.com",
     "$collection": "inv.vendors"
 }
-

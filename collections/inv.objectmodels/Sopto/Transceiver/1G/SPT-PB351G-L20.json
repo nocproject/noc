@@ -1,5 +1,5 @@
 {
-    "name": "Sopto | Transceiver | 1G |  SPT-PB351G-L20",
+    "name": "Sopto | Transceiver | 1G | SPT-PB351G-L20",
     "$collection": "inv.objectmodels",
     "uuid": "d70ab069-5e04-4c8d-8fa6-8d7fef0f145e",
     "vendor__code": "SOPTO",
@@ -37,4 +37,3 @@
         }
     }
 }
-
