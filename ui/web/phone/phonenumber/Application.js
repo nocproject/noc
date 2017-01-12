@@ -19,6 +19,7 @@ Ext.define("NOC.phone.phonenumber.Application", {
         "NOC.phone.phonelinktype.LookupField"
     ],
     model: "NOC.phone.phonenumber.Model",
+    rowClassField: "row_class",
     search: true,
 
     statusStore: [

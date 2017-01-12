@@ -9,10 +9,12 @@ console.debug("Defining NOC.phone.phonenumberprofile.Application");
 Ext.define("NOC.phone.phonenumberprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.phone.phonenumberprofile.Model"
+        "NOC.phone.phonenumberprofile.Model",
+        "NOC.main.style.LookupField"
     ],
     model: "NOC.phone.phonenumberprofile.Model",
     search: true,
+    rowClassField: "row_class",
 
     initComponent: function() {
         var me = this;
@@ -42,6 +44,12 @@ Ext.define("NOC.phone.phonenumberprofile.Application", {
                     name: "description",
                     xtype: "textarea",
                     fieldLabel: __("Description"),
+                    allowBlank: true
+                },
+                {
+                    name: "style",
+                    xtype: "main.style.LookupField",
+                    fieldLabel: __("Style"),
                     allowBlank: true
                 }
             ]
