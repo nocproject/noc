@@ -266,6 +266,11 @@ _MODELS = {
     "kb.KBUserBookmark": "noc.kb.models.kbuserbookmark.KBUserBookmark",
     # support models
     "support.Crashinfo": "noc.support.models.crashinfo.Crashinfo",
+    # crm models
+    "crm.SubscriberProfile": "noc.crm.models.subscriberprofile.SubscriberProfile",
+    "crm.SupplierProfile": "noc.crm.models.supplierprofile.SupplierProfile",
+    # sla models
+    "sla.SLAProfile": "noc.sla.models.slaprofile.SLAProfile",
     # bi models
     "bi.DashboardLayout": "noc.bi.models.dashboardlayout.DashboardLayout",
     # phone models
