@@ -370,7 +370,14 @@ class ExtDocApplication(ExtApplication):
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        o.delete()
+        try:
+            o.delete()
+        except ValueError as e:
+            return self.render_json(
+                {
+                    "success": False,
+                    "message": "ERROR: %s" % e
+                }, status=self.CONFLICT)
         return HttpResponse(status=self.DELETED)
 
     def _api_to_json(self, request, id):
