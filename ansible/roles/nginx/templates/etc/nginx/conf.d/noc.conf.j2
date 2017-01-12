@@ -322,11 +322,11 @@ server {
 
 {% if noc_config["services"].get("bi", []) %}
     location /ui/bi/editor/ {
-      alias /opt/noc/ui/bi/;
-      try_files $uri /index.html =404;
-      gzip on;
-      gzip_types text/css text/javascript application/x-javascript application/json;
-        access_log  /var/log/nginx/static.access.log noc_format;
+        alias {{ noc_root }}/ui/bi/;
+        try_files $uri /index.html =404;
+        gzip on;
+        gzip_types text/css text/javascript application/x-javascript application/json;
+        access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 {% endif %}
 
