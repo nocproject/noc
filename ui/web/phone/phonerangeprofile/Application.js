@@ -9,10 +9,12 @@ console.debug("Defining NOC.phone.phonerangeprofile.Application");
 Ext.define("NOC.phone.phonerangeprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.phone.phonerangeprofile.Model"
+        "NOC.phone.phonerangeprofile.Model",
+        "NOC.main.style.LookupField"
     ],
     model: "NOC.phone.phonerangeprofile.Model",
     search: true,
+    rowClassField: "row_class",
 
     initComponent: function() {
         var me = this;
@@ -52,6 +54,12 @@ Ext.define("NOC.phone.phonerangeprofile.Application", {
                     minValue: 0,
                     maxValue: 9999,
                     allowBlank: false
+                },
+                {
+                    name: "style",
+                    xtype: "main.style.LookupField",
+                    fieldLabel: __("Style"),
+                    allowBlank: true
                 }
             ]
         });
