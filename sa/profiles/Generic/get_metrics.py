@@ -72,10 +72,6 @@ class Script(BaseScript):
         ]
     }
 
-    PROFILE_HINTS = {
-
-    }
-
     GAUGE = "gauge"
     COUNTER = "counter"
 
@@ -144,26 +140,14 @@ class Script(BaseScript):
                                 }
                 else:
                     # Apply object metric
-                    if len(self.SNMP_OIDS[m][0]) > 4:
-                        t = self.SNMP_OIDS[m][0][4]
-                        for i in self.PROFILE_HINTS[t]:
-                            oid, vtype, scale = self.resolve_oid([self.SNMP_OIDS[m][0][0:4]],
-                                                                 self.SNMP_OIDS[m][0][5] % self.PROFILE_HINTS[t][i])
-                            batch[oid] = {
-                                "name": m,
-                                "tags": {t: i},
-                                "type": vtype,
-                                "scale": scale
-                            }
-                    else:
-                        oid, vtype, scale = self.resolve_oid(self.SNMP_OIDS[m])
-                        if oid:
-                            batch[oid] = {
-                                "name": m,
-                                "tags": {},
-                                "type": vtype,
-                                "scale": scale
-                            }
+                    oid, vtype, scale = self.resolve_oid(self.SNMP_OIDS[m])
+                    if oid:
+                        batch[oid] = {
+                            "name": m,
+                            "tags": {},
+                            "type": vtype,
+                            "scale": scale
+                        }
         # Run snmp batch
         if not batch:
             self.logger.debug("Nothing to fetch via SNMP")
@@ -248,14 +232,10 @@ class Script(BaseScript):
         """
         Return first suitable oid for OID_*, or None if not founc
         """
-        # @todo Get variable from MIB
         def rmib(v):
             if isinstance(v, six.string_types):
                 if ifindex:
-                    try:
-                        return mib[v, ifindex]
-                    except KeyError:
-                        return ".".join((v, ifindex))
+                    return mib[v, ifindex]
                 else:
                     return mib[v]
             else:
