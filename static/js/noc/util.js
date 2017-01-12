@@ -271,12 +271,18 @@ Ext.apply(NOC.render, {
 Ext.apply(NOC.msg, {
     started: function(message) {
         Ext.toast({
-            html: Ext.String.format.apply(this, arguments),
+            html: '<div style="text-align: center;">' + Ext.String.format.apply(this, arguments) + '</div>',
             align: 't',
             closable: false,
             bodyStyle: {
                 background: '#1E90FF',
                 Color: 'white'
+            },
+            width: '100%',
+            spacing: 0,
+            paddingY: 0,
+            style: {
+               "border-width": '0px'
             }
         });
     },
@@ -288,6 +294,12 @@ Ext.apply(NOC.msg, {
             bodyStyle: {
                 background: 'green',
                 Color: 'white'
+            },
+            width: '100%',
+            spacing: 0,
+            paddingY: -3,
+            style: {
+               "border-width": '0px'
             }
         });
     },
@@ -299,6 +311,12 @@ Ext.apply(NOC.msg, {
             bodyStyle: {
                 background: 'red',
                 Color: 'white'
+            },
+            width: '100%',
+            spacing: 0,
+            paddingY: -3,
+            style: {
+               "border-width": '0px'
             }
         });
     },
@@ -310,6 +328,12 @@ Ext.apply(NOC.msg, {
             bodyStyle: {
                 background: '#1E90FF',
                 Color: 'white'
+            },
+            width: '100%',
+            spacing: 0,
+            paddingY: -3,
+            style: {
+               "border-width": '0px'
             }
         });
     }

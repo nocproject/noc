@@ -245,18 +245,18 @@ Ext.define("NOC.core.ModelApplication", {
             }
         ];
 
-        if(me.dashboardIcon){
+        if(me.openDashboard){
             rowItems = rowItems.concat([
                 {
-                    glyph: NOC.glyph.line_chart,
-                    tooltip: __("Show dashboard"),
+                    glyph: me.openDashboard.icon,
+                    tooltip: me.openDashboard.tooltip,
                     scope: me,
                     handler: function(grid, rowIndex) {
                         var me = this,
                             record = me.store.getAt(rowIndex);
 
                         window.open(
-                            '/ui/grafana/dashboard/script/noc.js?dashboard=ipsla&id=' + record.id
+                            '/ui/grafana/dashboard/script/noc.js?dashboard=' + me.openDashboard.type + '&id=' + record.id
                         );
                     }
                 }

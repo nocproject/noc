@@ -106,7 +106,11 @@ Ext.define("NOC.sla.slaprobe.Application", {
                     ]
                 }
             ],
-            dashboardIcon: true
+            openDashboard: {
+                icon: NOC.glyph.line_chart,
+                type: 'ipsla',
+                tooltip: __('Show IPSLA Dashboard')
+            }
         });
         me.callParent();
     }
