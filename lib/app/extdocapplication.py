@@ -176,14 +176,19 @@ class ExtDocApplication(ExtApplication):
         for p in self.ignored_params:
             if p in q:
                 del q[p]
-        for p in (self.limit_param, self.page_param, self.start_param,
+        for p in (
+            self.limit_param, self.page_param, self.start_param,
             self.format_param, self.sort_param, self.query_param,
-            self.only_param):
+            self.only_param
+        ):
             if p in q:
                 del q[p]
         # Normalize parameters
         for p in q:
-            if p in self.clean_fields:
+            if p.endswith("__exists"):
+                v = BooleanParameter().clean(q[p])
+                q[p] = v
+            elif p in self.clean_fields:
                 q[p] = self.clean_fields[p].clean(q[p])
         # @todo: correct __ lookups
         if any(p for p in q if p.endswith("__referred")):
