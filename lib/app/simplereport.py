@@ -349,7 +349,7 @@ class TableColumn(ReportNode):
             return "-"
         sign, digits, exp = f.as_tuple()
         if exp:
-            r = "." + "".join(map(str, digits[-exp:]))
+            r = "." + "".join(map(str, digits[exp:]))
             if r == ".0":
                 r = ""
             digits = digits[:exp]
