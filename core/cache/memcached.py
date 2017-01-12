@@ -29,7 +29,11 @@ class MemcachedCache(BaseCache):
             binary=True,
             behaviors={
                 "tcp_nodelay": True,
-                "ketama": True
+                # Failover handling
+                "ketama": True,
+                "remove_failed": 1,
+                "retry_timeout": 1,
+                "dead_timeout": 60
             }
         )
         logger.debug(
