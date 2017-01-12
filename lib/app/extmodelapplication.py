@@ -468,7 +468,14 @@ class ExtModelApplication(ExtApplication):
                 "status": False,
                 "message": "Not found"
             }, status=self.NOT_FOUND)
-        o.delete()  # @todo: Detect errors
+        try:
+            o.delete()
+        except ValueError as e:
+            return self.render_json(
+                {
+                    "success": False,
+                    "message": "ERROR: %s" % e
+                }, status=self.CONFLICT)
         return HttpResponse(status=self.DELETED)
 
     @view(url="^actions/group_edit/$", method=["POST"],
