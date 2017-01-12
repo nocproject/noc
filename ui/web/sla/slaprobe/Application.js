@@ -108,6 +108,7 @@ Ext.define("NOC.sla.slaprobe.Application", {
             ],
             openDashboard: {
                 icon: NOC.glyph.line_chart,
+                color: NOC.colors.line_chart,
                 type: 'ipsla',
                 tooltip: __('Show IPSLA Dashboard')
             }

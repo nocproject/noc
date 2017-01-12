@@ -168,5 +168,11 @@ Ext.define("NOC.phone.phonerange.Application", {
                 "/api/card/view/phonerange/" + me.currentRecord.get("id") + "/"
             );
         }
+    },
+    levelFilter: {
+        icon: NOC.glyph.level_down,
+        color: NOC.colors.level_down,
+        filter: 'parent',
+        tooltip: __('Parent filter')
     }
 });
