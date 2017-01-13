@@ -282,7 +282,7 @@ Ext.apply(NOC.msg, {
             style: {
                 background: '#1E90FF'
             },
-            width: '250px',
+            width: '80%',
             paddingY: 0,
             border: false
         });
@@ -300,7 +300,7 @@ Ext.apply(NOC.msg, {
             style: {
                 background: 'green'
             },
-            width: '250px',
+            width: '80%',
             paddingY: 0,
             border: false
         });
@@ -318,7 +318,7 @@ Ext.apply(NOC.msg, {
             style: {
                 background: 'red'
             },
-            width: '250px',
+            width: '80%',
             paddingY: 0,
             border: false
         });
@@ -336,7 +336,7 @@ Ext.apply(NOC.msg, {
             style: {
                 background: '#1E90FF'
             },
-            width: '250px',
+            width: '80%',
             paddingY: 0,
             border: false
         });
