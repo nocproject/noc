@@ -13,6 +13,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcapabilities import IGetCapabilities
 from noc.lib.mib import mib
 from noc.core.snmp.consts import SNMP_v1, SNMP_v2c, SNMP_v3
+from noc.core.snmp.error import SNMPError
 
 
 class Script(BaseScript):
@@ -55,7 +56,7 @@ class Script(BaseScript):
             for k, v in self.snmp.getnext(oid, bulk=bulk,
                                           only_first=only_first):
                 return True
-        except self.snmp.TimeOutError:
+        except (self.snmp.TimeOutError, SNMPError):
             pass
         return False
 
