@@ -271,70 +271,74 @@ Ext.apply(NOC.render, {
 Ext.apply(NOC.msg, {
     started: function(message) {
         Ext.toast({
-            html: '<div style="text-align: center;">' + Ext.String.format.apply(this, arguments) + '</div>',
+            html: '<div style="text-align: center;"><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
             align: 't',
-            closable: false,
             bodyStyle: {
                 background: '#1E90FF',
-                Color: 'white'
+                color: 'white',
+                "font-weight": 'bold',
+                "font-size": 'large'
             },
-            width: '100%',
-            spacing: 0,
-            paddingY: 0,
             style: {
-               "border-width": '0px'
-            }
+                background: '#1E90FF'
+            },
+            width: '250px',
+            paddingY: 0,
+            border: false
         });
     },
     complete: function(message) {
         Ext.toast({
-            html: Ext.String.format.apply(this, arguments),
+            html: '<div style="text-align: center;"><i class="fa fa-check-circle" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
             align: 't',
-            closable: false,
             bodyStyle: {
                 background: 'green',
-                Color: 'white'
+                color: 'white',
+                "font-weight": 'bold',
+                "font-size": 'large'
             },
-            width: '100%',
-            spacing: 0,
-            paddingY: -3,
             style: {
-               "border-width": '0px'
-            }
+                background: 'green'
+            },
+            width: '250px',
+            paddingY: 0,
+            border: false
         });
     },
     failed: function(message) {
         Ext.toast({
-            html: Ext.String.format.apply(this, arguments),
+            html: '<div style="text-align: center;"><i class="fa fa-bolt" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
             align: 't',
-            closable: false,
             bodyStyle: {
                 background: 'red',
-                Color: 'white'
+                color: 'white',
+                "font-weight": 'bold',
+                "font-size": 'large'
             },
-            width: '100%',
-            spacing: 0,
-            paddingY: -3,
             style: {
-               "border-width": '0px'
-            }
+                background: 'red'
+            },
+            width: '250px',
+            paddingY: 0,
+            border: false
         });
     },
     info: function(message) {
         Ext.toast({
-            html: Ext.String.format.apply(this, arguments),
+            html: '<div style="text-align: center;"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
             align: 't',
-            closable: false,
             bodyStyle: {
                 background: '#1E90FF',
-                Color: 'white'
+                color: 'white',
+                "font-weight": 'bold',
+                "font-size": 'large'
             },
-            width: '100%',
-            spacing: 0,
-            paddingY: -3,
             style: {
-               "border-width": '0px'
-            }
+                background: '#1E90FF'
+            },
+            width: '250px',
+            paddingY: 0,
+            border: false
         });
     }
 });

@@ -106,34 +106,46 @@ Ext.define('NOC.LoginView', {
             });
         }
     }
+
     , onLoginFailure: function() {
         Ext.toast({
             html: '<div style="text-align: center;">' + __('Failed to log in') + '</div>',
             align: 't',
-            closable: false,
-            spacing: 0,
             paddingY: 0,
             width: '100%',
+            border: false,
             bodyStyle: {
+                color: 'white',
                 background: 'red',
-                Color: 'white'
-            }
-        });
-        Ext.toast({
-            html: __('Failed to log in'),
-            align: 't',
-            spacing: 0,
-            paddingY: -3,
-            width: '100%',
-            style: {
-               "border-width": '0px'
+                "font-weight": 'bold'
             },
-            bodyStyle: {
-               background: 'red'
+            style: {
+                background: 'red',
+                "border-width": '0px'
             }
         });
-
     }
+
+    , message: function() {
+        Ext.toast({
+            html: '<div style="text-align: center;">' + __('Failed to log in') + '</div>',
+            align: 't',
+            paddingY: 0,
+            width: '100%',
+            border: false,
+            bodyStyle: {
+                color: 'white',
+                background: 'red',
+                "font-weight": 'bold',
+                "font-size": 'large'
+            },
+            style: {
+                background: 'red',
+                "border-width": '0px'
+            }
+        });
+    }
+
     , onLoginSuccess: function(response) {
         var me = this;
         try {
@@ -152,14 +164,18 @@ Ext.define('NOC.LoginView', {
             Ext.toast({
                 html: '<div style="text-align: center;">' + __('Failed to log in') + '</div>',
                 align: 't',
-                paddingY: -4,
+                paddingY: 0,
                 width: '100%',
+                border: false,
                 bodyStyle: {
-                    background: 'blue',
-                    color: 'white'
+                    color: 'white',
+                    background: 'red',
+                    "font-weight": 'bold',
+                    "font-size": 'large'
                 },
                 style: {
-                    "border-width": '0px !importing'
+                    background: 'red',
+                    "border-width": '0px'
                 }
             });
         }
