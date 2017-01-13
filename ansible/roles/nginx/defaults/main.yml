@@ -3,6 +3,7 @@ nginx_http_redirect_enabled: false
 required_assets:
   - card
   - web
+  - bi
 web_weight: 1
 card_weight: 1
 login_weight: 1
