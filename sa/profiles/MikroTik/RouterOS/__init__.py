@@ -27,7 +27,9 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"bad command name"
     config_volatile = [r"^#.*?$", r"^\s?"]
     default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
-    telnet_naws = "\x00\xfa\x00\xfa"
+    rogue_chars = ["\r", "\x00"]
+
+    #telnet_naws = "\x00\xfa\x00\xfa"
 
     def setup_script(self, script):
         """
@@ -38,11 +40,14 @@ class Profile(BaseProfile):
         """
         if script.parent is None:
             user = script.credentials.get("user", "")
-            if not user.endswith("+ct"):
-                script.credentials["user"] = user + "+ct"
+            if not user.endswith("+ct255w255h"):
+                script.credentials["user"] = user + "+ct255w255h"
         self.add_script_method(script, "cli_detail", self.cli_detail)
+
+    def setup_session(self, script):
         #MikroTik Remove duplicates prompt
-        script.cli("")
+        script.cli("\n")
+
 
     def cli_detail(self, script, cmd, cached=False):
         """
