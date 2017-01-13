@@ -12,6 +12,7 @@
     - curl
     - libffi
     - libmemcached
+    - lsof
   tags:
     - requirements
 
