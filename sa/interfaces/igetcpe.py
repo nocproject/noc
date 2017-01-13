@@ -61,7 +61,7 @@ class IGetCPE(Interface):
         ]),
         "interface": InterfaceNameParameter(required=False),
         "model": StringParameter(required=False),
-        "serial": IPv4Parameter(required=False),
+        "serial": StringParameter(required=False),
         "ip": IPv4Parameter(required=False),
         "mac": MACAddressParameter(required=False),
         "modulation": StringParameter(required=False),
