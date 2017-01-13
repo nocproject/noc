@@ -112,32 +112,12 @@ Ext.define('NOC.LoginView', {
             html: '<div style="text-align: center;">' + __('Failed to log in') + '</div>',
             align: 't',
             paddingY: 0,
-            width: '100%',
+            width: '80%',
             border: false,
             bodyStyle: {
                 color: 'white',
                 background: 'red',
                 "font-weight": 'bold'
-            },
-            style: {
-                background: 'red',
-                "border-width": '0px'
-            }
-        });
-    }
-
-    , message: function() {
-        Ext.toast({
-            html: '<div style="text-align: center;">' + __('Failed to log in') + '</div>',
-            align: 't',
-            paddingY: 0,
-            width: '100%',
-            border: false,
-            bodyStyle: {
-                color: 'white',
-                background: 'red',
-                "font-weight": 'bold',
-                "font-size": 'large'
             },
             style: {
                 background: 'red',
@@ -165,7 +145,7 @@ Ext.define('NOC.LoginView', {
                 html: '<div style="text-align: center;">' + __('Failed to log in') + '</div>',
                 align: 't',
                 paddingY: 0,
-                width: '100%',
+                width: '80%',
                 border: false,
                 bodyStyle: {
                     color: 'white',
