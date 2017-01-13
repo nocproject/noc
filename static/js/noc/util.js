@@ -277,12 +277,13 @@ Ext.apply(NOC.msg, {
                 background: '#1E90FF',
                 color: 'white',
                 "font-weight": 'bold',
-                "font-size": 'large'
+//                "font-size": 'large'
             },
             style: {
                 background: '#1E90FF'
             },
             width: '80%',
+            minHeight: 10,
             paddingY: 0,
             border: false
         });
@@ -295,12 +296,13 @@ Ext.apply(NOC.msg, {
                 background: 'green',
                 color: 'white',
                 "font-weight": 'bold',
-                "font-size": 'large'
+//                "font-size": 'large'
             },
             style: {
                 background: 'green'
             },
             width: '80%',
+            minHeight: 10,
             paddingY: 0,
             border: false
         });
@@ -313,12 +315,13 @@ Ext.apply(NOC.msg, {
                 background: 'red',
                 color: 'white',
                 "font-weight": 'bold',
-                "font-size": 'large'
+//                "font-size": 'large'
             },
             style: {
                 background: 'red'
             },
             width: '80%',
+            minHeight: 10,
             paddingY: 0,
             border: false
         });
@@ -331,12 +334,13 @@ Ext.apply(NOC.msg, {
                 background: '#1E90FF',
                 color: 'white',
                 "font-weight": 'bold',
-                "font-size": 'large'
+//                "font-size": 'large'
             },
             style: {
                 background: '#1E90FF'
             },
             width: '80%',
+            minHeight: 10,
             paddingY: 0,
             border: false
         });
