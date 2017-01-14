@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## PhoneRange model
+## PhoneNumberProfile model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -16,10 +16,14 @@ import cachetools
 ## NOC modules
 from noc.main.models.style import Style
 from noc.lib.nosql import ForeignKeyField
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
+@on_delete_check(check=[
+    ("phone.PhoneNumber", "profile")
+])
 class PhoneNumberProfile(Document):
     meta = {
         "collection": "noc.phonenumberprofiles"

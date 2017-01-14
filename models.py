@@ -275,7 +275,10 @@ _MODELS = {
     # bi models
     "bi.DashboardLayout": "noc.bi.models.dashboardlayout.DashboardLayout",
     # phone models
-    "phone.PhoneNumber": "noc.phone.models.phonenumber.PhoneNumber"
+    "phone.PhoneNumber": "noc.phone.models.phonenumber.PhoneNumber",
+    "phone.PhoneNumberProfile": "noc.phone.models.phonenumberprofile.PhoneNumberProfile",
+    "phone.PhoneRange": "noc.phone.models.phonerange.PhoneRange",
+    "phone.PhoneRangeProfile": "noc.phone.models.phonerangeprofile.PhoneRangeProfile",
 }
 
 FTS_MODELS = [
