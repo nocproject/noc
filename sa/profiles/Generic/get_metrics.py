@@ -44,6 +44,7 @@ class OIDRule(object):
 
     def __init__(self, oid, type=None, scale=1):
         self.oid = oid
+        self.is_complex = not isinstance(oid, six.string_types)
         self.type = type or self.default_type
         if isinstance(scale, six.string_types):
             self.scale = get_handler(
@@ -184,9 +185,16 @@ class InterfaceRule(OIDRule):
         for i in metric["interfaces"]:
             ifindex = script.get_ifindex(i)
             if ifindex:
-                oid = mib[self.expand(self.oid, {"ifIndex", ifindex})]
-                if oid:
-                    yield oid, self.type, self.scale, {"interface": i}
+                if self.is_complex:
+                    # oid is list
+                    for o in self.oid:
+                        oid = mib[self.expand(o, {"ifIndex", ifindex})]
+                        if oid:
+                            yield oid, self.type, self.scale, {"interface": i}
+                else:
+                    oid = mib[self.expand(self.oid, {"ifIndex", ifindex})]
+                    if oid:
+                        yield oid, self.type, self.scale, {"interface": i}
 
 
 class Script(BaseScript):
