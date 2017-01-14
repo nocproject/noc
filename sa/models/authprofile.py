@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## AuthProfile
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -15,11 +15,16 @@ import cachetools
 ## NOC modules
 from noc.core.model.decorator import on_save
 from noc.core.cache.base import cache
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
 @on_save
+@on_delete_check(check=[
+    ("sa.ManagedObject", "auth_profile"),
+    ("sa.ManagedObjectProfile", "cpe_auth_profile")
+])
 class AuthProfile(models.Model):
     class Meta:
         verbose_name = "Auth Profile"
