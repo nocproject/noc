@@ -56,6 +56,10 @@ Ext.define("NOC.core.modelfilter.Tree", {
         var me = this;
         if(me.name in filter) {
             me.tree.restoreById(filter[me.name]);
+        } else {
+            if(me.name + '__exists' in filter) {
+                me.tree.restoreById('_root_');
+            }
         }
     }
 });
