@@ -18,7 +18,7 @@ from threading import Lock
 ## Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
-                              SET_NULL)
+                              DateTimeField, SET_NULL)
 from django.contrib.auth.models import User, Group
 import cachetools
 import six
@@ -186,6 +186,28 @@ class ManagedObject(Model):
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
                             blank=True, null=True)
+    # Reference to controller, when object is CPE
+    controller = ForeignKey(
+        "self", verbose_name="Controller",
+        blank=True, null=True
+    )
+    # CPE id on given controller
+    local_cpe_id = CharField(
+        "Local CPE ID",
+        max_length=128,
+        null=True, blank=True
+    )
+    # Globally unique CPE id
+    global_cpe_id = CharField(
+        "Global CPE ID",
+        max_length=128,
+        null=True, blank=True
+    )
+    # Last seen date, for CPE
+    last_seen = DateTimeField(
+        "Last Seen",
+        blank=True, null=True
+    )
     # For service terminators
     # Name of service termination group (i.e. BRAS, SBC)
     termination_group = ForeignKey(

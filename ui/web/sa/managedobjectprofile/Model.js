@@ -226,6 +226,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "enable_box_discovery_cpe",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
             name: "enable_periodic_discovery",
             xtype: "boolean",
             defaultValue: false
@@ -264,6 +269,32 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "clear_links_on_serial_change",
             xtype: "boolean",
             defaultValue: false
+        },
+        {
+            name: "cpe_segment_policy",
+            xtype: "string"
+        },
+        {
+            name: "cpe_cooldown",
+            xtype: "int"
+        },
+        {
+            name: "cpe_profile",
+            xtype: "string"
+        },
+        {
+            name: "cpe_profile__label",
+            xtype: "string",
+            persist: false
+        },
+        {
+            name: "cpe_auth_profile",
+            xtype: "string"
+        },
+        {
+            name: "cpe_auth_profile__label",
+            xtype: "string",
+            persist: false
         },
         {
             name: "row_class",
