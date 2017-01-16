@@ -111,7 +111,7 @@ class PhoneRange(Document):
                 to_number__gte=self.to_number
             ) | Q(
                 to_number__lt=self.to_number,
-                from_number__lte=self.from_number,
+                from_number__lt=self.from_number,
                 to_number__gte=self.from_number
             ) | Q(
                 from_number=self.from_number,
@@ -123,8 +123,8 @@ class PhoneRange(Document):
         rr = PhoneRange.objects.filter(q).first()
         if rr:
             raise ValidationError(
-                "Overlapped ranges: %s - %s" % (
-                    rr.from_number, rr.to_number)
+                "Overlapped ranges: %s - %s (%s)" % (
+                    rr.from_number, rr.to_number, rr.name)
             )
         q = {
             "dialplan": self.dialplan,
