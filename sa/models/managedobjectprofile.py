@@ -2,13 +2,13 @@
 ##----------------------------------------------------------------------
 ## ManagedObjectProfile
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import operator
-from threading import RLock
+from threading import Lock
 ## Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
@@ -16,20 +16,27 @@ from django.template import Template, Context
 import cachetools
 ## NOC modules
 from noc.main.models.style import Style
+from authprofile import AuthProfile
 from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
 from noc.core.model.fields import TagsField, PickledField
-from noc.core.model.decorator import on_save, on_init
+from noc.core.model.decorator import on_save, on_init, on_delete_check
 from noc.main.models.pool import Pool
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
 from objectmap import ObjectMap
 
-id_lock = RLock()
+id_lock = Lock()
 
 
 @on_init
 @on_save
+@on_delete_check(check=[
+    ("sa.ManagedObject", "object_profile"),
+    ("sa.ManagedObjectProfile", "cpe_profile"),
+    ("sa.ManagedObjectSelector", "filter_object_profile"),
+    ("inv.FirmwarePolicy", "object_profile")
+])
 class ManagedObjectProfile(models.Model):
 
     class Meta:
@@ -141,6 +148,8 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_udld = models.BooleanField(default=False)
     # Enable SLA probes discovery
     enable_box_discovery_sla = models.BooleanField(default=False)
+    # Enable CPE discovery
+    enable_box_discovery_cpe = models.BooleanField(default=False)
     # Enable periodic discovery.
     # Periodic discovery launched repeatedly
     enable_periodic_discovery = models.BooleanField(default=True)
@@ -159,6 +168,30 @@ class ManagedObjectProfile(models.Model):
     #
     clear_links_on_platform_change = models.BooleanField(default=False)
     clear_links_on_serial_change = models.BooleanField(default=False)
+    # CPE discovery settings
+    cpe_segment_policy = models.CharField(
+        _("CPE Segment Policy"),
+        max_length=1,
+        choices=[
+            ("C", "From controller"),
+            ("L", "From linked object")
+        ],
+        default="C"
+    )
+    cpe_cooldown = models.IntegerField(
+        _("CPE cooldown, days"),
+        default=0
+    )
+    cpe_profile = models.ForeignKey(
+        "self",
+        verbose_name="Object Profile",
+        blank=True, null=True
+    )
+    cpe_auth_profile = models.ForeignKey(
+        AuthProfile,
+        verbose_name="Auth Profile",
+        null=True, blank=True
+    )
     #
     metrics = PickledField()
     #

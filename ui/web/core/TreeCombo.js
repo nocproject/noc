@@ -233,6 +233,11 @@ Ext.define('NOC.core.TreeCombo', {
     restoreById: function(id) {
         var me = this;
 
+        if(id === '_root_') {
+            console.log(me);
+            me.autocomplete.setRawValue(__("Root"));
+            return;
+        }
         if(id) {
             this.restoreStore.load({
                 url: this.restUrl + '/' + id + '/get_path/',

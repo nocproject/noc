@@ -1,0 +1,83 @@
+# -*- coding: utf-8 -*-
+##----------------------------------------------------------------------
+## ID check
+##----------------------------------------------------------------------
+## Copyright (C) 2007-2017 The NOC Project
+## See LICENSE for details
+##----------------------------------------------------------------------
+
+## Python modules
+import datetime
+## NOC modules
+from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.sa.models.managedobject import ManagedObject
+
+
+class CPECheck(DiscoveryCheck):
+    """
+    CPE check
+    @todo: Remove stale CPE
+    """
+    name = "cpe"
+    required_script = "get_cpe"
+    required_capabilities = ["CPE | Controller"]
+
+    def handler(self):
+        self.logger.info("Checking CPEs")
+        now = datetime.datetime.now()
+        result = self.object.scripts.get_cpe()
+        for cpe in result:
+            if cpe["status"] != "active":
+                self.logger.debug(
+                    "[%s|%s] CPE status is '%s'. Skipping",
+                    cpe["id"], cpe["global_id"]
+                )
+                continue
+            mo = self.find_cpe(cpe["global_id"])
+            cpedata = {
+                "controller": self.object,
+                "local_cpe_id": cpe["id"],
+                "global_cpe_id": cpe["id"]
+            }
+
+            if mo:
+                changes = self.update_if_changed(mo, {
+                    "controller": self.object,
+                    "local_cpe_id": cpe["id"],
+                    "global_cpe_id": cpe["global_id"],
+                    "last_seen": now
+                })
+                if changes:
+                    self.logger.info(
+                        "[%s|%s] Changed: %s",
+                        cpe["id"], cpe["global_id"],
+                        ", ".join("%s='%s'" % (c, changes[c]) for c in changes)
+                    )
+            else:
+                self.logger.info(
+                    "[%s|%s] Created CPE %s",
+                    cpe["id"], cpe["global_id"],
+                )
+                name = cpe.get("name") or "cpe-%s" % cpe["global_id"]
+                mo = ManagedObject(
+                    name=name,
+                    pool=self.object.pool,
+                    profile_name="Generic.Host",
+                    object_profile=self.object.object_profile.cpe_profile or self.object.object_profile,
+                    administrative_domain=self.object.administrative_domain,
+                    segment=self.object.segment,
+                    auth_profile=self.object.object_profile.cpe_auth_profile,
+                    address=cpe.get("address") or "0.0.0.0",
+                    controller=self.object,
+                    last_seen=now,
+                    local_cpe_id=cpe["id"],
+                    global_cpe_id=cpe["global_id"]
+                )
+                mo.save()
+
+    @classmethod
+    def find_cpe(cls, global_id):
+        try:
+            return ManagedObject.objects.get(cpe_global_id=global_id)
+        except ManagedObject.DoesNotExist:
+            return None
