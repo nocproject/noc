@@ -20,6 +20,8 @@
     name: grafana-{{grafana_version}}
     state: present
     update_cache: yes
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
 
@@ -28,6 +30,8 @@
     name: wine-fonts
     state: present
     update_cache: yes
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
 
