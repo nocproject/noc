@@ -30,16 +30,10 @@ class CPECheck(DiscoveryCheck):
             if cpe["status"] != "active":
                 self.logger.debug(
                     "[%s|%s] CPE status is '%s'. Skipping",
-                    cpe["id"], cpe["global_id"]
+                    cpe["id"], cpe["global_id"], cpe["status"]
                 )
                 continue
             mo = self.find_cpe(cpe["global_id"])
-            cpedata = {
-                "controller": self.object,
-                "local_cpe_id": cpe["id"],
-                "global_cpe_id": cpe["id"]
-            }
-
             if mo:
                 changes = self.update_if_changed(mo, {
                     "controller": self.object,
@@ -54,11 +48,13 @@ class CPECheck(DiscoveryCheck):
                         ", ".join("%s='%s'" % (c, changes[c]) for c in changes)
                     )
             else:
+                name = cpe.get("name") or "cpe-%s" % cpe["global_id"]
+                if ManagedObject.objects.filter(name=name).exists():
+                    name = "cpe-%s" % cpe["global_id"]
                 self.logger.info(
                     "[%s|%s] Created CPE %s",
-                    cpe["id"], cpe["global_id"],
+                    cpe["id"], cpe["global_id"], name
                 )
-                name = cpe.get("name") or "cpe-%s" % cpe["global_id"]
                 mo = ManagedObject(
                     name=name,
                     pool=self.object.pool,
@@ -66,7 +62,7 @@ class CPECheck(DiscoveryCheck):
                     object_profile=self.object.object_profile.cpe_profile or self.object.object_profile,
                     administrative_domain=self.object.administrative_domain,
                     segment=self.object.segment,
-                    auth_profile=self.object.object_profile.cpe_auth_profile,
+                    auth_profile=self.object.object_profile.cpe_auth_profile or self.object.auth_profile,
                     address=cpe.get("address") or "0.0.0.0",
                     controller=self.object,
                     last_seen=now,
