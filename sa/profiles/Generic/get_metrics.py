@@ -267,6 +267,7 @@ class Script(BaseScript):
         batch = {}
         for m in metrics:
             # Calculate oids
+            self.logger.debug("Make oid for metrics: %s" % m)
             snmp_rule = self.get_snmp_rule(m)
             if snmp_rule:
                 for oid, vtype, scale, tags in snmp_rule.iter_oids(self, metrics[m]):
@@ -276,6 +277,7 @@ class Script(BaseScript):
                         "type": vtype,
                         "scale": scale
                     }
+        self.logger.debug("Batch: %s" % batch)
         # Run snmp batch
         if not batch:
             self.logger.debug("Nothing to fetch via SNMP")
@@ -395,6 +397,7 @@ class Script(BaseScript):
         profile = self.profile.name
         if profile not in self._SNMP_OID_RULES:
             self.load_snmp_rules(profile)
+            self.logger.debug("Loading profile rules: %s" % self._SNMP_OID_RULES[profile])
         return self._SNMP_OID_RULES[profile].get(metric_type)
 
     @classmethod
