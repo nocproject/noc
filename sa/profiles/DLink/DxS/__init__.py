@@ -293,8 +293,8 @@ class Profile(BaseProfile):
                     "vlan_id": int(match.group("vlan_id")),
                     "vlan_name": match.group("vlan_name"),
                     "vlan_type": match.group("vlan_type"),
-                    "tagged_ports": tagged_ports,
-                    "untagged_ports": untagged_ports
+                    "tagged_ports": set(tagged_ports),
+                    "untagged_ports": set(untagged_ports)
                 }]
         return vlans
 
