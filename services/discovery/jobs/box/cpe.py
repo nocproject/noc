@@ -62,7 +62,7 @@ class CPECheck(DiscoveryCheck):
                     profile_name="Generic.Host",
                     object_profile=self.object.object_profile.cpe_profile or self.object.object_profile,
                     administrative_domain=self.object.administrative_domain,
-                    scheme=1,
+                    scheme=self.object.scheme,
                     segment=self.object.segment,
                     auth_profile=self.object.object_profile.cpe_auth_profile or self.object.auth_profile,
                     address=cpe.get("ip") or "0.0.0.0",
