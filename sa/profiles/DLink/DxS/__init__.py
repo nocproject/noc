@@ -243,7 +243,7 @@ class Profile(BaseProfile):
 
     rx_vlan = re.compile(
         r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
-        r"VLAN Name\s+:(?P<vlan_name>.*?)\n"
+        r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
         r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
         r"^(Current Tagged P|Tagged p)orts\s+:\s*(?P<tagged_ports>\S*?)\s*\n"
         r"^(Current Untagged P|Untagged p)orts\s*:\s*"
@@ -251,7 +251,7 @@ class Profile(BaseProfile):
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
     rx_vlan1 = re.compile(
         r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
-        r"VLAN Name\s+:(?P<vlan_name>.*?)\n"
+        r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
         r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.*?"
         r"^Member Ports\s+:\s*(?P<member_ports>\S*?)\s*\n"
         r"(Static ports\s+:\s*\S+\s*\n)?"
@@ -268,7 +268,7 @@ class Profile(BaseProfile):
                 script.expand_interface_range(match.group("untagged_ports"))
             vlans += [{
                 "vlan_id": int(match.group("vlan_id")),
-                "vlan_name": match.group("vlan_name").strip(),
+                "vlan_name": match.group("vlan_name"),
                 "vlan_type": match.group("vlan_type"),
                 "tagged_ports": tagged_ports,
                 "untagged_ports": untagged_ports

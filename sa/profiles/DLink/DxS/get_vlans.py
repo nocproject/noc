@@ -19,13 +19,8 @@ class Script(BaseScript):
         r = []
         vlans = self.profile.get_vlans(self)
         for v in vlans:
-            if v['vlan_name']:
-                r += [{
-                    "vlan_id": v['vlan_id'],
-                    "name": v['vlan_name']
-                }]
-            else:
-                r += [{
-                    "vlan_id": v['vlan_id']
-                }]
+            r += [{
+                "vlan_id": v['vlan_id'],
+                "name": v['vlan_name']
+            }]
         return r
