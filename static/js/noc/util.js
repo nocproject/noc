@@ -282,6 +282,11 @@ Ext.apply(NOC.msg, {
             style: {
                 background: '#1E90FF'
             },
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
             width: '50%',
             minHeight: 10,
             paddingY: 0,
@@ -300,6 +305,11 @@ Ext.apply(NOC.msg, {
             },
             style: {
                 background: 'green'
+            },
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
             },
             width: '50%',
             minHeight: 10,
@@ -320,6 +330,11 @@ Ext.apply(NOC.msg, {
             style: {
                 background: 'red'
             },
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
             width: '50%',
             minHeight: 10,
             paddingY: 0,
@@ -338,6 +353,11 @@ Ext.apply(NOC.msg, {
             },
             style: {
                 background: '#1E90FF'
+            },
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
             },
             width: '50%',
             minHeight: 10,
