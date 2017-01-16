@@ -39,7 +39,7 @@ class CPECheck(DiscoveryCheck):
                     "controller": self.object,
                     "local_cpe_id": cpe["id"],
                     "global_cpe_id": cpe["global_id"],
-                    "ip": cpe["ip"],
+                    "address": cpe["ip"],
                     "last_seen": now
                 })
                 if changes:
