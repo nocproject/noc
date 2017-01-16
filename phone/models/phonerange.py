@@ -24,7 +24,7 @@ from noc.lib.nosql import PlainReferenceField
 from noc.crm.models.supplier import Supplier
 from noc.project.models.project import Project
 from noc.lib.nosql import ForeignKeyField
-from noc.core.model.decorator import on_save
+from noc.core.model.decorator import on_save, on_delete
 from noc.core.defer import call_later
 
 logger = logging.getLogger(__name__)
@@ -32,6 +32,7 @@ id_lock = Lock()
 
 
 @on_save
+@on_delete
 class PhoneRange(Document):
     meta = {
         "collection": "noc.phoneranges",
@@ -136,11 +137,29 @@ class PhoneRange(Document):
         self.parent = PhoneRange.get_closest_range(**q)
 
     def on_save(self):
+        from phonenumber import PhoneNumber
+        # Borrow own phone numbers from parent
+        if self.parent:
+            for n in PhoneNumber.objects.filter(
+                phone_range=self.parent.id,
+                number__gte=self.from_number,
+                number__lte=self.to_number
+            ):
+                n.phone_range = self
+                n.save()
+        # Allocate numbers when necessary
         if self.to_allocate_numbers:
             call_later(
                 "noc.phone.models.phonerange.allocate_numbers",
                 range_id=self.id
             )
+
+    def on_delete(self):
+        from phonenumber import PhoneNumber
+        new_parent = self.parent.id if self.parent else None
+        for n in PhoneNumber.objects.filter(phone_range=self.id):
+            n.phone_range = new_parent
+            n.save()
 
     @property
     def has_children(self):
