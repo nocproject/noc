@@ -56,10 +56,14 @@ class OIDRule(object):
     def iter_oids(self, script, metric):
         """
         Generator yielding oid, type, scale, tags
+        :param script:
         :param metric:
         :return:
         """
-        yield self.oid, self.type, self.scale, {}
+        if self.is_complex:
+            yield tuple(self.oid), self.type, self.scale, {}
+        else:
+            yield self.oid, self.type, self.scale, {}
 
     @classmethod
     def load(cls, data):
@@ -97,6 +101,7 @@ class OIDRule(object):
             lambda x: str(context[x.group(1)]),
             template
         )
+
 
 class CounterRule(OIDRule):
     """
@@ -188,11 +193,11 @@ class InterfaceRule(OIDRule):
                 if self.is_complex:
                     # oid is list
                     for o in self.oid:
-                        oid = mib[self.expand(o, {"ifIndex", ifindex})]
+                        oid = mib[self.expand(o, {"ifIndex": ifindex})]
                         if oid:
                             yield oid, self.type, self.scale, {"interface": i}
                 else:
-                    oid = mib[self.expand(self.oid, {"ifIndex", ifindex})]
+                    oid = mib[self.expand(self.oid, {"ifIndex": ifindex})]
                     if oid:
                         yield oid, self.type, self.scale, {"interface": i}
 
@@ -407,9 +412,9 @@ class Script(BaseScript):
             v, p = profile.split(".")
             for path in [
                 os.path.join("sa", "profiles", "Generic", "snmp_metrics"),
-                os.path.join("sa", "profiles", p, v, "snmp_metrics"),
+                os.path.join("sa", "profiles", v, p, "snmp_metrics"),
                 os.path.join("custom", "sa", "profiles", "Generic", "snmp_metrics"),
-                os.path.join("custom", "sa", p, v, "snmp_metrics")
+                os.path.join("custom", "sa", v, p, "snmp_metrics")
             ]:
                 cls.apply_rules_from_dir(
                     cls._SNMP_OID_RULES[profile],
