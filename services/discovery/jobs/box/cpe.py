@@ -46,7 +46,7 @@ class CPECheck(DiscoveryCheck):
                     self.logger.info(
                         "[%s|%s] Changed: %s",
                         cpe["id"], cpe["global_id"],
-                        ", ".join("%s='%s'" % (c, changes[c]) for c in changes)
+                        ", ".join("%s='%s'" % c for c in changes)
                     )
             else:
                 name = cpe.get("name") or "cpe-%s" % cpe["global_id"]
