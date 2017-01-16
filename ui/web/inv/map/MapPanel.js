@@ -898,9 +898,12 @@ Ext.define("NOC.inv.map.MapPanel", {
     },
 
     onNodeMenuDashboard: function() {
-        var me = this;
+        var me = this,
+            objectType = me.nodeMenuObjectType;
+
+        if('managedobject' == me.nodeMenuObjectType) objectType = 'mo';
         window.open(
-            '/ui/grafana/dashboard/script/noc.js?dashboard=' + me.nodeMenuObjectType + '&id=' + me.nodeMenuObject
+            '/ui/grafana/dashboard/script/noc.js?dashboard=' + objectType + '&id=' + me.nodeMenuObject
         );
     },
 
