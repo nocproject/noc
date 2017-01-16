@@ -275,6 +275,7 @@ _MODELS = {
     # bi models
     "bi.DashboardLayout": "noc.bi.models.dashboardlayout.DashboardLayout",
     # phone models
+    "phone.DialPlan": "noc.phone.models.dialplan.DialPlan",
     "phone.PhoneNumber": "noc.phone.models.phonenumber.PhoneNumber",
     "phone.PhoneNumberProfile": "noc.phone.models.phonenumberprofile.PhoneNumberProfile",
     "phone.PhoneRange": "noc.phone.models.phonerange.PhoneRange",
