@@ -74,6 +74,6 @@ class CPECheck(DiscoveryCheck):
     @classmethod
     def find_cpe(cls, global_id):
         try:
-            return ManagedObject.objects.get(cpe_global_id=global_id)
+            return ManagedObject.objects.get(global_cpe_id=global_id)
         except ManagedObject.DoesNotExist:
             return None
