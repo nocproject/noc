@@ -13,10 +13,15 @@ import operator
 from mongoengine.document import Document
 from mongoengine.fields import StringField
 import cachetools
+from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
 
 
+@on_delete_check(check=[
+    ("phone.PhoneRange", "dialplan"),
+    ("phone.PhoneNumber", "dialplan")
+])
 class DialPlan(Document):
     meta = {
         "collection": "noc.dialplans"
