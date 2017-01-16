@@ -39,6 +39,7 @@ class CPECheck(DiscoveryCheck):
                     "controller": self.object,
                     "local_cpe_id": cpe["id"],
                     "global_cpe_id": cpe["global_id"],
+                    "ip": cpe["ip"],
                     "last_seen": now
                 })
                 if changes:
@@ -63,7 +64,7 @@ class CPECheck(DiscoveryCheck):
                     administrative_domain=self.object.administrative_domain,
                     segment=self.object.segment,
                     auth_profile=self.object.object_profile.cpe_auth_profile or self.object.auth_profile,
-                    address=cpe.get("address") or "0.0.0.0",
+                    address=cpe.get("ip") or "0.0.0.0",
                     controller=self.object,
                     last_seen=now,
                     local_cpe_id=cpe["id"],
