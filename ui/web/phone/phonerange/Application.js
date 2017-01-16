@@ -132,6 +132,11 @@ Ext.define("NOC.phone.phonerange.Application", {
                 me.cardButton
             ]
         });
+
+        me.currentQuery = {
+            "parent__exists": false
+        };
+
         me.callParent();
     },
     filters: [

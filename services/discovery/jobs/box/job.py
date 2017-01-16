@@ -28,6 +28,7 @@ from lldp import LLDPCheck
 from stp import STPCheck
 from nri import NRICheck
 from sla import SLACheck
+from cpe import CPECheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -72,6 +73,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             VLANCheck(self).run()
         if self.object.object_profile.enable_box_discovery_nri:
             NRICheck(self).run()
+        if self.object.object_profile.enable_box_discovery_cpe:
+            CPECheck(self).run()
         # Topology discovery
         # Most preferable methods first
         for check in self.TOPOLOGY_METHODS:
