@@ -264,7 +264,7 @@ Ext.define("NOC.core.ModelApplication", {
                             record = me.store.getAt(rowIndex);
 
                         window.open(
-                            '/ui/grafana/dashboard/script/noc.js?dashboard=' + me.openDashboard.type + '&id=' + record.id
+                            '/ui/grafana/dashboard/script/noc.js?dashboard=' + me.openDashboard.type + '&id=' + record.get('managed_object')
                         );
                     }
                 }
