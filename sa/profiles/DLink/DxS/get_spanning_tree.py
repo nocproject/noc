@@ -9,7 +9,6 @@
 ## Python modules
 import re
 import itertools
-import time
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -23,8 +22,8 @@ class Script(BaseScript):
     rx_stp = re.compile(
         r"^\s*STP Bridge Global Settings\n"
         r"^\s*\-+\n"
-        r"^\s*STP Status\s+: (?P<status>Enabled|Disabled)\s*"
-        r"^\s*STP Version\s+: (?P<mode>STP|RSTP)\s*", re.MULTILINE)
+        r"^\s*STP Status\s+: (?P<status>Enabled|Disabled)\s*\n"
+        r"^\s*STP Version\s+: (?P<mode>STP|RSTP)\s*\n", re.MULTILINE)
     rx_ins = re.compile(
         r"^\s*STP Instance Settings\n"
         r"^\s*\-+\n"
