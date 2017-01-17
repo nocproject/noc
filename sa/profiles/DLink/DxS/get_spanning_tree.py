@@ -9,6 +9,7 @@
 ## Python modules
 import re
 import itertools
+import time
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
@@ -22,8 +23,8 @@ class Script(BaseScript):
     rx_stp = re.compile(
         r"^\s*STP Bridge Global Settings\n"
         r"^\s*\-+\n"
-        r"^\s*STP Status\s+: (?P<status>Enabled|Disabled)\n"
-        r"^\s*STP Version\s+: (?P<mode>STP|RSTP)\n", re.MULTILINE)
+        r"^\s*STP Status\s+: (?P<status>Enabled|Disabled)\s*"
+        r"^\s*STP Version\s+: (?P<mode>STP|RSTP)\s*", re.MULTILINE)
     rx_ins = re.compile(
         r"^\s*STP Instance Settings\n"
         r"^\s*\-+\n"
@@ -46,6 +47,10 @@ class Script(BaseScript):
         r"^\s*Regional Root Bridge\s+(?P<rbridge_id>\S+)\s+Priority\s+(?P<rbridge_priority>\d+)\s*\n"
         r"^\s*Path cost (?P<int_root_cost>\d+)\s*\n"
         r"^\s*Designated Bridge\s+(?P<bridge_id>\S+)\s+Priority\s+(?P<bridge_priority>\d+)\s*\n",
+        re.MULTILINE)
+    rx_ins2 = re.compile(
+        r"^\s*Bridge\s+Address (?P<bridge_id>\S+)\s+Priority\s+(?P<bridge_priority>\d+)\s*\n"
+        r"^\s*Root\s+Address (?P<root_id>\S+)\s+Priority\s+(?P<root_priority>\d+)\s*\n",
         re.MULTILINE)
     rx_iface_role = re.compile(
         r"^\s*(?P<iface>\d+)\s+(P<role>\S+)\s+(P<status>\S+)\s+\d+(?P<prio_n>\S+)\s+(?P<type>.+)\n",
@@ -178,7 +183,9 @@ class Script(BaseScript):
         if not match:
             match = self.rx_ins1.search(c)
             if not match:
-                return {"mode": "None", "instances": []}
+                match = self.rx_ins2.search(c)
+                if not match:
+                    return {"mode": "None", "instances": []}
             iface_role = []
             for match_r in self.rx_iface_role.finditer(c):
                 iface_role[int(match_r.group("iface"))] = {
