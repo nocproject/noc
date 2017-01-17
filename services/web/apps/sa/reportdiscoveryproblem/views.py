@@ -53,7 +53,7 @@ class ReportForm(forms.Form):
 
 
 class ReportFilterApplication(SimpleReport):
-    title = _("Failed Discovery")
+    title = _("Discovery Problem")
     form = ReportForm
     predefined_reports = {
         "default": PredefinedReport(
