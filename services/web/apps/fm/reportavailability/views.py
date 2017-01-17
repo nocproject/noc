@@ -164,7 +164,7 @@ class ReportAvailabilityApplication(SimpleReport):
                 o.address,
                 o.profile_name
             ]
-            s.extend(round(a.get(o.id, (100, 0, 0)),2))
+            s.extend(a.get(o.id, (100, 0, 0)))
             r += [s]
             """
             a1.get(o.id, 100),
