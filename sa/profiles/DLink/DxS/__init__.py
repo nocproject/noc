@@ -139,7 +139,7 @@ class Profile(BaseProfile):
         r"(?P<addr_learning>Enabled|Disabled)\s*"
         r"((?P<trap_state>Enabled|Disabled)\s*)?"
         r"((?P<asd>\-)\s*)?"
-        r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?"
+        r"(\n\s+(?P<mdix>Auto|MDI|MDIX|Cross|\-)\s*)?"
         r"(\n\s+Desc(ription)?:\s*?(?P<desc>.*?))?$",
         re.MULTILINE)
 
