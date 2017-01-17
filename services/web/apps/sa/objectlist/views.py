@@ -47,7 +47,7 @@ class ObjectListApplication(ExtApplication):
         nq = {}
         for k in q:
             if not k.startswith("_"):
-                nq[k] = q
+                nq[k] = q[k]
         return nq
 
     @view(method=["GET"], url="^$", access="read", api=True)
