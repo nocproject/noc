@@ -22,11 +22,12 @@ class Profile(BaseProfile):
     command_disable_pager = "terminal page-break disable"
     pattern_more = " --More-- "
     command_more = " "
+    command_exit = "exit"
 
     rx_ver = re.compile(
         r"^Product name\s*:\s*(?P<platform>\S+)\s*\n"
         r"^NOS\s+Version NOS_(?P<version>\d+\.\d+\.\d+).+\n"
-        r"^Support ipv6\s*:\s*(?P<ipv6_support>\S+)\s*\n"
+        r"(^Support ipv6\s*:\s*(?P<ipv6_support>\S+)\s*\n)?"
         r"^Bootstrap\s+Version Bootstrap_(?P<bootprom>\d+\.\d+\.\d+).+\n"
         r"^FPGA Version\s*\n"
         r"^Hardware \S+ Version Rev.(?P<hardware>\S+)\s*\n"
