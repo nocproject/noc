@@ -143,8 +143,8 @@ class ReportAvailabilityApplication(SimpleReport):
             mos_id = list(mos.values_list("id", flat=True))
             iface_p = InterfaceProfile.objects.get(name="Клиентский порт")
             match = {
-                "profile:": iface_p.id,
-                "manged_object": {"$in": mos_id}}
+                "profile": iface_p.id,
+                "managed_object": {"$in": mos_id}}
             pipeline = [
                 {"$match": match},
                 {"$group": {"_id": "$managed_object", "count": {"$sum": 1}, "m": {"$max": "$oper_status"}}},
