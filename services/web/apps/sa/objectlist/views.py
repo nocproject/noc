@@ -10,7 +10,13 @@
 from django.db.models import Q
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.app.access import HasPerm, PermitLogged
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.sa.interfaces.base import (ListOfParameter, ModelParameter, IPv4Parameter,
+                                    DictParameter, StringListParameter, StringParameter, InterfaceTypeError)
 from noc.sa.models.useraccess import UserAccess
 
 
@@ -78,7 +84,7 @@ class ObjectListApplication(ExtApplication):
         return self.list_data(request, self.instance_to_dict)
 
     @view(method=["POST"], url="^iplist/$",
-          access="launch", api=True,
+          access=PermitLogged(), api=True,
           validate={
                "query": DictParameter(attrs={"addresses": ListOfParameter(element=IPv4Parameter(), convert=True),
                                              })
