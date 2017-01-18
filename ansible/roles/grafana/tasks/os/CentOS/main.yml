@@ -19,6 +19,8 @@
     state: present
     update_cache: yes
   notify: restart grafana
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
