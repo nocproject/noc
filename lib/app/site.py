@@ -17,15 +17,15 @@ import json
 from collections import defaultdict
 ## Third-party modules
 from django.http import HttpResponse, HttpResponseNotFound,\
-                        HttpResponseForbidden, Http404
+                        HttpResponseForbidden
 from django.conf.urls.defaults import *
 from django.core.urlresolvers import *
 from django.conf import settings
 from django.utils.encoding import smart_str
-from django.db.models.loading import load_app
 import six
+import ujson
 ## NOC modules
-from noc.settings import INSTALLED_APPS, config
+from noc.settings import config
 from noc.lib.debug import error_report
 
 logger = logging.getLogger(__name__)
@@ -196,14 +196,19 @@ class Site(object):
                             ct = request.META.get("CONTENT_TYPE")
                             if ct and ("text/json" in ct or
                                        "application/json" in ct):
-                                g = json.loads(request.raw_post_data)
+                                try:
+                                    g = ujson.loads(request.raw_post_data)
+                                except ValueError as e:
+                                    logger.error("Unable to decode JSON: %s", e)
+                                    errors = "Unable to decode JSON: %s" % e
                             else:
                                 g = dict((k, v[0] if len(v) == 1 else v)
-                                           for k, v in request.POST.lists())
-                        try:
-                            kwargs.update(v.validate.clean(g))
-                        except InterfaceTypeError, why:
-                            errors = str(why)
+                                         for k, v in request.POST.lists())
+                        if not errors:
+                            try:
+                                kwargs.update(v.validate.clean(g))
+                            except InterfaceTypeError as e:
+                                errors = str(e)
                     elif issubclass(v.validate, Form):
                         # Validate via django forms
                         f = v.validate(request.GET)  # @todo: Post
