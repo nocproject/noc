@@ -2,18 +2,21 @@
 ##----------------------------------------------------------------------
 ## Maintainance
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python
 import datetime
+import operator
+from threading import Lock
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField, BooleanField, ReferenceField, DateTimeField,
     ListField, EmbeddedDocumentField
 )
+import cachetools
 ## NOC modules
 from maintainancetype import MaintainanceType
 from noc.sa.models.managedobject import ManagedObject
@@ -23,6 +26,8 @@ from noc.core.model.decorator import on_save
 from noc.inv.models.objectuplink import ObjectUplink
 from noc.main.models.timepattern import TimePattern
 from noc.core.defer import call_later
+
+id_lock = Lock()
 
 
 class MaintainanceObject(EmbeddedDocument):
@@ -66,6 +71,13 @@ class Maintainance(Document):
     # <external system name>:<external tt id>
     escalation_tt = StringField(required=False)
     # @todo: Attachments
+
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, id):
+        return Maintainance.objects.filter(id=id).first()
 
     def on_save(self):
         self.update_affected_objects()
