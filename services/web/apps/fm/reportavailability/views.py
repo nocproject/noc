@@ -162,9 +162,10 @@ class ReportAvailabilityApplication(SimpleReport):
                 o.administrative_domain.name,
                 o.name,
                 o.address,
-                o.profile_name
+                o.profile_name,
+                round(a.get(o.id, (100.0, 0, 0))[0], 2)
             ]
-            s.extend(a.get(o.id, (100, 0, 0)))
+            s.extend(a.get(o.id, (100.0, 0, 0))[1:])
             r += [s]
             """
             a1.get(o.id, 100),
