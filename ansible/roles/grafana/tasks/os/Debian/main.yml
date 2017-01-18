@@ -26,6 +26,8 @@
     update_cache: yes
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   notify: restart grafana
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

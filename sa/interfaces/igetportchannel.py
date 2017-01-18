@@ -21,3 +21,4 @@ class IGetPortchannel(Interface):
         "type": StringParameter()
         # choices=["S","L"]. S - for static, L for LACP
     }))
+    preview = "NOC.sa.managedobject.scripts.ShowPortChannel"

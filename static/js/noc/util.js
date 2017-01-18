@@ -272,7 +272,7 @@ Ext.apply(NOC.msg, {
     started: function(message) {
         Ext.toast({
             html: '<div style="text-align: center;"><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
-            align: 't',
+            align: 'bl',
             bodyStyle: {
                 background: '#1E90FF',
                 color: 'white',
@@ -282,7 +282,12 @@ Ext.apply(NOC.msg, {
             style: {
                 background: '#1E90FF'
             },
-            width: '80%',
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
+            width: '50%',
             minHeight: 10,
             paddingY: 0,
             border: false
@@ -291,7 +296,7 @@ Ext.apply(NOC.msg, {
     complete: function(message) {
         Ext.toast({
             html: '<div style="text-align: center;"><i class="fa fa-check-circle" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
-            align: 't',
+            align: 'bl',
             bodyStyle: {
                 background: 'green',
                 color: 'white',
@@ -301,7 +306,12 @@ Ext.apply(NOC.msg, {
             style: {
                 background: 'green'
             },
-            width: '80%',
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
+            width: '50%',
             minHeight: 10,
             paddingY: 0,
             border: false
@@ -310,7 +320,7 @@ Ext.apply(NOC.msg, {
     failed: function(message) {
         Ext.toast({
             html: '<div style="text-align: center;"><i class="fa fa-bolt" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
-            align: 't',
+            align: 'bl',
             bodyStyle: {
                 background: 'red',
                 color: 'white',
@@ -320,7 +330,12 @@ Ext.apply(NOC.msg, {
             style: {
                 background: 'red'
             },
-            width: '80%',
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
+            width: '50%',
             minHeight: 10,
             paddingY: 0,
             border: false
@@ -329,7 +344,7 @@ Ext.apply(NOC.msg, {
     info: function(message) {
         Ext.toast({
             html: '<div style="text-align: center;"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
-            align: 't',
+            align: 'bl',
             bodyStyle: {
                 background: '#1E90FF',
                 color: 'white',
@@ -339,7 +354,12 @@ Ext.apply(NOC.msg, {
             style: {
                 background: '#1E90FF'
             },
-            width: '80%',
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
+            width: '50%',
             minHeight: 10,
             paddingY: 0,
             border: false
