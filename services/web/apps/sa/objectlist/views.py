@@ -10,7 +10,13 @@
 from django.db.models import Q
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
+from noc.lib.app.access import HasPerm, PermitLogged
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.objectcapabilities import ObjectCapabilities
+from noc.sa.interfaces.base import (ListOfParameter, ModelParameter, IPv4Parameter,
+                                    DictParameter, StringListParameter, StringParameter, InterfaceTypeError)
 from noc.sa.models.useraccess import UserAccess
 
 
@@ -47,9 +53,43 @@ class ObjectListApplication(ExtApplication):
         nq = {}
         for k in q:
             if not k.startswith("_"):
-                nq[k] = q
+                nq[k] = q[k]
+
+        if "administrative_domain" in nq:
+            ad = AdministrativeDomain.get_nested_ids(
+                int(nq["administrative_domain"])
+            )
+            if ad:
+                del nq["administrative_domain"]
+                nq["administrative_domain__in"] = ad
+
+        if "selector" in nq:
+            s = self.get_object_or_404(ManagedObjectSelector,
+                                       id=int(q["selector"]))
+            if s:
+                nq["id__in"] = list(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
+            del nq["selector"]
+        # @todo Filter capabilities(AND)
+        if "caps" in nq:
+            del nq["caps"]
+            pass
+        if "addresses" in nq:
+            nq["address__in"] = nq["addresses"]
+            del nq["addresses"]
+
         return nq
 
     @view(method=["GET"], url="^$", access="read", api=True)
     def api_list(self, request):
         return self.list_data(request, self.instance_to_dict)
+
+    @view(method=["POST"], url="^iplist/$",
+          access=PermitLogged(), api=True,
+          validate={
+               "query": DictParameter(attrs={"addresses": ListOfParameter(element=IPv4Parameter(), convert=True),
+                                             })
+           })
+    def api_action_ip_list(self, request, query):
+        # @todo Required user vault implementation
+
+        return self.render_json({"status": True})

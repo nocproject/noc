@@ -76,7 +76,7 @@ class EventSummaryReport(SimpleReport):
             ("Archived", ArchivedEvent.objects.count())
         ]
 
-    def get_data(self, report_type, **kwargs):
+    def get_data(self, request, report_type, **kwargs):
         if report_type == "class":
             # Summary by class
             columns = ["Event Class"]

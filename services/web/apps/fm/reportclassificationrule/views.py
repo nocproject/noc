@@ -21,11 +21,12 @@ class ReportForm(forms.Form):
     profile = forms.ChoiceField(label=_("Profile"),
                                 choices=profile_loader.choices())
 
+
 class ReportClassificationRules(SimpleReport):
     title = _("Classification Rules")
     form = ReportForm
 
-    def get_data(self, profile):
+    def get_data(self, request, profile):
         def get_profile(r):
             for p in r.patterns:
                 if p.key_re in ("profile", "^profile$"):

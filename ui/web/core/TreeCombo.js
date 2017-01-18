@@ -116,6 +116,8 @@ Ext.define('NOC.core.TreeCombo', {
 
         this.autocomplete = Ext.create('Ext.form.field.ComboBox', {
             fieldLabel: this.fieldLabel,
+            itemId: this.itemId,
+            xtype: this.xtype,
             labelWidth: this.labelWidth,
             labelAlign: this.labelAlign || "top",
             forceSelection: false,

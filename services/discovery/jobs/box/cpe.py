@@ -30,44 +30,42 @@ class CPECheck(DiscoveryCheck):
             if cpe["status"] != "active":
                 self.logger.debug(
                     "[%s|%s] CPE status is '%s'. Skipping",
-                    cpe["id"], cpe["global_id"]
+                    cpe["id"], cpe["global_id"], cpe["status"]
                 )
                 continue
             mo = self.find_cpe(cpe["global_id"])
-            cpedata = {
-                "controller": self.object,
-                "local_cpe_id": cpe["id"],
-                "global_cpe_id": cpe["id"]
-            }
-
             if mo:
                 changes = self.update_if_changed(mo, {
                     "controller": self.object,
                     "local_cpe_id": cpe["id"],
                     "global_cpe_id": cpe["global_id"],
+                    "address": cpe["ip"],
                     "last_seen": now
                 })
                 if changes:
                     self.logger.info(
                         "[%s|%s] Changed: %s",
                         cpe["id"], cpe["global_id"],
-                        ", ".join("%s='%s'" % (c, changes[c]) for c in changes)
+                        ", ".join("%s='%s'" % c for c in changes)
                     )
             else:
+                name = cpe.get("name") or "cpe-%s" % cpe["global_id"]
+                if ManagedObject.objects.filter(name=name).exists():
+                    name = "cpe-%s" % cpe["global_id"]
                 self.logger.info(
                     "[%s|%s] Created CPE %s",
-                    cpe["id"], cpe["global_id"],
+                    cpe["id"], cpe["global_id"], name
                 )
-                name = cpe.get("name") or "cpe-%s" % cpe["global_id"]
                 mo = ManagedObject(
                     name=name,
                     pool=self.object.pool,
                     profile_name="Generic.Host",
                     object_profile=self.object.object_profile.cpe_profile or self.object.object_profile,
                     administrative_domain=self.object.administrative_domain,
+                    scheme=self.object.scheme,
                     segment=self.object.segment,
-                    auth_profile=self.object.object_profile.cpe_auth_profile,
-                    address=cpe.get("address") or "0.0.0.0",
+                    auth_profile=self.object.object_profile.cpe_auth_profile or self.object.auth_profile,
+                    address=cpe.get("ip") or "0.0.0.0",
                     controller=self.object,
                     last_seen=now,
                     local_cpe_id=cpe["id"],
@@ -78,6 +76,6 @@ class CPECheck(DiscoveryCheck):
     @classmethod
     def find_cpe(cls, global_id):
         try:
-            return ManagedObject.objects.get(cpe_global_id=global_id)
+            return ManagedObject.objects.get(global_cpe_id=global_id)
         except ManagedObject.DoesNotExist:
             return None

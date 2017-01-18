@@ -143,8 +143,8 @@ class ReportAvailabilityApplication(SimpleReport):
             mos_id = list(mos.values_list("id", flat=True))
             iface_p = InterfaceProfile.objects.get(name="Клиентский порт")
             match = {
-                "profile:": iface_p.id,
-                "manged_object": {"$in": mos_id}}
+                "profile": iface_p.id,
+                "managed_object": {"$in": mos_id}}
             pipeline = [
                 {"$match": match},
                 {"$group": {"_id": "$managed_object", "count": {"$sum": 1}, "m": {"$max": "$oper_status"}}},
@@ -162,9 +162,10 @@ class ReportAvailabilityApplication(SimpleReport):
                 o.administrative_domain.name,
                 o.name,
                 o.address,
-                o.profile_name
+                o.profile_name,
+                round(a.get(o.id, (100.0, 0, 0))[0], 2)
             ]
-            s.extend(round(a.get(o.id, (100, 0, 0),2)))
+            s.extend(a.get(o.id, (100.0, 0, 0))[1:])
             r += [s]
             """
             a1.get(o.id, 100),

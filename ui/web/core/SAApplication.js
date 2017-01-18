@@ -14,6 +14,11 @@ Ext.define('NOC.core.SAApplication', {
         'NOC.core.SAApplicationModel',
         'Ext.ux.form.SearchField',
         'NOC.main.ref.profile.LookupField',
+        'NOC.main.pool.LookupField',
+        'NOC.sa.administrativedomain.TreeCombo',
+        'NOC.inv.networksegment.TreeCombo',
+        'NOC.sa.managedobjectprofile.LookupField',
+        'NOC.sa.managedobjectselector.LookupField',
         'NOC.sa.commandsnippet.LookupField',
         'NOC.sa.actioncommands.LookupField'
     ],
@@ -99,7 +104,7 @@ Ext.define('NOC.core.SAApplication', {
         });
 
         me.filterPanel = Ext.create('Ext.panel.Panel', {
-            title: "Filters (doesn't work)",
+            title: "Filters",
             region: 'east',
             width: 300,
             collapsed: true,
@@ -122,26 +127,8 @@ Ext.define('NOC.core.SAApplication', {
                 {
                     xtype: 'searchfield',
                     isLookupField: true,
-                    itemId: 'name',  // name of http request query param
+                    itemId: '__query',  // name of http request query param
                     fieldLabel: __('Name'),
-                    labelWidth: 50,
-                    triggers: {
-                        clear: {
-                            cls: 'x-form-clear-trigger',
-                            scope: me,
-                            handler: 'cleanFilter'
-                        }
-                    },
-                    listeners: {
-                        scope: me,
-                        specialkey: me.setFilter
-                    }
-                },
-                {
-                    xtype: 'searchfield',
-                    isLookupField: true,
-                    itemId: 'ip', // name of http request query param
-                    fieldLabel: __('IP'),
                     labelWidth: 50,
                     triggers: {
                         clear: {
@@ -158,18 +145,101 @@ Ext.define('NOC.core.SAApplication', {
                 {
                     xtype: 'main.ref.profile.LookupField',
                     itemId: 'profile_name', // name of http request query param
-                    fieldLabel: __('Profile'),
+                    fieldLabel: __('By SA Profile:'),
                     listeners: {
                         scope: me,
                         change: me.setFilter
                     }
                 },
                 {
-                    xtype: 'button',
-                    itemId: 'clean-btn',
-                    minWidth: 50,
-                    text: __('Clean All'),
-                    handler: Ext.bind(me.cleanAllFilters, me)
+                    xtype: 'sa.managedobjectprofile.LookupField',
+                    itemId: 'object_profile', // name of http request query param
+                    fieldLabel: __('By Obj. Profile:'),
+                    listeners: {
+                        scope: me,
+                        change: me.setFilter
+                    }
+                },
+                {
+                    xtype: 'sa.administrativedomain.TreeCombo',
+                    isLookupField: true,
+                    itemId: 'administrative_domain', // name of http request query param
+                    fieldLabel: __('By Adm. Domain:'),
+                    listeners: {
+                        scope: me,
+                        select: me.setFilter
+                    }
+                },
+                {
+                    xtype: 'inv.networksegment.TreeCombo',
+                    isLookupField: true,
+                    itemId: 'segment', // name of http request query param
+                    fieldLabel: __('By Segment:'),
+                    listeners: {
+                        scope: me,
+                        select: me.setFilter
+                    }
+                },
+                {
+                    xtype: 'sa.managedobjectselector.LookupField',
+                    itemId: 'selector', // name of http request query param
+                    fieldLabel: __('By Selector:'),
+                    listeners: {
+                        scope: me,
+                        change: me.setFilter
+                    }
+                },
+                {
+                    xtype: 'main.pool.LookupField',
+                    itemId: 'pool', // name of http request query param
+                    fieldLabel: __('By Pool:'),
+                    listeners: {
+                        scope: me,
+                        change: me.setFilter
+                    }
+                },
+                // {
+                //     xtype: '',
+                //     itemId: 'tag', // name of http request query param
+                //     fieldLabel: __('By Tag:'),
+                //     listeners: {
+                //         scope: me,
+                //         change: me.setFilter
+                //     }
+                // },
+                {
+                    xtype: 'textarea',
+                    fieldLabel: __('By IP list (max. 500):'),
+                    bind: {
+                        value: '{ips}'
+                    }
+                },
+                {
+                    xtype: 'panel',
+                    border: false,
+                    layout: {
+                        align: 'right',
+                        type: 'hbox'
+                    },
+                    items: [
+                        {
+                            xtype: 'button',
+                            itemId: 'send-btn',
+                            minWidth: 50,
+                            text: __('Send IP list'),
+                            handler: Ext.bind(me.sendIPs, me)
+                        },
+                        {
+                            xtype: 'tbfill'
+                        },
+                        {
+                            xtype: 'button',
+                            itemId: 'clean-btn',
+                            minWidth: 50,
+                            text: __('Clean All'),
+                            handler: Ext.bind(me.cleanAllFilters, me)
+                        }
+                    ]
                 }
             ]
         });
@@ -205,7 +275,7 @@ Ext.define('NOC.core.SAApplication', {
         selectedGridHasSelection = '{!' + selectedGridStateId + '.selection}';
         selectedGridHasRecords = '{!hasRecords}';
 
-        selectionGrid = Ext.create("Ext.grid.Panel", {
+        selectionGrid = Ext.create('Ext.grid.Panel', {
             reference: selectionGridStateId,
             store: me.selectionStore,
             pageSize: 0,
@@ -213,6 +283,7 @@ Ext.define('NOC.core.SAApplication', {
             scrollable: true,
             stateful: true,
             stateId: selectionGridStateId,
+            emptyText: __('Not Found'),
             selModel: {
                 mode: 'SIMPLE',
                 pruneRemoved: false,
@@ -674,8 +745,6 @@ Ext.define('NOC.core.SAApplication', {
             }
         });
 
-        me.resultPanel = me.getResultPanel();
-
         me.progressBackButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.arrow_left,
             tooltip: __("Back"),
@@ -705,7 +774,17 @@ Ext.define('NOC.core.SAApplication', {
                 {
                     region: 'east',
                     width: "50%",
-                    items: me.resultPanel
+                    items: {
+                        xtype: "textarea",
+                        layout: 'fit',
+                        width: '100%',
+                        height: 700,
+                        scrollable: true,
+                        padding: 4,
+                        bind: {
+                            value: '{resultOutput}'
+                        }
+                    }
                 }
             ],
             dockedItems: [
@@ -922,7 +1001,7 @@ Ext.define('NOC.core.SAApplication', {
                         }
                     }
                     if(commands.length > 0) {
-                        me.sendCommands(commands);
+                        me.sendCommands(commands[0]);
                     } else {
                         NOC.error(__('Empty command'))
                     }
@@ -949,9 +1028,7 @@ Ext.define('NOC.core.SAApplication', {
     },
     //
     onShowResult: function(grid, record) {
-        var me = this;
-
-        me.resultPanel.showResult(record.get("result"));
+        this.viewModel.set('resultOutput', record.get("result"))
     },
 
     buildReport: function() {
@@ -984,33 +1061,97 @@ Ext.define('NOC.core.SAApplication', {
             this.filterObject = Ext.Object.fromQueryString(queryStr, true);
             Ext.Array.each(this.lookupFields(), function(item) {
                 if(item.itemId in this.filterObject) {
-                    item.setValue(this.filterObject[item.itemId]);
+                    if(item.xtype.endsWith('TreeCombo')) {
+                        item.restoreById(this.filterObject[item.itemId]);
+                    } else {
+                        item.setValue(this.filterObject[item.itemId]);
+                    }
                 }
             }, this);
             // ToDo after change backend
-            // this.selectionStore.setFilterParams(this.filterObject);
+            this.selectionStore.setFilterParams(this.filterObject);
         }
         this.selectionStore.load();
     },
 
     setFilter: function(field, event) {
+        var value = field.getValue();
+
+        if(field.xtype && field.xtype.endsWith('TreeCombo')) {
+            value = event.get('id');
+        }
+
         if('Ext.event.Event' === Ext.getClassName(event)) {
             if(Ext.EventObject.ENTER === event.getKey()) {
-                this.reloadData(field.itemId, field.getValue());
+                this.reloadData(field.itemId, value);
             }
             return;
         }
-        this.reloadData(field.itemId, field.getValue());
+
+        this.reloadData(field.itemId, value);
     },
 
     cleanAllFilters: function() {
-        console.log('clean all');
         Ext.History.add(this.appId);
         this.filterObject = {};
         Ext.Array.each(this.lookupFields(), function(item) {
-            item.setValue('');
+            if(item.xtype.endsWith('TreeCombo')) {
+                item.reset();
+            } else {
+                item.setValue('');
+            }
         });
+        this.viewModel.set('ips', '');
         this.reload();
+    },
+
+    sendIPs: function() {
+        var ips = this.viewModel.get('ips');
+
+        if(!ips) {
+            NOC.msg.failed(__('Empty IP list'));
+            return;
+        }
+
+        var data = {
+            query: {
+                addresses: ips.split('\n')
+                    .filter(function(ip) {
+                        return ip.length > 0;
+                    })
+                    .map(function(ip) {
+                        return ip.trim();
+                    })
+            }
+        };
+
+        if(data.query.addresses.length > 500) {
+            NOC.msg.failed(__('Too many rows, max 500'));
+        }
+
+        if(data.query.addresses.length === 0) {
+            NOC.msg.failed(__('Empty IP list'));
+        }
+
+        Ext.Ajax.request({
+            url: '/sa/objectlist/iplist/',
+            method: "POST",
+            jsonData: JSON.stringify(data),
+
+            success: function(response, opts) {
+                var obj = Ext.decode(response.responseText);
+                var data = Ext.decode(obj);
+                if(data.status) {
+                    NOC.msg.complete(__('IP list successful add to query'));
+                } else {
+                    NOC.msg.failed(__('Error in processing IP list. Check list and repeat send'));
+                }
+            },
+
+            failure: function(response, opts) {
+                NOC.msg.failed(__('server-side failure with status code ' + response.status));
+            }
+        });
     },
 
     cleanFilter: function(field, trigger, event) {
@@ -1024,7 +1165,7 @@ Ext.define('NOC.core.SAApplication', {
     },
 
     reloadData: function(name, value) {
-        if(value && value.length > 0) {
+        if((typeof value === 'string' && value.length > 0) || (typeof value === 'number')) {
             if(value === this.filterObject[name]) return;
             this.filterObject[name] = value;
         } else {
@@ -1041,10 +1182,7 @@ Ext.define('NOC.core.SAApplication', {
     },
 
     reload: function() {
-        // ToDo after change backend
-        console.log('reloading ...');
-        console.log(this.filterObject);
-        // this.selectionStore.setFilterParams(this.filterObject);
-        // this.selectionStore.load();
+        this.selectionStore.setFilterParams(this.filterObject);
+        this.selectionStore.load();
     }
 });
