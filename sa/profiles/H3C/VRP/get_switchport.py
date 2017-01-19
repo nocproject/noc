@@ -77,12 +77,18 @@ class Script(BaseScript):
             v = self.cli("display port vlan")
 
         for match in rx_line.finditer(v):
+            interface = match.group("interface")
+            if interface.startswith("Vlan") \
+            or interface.startswith("NULL") \
+            or interface.startswith("DCN-Serial") \
+            or interface.startswith("Cpos-Trunk"):
+                continue
             port = {}
             tagged = []
             trunk = match.group("mode") in ("trunk", "hybrid", "trunking")
             if trunk:
                 vlans = match.group("vlans").strip()
-                if vlans not in ["-", "none"]:
+                if vlans not in ["-", "none", "IEEE 802.1q"]:
                     vlans = self.rx_vlan_comment.sub("", vlans)
                     vlans = vlans.replace(" ", ",")
                     tagged = self.expand_rangelist(vlans)
@@ -91,14 +97,11 @@ class Script(BaseScript):
                         r[-1]["tagged"] += [v for v in tagged if v in known_vlans]
                         continue
             members = []
-
-            interface = match.group("interface")
             if interface.startswith("Eth-Trunk"):
                 ifname = self.profile.convert_interface_name(interface)
                 for p in portchannels:
                     if p["interface"] in (ifname, interface):
                         members = p["members"]
-
             pvid = int(match.group("pvid"))
             # This is an exclusive Chinese networks ?
             if pvid == 0:

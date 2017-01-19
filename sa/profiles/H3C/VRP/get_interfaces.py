@@ -57,7 +57,8 @@ class Script(BaseScript):
         "Tunnel": "tunnel",
         "Virtual-Ethernet": None,
         "Virtual-Template": None,
-        "Vlanif": "SVI"
+        "Vlanif": "SVI",
+        "Vlan-interface": "SVI"
     }
 
     def get_ospfint(self):
@@ -112,6 +113,10 @@ class Script(BaseScript):
         v = self.cli("display interface")
         il = self.rx_iface_sep.split(v)[1:]
         for full_ifname, data in zip(il[::2], il[1::2]):
+            print "%s" % full_ifname
+            if full_ifname.startswith("Vlan"):
+                print "%s" % full_ifname
+                quit()
             ifname = self.profile.convert_interface_name(full_ifname)
             if ifname.startswith("NULL"):
                 continue
