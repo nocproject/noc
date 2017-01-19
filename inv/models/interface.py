@@ -173,6 +173,23 @@ class Interface(Document):
         :type other: Interface
         :returns: Link instance
         """
+        def link_mismatched_lag(agg, phy):
+            """
+            Try to link LAG to physical interface
+            :param agg:
+            :param phy:
+            :return:
+            """
+            l_members = [i for i in agg.lag_members if i.oper_status]
+            if len(l_members) > 1:
+                raise ValueError("More then one active interface in LAG")
+            link = Link(
+                interfaces=l_members + [phy],
+                discovery_method=method
+            )
+            link.save()
+            return link
+
         # Try to check existing LAG
         el = Link.objects.filter(interfaces=self.id).first()
         if el and other not in el.interfaces:
@@ -198,6 +215,8 @@ class Interface(Document):
                 )
                 link.save()
                 return link
+            elif other.type == "aggregated" and other.profile.allow_lag_mismatch:
+                return link_mismatched_lag(other, self)
             else:
                 raise ValueError("Cannot connect %s interface to %s" % (
                     self.type, other.type))
@@ -221,15 +240,7 @@ class Interface(Document):
                 else:
                     return
             elif self.profile.allow_lag_mismatch:
-                l_members = [i for i in self.lag_members if i.oper_status]
-                if len(l_members) > 1:
-                    raise ValueError("More then one active interface in LAG")
-                link = Link(
-                    interfaces=l_members + [other],
-                    discovery_method=method
-                )
-                link.save()
-                return link
+                return link_mismatched_lag(self, other)
             else:
                 raise ValueError("Cannot connect %s interface to %s" % (
                     self.type, other.type))
