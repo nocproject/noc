@@ -196,7 +196,7 @@ Ext.define('NOC.core.TreeCombo', {
         this.autocomplete.on('change', function(element, newValue) {
             if(newValue === null) {
                 me.reset();
-                me.fireEvent('clear');
+                me.fireEvent('clear', element);
             }
         });
 
@@ -204,11 +204,11 @@ Ext.define('NOC.core.TreeCombo', {
             me.restoreById(record.id);
         });
 
-        this.autocomplete.on("specialkey", function(field, e) {
+        this.autocomplete.on("specialkey", function(element, e) {
             switch(e.keyCode) {
                 case e.ESC:
                     me.autocomplete.clearValue();
-                    me.fireEvent("clear");
+                    me.fireEvent('clear', element);
                     break;
             }
         });
