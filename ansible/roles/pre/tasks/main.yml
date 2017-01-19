@@ -47,6 +47,7 @@
 
 - name: Various env checks
   include: "checks.yml"
+  run_once: true
   tags:
     - always
     - env_checks
