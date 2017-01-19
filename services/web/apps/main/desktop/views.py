@@ -33,24 +33,6 @@ class DesktopApplication(ExtApplication):
     """
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
-        #
-        # Parse themes
-        self.default_theme = config.get("customization", "default_theme")
-        self.themes = {}  # id -> {name: , css:}
-        for o in config.options("themes"):
-            if o.endswith(".name"):
-                theme_id = o[:-5]
-                nk = "%s.name" % theme_id
-                ek = "%s.enabled" % theme_id
-                if (config.has_option("themes", nk) and
-                    config.has_option("themes", ek) and
-                    config.getboolean("themes", ek)):
-                    self.themes[theme_id] = {
-                        "id": theme_id,
-                        "name": config.get("themes", nk).strip(),
-                        "css": "/static/pkg/extjs/packages/ext-theme-%s/build/resources/ext-theme-%s-all.css" % (theme_id, theme_id),
-                        "js": "/static/pkg/extjs/packages/ext-theme-%s/build/ext-theme-%s.js" % (theme_id, theme_id)
-                    }
         # Login restrictions
         self.restrict_to_group = self.get_group(
             config.get("authentication", "restrict_to_group"))
@@ -284,42 +266,6 @@ class DesktopApplication(ExtApplication):
                 "status": False,
                 "error": _("Failed to change credentials")
             })
-
-    @view(method=["GET"], url=r"^theme/lookup/$",
-          access=PermitLogged(), api=True)
-    def api_theme_lookup(self, request):
-        q = dict(request.GET.items())
-        limit = q.get("__limit")
-        # page = q.get(self.page_param)
-        start = q.get("__start")
-        format = q.get("__format")
-        query = q.get("__query")
-        data = [{"id": t["id"], "label": t["name"]}
-                for t in self.themes.values()]
-        if query:
-            data = [t for t in data if query in t["id"] or query in t["label"]]
-        data = sorted(data, key=lambda x: x["label"])
-        if start is not None and limit is not None:
-            data = data[int(start):int(start) + int(limit)]
-        if format == "ext":
-            data = {
-                "total": len(data),
-                "success": True,
-                "data": data
-            }
-        return data
-
-    @view(method=["GET"], url=r"^theme/(?P<theme_id>\S+)/$",
-          access=PermitLogged(), api=True)
-    def api_theme(self, request, theme_id):
-        if theme_id not in self.themes:
-            return self.response_not_found()
-        theme = self.themes[theme_id]
-        return {
-            "id": theme_id,
-            "name": theme["name"],
-            "css": theme["css"]
-        }
 
     @view(method=["POST"], url="^dlproxy/$", access=True, api=True)
     def api_dlproxy(self, request):
