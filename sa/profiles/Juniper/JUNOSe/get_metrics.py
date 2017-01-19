@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
+from noc.lib.text import parse_table
 from noc.core.script.metrics import percent_usage
 
 
