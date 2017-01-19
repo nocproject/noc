@@ -102,6 +102,21 @@ class OIDRule(object):
             template
         )
 
+    def expand_oid(self, **kwargs):
+        """
+        Apply kwargs to template and return resulting oid
+        :param kwargs:
+        :return:
+        """
+        if self.is_complex:
+            oids = tuple(mib[self.expand(o, kwargs)] for o in self.oid)
+            if None in oids:
+                return None
+            else:
+                return oids
+        else:
+            return mib[self.expand(self.oid, kwargs)]
+
 
 class CounterRule(OIDRule):
     """
@@ -182,24 +197,68 @@ class HiresRule(object):
 
 class InterfaceRule(OIDRule):
     """
-    Expand %(ifIndex)s
+    Expand {{ifIndex}}
     """
     name = "ifindex"
 
     def iter_oids(self, script, metric):
         for i in metric["interfaces"]:
             ifindex = script.get_ifindex(i)
-            if ifindex:
-                if self.is_complex:
-                    # oid is list
-                    for o in self.oid:
-                        oid = mib[self.expand(o, {"ifIndex": ifindex})]
-                        if oid:
-                            yield oid, self.type, self.scale, {"interface": i}
-                else:
-                    oid = mib[self.expand(self.oid, {"ifIndex": ifindex})]
-                    if oid:
-                        yield oid, self.type, self.scale, {"interface": i}
+            if ifindex is not None:
+                oid = self.expand_oid(ifIndex=ifindex)
+                if oid:
+                    yield oid, self.type, self.scale, {"interface": i}
+
+
+class CapabilityIndexRule(OIDRule):
+    """
+    Expand {{index}} to range given in capability
+    capability: Integer capability containing number of iterations
+    start: starting index
+    """
+    name = "capindex"
+
+    def __init__(self, oid, type=None, scale=1, start=0, capability=None):
+        super(CapabilityIndexRule, self).__init__(oid, type=type, scale=scale)
+        self.start = start
+        self.capability = capability
+
+    def iter_oids(self, script, metric):
+        if self.capability and script.has_capability(self.capability):
+            for i in range(
+                self.start,
+                script.capabilities[self.capability] + self.start
+            ):
+                oid = self.expand_oid(index=i)
+                if oid:
+                    yield oid, self.type, self.scale, {}
+
+
+class CapabilityListRule(OIDRule):
+    """
+    Expand {{item}} from capability
+    capability: String capability, separated by *separator*
+    separator: String separator, comma by default
+    strip: Strip resulting item, remove spaces from both sides
+    """
+    name = "caplist"
+
+    def __init__(self, oid, type=None, scale=1, capability=None, separator=",", strip=True):
+        super(CapabilityIndexRule, self).__init__(oid, type=type, scale=scale)
+        self.capability = capability
+        self.separator = separator
+        self.strip = strip
+
+    def iter_oids(self, script, metric):
+        if self.capability and script.has_capability(self.capability):
+            for i in script.capabilities[self.capability].split(self.separator):
+                if self.strip:
+                    i = i.strip()
+                if not i:
+                    continue
+                oid = self.expand_oid(item=i)
+                if oid:
+                    yield oid, self.type, self.scale, {}
 
 
 class Script(BaseScript):
