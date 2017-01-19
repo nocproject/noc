@@ -44,7 +44,7 @@ class Script(BaseScript):
             try:
                 r = self.snmp.get(oid, version=version)
                 return r is not None
-            except self.snmp.TimeOutError:
+            except (self.snmp.TimeOutError, SNMPError):
                 pass
         return False
 
