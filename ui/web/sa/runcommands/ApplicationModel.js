@@ -9,9 +9,6 @@ console.debug("Defining NOC.sa.runcommands.ApplicationModel");
 Ext.define("NOC.sa.runcommands.ApplicationModel", {
     extend: "Ext.data.Model",
     rest_url: "/sa/objectlist/",
-    actionMethods: {
-        read: 'POST'
-    },
 
     fields: [
         {

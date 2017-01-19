@@ -94,7 +94,10 @@ Ext.define("NOC.sa.runcommands.Application", {
             leadingBufferZone: bs * 5,
             numFromEdge: Math.ceil(bs / 2),
             trailingBufferZone: bs * 5,
-            purgePageCount: 10
+            purgePageCount: 10,
+            actionMethods: {
+                read: 'POST'
+            }
         });
 
         me.filterPanel = Ext.create('Ext.panel.Panel', {
@@ -161,6 +164,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                     fieldLabel: __('By Adm. Domain:'),
                     listeners: {
                         scope: me,
+                        clear: me.setFilter,
                         select: me.setFilter
                     }
                 },
@@ -292,7 +296,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                         },
                         {
                             text: __("Select Checked"),
-                            glyph: NOC.glyph.plus_circle,
+                            glyph: NOC.glyph.check_square_o,
                             bind: {
                                 disabled: selectionGridHasSelection
                             },
@@ -373,7 +377,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                     items: [
                         {
                             text: __("Remove Checked"),
-                            glyph: NOC.glyph.minus_circle,
+                            glyph: NOC.glyph.check_square_o,
                             bind: {
                                 disabled: selectedGridHasSelection
                             },
@@ -1040,7 +1044,7 @@ Ext.define("NOC.sa.runcommands.Application", {
             this.filterObject = Ext.Object.fromQueryString(queryStr, true);
             Ext.Array.each(this.lookupFields(), function(item) {
                 if(item.itemId in this.filterObject) {
-                    if(item.xtype.endsWith('TreeCombo')) {
+                    if(Ext.String.endsWith(item.xtype, 'TreeCombo', true)) {
                         item.restoreById(this.filterObject[item.itemId]);
                     } else {
                         item.setValue(this.filterObject[item.itemId]);
@@ -1070,8 +1074,10 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         }
 
-        if(field.xtype && field.xtype.endsWith('TreeCombo')) {
-            value = event.get('id');
+        if(Ext.String.endsWith(field.xtype, 'TreeCombo', true)) {
+            if(Ext.isFunction(event.get)) { // event -> data
+                value = event.get('id');
+            }
         }
 
         if('Ext.event.Event' === Ext.getClassName(event)) {
@@ -1088,7 +1094,7 @@ Ext.define("NOC.sa.runcommands.Application", {
         Ext.History.add(this.appId);
         this.filterObject = {};
         Ext.Array.each(this.lookupFields(), function(item) {
-            if(item.xtype.endsWith('TreeCombo')) {
+            if(Ext.String.endsWith(item.xtype, 'TreeCombo', true)) {
                 item.reset();
             } else {
                 item.setValue('');
@@ -1098,7 +1104,7 @@ Ext.define("NOC.sa.runcommands.Application", {
         this.reload();
     },
 
-    cleanFilter: function(field, trigger, event) {
+    cleanFilter: function(field) {
         var fieldName = field;
 
         if(Ext.isObject(field) && 'itemId' in field) {
@@ -1111,21 +1117,27 @@ Ext.define("NOC.sa.runcommands.Application", {
     reloadData: function(name, value) {
         if((typeof value === 'string' && value.length > 0)
             || (typeof value === 'number')
-            || (typeof value === 'object')) {
+            || (value !== null && typeof value === 'object')) {
             if(value === this.filterObject[name]) return;
             this.filterObject[name] = value;
         } else {
-            if(name in this.filterObject) {
+            if(this.filterObject.hasOwnProperty(name)) {
                 delete this.filterObject[name];
             } else return;
         }
-        if(name !== 'addresses') {
-            var token = '', query = Ext.Object.toQueryString(this.filterObject, true);
-            if(query.length > 0) {
-                token = '?' + query;
-            }
-            Ext.History.add(this.appId + token, true);
+
+        var queryObject = Ext.clone(this.filterObject);
+        if(queryObject.hasOwnProperty('addresses')) {
+            delete queryObject['addresses'];
         }
+
+        var token = '', query = Ext.Object.toQueryString(queryObject, true);
+
+        if(query.length > 0) {
+            token = '?' + query;
+        }
+
+        Ext.History.add(this.appId + token, true);
         this.reload();
     },
 
