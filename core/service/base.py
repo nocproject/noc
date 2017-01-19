@@ -35,6 +35,7 @@ from .config import Config
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
+from .health import HealthRequestHandler
 from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
 from .ctl import CtlAPI
@@ -359,7 +360,8 @@ class Service(object):
         Initialize services before run
         """
         handlers = [
-            (r"^/mon/$", MonRequestHandler, {"service": self})
+            (r"^/mon/$", MonRequestHandler, {"service": self}),
+            (r"^/health/$", HealthRequestHandler, {"service": self})
         ]
         api = [CtlAPI]
         if self.api:
