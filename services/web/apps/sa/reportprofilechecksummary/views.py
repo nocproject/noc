@@ -113,7 +113,7 @@ class ReportFilterApplication(SimpleReport):
                 {"name": _("Is Managed, object type undefined has ping response"), "value": is_alive_id.count()},
                 {"name": _("Is Managed, object type undefined bad SNMP Credential"), "value": bad_snmp_cred},
                 {"name": _("Is Managed, object type undefined for various reasons"), "value":
-                    is_alive_id.count() - bad_snmp_cred - profile_not_found},
+                    not_procc_yet + profile_not_found},
                 {"name": _("Is Managed, object type Profile is not know"), "value": profile_not_found},
                 {"name": _("Is Managed, objects not processed yet"), "value": not_procc_yet},
             ]
