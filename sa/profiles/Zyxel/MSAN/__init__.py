@@ -59,6 +59,10 @@ class Profile(BaseProfile):
         if slot_no == 17:
             if hw in ["MSC1024GB", "MSC1224GB", "MSC1024G", "MSC1224G"]:
                 return "IES-6000"
-        if (hw == "IES1248-51") and (slot_no == 1):
-            return "IES-1248"
+        if (slot_no == 1):
+            if (hw == "IES1248-51"):
+                return "IES-1248"
+            # Need more examples
+            if (hw == "IES-612"):
+                return "IES-612"
         return ""
