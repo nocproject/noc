@@ -53,7 +53,7 @@ Heatmap.prototype.poll_data = function () {
         s = bbox.getSouth(),
         zoom = me.map.getZoom(),
         onEachPoP = function(feature, layer) {
-            if(feature.properties && feature.properties.objects) {
+            if(feature.properties && feature.properties.alarms > 0 && feature.properties.objects) {
                 var text = ["Alarms: " + feature.properties.alarms, ""];
                 text = text.concat(feature.properties.objects.map(function(v) {
                     return "<a target=_ href='/api/card/view/managedobject/" + v.id +"/'>" + v.name + "</a>";
@@ -65,6 +65,14 @@ Heatmap.prototype.poll_data = function () {
             radius: 3,
             fillColor: "#ff7800",
             color: "#000000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        },
+        pointOptions = {
+            radius: 5,
+            // fillColor: "#000000",
+            // color: "#000000",
             weight: 1,
             opacity: 1,
             fillOpacity: 0.8
@@ -92,7 +100,11 @@ Heatmap.prototype.poll_data = function () {
         if(data.pops) {
             me.pops = L.geoJSON(data.pops, {
                 pointToLayer: function(feature, latlng) {
-                    return L.circleMarker(latlng, popOptions)
+                    if(feature.properties.alarms > 0) {
+                        return L.circleMarker(latlng, popOptions)
+                    } else {
+                        return L.circleMarker(latlng, pointOptions)
+                    }
                 },
                 onEachFeature: onEachPoP
             }).addTo(me.map);
