@@ -1,0 +1,16 @@
+{
+  "$metric": "Interface | Load | Out",
+  "$type": "hires",
+  "hires": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifHCOutOctets.{{ ifIndex }}",
+    "type": "counter",
+    "scale": 8
+  },
+  "normal": {
+    "$type": "ifindex",
+    "oid": "IF-MIB::ifOutOctets.{{ ifIndex }}",
+    "type": "counter",
+    "scale": 8
+  }
+}
