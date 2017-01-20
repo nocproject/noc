@@ -39,6 +39,10 @@ class Script(BaseScript):
     )
 
     CHASSIS_TYPES = {
+        "chassiscomponent": 1,
+        "chassis component": 1,
+        "portcomponent": 3,
+        "port component": 3,
         "macaddress": 4,
         "mac address": 4,
         "networkaddress": 5,
