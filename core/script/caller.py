@@ -31,7 +31,7 @@ class Session(object):
 
         def __call__(self, **kwargs):
             return self.session._call_script(
-                self.script, **kwargs
+                self.script, kwargs
             )
 
     def __init__(self, object, idle_timeout=None):
@@ -54,13 +54,13 @@ class Session(object):
         return cw
 
     @classmethod
-    def _get_url(cls, session, default=None):
+    def _get_service(cls, session, default=None):
         with cls._lock:
-            url = cls._sessions.get(session)
-            if not url and default:
+            service = cls._sessions.get(session)
+            if not service and default:
                 cls._sessions[session] = default
-                url = default
-        return url
+                service = default
+        return service
 
     def _call_script(self, script, args, timeout=None):
         # Call SAE
@@ -69,12 +69,12 @@ class Session(object):
             calling_service=CALLING_SERVICE
         ).get_credentials(self._object.id)
         # Get hints from session
-        url = self._get_url(self._id, data["url"])
+        service = self._get_service(self._id, data["service"])
         # Call activator
         return RPCClient(
             "activator-%s" % self._object.pool.name,
             calling_service=CALLING_SERVICE,
-            hints=[url]
+            hints=[service]
         ).script(
             "%s.%s" % (self._object.profile_name, script),
             data["credentials"],
@@ -85,13 +85,13 @@ class Session(object):
         )
 
     def close(self):
-        url = self._get_url(self._id)
-        if url:
+        service = self._get_service(self._id)
+        if service:
             # Close at activator
             RPCClient(
                 "activator-%s" % self._object.pool.name,
                 calling_service=CALLING_SERVICE,
-                hints=[url]
+                hints=[service]
             ).close_session(self._id)
             # Remove from cache
             with self._lock:
@@ -118,5 +118,5 @@ class SessionContext(object):
         self._session.close()
 
     def __getattr__(self, name):
-        if not name.startwith("_"):
+        if not name.startswith("_"):
             return getattr(self._session, name)
