@@ -94,7 +94,7 @@ class SAEAPI(API):
         # Get activator
         activator = self.service.get_activator(pool)
         try:
-            data["url"] = activator._get_url()
+            data["service"] = activator._get_service()
         except ValueError:
             raise APIError(
                 "No activators configured for pool '%s'" % pool
