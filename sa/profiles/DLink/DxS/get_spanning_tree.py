@@ -52,7 +52,7 @@ class Script(BaseScript):
         r"^\s*Root\s+Address (?P<root_id>\S+)\s+Priority\s+(?P<root_priority>\d+)\s*\n",
         re.MULTILINE)
     rx_iface_role = re.compile(
-        r"^\s*(?P<iface>\d+)\s+(P<role>\S+)\s+(P<status>\S+)\s+\d+(?P<prio_n>\S+)\s+(?P<type>.+)\n",
+        r"^\s*(?P<iface>\d+)\s+(P<role>\S+)\s+(P<status>\S+)\s+\d+\s+(?P<prio_n>\S+)\s+(?P<type>.+)\n",
         re.MULTILINE)
     rx_iface = re.compile(
         r"^\s*Port Index\s+: (?P<iface>\d+)\s+,.+\n"
@@ -110,6 +110,7 @@ class Script(BaseScript):
         "NonStp": "nonstp",
     }
     designated_bridge = ""
+    iface_role = []
 
     def parse_stp(self, s):
         match = self.rx_iface.search(s)
@@ -145,8 +146,8 @@ class Script(BaseScript):
                 edge = False
                 p2p = False
                 iface = match.group("iface")
-                if int(iface) in iface_role:
-                    p2p = iface_role[int(iface)]["type"] == "Point to point"
+                if int(iface) in self.iface_role:
+                    p2p = self.iface_role[int(iface)]["type"] == "Point to point"
                 iface = {
                     "interface": match.group("iface"),
                     "port_id": "%d.%d" % (int(match.group("p_priority")), int(match.group("iface"))),
@@ -186,14 +187,14 @@ class Script(BaseScript):
                 match = self.rx_ins2.search(c)
                 if not match:
                     return {"mode": "None", "instances": []}
-            iface_role = []
-            for match_r in self.rx_iface_role.finditer(c):
-                iface_role[int(match_r.group("iface"))] = {
-                    "role": match_r.group("role"),
-                    "state": match_r.group("status"),
-                    "prio_n": match_r.group("prio_n"),
-                    "type": match_r.group("type").strip()
-                }
+        self.iface_role = []
+        for match_r in self.rx_iface_role.finditer(c):
+            self.iface_role[int(match_r.group("iface"))] = {
+                "role": match_r.group("role"),
+                "state": match_r.group("status"),
+                "prio_n": match_r.group("prio_n"),
+                "type": match_r.group("type").strip()
+            }
         inst = {
             "id": 0,
             "vlans": "1-4095",
