@@ -177,7 +177,8 @@ class Script(BaseScript):
             "mode": match.group("mode"),
             "instances": []
         }
-        c = self.cli("show stp instance\nq", ignore_errors=True)
+        # XXX TODO: convert to stream CLI or use pager
+        c = self.cli("show stp instance")
         match = self.rx_ins.search(c)
         if not match:
             match = self.rx_ins1.search(c)
