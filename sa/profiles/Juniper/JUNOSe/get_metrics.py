@@ -14,21 +14,6 @@ from noc.core.script.metrics import percent_usage
 class Script(GetMetricsScript):
     name = "Juniper.JUNOSe.get_metrics"
 
-    SNMP_OIDS = GetMetricsScript.merge_oids({
-        "Subscribers | IPoE": [
-            ("SNMP", "1.3.6.1.4.1.4874.2.2.18.1.5.11.0", "counter", 1)
-        ],
-        "Subscribers | PPP": [
-            ("SNMP", "1.3.6.1.4.1.4874.2.2.11.1.7.7.0", "counter", 1)
-        ],
-        "Subscribers | L2TP": [
-            ("SNMP", "1.3.6.1.4.1.4874.2.2.35.1.1.2.10.0", "gauge", 1)
-        ],
-        "Environment | Temperature": [
-            ("SNMP", "1.3.6.1.4.1.4874.2.2.2.1.9.4.1.3.1", "counter", 1)
-        ],
-    })
-
     def collect_profile_metrics(self, metrics):
         if self.has_capability("BRAS | PPTP"):
             self.collect_subscribers_metrics(metrics)
@@ -49,8 +34,8 @@ class Script(GetMetricsScript):
 
     def get_subscribers_metrics(self):
         """
-        Returns collected ip sla metrics in form
-        probe id -> {
+        Returns collected subscribers metric in form
+        slot id -> {
             rtt: RTT in seconds
         }
         :return:
