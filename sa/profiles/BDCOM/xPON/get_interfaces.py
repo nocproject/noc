@@ -10,7 +10,7 @@
 # Python modules
 import re
 # NOC modules
-from lib.ip import IPv4
+from noc.core.ip import IPv4
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
@@ -22,8 +22,9 @@ class Script(BaseScript):
     TIMEOUT = 300
 
     rx_int1 = re.compile(
-        r"(?P<ifname>^g\S+|epon\S+)\s(?P<desc>(?:\S+|..\S+|\s))\s+(?P<status>\S+)"
-        r"\s(?:\s+\S+\)|\s+)\s+(?P<duplex>\S+)\s+(?P<speed>\S+)\s+(?P<type>\S+)",
+        r"(?P<ifname>^g\S+|epon\S+)(?:\s\s\s|\s)(?P<desc>(?:\S+|\s))\s+(?P<status>\S+)"
+        r"(?:\s*\d+|\s*T\S+|\s)(?:\s*(?P<duplex>full|auto)|\s)(?:\s*auto|\s*\d+\S+|\s)"
+        r"\s+(?P<type>\S+)",
         re.MULTILINE)
 
     rx_svi = re.compile(
@@ -39,7 +40,11 @@ class Script(BaseScript):
         "GigaEthernet-FX": "physical",  # GigabitEthernet
         "Giga-Combo-FX": "physical",  # GigabitEthernet Combo port
         "GigaEthernet-PON": "physical",  # EPON port
-        "GigaEthernet-LLID": "other"  # EPON port
+        "GigaEthernet-LLID": "other",  # EPON port
+        "Giga-TX": "physical",  # GigabitEthernet
+        "Giga-FX": "physical",  # GigabitEthernet
+        "Giga-PON": "physical",  # EPON port
+        "Giga-LLID": "other"  # EPON port
     }
 
     # @todo: snmp
