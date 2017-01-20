@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Alarm heatmap
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -16,7 +16,6 @@ import geojson
 from base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
-from noc.sa.models.managedobject import ManagedObject
 from noc.gis.models.layer import Layer
 from noc.inv.models.objectconnection import ObjectConnection
 
@@ -65,7 +64,6 @@ class AlarmHeatCard(BaseCard):
         alarms = []
         services = {}
         subscribers = {}
-        segments = set()
         t_data = defaultdict(list)
         if self.current_user.is_superuser:
             qs = ActiveAlarm.objects.all()
@@ -80,10 +78,10 @@ class AlarmHeatCard(BaseCard):
                     "subscriber": s_sub,
                     "service": s_service
                 })
+                # @todo: Should we add the object's weight to summary?
                 # @todo: Check west/south hemisphere
                 if active_layers and west <= mo.x <= east and south <= mo.y <= north:
                     t_data[mo.x, mo.y] += [(mo, w)]
-                    segments.add(mo.segment)
             else:
                 w = 0
             alarms += [{
@@ -97,12 +95,7 @@ class AlarmHeatCard(BaseCard):
             update_dict(subscribers, s_sub)
         links = None
         o_seen = set()
-        if segments and active_layers:
-            seen = set(
-                ManagedObject.objects.filter(
-                    segment__in=list(segments)
-                ).values_list("x", "y")
-            )
+        if t_data and active_layers:
             bbox = geojson.Polygon([[
                 [west, north],
                 [east, north],
@@ -127,7 +120,7 @@ class AlarmHeatCard(BaseCard):
                 "line": 1
             }):
                 for c in d["line"]["coordinates"]:
-                    if tuple(c) in seen:
+                    if tuple(c) in t_data:
                         o_seen.add(tuple(c))
                         lines += [d["line"]]
             if lines:
@@ -142,7 +135,11 @@ class AlarmHeatCard(BaseCard):
                 for mo, w in t_data[x, y]:
                     if mo not in mos:
                         mos[mo] = w
-                mos = sorted(mos, key=lambda z: mos[z], reverse=True)[:self.TOOLTIP_LIMIT]
+                mos = sorted(
+                    mos,
+                    key=lambda z: mos[z],
+                    reverse=True
+                )[:self.TOOLTIP_LIMIT]
                 points += [
                     geojson.Feature(
                         geometry=geojson.Point(
