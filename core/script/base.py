@@ -682,6 +682,7 @@ class BaseScript(object):
             if self.session:
                 with self.session_lock:
                     self.session_cli[self.session] = self.cli_stream
+            self.cli_stream.setup_session()
             # Disable pager when nesessary
             # @todo: Move to CLI
             if self.to_disable_pager:
