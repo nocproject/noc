@@ -9,6 +9,7 @@
 ## Python modules
 from threading import Lock
 import uuid
+import itertools
 ## NOC modules
 from noc.core.service.client import RPCClient, RPCError
 from noc.core.script.loader import loader
@@ -52,6 +53,24 @@ class Session(object):
         cw = Session.CallWrapper(self, name)
         self._cache[name] = cw
         return cw
+
+    def __contains__(self, item):
+        """
+        Check object has script name
+        """
+        if "." not in item:
+            # Normalize to full name
+            item = "%s.%s" % (self._object.profile_name, item)
+        return loader.has_script(item)
+
+    def __iter__(self):
+        return itertools.imap(
+                lambda y: y.split(".")[-1],
+                itertools.ifilter(
+                        lambda x: x.startswith(self._object.profile_name + "."),
+                        loader.iter_scripts()
+                )
+        )
 
     @classmethod
     def _get_service(cls, session, default=None):
