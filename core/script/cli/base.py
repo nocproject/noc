@@ -89,7 +89,7 @@ class CLI(object):
             return
         self.logger.debug("Setting close timeout to %ss",
                           session_timeout)
-        self.close_timeout = self.ioloop.call_later(
+        self.close_timeout = tornado.ioloop.IOLoop.instance().call_later(
             session_timeout,
             self.close
         )
@@ -565,7 +565,7 @@ class CLI(object):
     def set_script(self, script):
         self.script = script
         if self.close_timeout:
-            self.ioloop.remove_timeout(self.close_timeout)
+            tornado.ioloop.IOLoop.instance().remove_timeout(self.close_timeout)
             self.close_timeout = None
         if self.motd:
             self.script.set_motd(self.motd)
