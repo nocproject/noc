@@ -303,7 +303,12 @@ class ManagedObject(Model):
 
     @property
     def scripts(self):
-        return ScriptsProxy(self)
+        sp = getattr(self, "_scripts", None)
+        if sp:
+            return sp
+        else:
+            self._scripts = ScriptsProxy(self)
+            return self._scripts
 
     @property
     def actions(self):
