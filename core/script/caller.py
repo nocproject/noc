@@ -81,7 +81,9 @@ class Session(object):
             data["capabilities"],
             data["version"],
             args,
-            timeout
+            timeout,
+            self._id,
+            self._idle_timeout
         )
 
     def close(self):
