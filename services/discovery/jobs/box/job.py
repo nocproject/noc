@@ -57,6 +57,14 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 "Cannot choose valid credentials. Stopping"
             )
             return
+        if self.allow_sessions():
+            self.logger.debug("Using CLI sessions")
+            with self.object.open_session():
+                self.run_checks()
+        else:
+            self.run_checks()
+
+    def run_checks(self):
         if self.object.object_profile.enable_box_discovery_version:
             VersionCheck(self).run()
         if self.object.object_profile.enable_box_discovery_caps:
@@ -113,3 +121,6 @@ class BoxDiscoveryJob(MODiscoveryJob):
         except ValueError:
             return False
         return i1 <= i2
+
+    def allow_sessions(self):
+        return bool(self.get_caps().get("Management | Allow Sessions"))
