@@ -171,7 +171,6 @@ class CLI(object):
             self.motd = yield self.read_until_prompt()
             self.script.set_motd(self.motd)
             self.is_started = True
-            self.setup_session()
         # Send command
         # @todo: encode to object's encoding
         self.send(self.command)
