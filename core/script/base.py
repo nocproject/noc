@@ -66,6 +66,15 @@ class BaseScript(object):
     # Sessions
     session_lock = Lock()
     session_cli = {}
+    # In session mode when active CLI session exists
+    # * True -- reuse session
+    # * False -- close session and run new without session context
+    reuse_cli_session = True
+    # In session mode:
+    # Should we keep CLI session for reuse by next script
+    # * True - keep CLI session for next script
+    # * False - close CLI session
+    keep_cli_session = True
 
     # Common errors
     class ScriptError(Exception):
@@ -670,6 +679,11 @@ class BaseScript(object):
                     self.cli_stream = None
                     del self.session_cli[self.session]
             if self.cli_stream:
+                if not self.to_reuse_cli_session():
+                    self.logger.debug(
+                        "Script cannot reuse existing CLI session, starting new one"
+                    )
+                    self.close_cli_stream()
                 self.logger.debug("Using cached session's CLI")
                 self.cli_stream.set_script(self)
         if not self.cli_stream:
@@ -704,7 +718,7 @@ class BaseScript(object):
         if self.parent:
             return
         if self.cli_stream:
-            if self.session:
+            if self.session and self.to_keep_cli_session():
                 self.cli_stream.deferred_close(self.session_idle_timeout)
             else:
                 self.cli_stream.shutdown_session()
@@ -775,6 +789,12 @@ class BaseScript(object):
             for _ in range(offset):
                 g.next()
         return itertools.izip(g, g)
+
+    def to_reuse_cli_session(self):
+        return self.reuse_cli_session
+
+    def to_keep_cli_session(self):
+        return self.keep_cli_session
 
 
 class ScriptsHub(object):
