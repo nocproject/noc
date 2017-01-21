@@ -109,12 +109,12 @@ class SessionContext(object):
         self._object_scripts = None
 
     def __enter__(self):
-        self._object_scripts = self._object.scripts
-        self._object.scripts = self._session
-        return self.session
+        self._object_scripts = getattr(self._object, "_scripts", None)
+        self._object._scripts = self._session
+        return self._session
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._object.scripts = self._object_scripts
+        self._object._scripts = self._object_scripts
         self._session.close()
 
     def __getattr__(self, name):
