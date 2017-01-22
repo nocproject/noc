@@ -180,7 +180,7 @@ class HiresRule(object):
         if script.has_capability("SNMP | IF-MIB | HC"):
             g = self.hires.iter_oids
         else:
-            g = self.normal.iter_oits
+            g = self.normal.iter_oids
         for r in g(script, metric):
             yield r
 
