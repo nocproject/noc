@@ -2,6 +2,6 @@
   "$metric": "Interface | Status | Admin",
   "$type": "ifindex",
   "oid": "IF-MIB::ifAdminStatus.{{ ifIndex }}",
-  "type": "booln",
+  "type": "bool",
   "scale": "is1"
 }
