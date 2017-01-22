@@ -1,7 +1,7 @@
 {
   "$metric": "Interface | Status | Admin",
   "$type": "ifindex",
-  "oid": "IIF-MIB::ifAdminStatus.{{ ifIndex }}",
+  "oid": "IF-MIB::ifAdminStatus.{{ ifIndex }}",
   "type": "boolean",
   "scale": "is1"
 }
