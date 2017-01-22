@@ -297,7 +297,7 @@ class Service(object):
                 from tornaduv import UVLoop
                 self.logger.warn("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
-            self.ioloop = tornado.ioloop.IOLoop.current()
+            self.ioloop = tornado.ioloop.IOLoop.instance()
             self.logger.warn("Activating service")
             self.activate()
             self.logger.warn("Starting IOLoop")
