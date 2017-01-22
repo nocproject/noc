@@ -74,6 +74,8 @@ class CLI(object):
         self.close_timeout = None
 
     def close(self):
+        if self.script.session:
+            self.script.close_session(self.script.session)
         if self.iostream:
             self.iostream.close()
         if self.ioloop:
@@ -81,15 +83,13 @@ class CLI(object):
             self.ioloop.close(all_fds=True)
             self.ioloop = None
         self.is_closed = True
-        if self.script.session:
-            self.script.close_session(self.script.session)
 
     def deferred_close(self, session_timeout):
         if self.is_closed or not self.iostream:
             return
         self.logger.debug("Setting close timeout to %ss",
                           session_timeout)
-        self.close_timeout = self.ioloop.call_later(
+        self.close_timeout = tornado.ioloop.IOLoop.instance().call_later(
             session_timeout,
             self.close
         )
@@ -561,3 +561,21 @@ class CLI(object):
         Return collected message of the day
         """
         return self.motd
+
+    def set_script(self, script):
+        self.script = script
+        if self.close_timeout:
+            tornado.ioloop.IOLoop.instance().remove_timeout(self.close_timeout)
+            self.close_timeout = None
+        if self.motd:
+            self.script.set_motd(self.motd)
+
+    def setup_session(self):
+        if self.profile.setup_session:
+            self.logger.debug("Setup session")
+            self.profile.setup_session(self.script)
+
+    def shutdown_session(self):
+        if self.profile.shutdown_session:
+            self.logger.debug("Shutdown session")
+            self.profile.shutdown_session(self.script)
