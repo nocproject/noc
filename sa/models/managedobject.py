@@ -55,6 +55,7 @@ from objectpath import ObjectPath
 from noc.core.defer import call_later
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
+from noc.core.script.caller import SessionContext
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
@@ -302,7 +303,12 @@ class ManagedObject(Model):
 
     @property
     def scripts(self):
-        return ScriptsProxy(self)
+        sp = getattr(self, "_scripts", None)
+        if sp:
+            return sp
+        else:
+            self._scripts = ScriptsProxy(self)
+            return self._scripts
 
     @property
     def actions(self):
@@ -968,6 +974,9 @@ class ManagedObject(Model):
                 except ValueError:
                     pass
         return None
+
+    def open_session(self, idle_timeout=None):
+        return SessionContext(self, idle_timeout)
 
 
 @on_save

@@ -48,7 +48,7 @@ class BaseScript(object):
     # Default script timeout
     TIMEOUT = 120
     # Defeault session timeout
-    SESSION_TIMEOUT = 20
+    SESSION_IDLE_TIMEOUT = 60
     # Enable call cache
     # If True, script result will be cached and reused
     # during lifetime of parent script
@@ -66,6 +66,15 @@ class BaseScript(object):
     # Sessions
     session_lock = Lock()
     session_cli = {}
+    # In session mode when active CLI session exists
+    # * True -- reuse session
+    # * False -- close session and run new without session context
+    reuse_cli_session = True
+    # In session mode:
+    # Should we keep CLI session for reuse by next script
+    # * True - keep CLI session for next script
+    # * False - close CLI session
+    keep_cli_session = True
 
     # Common errors
     class ScriptError(Exception):
@@ -104,7 +113,7 @@ class BaseScript(object):
                  args=None, capabilities=None,
                  version=None, parent=None, timeout=None,
                  name=None, collect_beef=False,
-                 session=None, session_timeout=None):
+                 session=None, session_idle_timeout=None):
         self.service = service
         self.tos = self.service.config.tos
         self.pool = self.service.config.pool
@@ -143,11 +152,10 @@ class BaseScript(object):
                 self.snmp = SNMP(self, beef=self.beef)
         self.http = HTTP(self)
         self.to_disable_pager = not self.parent and self.profile.command_disable_pager
-        self.to_shutdown_session = False
         self.scripts = ScriptsHub(self)
         # Store session id
         self.session = session
-        self.session_timeout = session_timeout or self.SESSION_TIMEOUT
+        self.session_idle_timeout = session_idle_timeout or self.SESSION_IDLE_TIMEOUT
         # Cache CLI and SNMP calls, if set
         self.is_cached = False
         # Suitable only when self.parent is None.
@@ -671,7 +679,13 @@ class BaseScript(object):
                     self.cli_stream = None
                     del self.session_cli[self.session]
             if self.cli_stream:
+                if not self.to_reuse_cli_session():
+                    self.logger.debug(
+                        "Script cannot reuse existing CLI session, starting new one"
+                    )
+                    self.close_cli_stream()
                 self.logger.debug("Using cached session's CLI")
+                self.cli_stream.set_script(self)
         if not self.cli_stream:
             protocol = self.credentials.get("cli_protocol", "telnet")
             self.logger.debug("Open %s CLI", protocol)
@@ -682,12 +696,9 @@ class BaseScript(object):
             if self.session:
                 with self.session_lock:
                     self.session_cli[self.session] = self.cli_stream
-            # Run session setup
-            if self.profile.setup_session:
-                self.logger.debug("Setup session")
-                self.profile.setup_session(self)
-            self.to_shutdown_session = bool(self.profile.shutdown_session)
+            self.cli_stream.setup_session()
             # Disable pager when nesessary
+            # @todo: Move to CLI
             if self.to_disable_pager:
                 self.logger.debug("Disable paging")
                 self.to_disable_pager = False
@@ -707,12 +718,10 @@ class BaseScript(object):
         if self.parent:
             return
         if self.cli_stream:
-            if self.to_shutdown_session:
-                self.logger.debug("Shutdown session")
-                self.profile.shutdown_session(self)
-            if self.session:
-                self.cli_stream.deferred_close(self.session_timeout)
+            if self.session and self.to_keep_cli_session():
+                self.cli_stream.deferred_close(self.session_idle_timeout)
             else:
+                self.cli_stream.shutdown_session()
                 self.cli_stream.close()
             self.cli_stream = None
 
@@ -727,6 +736,7 @@ class BaseScript(object):
             if stream:
                 del cls.session_cli[session_id]
         if stream and not stream.is_closed:
+            stream.shutdown_session()
             stream.close()
 
     def has_snmp(self):
@@ -779,6 +789,12 @@ class BaseScript(object):
             for _ in range(offset):
                 g.next()
         return itertools.izip(g, g)
+
+    def to_reuse_cli_session(self):
+        return self.reuse_cli_session
+
+    def to_keep_cli_session(self):
+        return self.keep_cli_session
 
 
 class ScriptsHub(object):

@@ -32,7 +32,7 @@ class ActivatorAPI(API):
                args=None,
                timeout=None,
                session=None,
-               session_timeout=None,
+               session_idle_timeout=None,
                ):
         """
         Execute SA script
@@ -52,7 +52,8 @@ class ActivatorAPI(API):
         :param version: Dict of discovered version
         :param timeout: Script timeout, in seconds
         :param session: Unique session id to share CLI stream
-        :param session_timeout: Hold CLI stream up to session_timeout seconds
+        :param session_idle_timeout: Hold CLI stream up to
+            session_idle_timeout seconds after script completion
         """
         script_class = loader.get_script(name)
         if not script_class:
@@ -66,7 +67,7 @@ class ActivatorAPI(API):
             timeout=timeout,
             name=name,
             session=session,
-            session_timeout=session_timeout
+            session_idle_timeout=session_idle_timeout
         )
         try:
             result = script.run()
@@ -95,10 +96,10 @@ class ActivatorAPI(API):
             )
             self.logger.debug("SNMP GET %s %s returns %s",
                               address, oid, result)
-        except SNMPError, why:
+        except SNMPError as e:
             result = None
             self.logger.debug("SNMP GET %s %s returns error %s",
-                              address, oid, why)
+                              address, oid, e)
         raise tornado.gen.Return(result)
 
     @api
