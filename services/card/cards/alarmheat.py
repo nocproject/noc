@@ -96,6 +96,7 @@ class AlarmHeatCard(BaseCard):
         links = None
         o_seen = set()
         points = None
+        o_data = {}
         if t_data and active_layers:
             # Create lines
             bbox = geojson.Polygon([[
@@ -121,23 +122,21 @@ class AlarmHeatCard(BaseCard):
                 "connection": 1,
                 "line": 1
             }):
-                added = False
                 for c in d["line"]["coordinates"]:
                     if tuple(c) in t_data:
+                        for c in d["line"]["coordinates"]:
+                            tc = tuple(c)
+                            o_data[tc] = t_data.get(tc, [])
                         o_seen.add(tuple(c))
                         lines += [d["line"]]
-                        added = True
-                if added:
-                    for c in d["line"]["coordinates"]:
-                        # Create empty point when nesessary
-                        t_data[tuple(c)] += []
+                        break
             if lines:
                 links = geojson.FeatureCollection(features=lines)
             # Create points
             points = []
-            for x, y in t_data:
+            for x, y in o_data:
                 mos = {}
-                for mo, w in t_data[x, y]:
+                for mo, w in o_data[x, y]:
                     if mo not in mos:
                         mos[mo] = w
                 mos = sorted(
