@@ -26,6 +26,14 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             self.logger.info("Invalid credentials. Stopping")
             return
         self.reboot_detected = False
+        if self.allow_sessions():
+            self.logger.debug("Using CLI sessions")
+            with self.object.open_session():
+                self.run_checks()
+        else:
+            self.run_checks()
+
+    def run_checks(self):
         if self.object.object_profile.enable_periodic_discovery_uptime:
             UptimeCheck(self).run()
         if self.object.object_profile.enable_periodic_discovery_interface_status:

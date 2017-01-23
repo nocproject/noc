@@ -121,6 +121,3 @@ class BoxDiscoveryJob(MODiscoveryJob):
         except ValueError:
             return False
         return i1 <= i2
-
-    def allow_sessions(self):
-        return bool(self.get_caps().get("Management | Allow Sessions"))

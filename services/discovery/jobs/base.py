@@ -89,6 +89,9 @@ class MODiscoveryJob(PeriodicJob):
     def update_caps(self, caps, source):
         self.caps = self.object.update_caps(caps, source=source)
 
+    def allow_sessions(self):
+        return bool(self.get_caps().get("Management | Allow Sessions"))
+
 
 class DiscoveryCheck(object):
     name = None
