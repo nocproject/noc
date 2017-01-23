@@ -103,6 +103,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                         {
                             text: __("Description"),
                             dataIndex: "description",
+                            width: 150,
                             flex: 1
                         },
                         {
