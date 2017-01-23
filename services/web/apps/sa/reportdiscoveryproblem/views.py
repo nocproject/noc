@@ -132,7 +132,9 @@ class ReportFilterApplication(SimpleReport):
                             _("Yes") if mo.get_status() else _("No"),
                             discovery["st"].strftime("%d.%m.%Y"),
                             method,
-                            discovery["job"][0]["problems"][method].replace("\n", " ").replace("\r", " ")
+                            discovery["job"][0]["problems"][method].replace("\n", " ").replace("\r", " ") if
+                            isinstance(discovery["job"][0]["problems"][method], str) else
+                            discovery["job"][0]["problems"][method]
                         )
                     ]
 
