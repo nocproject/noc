@@ -87,6 +87,22 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     },
                     align: "center"
                 },
+
+//                {
+//                    text: __("SLA"),
+//                    dataIndex: "enable_box_discovery_sla",
+//                    width: 60,
+//                    renderer: NOC.render.Bool,
+//                    align: "center"
+//                },
+//                {
+//                    text: __("CPE"),
+//                    dataIndex: "enable_box_discovery_cpe",
+//                    width: 60,
+//                    renderer: NOC.render.Bool,
+//                    align: "center"
+//                },
+
                 {
                     text: __("Failed interval"),
                     dataIndex: "box_discovery_failed_interval",
@@ -352,7 +368,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "container",
                                             layout: "hbox",
                                             defaults: {
-                                                padding: "4 8 0 0"
+                                                padding: "0 8 0 0"
                                             },
                                             items: [
                                                 {
@@ -378,7 +394,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "container",
                                             layout: "hbox",
                                             defaults: {
-                                                padding: "4 8 0 0"
+                                                padding: "0 8 0 0"
                                             },
                                             items: [
                                                 {
@@ -407,7 +423,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     title: __("Box"),
                                     layout: "hbox",
                                     defaults: {
-                                        padding: "4 8 0 0"
+                                        padding: "0 8 0 0"
                                     },
                                     items: [
                                         {
@@ -462,7 +478,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     title: __("Topology"),
                                     layout: "hbox",
                                     defaults: {
-                                        padding: "4 8 0 0"
+                                        padding: "0 8 0 0"
                                     },
                                     items: [
                                         {
@@ -527,7 +543,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     title: __("Clear links"),
                                     layout: "hbox",
                                     defaults: {
-                                        padding: "4 8 0 0"
+                                        padding: "0 8 0 0"
                                     },
                                     items: [
                                         {
@@ -548,7 +564,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     title: __("SLA"),
                                     layout: "hbox",
                                     defaults: {
-                                        padding: "4 8 0 0"
+                                        padding: "0 8 0 0"
                                     },
                                     items: [
                                         {
@@ -561,48 +577,77 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                 {
                                     xtype: "fieldset",
                                     title: __("CPE"),
-                                    layout: "hbox",
+                                    layout: "vbox",
                                     defaults: {
-                                        padding: "4 8 0 0"
+                                        labelAlign: "top",
+                                        padding: 4
                                     },
                                     items: [
                                         {
-                                            name: "enable_box_discovery_cpe",
-                                            xtype: "checkboxfield",
-                                            boxLabel: __("CPE")
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "enable_box_discovery_cpe",
+                                                    xtype: "checkboxfield",
+                                                    boxLabel: __("CPE")
+                                                }
+                                            ]
                                         },
                                         {
-                                            name: "cpe_segment_policy",
-                                            xtype: "combobox",
-                                            fieldLabel: __("Segment Policy"),
-                                            allowBlank: true,
-                                            store: [
-                                                ["C", _("Use Controller's")],
-                                                ["L", _("Use uplink object's")]
-                                            ],
-                                            uiStyle: "medium"
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "cpe_segment_policy",
+                                                    xtype: "combobox",
+                                                    fieldLabel: __("Segment Policy"),
+                                                    allowBlank: true,
+                                                    store: [
+                                                        ["C", _("Use Controller's")],
+                                                        ["L", _("Use uplink object's")]
+                                                    ],
+                                                    uiStyle: "medium"
+                                                },
+                                                {
+                                                    name: "cpe_cooldown",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("CPE Cooldown (days)"),
+                                                    labelWidth: 205,
+                                                    allowBlank: true,
+                                                    minValue: 0,
+                                                    uiStyle: "small"
+                                                },
+                                            ]
                                         },
                                         {
-                                            name: "cpe_cooldown",
-                                            xtype: "numberfield",
-                                            fieldLabel: __("CPE Cooldown (days)"),
-                                            allowBlank: true,
-                                            minValue: 0,
-                                            uiStyle: "small"
-                                        },
-                                        {
-                                            name: "cpe_profile",
-                                            xtype: "sa.managedobjectprofile.LookupField",
-                                            fieldLabel:__("CPE Profile"),
-                                            allowBlank: true,
-                                            uiStyle: "medium"
-                                        },
-                                        {
-                                            name: "cpe_auth_profile",
-                                            xtype: "sa.authprofile.LookupField",
-                                            fieldLabel:__("CPE Auth Profile"),
-                                            allowBlank: true,
-                                            uiStyle: "medium"
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "cpe_profile",
+                                                    xtype: "sa.managedobjectprofile.LookupField",
+                                                    fieldLabel:__("CPE Profile"),
+                                                    allowBlank: true,
+                                                    uiStyle: "medium"
+                                                },
+                                                {
+                                                    name: "cpe_auth_profile",
+                                                    xtype: "sa.authprofile.LookupField",
+                                                    fieldLabel:__("CPE Auth Profile"),
+                                                    allowBlank: true,
+                                                    uiStyle: "medium"
+                                                }
+                                            ]
                                         }
                                     ]
                                 }
