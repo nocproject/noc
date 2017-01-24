@@ -66,7 +66,10 @@ class Script(BaseScript):
             if match.group("sys_name") != "N/A":
                 n["remote_system_name"] = match.group("sys_name")
             if match.group("sys_descr") != "N/A" and "\n" not in match.group("sys_descr"):
-                n["remote_system_description"] = match.group("sys_descr")
+                sd = match.group("sys_descr")
+                if "SysDesc:" in sd:
+                    sd = sd.split()[-1]
+                n["remote_system_description"] = sd
             if match.group("port_descr") != "N/A":
                 n["remote_port_description"] = match.group("port_descr")
             i["neighbors"] += [n]
