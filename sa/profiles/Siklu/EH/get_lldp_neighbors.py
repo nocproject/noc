@@ -22,6 +22,7 @@ class Script(BaseScript):
     CHASSIS_TYPES = {
         "macaddress": 4,
         "mac address": 4,
+        "mac-addr": 4,
         "network-addr": 4,
         "interfacename": 6,
         "interface name": 6,
@@ -35,6 +36,7 @@ class Script(BaseScript):
         "mac address": 3,
         "mac-addr": 3,
         "interfacename": 5,
+        "interface-name": 5,
         "interface name": 5,
         "local": 7
     }
