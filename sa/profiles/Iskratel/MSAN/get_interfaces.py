@@ -53,6 +53,10 @@ class Script(BaseScript):
         r"Description\.+(?P<descr>.*)\n"
         r"MAC Address\.+(?P<mac>\S+)\n",
         re.MULTILINE)
+    rx_port3 = re.compile(
+        r"Interface\.+\S+\n"
+        r"Description\.+(?P<descr>.*)\n",
+        re.MULTILINE)
     rx_vlan = re.compile(
         r"^(?P<port>\d+/\d+/\d+)\s+(?P<vlan>\d+)\s+", re.MULTILINE)
     rx_vlan1 = re.compile(
@@ -106,8 +110,11 @@ class Script(BaseScript):
             try:
                 c = self.cli("show port description %s" % ifname)
                 match1 = self.rx_port2.search(c)
-                i["snmp_ifindex"] = match1.group("ifindex")
-                i["mac"] = match1.group("mac")
+                if match1:
+                    i["snmp_ifindex"] = match1.group("ifindex")
+                    i["mac"] = match1.group("mac")
+                else:
+                    match1 = self.rx_port3.search(c)
                 if match1.group("descr"):
                     i["description"] = match1.group("descr")
             except self.CLISyntaxError:
