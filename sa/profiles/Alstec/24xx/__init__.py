@@ -20,4 +20,4 @@ class Profile(BaseProfile):
     pattern_more = r"^--More-- or \(q\)uit$"
     pattern_syntax_error = r"ERROR: Wrong or incomplete command"
     command_super = "enable"
-    command_exit = "quit"
+    command_exit = "logout"
