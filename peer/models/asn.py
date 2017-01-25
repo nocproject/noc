@@ -18,8 +18,13 @@ from noc.settings import config
 from noc.lib.rpsl import rpsl_format
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(check=[
+    ("peer.Peer", "local_asn"),
+    ("peer.PeeringPoint", "local_as")
+])
 class AS(models.Model):
     class Meta:
         verbose_name = "AS"

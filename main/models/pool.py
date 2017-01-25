@@ -14,10 +14,15 @@ import operator
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
 import cachetools
+from noc.core.model.decorator import on_delete_check
 
 id_lock = threading.Lock()
 
 
+@on_delete_check(check=[
+    ("sa.ManagedObject", "pool"),
+    # ("fm.EscalationItem", "administrative_domain")
+])
 class Pool(Document):
     meta = {
         "collection": "noc.pools"

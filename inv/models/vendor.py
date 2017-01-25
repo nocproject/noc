@@ -12,8 +12,12 @@ from mongoengine.fields import (StringField, BooleanField, URLField,
                                 UUIDField)
 ## NOC modules
 from noc.lib.prettyjson import to_json
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(check=[
+    ("inv.ObjectModel", "vendor")
+])
 class Vendor(Document):
     """
     Equipment vendor

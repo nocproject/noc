@@ -87,6 +87,10 @@ class ObjectModelConnection(EmbeddedDocument):
 
 
 @category
+@on_delete_check(check=[
+    ("inv.ModelMapping", "model"),
+    ("inv.Object", "model")
+])
 class ObjectModel(Document):
     """
     Equipment vendor

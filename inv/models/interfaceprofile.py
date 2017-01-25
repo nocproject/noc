@@ -20,6 +20,7 @@ from noc.lib.nosql import ForeignKeyField
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.pm.models.metrictype import MetricType
+from noc.core.model.decorator import on_delete_check
 
 id_lock = RLock()
 
@@ -33,6 +34,12 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     high_error = FloatField(required=False)
 
 
+@on_delete_check(check=[
+    ("inv.Interface", "profile"),
+    ("inv.InterfaceClassificationRule", "profile"),
+    ("inv.SubInterface", "profile")
+    # ("sa.ServiceProfile", "")
+])
 class InterfaceProfile(Document):
     """
     Interface SLA profile and settings

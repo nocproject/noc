@@ -49,7 +49,7 @@ from noc.core.handler import get_handler
 from noc.lib.debug import error_report
 from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
-from noc.core.model.decorator import on_save, on_init, on_delete
+from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
 from noc.inv.models.object import Object
 from objectpath import ObjectPath
 from noc.core.defer import call_later
@@ -74,6 +74,18 @@ logger = logging.getLogger(__name__)
 @on_init
 @on_save
 @on_delete
+@on_delete_check(check=[
+    # ("cm.ValidationRule.ObjectItem", ""),
+    ("fm.ActiveAlarm", "managed_object"),
+    ("fm.ActiveEvent", "managed_object"),
+    ("fm.ArchivedAlarm", "managed_object"),
+    ("fm.ArchivedEvent", "managed_object"),
+    ("fm.FailedEvent", "managed_object"),
+    ("fm.NewEvent", "managed_object"),
+    ("inv.Interface", "managed_object"),
+    ("inv.SubInterface", "managed_object")
+    # ("maintainance.Maintainance", "escalate_managed_object"),
+])
 class ManagedObject(Model):
     """
     Managed Object
