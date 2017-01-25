@@ -89,6 +89,20 @@ class CLI(object):
             return
         self.logger.debug("Setting close timeout to %ss",
                           session_timeout)
+        # Cannot call call_later directly due to
+        # thread-safety problems
+        # See tornado issue #1773
+        tornado.ioloop.IOLoop.instance().add_callback(
+            self._set_close_timeout,
+            session_timeout
+        )
+
+    def _set_close_timeout(self, session_timeout):
+        """
+        Wrapper to deal with IOLoop.add_timeout thread safety problem
+        :param session_timeout:
+        :return:
+        """
         self.close_timeout = tornado.ioloop.IOLoop.instance().call_later(
             session_timeout,
             self.close
