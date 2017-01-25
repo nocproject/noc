@@ -95,7 +95,7 @@ class TelnetIOStream(IOStream):
 
     def read_from_fd(self):
         chunk = super(TelnetIOStream, self).read_from_fd()
-        if self.iac_seq:
+        if self.iac_seq and chunk:
             # Restore incomplete IAC context
             chunk = self.iac_seq + chunk
             self.iac_seq = ""
