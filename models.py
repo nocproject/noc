@@ -189,7 +189,7 @@ _MODELS = {
     "fm.AlarmClassConfig": "noc.fm.models.alarmclassconfig.AlarmClassConfig",
     "fm.AlarmDiagnosticConfig": "noc.fm.models.alarmdiagnosticconfig.AlarmDiagnosticConfig",
     "fm.AlarmSeverity": "noc.fm.models.alarmseverity.AlarmSeverity",
-    "fm.AlarmTrigger": "noc.fm.models.AlarmTrigger",
+    "fm.AlarmTrigger": "noc.fm.models.alarmtrigger.AlarmTrigger",
     "fm.ArchivedAlarm": "noc.fm.models.archivedalarm.ArchivedAlarm",
     "fm.ArchivedEvent": "noc.fm.models.archivedevent.ArchivedEvent",
     "fm.CloneClassificationRule": "noc.fm.models.cloneclassificationrule.CloneClassificationRule",
