@@ -83,10 +83,14 @@ class BIAPI(API):
         }
         for fn in model._fields_order:
             f = model._fields[fn]
+            d = getattr(f, "dict_type", None)
+            if d:
+                d = d._meta.name
             r["fields"] += [{
                 "name": f.name,
                 "description": None,
-                "type": f.db_type
+                "type": f.db_type,
+                "dict": d
             }]
         return r
 
