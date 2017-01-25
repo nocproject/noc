@@ -29,12 +29,15 @@ from noc.lib.utils import deep_merge
 from noc.lib.middleware import get_user
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.defer import call_later
-from noc.core.model.decorator import on_save
+from noc.core.model.decorator import on_save, on_delete_check
 
 id_lock = RLock()
 
 
 @on_save
+@on_delete_check(check=[
+    ("sa.ManagedObject", "container")
+])
 class Object(Document):
     """
     Inventory object

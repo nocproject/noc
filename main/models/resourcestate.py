@@ -8,8 +8,14 @@
 
 ## Django modules
 from django.db import models
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(check=[
+    ("inv.Interface", "state"),
+    ("ip.Prefix", "state"),
+    ("vc.VC", "state")
+])
 class ResourceState(models.Model):
     class Meta:
         verbose_name = "Resource State"

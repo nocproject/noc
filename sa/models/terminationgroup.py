@@ -10,8 +10,16 @@
 from django.db import models
 ## NOC modules
 from noc.core.model.fields import TagsField
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(check=[
+    # ("ip.DynamicIPPoolUsage", "termination_group"),
+    ("sa.ManagedObject", "termination_group"),
+    ("sa.ManagedObject", "service_terminator"),
+    ("sa.ManagedObjectSelector", "filter_termination_group"),
+    ("sa.ManagedObjectSelector", "filter_service_terminator")
+])
 class TerminationGroup(models.Model):
     """
     Termination Group

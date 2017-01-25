@@ -12,8 +12,13 @@ from django.db import models
 ## NOC Modules
 from noc.core.ip import IP
 from noc.core.model.fields import CIDRField
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(check=[
+    # ("inv.InterfaceClassificationMatch", "prefix_table"),
+    ("sa.ManagedObjectSelector", "filter_prefix")
+])
 class PrefixTable(models.Model):
     class Meta:
         verbose_name = _("Prefix Table")

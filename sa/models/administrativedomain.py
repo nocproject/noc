@@ -16,11 +16,21 @@ import cachetools
 ## NOC modules
 from noc.main.models.pool import Pool
 from noc.core.model.fields import TagsField, DocumentReferenceField
+from noc.core.model.decorator import on_delete_check
 
 
 id_lock = RLock()
 
 
+@on_delete_check(check=[
+    ("cm.ObjectNotify", "administrative_domain"),
+    # ("fm.EscalationItem", "administrative_domain"),
+    ("sa.GroupAccess", "administrative_domain"),
+    ("sa.ManagedObject", "administrative_domain"),
+    ("sa.ManagedObjectSelector", "filter_administrative_domain"),
+    ("sa.UserAccess", "administrative_domain"),
+    ("sa.AdministrativeDomain", "parent")
+])
 class AdministrativeDomain(models.Model):
     """
     Administrative Domain

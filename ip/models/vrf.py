@@ -22,9 +22,19 @@ from noc.lib.validators import check_rd, is_rd
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
-
+from noc.core.model.decorator import on_delete_check
 
 @full_text_search
+@on_delete_check(check=[
+    ("ip.AddressRange", "vrf"),
+    ("ip.IPPool", "vrf"),
+    ("ip.PrefixAccess", "vrf"),
+    ("ip.Prefix", "vrf"),
+    # ("ip.DynamicIPPoolUsage", "vrf"),
+    ("sa.ManagedObject", "vrf"),
+    ("sa.ManagedObjectSelector", "vrf"),
+    ("vc.VCBindFilter", "vrf"),
+])
 class VRF(models.Model):
     """
     VRF

@@ -20,10 +20,15 @@ from django.db.models.aggregates import Count
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
+from noc.core.model.decorator import on_delete_check
 
 id_lock = RLock()
 
 
+@on_delete_check(check=[
+    ("sa.ManagedObject", "segment"),
+    ("inv.NetworkSegment", "parent")
+])
 class NetworkSegment(Document):
     meta = {
         "collection": "noc.networksegments",

@@ -13,10 +13,19 @@ from vctype import VCType
 from vcfilter import VCFilter
 from noc.main.models.style import Style
 from noc.core.model.decorator import on_save, on_delete
+from noc.core.model.decorator import on_delete_check
 
 
 @on_save
 @on_delete
+@on_delete_check(check=[
+    ("inv.Interface", "vc_domain"),
+    ("sa.ManagedObject", "vc_domain"),
+    ("sa.ManagedObjectSelector", "filter_vc_domain"),
+    ("vc.VC", "vc_domain"),
+    ("vc.VCBindFilter", "vc_domain"),
+    ("vc.VCDomainProvisioningConfig", "vc_domain"),
+])
 class VCDomain(models.Model):
     """
     Virtual circuit domain, allows to separate unique VC spaces
