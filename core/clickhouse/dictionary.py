@@ -101,7 +101,7 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
                 "             <attribute>",
                 "                 <name>%s</name>" % ff.name,
                 "                 <type>%s</type>" % ff.db_type,
-                "                 <null_value>%s</null_value>" % ff.default_value,
+                "                 <null_value>%s</null_value>" % ff.default,
                 "                 <hierarchical>%s</hierarchical>" % "true" if hier else "false",
                 "             </attribute>"
             ]

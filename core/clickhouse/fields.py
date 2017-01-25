@@ -17,9 +17,10 @@ class BaseField(object):
     db_type = None
     default_value = ""
 
-    def __init__(self):
+    def __init__(self, default=None):
         self.field_number = self.FIELD_NUMBER.next()
         self.name = None
+        self.default = default or self.default_value
 
     def get_create_sql(self):
         return "%s %s" % (self.name, self.get_db_type())
