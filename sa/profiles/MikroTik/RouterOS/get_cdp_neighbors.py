@@ -17,12 +17,18 @@ class Script(BaseScript):
 
     def execute(self):
         device_id = self.scripts.get_fqdn()
+        interfaces = []
+        for n, f, r in self.cli_detail(
+        "/interface print detail without-paging where type=\"ether\""):
+            interfaces += [r["name"]]
         # Get neighbors
         neighbors = []
         for n, f, r in self.cli_detail(
         "/ip neighbor print detail without-paging"):
             platform = r["platform"]
             if platform == "MikroTik":
+                continue
+            if r["interface"] not in interfaces:
                 continue
             neighbors += [{
                 "device_id": r["identity"],
