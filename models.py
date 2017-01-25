@@ -297,7 +297,7 @@ FTS_MODELS = [
 ]
 
 COLLECTIONS = [
-    "bi.DashboardLayout"
+    "bi.DashboardLayout",
     "cm.ErrorType",
     "gis.Layer",
     "inv.Capability",
