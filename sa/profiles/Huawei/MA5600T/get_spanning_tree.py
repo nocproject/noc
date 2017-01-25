@@ -95,6 +95,8 @@ class Script(BaseScript):
                     instance.update(match.groupdict())
                 else:
                     match = self.rx_cst_root.search(inst)
+                    if not match:
+                        match = self.rx_ist_root.search(inst)
                     instance.update(match.groupdict())
                 vlans = ""
                 for i in c.split("\n"):
