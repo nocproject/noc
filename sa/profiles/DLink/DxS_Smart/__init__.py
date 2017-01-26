@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
 ## Vendor: D-Link
-## OS:     DxS
+## OS:     DxS_Smart
 ## Compatible:
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -49,7 +49,7 @@ class Profile(BaseProfile):
             or v["version"].startswith("2"):
                 return "1.3.6.1.4.1.171.10.75.7"
             else:
-                return "1.3.6.1.4.1.171.10.76.17"
+                return "1.3.6.1.4.1.171.10.75.17"
         if v["platform"].startswith("DES-1210-48"):
             return "1.3.6.1.4.1.171.10.76.11"
         if v["platform"].startswith("DES-1210-08P"):
@@ -59,7 +59,11 @@ class Profile(BaseProfile):
             else:
                 return "1.3.6.1.4.1.171.10.75.14"
         if v["platform"].startswith("DES-1210-28P"):
+            if v["version"].startswith("2") \
+            or v["version"].startswith("3"):
                 return "1.3.6.1.4.1.171.10.75.6"
+            else:
+                return "1.3.6.1.4.1.171.10.75.19.1"
         if v["platform"].startswith("DES-1210-28"):
             if v["version"].startswith("1") \
             or v["version"].startswith("2"):
@@ -68,6 +72,22 @@ class Profile(BaseProfile):
                 return "1.3.6.1.4.1.171.10.75.15"
         if v["platform"].startswith("DES-1210"):
             return "1.3.6.1.4.1.171.10.75.7"
+        if v["platform"] == "DGS-1210-10P":
+            return "1.3.6.1.4.1.171.10.76.12"
+        if v["platform"] == "DGS-1210-20":
+            return "1.3.6.1.4.1.171.10.76.14"
+        if v["platform"] == "DGS-1210-28":
+            return "1.3.6.1.4.1.171.10.76.15"
+        if v["platform"] == "DGS-1210-28P":
+            return "1.3.6.1.4.1.171.10.76.16"
+        if v["platform"] == "DGS-1210-16":
+            return "1.3.6.1.4.1.171.10.76.9"
+        if v["platform"] == "DGS-1210-24":
+            return "1.3.6.1.4.1.171.10.76.10"
+        if v["platform"] == "DGS-1210-48":
+            return "1.3.6.1.4.1.171.10.76.11"
+        if v["platform"] == "DGS-1210-52":
+            return "1.3.6.1.4.1.171.10.76.17"
         return None
 
     rx_port = re.compile(r"^(?P<port>\d+)\s+"
@@ -194,9 +214,5 @@ def DES1210(v):
 
 
 # DGS-1210-series
-def DGS121048(v):
-    return v["platform"].startswith("DGS-1210-48")
-
-
-def DGS121052(v):
-    return v["platform"].startswith("DGS-1210-52")
+def DGS1210(v):
+    return v["platform"].startswith("DGS-1210")

@@ -64,6 +64,20 @@ class Script(BaseScript):
         return "Global DLDP is not enabled" not in r \
             and "DLDP global status : disable" not in r
 
+    @false_on_cli_error
+    def has_stack(self):
+        """
+        Check stack members
+        :return:
+        """
+        r = self.profile.parse_table(self.cli("display stack peer"))
+        return [l[0] for l in r["table"]]
+        # return len([l for l in r.splitlines() if "STACK" in l])
+
     def execute_platform(self, caps):
         if self.has_ndp():
             caps["Huawei | NDP"] = True
+        s = self.has_stack()
+        if s:
+            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+            caps["Stack | Member Ids"] = " | ".join(s)

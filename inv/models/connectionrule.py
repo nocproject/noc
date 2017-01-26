@@ -15,6 +15,7 @@ from mongoengine.fields import (StringField, UUIDField,
 ## NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
+from noc.core.model.decorator import on_delete_check
 
 
 class Context(EmbeddedDocument):
@@ -84,6 +85,9 @@ class Rule(EmbeddedDocument):
         }
 
 
+@on_delete_check(check=[
+    ("inv.ObjectModel", "connection_rule")
+])
 class ConnectionRule(Document):
     """
     Equipment vendor

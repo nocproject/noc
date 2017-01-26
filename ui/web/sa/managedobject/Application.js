@@ -11,6 +11,7 @@ Ext.define("NOC.sa.managedobject.Application", {
     requires: [
         "NOC.sa.managedobject.Model",
         "NOC.sa.managedobject.AttributesModel",
+        "NOC.sa.managedobject.LookupField",
         "NOC.sa.managedobject.SchemeLookupField",
         "NOC.sa.administrativedomain.LookupField",
         "NOC.main.pool.LookupField",
@@ -557,6 +558,42 @@ Ext.define("NOC.sa.managedobject.Application", {
                 },
                 {
                     xtype: "fieldset",
+                    title: __("CPE"),
+                    layout: "hbox",
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "controller",
+                            xtype: "sa.managedobject.LookupField",
+                            fieldLabel: __("Controller"),
+                            allowBlank: true,
+                            groupEdit: true
+                        },
+                        {
+                            name: "local_cpe_id",
+                            xtype: "textfield",
+                            fieldLabel: __("Local CPE Id"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "global_cpe_id",
+                            xtype: "textfield",
+                            fieldLabel: __("Global CPE Id"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "last_seen",
+                            xtype: "displayfield",
+                            fieldLabel: __("Last Seen"),
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
                     title: __("Event Sources"),
                     layout: "hbox",
                     defaults: {
@@ -773,6 +810,12 @@ Ext.define("NOC.sa.managedobject.Application", {
             name: "vc_domain",
             ftype: "lookup",
             lookup: "vc.vcdomain"
+        },
+        {
+            title: __("By Controller"),
+            name: "controller",
+            ftype: "lookup",
+            lookup: "sa.managedobject"
         },
         {
             title: __("By Termination Group"),

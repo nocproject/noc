@@ -7,6 +7,6 @@
     "config_mode": false,
     "preference": 1000,
     "match": [],
-    "commands": "{% ifequal address.afi \"4\" %}\nping {% if vrf %}vrf {{vrf.name}} {% endif %} {{address.address}}\n{% else %}\nping6 {% if vrf %}vrf {{vrf.name}} {% endif %} {{address.address}}\n{% endifequal %}",
+    "commands": "{% if address.afi == \"4\" %}\nping {% if vrf %}vrf {{vrf.name}} {% endif %} {{address.address}}\n{% else %}\nping6 {% if vrf %}vrf {{vrf.name}} {% endif %} {{address.address}}\n{% endif %}",
     "timeout": 60
 }

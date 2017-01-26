@@ -56,6 +56,7 @@ class Command(BaseCommand):
     def handle_apply(self, fixes=None, *args, **options):
         if not fixes:
             return
+        import noc.lib.nosql  # Connect to mongo
         for f in fixes:
             fix = self.get_fix(f)
             if not fix:

@@ -135,6 +135,7 @@ _MODELS = {
     "inv.Coverage": "noc.inv.models.coverage.Coverage",
     "inv.CoveredBuilding": "noc.inv.models.coveredbuilding.CoveredBuilding",
     "inv.CoveredObject": "noc.inv.models.coveredobject.CoveredObject",
+    "inv.FirmwarePolicy": "noc.inv.models.firmwarepolicy.FirmwarePolicy",
     "inv.ForwardingInstance": "noc.inv.models.forwardinginstance.ForwardingInstance",
     "inv.Interface": "noc.inv.models.interface.Interface",
     "inv.InterfaceClassificationRule": "noc.inv.models.interfaceclassificationrule.InterfaceClassificationRule",
@@ -164,6 +165,7 @@ _MODELS = {
     "sa.ActionCommands": "noc.sa.models.action.ActionCommands",
     "sa.AdministrativeDomain": "noc.sa.models.administrativedomain.AdministrativeDomain",
     "sa.AuthProfile": "noc.sa.models.authprofile.AuthProfile",
+    "sa.CommandSnippet": "noc.sa.models.commandsnippet.CommandSnippet",
     "sa.FailedScriptLog": "noc.sa.models.failedscriptlog.FailedScriptLog",
     "sa.GroupAccess": "noc.sa.models.groupaccess.GroupAccess",
     "sa.InteractionLog": "noc.sa.models.interactionlog.InteractionLog",
@@ -185,8 +187,9 @@ _MODELS = {
     "fm.AlarmClass": "noc.fm.models.alarmclass.AlarmClass",
     "fm.AlarmClassCategory": "noc.fm.models.alarmclasscategory.AlarmClassCategory",
     "fm.AlarmClassConfig": "noc.fm.models.alarmclassconfig.AlarmClassConfig",
+    "fm.AlarmDiagnosticConfig": "noc.fm.models.alarmdiagnosticconfig.AlarmDiagnosticConfig",
     "fm.AlarmSeverity": "noc.fm.models.alarmseverity.AlarmSeverity",
-    "fm.AlarmTrigger": "noc.fm.models.AlarmTrigger",
+    "fm.AlarmTrigger": "noc.fm.models.alarmtrigger.AlarmTrigger",
     "fm.ArchivedAlarm": "noc.fm.models.archivedalarm.ArchivedAlarm",
     "fm.ArchivedEvent": "noc.fm.models.archivedevent.ArchivedEvent",
     "fm.CloneClassificationRule": "noc.fm.models.cloneclassificationrule.CloneClassificationRule",
@@ -196,6 +199,7 @@ _MODELS = {
     "fm.EventClassificationRule": "noc.fm.models.eventclassificationrule.EventClassificationRule",
     "fm.EventClassificationRuleCategory": "noc.fm.models.eventclassificationrule.EventClassificationRuleCategory",
     "fm.EventTrigger": "noc.fm.models.EventTrigger",
+    "fm.EscalationItem": "noc.fm.models.alarmescalation.EscalationItem",
     "fm.FailedEvent": "noc.fm.models.failedevent.FailedEvent",
     "fm.IgnoreEventRules": "noc.fm.models.IgnoreEventRules",
     "fm.IgnorePattern": "noc.fm.models.ignorepattern.IgnorePattern",
@@ -264,10 +268,24 @@ _MODELS = {
     "kb.KBEntryTemplate": "noc.kb.models.kbentrytemplate.KBEntryTemplate",
     "kb.KBGlobalBookmark": "noc.kb.models.kbglobalbookmark.KBGlobalBookmark",
     "kb.KBUserBookmark": "noc.kb.models.kbuserbookmark.KBUserBookmark",
+    # Maintainance
+    "maintainance.Maintainance": "noc.maintainance.models.maintainance.Maintainance",
     # support models
     "support.Crashinfo": "noc.support.models.crashinfo.Crashinfo",
+    # crm models
+    "crm.SubscriberProfile": "noc.crm.models.subscriberprofile.SubscriberProfile",
+    "crm.SupplierProfile": "noc.crm.models.supplierprofile.SupplierProfile",
+    # sla models
+    "sla.SLAProfile": "noc.sla.models.slaprofile.SLAProfile",
+    "sla.SLAProbe": "noc.sla.models.slaprobe.SLAProbe",
     # bi models
-    "bi.DashboardLayout": "noc.bi.models.dashboardlayout.DashboardLayout"
+    "bi.DashboardLayout": "noc.bi.models.dashboardlayout.DashboardLayout",
+    # phone models
+    "phone.DialPlan": "noc.phone.models.dialplan.DialPlan",
+    "phone.PhoneNumber": "noc.phone.models.phonenumber.PhoneNumber",
+    "phone.PhoneNumberProfile": "noc.phone.models.phonenumberprofile.PhoneNumberProfile",
+    "phone.PhoneRange": "noc.phone.models.phonerange.PhoneRange",
+    "phone.PhoneRangeProfile": "noc.phone.models.phonerangeprofile.PhoneRangeProfile",
 }
 
 FTS_MODELS = [
@@ -279,29 +297,28 @@ FTS_MODELS = [
 ]
 
 COLLECTIONS = [
-    "fm.SyntaxAlias",
-    "sa.Action",
+    "bi.DashboardLayout",
+    "cm.ErrorType",
+    "gis.Layer",
     "inv.Capability",
-    "pm.MetricType",
-    "fm.Enumeration",
     "inv.ConnectionRule",
     "inv.ConnectionType",
-    "inv.Vendor",
-    "fm.MIBAlias",
-    "gis.Layer",
-    "cm.ErrorType",
-    "fm.OIDAlias",
-    "inv.Technology",
-    "fm.MIBPreference",
     "inv.ModelInterface",
-    "fm.AlarmSeverity",
-    "sa.ActionCommands",
     "inv.ObjectModel",
+    "inv.Technology",
+    "inv.Vendor",
     "fm.AlarmClass",
+    "fm.AlarmSeverity",
     "fm.EventClass",
     "fm.EventClassificationRule",
     "fm.CloneClassificationRule",
-    "sa.ProfileCheckRule",
-    "bi.DashboardLayout"
+    "fm.Enumeration",
+    "fm.MIBAlias",
+    "fm.MIBPreference",
+    "fm.OIDAlias",
+    "fm.SyntaxAlias",
+    "pm.MetricType",
+    "sa.Action",
+    "sa.ActionCommands",
+    "sa.ProfileCheckRule"
 ]
-

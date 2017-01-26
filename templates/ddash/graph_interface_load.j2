@@ -44,6 +44,16 @@
     {
       "alias": "Input",
       "transform": "negative-Y"
+    },
+    {
+      "alias": "Oper status",
+      "yaxis": 2,
+      "fill": 0
+    },
+    {
+      "alias": "Admin status",
+      "yaxis": 2,
+      "fill": 0
     }
   ],
   "span": 12,
@@ -147,6 +157,106 @@
           "value": "/^${{interface.type}}$/"
         }
       ]
+    },
+    {
+      "refId": "C",
+      "measurement": "Interface | Status | Oper",
+      "alias": "Oper status",
+      "hide": false,
+      "policy": "default",
+      "dsType": "influxdb",
+      "resultFormat": "time_series",
+      "tags": [
+        {
+          "key": "object",
+          "operator": "=~",
+          "value": "/^$device$/"
+        },
+        {
+          "condition": "AND",
+          "key": "interface",
+          "operator": "=~",
+          "value": "/^${{interface.type}}$/"
+        }
+      ],
+      "groupBy": [
+        {
+          "type": "time",
+          "params": [
+            "$interval"
+          ]
+        },
+        {
+          "type": "fill",
+          "params": [
+            "null"
+          ]
+        }
+      ],
+      "select": [
+        [
+          {
+            "type": "field",
+            "params": [
+              "value"
+            ]
+          },
+          {
+            "type": "last",
+            "params": []
+          }
+        ]
+      ]
+    },
+    {
+      "refId": "D",
+      "measurement": "Interface | Status | Admin",
+      "alias": "Admin status",
+      "hide": false,
+      "policy": "default",
+      "dsType": "influxdb",
+      "resultFormat": "time_series",
+      "tags": [
+        {
+          "key": "object",
+          "operator": "=~",
+          "value": "/^$device$/"
+        },
+        {
+          "condition": "AND",
+          "key": "interface",
+          "operator": "=~",
+          "value": "/^${{interface.type}}$/"
+        }
+      ],
+      "groupBy": [
+        {
+          "type": "time",
+          "params": [
+            "$interval"
+          ]
+        },
+        {
+          "type": "fill",
+          "params": [
+            "null"
+          ]
+        }
+      ],
+      "select": [
+        [
+          {
+            "type": "field",
+            "params": [
+              "value"
+            ]
+          },
+          {
+            "type": "last",
+            "params": []
+          }
+        ]
+      ]
     }
   ],
   "timeFrom": null,
@@ -172,12 +282,12 @@
       "show": true
     },
     {
-      "format": "short",
-      "label": null,
       "logBase": 1,
+      "show": false,
       "max": null,
+      "format": "short",
       "min": null,
-      "show": null
+      "label": null
     }
   ]
 }

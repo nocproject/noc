@@ -17,19 +17,21 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Iskratel.MSAN"
+    pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin)|User: ?"
     # Iskratel do not have "enable_super" command
-    pattern_unpriveleged_prompt = r"^\S+?>"
-    pattern_prompt = r"^\S+?#"
+    # pattern_unpriveleged_prompt = r"^\S+?>"
+    pattern_prompt = r"^\S+?\s*[#>]"
     pattern_more = [
         (r"Press any key to continue or ESC to stop scrolling.", " "),
-        (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t")
+        (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t"),
+        (r"--More-- or \(q\)uit", " ")
     ]
-    pattern_syntax_error = r"% Invalid input detected at"
+    pattern_syntax_error = r"% Invalid input detected at|Command not found"
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
     command_submit = "\r"
-    rogue_chars = ["\r\x00"]
+    rogue_chars = ["\r", "\x00"]
 
     rx_hw = re.compile(
         r"System Description\.+ ISKRATEL Switching\n"
@@ -44,6 +46,26 @@ class Profile(BaseProfile):
         r"Puma Microcode Version\.+ (?P<micr_ver>\S+)\n",
         re.MULTILINE)
 
+    rx_hw2 = re.compile(
+        r"System Description\.+ ISKRATEL Switching\n"
+        r"Machine Type\.+ (?P<descr>Iskratel .+)\n"
+        r"Machine Model\.+ (?P<platform>\S+)\n"
+        r"Serial Number\.+ (?P<serial>\S+)\n"
+        r"FRU Number\.+ (?P<number>\S+)\n"
+        r"Part Number\.+ (?P<part_no>\S+)\n"
+        r"Maintenance Level\.+ .+\n"
+        r"Manufacturer\.+ .+\n"
+        r"Burned In MAC Address\.+ (?P<mac>\S+)\n"
+        r"Network Processing Device\.+ .+\n"
+        r"Hardware and CPLD Version\.+ (?P<hw_ver>\S+)\n"
+        r"IPMI Version\.+ (?P<ipmi_ver>\S+)",
+        re.MULTILINE)
+
     def get_hardware(self, script):
         c = script.cli("show hardware", cached=True)
-        return self.rx_hw.search(c).groupdict()
+        match = self.rx_hw.search(c)
+        if match:
+            return match.groupdict()
+        else:
+            match = self.rx_hw2.search(c)
+            return match.groupdict()

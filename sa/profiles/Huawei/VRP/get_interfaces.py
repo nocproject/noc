@@ -61,6 +61,7 @@ class Script(BaseScript):
         "Eth-Trunk": "aggregated",
         "Ip-Trunk": "aggregated",
         "XGigabitEthernet": "physical",
+        "Ten-GigabitEthernet": "physical",
         "GigabitEthernet": "physical",
         "FastEthernet": "physical",
         "Ethernet": "physical",
@@ -77,7 +78,8 @@ class Script(BaseScript):
         "Vlanif": "SVI",
         "Vlan-interface": "SVI",
         "NULL": "null",
-        "RprPos": "unknown"
+        "RprPos": "unknown",
+        "Rpr": "unknown"
     }
 
     def get_ospfint(self):

@@ -41,7 +41,7 @@ Ext.define("NOC.core.ModelApplication", {
         me.base_url = "/" + n[1] + "/" + n[2] + "/";
         me.appName = n[1] + "." + n[2];
         // Variables
-        me.currentQuery = {};
+        me.currentQuery = me.currentQuery || {};
         // Create store
         var bs = Math.ceil(screen.height / 24);
         me.store = Ext.create("NOC.core.ModelStore", {
@@ -97,7 +97,14 @@ Ext.define("NOC.core.ModelApplication", {
                 break;
         }
         // Finally, load the store
-        me.store.load();
+        if(Ext.Object.isEmpty(me.currentQuery)) {
+            me.store.load();
+        } else {
+            Ext.each(me.filterSetters, function(set) {
+                set(me.currentQuery);
+            });
+            me.reloadStore();
+        }
     },
     //
     createGrid: function() {
@@ -184,6 +191,7 @@ Ext.define("NOC.core.ModelApplication", {
                     // @todo: Smarter solution using Ext.Class.alias
                     var ft = {
                         boolean: "NOC.core.modelfilter.Boolean",
+                        choices: "NOC.core.modelfilter.Choices",
                         lookup: "NOC.core.modelfilter.Lookup",
                         vcfilter: "NOC.core.modelfilter.VCFilter",
                         afi: "NOC.core.modelfilter.AFI",
@@ -243,6 +251,48 @@ Ext.define("NOC.core.ModelApplication", {
                 }
             }
         ];
+
+        if(me.openDashboard) {
+            rowItems = rowItems.concat([
+                {
+                    glyph: me.openDashboard.icon,
+                    color: me.openDashboard.color,
+                    tooltip: me.openDashboard.tooltip,
+                    scope: me,
+                    handler: function(grid, rowIndex) {
+                        var me = this,
+                            record = me.store.getAt(rowIndex);
+
+                        window.open(
+                            '/ui/grafana/dashboard/script/noc.js?dashboard=' + me.openDashboard.type + '&id=' + record.get('managed_object')
+                        );
+                    }
+                }
+            ]);
+        }
+
+        if(me.levelFilter) {
+            rowItems = rowItems.concat([
+                {
+                    glyph: me.levelFilter.icon,
+                    color: me.levelFilter.color,
+                    tooltip: me.levelFilter.tooltip,
+                    scope: me,
+                    handler: function(grid, rowIndex) {
+                        var me = this,
+                            record = me.store.getAt(rowIndex);
+
+                        me.currentQuery[me.levelFilter.filter] = record.id;
+                        me.store.setFilterParams(me.currentQuery);
+                        Ext.each(me.filterSetters, function(set) {
+                            set(me.currentQuery);
+                        });
+                        me.reloadStore();
+                    }
+                }
+            ]);
+        }
+
         // @todo: Replace with preview api
         if(me.onPreview) {
             rowItems = rowItems.concat([

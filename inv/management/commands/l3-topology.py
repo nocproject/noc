@@ -19,7 +19,7 @@ from noc.ip.models.vrf import VRF
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.subinterface import SubInterface
-from noc.lib.ip import IP
+from noc.core.ip import IP
 from noc.lib.validators import is_rd
 
 

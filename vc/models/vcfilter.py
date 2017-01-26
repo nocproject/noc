@@ -10,10 +10,15 @@
 import re
 ## Django modules
 from django.db import models
+from noc.core.model.decorator import on_delete_check
 
 rx_vc_filter = re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")
 
 
+@on_delete_check(check=[
+    ("vc.VCBindFilter", "vc_filter"),
+    ("vc.VCDomainProvisioningConfig", "vc_filter"),
+])
 class VCFilter(models.Model):
     """
     VC Filter

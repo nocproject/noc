@@ -188,6 +188,10 @@ class ExtModelApplication(ExtApplication):
     def cleaned_query(self, q):
         nq = {}
         for p in q:
+            if p.endswith("__exists"):
+                v = BooleanParameter().clean(q[p])
+                nq[p.replace("__exists", "__isnull")] = not v
+                continue
             if "__" in p:
                 np, lt = p.split("__", 1)
             else:
@@ -468,7 +472,14 @@ class ExtModelApplication(ExtApplication):
                 "status": False,
                 "message": "Not found"
             }, status=self.NOT_FOUND)
-        o.delete()  # @todo: Detect errors
+        try:
+            o.delete()
+        except ValueError as e:
+            return self.render_json(
+                {
+                    "success": False,
+                    "message": "ERROR: %s" % e
+                }, status=self.CONFLICT)
         return HttpResponse(status=self.DELETED)
 
     @view(url="^actions/group_edit/$", method=["POST"],

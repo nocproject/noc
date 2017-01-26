@@ -83,10 +83,14 @@ class BIAPI(API):
         }
         for fn in model._fields_order:
             f = model._fields[fn]
+            d = getattr(f, "dict_type", None)
+            if d:
+                d = d._meta.name
             r["fields"] += [{
                 "name": f.name,
                 "description": None,
-                "type": f.db_type
+                "type": f.db_type,
+                "dict": d
             }]
         return r
 
@@ -134,9 +138,9 @@ class BIAPI(API):
             "owner": d.owner,
             "created": d.created.isoformat(),
             "changed": d.changed.isoformat()
-        } for d in Dashboard.objects.filter(
-            owner=self.get_user()
-        ).exclude("config")]
+        } for d in Dashboard.objects
+#                   .filter(owner=self.get_user())
+                    .exclude("config")]
 
     def _get_dashboard(self, id):
         """
@@ -145,7 +149,7 @@ class BIAPI(API):
         :return:
         """
         return Dashboard.objects.filter(
-            owner=self.get_user(),
+#           owner=self.get_user(),
             id=id
         ).first()
 

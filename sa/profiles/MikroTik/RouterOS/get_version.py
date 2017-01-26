@@ -18,12 +18,13 @@ class Script(BaseScript):
     name = "MikroTik.RouterOS.get_version"
     cache = True
     interface = IGetVersion
+    #Some versions of Mikrotik return parameter values in quotes
     rx_ver = re.compile(
-        r"version: (?P<version>\d+\.\d+(\.\d+)?).+board-name: (?P<platform>\D+?.\S+?)\n",
+        r"version: (?P<q>\"?)(?P<version>\d+\.\d+(\.\d+)?)(?P=q).+board-name: (?P<qp>\"?)(?P<platform>\D+?.\S+?)(?P=qp)\n",
         re.MULTILINE | re.DOTALL)
     rx_rb = re.compile(
-        r"serial-number: (?P<serial>\S+).+current-firmware: "
-        r"(?P<boot>\d+\.\d+)", re.MULTILINE | re.DOTALL)
+        r"serial-number: (?P<qs>\"?)(?P<serial>\S+?)(?P=qs)\n.+current-firmware: "
+        r"(?P<qb>\"?)(?P<boot>\d+\.\d+)(?P=qb)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         v = self.cli("system resource print")

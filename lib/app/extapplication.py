@@ -106,8 +106,13 @@ class ExtApplication(Application):
         Returns a list of requested object objects
         """
         # Todo: Fix
-        q = dict((str(k), v[0] if len(v) == 1 else v)
-            for k, v in request.GET.lists())
+        if request.method == "POST":
+            q = dict((str(k), v[0] if len(v) == 1 else v)
+                     for k, v in request.POST.lists())
+        else:
+            q = dict((str(k), v[0] if len(v) == 1 else v)
+                     for k, v in request.GET.lists())
+
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)

@@ -14,10 +14,15 @@ import operator
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField
 import cachetools
+from noc.core.model.decorator import on_delete_check
 
 id_lock = threading.Lock()
 
 
+@on_delete_check(check=[
+    ("sa.ManagedObject", "pool"),
+    # ("fm.EscalationItem", "administrative_domain")
+])
 class Pool(Document):
     meta = {
         "collection": "noc.pools"
@@ -39,18 +44,12 @@ class Pool(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
-        try:
-            return Pool.objects.get(id=id)
-        except Pool.DoesNotExist:
-            return None
+        return Pool.objects.filter(id=id).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name):
-        try:
-            return Pool.objects.get(name=name)
-        except Pool.DoesNotExist:
-            return None
+        return Pool.objects.filter(name=name).first()
 
     def get_delta(self):
         """

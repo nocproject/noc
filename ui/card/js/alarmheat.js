@@ -16,9 +16,7 @@ Heatmap.prototype.initialize = function () {
         scale = q.zoom ? parseInt(q.zoom) : 11;
     this.map = L.map("map");
     // Subscribe to events
-    this.map.on("moveend", function () {
-        me.poll_data();
-    });
+    this.map.on("moveend", function() {me.poll_data();});
     this.heatmap = null;
     this.topology = null;
     this.pops = null;
@@ -31,11 +29,11 @@ Heatmap.prototype.initialize = function () {
     this.map.setView([lat, lon], scale);
 };
 
-Heatmap.prototype.parseQuerystring = function () {
+Heatmap.prototype.parseQuerystring = function() {
     var q = window.location.search.substring(1),
         vars = q.split("&"),
         r = {}, i, pair;
-    for (i = 0; i < vars.length; i++) {
+    for(i = 0; i < vars.length; i++) {
         pair = vars[i].split("=");
         r[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
     }
@@ -54,11 +52,11 @@ Heatmap.prototype.poll_data = function () {
         n = bbox.getNorth(),
         s = bbox.getSouth(),
         zoom = me.map.getZoom(),
-        onEachPoP = function (feature, layer) {
-            if (feature.properties && feature.properties.objects) {
+        onEachPoP = function(feature, layer) {
+            if(feature.properties && feature.properties.alarms > 0 && feature.properties.objects) {
                 var text = ["Alarms: " + feature.properties.alarms, ""];
-                text = text.concat(feature.properties.objects.map(function (v) {
-                    return "<a target=_ href='/api/card/view/managedobject/" + v.id + "/'>" + v.name + "</a>";
+                text = text.concat(feature.properties.objects.map(function(v) {
+                    return "<a target=_ href='/api/card/view/managedobject/" + v.id +"/'>" + v.name + "</a>";
                 }));
                 layer.bindPopup(text.join("<br/>"));
             }
@@ -70,8 +68,16 @@ Heatmap.prototype.poll_data = function () {
             weight: 1,
             opacity: 1,
             fillOpacity: 0.8
+        },
+        pointOptions = {
+            radius: 5,
+            // fillColor: "#000000",
+            // color: "#000000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
         };
-    $.ajax("/api/card/view/alarmheat/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s).done(function (data) {
+    $.ajax("/api/card/view/alarmheat/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s).done(function(data) {
         // Replace heatmap
         var heat_data = [];
         $.each(data.alarms, function(i, v) {
@@ -80,21 +86,25 @@ Heatmap.prototype.poll_data = function () {
             }
         });
         //
-        if (me.topology) {
+        if(me.topology) {
             me.map.removeLayer(me.topology);
             me.topology = null;
         }
-        if (data.links) {
+        if(data.links) {
             me.topology = L.geoJSON(data.links).addTo(me.map);
         }
         //
-        if (me.pops) {
+        if(me.pops) {
             me.map.removeLayer(me.pops);
         }
-        if (data.pops) {
+        if(data.pops) {
             me.pops = L.geoJSON(data.pops, {
-                pointToLayer: function (feature, latlng) {
-                    return L.circleMarker(latlng, popOptions)
+                pointToLayer: function(feature, latlng) {
+                    if(feature.properties.alarms > 0) {
+                        return L.circleMarker(latlng, popOptions)
+                    } else {
+                        return L.circleMarker(latlng, pointOptions)
+                    }
                 },
                 onEachFeature: onEachPoP
             }).addTo(me.map);

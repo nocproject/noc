@@ -25,6 +25,7 @@ from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
 from noc.main.models.textindex import full_text_search
 from noc.core.cache.decorator import cachedmethod
+from noc.core.model.decorator import on_delete_check
 
 ## Regular expressions
 rx_vc_underline = re.compile("\s+")
@@ -33,6 +34,9 @@ rx_vc_empty = re.compile(r"[^a-zA-Z0-9\-_]+")
 id_lock = Lock()
 
 
+@on_delete_check(check=[
+    ("ip.Prefix", "vc")
+])
 @full_text_search
 class VC(models.Model):
     """

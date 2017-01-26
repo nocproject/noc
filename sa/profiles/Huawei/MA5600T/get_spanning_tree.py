@@ -25,11 +25,12 @@ class Script(BaseScript):
     rx_inst_id = re.compile("^\s*(?P<id>\d+)", re.MULTILINE)
     rx_inst = re.compile(
         r"^\s+Bridge\s+Priority\s*:\s*(?P<bridge_priority>\d+)\s+"
-        r"MAC Address\s*:\s*(?P<bridge_id>\S+)\s*\n"
-        r"^\s+.+\n"
-        r"(^\s+.+\n)?"
-        r"(^\s+.+\n)?"
+        r"MAC Address\s*:\s*(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
+    rx_ist_root = re.compile(
         r"^\s+IST Root\s+Priority\s*:\s*(?P<root_priority>\d+)\s+"
+        r"MAC Address\s*:\s*(?P<root_id>\S+)\s*\n", re.MULTILINE)
+    rx_cst_root = re.compile(
+        r"^\s+CST Root\s+Priority\s*:\s*(?P<root_priority>\d+)\s+"
         r"MAC Address\s*:\s*(?P<root_id>\S+)\s*\n", re.MULTILINE)
     rx_port = re.compile(
         r"^\s*\d+\s+(?P<port>\d+/\s*\d+/\s*\d+)\s+\d+", re.MULTILINE)
@@ -89,19 +90,28 @@ class Script(BaseScript):
                 instance["id"] = int(match.group("id"))
                 match = self.rx_inst.search(inst)
                 instance.update(match.groupdict())
+                if instance["id"] == 0:
+                    match = self.rx_ist_root.search(inst)
+                    instance.update(match.groupdict())
+                else:
+                    match = self.rx_cst_root.search(inst)
+                    if not match:
+                        match = self.rx_ist_root.search(inst)
+                    instance.update(match.groupdict())
                 vlans = ""
                 for i in c.split("\n"):
                     match = self.rx_vlans.search(c)
-                    if int(match.group("inst")) == instance["id"]:
-                        vlans = match.group("vlans").strip()
-                        # 90   to   91
-                        vlans = re.sub('\s+to\s+', '-', vlans)
-                        # 90  100
-                        vlans = re.sub('\s{2,}', ' ', vlans)
-                        vlans = vlans.replace(" ", ",")
-                        break
+                    if match:
+                        if int(match.group("inst")) == instance["id"]:
+                            vlans = match.group("vlans").strip()
+                            # 90   to   91
+                            vlans = re.sub('\s+to\s+', '-', vlans)
+                            # 90  100
+                            vlans = re.sub('\s{2,}', ' ', vlans)
+                            vlans = vlans.replace(" ", ",")
+                            break
                 if vlans == "":
-                    vlans = "1-4094"
+                    vlans = "1-4095"
                 instance["vlans"] = vlans
                 for p in self.rx_port.finditer(inst):
                     ifname = p.group("port").replace(" ", "")

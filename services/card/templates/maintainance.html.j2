@@ -29,6 +29,14 @@
         </td>
     <tr>
     {% endif %}
+    {% if object.escalation_tt %}
+    <tr>
+        <th scope="row">{{ _("Escalation") }}</th>
+        <td>
+            TT <a href="/api/card/view/tt/{{ object.escalation_tt }}/">{{ object.escalation_tt }}</a>
+        </td>
+    </tr>
+    {% endif %}
     <tr>
         <th scope="row">{{ _("Contacts") }}</th>
         <td>{{ contacts }}</td>
@@ -51,8 +59,8 @@
                             <br/>
                             <span class="small">{{ a["object"] | object_location }}</span>
                         </td>
-                        <td>{{ a["address"] }}</td>
                         <td>{{ a["platform"] }}</td>
+                        <td>{{ a["address"] }}</td>
                         <td>{{ a["summary"] | glyph_summary }}</td>
                     </tr>
                     {% endfor %}

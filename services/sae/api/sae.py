@@ -81,6 +81,27 @@ class SAEAPI(API):
              data["version"], args, timeout]
         )
 
+    @api
+    @tornado.gen.coroutine
+    def get_credentials(self, object_id):
+        # Resolve object data
+        data = yield self.service.get_executor("db").submit(
+            self.get_object_data, object_id
+        )
+        # Find pool name
+        pool = self.service.get_pool_name(data["pool_id"])
+        if not pool:
+            raise APIError("Pool not found")
+        # Get activator
+        activator = self.service.get_activator(pool)
+        try:
+            data["service"] = activator._get_service()
+        except ValueError:
+            raise APIError(
+                "No activators configured for pool '%s'" % pool
+            )
+        raise tornado.gen.Return(data)
+
     @cachedmethod(
         key="cred-%s"
     )

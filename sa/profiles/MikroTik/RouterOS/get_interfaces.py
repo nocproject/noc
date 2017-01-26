@@ -6,9 +6,12 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+# Python modules
+import time
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.lib.validators import is_int
 
 
 class Script(BaseScript):
@@ -59,9 +62,18 @@ class Script(BaseScript):
         ifname = self.cli_detail("/interface %s print detail without-paging" % iftype, cached=True)
         for n1, f1, r1 in ifname:
             if self.si["name"] == r1["name"]:
-                tun["local_address"] = r1["local-address"]
+                #in eoip-tunnel on routerboard: 411AH firmware: 2.20, local-address is not exist
+                if "local-address" in r1.keys():
+                    tun["local_address"] = r1["local-address"]
                 tun["remote_address"] = r1["remote-address"]
                 return
+
+    def get_mtu(self, r):
+        if is_int(r.get("mtu")):
+            return int(r["mtu"])
+        if is_int(r.get("actual-mtu")):
+            return int(r["actual-mtu"])
+        return None
 
     def execute(self):
         ifaces = {}
@@ -72,9 +84,11 @@ class Script(BaseScript):
                 "/interface print oid without-paging"
         ):
             n_ifindex[n] = int(r["name"].rsplit(".", 1)[-1])
+        time.sleep(1)
         # Fill interfaces
-        for n, f, r in self.cli_detail(
-            "/interface print detail without-paging"):
+        a = self.cli_detail(
+            "/interface print detail without-paging")
+        for n, f, r in a:
             if r["type"] in self.ignored_types:
                 continue
             if not r["type"] in "vlan":  # TODO: Check other types
@@ -96,12 +110,13 @@ class Script(BaseScript):
                 or r["type"].startswith("gre-"):
                     self.si = {
                         "name": r["name"],
-                        "mtu": r.get("actual-mtu") or r.get("mtu"),
                         "admin_status": "X" not in f,
                         "oper_status": "R" in f,
                         "enabled_afi": ["IPv4"],
                         "enabled_protocols": []
                     }
+                    if self.get_mtu(r) is not None:
+                        self.si["mtu"] = self.get_mtu(r)
                     if r["type"].startswith("ipip-"):
                         self.get_tunnel("IPIP", "R", "IPv4", ifaces)
                     if r["type"].startswith("eoip-"):
@@ -109,6 +124,7 @@ class Script(BaseScript):
                     if r["type"].startswith("gre-"):
                         self.get_tunnel("GRE", "R", "IPv4", ifaces)
                     ifaces[r["name"]]["subinterfaces"] += [self.si]
+        time.sleep(1)
         # Refine ethernet parameters
         for n, f, r in self.cli_detail(
             "/interface ethernet print detail without-paging"):
@@ -122,13 +138,14 @@ class Script(BaseScript):
                 self.si = {
                     "name": r["name"],
                     "mac": r.get("mac-address") or r.get("mac"),
-                    "mtu": r["mtu"],
                     "admin_status": "X" not in f,
                     "oper_status": "R" in f,
                     "enabled_afi": [],
                     "vlan_ids": [int(r["vlan-id"])],
                     "enabled_protocols": []
                 }
+                if self.get_mtu(r) is not None:
+                    self.si["mtu"] = self.get_mtu(r)
                 i["subinterfaces"] += [self.si]
         # process internal `switch` ports and vlans
         vlan_tags = {}
@@ -163,13 +180,14 @@ class Script(BaseScript):
                     self.si = {
                         "name": p,
                         "mac": i.get("mac"),
-                        "mtu": i.get("mtu"),
                         "admin_status": i.get("admin_status"),
                         "oper_status": i.get("oper_status"),
                         "enabled_afi": ["BRIDGE"],
                         "enabled_protocols": [],
                         "tagged_vlans": []
                     }
+                    if self.get_mtu(i) is not None:
+                        self.si["mtu"] = self.get_mtu(i)
                     if p in vlan_tags:
                         if vlan_tags[p]:
                             self.si["tagged_vlans"] += [vlan_id]
@@ -267,9 +285,10 @@ class Script(BaseScript):
                         "admin_status": i["admin_status"],
                         "oper_status": i["oper_status"],
                         "mac": r["mac-address"],
-                        "mtu": r.get("actual-mtu") or r.get("mtu"),
                         "enabled_protocols": []
                     }
+                    if self.get_mtu(i) is not None:
+                        self.si["mtu"] = self.get_mtu(i)
                     i["subinterfaces"] += [self.si]
                 else:
                     i["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
@@ -288,9 +307,10 @@ class Script(BaseScript):
                         "admin_status": i["admin_status"],
                         "oper_status": i["oper_status"],
                         "mac": r["mac-address"],
-                        "mtu": r["mtu"],
                         "enabled_protocols": []
                     }
+                    if self.get_mtu(i) is not None:
+                        self.si["mtu"] = self.get_mtu(i)
                     i["subinterfaces"] += [self.si]
                 if r["mode"] in ["802.3ad"]:
                     i["enabled_protocols"] += ["LACP"]

@@ -16,12 +16,13 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Raisecom.ROS"
-    pattern_more = "^ --More--"
+    pattern_more = "^ --More--\s*"
     pattern_unpriveleged_prompt = r"^\S+?>"
     command_super = "enable"
     pattern_prompt = r"^\S+?#"
     command_more = " "
     command_exit = "exit"
+    rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
 
     rx_ver = re.compile(
         r"Product name: (?P<platform>\S+)\s*\n"

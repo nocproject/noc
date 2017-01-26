@@ -6,10 +6,6 @@
       "version": "6.0.1"
     },
     {
-      "name": "webix",
-      "version": "3.2.4"
-    },
-    {
       "name": "joint",
       "version": "0.9.6"
     },
@@ -36,10 +32,6 @@
     {
       "name": "nocsound",
       "version": "1.0.0"
-    },
-    {
-      "name": "jsmessage",
-      "version": "2013.03"
     },
     {
       "name": "handlebars",

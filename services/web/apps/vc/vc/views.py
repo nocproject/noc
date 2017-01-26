@@ -16,7 +16,7 @@ from noc.vc.models.vcdomain import VCDomain
 from noc.vc.models.vcfilter import VCFilter
 from noc.vc.models.vc import VC
 from noc.inv.models.subinterface import SubInterface
-from noc.lib.ip import IP
+from noc.core.ip import IP
 from noc.sa.interfaces.base import DictParameter, ModelParameter, ListOfParameter,\
     IntParameter, StringParameter
 from noc.core.translation import ugettext as _

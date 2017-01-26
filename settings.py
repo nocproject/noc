@@ -67,7 +67,7 @@ TEMPLATE_LOADERS = [
     "django.template.loaders.filesystem.Loader",
     "django.template.loaders.app_directories.Loader"
 ]
-# 
+#
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.debug",
@@ -131,7 +131,10 @@ INSTALLED_APPS = [
     "noc.peer",
     "noc.kb",
     "noc.maintainance",
-    "noc.support"
+    "noc.support",
+    "noc.bi",
+    "noc.sla",
+    "noc.phone"
 ]
 
 FORCE_SCRIPT_NAME = ""

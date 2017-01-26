@@ -90,53 +90,58 @@ Ext.define('NOC.LoginView', {
         }]
     }
     , onLoginClick: function() {
-        var me = this,
-            params = Ext.encode({
-                jsonrpc: '2.0',
-                method: 'login',
-                params: [me.getViewModel().getData()]
-            });
+        var params = Ext.encode({
+            jsonrpc: '2.0',
+            method: 'login',
+            params: [this.getViewModel().getData()]
+        });
         if(params !== undefined) {
             Ext.Ajax.request({
                 url: '/api/login/'
                 , params: params
                 , method: 'POST'
-                , success: me.onLoginSuccess
-                , failure: me.onLoginFailure
+                , success: Ext.Function.pass(this.onLoginSuccess, this.onLoginFailure)
+                , failure: this.onLoginFailure
             });
         }
     }
+
     , onLoginFailure: function() {
         Ext.toast({
-            html: __('Failed to log in'),
+            html: '<div style="text-align: center;">' + __('Failed to log in') + '</div>',
             align: 't',
-            spacing: 0,
             paddingY: 0,
-            width: '100%'
+            width: '80%',
+            minHeight: 5,
+            border: false,
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
+            bodyStyle: {
+                color: 'white',
+                background: 'red',
+                "font-weight": 'bold'
+            },
+            style: {
+                background: 'red',
+                "border-width": '0px'
+            }
         });
     }
-    , onLoginSuccess: function(response) {
-        var me = this;
-        try {
-            var o = Ext.decode(response.responseText);
-            if(true !== o.result) {
-                me.onLoginFailure();
+
+    , onLoginSuccess: function(failureFunc, response) {
+        var o = Ext.decode(response.responseText);
+        if(true !== o.result) {
+            failureFunc();
+        } else {
+            var param = Ext.urlDecode(location.search);
+            if('uri' in param) {
+                document.location = param.uri;
             } else {
-                var param = Ext.urlDecode(location.search);
-                if('uri' in param) {
-                    document.location = param.uri;
-                } else {
-                    document.location = '/';
-                }
+                document.location = '/';
             }
-        } catch(e) {
-            Ext.toast({
-                html: __('Failed to log in'),
-                align: 't',
-                spacing: 0,
-                paddingY: 0,
-                width: '100%'
-            });
         }
     }
 

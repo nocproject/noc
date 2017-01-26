@@ -14,7 +14,7 @@ from noc.sa.interfaces.igetfqdn import IGetFQDN
 
 
 class Script(BaseScript):
-    name = "Cisco.IOS.get_fqdn"
+    name = "Huawei.VRP.get_fqdn"
     interface = IGetFQDN
     rx_hostname = re.compile(r"^sysname\s+(?P<hostname>\S+)", re.MULTILINE)
     rx_hostname_lldp = re.compile(r"^System name\s+:\s*(?P<hostname>\S+)", re.MULTILINE)

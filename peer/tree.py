@@ -14,7 +14,7 @@
 ##----------------------------------------------------------------------
 
 # NOC modules
-from noc.lib.ip import *
+from noc.core.ip import IP, IPv4
 
 
 class Node(object):
@@ -22,9 +22,9 @@ class Node(object):
     Optimizing prefix tree.
     @todo: Merge with PrefixDB
     """
-    def __init__(self, parent=None, prefix=[], n=0, prefixes=None):
+    def __init__(self, parent=None, prefix=None, n=0, prefixes=None):
         self.parent = parent
-        self.prefix = prefix
+        self.prefix = prefix or []
         self.children = [None, None]
         self.is_final = False
         self.n = 0
@@ -66,7 +66,7 @@ class Node(object):
                 # with siblings
                 n = self.parent
                 while n:
-                    if len([c for c in n.children if c and c.is_final]) == 2:
+                    if sum(c for c in n.children if c and c.is_final) == 2:
                         n.release_children()
                         n = n.parent
                     else:

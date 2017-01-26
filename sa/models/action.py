@@ -17,7 +17,7 @@ import jinja2
 ## NOC modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
-from noc.lib.ip import IP
+from noc.core.ip import IP
 
 
 class ActionParameter(EmbeddedDocument):
@@ -121,10 +121,7 @@ class Action(Document):
                     return ac
         return None
 
-    def execute(self, obj, **kwargs):
-        """
-        Execute commands
-        """
+    def expand(self, obj, **kwargs):
         ac = self.get_commands(obj)
         if not ac:
             return None
@@ -132,7 +129,15 @@ class Action(Document):
         loader = jinja2.DictLoader({"tpl": ac.commands})
         env = jinja2.Environment(loader=loader)
         template = env.get_template("tpl")
-        commands = template.render(**self.clean_args(obj, **kwargs))
+        return template.render(**self.clean_args(obj, **kwargs))
+
+    def execute(self, obj, **kwargs):
+        """
+        Execute commands
+        """
+        commands = self.expand(obj, **kwargs)
+        if commands is None:
+            return None
         # Execute rendered commands
         if ac.config_mode:
             return obj.scripts.configure(commands=commands)

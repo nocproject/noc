@@ -22,4 +22,4 @@ class SupplierApplication(ExtDocApplication):
     query_fields = ["name__icontains"]
 
     def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile.style else ""
+        return o.profile.style.css_class_name if o.profile and o.profile.style else ""

@@ -12,8 +12,12 @@ from django.db import models
 ## NOC modules
 from noc.core.model.fields import TagsField
 from noc.lib.app.site import site
+from noc.core.model.decorator import on_delete_check
 
 
+@on_delete_check(check=[
+    ("ip.VRF", "vrf_group")
+])
 class VRFGroup(models.Model):
     """
     Group of VRFs with common properties

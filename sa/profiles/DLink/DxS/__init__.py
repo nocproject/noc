@@ -139,7 +139,7 @@ class Profile(BaseProfile):
         r"(?P<addr_learning>Enabled|Disabled)\s*"
         r"((?P<trap_state>Enabled|Disabled)\s*)?"
         r"((?P<asd>\-)\s*)?"
-        r"(\n\s+(?P<mdix>Auto|MDI|MDIX|\-)\s*)?"
+        r"(\n\s+(?P<mdix>Auto|MDI|MDIX|Cross|\-)\s*)?"
         r"(\n\s+Desc(ription)?:\s*?(?P<desc>.*?))?$",
         re.MULTILINE)
 
@@ -293,8 +293,8 @@ class Profile(BaseProfile):
                     "vlan_id": int(match.group("vlan_id")),
                     "vlan_name": match.group("vlan_name"),
                     "vlan_type": match.group("vlan_type"),
-                    "tagged_ports": tagged_ports,
-                    "untagged_ports": untagged_ports
+                    "tagged_ports": set(tagged_ports),
+                    "untagged_ports": set(untagged_ports)
                 }]
         return vlans
 

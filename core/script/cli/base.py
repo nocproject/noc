@@ -26,6 +26,8 @@ class CLI(object):
     iostream_class = None
     BUFFER_SIZE = 1048576
     MATCH_TAIL = 256
+    # Buffer to check missed ECMA control characters
+    MATCH_MISSED_CONTROL_TAIL = 8
     # Retries on immediate disconnect
     CONNECT_RETRIES = 3
     # Timeout after immediate disconnect
@@ -72,6 +74,8 @@ class CLI(object):
         self.close_timeout = None
 
     def close(self):
+        if self.script.session:
+            self.script.close_session(self.script.session)
         if self.iostream:
             self.iostream.close()
         if self.ioloop:
@@ -79,15 +83,27 @@ class CLI(object):
             self.ioloop.close(all_fds=True)
             self.ioloop = None
         self.is_closed = True
-        if self.script.session:
-            self.script.close_session(self.script.session)
 
     def deferred_close(self, session_timeout):
         if self.is_closed or not self.iostream:
             return
         self.logger.debug("Setting close timeout to %ss",
                           session_timeout)
-        self.close_timeout = self.ioloop.call_later(
+        # Cannot call call_later directly due to
+        # thread-safety problems
+        # See tornado issue #1773
+        tornado.ioloop.IOLoop.instance().add_callback(
+            self._set_close_timeout,
+            session_timeout
+        )
+
+    def _set_close_timeout(self, session_timeout):
+        """
+        Wrapper to deal with IOLoop.add_timeout thread safety problem
+        :param session_timeout:
+        :return:
+        """
+        self.close_timeout = tornado.ioloop.IOLoop.instance().call_later(
             session_timeout,
             self.close
         )
@@ -246,7 +262,12 @@ class CLI(object):
                 raise tornado.gen.TimeoutError()
             self.logger.debug("Received: %r", r)
             # Clean input
-            self.buffer += self.cleaned_input(r)
+            if self.buffer.find(
+                    "\x1b",
+                    -self.MATCH_MISSED_CONTROL_TAIL) != -1:
+                self.buffer = self.cleaned_input(self.buffer + r)
+            else:
+                self.buffer += self.cleaned_input(r)
             # Try to find matched pattern
             offset = max(0, len(self.buffer) - self.MATCH_TAIL)
             for rx, handler in self.pattern_table.iteritems():
@@ -414,7 +435,7 @@ class CLI(object):
 
     def on_failure(self, data, match):
         self.logger.debug("State: <FAILURE>")
-        raise self.CLIError(self.buffer or None)
+        raise self.CLIError(self.buffer or data or None)
 
     def on_prompt(self, data, match):
         self.logger.debug("State: <PROMT>")
@@ -554,3 +575,21 @@ class CLI(object):
         Return collected message of the day
         """
         return self.motd
+
+    def set_script(self, script):
+        self.script = script
+        if self.close_timeout:
+            tornado.ioloop.IOLoop.instance().remove_timeout(self.close_timeout)
+            self.close_timeout = None
+        if self.motd:
+            self.script.set_motd(self.motd)
+
+    def setup_session(self):
+        if self.profile.setup_session:
+            self.logger.debug("Setup session")
+            self.profile.setup_session(self.script)
+
+    def shutdown_session(self):
+        if self.profile.shutdown_session:
+            self.logger.debug("Shutdown session")
+            self.profile.shutdown_session(self.script)

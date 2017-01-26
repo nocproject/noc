@@ -398,7 +398,7 @@ class Script(BaseScript):
                 iftype = self.profile.get_interface_type(ifname)
                 if not iftype:
                     self.logger.info(
-                        "Ignoring unknown interface type: '%s", iftype
+                        "Ignoring unknown interface type for: %s", ifname
                     )
                     continue
                 iface = {

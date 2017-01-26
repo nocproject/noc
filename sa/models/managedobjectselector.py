@@ -27,7 +27,7 @@ from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import TagsField
 from noc.lib.validators import check_re, is_int, is_ipv4, is_ipv6
 from noc.lib.db import SQL, QTags
-from noc.core.model.decorator import on_delete, on_save
+from noc.core.model.decorator import on_delete, on_save, on_delete_check
 from noc.core.model.fields import DocumentReferenceField
 
 id_lock = Lock()
@@ -35,6 +35,22 @@ id_lock = Lock()
 
 @on_save
 @on_delete
+@on_delete_check(check=[
+    # ("cm.SelectorItem", "selector"),
+    ("fm.AlarmDiagnosticConfig", "selector"),
+    # ("fm.EscalationItem", "selector"),
+    ("fm.AlarmTrigger", "selector"),
+    ("fm.EventTrigger", "selector"),
+    ("inv.InterfaceClassificationRule", "selector"),
+    ("inv.NetworkSegment", "selector"),
+    ("sa.CommandSnippet", "selector"),
+    ("sa.GroupAccess", "selector"),
+    ("sa.ManagedObjectSelectorByAttribute", "selector"),
+    ("sa.MRTConfig", "selector"),
+    ("sa.ObjectNotification", "selector"),
+    ("sa.UserAccess", "selector"),
+    ("vc.VCDomainProvisioningConfig", "selector"),
+])
 class ManagedObjectSelector(models.Model):
     class Meta:
         verbose_name = _("Managed Object Selector")
@@ -318,21 +334,6 @@ class ManagedObjectSelector(models.Model):
     def objects_with_scripts(self, scripts):
         return self.managed_objects.filter(
             profile_name__in=self.scripts_profiles(scripts))
-
-    def objects_for_user(self, user, scripts=None):
-        """
-        Returns queryset containing selector objects accessible to user,
-        optionally restricted to ones having scripts
-        :param user: User
-        :param scripts: optional list of scripts
-        :return:
-        """
-        from useraccess import UserAccess
-
-        q = UserAccess.Q(user)
-        if scripts:
-            q &= Q(profile_name__in=self.scripts_profiles(scripts))
-        return self.managed_objects.filter(q)
 
     @classmethod
     def resolve_expression(cls, s):

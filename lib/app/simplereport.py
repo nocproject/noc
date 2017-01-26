@@ -349,7 +349,7 @@ class TableColumn(ReportNode):
             return "-"
         sign, digits, exp = f.as_tuple()
         if exp:
-            r = "." + "".join(map(str, digits[-exp:]))
+            r = "." + "".join(map(str, digits[exp:]))
             if r == ".0":
                 r = ""
             digits = digits[:exp]
@@ -487,6 +487,7 @@ class TableSection(ReportSection):
             "<input type='submit' value='CSV' onclick='getCSVData(\".report-table\");'>",
             "<input type='button' value='" + _("Print") + "'onclick='window.print()'>",
             "<input type='button' value='PDF' onclick='getPDF(\".report-table\")'>",
+            "<input type='submit' value='SSV' onclick='getSSVData(\".report-table\");'>",
             "</form>",
             "<table class='report-table' summary='%s'>" % self.quote(self.name)
         ]
@@ -548,6 +549,11 @@ class TableSection(ReportSection):
         s += ["  var v = $(t).TableCSVExport({delivery: 'value', separator: ','});"]
         s += ["  $('#csv_data').val(v);"]
         s += ["}"]
+        s += ["function getSSVData(t) {"]
+        s += ["  var v = $(t).TableCSVExport({delivery: 'value', separator: ';'});"]
+        s += ["  $('#csv_data').val(v);"]
+        s += ["}"]
+
         s += ["</script>"]
         return "\n".join(s)
 
@@ -566,12 +572,14 @@ class TableSection(ReportSection):
                 n = 1
                 for row in self.data:
                     if type(row) == SectionRow:
+                        writer.writerow([row.name])
                         continue
                     writer.writerow([n] + list(row))
                     n += 1
             else:
                 for row in self.data:
                     if type(row) == SectionRow:
+                        writer.writerow([row.name])
                         continue
                     writer.writerow(row)
         return f.getvalue()

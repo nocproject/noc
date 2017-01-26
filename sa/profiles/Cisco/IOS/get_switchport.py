@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Cisco.IOS.get_switchport
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -31,7 +31,12 @@ class Script(BaseScript):
                          #"Pruning VLANs Enabled:",
                          re.MULTILINE | re.DOTALL)
 
-    rx_descr_if = re.compile(r"^(?P<interface>\S+)\s+(?:up|down|admin down|deleted)\s+(?:up|down)\s+(?P<description>.+)")
+    rx_descr_if = re.compile(
+        r"^(?P<interface>\S+)\s+(?:up|down|admin down|deleted)\s+"
+        r"(?:up|down)\s+(?P<description>.+)")
+    rx_tagged = re.compile(
+        r"^Port\s+Vlans allowed on trunk\s*\n"
+        r"^\S+\s+([0-9\-\,]+)\s*\n", re.MULTILINE)
 
     def get_description(self):
         r = []
@@ -87,7 +92,14 @@ class Script(BaseScript):
                 # 3460,3463-3467,3469-3507,3512,3514,3516-3519,3528,(more)
                 #
                 elif "more" in vlans:
-                    tagged = self.expand_rangelist(vlans[:-7])
+                    try:
+                        c = self.cli("show interface %s trunk" % interface)
+                        match1 = self.rx_tagged.search(c)
+                        if match1:  # If not `none` in returned list
+                            tagged = self.expand_rangelist(match1.group(1))
+                    except self.CLISyntaxError:
+                        # Return anything
+                        tagged = self.expand_rangelist(vlans[:-7])
                 else:
                     tagged = self.expand_rangelist(vlans)
                 if untagged in tagged:

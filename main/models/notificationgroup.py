@@ -20,6 +20,7 @@ from noc.settings import LANGUAGE_CODE
 from noc.lib.timepattern import TimePatternList
 from timepattern import TimePattern
 from noc.core.service.pub import pub
+from noc.core.model.decorator import on_delete_check
 
 id_lock = RLock()
 logger = logging.getLogger(__name__)
@@ -36,6 +37,18 @@ NOTIFICATION_METHOD_CHOICES = [
 USER_NOTIFICATION_METHOD_CHOICES = NOTIFICATION_METHOD_CHOICES
 
 
+@on_delete_check(check=[
+    ("cm.ObjectNotify", "administrative_domain"),
+    ("dns.DNSZone", "notification_group"),
+    ("dns.DNSZoneProfile", "notification_group"),
+    ("fm.ActiveAlarm", "notification_group"),
+    # ("fm.EscalationItem", "administrative_domain")
+    ("fm.AlarmTrigger", "notification_group"),
+    ("fm.EventTrigger", "notification_group"),
+    ("inv.InterfaceProfile", "status_change_notification"),
+    # ("ReportSubscription", "notification_group"),
+    ("vc.VCDomainProvisioningConfig", "notification_group")
+])
 class NotificationGroup(models.Model):
     """
     Notification Groups

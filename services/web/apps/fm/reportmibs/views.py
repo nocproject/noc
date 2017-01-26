@@ -15,7 +15,7 @@ from noc.core.translation import ugettext as _
 
 class ReportreportMIBs(SimpleReport):
     title = _("Installed MIBs")
-    def get_data(self,**kwargs):
+    def get_data(self, request, **kwargs):
         data = []  # Mib, Last Updated, Entries, Depends, Used by
         for m in MIB.objects.order_by("name"):
             ec = MIBData.objects.filter(mib=m.id).count()

@@ -26,11 +26,12 @@ class Script(BaseScript):
         r"^\s*bootbase version\s*:\s+(?P<bootprom>\S+) \| \S+\s*\n",
         re.MULTILINE)
     rx_ver2 = re.compile(
-        r"^\s*Model: (?P<platform>\S+)\s*\n"
+        r"^\s*Model: (?:\S+ \/ )?(?P<platform>\S+)\s*\n"
         r"^\s*ZyNOS version: (?P<version>\S+) \| \S+\s*\n"
         r".+?\n"
         r"^\s*Bootbase version: (?P<bootprom>\S+) \| \S+\s*\n"
         r".+?\n"
+        r"(^\s*Hardware version: (?P<hardware>\S+)\s*\n)?"
         r"^\s*Serial number: (?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
     rx_ver3 = re.compile(
@@ -65,7 +66,7 @@ class Script(BaseScript):
                 }
             else:
                 raise self.NotSupportedError()
-        return {
+        r = {
             "vendor": "ZyXEL",
             "platform": platform,
             "version": match.group("version"),
@@ -73,3 +74,8 @@ class Script(BaseScript):
                 "Boot PROM": match.group("bootprom")
             }
         }
+        if ("hardware" in match.groupdict()) and (match.group("hardware")):
+            r["attributes"]["HW version"] = match.group("hardware")
+        if ("serial" in match.groupdict()) and (match.group("serial")):
+            r["attributes"]["Serial Number"] = match.group("serial")
+        return r

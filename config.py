@@ -167,6 +167,9 @@ class Config(BaseConfig):
             default="local"
         )
         session_ttl = SecondsParameter(default="7d")
+        restrict_to_group = StringParameter(default="")
+        single_session_group = StringParameter(default="")
+        mutual_exclusive_group = StringParameter(default="")
 
     class ping(ConfigSection):
         tos = IntParameter(

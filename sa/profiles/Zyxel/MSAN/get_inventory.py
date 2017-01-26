@@ -26,7 +26,7 @@ class Script(BaseScript):
         r"^\s*hardware serial number\s*:\s+(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
     rx_hw = re.compile(
-        r"^\s*Model\s*:\s+(?P<part_no>\S+)\s*\n"
+        r"^\s*Model\s*:\s+(?:\S+ \/ )?(?P<part_no>\S+)\s*\n"
         r"^.+?\n"
         r"^\s*Hardware version\s*:\s+(?P<revision>\S+)\s*\n"
         r"^\s*Serial number\s*:\s+(?P<serial>\S+)\s*\n",

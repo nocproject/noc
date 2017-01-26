@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ManagedObject
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ from threading import Lock
 ## Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
-                              SET_NULL)
+                              DateTimeField, SET_NULL)
 from django.contrib.auth.models import User, Group
 import cachetools
 import six
@@ -38,6 +38,9 @@ from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import INETField, TagsField, DocumentReferenceField
 from noc.lib.app.site import site
 from noc.lib.stencil import stencil_registry
+from noc.lib.validators import is_ipv4, is_ipv4_prefix
+from noc.core.ip import IP
+from noc.sa.interfaces.base import MACAddressParameter
 from noc.core.gridvcs.manager import GridVCSField
 from noc.main.models.textindex import full_text_search, TextIndex
 from noc.settings import config
@@ -46,13 +49,14 @@ from noc.core.handler import get_handler
 from noc.lib.debug import error_report
 from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
-from noc.core.model.decorator import on_save, on_init, on_delete
+from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
 from noc.inv.models.object import Object
 from objectpath import ObjectPath
 from noc.core.defer import call_later
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.config import config
+from noc.core.script.caller import SessionContext
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
@@ -70,6 +74,18 @@ logger = logging.getLogger(__name__)
 @on_init
 @on_save
 @on_delete
+@on_delete_check(check=[
+    # ("cm.ValidationRule.ObjectItem", ""),
+    ("fm.ActiveAlarm", "managed_object"),
+    ("fm.ActiveEvent", "managed_object"),
+    ("fm.ArchivedAlarm", "managed_object"),
+    ("fm.ArchivedEvent", "managed_object"),
+    ("fm.FailedEvent", "managed_object"),
+    ("fm.NewEvent", "managed_object"),
+    ("inv.Interface", "managed_object"),
+    ("inv.SubInterface", "managed_object")
+    # ("maintainance.Maintainance", "escalate_managed_object"),
+])
 class ManagedObject(Model):
     """
     Managed Object
@@ -183,6 +199,28 @@ class ManagedObject(Model):
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
                             blank=True, null=True)
+    # Reference to controller, when object is CPE
+    controller = ForeignKey(
+        "self", verbose_name="Controller",
+        blank=True, null=True
+    )
+    # CPE id on given controller
+    local_cpe_id = CharField(
+        "Local CPE ID",
+        max_length=128,
+        null=True, blank=True
+    )
+    # Globally unique CPE id
+    global_cpe_id = CharField(
+        "Global CPE ID",
+        max_length=128,
+        null=True, blank=True
+    )
+    # Last seen date, for CPE
+    last_seen = DateTimeField(
+        "Last Seen",
+        blank=True, null=True
+    )
     # For service terminators
     # Name of service termination group (i.e. BRAS, SBC)
     termination_group = ForeignKey(
@@ -277,7 +315,12 @@ class ManagedObject(Model):
 
     @property
     def scripts(self):
-        return ScriptsProxy(self)
+        sp = getattr(self, "_scripts", None)
+        if sp:
+            return sp
+        else:
+            self._scripts = ScriptsProxy(self)
+            return self._scripts
 
     @property
     def actions(self):
@@ -907,6 +950,45 @@ class ManagedObject(Model):
                     20,
                     pop_id=pop.id
                 )
+
+    @classmethod
+    def get_search_Q(cls, query):
+        query = query.strip()
+        if query:
+            if ".*" in query and is_ipv4(query.replace(".*", ".1")):
+                return Q(address__regex=query.replace(".", "\\.")
+                         .replace("*", "[0-9]+"))
+            elif set("+*[]()") & set(query):
+                # Maybe regular expression
+                try:
+                    # Check syntax
+                    # @todo: PostgreSQL syntax differs from python one
+                    re.compile(query)
+                    return Q(name__regex=query)
+                except re.error:
+                    pass
+            elif is_ipv4(query):
+                # Exact match on IP address
+                return Q(address=query)
+            elif is_ipv4_prefix(query):
+                # Match by prefix
+                p = IP.prefix(query)
+                if p.mask >= 20:
+                    return Q(address__gte=p.first.address,
+                             address__lte=p.last.address)
+            else:
+                try:
+                    mac = MACAddressParameter().clean(query)
+                    from noc.inv.models.discoveryid import DiscoveryID
+                    mo = DiscoveryID.find_object(mac)
+                    if mo:
+                        return Q(pk=mo.pk)
+                except ValueError:
+                    pass
+        return None
+
+    def open_session(self, idle_timeout=None):
+        return SessionContext(self, idle_timeout)
 
 
 @on_save

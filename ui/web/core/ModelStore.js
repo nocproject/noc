@@ -57,6 +57,10 @@ Ext.define("NOC.core.ModelStore", {
             schema = Ext.data.schema.Schema.get("default"),
             sModel = schema.getEntity(modelName);
 
+        if(model.actionMethods) {
+            proxy.actionMethods = model.actionMethods;
+        }
+
         if(!sModel) {
             sModel = Ext.define(modelName, {
                 extend: "Ext.data.Model",

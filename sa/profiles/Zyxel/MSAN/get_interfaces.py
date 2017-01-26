@@ -11,7 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.ip import IPv4
+from noc.core.ip import IPv4
 
 
 class Script(BaseScript):
@@ -159,7 +159,7 @@ class Script(BaseScript):
                     iface_mac += [match.groupdict()]
         else:
             ver = self.scripts.get_version()
-            if ver["platform"] in ["IES-1248"]:
+            if ver["platform"] in ["IES-1248", "IES-612"]:
                 for match in self.rx_vlan2.finditer(self.cli("switch vlan show *")):
                     vlans += [{
                         "vid": int(match.group("vlan_id")),

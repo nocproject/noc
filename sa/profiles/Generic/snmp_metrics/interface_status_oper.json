@@ -1,0 +1,7 @@
+{
+  "$metric": "Interface | Status | Oper",
+  "$type": "ifindex",
+  "oid": "IF-MIB::ifOperStatus.{{ ifIndex }}",
+  "type": "bool",
+  "scale": "is1"
+}

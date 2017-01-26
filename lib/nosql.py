@@ -10,12 +10,8 @@
 import logging
 import sys
 import time
-## Django modules
-from django.db.models import Model
-from django.db import IntegrityError
-import django.db.models.signals
 ## Third-party modules
-import pymongo
+from django.db.models import Model
 from mongoengine.base import *
 from mongoengine import *
 import mongoengine
@@ -23,6 +19,7 @@ import six
 import bson
 ## NOC modules
 from noc.config import config
+from noc.models import get_model
 
 logger = logging.getLogger(__name__)
 
@@ -73,8 +70,8 @@ class PlainReferenceField(BaseField):
     """
 
     def __init__(self, document_type, *args, **kwargs):
-        if not isinstance(document_type, basestring):
-            if not issubclass(document_type, (Document, basestring)):
+        if not isinstance(document_type, six.string_types):
+            if not issubclass(document_type, (Document, six.string_types)):
                 raise ValidationError("Argument to PlainReferenceField constructor "
                                       "must be a document class or a string")
         self.document_type_obj = document_type
@@ -83,9 +80,11 @@ class PlainReferenceField(BaseField):
 
     @property
     def document_type(self):
-        if isinstance(self.document_type_obj, basestring):
+        if isinstance(self.document_type_obj, six.string_types):
             if self.document_type_obj == RECURSIVE_REFERENCE_CONSTANT:
                 self.document_type_obj = self.owner_document
+            elif isinstance(self.document_type_obj, six.string_types):
+                self.document_type_obj = get_model(self.document_type_obj)
             else:
                 self.document_type_obj = get_document(self.document_type_obj)
         return self.document_type_obj
@@ -98,7 +97,7 @@ class PlainReferenceField(BaseField):
         # Get value from document instance if available
         value = instance._data.get(self.name)
         # Dereference DBRefs
-        if isinstance(value, ObjectId) or (isinstance(value, basestring) and len(value) == 24):
+        if isinstance(value, ObjectId) or (isinstance(value, six.string_types) and len(value) == 24):
             if self.has_get_by_id is None:
                 self.has_get_by_id = hasattr(self.document_type, "get_by_id")
             if self.has_get_by_id:
@@ -203,29 +202,6 @@ class ForeignKeyField(BaseField):
         self.document_type = model
         self.has_get_by_id = hasattr(self.document_type, "get_by_id")
         super(ForeignKeyField, self).__init__(**kwargs)
-        if True:  # not settings.IS_TEST:
-            django.db.models.signals.pre_delete.connect(self.on_ref_delete,
-                                                        sender=model)
-
-    def on_ref_delete(self, sender, instance, **kwargs):
-        """
-        Check referenced object is not deleted
-        :param sender:
-        :param instance:
-        :param using:
-        :return:
-        """
-        if not self.name:
-            return
-        doc = self.document_type
-        if hasattr(doc, "objects"):
-            if doc.objects.filter(**{self.name: instance.id}).first() is not None:
-                raise IntegrityError(
-                    "%r object is referenced from %r" % (instance,
-                                                         doc)
-                )
-        else:
-            pass  # Embedded Document
 
     def __get__(self, instance, owner):
         """Descriptor to allow lazy dereferencing."""
@@ -257,8 +233,10 @@ class ForeignKeyField(BaseField):
             # We need the id from the saved object to create the DBRef
             id_ = document.pk
             if id_ is None:
-                raise ValidationError("You can only reference models once "
-                                      "they have been saved to the database")
+                raise ValidationError(
+                    "You can only reference models once "
+                    "they have been saved to the database"
+                )
         else:
             id_ = document
         return id_

@@ -40,3 +40,7 @@ def subtract(*args):
     Subtract from first arguments
     """
     return args[0] - reduce(lambda x, y: x + y, args[1:])
+
+
+def is1(x):
+    return 1 if x == 1 else 0

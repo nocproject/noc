@@ -34,6 +34,7 @@ from noc.config import config
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
+from .health import HealthRequestHandler
 from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
 from .ctl import CtlAPI
@@ -162,7 +163,7 @@ class Service(object):
                 from tornaduv import UVLoop
                 self.logger.warn("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
-            self.ioloop = tornado.ioloop.IOLoop.current()
+            self.ioloop = tornado.ioloop.IOLoop.instance()
             self.logger.warn("Activating service")
             self.activate()
             self.logger.warn("Starting IOLoop")
@@ -215,7 +216,8 @@ class Service(object):
         Initialize services before run
         """
         handlers = [
-            (r"^/mon/$", MonRequestHandler, {"service": self})
+            (r"^/mon/$", MonRequestHandler, {"service": self}),
+            (r"^/health/$", HealthRequestHandler, {"service": self})
         ]
         api = [CtlAPI]
         if self.api:

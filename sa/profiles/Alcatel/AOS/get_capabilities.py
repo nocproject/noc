@@ -9,6 +9,7 @@
 ## Python modules
 import re
 ## NOC modules
+from noc.lib.text import parse_table
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 
@@ -36,3 +37,19 @@ class Script(BaseScript):
         r = self.cli("show udld configuration")
         match = self.rx_udld.search(r)
         return match and match.group("status") == "enabled"
+
+    @false_on_cli_error
+    def has_stack(self):
+        """
+        Check stack members
+        :return:
+        """
+        v = self.cli("show module")
+        v = parse_table(v.replace("\n\n", "\n"))
+        return [l[0].split("-")[1] for l in v if "NI-" in l[0]]
+
+    def execute_platform(self, caps):
+        s = self.has_stack()
+        if s:
+            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+            caps["Stack | Member Ids"] = " | ".join(s)

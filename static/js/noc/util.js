@@ -196,7 +196,8 @@ Ext.apply(NOC.render, {
     },
 
     htmlEncode: function(v) {
-        return Ext.util.Format.htmlEncode(v);
+        if(v) return Ext.util.Format.htmlEncode(v);
+        return "NULL";
     },
 
     //
@@ -233,15 +234,20 @@ Ext.apply(NOC.render, {
         header = header.join("");
         return function(value) {
             var r = [header];
-            for(var i = 0; i < value.length; i++) {
-                var row = value[i];
-                r.push("<tr>");
-                for(var j = 0; j < fields.length; j++) {
-                    r.push("<td>");
-                    r.push(renderers[j](row[fields[j]]));
-                    r.push("</td>");
+            if(value) {
+                for(var i = 0; i < value.length; i++) {
+                    var row = value[i];
+                    r.push("<tr>");
+                    for(var j = 0; j < fields.length; j++) {
+                        r.push("<td>");
+                        r.push(renderers[j](row[fields[j]]));
+                        r.push("</td>");
+                    }
+                    r.push("</tr>");
                 }
-                r.push("</tr>");
+            }
+            else {
+                r.push("<tr><td></td></tr>");
             }
             r.push("</table>");
             return r.join("");
@@ -264,31 +270,99 @@ Ext.apply(NOC.render, {
 //
 Ext.apply(NOC.msg, {
     started: function(message) {
-        dhtmlx.message({
-            text: Ext.String.format.apply(this, arguments),
-            type: "started",
-            expire: 2000
+        Ext.toast({
+            html: '<div style="text-align: center;"><i class="fa fa-clock-o" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
+            align: 'bl',
+            bodyStyle: {
+                background: '#1E90FF',
+                color: 'white',
+                "font-weight": 'bold',
+//                "font-size": 'large'
+            },
+            style: {
+                background: '#1E90FF'
+            },
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
+            width: '50%',
+            minHeight: 10,
+            paddingY: 0,
+            border: false
         });
     },
     complete: function(message) {
-        dhtmlx.message({
-            text: Ext.String.format.apply(this, arguments),
-            type: "complete",
-            expire: 2000
+        Ext.toast({
+            html: '<div style="text-align: center;"><i class="fa fa-check-circle" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
+            align: 'bl',
+            bodyStyle: {
+                background: 'green',
+                color: 'white',
+                "font-weight": 'bold',
+//                "font-size": 'large'
+            },
+            style: {
+                background: 'green'
+            },
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
+            width: '50%',
+            minHeight: 10,
+            paddingY: 0,
+            border: false
         });
     },
     failed: function(message) {
-        dhtmlx.message({
-            text: Ext.String.format.apply(this, arguments),
-            type: "failed",
-            expire: 10000
+        Ext.toast({
+            html: '<div style="text-align: center;"><i class="fa fa-bolt" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
+            align: 'bl',
+            bodyStyle: {
+                background: 'red',
+                color: 'white',
+                "font-weight": 'bold',
+//                "font-size": 'large'
+            },
+            style: {
+                background: 'red'
+            },
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
+            width: '50%',
+            minHeight: 10,
+            paddingY: 0,
+            border: false
         });
     },
     info: function(message) {
-        dhtmlx.message({
-            text: Ext.String.format.apply(this, arguments),
-            type: "info",
-            expire: 10000
+        Ext.toast({
+            html: '<div style="text-align: center;"><i class="fa fa-info-circle" aria-hidden="true"></i>&nbsp' + Ext.String.format.apply(this, arguments) + '</div>',
+            align: 'bl',
+            bodyStyle: {
+                background: '#1E90FF',
+                color: 'white',
+                "font-weight": 'bold',
+//                "font-size": 'large'
+            },
+            style: {
+                background: '#1E90FF'
+            },
+            listeners: {
+                focusenter: function() {
+                    this.close();
+                }
+            },
+            width: '50%',
+            minHeight: 10,
+            paddingY: 0,
+            border: false
         });
     }
 });

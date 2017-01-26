@@ -898,9 +898,12 @@ Ext.define("NOC.inv.map.MapPanel", {
     },
 
     onNodeMenuDashboard: function() {
-        var me = this;
+        var me = this,
+            objectType = me.nodeMenuObjectType;
+
+        if('managedobject' == me.nodeMenuObjectType) objectType = 'mo';
         window.open(
-            '/ui/grafana/dashboard/script/noc.js?dashboard=' + me.nodeMenuObjectType + '&id=' + me.nodeMenuObject
+            '/ui/grafana/dashboard/script/noc.js?dashboard=' + objectType + '&id=' + me.nodeMenuObject
         );
     },
 
@@ -925,7 +928,6 @@ Ext.define("NOC.inv.map.MapPanel", {
         Ext.Array.forEach(objects, function(item) {
             elements.push({object: item.get('object'), object__label: item.get('object__label')});
         });
-        console.log(elements);
         NOC.run(
             'NOC.inv.map.Maintainance',
             'Add To Maintainance',

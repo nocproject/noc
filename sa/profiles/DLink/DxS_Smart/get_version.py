@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS_Smart.get_version
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -10,7 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re
-from noc.sa.profiles.DLink.DxS_Smart import (DES1210, DGS121048, DGS121052)
+from noc.sa.profiles.DLink.DxS_Smart import (DES1210, DGS1210)
 
 
 class Script(BaseScript):
@@ -20,9 +20,10 @@ class Script(BaseScript):
 
     rx_ver = re.compile(
         r"system hardware version\s+:\s+(?P<hardware>\S+).+"
-        r"system firmware version\s+:\s+(?P<version>\S+).+system boot"
-        r" version\s+:\s+(?P<bootprom>\S+).+system protocol version\s+:"
-        r"\s+(?P<protover>\S+).+system serial number\s+:\s+(?P<serial>\S+)",
+        r"system firmware version\s+:\s+(?P<version>\S+).+"
+        r"system boot version\s+:\s+(?P<bootprom>\S+).+"
+        r"(system protocol version\s+:\s+(?P<protover>\S+).+)?"
+        r"system serial number\s+:\s+(?P<serial>\S+)",
         re.MULTILINE | re.DOTALL | re.I
     )
     rx_snmp_ver = re.compile(r"^(?P<platform>\S+)\s*", re.DOTALL)
@@ -38,7 +39,7 @@ class Script(BaseScript):
                 pass
         else:
             raise self.NotSupportedError()
-        if DES1210(r) or DGS121048(r) or DGS121052(r):
+        if DES1210(r) or DGS1210(r):
             s = self.cli("show switch", cached=True)
             match = self.re_search(self.rx_ver, s)
             r.update({

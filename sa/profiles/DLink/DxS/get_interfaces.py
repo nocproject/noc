@@ -12,7 +12,7 @@ import functools
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.lib.ip import IPv4
+from noc.core.ip import IPv4
 from noc.lib.validators import is_int
 from noc.sa.profiles.DLink.DxS import DxS_L2
 from noc.sa.profiles.DLink.DxS import DGS3120
@@ -119,7 +119,7 @@ class Script(BaseScript):
     rx_udld = re.compile(
         r"(?P<port>\d+(?:[:/]\d+)?)\s+Enabled\s+\S+\s+\S+\s+\S+\s+\d+")
     rx_ctp = re.compile(
-        r"^(?P<port>\d+(?:[:/]\d+)?)\s+Enabled\s+\S+",
+        r"^(?P<port>\d+(?:[:/]\d+)?)\s+(?P<status>Enabled|Disabled)\s+\S+",
         re.MULTILINE)
     rx_pim = re.compile(
         r"(?P<ipif>\S+)\s+\S+\s+\S+\s+\d+\s+\d+\s+\S+\s+Enabled\s+")
@@ -147,7 +147,7 @@ class Script(BaseScript):
         match = self.rx_ctp.search(s)
         if match:
             key = match.group("port")
-            obj = {"port": key}
+            obj = {"port": key, "status": match.group("port")}
             return key, obj, s[match.end():]
         else:
             return None
@@ -280,7 +280,8 @@ class Script(BaseScript):
                     cmd_next="n", cmd_stop="q"
                 )
             for i in c:
-                ctp += [i['port']]
+                if i['status'] == "Enabled":
+                    ctp += [i['port']]
 
         gvrp = []
         try:

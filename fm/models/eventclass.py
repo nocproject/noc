@@ -110,7 +110,7 @@ class EventDispositionRule(EmbeddedDocument):
     combo_count = fields.IntField(required=False, default=0)
     # Applicable for sequence, all and any combo_condition
     combo_event_classes = fields.ListField(
-        nosql.PlainReferenceField("EventClass"),
+        nosql.PlainReferenceField("fm.EventClass"),
         required=False,
         default=[])
     # event var name -> alarm var name mappings
@@ -143,7 +143,7 @@ class EventSuppressionRule(EmbeddedDocument):
     }
     name = fields.StringField()
     condition = fields.StringField(required=True, default="True")
-    event_class = nosql.PlainReferenceField("EventClass", required=True)
+    event_class = nosql.PlainReferenceField("fm.EventClass", required=True)
     match_condition = fields.DictField(required=True, default={})
     window = fields.IntField(required=True, default=3600)
     suppress = fields.BooleanField(required=True, default=True)

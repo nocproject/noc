@@ -12,8 +12,8 @@ import types
 import datetime
 ## NOC Modules
 from noc.lib.text import list_to_ranges, ranges_to_list
-from noc.lib.ip import IPv6
-from noc.lib.mac import MAC
+from noc.core.ip import IPv6
+from noc.core.mac import MAC
 from noc.lib.validators import *
 
 InterfaceTypeError = ValueError
@@ -1249,6 +1249,7 @@ class DocumentParameter(Parameter):
     def __init__(self, document, required=True):
         super(DocumentParameter, self).__init__(required=required)
         self.document = document
+        self.has_get_by_id = bool(getattr(self.document, "get_by_id", None))
 
     def clean(self, value):
         if not value:
@@ -1256,7 +1257,10 @@ class DocumentParameter(Parameter):
                 self.raise_error("Value required")
             else:
                 return None
-        v = self.document.objects.filter(id=value).first()
+        if self.has_get_by_id:
+            v = self.document.get_by_id(value)
+        else:
+            v = self.document.objects.filter(id=value).first()
         if not v:
             self.raise_error("Not found: %d" % value)
         return v

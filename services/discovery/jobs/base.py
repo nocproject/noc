@@ -88,6 +88,9 @@ class MODiscoveryJob(PeriodicJob):
     def update_caps(self, caps, source):
         self.caps = self.object.update_caps(caps, source=source)
 
+    def allow_sessions(self):
+        return bool(self.get_caps().get("Management | Allow Sessions"))
+
 
 class DiscoveryCheck(object):
     name = None
@@ -403,6 +406,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     "Cannot confirm links",
                     remote_object.name, self.required_script
                 )
+                continue
             confirmed = set()
             for li, ro_id, ri in self.iter_neighbors(remote_object):
                 ro = self.get_neighbor(ro_id)

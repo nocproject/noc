@@ -36,6 +36,14 @@ class Script(BaseScript):
     rx_inst1 = re.compile(
         "^\s*Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
         "^\s*Address\s+(?P<root_id>\S+)\s*\n"
+        "^\s*Cost\s+\d+\s*\n"
+        "^\s*Port\s+\S+\s*\n"
+        "^\s*.+\n"
+        "^\s*Bridge ID\s+ Priority\s+(?P<bridge_priority>\d+)\s*\n"
+        "^\s*Address\s+(?P<bridge_id>\S+)\s*\n", re.MULTILINE)
+    rx_inst2 = re.compile(
+        "^\s*Root ID\s+ Priority\s+(?P<root_priority>\d+)\s*\n"
+        "^\s*Address\s+(?P<root_id>\S+)\s*\n"
         "^\s*This switch is the root\s*\n", re.MULTILINE)
     rx_vlans = re.compile("^0\s+(?P<vlans>\S+)\s+enabled", re.MULTILINE)
     rx_port = re.compile(
@@ -87,17 +95,24 @@ class Script(BaseScript):
                 inst = match.groupdict()
             else:
                 match = self.rx_inst1.search(v)
-                inst = match.groupdict()
-                inst["id"] = 1
-                inst["bridge_priority"] = inst["root_priority"]
-                inst["bridge_id"] = inst["root_id"]
-                inst["interfaces"] = []
-                try:
-                    c = self.cli("show spanning-tree mst-configuration")
-                    match = self.rx_vlans.search(c)
-                    inst["vlans"] = match.group("vlans")
-                except:
-                    inst["vlans"] = "1-4094"
+                if match:
+                    inst = match.groupdict()
+                    inst["id"] = 0
+                    inst["interfaces"] = []
+                    inst["vlans"] = "1-4095"
+                else:
+                    match = self.rx_inst2.search(v)
+                    inst = match.groupdict()
+                    inst["id"] = 0
+                    inst["bridge_priority"] = inst["root_priority"]
+                    inst["bridge_id"] = inst["root_id"]
+                    inst["interfaces"] = []
+                    try:
+                        c = self.cli("show spanning-tree mst-configuration")
+                        match = self.rx_vlans.search(c)
+                        inst["vlans"] = match.group("vlans")
+                    except:
+                        inst["vlans"] = "1-4095"
             for port in v.split("\n\n"):
                 match = self.rx_port.search(port)
                 if match:

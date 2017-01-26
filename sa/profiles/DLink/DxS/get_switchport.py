@@ -29,17 +29,14 @@ class Script(BaseScript):
                 "interface": iface,
                 "status": p['status'],
                 "members": [],
-                "802.1Q Enabled": True
+                "802.1Q Enabled": True,
+                "tagged": [v["vlan_id"] for v in vlans if iface in v["tagged_ports"]]
             }
             desc = p['desc']
-            if desc != '' and desc != 'null':
+            if desc and desc != 'null':
                 i['description'] = desc
-            tagged_vlans = []
-            for v in vlans:
-                if iface in v['tagged_ports']:
-                    tagged_vlans += [v['vlan_id']]
-                if iface in v['untagged_ports']:
-                    i['untagged'] = v['vlan_id']
-            i['tagged'] = tagged_vlans
+            untagged = [v["vlan_id"] for v in vlans if iface in v["untagged_ports"]]
+            if untagged:
+                i["untagged"] = untagged[0]
             interfaces += [i]
         return interfaces

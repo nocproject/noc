@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ManagedObject card handler
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -28,8 +28,7 @@ from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.lib.text import split_alnum, list_to_ranges
 from noc.maintainance.models.maintainance import Maintainance
-from noc.lib.validators import is_ipv4, is_int
-from noc.lib.mac import MAC
+from noc.sa.models.useraccess import UserAccess
 
 
 class ManagedObjectCard(BaseCard):
@@ -258,31 +257,11 @@ class ManagedObjectCard(BaseCard):
     @classmethod
     def search(cls, handler, query):
         q = Q(name__icontains=query)
-        if is_ipv4(query):
-            q |= Q(address=query)
-        if ".*" in query and is_ipv4(query.replace(".*", ".1")):
-            q |= Q(address__regex=query.replace(".", "\\.").replace("*", "[0-9]+"))
-        elif set("+*[]()") & set(query):
-            # Maybe regular expression
-            try:
-                # Check syntax
-                # @todo: PostgreSQL syntax differs from python one
-                re.compile(query)
-                q |= Q(name__regex=query)
-                q |= Q(address__regex=query)
-            except re.error:
-                pass
-        if is_int(query):
-            q |= Q(id=int(query))
-        try:
-            mac = MAC(query)
-            mo = DiscoveryID.find_object(mac=str(mac))
-            if mo:
-                q = Q(id=mo.id)
-        except ValueError:
-            pass
+        sq = ManagedObject.get_search_Q(query)
+        if sq:
+            q &= sq
         if not handler.current_user.is_superuser:
-            q &= Q(administrative_domain__in=handler.get_user_domains())
+            q &= UserAccess.Q(handler.current_user)
         r = []
         for mo in ManagedObject.objects.filter(q):
             r += [{

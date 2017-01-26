@@ -36,7 +36,7 @@ class Script(BaseScript):
         return {
                 "success": match.group("success"),
                 "count": match.group("count"),
-                "min": match.group("min"),
-                "avg": match.group("avg"),
-                "max": match.group("max"),
+                "min": match.group("min") if match.group("min") else 0.0,
+                "avg": match.group("avg") if match.group("avg") else 0.0,
+                "max": match.group("max") if match.group("max") else 0.0,
             }

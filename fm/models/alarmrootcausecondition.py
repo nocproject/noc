@@ -16,7 +16,7 @@ class AlarmRootCauseCondition(nosql.EmbeddedDocument):
     }
 
     name = nosql.StringField(required=True)
-    root = nosql.PlainReferenceField("AlarmClass")
+    root = nosql.PlainReferenceField("fm.AlarmClass")
     window = nosql.IntField(required=True)
     condition = nosql.StringField(default="True")
     match_condition = nosql.DictField(required=True)

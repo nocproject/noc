@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "d335fe4d-e03c-4333-a981-dc1ff3983dfa",
     "vendor__code": "HUAWEI",
-    "description": "L3 switch with 48 10/100 Base-TX ports, 2 100/1000 Base-X SFP ports, and 2 1000 Base-X SFP ports",
+    "description": "L3 switch with 24 10/100 Base-TX ports, 2 100/1000 Base-X SFP ports, and 2 1000 Base-X SFP ports",
     "connections": [
         {
             "description": "Power outlet",
@@ -253,7 +253,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["02351366"]
+            "part_no": ["02351366", "CX4Z126AM", "CX22EFFE"]
         },
         "dimensions": {
             "depth": 220,

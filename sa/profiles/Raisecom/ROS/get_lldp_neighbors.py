@@ -20,18 +20,18 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_lldp = re.compile(
-        r"Port\s+port(?P<port>\d+)\s*has\s+1\s*remotes:\n\n"
-        r"Remote\s*1\s*\n"
-        r"\s*\-+\n"
-        r"ChassisIdSubtype:\s+(?P<ch_type>\S+)\s*\n"
-        r"ChassisId:\s+(?P<ch_id>\S+)\s*\n"
-        r"PortIdSubtype:\s+(?P<port_id_subtype>\S+)\s*\n"
-        r"PortId:\s+(?P<port_id>.+)\s*\n"
-        r"PortDesc:\s+(?P<port_descr>.+)\s*\n"
-        r"SysName:\s+(?P<sys_name>.+)\s*\n"
-        r"(?P<sys_descr>[\S\s]*?)\n"
-        r"SysCapSupported:\s+(?P<sys_caps_supported>\S+)\s*\n"
-        r"SysCapEnabled:\s+(?P<sys_caps_enabled>\S+)\s*\n",
+        r"^\s*Port\s+port(?P<port>\d+)\s*has\s+1\s*remotes:\n\n"
+        r"^\s*Remote\s*1\s*\n"
+        r"^\s*\-+\n"
+        r"^\s*ChassisIdSubtype:\s+(?P<ch_type>\S+)\s*\n"
+        r"^\s*ChassisId:\s+(?P<ch_id>\S+)\s*\n"
+        r"^\s*PortIdSubtype:\s+(?P<port_id_subtype>\S+)\s*\n"
+        r"^\s*PortId:\s+(?P<port_id>.+)\s*\n"
+        r"^\s*PortDesc:\s+(?P<port_descr>.+)\s*\n"
+        r"^\s*SysName:\s+(?P<sys_name>.+)\s*\n"
+        r"^\s*SysDesc:\s+(?P<sys_descr>.+)\n"
+        r"^\s*SysCapSupported:\s+(?P<sys_caps_supported>\S+)\s*\n"
+        r"^\s*SysCapEnabled:\s+(?P<sys_caps_enabled>\S+)\s*\n",
         re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
@@ -50,7 +50,8 @@ class Script(BaseScript):
                 }[c]
             n = {
                 "remote_chassis_id_subtype": {
-                        "macAddress": 4
+                        "macAddress": 4,
+                        "networkAddress": 5
                     }[match.group("ch_type")],
                 "remote_chassis_id": match.group("ch_id"),
                 "remote_port_subtype": {
@@ -65,7 +66,10 @@ class Script(BaseScript):
             if match.group("sys_name") != "N/A":
                 n["remote_system_name"] = match.group("sys_name")
             if match.group("sys_descr") != "N/A" and "\n" not in match.group("sys_descr"):
-                n["remote_system_description"] = match.group("sys_descr")
+                sd = match.group("sys_descr")
+                if "SysDesc:" in sd:
+                    sd = sd.split()[-1]
+                n["remote_system_description"] = sd
             if match.group("port_descr") != "N/A":
                 n["remote_port_description"] = match.group("port_descr")
             i["neighbors"] += [n]

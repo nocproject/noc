@@ -428,6 +428,13 @@ Ext.define("NOC.fm.alarm.Application", {
                     }
                 },
                 {
+                    text: __("Objects"),
+                    dataIndex: "total_objects",
+                    width: 30,
+                    align: "right",
+                    sortable: false
+                },
+                {
                     text: __("Events"),
                     dataIndex: "events",
                     width: 30,

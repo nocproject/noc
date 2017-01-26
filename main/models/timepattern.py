@@ -14,10 +14,20 @@ import cachetools
 from django.db import models
 ## NOC modules
 from noc.lib.timepattern import TimePattern as TP
+from noc.core.model.decorator import on_delete_check
 
 id_lock = RLock()
 
 
+@on_delete_check(check=[
+    # ("fm.EscalationItem", "administrative_domain")
+    ("fm.AlarmTrigger", "time_pattern"),
+    ("fm.EventTrigger", "time_pattern"),
+    ("main.Schedule", "time_pattern"),
+    ("main.TimePatternTerm", "time_pattern"),
+    ("maintainance.Maintainance", "time_pattern"),
+    ("sa.ManagedObject", "time_pattern")
+])
 class TimePattern(models.Model):
     """
     Time Patterns

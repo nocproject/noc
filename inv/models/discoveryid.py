@@ -18,6 +18,7 @@ from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.core.perf import metrics
 
 
 class MACRange(EmbeddedDocument):
@@ -89,6 +90,7 @@ class DiscoveryID(Document):
         c = cls._get_collection()
         # Find by mac
         if mac:
+            metrics["discoveryid_mac_requests"] += 1
             r = c.find_one({
                 "chassis_mac": {
                     "$elemMatch": {
@@ -100,10 +102,14 @@ class DiscoveryID(Document):
                         }
                     }
                 }
-            }, {"_id": 0, "object": 1}, read_preference=ReadPreference.SECONDARY_PREFERRED)
+            }, {"_id": 0, "object": 1, "chassis_mac": 1}, read_preference=ReadPreference.SECONDARY_PREFERRED)
             if r:
+                for m in r["chassis_mac"]:
+                    if m["first_mac"] == mac:
+                        metrics["discoveryid_mac_first"] += 1
                 return ManagedObject.get_by_id(r["object"])
             # Fallback to interface search
+            metrics["discoveryid_mac_interface"] += 1
             o = set(
                 d["managed_object"]
                 for d in Interface._get_collection().find({
@@ -115,10 +121,13 @@ class DiscoveryID(Document):
             )
             if len(o) == 1:
                 return ManagedObject.get_by_id(list(o)[0])
+            metrics["discoveryid_mac_failed"] += 1
         if ipv4_address:
+            metrics["discoveryid_ip_requests"] += 1
             # Try router_id
             d = DiscoveryID.objects.filter(router_id=ipv4_address).first()
             if d:
+                metrics["discoveryid_ip_routerid"] += 1
                 return d.object
             # Fallback to interface addresses
             o = set(
@@ -136,7 +145,9 @@ class DiscoveryID(Document):
                 if has_ip(ipv4_address, d["ipv4_addresses"])
             )
             if len(o) == 1:
+                metrics["discoveryid_ip_interface"] += 1
                 return ManagedObject.get_by_id(list(o)[0])
+            metrics["discoveryid_ip_failed"] += 1
         return None
 
     @classmethod

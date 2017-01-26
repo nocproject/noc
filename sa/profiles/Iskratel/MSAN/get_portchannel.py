@@ -22,12 +22,11 @@ class Script(BaseScript):
         r"(?P<port2>\d+/\d+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
-        match = self.rx_p.search(self.cli("show port-channel all"))
-        if match:
-            return [{
+        r = []
+        for match in self.rx_p.finditer(self.cli("show port-channel all")):
+            r += [{
                 "interface": match.group("iface"),
                 "members": [match.group("port1"), match.group("port2")],
                 "type": "S"
             }]
-        else:
-            return []
+        return r

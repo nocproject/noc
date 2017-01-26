@@ -27,6 +27,7 @@ from lldp import LLDPCheck
 from stp import STPCheck
 from nri import NRICheck
 from sla import SLACheck
+from cpe import CPECheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -55,6 +56,14 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 "Cannot choose valid credentials. Stopping"
             )
             return
+        if self.allow_sessions():
+            self.logger.debug("Using CLI sessions")
+            with self.object.open_session():
+                self.run_checks()
+        else:
+            self.run_checks()
+
+    def run_checks(self):
         if self.object.object_profile.enable_box_discovery_version:
             VersionCheck(self).run()
         if self.object.object_profile.enable_box_discovery_caps:
@@ -71,6 +80,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             VLANCheck(self).run()
         if self.object.object_profile.enable_box_discovery_nri:
             NRICheck(self).run()
+        if self.object.object_profile.enable_box_discovery_cpe:
+            CPECheck(self).run()
         # Topology discovery
         # Most preferable methods first
         for check in self.TOPOLOGY_METHODS:

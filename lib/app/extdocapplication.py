@@ -14,6 +14,7 @@ from django.http import HttpResponse
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, ReferenceField,
                                 BinaryField)
+from mongoengine.errors import ValidationError
 ## NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
@@ -169,14 +170,19 @@ class ExtDocApplication(ExtApplication):
         for p in self.ignored_params:
             if p in q:
                 del q[p]
-        for p in (self.limit_param, self.page_param, self.start_param,
+        for p in (
+            self.limit_param, self.page_param, self.start_param,
             self.format_param, self.sort_param, self.query_param,
-            self.only_param):
+            self.only_param
+        ):
             if p in q:
                 del q[p]
         # Normalize parameters
         for p in q:
-            if p in self.clean_fields:
+            if p.endswith("__exists"):
+                v = BooleanParameter().clean(q[p])
+                q[p] = v
+            elif p in self.clean_fields:
                 q[p] = self.clean_fields[p].clean(q[p])
         # @todo: correct __ lookups
         if any(p for p in q if p.endswith("__referred")):
@@ -274,8 +280,8 @@ class ExtDocApplication(ExtApplication):
     def api_create(self, request):
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
-        except ValueError, why:
-            return self.response(str(why), status=self.BAD_REQUEST)
+        except ValueError as e:
+            return self.response(str(e), status=self.BAD_REQUEST)
 
         if self.pk in attrs:
             del attrs[self.pk]
@@ -292,7 +298,10 @@ class ExtDocApplication(ExtApplication):
         for k, v in attrs.items():
             if k != self.pk and "__" not in k:
                 setattr(o, k, v)
-        o.save()
+        try:
+            o.save()
+        except ValidationError as e:
+            return self.response({"message": str(e)}, status=self.BAD_REQUEST)
         # Reread result
         o = self.model.objects.get(**{self.pk: o.pk})
         if request.is_extjs:
@@ -338,7 +347,10 @@ class ExtDocApplication(ExtApplication):
         for k in attrs:
             if k != self.pk and "__" not in k:
                 setattr(o, k, attrs[k])
-        o.save()
+        try:
+            o.save()
+        except ValidationError as e:
+            return self.response({"message": str(e)}, status=self.BAD_REQUEST)
         # Reread result
         o = self.model.objects.get(**{self.pk: id})
         if request.is_extjs:
@@ -357,7 +369,14 @@ class ExtDocApplication(ExtApplication):
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
             return HttpResponse("", status=self.NOT_FOUND)
-        o.delete()
+        try:
+            o.delete()
+        except ValueError as e:
+            return self.render_json(
+                {
+                    "success": False,
+                    "message": "ERROR: %s" % e
+                }, status=self.CONFLICT)
         return HttpResponse(status=self.DELETED)
 
     def _api_to_json(self, request, id):

@@ -54,6 +54,8 @@ install_npkg() {
     ${dckrc} run --rm --entrypoint "./scripts/deploy/install-packages requirements/mib.json" dev
     echo "Installing depends web..."
     ${dckrc} run --rm --entrypoint "./scripts/deploy/install-packages requirements/web.json" dev
+    echo "Installing depends bi..."
+    ${dckrc} run --rm --entrypoint "./scripts/deploy/install-packages requirements/bi.json" dev
 }
 
 start_sae() {
@@ -70,7 +72,7 @@ start_sae() {
 
 start_web() {
     echo "Starting WEB..."
-    ${dckrc} up -d web card login grafanads bi mrt
+    ${dckrc} up -d web card login grafanads bi mrt front
 }
 
 start_pm() {

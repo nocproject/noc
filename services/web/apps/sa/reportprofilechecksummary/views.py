@@ -37,7 +37,7 @@ class ReportFilterApplication(SimpleReport):
                 continue
             data += [SectionRow(name=p.name)]
 
-            mnp_in = ManagedObjectProfile.objects.filter(enable_ping=False)
+            mnp_in = list(ManagedObjectProfile.objects.filter(enable_ping=False))
 
             is_managed = ManagedObject.objects.filter(is_managed=True, pool=p).exclude(object_profile__in=mnp_in)
             is_not_man = ManagedObject.objects.filter(is_managed=False, pool=p)
@@ -51,15 +51,16 @@ class ReportFilterApplication(SimpleReport):
             is_managed_not_generic = is_managed.exclude(profile_name="Generic.Host")
             is_managed_undef = is_managed.filter(profile_name="Generic.Host")
 
-            is_managed_undef_in = [i for i in is_managed_undef.values_list("id", flat=True)]
-            is_managed_not_generic_in = is_managed_not_generic.values_list("id", flat=True)
+            is_managed_undef_in = list(is_managed_undef.values_list("id", flat=True))
+            is_managed_not_generic_in = list(is_managed_not_generic.values_list("id", flat=True))
 
             is_managed_c = is_managed.count()
             is_managed_not_generic_c = len(is_managed_not_generic_in)
 
             if not (is_managed.count and is_managed_not_generic_c):
-                    data.pop()
-                    continue
+                # @todo Если unmanaged != 0 - выводить только его (разбить на is_managed и is_unmanaged
+                data.pop()
+                continue
 
             if not is_managed_c:
                 data += [["", "Has not permissions to view", None]]
@@ -74,7 +75,7 @@ class ReportFilterApplication(SimpleReport):
             is_not_alived_c = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_undef_in},
                                                                         "status": False},
                                                                        {"_id": 1, "object": 1},
-                read_preference=ReadPreference.SECONDARY_PREFERRED).count()
+                                                                       read_preference=ReadPreference.SECONDARY_PREFERRED).count()
 
             is_managed_alive_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                                    m["object"] for m in is_alive_id]
@@ -104,37 +105,42 @@ class ReportFilterApplication(SimpleReport):
             calc = [
                 {"name": _("Not Managed"), "value": is_not_man.count() + is_not_resp.count()},
                 {"name": _("Is Managed"), "value": is_managed_c},
-                {"name": _("Is Managed, object type defined"), "value": is_managed_not_generic_c},
+                {"name": _("Is Managed, object type defined"), "value": is_managed_not_generic_c, "percent":
+                    "%.2f %%" % percent},
                 {"name": _("Is Managed, object type defined bad CLI Credential"), "value": bad_cli_cred},
                 {"name": _("Is Managed, object type undefined"), "value": len(is_managed_undef_in)},
                 {"name": _("Is Managed, object type undefined not ping response"), "value": is_not_alived_c},
                 {"name": _("Is Managed, object type undefined has ping response"), "value": is_alive_id.count()},
                 {"name": _("Is Managed, object type undefined bad SNMP Credential"), "value": bad_snmp_cred},
                 {"name": _("Is Managed, object type undefined for various reasons"), "value":
-                    is_alive_id.count() - bad_snmp_cred - profile_not_found},
+                    is_alive_id.count() - bad_snmp_cred},
                 {"name": _("Is Managed, object type Profile is not know"), "value": profile_not_found},
                 {"name": _("Is Managed, objects not processed yet"), "value": not_procc_yet},
             ]
 
             summary = [sum(e) for e in zip(summary, [i["value"] for i in calc])]
             ALPHABET = {i[1]: i[0] for i in enumerate(u"npabcdefghijklmoqrstuvwxyz")}
-            calc[2]["value"] = "%d (%d%%)" % (is_managed_not_generic.count(), percent)
+            # calc[2]["value"] = "%d (%d%%)" % (is_managed_not_generic.count(), percent)
             for c in calc:
-                data += [[s1[calc.index(c)], c["name"], c["value"]]]
+                data += [[s1[calc.index(c)], c["name"], c["value"], c.get("percent", None)]]
 
         data += [SectionRow("Summary")]
         for c in summary:
             if summary.index(c) == 2:
-                data += [[s1[summary.index(c)], calc[summary.index(c)]["name"], "%d (%d%%)" % (c, (c / float(summary[1]))*100)]]
+                # data += [[s1[summary.index(c)], calc[summary.index(c)]["name"], "%d (%d%%)" % (c, (c / float(summary[1]))*100)]]
+                data += [[s1[summary.index(c)],
+                          calc[summary.index(c)]["name"],
+                          c, "%.2f %%" % ((c / float(summary[1]))*100)]]
                 continue
-            data += [[s1[summary.index(c)], calc[summary.index(c)]["name"], c]]
+            data += [[s1[summary.index(c)], calc[summary.index(c)]["name"], c, None]]
 
         return self.from_dataset(
             title=self.title,
             columns=[
                 _("PP"),
                 _("Status"),
-                _("Quantity")
+                _("Quantity"),
+                _("Percent")
             ],
             data=data
         )

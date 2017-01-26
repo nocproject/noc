@@ -9,7 +9,6 @@
 """
 """
 from noc.core.profile.base import BaseProfile
-from noc.core.profile.base import BaseProfile
 import re
 
 
@@ -23,7 +22,7 @@ class Profile(BaseProfile):
         (r"^Delete flash:", "y\n\r"),
         (r"^Squeeze flash:", "y\n\r")
     ]
-    pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.\[/`\s:]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"
+    pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.\[\(/`'\"\s:]+)(?:-[a-zA-Z0-9/]+)*[>#\]\)]"
     pattern_syntax_error = r"(ERROR: |% Wrong parameter found at|% Unrecognized command found at|Error:Too many parameters found|% Too many parameters found at|% Ambiguous command found at|Error: Unrecognized command found at)"
 
     command_more = " "
@@ -42,11 +41,14 @@ class Profile(BaseProfile):
         return "undo ip ip-prefix %s\n" % name + "\n".join([p % x.replace("/", " ") for x in pl])
 
     rx_interface_name = re.compile(
-        r"^(?P<type>XGE|GE|Eth|MEth)(?P<number>[\d/]+(\.\d+)?)$")
+        r"^(?P<type>XGE|Ten-GigabitEthernet|GE|Eth|MEth)"
+        r"(?P<number>[\d/]+(\.\d+)?)$")
 
     def convert_interface_name(self, s):
         """
         >>> Profile().convert_interface_name("XGE2/0/0")
+        'XGigabitEthernet2/0/0'
+        >>> Profile().convert_interface_name("Ten-GigabitEthernet2/0/0")
         'XGigabitEthernet2/0/0'
         >>> Profile().convert_interface_name("GE2/0/0")
         'GigabitEthernet2/0/0'
@@ -59,6 +61,7 @@ class Profile(BaseProfile):
         if not match:
             return s
         return "%s%s" % ({
+            "Ten-GigabitEthernet": "XGigabitEthernet",
             "XGE": "XGigabitEthernet",
             "GE": "GigabitEthernet",
             "Eth": "Ethernet",
@@ -80,7 +83,30 @@ class Profile(BaseProfile):
         return config
 
     def fix_version(self, v):
-        if v["platform"] == "S5628F-HI" and v["version"] == "5.20":
+        # CLI return S5628F-HI as platform, but SNMP return S5628F
+        BAD_PLATFORMS = ["S5628F", "S5628F-HI"]
+        if v["platform"] in BAD_PLATFORMS and v["version"] == "5.20":
             # Do not change these numbers. Used in get_switchport script
             v["version"] = "3.10"
         return v["version"]
+
+    @staticmethod
+    def parse_table(e):
+        p = {"table": []}
+        is_table = False
+        is_next = False
+        header = []
+        for l in e.splitlines():
+            if not l:
+                continue
+            if "-"*10 in l:
+                is_table = True
+                header = prev_l
+                continue
+            if ":" in l and not is_table:
+                p.update(dict([l.split(":")]))
+            elif is_table:
+                l = l.split()
+                p["table"].append(l)
+            prev_l = l
+        return p

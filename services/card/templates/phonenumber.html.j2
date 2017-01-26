@@ -1,0 +1,142 @@
+<table class="table table-condensed table-hover">
+<tbody>
+</tbody>
+<tr>
+    <th colspan="2">
+        {{ _("Phone Number") }}: {{ object.number }}
+    </th>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Dialplan") }}
+    </th>
+    <td>
+        <a href="/api/card/view/dialplan/{{ object.dialplan.id }}/">{{ object.dialplan.name }}</a>
+        {% for p in path %}
+            /
+            <a href="/api/card/view/phonerange/{{ p.id }}/">{{ p.name }} ({{ p.from_number }} - {{ p.to_number }})</a>
+        {% endfor %}
+    </td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Category") }}
+    </th>
+    <td>
+        {% if object.category %}{{ object.category.name }}{% endif %}
+    </td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Status") }}
+    </th>
+    <td>
+        {{ object.status }}
+    </td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Protocol") }}
+    </th>
+    <td>
+        {{ object.protocol }}
+    </td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Profile") }}
+    </th>
+    <td>
+        {% if object.profile %}{{ object.profile.name }}{% endif %}
+    </td>
+</tr>
+<tr>
+    <th scope="row" class="col-md-2">
+        {{ _("Project") }}
+    </th>
+    <td>
+        {% if object.project %}{{ object.project.name }}{% endif %}
+    </td>
+</tr>
+
+<tr>
+    <th scope="row">
+        {{ _("Description") }}
+    </th>
+    <td>
+        {% if object.description %} {{ object.description }} {% endif %}
+    </td>
+</tr>
+
+<tr>
+    <th scope="row">
+        {{ _("ENUM") }}
+    </th>
+    <td>
+        {{ object.enum }}
+    </td>
+</tr>
+
+{% if object.linked_numbers %}
+<tr>
+    <th scope="row">
+        {{ _("Linked Numbers") }}
+    </th>
+    <td>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-md-3">{{ _("Type") }}</th>
+                    <th class="col-md-3">{{ _("Number") }}</th>
+                    <th class="col-md-6">{{ _("Description") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for n in object.linked_numbers %}
+                <tr>
+                    <td>{{ n.type.name }}</td>
+                    <td>
+                        <a href='/api/card/view/dialplan/{{ n.number.dialplan.id }}/'>{{ n.number.dialplan.name}}</a>:
+                        <a href='/api/card/view/phonenumber/{{ n.number.id }}/'>{{ n.number.number}}</a>
+                    </td>
+                    <td>{{ n.description }}</td>
+                </tr>
+            {% endfor %}
+            <tbody>
+        </table>
+    </td>
+</tr>
+{% endif %}
+
+{% if linked_by %}
+<tr>
+    <th scope="row">
+        {{ _("Linked By") }}
+    </th>
+    <td>
+        <table>
+            <thead>
+                <tr>
+                    <th class="col-md-3">{{ _("Number") }}</th>
+                    <th class="col-md-3">{{ _("Type") }}</th>
+                    <th class="col-md-3">{{ _("Number") }}</th>
+                    <th class="col-md-6">{{ _("Description") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for n in linked_by %}
+                <tr>
+                    <td>
+                        <a href='/api/card/view/dialplan/{{ n.number.dialplan.id }}/'>{{ n.number.dialplan.name}}</a>:
+                        <a href='/api/card/view/phonenumber/{{ n.number.id }}/'>{{ n.number.number}}</a>
+                    </td>
+                    <td>{{ n.type.name }}</td>
+                    <td>{{ object.number }}</td>
+                    <td>{{ n.description }}</td>
+                </tr>
+            {% endfor %}
+            <tbody>
+        </table>
+    </td>
+</tr>
+{% endif %}

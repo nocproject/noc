@@ -29,17 +29,17 @@ Ext.define('NOC.core.TreeCombo', {
         idIsNumber: false
     },
 
-    initComponent: function () {
+    initComponent: function() {
         var me = this,
             path;
 
         // Calculate restUrl
         path = me.$className.split(".");
-        if (!me.restUrl && path[0] === 'NOC' && path[3] === 'TreeCombo') {
+        if(!me.restUrl && path[0] === 'NOC' && path[3] === 'TreeCombo') {
             me.restUrl = '/' + path[1] + '/' + path[2]
         }
 
-        if (!me.restUrl) {
+        if(!me.restUrl) {
             throw "Cannot determine restUrl for " + me.$className;
         }
 
@@ -116,6 +116,8 @@ Ext.define('NOC.core.TreeCombo', {
 
         this.autocomplete = Ext.create('Ext.form.field.ComboBox', {
             fieldLabel: this.fieldLabel,
+            itemId: this.itemId,
+            xtype: this.xtype,
             labelWidth: this.labelWidth,
             labelAlign: this.labelAlign || "top",
             forceSelection: false,
@@ -143,20 +145,20 @@ Ext.define('NOC.core.TreeCombo', {
             historyStore: this.historyStore,
             pathStore: this.pathStore,
             actionAlways: this.actionAlways,
-            closeSelectWindow: function () {
+            closeSelectWindow: function() {
                 me.selectWindow.hide();
             },
-            action: function (node, hasChild) {
+            action: function(node, hasChild) {
                 me.selectNode(node);
-                if (me.action !== undefined) {
+                if(me.action !== undefined) {
                     me.action(node.id);
                 }
-                if (!hasChild) {
+                if(!hasChild) {
                     me.selectWindow.hide();
                 }
             },
-            fieldValue: function (value) {
-                if (value === undefined) {
+            fieldValue: function(value) {
+                if(value === undefined) {
                     return me.getFieldValue();
                 } else {
                     me.setFieldValue(value);
@@ -184,34 +186,34 @@ Ext.define('NOC.core.TreeCombo', {
             {
                 xtype: 'button',
                 text: '<i class="fa fa-folder-open-o" aria-hidden="true"></i>',
-                handler: function () {
+                handler: function() {
                     me.selectWindow.showAt(me.getXY());
                     me.selectWindow.setWidth(me.getWidth());
                 }
             }
         ];
 
-        this.autocomplete.on('change', function (element, newValue) {
-            if (newValue === null) {
+        this.autocomplete.on('change', function(element, newValue) {
+            if(newValue === null) {
                 me.reset();
-                me.fireEvent('clear');
+                me.fireEvent('clear', element);
             }
         });
 
-        this.autocomplete.on('select', function (element, record) {
+        this.autocomplete.on('select', function(element, record) {
             me.restoreById(record.id);
         });
 
-        this.autocomplete.on("specialkey", function (field, e) {
-            switch (e.keyCode) {
+        this.autocomplete.on("specialkey", function(element, e) {
+            switch(e.keyCode) {
                 case e.ESC:
                     me.autocomplete.clearValue();
-                    me.fireEvent("clear");
+                    me.fireEvent('clear', element);
                     break;
             }
         });
 
-        this.on('destroy', function () {
+        this.on('destroy', function() {
             // ToDo ext-all.js:22 Uncaught TypeError: Cannot read property 'addCls' of null, press x on tab on open window panel
             console.log('destroy TreeCombo');
             this.selectWindow.destroy();
@@ -225,25 +227,30 @@ Ext.define('NOC.core.TreeCombo', {
 
         this.callParent();
 
-        this.mon(Ext.getBody(), 'click', function () {
+        this.mon(Ext.getBody(), 'click', function() {
             me.selectWindow.hide();
         }, me, {delegate: '.x-mask'});
     },
 
-    restoreById: function (id) {
+    restoreById: function(id) {
         var me = this;
 
-        if (id) {
+        if(id === '_root_') {
+            console.log(me);
+            me.autocomplete.setRawValue(__("Root"));
+            return;
+        }
+        if(id) {
             this.restoreStore.load({
                 url: this.restUrl + '/' + id + '/get_path/',
-                callback: function (records) {
-                    if (records) {
+                callback: function(records) {
+                    if(records) {
                         me.selectNode(records.pop());
-                        if (records.length === 0) {
+                        if(records.length === 0) {
                             me.panel.selectListRow();
                             return;
                         }
-                        if (records.length > 0) {
+                        if(records.length > 0) {
                             me.historyStore.loadData(records, true);
                             me.pathStore.loadData(records, true);
                             me.panel.byIdQuery(records[records.length - 1].id);
@@ -254,13 +261,13 @@ Ext.define('NOC.core.TreeCombo', {
         }
     },
 
-    selectNode: function (node) {
+    selectNode: function(node) {
         this.setFieldValue(node);
         this.comboStore.load({
             params: {__query: node.data.label},
             scope: this,
-            callback: function (records) {
-                if (records) {
+            callback: function(records) {
+                if(records) {
                     this.autocomplete.setValue(node.data.label);
                     this.fireEvent('select', this.autocomplete, node);
                 }
@@ -268,14 +275,14 @@ Ext.define('NOC.core.TreeCombo', {
         });
     },
 
-    getValue: function () {
-        if (this.fieldValue) {
+    getValue: function() {
+        if(this.fieldValue) {
             return this.fieldValue.id;
         }
         return null;
     },
 
-    reset: function () {
+    reset: function() {
         this.autocomplete.setValue(null);
         this.setFieldValue(null);
         this.pathStore.removeAll();
