@@ -1,18 +1,20 @@
 {
     "": {
         "Content-Transfer-Encoding": "8bit",
-        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Type": "text/plain; charset=UTF-8",
         "Generated-By": "Babel 2.3.4",
         "Language": "ru",
         "Language-Team": "ru <LL@li.org>",
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
-        "PO-Revision-Date": "2016-12-07 11:24+0500",
-        "POT-Creation-Date": "2016-12-07 09:14+0300",
+        "PO-Revision-Date": "2017-01-26 08:14+0500",
+        "POT-Creation-Date": "2017-01-26 07:38+0500",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
-        "X-Generator": "Poedit 1.8.9"
+        "X-Generator": "Poedit 1.8.11",
+        "X-Poedit-Basepath": "micro/noc_bitbucket",
+        "X-Poedit-SearchPath-0": "."
     },
     "About NOC ...": [
         null,
@@ -21,6 +23,10 @@
     "Access": [
         null,
         "Доступ"
+    ],
+    "Access Level": [
+        null,
+        "Уровень доступа"
     ],
     "Account": [
         null,
@@ -218,9 +224,21 @@
         null,
         "Все настройки интерфейса успешно применены"
     ],
+    "Allocate Numbers": [
+        null,
+        "Размещённые номера"
+    ],
+    "Allocated": [
+        null,
+        "Размещен"
+    ],
     "Allocated till": [
         null,
         "Размещено до"
+    ],
+    "Allow LAG mismatch": [
+        null,
+        "Разрешить соединиение LAG <> physical"
     ],
     "Alrm Status": [
         null,
@@ -346,6 +364,10 @@
         null,
         "По З.О."
     ],
+    "By Adm. Domain:": [
+        null,
+        "По З.О.:"
+    ],
     "By Adm. domain": [
         null,
         "По З.О."
@@ -354,9 +376,17 @@
         null,
         "По Зоне Ответственности"
     ],
+    "By Category": [
+        null,
+        "По категории"
+    ],
     "By Date": [
         null,
         "По дате"
+    ],
+    "By Dialplan": [
+        null,
+        "По Номерному плану"
     ],
     "By Event Class": [
         null,
@@ -365,6 +395,10 @@
     "By Group": [
         null,
         "По Группе"
+    ],
+    "By IP list (max. 500):": [
+        null,
+        "По списку IP адресов (мак. 500)"
     ],
     "By Link Event": [
         null,
@@ -386,6 +420,10 @@
         null,
         "По профилю объекта"
     ],
+    "By Obj. Profile:": [
+        null,
+        "По профилю объекта:"
+    ],
     "By Parent": [
         null,
         "По Родителю"
@@ -393,6 +431,10 @@
     "By Pool": [
         null,
         "По Пулу"
+    ],
+    "By Pool:": [
+        null,
+        "По пулу:"
     ],
     "By Profile": [
         null,
@@ -402,17 +444,37 @@
         null,
         "По Проекту"
     ],
+    "By Protocol": [
+        null,
+        "По протоколу"
+    ],
+    "By Range": [
+        null,
+        "По Диапазону"
+    ],
     "By SA Profile": [
         null,
         "По профилю"
+    ],
+    "By SA Profile:": [
+        null,
+        "По профилю:"
     ],
     "By Segment": [
         null,
         "По сегменту"
     ],
+    "By Segment:": [
+        null,
+        "По сегменту:"
+    ],
     "By Selector": [
         null,
         "По селектору"
+    ],
+    "By Selector:": [
+        null,
+        "По Селектору:"
     ],
     "By Service Terminator": [
         null,
@@ -421,6 +483,10 @@
     "By State": [
         null,
         "По состоянию"
+    ],
+    "By Status": [
+        null,
+        "По статусу"
     ],
     "By Tags": [
         null,
@@ -482,6 +548,10 @@
         null,
         "Шаблон заголовка карточки"
     ],
+    "Category": [
+        null,
+        "Категория"
+    ],
     "Cellar": [
         null,
         "Подвал"
@@ -518,6 +588,10 @@
         null,
         "Изменение"
     ],
+    "Changes": [
+        null,
+        "Изменения"
+    ],
     "Changeset": [
         null,
         "Набор изменений"
@@ -537,6 +611,10 @@
     "Class": [
         null,
         "Класс"
+    ],
+    "Clean All": [
+        null,
+        "Очистить все"
     ],
     "Clear": [
         null,
@@ -918,6 +996,14 @@
         null,
         "Диагностика"
     ],
+    "DialPlan": [
+        null,
+        "Номерной план"
+    ],
+    "Dialplan": [
+        null,
+        "Номерной план"
+    ],
     "Diameter (mm)": [
         null,
         "Диаметр (мм)"
@@ -990,6 +1076,10 @@
         null,
         "Действующие настройки"
     ],
+    "Empty command": [
+        null,
+        "Пустой вывод"
+    ],
     "Enable": [
         null,
         "Включить"
@@ -1001,6 +1091,10 @@
     "Enabled": [
         null,
         "Включить"
+    ],
+    "Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET, AS-MEGA-SET)": [
+        null,
+        "Введите список валидных номеров AS (н-р, AS1234) или набора (н-р. ex. AS-MEGASET, AS-MEGA-SET)"
     ],
     "Entrance": [
         null,
@@ -1025,6 +1119,10 @@
     "Error saving record!": [
         null,
         "Ошибка при сохранении записи!"
+    ],
+    "Escalate to": [
+        null,
+        "Эскалировать на (объект)"
     ],
     "Escalation Time": [
         null,
@@ -1538,6 +1636,10 @@
         null,
         "С адреса"
     ],
+    "From Number": [
+        null,
+        "С номера"
+    ],
     "From Router": [
         null,
         "От маршрутизатора"
@@ -1930,6 +2032,10 @@
         null,
         "Стиль заргрузки линка"
     ],
+    "Linked Numbers": [
+        null,
+        "Связанные номера"
+    ],
     "Links": [
         null,
         "Линки"
@@ -1973,6 +2079,10 @@
     "Low Warn": [
         null,
         "Нижний порог предупр."
+    ],
+    "Lvl": [
+        null,
+        "Уров."
     ],
     "MAC Discovery": [
         null,
@@ -2037,6 +2147,10 @@
     "Mark/Unmark": [
         null,
         "Отметить/Убрать отметку"
+    ],
+    "Mask": [
+        null,
+        "Маска"
     ],
     "Masters": [
         null,
@@ -2142,6 +2256,10 @@
         null,
         "Мин.Увел."
     ],
+    "Mode": [
+        null,
+        "Режим работы"
+    ],
     "Model": [
         null,
         "Модель"
@@ -2153,6 +2271,10 @@
     "Month": [
         null,
         "Месяц"
+    ],
+    "Must contain only numbers": [
+        null,
+        "Должен содержать только числа"
     ],
     "Name": [
         null,
@@ -2221,6 +2343,10 @@
     "No new VRFs found": [
         null,
         "Новые VRF не найдены"
+    ],
+    "Not Found": [
+        null,
+        "Не найдено"
     ],
     "Nothing changed": [
         null,
@@ -2401,6 +2527,10 @@
     "Parent": [
         null,
         "Родитель"
+    ],
+    "Parent filter": [
+        null,
+        "Фильтр по родителю"
     ],
     "Password": [
         null,
@@ -2618,6 +2748,10 @@
         null,
         "Поднятие"
     ],
+    "Range": [
+        null,
+        "Диапазон"
+    ],
     "Rear": [
         null,
         "Задняя часть"
@@ -2750,6 +2884,10 @@
         null,
         "Сбросить на настройки по умолчанию"
     ],
+    "Resources": [
+        null,
+        "Ресурсы"
+    ],
     "Result": [
         null,
         "Результат"
@@ -2794,6 +2932,10 @@
         null,
         "Прав. RE"
     ],
+    "Role": [
+        null,
+        "Роль"
+    ],
     "Root": [
         null,
         "Корень"
@@ -2826,9 +2968,21 @@
         null,
         "Запуск"
     ],
+    "Run Action": [
+        null,
+        "Запустить действие"
+    ],
     "Run As": [
         null,
         "Запустить От"
+    ],
+    "Run Commands": [
+        null,
+        "Запустить список комманд"
+    ],
+    "Run Snippet": [
+        null,
+        "Запустить Snippet"
     ],
     "Run discovery now": [
         null,
@@ -3086,6 +3240,10 @@
         null,
         "Показать"
     ],
+    "Show Allocated resources": [
+        null,
+        "Показать Занятые ресурсы"
+    ],
     "Show JSON": [
         null,
         "Показ JSON"
@@ -3221,10 +3379,6 @@
     "Starting search": [
         null,
         "Идет поиск"
-    ],
-    "Starting {0}": [
-        null,
-        "Запуск {0}"
     ],
     "State": [
         null,
@@ -3394,6 +3548,10 @@
         null,
         "Тэгированный"
     ],
+    "Tagged (Ranges)": [
+        null,
+        "Тэгированный (диапазон)"
+    ],
     "Tags": [
         null,
         "Теги"
@@ -3522,6 +3680,10 @@
         null,
         "До Адреса"
     ],
+    "To Number": [
+        null,
+        "По номер"
+    ],
     "To OID": [
         null,
         "в OID"
@@ -3550,9 +3712,17 @@
         null,
         "Вкл./Выкл. звук"
     ],
+    "Too many IP, max 500": [
+        null,
+        "Слишко много IP адресов (максимум 500)"
+    ],
     "Topology": [
         null,
         "Топология"
+    ],
+    "Total": [
+        null,
+        "Всего"
     ],
     "Total: ": [
         null,
@@ -3898,6 +4068,10 @@
         null,
         "проект"
     ],
+    "server-side failure with status code ": [
+        null,
+        "Ошибка со стороны сервера. Код: "
+    ],
     "service": [
         null,
         "сервис"
@@ -3909,6 +4083,10 @@
     "state": [
         null,
         "состояния"
+    ],
+    "to maintainance": [
+        null,
+        "в РНР"
     ],
     "type": [
         null,
