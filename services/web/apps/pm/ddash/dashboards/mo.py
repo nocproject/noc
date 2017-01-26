@@ -57,10 +57,10 @@ class MODashboard(BaseDashboard):
                     lags += [{
                         "name": iface.name,
                         "ports": [i.name for i in iface.lag_members],
-                        "descr": iface.description or "No description"
+                        "descr": iface.description.replace('\"', '') or "No description"
                     }]
                     continue
-                ports += [{"name": iface.name, "descr": iface.description}]
+                ports += [{"name": iface.name, "descr": iface.description.replace('\"', '')}]
             port_types += [{"type": profile.id, "name": profile.name,
                             "ports": ports}]
 
@@ -82,7 +82,7 @@ class MODashboard(BaseDashboard):
             "port_types": self.object_data["port_types"],
             "object_metrics": self.object_data["object_metrics"],
             "lags": self.object_data["lags"],
-            "device": self.object.name,
+            "device": self.object.name.replace('\"', ''),
             "ip": self.object.address,
             "platform": self.object.platform or "Unknown platform",
             "device_id": self.object.id,
