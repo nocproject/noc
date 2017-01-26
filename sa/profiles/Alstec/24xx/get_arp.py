@@ -24,19 +24,19 @@ class Script(BaseScript):
         r"(?P<mac>\S+)\s+\S+\s*$", re.MULTILINE)
 
     rx_ip = re.compile(
-        r"^IP\sAddress\.+\s(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s*", re.MULTILINE
+        r"^\s*IP\sAddress\s*\.+\s(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s*", re.MULTILINE
     )
 
     rx_mac = re.compile(
-        r"MAC\sAddress\.+\s(?P<MAC_address>\S+)\n", re.MULTILINE
+        r"\s*MAC\sAddress\s*\.+\s(?P<MAC_address>\S+)\n", re.MULTILINE
     )
 
     rx_ip_gw = re.compile(
-        r"^Default\sGateway\.+\s(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s*", re.MULTILINE
+        r"^\s*Default\sGateway\s*\.+\s(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s*", re.MULTILINE
     )
 
     rx_vlan_gw = re.compile(
-        r"^Management\sVLAN\sID\.+\s*(?P<MAC_address>\d+)\s*\n", re.MULTILINE
+        r"^\s*Management\sVLAN\sID\s*\.+\s*(?P<MAC_address>\d+)\s*\n", re.MULTILINE
     )
 
     def execute(self, interface=None):

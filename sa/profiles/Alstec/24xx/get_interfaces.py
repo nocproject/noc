@@ -36,10 +36,10 @@ class Script(BaseScript):
         r"^Management VLAN ID\.+ (?P<vlan_id>\d+)\s*\n",
         re.MULTILINE)
     rx_ip2 = re.compile(
-        r"^IP Address\.+ (?P<ip_address>\S+)\s*?"
-        r"^Subnet Mask\.+ (?P<ip_subnet>\S+)\s*.+"
-        r"^(MAC Address|Burned In MAC Address)\.+ (?P<mac>\S+)\s*.+"
-        r"^Management VLAN ID\.+ (?P<vlan_id>\d+)\s*\n",
+        r"^\s*IP Address\s*\.+ (?P<ip_address>\S+)\s*?"
+        r"^\s*Subnet Mask\s*\.+ (?P<ip_subnet>\S+)\s*.+"
+        r"^\s*(MAC Address|Burned In MAC Address)\s*\.+ (?P<mac>\S+)\s*.+"
+        r"^\s*Management VLAN ID\s*\.+ (?P<vlan_id>\d+)\s*\n",
         re.MULTILINE | re.DOTALL
     )
     rx_ipv6 = re.compile(r"^(IPv6 address|IPv6 Prefix is )\.+ (?P<ipv6_address>\S+)\s*", re.MULTILINE)
