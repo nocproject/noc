@@ -20,7 +20,7 @@ class Profile(BaseProfile):
     pattern_username = "([Uu]ser ?[Nn]ame|[Ll]ogin)|User: ?"
     # Iskratel do not have "enable_super" command
     # pattern_unpriveleged_prompt = r"^\S+?>"
-    pattern_prompt = r"^\S+?\s*[#>]"
+    pattern_prompt = r"^(\S+?|\(ISKRATEL Switching\))\s*[#>]"
     pattern_more = [
         (r"Press any key to continue or ESC to stop scrolling.", " "),
         (r"Press any key to continue, ESC to stop scrolling or TAB to scroll to the end.", "\t"),
@@ -48,18 +48,20 @@ class Profile(BaseProfile):
 
     rx_hw2 = re.compile(
         r"System Description\.+ ISKRATEL Switching\n"
-        r"Machine Type\.+ (?P<descr>Iskratel .+)\n"
-        r"Machine Model\.+ (?P<platform>\S+)\n"
+        r"Machine Type\.+ (?P<descr>.+)\n"
+        r"Machine Model\.+ (?P<platform>.+)\n"
         r"Serial Number\.+ (?P<serial>\S+)\n"
-        r"FRU Number\.+ (?P<number>\S+)\n"
+        r"FRU Number\.+ (?P<number>\S*)\n"
         r"Part Number\.+ (?P<part_no>\S+)\n"
         r"Maintenance Level\.+ .+\n"
         r"Manufacturer\.+ .+\n"
         r"Burned In MAC Address\.+ (?P<mac>\S+)\n"
-        r"Network Processing Device\.+ .+\n"
-        r"Hardware and CPLD Version\.+ (?P<hw_ver>\S+)\n"
+        r"(Operating System\.+ \S+\n)?"
+        r"Network Processing Device\.+ .+\n.*"
+        r"(Firmware Version\.+ (?P<api_ver>\S+)\n)?"
+        r"Hardware( and CPLD)? Version\.+ (?P<hw_ver>\S+)\n.*"
         r"IPMI Version\.+ (?P<ipmi_ver>\S+)",
-        re.MULTILINE)
+        re.MULTILINE | re.DOTALL)
 
     def get_hardware(self, script):
         c = script.cli("show hardware", cached=True)

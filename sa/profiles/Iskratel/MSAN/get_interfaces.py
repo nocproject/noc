@@ -43,7 +43,7 @@ class Script(BaseScript):
         r"^(?P<port>\d+/\d+)\s+(?:\s+|PC|PC Mbr)\s+"
         r"(?P<admin_status>Enable|Disable)\s+"
         r"(?:Auto|1000 Full|100 Full|100 Half|10 Full|10 Half)\s+"
-        r"(?:Auto|1000 Full|100 Full|100 Half|10 Full|10 Half)\s+"
+        r"(?:\s+|Auto|1000 Full|100 Full|100 Half|10 Full|10 Half)\s+"
         r"(?P<oper_status>Up|Down)\s+(?:Enable|Disable)\s+"
         r"(?:Enable|Disable)(?P<descr>.*?)\n", re.MULTILINE)
     rx_port1 = re.compile(r"(?P<port>\d+/\d+)/\d+")
@@ -64,34 +64,36 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute(self):
+        v = self.profile.get_hardware(self)
         pch = self.scripts.get_portchannel()
         pvc = []
-        try:
-            c = self.cli("show interface all pvc")
-            for match in self.rx_if_pvc.finditer(c):
-                for match1 in self.rx_pvc.finditer(match.group("pvcs")):
+        if "Switch" not in v["platform"]:
+            try:
+                c = self.cli("show interface all pvc")
+                for match in self.rx_if_pvc.finditer(c):
+                    for match1 in self.rx_pvc.finditer(match.group("pvcs")):
+                        pvc += [{
+                            "port":match.group("port"),
+                            "vpi": int(match1.group("vpi")),
+                            "vci": int(match1.group("vci")),
+                            "vlan": int(match1.group("vlan"))
+                        }]
+            except self.CLISyntaxError:
+                c = self.cli("\x08" * 22)
+                c = self.cli("show pvc all")
+                for match in self.rx_pvc1.finditer(c):
                     pvc += [{
                         "port":match.group("port"),
-                        "vpi": int(match1.group("vpi")),
-                        "vci": int(match1.group("vci")),
-                        "vlan": int(match1.group("vlan"))
+                        "vpi": int(match.group("vpi")),
+                        "vci": int(match.group("vci"))
                     }]
-        except self.CLISyntaxError:
-            c = self.cli("\x08" * 22)
-            c = self.cli("show pvc all")
-            for match in self.rx_pvc1.finditer(c):
-                pvc += [{
-                    "port":match.group("port"),
-                    "vpi": int(match.group("vpi")),
-                    "vci": int(match.group("vci"))
-                }]
-            c = self.cli("show vlan port all")
-            for match in self.rx_vlan.finditer(c):
-                ifname = match.group("port")
-                for p in pvc:
-                    if p["port"] == ifname:
-                        p["vlan"] = int(match.group("vlan"))
-                        break
+                c = self.cli("show vlan port all")
+                for match in self.rx_vlan.finditer(c):
+                    ifname = match.group("port")
+                    for p in pvc:
+                        if p["port"] == ifname:
+                            p["vlan"] = int(match.group("vlan"))
+                            break
         interfaces = []
         for match in self.rx_port.finditer(self.cli("show port all")):
             ifname = match.group('port')

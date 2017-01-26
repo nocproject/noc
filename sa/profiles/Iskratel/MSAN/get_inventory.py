@@ -18,21 +18,21 @@ class Script(BaseScript):
 
     def execute(self):
         v = self.profile.get_hardware(self)
-        if "descr" in v:
-            return [{
-                "type": "LINECARD",
-                "number": v["number"],
-                "vendor": "ISKRATEL",
-                "part_no": v["part_no"],
-                "serial": v["serial"],
-                "revision": v["hw_ver"],
-                "description": v["descr"]
-            }]
+        r = {
+            "vendor": "ISKRATEL",
+            "part_no": v["part_no"],
+            "serial": v["serial"]
+        }
+        if v["number"]:
+            r["type"] = "LINECARD"
+            r["number"] = v["number"]
         else:
-            return [{
-                "type": "LINECARD",
-                "number": v["number"],
-                "vendor": "ISKRATEL",
-                "part_no": v["part_no"],
-                "serial": v["serial"]
-            }]
+            r["type"] = "CHASSIS"
+        if "descr" in v:
+            r["description"] = v["descr"]
+        if "revision" in v:
+            r["revision"] = v["hw_ver"]
+
+        # TODO: use `show slot` command
+
+        return [r]
