@@ -21,6 +21,7 @@ class Script(BaseScript):
     rx_vlan = re.compile(
         r"^vlan database\s*\n"
         r"^vlan (?P<vlans>\S+)\s*\n"
+        r"(vlan name \d \"\S+\"\s*\n)*"
         r"exit\s*\n", re.MULTILINE)
 
     def execute(self):
