@@ -10,6 +10,10 @@ Ext.define('NOC.inv.map.BasketController', {
     extend: 'Ext.app.ViewController',
     alias: 'controller.basket',
 
+    mixins: [
+        "NOC.core.Export"
+    ],
+
     onDeleteClick: function() {
         var grid = this.getView(),
             selected = grid.getSelectionModel().getSelection(),
@@ -32,5 +36,9 @@ Ext.define('NOC.inv.map.BasketController', {
         var grid = this.getView();
 
         grid.fireEvent('addtomaintaince', grid.getStore().getData());
+    },
+
+    onExportClick: function() {
+        this.save(this.getView(), 'basket.csv')
     }
 });
