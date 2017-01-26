@@ -72,6 +72,7 @@ Ext.define("NOC.core.Export", {
 
     export: function(records, columns) {
         var out = [];
+
         Ext.Array.forEach(records, function(item) {
             var record = {};
             Ext.Array.forEach(this.columns, function(column) {
@@ -94,6 +95,7 @@ Ext.define("NOC.core.Export", {
             first = renderPlugin.getFirstVisibleRowIndex(),
             last = renderPlugin.getLastVisibleRowIndex(),
             columns = grid.getVisibleColumns();
+
         try {
             var records = grid.getStore().getRange(first, last);
         } catch (e) {

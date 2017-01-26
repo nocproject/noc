@@ -988,7 +988,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         store.add({
             id: objectId,
             object: objectId,
-            object__label: me.objectNodes[objectId].attributes.attrs.text.text
+            object__label: me.objectNodes[objectId].attributes.attrs.text.text.replace("\n", "")
         });
     },
 

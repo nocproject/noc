@@ -61,6 +61,15 @@ Ext.define('NOC.inv.map.Basket', {
             bind: {
                 disabled: '{!hasRecords}'
             }
+        },
+        {
+            xtype: 'button',
+            tooltip: __("Export"),
+            glyph: NOC.glyph.arrow_down,
+            handler: 'onExportClick',
+            bind: {
+                disabled: '{!hasRecords}'
+            }
         }
     ],
     selModel: {
