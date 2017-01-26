@@ -95,10 +95,15 @@ Ext.define("NOC.core.Export", {
             first = renderPlugin.getFirstVisibleRowIndex(),
             last = renderPlugin.getLastVisibleRowIndex(),
             columns = grid.getVisibleColumns();
+        var records;
 
         try {
-            var records = grid.getStore().getRange(first, last);
-        } catch (e) {
+            if('NOC.core.ModelStore' === Ext.getClassName(grid.getStore())) {
+                records = grid.getStore().getRange(first, last);
+            } else {
+                records = grid.getStore().getRange(0);
+            }
+        } catch(e) {
             return false;
         }
 
