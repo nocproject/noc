@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetInventory
 
     rx_inv = re.compile(
-        r"^\s+(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+"
+        r"^\s*(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+"
         r"(?P<serial>[NZ]\S+)\s+", re.MULTILINE)
 
     def execute(self):
