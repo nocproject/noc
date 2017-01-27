@@ -61,3 +61,11 @@
     dest: "/etc/systemd/system/pgbouncer.service.d/noc.conf"
   tags:
     - config
+
+- name: Install pgbouncer logrotated config
+  template:
+    src: "etc/pgbouncer.j2"
+    dest: "/etc/logrotate.d/pgbouncer.conf"
+  when: "'Linux' in ansible_system"
+  tags:
+    - config
