@@ -61,6 +61,8 @@ class InfluxDBClient(object):
                 continue
             if "error" in qr:
                 raise ValueError(qr["error"])
+            if "series" not in qr:
+                continue
             for sv in qr["series"]:
                 for v in sv["values"]:
                     values = sv.get("tags", {}).copy()
