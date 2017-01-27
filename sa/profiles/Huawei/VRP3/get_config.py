@@ -20,6 +20,10 @@ class Script(BaseScript):
     def execute(self):
         self.cli("no monitor")
         with self.configure():
-            config = self.cli("show running-config")
+            try:
+                config = self.cli("show running-config")
+            except self.CLISyntaxError:
+                # MA5600 V100R011(MA5605) Version
+                raise self.NotSupportedError()
             config = self.strip_first_lines(config, 3)
         return self.cleaned_config(config)
