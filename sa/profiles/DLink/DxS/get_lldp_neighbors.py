@@ -106,6 +106,7 @@ class Script(BaseScript):
                         "Other": 1,
                         "Repeater": 2,
                         "Bridge": 4,
+                        "Access Point": 8,
                         "WLAN Access Point": 8,
                         "Router": 16,
                         "Telephone": 32,
