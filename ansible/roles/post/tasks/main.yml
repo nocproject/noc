@@ -91,7 +91,7 @@
     body:
       name: nocdb
       type: influxdb
-      url: "http://{{ influx_host }}"
+      url: "{{ influx_host }}"
       access: proxy
       isDefault: True
       database: "{{ noc_influxdb_db }}"
