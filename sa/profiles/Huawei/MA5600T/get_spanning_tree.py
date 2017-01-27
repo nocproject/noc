@@ -33,7 +33,8 @@ class Script(BaseScript):
         r"^\s+CST Root\s+Priority\s*:\s*(?P<root_priority>\d+)\s+"
         r"MAC Address\s*:\s*(?P<root_id>\S+)\s*\n", re.MULTILINE)
     rx_port = re.compile(
-        r"^\s*\d+\s+(?P<port>\d+/\s*\d+/\s*\d+)\s+\d+", re.MULTILINE)
+        r"^\s*\d+\s+(?P<port>\d+/\s*\d+/\s*\d+)\s+"
+        r"(?P<port_id1>\d+)\s+(?P<port_id2>\d+)", re.MULTILINE)
     rx_port_id_state = re.compile(
         r"\-+\[Port(?P<port_id>\d+)\((?P<state>\S+)\)\]\-+")
     rx_port_role_pri = re.compile(
@@ -118,8 +119,8 @@ class Script(BaseScript):
                     p1 = self.cli("display stp instance %d port %s" %
                                   (instance["id"], ifname))
                     iface = {"interface": ifname}
+                    iface["port_id"] = p.group("port_id1") + "." + p.group("port_id2")
                     match = self.rx_port_id_state.search(p1)
-                    iface["port_id"] = match.group("port_id")
                     iface["state"] = self.PORT_STATE[match.group("state")]
                     match = self.rx_port_role_pri.search(p1)
                     iface["role"] = self.PORT_ROLE[
