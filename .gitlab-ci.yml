@@ -35,7 +35,7 @@ test:empty:
   script:
     - env | sort
     - export NOC_PG_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR | awk -F '=' '{print $2}')
-    - export NOC_MONGO_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR | | awk -F '=' '{print $2}')
+    - export NOC_MONGO_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR | awk -F '=' '{print $2}')
     - ln -s src/ /opt/noc/collections/
     - cd /opt/noc
     - ls -lah .
