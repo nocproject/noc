@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Config | Config Changed #2 (SNMP)",
+    "uuid": "484f3639-4527-42da-8950-2e8c06576d0d",
+    "description": "This notification is generated when the configuration is changed - raw variables 1.3.6.1.6.3.1.1.4.1.0  1.3.6.1.4.1.2011.6.10.2.1",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-MIB::hwConfig\\.2\\.1$"
+        }
+    ]
+}

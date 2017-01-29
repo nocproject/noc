@@ -1,0 +1,39 @@
+{
+    "name": "Cisco | Transceiver | 1G | GLC-SX-MMD",
+    "$collection": "inv.objectmodels",
+    "uuid": "a098cf6e-a684-4c8a-b6a4-170f020b2506",
+    "vendor__code": "CISCO",
+    "description": "1000BASE-SX short wavelength; with DOM",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1000BASESX"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1000BASESX"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["GLC-SX-MMD"]
+        }
+    }
+}

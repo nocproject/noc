@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | ASR1000 | SIP",
+    "$collection": "inv.connectiontypes",
+    "uuid": "2230142a-e93b-42d0-8cd8-9775bafdf7a4",
+    "description": "Cisco ASR1000 SPA Interface Processor slot",
+    "c_group": [],
+    "genders": "mf"
+}

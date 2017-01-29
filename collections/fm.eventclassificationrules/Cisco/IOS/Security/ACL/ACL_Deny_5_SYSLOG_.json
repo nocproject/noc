@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | ACL | ACL Deny #5 (SYSLOG)",
+    "uuid": "45687426-0759-4b69-a227-63641d1ce5b3",
+    "description": "%SEC-6-IPACCESSLOGDP: list IGMP_ONLY denied icmp 10.10.192.10 -> 10.10.16.1 (0/0), 3 packets",
+    "event_class__name": "Security | ACL | ACL Deny",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SEC-6-IPACCESSLOG[NRD]P: list (?P<name>\\S+) denied (?P<proto>\\S+) (?P<src_ip>\\S+) -> (?P<dst_ip>\\S+) \\(\\d+/\\d+\\), (?P<count>\\S+) packet"
+        }
+    ]
+}

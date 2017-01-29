@@ -1,0 +1,7 @@
+{
+    "name": "Power | IEC 60320 C1",
+    "uuid": "f9ad61cb-4a0a-4204-bbe0-580ae42ab78b",
+    "description": "Non-polarized C1/C2 connector",
+    "c_group": ["power_c1"],
+    "genders": "m"
+}

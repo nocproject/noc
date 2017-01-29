@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | NTP | System Clock Synchronized (SYSLOG)",
+    "uuid": "89081ec7-3c13-40d7-873e-9d88a8546c6e",
+    "description": "%NTP-5-PEERSYNC: NTP synced to peer 192.168.100.253",
+    "event_class__name": "Network | NTP | System Clock Synchronized",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%NTP-5-PEERSYNC: NTP synced to peer (?P<server_address>\\S+)$"
+        }
+    ]
+}

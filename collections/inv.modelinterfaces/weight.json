@@ -1,0 +1,21 @@
+{
+    "name": "weight",
+    "uuid": "2a928f8d-4380-4d0a-83c4-1f00c9536484",
+    "description": "Object's weight properties",
+    "attrs": [
+        {
+            "name": "is_recursive",
+            "type": "bool",
+            "description": "Count nested objects' weight when true",
+            "required": true,
+            "is_const": true
+        },
+        {
+            "name": "weight",
+            "type": "float",
+            "description": "Own net weight in kg",
+            "required": true,
+            "is_const": true
+        }
+    ]
+}

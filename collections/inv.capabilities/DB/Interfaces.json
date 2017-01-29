@@ -1,0 +1,7 @@
+{
+    "name": "DB | Interfaces",
+    "$collection": "inv.capabilities",
+    "uuid": "8b2d38a0-a601-42ee-90eb-a3ef6aecfebc",
+    "description": "Number of discovered interfaces",
+    "type": "int"
+}

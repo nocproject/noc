@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Network | STP | STP Port State Changed (SYSLOG)",
+    "uuid": "37385a32-a60b-49a3-9e46-1330b8611f55",
+    "description": "%STP-W-PORTSTATUS: 1:16: STP status Forwarding",
+    "event_class__name": "Network | STP | STP Port State Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%STP-W-PORTSTATUS: (P<interface>\\S+): STP status (?P<state__enum__stp_state>\\S+)"
+        }
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "name": "Chassis | Stack | Stack Degraded",
+    "$collection": "fm.eventclasses",
+    "uuid": "ff2191ec-f107-4232-b849-5045f194de3d",
+    "description": "One or more unit is out of stack",
+    "action": "A",
+    "vars": [
+        {
+            "name": "unit",
+            "description": "Unit number",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "subject_template": "Unit {{unit}} is out of stack",
+    "body_template": "Unit {{unit}} is out of stack",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Stack | Stack Degraded"
+        }
+    ]
+}

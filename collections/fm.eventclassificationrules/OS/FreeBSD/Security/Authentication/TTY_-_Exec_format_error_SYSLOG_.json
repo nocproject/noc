@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | TTY - Exec format error (SYSLOG)",
+    "uuid": "586515e3-25c6-4451-8703-dcfe08010c59",
+    "description": "getty[1039]: /usr/bin/login: Exec format error",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "getty\\[\\d+\\]: /usr/bin/login: Exec format error$"
+        }
+    ]
+}

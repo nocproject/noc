@@ -1,0 +1,7 @@
+{
+    "name": "Network | CDP",
+    "$collection": "inv.capabilities",
+    "uuid": "16e9be1c-66f2-45db-acbd-354fa585208e",
+    "description": "CDP is enabled",
+    "type": "bool"
+}

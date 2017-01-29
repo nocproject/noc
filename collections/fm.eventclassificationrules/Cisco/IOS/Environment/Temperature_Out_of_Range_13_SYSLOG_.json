@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Out of Range #13 (SYSLOG)",
+    "uuid": "8d2c9c44-2ccc-44fa-96ff-c84ab4762815",
+    "description": "%C7600_ENV-SP-4-MINORTEMPALARM: module 4 device-1 temperature crossed threshold #1(=60C). It has exceeded normal operating temperature range.",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C7600_ENV-SP-4-MINORTEMPALARM: (?P<name>.+) temperature crossed threshold #1\\(=(?P<min>\\S+)\\). It has exceeded normal operating temperature range."
+        }
+    ]
+}

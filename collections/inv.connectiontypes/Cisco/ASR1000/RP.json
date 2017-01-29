@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | ASR1000 | RP",
+    "$collection": "inv.connectiontypes",
+    "uuid": "5685aa9f-bc0d-47c9-b713-d2e457fa5368",
+    "description": "Cisco ASR1000 Route Processor slot",
+    "c_group": [],
+    "genders": "mf"
+}

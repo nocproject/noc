@@ -1,0 +1,7 @@
+{
+    "name": "Power | MSTB 2.5/2-ST-5.08",
+    "uuid": "b0a0686e-e6b8-448b-b0c4-185fea7ab4cc",
+    "description": "Terminal block connector, 2 pins",
+    "c_group": ["mstb_2.5_2_5.08"],
+    "genders": "m"
+}

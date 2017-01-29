@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Environment | Temperature Out of Range #2 (SYSLOG)",
+    "uuid": "a44b0585-10c8-449f-9d6e-976ac071700d",
+    "description": "%PLATFORM-ENVMON-2-CHASSIS_OVERTEMP : Chassis ambient temperature 56.0C at or above rising T3 threshold 56.0C",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PLATFORM-ENVMON-2-CHASSIS_OVERTEMP : (?P<name>Chassis) ambient temperature (?P<measure>\\S+C) at or above rising \\S+ threshold (?P<threshold>\\S+C)"
+        }
+    ]
+}

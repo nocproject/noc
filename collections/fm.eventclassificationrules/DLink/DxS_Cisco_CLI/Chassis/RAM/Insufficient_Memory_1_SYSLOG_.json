@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS_Cisco_CLI | Chassis | RAM | Insufficient Memory #1 (SYSLOG)",
+    "uuid": "15305294-20d8-4631-a1a6-9fbdead0ec1a",
+    "description": "%BGP-4-MEM_WARNING_START: BGP down due to insufficient memory and will be restarting in 120s",
+    "event_class__name": "Chassis | RAM | Insufficient Memory",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS_Cisco_CLI$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:BGP-4-MEM_WARNING_START|NSM-4-MEM_WARNING): (?P<reason>.+)"
+        }
+    ]
+}

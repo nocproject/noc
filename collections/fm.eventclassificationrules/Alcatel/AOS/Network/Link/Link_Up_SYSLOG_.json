@@ -1,0 +1,21 @@
+{
+    "name": "Alcatel | AOS | Network | Link | Link Up (SYSLOG)",
+    "uuid": "5a59104a-eccd-458c-a86b-60315956b575",
+    "description": "Jul 20 15:58:47 Alcatel6850 INTERFACE(6) Data: 1/3: link UP",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Alcatel\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "INTERFACE\\(6\\) Data: (?P<interface>.+): link UP"
+        }
+    ]
+}

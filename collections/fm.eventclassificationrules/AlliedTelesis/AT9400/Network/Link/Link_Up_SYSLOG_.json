@@ -1,0 +1,21 @@
+{
+    "name": "AlliedTelesis | AT9400 | Network | Link | Link Up (SYSLOG)",
+    "uuid": "4b14b6a3-05c5-4662-90ec-ddf0306bcbe8",
+    "description": "pcfg: Link UP on port 20",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^AlliedTelesis\\.AT9400$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "pcfg: Link UP on port (?P<interface>\\d+)"
+        }
+    ]
+}

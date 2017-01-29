@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Network | STP | BPDU Guard Recovery (SYSLOG)",
+    "uuid": "1de72d95-8b82-469c-a3f5-bcf6e9ea15eb",
+    "description": "INFO(6) Port <2>  recover from BPDU under attacking state automatically",
+    "event_class__name": "Network | STP | BPDU Guard Recovery",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Port <?(?P<interface>\\S*\\d+)>?\\s+recover from BPDU under (?:attacking|protection) state automatically"
+        }
+    ]
+}

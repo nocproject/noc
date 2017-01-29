@@ -1,0 +1,30 @@
+{
+    "name": "Juniper | EX | EX9200-SCBE",
+    "$collection": "inv.objectmodels",
+    "uuid": "32a2427b-59a4-4814-a646-6736803f6725",
+    "vendor__code": "JUNIPER",
+    "description": "EX9200 Enhanced Switch Control Board",
+    "cr_context": "SCB",
+    "connections": [
+        {
+            "description": "Routing Engine slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "re",
+            "type__name": "Juniper | MX | RE"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | MX | SCB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "order_part_no": ["EX9200-SCBE"],
+            "part_no": ["750-049608"]
+        }
+    }
+}

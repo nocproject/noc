@@ -1,0 +1,25 @@
+{
+    "name": "DLink | DxS | Network | Storm Control | Storm Cleared (SNMP)",
+    "uuid": "3ffd9a01-6c07-4d98-9d9c-a2e369f56b4d",
+    "description": "PKT-STORM-CTRL-MIB::swPktStormCleared",
+    "event_class__name": "Network | Storm Control | Storm Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "PKT-STORM-CTRL-MIB::swPktStormCleared"
+        },
+        {
+            "key_re": "^PKT-STORM-CTRL-MIB::swPktStormCtrlPortIndex$",
+            "value_re": "(?P<interface>\\S+)"
+        }
+    ]
+}

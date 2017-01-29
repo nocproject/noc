@@ -1,0 +1,93 @@
+{
+    "name": "Brocade | SX",
+    "uuid": "3aefbe22-c0b6-421a-9bf7-5a4b49ff4a98",
+    "description": "SX connection rules",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "sfm",
+            "type": "SFM"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "card",
+            "type": "CARD"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "mgmt",
+            "type": "MGMT"
+        },
+        {
+            "reset_scopes": ["mgmt", "line", "sfm"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "PWR",
+            "scope": "chassis",
+            "target_connection": "pwr{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SFM",
+            "scope": "chassis",
+            "target_connection": "sfm{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "card",
+            "target_connection": "sfp{N}",
+            "target_number": "",
+            "target_type": "CARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "card",
+            "target_connection": "xfp{N}",
+            "target_number": "",
+            "target_type": "CARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "card",
+            "target_connection": "sfpp{N}",
+            "target_number": "",
+            "target_type": "CARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "XG{N}_sfpp",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "MGMT",
+            "scope": "chassis",
+            "target_connection": "mgmt{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "CARD",
+            "scope": "chassis",
+            "target_connection": "card{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

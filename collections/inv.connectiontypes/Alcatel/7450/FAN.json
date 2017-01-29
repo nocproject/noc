@@ -1,0 +1,8 @@
+{
+    "name": "Alcatel | 7450 | FAN",
+    "$collection": "inv.connectiontypes",
+    "uuid": "54723145-9bd4-49ad-9788-7b5bb17cfb95",
+    "description": "Alcatel 7450 FAN Slot",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Network | OAM",
+    "$collection": "inv.capabilities",
+    "uuid": "f7cc66b8-8f94-410d-a353-f5cf7f811b06",
+    "description": "Ethernet OAM is enabled",
+    "type": "bool"
+}

@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DxS | Security | Attack | Ping Of Death (SYSLOG)",
+    "uuid": "07fbf0c9-ded6-4af0-8ed8-f69a27edb802",
+    "description": "INFO: Ping of Death Attack is blocked from (IP: 10.201.49.57 Port: 1)",
+    "event_class__name": "Security | Attack | Ping Of Death",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Ping of Death Attack is (?:blocked|detected) from \\(IP: (?P<src_ip>\\S+) Port: (?P<interface>\\S+)\\)"
+        }
+    ]
+}

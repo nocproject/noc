@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Unknown | Ignore LLDP local tx/rs change (SYSLOG)",
+    "uuid": "a142d7a0-9c68-45af-9694-91e3f6425178",
+    "description": "0000001592: Jan 7 16:55:24: torgovaja_4: %LLDP-4-lldpSomthingChangedLoc: 579337:20: Length of Port 2 Description has changed",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%LLDP-4-lldpSomthingChangedLoc: \\S+: Length of Port \\S+ Description has changed$"
+        }
+    ]
+}

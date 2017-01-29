@@ -1,0 +1,13 @@
+{
+    "name": "Huawei | MA | MA5603T sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "38d0817e-576f-4f96-8702-b993304750ed",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.2011.2.123",
+    "action": "match",
+    "profile": "Huawei.MA5600T"
+}

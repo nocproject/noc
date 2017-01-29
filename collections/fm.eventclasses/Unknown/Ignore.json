@@ -1,0 +1,15 @@
+{
+    "name": "Unknown | Ignore",
+    "$collection": "fm.eventclasses",
+    "uuid": "5987a346-7d84-420f-9b8b-ff590d9ac3a5",
+    "description": "Delete event and stop processing",
+    "action": "D",
+    "vars": [
+
+    ],
+    "subject_template": "Ignored event",
+    "body_template": "Ignored event",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Event without any usable information for FM",
+    "recommended_actions": "No specific action needed"
+}

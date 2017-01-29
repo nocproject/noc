@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | STP | BPDU Guard Violation (SYSLOG)",
+    "uuid": "64938c58-d686-4a7d-b7d5-2d3014649ebc",
+    "description": "%PM-SP-4-ERR_DISABLE: bpduguard error detected on Gi4/1, putting Gi4/1 in err-disable state",
+    "event_class__name": "Network | STP | BPDU Guard Violation",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM(-SP)?-4-ERR_DISABLE: bpduguard error detected on (?P<interface>\\S+), putting \\S+ in err-disable state"
+        }
+    ]
+}

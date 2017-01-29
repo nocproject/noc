@@ -1,0 +1,29 @@
+{
+    "name": "DLink | DxS | Config | Config Changed #2 (SNMP)",
+    "uuid": "361328a6-c4bd-4e41-8f46-6458887724b3",
+    "description": "AGENT-GENERAL-MIB::agentCfgOperCompleteTrap",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^AGENT-GENERAL-MIB::agentCfgOperCompleteTrap$"
+        },
+        {
+            "key_re": "^AGENT-GENERAL-MIB::agentCfgOperate$",
+            "value_re": "^save$"
+        },
+        {
+            "key_re": "^AGENT-GENERAL-MIB::agentLoginUserName$",
+            "value_re": "^(?P<user>.+)$"
+        }
+    ]
+}

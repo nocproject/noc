@@ -1,0 +1,37 @@
+{
+    "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate #2 (SNMP)",
+    "uuid": "25ffacdb-a636-41ec-b2f4-6a0d315f2aba",
+    "description": "CISCO-SLB-MIB::ciscoSlbMIBNotificationPrefix",
+    "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | Server Farm is Operate",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-SLB-MIB::ciscoSlbRealServerStateChange$"
+        },
+        {
+            "key_re": "^CISCO-SLB-MIB::slbRealState.+",
+            "value_re": "^(?P<state>inService)$"
+        },
+        {
+            "key_re": "^CISCO-SLB-MIB::slbInetAddressType.+",
+            "value_re": "^ipv4$"
+        },
+        {
+            "key_re": "^CISCO-SLB-MIB::slbInetAddress\\..+?(?P<real>\\d+\\.\\d+\\.\\d+\\.\\d+)\\.\\d+$",
+            "value_re": "^None$"
+        },
+        {
+            "key_re": "^CISCO-SLB-MIB::slbName.+",
+            "value_re": "^(?P<farm>.+)$"
+        }
+    ]
+}

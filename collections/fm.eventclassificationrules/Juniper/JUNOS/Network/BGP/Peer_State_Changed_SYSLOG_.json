@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | BGP | Peer State Changed (SYSLOG)",
+    "uuid": "a1f49412-f04c-400b-b735-9b2618c04266",
+    "description": "Jul 25 22:34:52 rpd[1260]: RPD_BGP_NEIGHBOR_STATE_CHANGED: BGP peer 10.99.2.2 (Internal AS 65000) changed state from Established to Idle (event RecvNotify)",
+    "event_class__name": "Network | BGP | Peer State Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "RPD_BGP_NEIGHBOR_STATE_CHANGED: BGP peer (?P<peer>\\S+) \\(.+? AS (?P<as>\\d+)\\) changed state from (?P<from_state__enum__bgp_state>\\S+) to (?P<to_state__enum__bgp_state>\\S+)"
+        }
+    ]
+}

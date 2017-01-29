@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | 2900 | MOTHERBOARD",
+    "$collection": "inv.connectiontypes",
+    "uuid": "c3f99e66-580c-4a52-af36-66e2fee69fc8",
+    "description": "Cisco 2900 motherboard slot",
+    "c_group": [],
+    "genders": "mf"
+}

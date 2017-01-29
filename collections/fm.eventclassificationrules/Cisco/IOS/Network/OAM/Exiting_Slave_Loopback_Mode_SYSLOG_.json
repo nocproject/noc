@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | OAM | Exiting Slave Loopback Mode (SYSLOG)",
+    "uuid": "9f6d3e5a-0c66-4126-a97b-de0235f7c734",
+    "description": "%ETHERNET_OAM-6-LOOPBACK: Interface Fa0/1 has exited the slave loopback mode.",
+    "event_class__name": "Network | OAM | Exiting Slave Loopback Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ETHERNET_OAM-6-LOOPBACK: Interface (?P<interface>\\S+) has exited the slave loopback mode"
+        }
+    ]
+}

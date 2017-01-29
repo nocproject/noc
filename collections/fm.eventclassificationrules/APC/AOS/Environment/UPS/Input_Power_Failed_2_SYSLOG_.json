@@ -1,0 +1,22 @@
+{
+    "name": "APC | AOS | Environment | UPS | Input Power Failed #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "46ee4bf7-07da-4f3f-8058-c9154a23ac5a",
+    "description": "UPS: Switched to battery backup power. 0x0109",
+    "event_class__name": "Environment | UPS | Input Power Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: Switched to battery backup power. 0x0109"
+        }
+    ]
+}

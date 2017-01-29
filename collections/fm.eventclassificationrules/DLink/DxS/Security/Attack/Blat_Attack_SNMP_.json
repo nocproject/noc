@@ -1,0 +1,33 @@
+{
+    "name": "DLink | DxS | Security | Attack | Blat Attack (SNMP)",
+    "uuid": "35bcd19a-7cbb-4f30-907a-5d096b2b6271",
+    "description": "DOS-PREV-MIB::swDoSAttackDetected",
+    "event_class__name": "Security | Attack | Blat Attack",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^DOS-PREV-MIB::swDoS(?:AttackDetected|Notify)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSNotifyVarIpAddr\\.0$",
+            "value_re": "^(?P<src_ip__bin_to_ip>.+)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSNotifyVarPortNumber\\.0$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^DOS-PREV-MIB::swDoSCtrlType\\.2$",
+            "value_re": "^blat-attack$"
+        }
+    ]
+}

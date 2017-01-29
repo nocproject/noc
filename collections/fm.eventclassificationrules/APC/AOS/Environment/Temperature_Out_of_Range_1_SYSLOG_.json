@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Environment | Temperature Out of Range #1 (SYSLOG)",
+    "uuid": "4cbaff86-fa93-49d7-b46a-ca8812b79042",
+    "description": "UPS: The internal battery temperature exceeds the critical threshold. 0x012C",
+    "event_class__name": "Environment | Temperature Out of Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: The internal battery temperature exceeds the critical threshold. 0x012C"
+        }
+    ]
+}

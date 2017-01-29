@@ -1,0 +1,7 @@
+{
+    "name": "Intel Corp",
+    "uuid": "e13dbe69-a4f3-4074-907b-44d5c3ab27e4",
+    "code": "INTEL",
+    "site": "http://www.intel.com/",
+    "$collection": "inv.vendors"
+}

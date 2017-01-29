@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Security | Authentication | Login #2 (SYSLOG)",
+    "uuid": "5cd7954d-5a4a-4c41-b5d5-d18a4ffd634f",
+    "description": "%AAA-I-CONNECT: New http connection for user admin, source 10.1.4.19 destination 10.8.25.150 ACCEPTED",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%AAA-I-CONNECT: New http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination\\s+\\S+\\s+ACCEPTED"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "HP | ProCurve9xxx | Network | IP | IP Flap (SYSLOG)",
+    "uuid": "2904953f-83b7-48d0-92c3-1b117e6348dc",
+    "description": "hp93_1, next hop router 10.0.7.100 moved from port 2/6 to port 2/2",
+    "event_class__name": "Network | IP | IP Flap",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.ProCurve9xxx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^\\S+ next hop router (?P<ip>\\S+) moved from port (?P<from_interface>[\\d\\/]+) to port (?P<to_interface>[\\d\\/]+)$"
+        }
+    ]
+}

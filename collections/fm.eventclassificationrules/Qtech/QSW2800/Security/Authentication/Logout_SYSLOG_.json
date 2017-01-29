@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW2800 | Security | Authentication | Logout (SYSLOG)",
+    "uuid": "37345a48-432a-435c-ac38-183a63272d4b",
+    "description": "003378: sw-dom-5 %Nov 27 15:07:49 2012 MODULE_UTILS_TRACEROUTE[subTelnetd1]:Telnet: User admin logout from 192.168.220.252:41808.",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW2800$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "User (?P<user>.+) logout from (?P<ip>\\S+):\\d+\\.$"
+        }
+    ]
+}

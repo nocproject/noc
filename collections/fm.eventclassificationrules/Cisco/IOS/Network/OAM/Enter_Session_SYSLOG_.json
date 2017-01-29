@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | OAM | Enter Session (SYSLOG)",
+    "uuid": "95c98d3c-5c68-457d-89f6-3fb047102264",
+    "description": "%ETHERNET_OAM-6-ENTER_SESSION: The client on interface Gi0/1 has entered the OAM session.",
+    "event_class__name": "Network | OAM | Enter Session",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ETHERNET_OAM-6-ENTER_SESSION: The client on interface (?P<interface>\\S+) has entered the OAM session"
+        }
+    ]
+}

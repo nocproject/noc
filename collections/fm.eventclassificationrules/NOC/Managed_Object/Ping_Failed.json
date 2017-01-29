@@ -1,0 +1,21 @@
+{
+    "name": "NOC | Managed Object | Ping Failed",
+    "uuid": "203ac1f6-4485-4153-8645-013e209f1286",
+    "description": "Ping Failed",
+    "event_class__name": "NOC | Managed Object | Ping Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^probe$",
+            "value_re": "^ping$"
+        },
+        {
+            "key_re": "^result$",
+            "value_re": "^failed$"
+        }
+    ]
+}

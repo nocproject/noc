@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | MSDP | Peer Up (SYSLOG)",
+    "uuid": "9a04a681-fb7d-4813-9a3c-923e864198cf",
+    "description": "%MSDP-5-PEER_UPDOWN: Session to peer 10.225.205.12 going up",
+    "event_class__name": "Network | MSDP | Peer Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Cisco.IOS$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%MSDP-5-PEER_UPDOWN: Session to peer (?P<peer>\\S+) going up"
+        }
+    ]
+}

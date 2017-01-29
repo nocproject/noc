@@ -1,0 +1,13 @@
+{
+    "name": "Huawei | AR 2240 | PAC-350WB-L",
+    "$collection": "inv.objectmodels",
+    "uuid": "521a13ae-19e0-48db-a733-0f5452237013",
+    "vendor__code": "HUAWEI",
+    "description": "AC-DC Power,-25degC,60degC,90V,290V,12V/29.2A",
+    "connections": [],
+    "data": {
+        "asset": {
+            "part_no": ["02131212"]
+        }
+    }
+}

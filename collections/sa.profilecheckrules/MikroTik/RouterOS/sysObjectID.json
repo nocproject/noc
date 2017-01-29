@@ -1,0 +1,13 @@
+{
+    "name": "MikroTik | RouterOS | sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "48316735-c90a-4c5d-8489-914eddccb4cc",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.14988.1",
+    "action": "match",
+    "profile": "MikroTik.RouterOS"
+}

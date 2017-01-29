@@ -1,0 +1,41 @@
+{
+    "name": "Cisco | IOS | Network | Link | Link Down #4 (SNMP)",
+    "uuid": "1c690ede-ee9c-4184-a2e3-b32a54a843f6",
+    "description": "SNMPv2-MIB::snmpTraps",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^IF-MIB::ifType\\.\\d+$",
+            "value_re": "^\\d+$"
+        },
+        {
+            "key_re": "^IF-MIB::ifOperStatus\\.\\d+$",
+            "value_re": "^down$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^IF-MIB::ifDescr\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^IF-MIB::ifAdminStatus\\.\\d+$",
+            "value_re": "^up$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^SNMPv2-MIB::snmpTraps$"
+        },
+        {
+            "key_re": "^IF-MIB::ifIndex\\.\\d+$",
+            "value_re": "^\\d+$"
+        }
+    ]
+}

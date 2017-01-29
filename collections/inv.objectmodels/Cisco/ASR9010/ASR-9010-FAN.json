@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | ASR9010 | ASR-9010-FAN",
+    "$collection": "inv.objectmodels",
+    "uuid": "db6aedac-c1c0-4e22-989e-6c5afb2fdb70",
+    "vendor__code": "CISCO",
+    "description": "ASR-9010 Fan Tray",
+    "cr_context": "FAN",
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR9010 | FAN"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ASR-9010-FAN"]
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | BGP | Peer Down #2 (SYSLOG)",
+    "uuid": "3f98086d-c8b8-4c86-91b6-a00068e2bfa5",
+    "description": "%ROUTING-BGP-5-ADJCHANGE : neighbor 1.1.1.1 Down - RR client configuration changed (VRF: default) (AS: 1234)",
+    "event_class__name": "Network | BGP | Peer Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ROUTING-BGP-5-ADJCHANGE : neighbor (?P<peer>.+) Down - (?P<reason>.+) \\(VRF: (?P<vrf>\\S+)\\)\\s\\(AS:\\s(?P<as>\\d+)\\)"
+        }
+    ]
+}

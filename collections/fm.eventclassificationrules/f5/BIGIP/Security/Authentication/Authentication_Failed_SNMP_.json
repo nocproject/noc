@@ -1,0 +1,29 @@
+{
+    "name": "f5 | BIGIP | Security | Authentication | Authentication Failed (SNMP)",
+    "uuid": "6a81f9b3-0dd9-4748-9f3f-05b56ac00986",
+    "description": "F5-BIGIP-COMMON-MIB::bigipAuthFailed",
+    "event_class__name": "Security | Authentication | Authentication Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^f5\\.BIGIP$"
+        },
+        {
+            "key_re": "^F5-BIGIP-COMMON-MIB::bigipNotifyObjMsg$",
+            "value_re": "\\[client (?P<ip>\\S+)\\] AUTHCACHE PAM: user '(?P<user>.+?)' - not authenticated: Authentication failure"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapEnterprise\\.0$",
+            "value_re": "^F5-BIGIP-COMMON-MIB::bigipNotification$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^F5-BIGIP-COMMON-MIB::bigipAuthFailed$"
+        }
+    ]
+}

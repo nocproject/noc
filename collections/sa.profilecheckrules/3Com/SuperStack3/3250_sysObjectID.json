@@ -1,0 +1,13 @@
+{
+    "name": "3Com | SuperStack3 | 3250 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "532c5cef-8df1-49ce-8dab-81b386411171",
+    "description": "3Com SuperStack 3 Switch 3250 48-Port 10/100 2-Port 10/100/1000 Switch (3CR17501-91)",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.43.1.8.42",
+    "action": "match",
+    "profile": "3Com.SuperStack3"
+}

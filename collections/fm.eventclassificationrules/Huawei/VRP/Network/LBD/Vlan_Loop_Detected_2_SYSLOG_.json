@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Network | LBD | Vlan Loop Detected #2 (SYSLOG)",
+    "uuid": "e3bf942e-81e8-4760-93bd-315398629db4",
+    "description": "DRV_NI/5/LOOP BACK: Loopback does exist on port Ethernet0/1 vlan 1, please check it",
+    "event_class__name": "Network | LBD | Vlan Loop Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Loopback does exist on port (?P<interface>\\S+) vlan (?P<vlan>\\d+), please check it"
+        }
+    ]
+}

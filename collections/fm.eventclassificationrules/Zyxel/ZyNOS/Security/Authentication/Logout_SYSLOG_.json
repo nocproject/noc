@@ -1,0 +1,21 @@
+{
+    "name": "Zyxel | ZyNOS | Security | Authentication | Logout (SYSLOG)",
+    "uuid": "32c8d77c-539e-49fb-8489-45515faeeae8",
+    "description": "Logout successful",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "auth(entication)?: User (?P<user>.*) logout$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Chassis | PSU | PSU Failed #1 (SYSLOG)",
+    "uuid": "59767375-60a4-4a4b-b8b4-5a584cd64ce5",
+    "description": "UPS: A power module fault exists. 0x0201",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: (?P<name>A power module) fault exists. 0x0201"
+        }
+    ]
+}

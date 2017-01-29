@@ -1,0 +1,33 @@
+{
+    "name": "DLink | DxS | Network | IMPB | Unauthenticated IP-MAC (SNMP)",
+    "uuid": "88aab146-1bc2-4e08-a670-b7772e7bc84f",
+    "description": "DES3526-L2MGMT-MIB::swl2NotifyIpMacBinding.0.3",
+    "event_class__name": "Network | IMPB | Unauthenticated IP-MAC",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^DES35(?:26|50)-L2MGMT-MIB::swL2IpMacBindingPortIndex\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^DES35(?:26|50)-L2MGMT-MIB::swL2IpMacBindingViolationIP$",
+            "value_re": "^(?P<ip>.+)$"
+        },
+        {
+            "key_re": "^DES35(?:26|50)-L2MGMT-MIB::swL2IpMacBindingViolationMac$",
+            "value_re": "^(?P<mac>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.\\d+$",
+            "value_re": "^DES35(?:26|50)-L2MGMT-MIB::swl2NotifyIpMacBinding\\.0\\.3$"
+        }
+    ]
+}

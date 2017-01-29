@@ -1,0 +1,29 @@
+{
+    "name": "Alcatel | 7750 | IMM12-10GB-SF+",
+    "$collection": "inv.objectmodels",
+    "uuid": "e5f43066-9e63-47b7-aff2-f02c902a3697",
+    "vendor__code": "ALU",
+    "description": "Alcatel 7750 Integrated Media Module (IMM)",
+    "cr_context": "IOM",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Alcatel | 7x50 | IO"
+        },
+        {
+            "description": "MDA slot 1 connection",
+            "direction": "i",
+            "gender": "f",
+            "name": "mda1",
+            "type__name": "Alcatel | 7x50 | MDA"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["3HE04743AAAB01"]
+        }
+    }
+}

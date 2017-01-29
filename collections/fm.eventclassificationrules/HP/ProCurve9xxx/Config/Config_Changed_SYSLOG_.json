@@ -1,0 +1,21 @@
+{
+    "name": "HP | ProCurve9xxx | Config | Config Changed (SYSLOG)",
+    "uuid": "d7801057-e349-4429-b63b-c8dee94b90ca",
+    "description": "hp93_1, System: Startup-config was changed by user manager from ssh client 192.168.205.40",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.ProCurve9xxx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^\\S+ System: Startup-config was changed by user (?P<user>\\S+) from \\S+ client (?P<ip>\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})$"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Eltex | MES | Network | Link | Link Up (SYSLOG)",
+    "uuid": "5918cdbf-9739-4ab5-ba35-0b48c12c7473",
+    "description": "%LINK-I-Up:  gi0/3",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Eltex\\.MES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%LINK-I-Up:  ?(?P<interface>.+)$"
+        }
+    ]
+}

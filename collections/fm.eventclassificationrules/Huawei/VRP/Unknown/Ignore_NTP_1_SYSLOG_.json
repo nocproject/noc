@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Unknown | Ignore NTP #1 (SYSLOG)",
+    "uuid": "c6ebaf67-d0cd-4a70-b493-b37def7a56ac",
+    "description": "Jul 20 2012 08:00:28 od-agg-2-marselskaya42 %%01NTP/4/LEAP_CHANGE(l)[33]:System leap changes from 0 to 1 after clock update.",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "NTP/\\d+/LEAP_CHANGE.+System leap changes from [01] to [01] after clock update"
+        }
+    ]
+}

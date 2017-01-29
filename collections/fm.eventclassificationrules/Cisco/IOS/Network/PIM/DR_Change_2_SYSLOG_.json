@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | PIM | DR Change #2 (SYSLOG)",
+    "uuid": "b5a4088d-99ed-4f93-99a8-e347766112bc",
+    "description": "%PIM-5-DRCHG: VRF blue: DR change from neighbor 0.0.0.0 to 172.16.1.1 on interface Tunnel0",
+    "event_class__name": "Network | PIM | DR Change",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PIM-5-DRCHG: VRF (?P<vrf>\\S+): DR change from neighbor (?P<from_dr>\\S+) to (?P<to_dr>\\S+) on interface (?P<interface>\\S+)"
+        }
+    ]
+}

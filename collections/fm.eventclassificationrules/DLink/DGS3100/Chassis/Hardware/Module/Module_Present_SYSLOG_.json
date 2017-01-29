@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Chassis | Hardware | Module | Module Present (SYSLOG)",
+    "uuid": "950b8b33-1f07-4663-8360-6ab040b5aaef",
+    "description": "%Fiber-I-SFP-PRESENT-CHNG: 2:14 SFP status is present.",
+    "event_class__name": "Chassis | Hardware | Module | Module Present",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:Box|Fiber)-I-SFP-PRESENT-CHNG:( unit_id \\d+)? (?P<interface>\\S+) (?P<module>SFP) status is present."
+        }
+    ]
+}

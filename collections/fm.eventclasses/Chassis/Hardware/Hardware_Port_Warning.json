@@ -1,0 +1,33 @@
+{
+    "name": "Chassis | Hardware | Hardware Port Warning",
+    "$collection": "fm.eventclasses",
+    "uuid": "644d544a-958b-4c8d-b8f0-e4aa8642c19c",
+    "description": "Hardware port or slot warning occured",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Hardware port or slot",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "Hardware port or slot warning occured: {{interface}}",
+    "body_template": "Hardware port or slot warning occured: {{interface}}",
+    "symptoms": "Link becomes unstable or is not responding",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "ignore",
+            "condition": "event.managed_object.is_ignored_interface(event.vars['interface'])",
+            "action": "ignore"
+        },
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Hardware | Hardware Port Warning"
+        }
+    ]
+}

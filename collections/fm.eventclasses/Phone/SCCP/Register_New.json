@@ -1,0 +1,44 @@
+{
+    "name": "Phone | SCCP | Register New",
+    "$collection": "fm.eventclasses",
+    "uuid": "fc9a4f06-5d8d-412b-b182-cbc060a14138",
+    "description": "New SCCP phone registered",
+    "action": "A",
+    "vars": [
+        {
+            "name": "name",
+            "description": "Device name",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "type",
+            "description": "Device type",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "sn",
+            "description": "Device Serial Number",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "ip",
+            "description": "Device IP address",
+            "type": "ip_address",
+            "required": true
+        },
+        {
+            "name": "socket",
+            "description": "Socket number",
+            "type": "int",
+            "required": true
+        }
+    ],
+    "subject_template": "New SCCP {{type}} registered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
+    "body_template": "New SCCP {{type}} registered: {{name}}({{sn}}). {{ip}} at socket {{socket}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

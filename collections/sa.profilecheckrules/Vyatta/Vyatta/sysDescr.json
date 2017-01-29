@@ -1,0 +1,13 @@
+{
+    "name": "Vyatta | Vyatta | sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "dc19fd75-8113-41b4-b859-48fcdbabb96a",
+    "description": "Examples:\nVyatta VyOS 1.1.6",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^(Vyatta|VyOS)\\s+",
+    "action": "match",
+    "profile": "Vyatta.Vyatta"
+}

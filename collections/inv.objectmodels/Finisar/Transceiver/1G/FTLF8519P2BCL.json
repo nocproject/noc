@@ -1,0 +1,39 @@
+{
+    "name": "Finisar | Transceiver | 1G | FTLF8519P2BCL",
+    "$collection": "inv.objectmodels",
+    "uuid": "a96c6815-1c75-401e-b5c7-3c25619a00f6",
+    "vendor__code": "FINISAR",
+    "description": "1000BASE-SX SFP Optical Transceiver\n",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "description": "SFP Connector",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "protocols": ["TransEth1G"],
+            "type__name": "Transceiver | SFP | Cisco"
+        },
+        {
+            "description": "RX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "rx",
+            "protocols": [">1GBASESX"],
+            "type__name": "Optical | LC"
+        },
+        {
+            "description": "TX Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "tx",
+            "protocols": ["<1GBASESX"],
+            "type__name": "Optical | LC"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["FTLF8519P2BCL-CS"]
+        }
+    }
+}

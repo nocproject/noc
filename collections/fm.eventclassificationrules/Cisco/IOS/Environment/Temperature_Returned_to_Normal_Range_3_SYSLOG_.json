@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #3 (SYSLOG)",
+    "uuid": "98f70797-ab30-4969-8bee-f3268c11b8f9",
+    "description": "%SYS-0-SYS_TEMPMAJORRECOVER: Chassis major temperature threshold recovered",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-0-SYS_TEMPMAJORRECOVER:\\s*(?P<name>Chassis) (?P<threshold>major|minor) temperature threshold recovered"
+        }
+    ]
+}

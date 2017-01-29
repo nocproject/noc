@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | STP | STP Vlan Loop Cleared (SYSLOG)",
+    "uuid": "4b1d2c34-121a-4a1d-a0c4-d2b4f5b200f9",
+    "description": "%SPANTREE-2-LOOPGUARD_UNBLOCK: Loop guard unblocking port GigabitEthernet0/39 on VLAN0252.",
+    "event_class__name": "Network | STP | STP Vlan Loop Cleared",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:SPANTREE|STP)-2-LOOPGUARD_(?:UN)?BLOCK: Loop guard unblocking port (?P<interface>\\S+) on VLAN(?P<vlan>\\d+)."
+        }
+    ]
+}

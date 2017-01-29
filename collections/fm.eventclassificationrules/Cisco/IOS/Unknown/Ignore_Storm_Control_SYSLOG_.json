@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Unknown | Ignore Storm Control (SYSLOG)",
+    "uuid": "46bb52a9-42e8-47a3-9a61-3aa4b5e6abbb",
+    "description": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on Gi0/24. The interface has been disabled.",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%STORM_CONTROL-3-SHUTDOWN: A packet storm was detected on \\S+. The interface has been disabled."
+        }
+    ]
+}

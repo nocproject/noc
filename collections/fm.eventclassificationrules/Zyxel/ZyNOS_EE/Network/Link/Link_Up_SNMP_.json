@@ -1,0 +1,25 @@
+{
+    "name": "Zyxel | ZyNOS_EE | Network | Link | Link Up (SNMP)",
+    "uuid": "94d4a839-70cf-472b-840f-2689025b1488",
+    "description": "IF-MIB::linkUp",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^RFC1213-MIB::ifIndex\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^IF-MIB::linkUp$"
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | Quidway S5700 | Extension slot",
+    "$collection": "inv.connectiontypes",
+    "uuid": "14ead783-9706-451a-92c2-47afa4b76f69",
+    "description": "Huawei Quidway S5700 Extension slot (Interface card)",
+    "c_group": [],
+    "genders": "mf"
+}

@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | SSH - Protocol major versions differ (SYSLOG)",
+    "uuid": "e5c21ac9-1762-40bb-97f5-f9be5e27faf4",
+    "description": "sshd[80442]: Protocol major versions differ for 10.111.0.33: SSH-2.0-OpenSSH_5.4p1 FreeBSD-20100308 vs. SSH-1.5-NmapNSE_1.0",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "sshd\\[\\d+\\]: Protocol major versions differ for (?P<ip>\\S+): .+ vs\\. .+"
+        }
+    ]
+}

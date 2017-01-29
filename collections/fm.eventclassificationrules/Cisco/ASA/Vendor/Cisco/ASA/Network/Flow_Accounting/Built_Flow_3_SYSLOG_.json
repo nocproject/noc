@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Vendor | Cisco | ASA | Network | Flow Accounting | Built Flow #3 (SYSLOG)",
+    "uuid": "1507a062-5947-4cc5-8886-85523e8d8a33",
+    "description": "Aug 08 2011 21:00:20: %ASA-6-302020: Built inbound ICMP connection for faddr 81.245.191.250/29934 gaddr 81.245.191.3/0 laddr 81.245.191.3/0",
+    "event_class__name": "Vendor | Cisco | ASA | Network | Flow Accounting | Built Flow",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:ASA|PIX)-6-302020: Built inbound ICMP connection for faddr (?P<src_ip>\\S+)/\\d+ gaddr (?P<dst_ip>\\S+)/\\d+"
+        }
+    ]
+}

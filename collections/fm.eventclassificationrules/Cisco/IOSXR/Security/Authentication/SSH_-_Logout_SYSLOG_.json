@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Security | Authentication | SSH - Logout (SYSLOG)",
+    "uuid": "b8a94760-d1c0-4cbf-9a75-bf5cae3c3ff0",
+    "description": "%SECURITY-SSHD-6-INFO_GENERAL : Client closes socket connection",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "Cisco.IOSXR"
+        },
+        {
+            "key_re": "source",
+            "value_re": "syslog"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%SECURITY-SSHD-6-INFO_GENERAL : Client closes socket connection"
+        }
+    ]
+}

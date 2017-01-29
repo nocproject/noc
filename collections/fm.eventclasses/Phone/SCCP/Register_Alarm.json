@@ -1,0 +1,38 @@
+{
+    "name": "Phone | SCCP | Register Alarm",
+    "$collection": "fm.eventclasses",
+    "uuid": "0739ec2b-ac9d-4bd4-9565-0bdae96b062c",
+    "description": "SCCP phone registration alarm",
+    "action": "A",
+    "vars": [
+        {
+            "name": "sn",
+            "description": "Device Serial Number",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "socket",
+            "description": "Socket number",
+            "type": "int",
+            "required": false
+        },
+        {
+            "name": "image",
+            "description": "Load image",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "reason",
+            "description": "Alarm reason",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "SCCP register alarm: {{sn}} load {{image}}: {{reason}}",
+    "body_template": "SCCP register alarm: {{sn}} load {{image}}: {{reason}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

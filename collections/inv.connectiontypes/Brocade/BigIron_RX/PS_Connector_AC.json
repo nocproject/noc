@@ -1,0 +1,7 @@
+{
+    "name": "Brocade | BigIron RX | PS Connector AC",
+    "uuid": "96b015ba-4efe-42fb-b135-bce4c291e2b7",
+    "description": "Power supply connector in RX chassis",
+    "c_group": [],
+    "genders": "mf"
+}

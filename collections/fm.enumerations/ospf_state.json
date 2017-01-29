@@ -1,0 +1,14 @@
+{
+    "name": "ospf_state",
+    "uuid": "b230e50f-70ee-4c8b-9eee-dae11326d3f8",
+    "values": {
+        "2WAY": ["2way", "twoway"],
+        "ATTEMPT": ["attempt"],
+        "DOWN": ["down"],
+        "EXCHANGE": ["exchange"],
+        "EXSTART": ["exstart", "exchangestart"],
+        "FULL": ["full"],
+        "INIT": ["init"],
+        "LOADING": ["loading"]
+    }
+}

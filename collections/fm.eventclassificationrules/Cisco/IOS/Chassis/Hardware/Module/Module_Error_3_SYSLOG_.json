@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #3 (SYSLOG)",
+    "uuid": "ec14655c-19ae-44c2-b5af-d1ed0b886552",
+    "description": "%CONST_DIAG-SP-4-ERROR_COUNTER_WARNING: Module 4 Error counter exceeds threshold",
+    "event_class__name": "Chassis | Hardware | Module | Module Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CONST_DIAG-(\\S+)?SP-4-ERROR_COUNTER_WARNING: (?P<module>Module \\S+) (?P<reason>Error counter exceeds threshold)"
+        }
+    ]
+}

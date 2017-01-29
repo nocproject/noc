@@ -1,0 +1,7 @@
+{
+    "name": "MINOR",
+    "uuid": "9353d796-cfb1-4a2e-a738-67dce8c4623b",
+    "description": "Some services are affected. Overal impact on network operation is limited",
+    "severity": 3000,
+    "style__name": "FM MINOR"
+}

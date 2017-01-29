@@ -1,0 +1,21 @@
+{
+    "name": "Linksys | SPS2xx | Security | Authentication | Login #1 (SYSLOG)",
+    "uuid": "9844dbcb-28ed-4db3-9417-162ed55b84ab",
+    "description": "SYSLOG: %AAA-I-CONNECT: New http connection for user admin, source 10.8.4.19 destination 10.8.2.13 ACCEPTED",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%AAA-I-CONNECT: New http connection for user (?P<user>.+?), source (?P<ip>\\S+) destination \\S+ ACCEPTED$"
+        }
+    ]
+}

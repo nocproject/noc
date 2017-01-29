@@ -1,0 +1,7 @@
+{
+    "name": "Config | Match Template",
+    "uuid": "d5e465d1-eb4b-45d5-a314-17d037793767",
+    "description": "Config must not match template",
+    "subject_template": "Config must not match template",
+    "body_template": "Config must not match template"
+}

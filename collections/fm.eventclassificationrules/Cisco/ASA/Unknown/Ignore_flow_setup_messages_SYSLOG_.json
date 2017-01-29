@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Unknown | Ignore flow setup messages (SYSLOG)",
+    "uuid": "4139975c-0dcd-4d56-8747-249c2a0e3396",
+    "description": "%PIX-7-710001: TCP access requested from source_address/source_port to interface_name:dest_address/service",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:PIX|ASA)-7-71000[1256]"
+        }
+    ]
+}

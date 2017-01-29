@@ -1,0 +1,15 @@
+{
+    "name": "enable_cdp",
+    "uuid": "a54807fd-7196-4f0e-b239-2edc4eaaa305",
+    "label": "Enable CDP",
+    "description": "Enable CDP on port",
+    "access_level": 15,
+    "params": [
+        {
+            "description": "Interface name",
+            "is_required": true,
+            "name": "interface",
+            "type": "interface"
+        }
+    ]
+}

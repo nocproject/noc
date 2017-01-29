@@ -1,0 +1,14 @@
+{
+    "name": "container",
+    "uuid": "0aef5942-e41a-4acf-ab3e-5bc406aaee08",
+    "description": "Generic container properties",
+    "attrs": [
+        {
+            "name": "container",
+            "type": "bool",
+            "description": "Is object a container?",
+            "required": true,
+            "is_const": true
+        }
+    ]
+}

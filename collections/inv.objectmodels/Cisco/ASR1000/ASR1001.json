@@ -1,0 +1,94 @@
+{
+    "name": "Cisco | ASR1000 | ASR1001",
+    "$collection": "inv.objectmodels",
+    "uuid": "e61660fa-4cbb-4498-abef-4f5226831555",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR1001 Chassis",
+    "connection_rule__name": "Cisco | ASR1000",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "PSU slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu0",
+            "type__name": "Cisco | ASR1000 | ASR1001 PSU"
+        },
+        {
+            "description": "PSU slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | ASR1000 | ASR1001 PSU"
+        },
+        {
+            "description": "Gi0/0/0",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi0_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Gi0/0/1",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi1_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Gi0/0/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Gi0/0/3",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi3_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "SPA Interface Processor slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sip1",
+            "type__name": "Cisco | ASR1000 | SIP"
+        },
+        {
+            "description": "Route Processor slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "r0",
+            "type__name": "Cisco | ASR1000 | RP"
+        }
+    ],
+    "data": {
+        "airflow": {
+            "exhaust": "r",
+            "inlet": "f"
+        },
+        "asset": {
+            "part_no": ["ASR1001"]
+        },
+        "dimensions": {
+            "depth": 461,
+            "height": 267,
+            "width": 438
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 4.0
+        },
+        "weight": {
+            "weight": 31.16
+        }
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter",
+    "$collection": "fm.eventclasses",
+    "uuid": "10b1ed75-bb83-4737-8915-d6fd31e8b0a4",
+    "description": "Failed to connect to vCenter",
+    "action": "A",
+    "vars": [
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "Failed to connect to vCenter",
+    "body_template": "Failed to connect to vCenter: {{reason}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter"
+        }
+    ],
+    "repeat_suppression": [
+        {
+            "name": "Suppress repeated messages",
+            "condition": "True",
+            "event_class__name": "Vendor | Arista | EOS | VMTracer | Failed to connect to vCenter",
+            "match_condition": {
+                "managed_object": "event.managed_object.id"
+            },
+            "window": 120,
+            "suppress": true
+        }
+    ]
+}

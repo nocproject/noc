@@ -1,0 +1,21 @@
+{
+    "name": "Huawei | VRP | Security | Audit | Command (SYSLOG)",
+    "uuid": "20d1f699-d256-4a37-afb4-99813be76583",
+    "description": "%%01SHELL/6/DISPLAY_CMDRECORD(l)[437]:Record command information. (Task=VT0 , Ip=192.168.220.252, User=admin, Command=\"display current-configuration\")",
+    "event_class__name": "Security | Audit | Command",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "Record command information\\. \\(Task=\\S+\\d+ , [Ii][Pp]=(:?\\S+), [Uu]ser=(?P<user>.+), [Cc]ommand=\"(?P<command>.+)\"\\)"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | IS-IS | Adjacency Up (SYSLOG)",
+    "uuid": "ef2d0003-cd5f-4a5d-8d36-c4f9387b7a66",
+    "description": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to xxx (TenGigabitEthernet8/2) Up, new adjacency",
+    "event_class__name": "Network | IS-IS | Adjacency Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CLNS-5-ADJCHANGE: ISIS: Adjacency to (?P<neighbor>\\S+)\\s+\\((?P<interface>.+)\\)\\sUp,.+"
+        }
+    ]
+}

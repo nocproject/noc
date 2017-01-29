@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Config | Invalid Config #2 (SYSLOG)",
+    "uuid": "c87bbfcd-7b67-4784-996a-34f6ed89b7d2",
+    "description": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface GigabitEthernet0/1/0/6 in Bundle-Ether5 is incompatible with the bundle operational state; link is not using LACP but bundle is running mLACP",
+    "event_class__name": "Config | Invalid Config",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%L2-BM-6-MEMBER_COMPATIBILITY : Interface .+ is incompatible with the .+ operational state"
+        }
+    ]
+}

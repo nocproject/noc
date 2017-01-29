@@ -1,0 +1,21 @@
+{
+    "name": "Brocade | IronWare | Chassis | PSU | PSU Failed (SYSLOG)",
+    "uuid": "5e04c2be-e493-4b00-9cb0-e236a814aae5",
+    "description": "Aug 8 22:45:19 AkrasRoot System: Power supply 1, left side power supply, failed",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Brocade\\.IronWare$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* System: (?P<name>Power supply \\d+),(\\s+\\S+)+, failed$"
+        }
+    ]
+}

@@ -1,0 +1,38 @@
+{
+    "name": "Alcatel | 7x50 | M2-10GB-XP-XFP",
+    "$collection": "inv.objectmodels",
+    "uuid": "231088b8-598c-4bda-b29d-217efdce56b4",
+    "vendor__code": "ALU",
+    "description": "Alcatel 7450, 7750 2 port 10-Gigabit Ethernet",
+    "cr_context": "MDA",
+    "connections": [
+        {
+            "description": "MDA slot connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Alcatel | 7x50 | IO"
+        },
+        {
+            "description": "TeX/1 XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te1_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        },
+        {
+            "description": "TeX/2 XFP port",
+            "direction": "i",
+            "gender": "f",
+            "name": "Te2_xfp",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | XFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["3HE03685AAAA01"]
+        }
+    }
+}

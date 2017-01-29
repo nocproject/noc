@@ -1,0 +1,21 @@
+{
+    "name": "Ubiquiti | AirOS |  Unknown | Ignore STA_JOIN (SYSLOG)",
+    "uuid": "95580aa1-7831-4b3d-96cc-8a4def6d5eb5",
+    "description": "Jan 15 17:11:34 syslog: wevent.wevent_main(): wevent: EVENT_STA_JOIN ath1: f8:db:7f:42:46:66 / 0",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Ubiquiti\\.AirOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* EVENT_STA_JOIN .*"
+        }
+    ]
+}

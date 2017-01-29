@@ -1,0 +1,13 @@
+{
+    "name": "Ericsson | MINI-LINK | CN510 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "868e9d80-df58-45c9-a44f-fad10f82fa2b",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.193.81.1.1.3",
+    "action": "match",
+    "profile": "Ericsson.SEOS"
+}

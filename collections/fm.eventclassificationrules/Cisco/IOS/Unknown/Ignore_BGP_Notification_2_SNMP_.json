@@ -1,0 +1,37 @@
+{
+    "name": "Cisco | IOS | Unknown | Ignore BGP Notification #2 (SNMP)",
+    "uuid": "71eacf37-8135-45c4-8e8c-21e8c0b892a9",
+    "description": "CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-SYSLOG-MIB::ciscoSyslogMIBNotificationPrefix$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistFacility\\.\\d+$",
+            "value_re": "^BGP$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgName\\.\\d+$",
+            "value_re": "^NOTIFICATION$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistSeverity\\.\\d+$",
+            "value_re": "^error$"
+        },
+        {
+            "key_re": "^CISCO-SYSLOG-MIB::clogHistMsgText\\.\\d+$",
+            "value_re": "^received from neighbor .+ \\(cease\\) \\d+ bytes"
+        }
+    ]
+}

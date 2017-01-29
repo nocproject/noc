@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #6 (SYSLOG)",
+    "uuid": "7afc2233-b040-4122-aa0f-9894ac556d6a",
+    "description": "%PS-3-DCOUTPUTVOLTOK: Power System DC condition is now normal.",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PS-3-DCOUTPUTVOLTOK: (?P<name>Power System) (?:AC|DC) condition is now normal\\.$"
+        }
+    ]
+}

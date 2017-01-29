@@ -1,0 +1,25 @@
+{
+    "name": "APC | AOS | Environment | UPS | Self-Test Passed (SNMP)",
+    "uuid": "3c13bda8-90ac-49ec-8e24-5af3770e75cf",
+    "description": "PowerNet-MIB::apc",
+    "event_class__name": "Environment | UPS | Self-Test Passed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "PowerNet-MIB::apc"
+        },
+        {
+            "key_re": "^PowerNet-MIB::mtrapargsString\\.0$",
+            "value_re": "UPS: Passed a self-test."
+        }
+    ]
+}

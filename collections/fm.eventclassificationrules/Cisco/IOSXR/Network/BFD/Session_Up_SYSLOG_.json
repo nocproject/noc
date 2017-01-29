@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | BFD | Session Up (SYSLOG)",
+    "uuid": "f061430d-cbff-4762-84c9-63b904f5e325",
+    "description": "%L2-BFD-6-SESSION_STATE_UP : BFD session to neighbor 192.168.1.1 on interface TenGigE0/1/1/2 is up",
+    "event_class__name": "Network | BFD | Session Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%L2-BFD-6-SESSION_STATE_UP : BFD session to neighbor (?P<peer>\\S+) on interface (?P<interface>\\S+) is up$"
+        }
+    ]
+}

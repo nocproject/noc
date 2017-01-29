@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #11 (SYSLOG)",
+    "uuid": "138ff6c9-6e97-4ef0-86a8-3375667dad12",
+    "description": "%HARDWARE-5-THERMAL_NORMAL: Temperature is within the acceptable limit.",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%HARDWARE-5-THERMAL_NORMAL: Temperature is within the acceptable limit."
+        }
+    ]
+}

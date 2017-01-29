@@ -1,0 +1,13 @@
+{
+    "name": "MikroTik | RouterOS | HTTP",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "f91a9bc4-5d67-44a0-b74c-370257db8600",
+    "description": "Examples:\n<h1>RouterOS v6.33</h1>",
+    "preference": 200,
+    "method": "http_get",
+    "param": "/",
+    "match_method": "re",
+    "value": "RouterOS\\s+v\\d+",
+    "action": "match",
+    "profile": "MikroTik.RouterOS"
+}

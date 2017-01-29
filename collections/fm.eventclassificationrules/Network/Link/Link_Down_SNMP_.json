@@ -1,0 +1,21 @@
+{
+    "name": "Network | Link | Link Down (SNMP)",
+    "uuid": "c9ef59cb-dfa6-492d-b4b5-088cf5685329",
+    "description": "IF-MIB::linkDown",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 2000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^IF-MIB::ifName\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^IF-MIB::linkDown$"
+        }
+    ]
+}

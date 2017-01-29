@@ -1,0 +1,270 @@
+{
+    "name": "Huawei | Quidway S2300 | S2328TP-EI",
+    "$collection": "inv.objectmodels",
+    "uuid": "094e9dfc-8f28-4796-83b5-c67df9f17c0a",
+    "vendor__code": "HUAWEI",
+    "description": "L3 switch with 24 10/100 Base-TX ports, 4 100/1000 Base-X SFP ports",
+    "connections": [
+        {
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/1 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/1",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/2 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/2",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/3 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/3",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/4 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/4",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/5 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/5",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/6 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/6",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/7 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/7",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/8 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/8",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/9 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/9",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/10 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/10",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/11 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/11",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/12 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/12",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/13 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/13",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/14 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/14",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/15 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/15",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/16 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/16",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/17 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/17",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/18 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/18",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/19 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/19",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/20 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/20",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/21 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/21",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/22 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/22",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/23 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/23",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Ethernet X/0/24 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "EthernetX/0/24",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet X/0/1 SFP interface",
+            "direction": "i",
+            "gender": "f",
+            "group": "GigabitEthernetX/0/0/1",
+            "name": "GigabitEthernetX/0/1_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet X/0/3 SFP interface",
+            "direction": "i",
+            "gender": "f",
+            "group": "GigabitEthernetX/0/0/3",
+            "name": "GigabitEthernetX/0/3_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet X/0/4 SFP interface",
+            "direction": "i",
+            "gender": "f",
+            "group": "GigabitEthernetX/0/0/4",
+            "name": "GigabitEthernetX/0/4_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet X/0/2 SFP interface",
+            "direction": "i",
+            "gender": "f",
+            "group": "GigabitEthernetX/0/0/2",
+            "name": "GigabitEthernetX/0/2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["S2328P-EI-AC"]
+        },
+        "dimensions": {
+            "depth": 220,
+            "height": 43,
+            "width": 442
+        },
+        "power": {
+            "power": 10.47
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

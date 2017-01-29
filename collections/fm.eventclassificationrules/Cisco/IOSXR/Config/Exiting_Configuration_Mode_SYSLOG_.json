@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Config | Exiting Configuration Mode (SYSLOG)",
+    "uuid": "a508ae72-f541-4831-91e3-e52d52cc8dab",
+    "description": "RP/0/RSP0/CPU0:Oct 19 20:18:39.038 : config[65891]: %MGBL-SYS-5-CONFIG_I : Configured from console by cisco on vty0 (1.1.1.1)",
+    "event_class__name": "Config | Exiting Configuration Mode",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "profile",
+            "value_re": "^Cisco.IOSXR$"
+        },
+        {
+            "key_re": "source",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "message",
+            "value_re": "%MGBL-SYS-5-CONFIG_I : Configured from console by (?P<user>.+) on (?P<source>\\S+) \\((?P<ip>\\S+)\\)$"
+        }
+    ]
+}

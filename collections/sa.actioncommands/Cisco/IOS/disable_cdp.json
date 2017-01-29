@@ -1,0 +1,10 @@
+{
+    "name": "Cisco | IOS | disable_cdp",
+    "uuid": "80276b39-2f50-4d89-bb9c-889065486c66",
+    "action__name": "disable_cdp",
+    "description": "",
+    "profile": "Cisco.IOS",
+    "config_mode": true,
+    "match": [],
+    "commands": "interface {{interface}}\n    no cdp enable"
+}

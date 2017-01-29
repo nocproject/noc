@@ -1,0 +1,28 @@
+{
+    "name": "Chassis | Hardware | Module | Invalid Module",
+    "$collection": "fm.alarmclasses",
+    "uuid": "578c1375-6759-4123-86c2-8427de40ff92",
+    "is_unique": true,
+    "discriminator": ["module"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "module",
+            "description": "Module type"
+        },
+        {
+            "name": "interface",
+            "description": "Hardware port or slot"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
+        }
+    ],
+    "subject_template": "Invalid module {{module}}{% if interface %} in interface {{interface}}{% endif %}",
+    "body_template": "Invalid module {{module}}{% if interface %} in interface {{interface}}{% endif %}{% if reason %}\nReason: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

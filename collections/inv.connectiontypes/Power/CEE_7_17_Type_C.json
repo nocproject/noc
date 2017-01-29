@@ -1,0 +1,7 @@
+{
+    "name": "Power | CEE 7/17 Type C",
+    "uuid": "f685064d-2de5-413b-b2a0-7da317b29d35",
+    "description": "German/French ungrounded",
+    "c_group": ["power_cee_7_4", "power_cee_7_16"],
+    "genders": "mf"
+}

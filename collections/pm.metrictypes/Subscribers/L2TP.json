@@ -1,0 +1,9 @@
+{
+    "name": "Subscribers | L2TP",
+    "$collection": "pm.metrictypes",
+    "uuid": "700c1712-4fcf-488f-b5e1-043ee8a3e8de",
+    "description": "Total active L2TP sessions on the box",
+    "scope": "o",
+    "measure": "sessions",
+    "vector_tag": ""
+}

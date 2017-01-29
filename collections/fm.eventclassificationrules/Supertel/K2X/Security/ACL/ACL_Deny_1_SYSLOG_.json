@@ -1,0 +1,22 @@
+{
+    "name": "Supertel | K2X | Security | ACL | ACL Deny #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "8cae04d7-af0d-4f9c-a06c-dead819753a9",
+    "description": "%MNGINF-W-ACL: Management ACL drop packet received on interface Vlan 1 from 192.168.25.8 to 192.168.1.1 protocol 6 service Telnet",
+    "event_class__name": "Security | ACL | ACL Deny",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Supertel.K2X$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%MNGINF-W-ACL: Management ACL drop packet received on interface (?P<dst_interface>(\\S+ \\d+|\\S+)) from (?P<src_ip>\\S+) to (?P<dst_ip>\\S+) protocol \\d+ service (?P<proto>\\S+)$"
+        }
+    ]
+}

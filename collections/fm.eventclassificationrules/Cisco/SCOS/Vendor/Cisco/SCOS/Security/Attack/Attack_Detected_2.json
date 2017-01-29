@@ -1,0 +1,25 @@
+{
+    "name": "Cisco | SCOS | Vendor | Cisco | SCOS | Security | Attack | Attack Detected #2",
+    "uuid": "e7606651-bdd1-4005-9417-cb4d6ca00e88",
+    "description": "PCUBE-SE-MIB::moduleAttackFilterActivatedTrap",
+    "event_class__name": "Vendor | Cisco | SCOS | Security | Attack | Attack Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.SCOS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^PCUBE-SE-MIB::moduleAttackFilterActivatedTrap$"
+        },
+        {
+            "key_re": "^PCUBE-SE-MIB::pcubeSeEventGenericString1$",
+            "value_re": "^Attack detected: Attack from IP address (?P<from_ip>\\S+), from (?P<from_side>\\S+) side, protocol (?P<proto>\\S+)\\. (?P<open_flows>\\d+) open flows per second detected, (?P<suspected_flows>\\d+) DDoS/DoS suspected flows per second detected\\. Action is: (?P<action>\\S+)\\.$"
+        }
+    ]
+}

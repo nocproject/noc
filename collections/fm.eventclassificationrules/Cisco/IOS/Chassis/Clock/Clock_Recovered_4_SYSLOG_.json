@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Clock | Clock Recovered #4 (SYSLOG)",
+    "uuid": "dba606de-17ea-4010-a153-875fb837da0c",
+    "description": "%UBR7200-6-ACTIVE: Cable clock [chars] reference active",
+    "event_class__name": "Chassis | Clock | Clock Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%UBR\\d+00-6-ACTIVE: (?P<name>Cable clock) .+ reference active$"
+        }
+    ]
+}

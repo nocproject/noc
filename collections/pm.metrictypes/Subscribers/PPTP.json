@@ -1,0 +1,9 @@
+{
+    "name": "Subscribers | PPTP",
+    "$collection": "pm.metrictypes",
+    "uuid": "18a6cb2b-8060-4487-8a2f-c65ae062f4bd",
+    "description": "Total active PPTP sessions on the box",
+    "scope": "o",
+    "measure": "sessions",
+    "vector_tag": ""
+}

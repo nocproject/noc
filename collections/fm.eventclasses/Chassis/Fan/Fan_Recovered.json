@@ -1,0 +1,28 @@
+{
+    "name": "Chassis | Fan | Fan Recovered",
+    "$collection": "fm.eventclasses",
+    "uuid": "c86978e9-979f-4f8f-913b-14df46466681",
+    "description": "Fan recovered",
+    "action": "A",
+    "vars": [
+        {
+            "name": "name",
+            "description": "Fan Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "Fan Recovered: {{name}}",
+    "body_template": "Fan Recovered: {{name}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Chassis | Fan | Fan Failed"
+        }
+    ]
+}

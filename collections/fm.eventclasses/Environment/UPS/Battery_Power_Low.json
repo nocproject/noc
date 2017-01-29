@@ -1,0 +1,23 @@
+{
+    "name": "Environment | UPS | Battery Power Low",
+    "$collection": "fm.eventclasses",
+    "uuid": "2b0a957c-ef91-4305-be71-b4e66361cf03",
+    "description": "Battery Power Low",
+    "action": "A",
+    "vars": [
+
+    ],
+    "subject_template": "Battery power low",
+    "body_template": "Battery power low",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "Change old battery",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Environment | UPS | Battery Power Low"
+        }
+    ]
+}

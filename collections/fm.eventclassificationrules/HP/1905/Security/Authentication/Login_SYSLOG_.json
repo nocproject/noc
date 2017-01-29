@@ -1,0 +1,21 @@
+{
+    "name": "HP | 1905 | Security | Authentication | Login (SYSLOG)",
+    "uuid": "f696b44a-831c-40fc-ae26-6a8c15426db7",
+    "description": "Dec 27 09:49:35 2012 Office [HTTP]/5/login (192.168.11.50)",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^HP\\.1905$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "\\[HTTP\\]/5/login \\((?P<ip>\\S+)\\)$"
+        }
+    ]
+}

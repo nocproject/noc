@@ -1,0 +1,7 @@
+{
+    "name": "Network | LLDP",
+    "$collection": "inv.capabilities",
+    "uuid": "45dd98d4-deab-4d48-91c7-66c2b884e8d2",
+    "description": "LLDP is enabled",
+    "type": "bool"
+}

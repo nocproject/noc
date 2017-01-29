@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Recovered #2 (SYSLOG)",
+    "uuid": "83a63f44-f5aa-44d8-890c-7acbde06a5d2",
+    "description": "ENVM-6-PSOK: [chars] now appears to be working correctly",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "ENVM-6-PSOK: (?P<name>.+) now appears to be working correctly"
+        }
+    ]
+}

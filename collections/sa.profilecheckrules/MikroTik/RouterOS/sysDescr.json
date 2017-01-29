@@ -1,0 +1,13 @@
+{
+    "name": "MikroTik | RouterOS | sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "dbb056e1-638c-4266-9938-9090ee9f35d7",
+    "description": "Examples:\nRouterOS RB951G-2HnD",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^RouterOS\\s+",
+    "action": "match",
+    "profile": "MikroTik.RouterOS"
+}

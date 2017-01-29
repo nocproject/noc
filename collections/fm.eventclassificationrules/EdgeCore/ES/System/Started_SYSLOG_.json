@@ -1,0 +1,21 @@
+{
+    "name": "EdgeCore | ES | System | Started (SYSLOG)",
+    "uuid": "a018403a-78d4-4c36-a259-c3a6bcd71b1c",
+    "description": "Jun 23 4:10:19 GUT_53 snmp: System coldStart notification.",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "snmp: System coldStart notification\\.$"
+        }
+    ]
+}

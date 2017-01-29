@@ -1,0 +1,56 @@
+{
+    "name": "Cisco | 7100",
+    "uuid": "42e3d91f-5ed1-4824-aeb5-f066bc3c3aa3",
+    "description": "Cisco 7100 series connection rules",
+    "context": [
+        {
+            "reset_scopes": ["mb", "linecard"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "mb",
+            "type": "MOTHERBOARD"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "linecard",
+            "type": "LINECARD"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "MOTHERBOARD",
+            "scope": "chassis",
+            "target_connection": "mb",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "LINECARD",
+            "scope": "chassis",
+            "target_connection": "linecard{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

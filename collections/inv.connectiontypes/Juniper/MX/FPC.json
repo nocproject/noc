@@ -1,0 +1,7 @@
+{
+    "name": "Juniper | MX | FPC",
+    "uuid": "6a7c4027-d13a-4e12-adcf-88920d452937",
+    "description": "Juniper MX FPC Slot",
+    "c_group": ["juniper_mx_fpc"],
+    "genders": "mf"
+}

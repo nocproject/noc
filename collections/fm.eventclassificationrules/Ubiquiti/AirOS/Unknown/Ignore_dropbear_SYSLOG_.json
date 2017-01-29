@@ -1,0 +1,21 @@
+{
+    "name": "Ubiquiti | AirOS | Unknown | Ignore dropbear (SYSLOG)",
+    "uuid": "150b46c0-a6fc-4a6d-b70f-a21435f8e38b",
+    "description": "Jan 12 03:19:25 dropbear[13418]: Child connection from 10.200.201.137:27931",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Ubiquiti\\.AirOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* dropbear\\[\\d+\\]: Child connection from (?P<ip>\\S+):\\d+$"
+        }
+    ]
+}

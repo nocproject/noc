@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | ASA | Security | Audit | Command (SYSLOG)",
+    "uuid": "3a171eb6-2075-4340-8154-09c6e57a8f4d",
+    "description": "%ASA-5-111008: User 'username' executed the 'enable' command.",
+    "event_class__name": "Security | Audit | Command",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.ASA$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%(?:ASA|PIX)-5-111008: User '(?P<user>\\S+)' executed the '(?P<command>.+)' command\\."
+        }
+    ]
+}

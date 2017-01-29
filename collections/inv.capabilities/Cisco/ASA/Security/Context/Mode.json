@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | ASA | Security | Context | Mode",
+    "$collection": "inv.capabilities",
+    "uuid": "9d17be66-aabc-482d-815e-53fadadd553b",
+    "description": "Cisco ASA Secrity context mode",
+    "type": "str",
+    "card_template": ""
+}

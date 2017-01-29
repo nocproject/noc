@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | NTP | Lost synchronization (SYSLOG)",
+    "uuid": "ccb7b047-f4c1-421d-a324-94b113b71384",
+    "description": "%NTP-4-UNSYNC: NTP sync is lost",
+    "event_class__name": "Network | NTP | Lost synchronization",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%NTP-4-UNSYNC: NTP sync is lost"
+        }
+    ]
+}

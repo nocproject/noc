@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | DOCSIS | Channel Width Changed (SYSLOG)",
+    "uuid": "7950e69d-48ae-4135-9dc9-89b7c2e325a1",
+    "description": "%UBR7100-5-USCWCHG: Interface Cable1/0 U3, channel width changed to 3200 kHz",
+    "event_class__name": "Network | DOCSIS | Channel Width Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%UBR\\d+00-5-USCWCHG: Interface (?P<interface>\\S+) U(?P<upstream>\\d+), channel width changed to (?P<width>\\S+) kHz"
+        }
+    ]
+}

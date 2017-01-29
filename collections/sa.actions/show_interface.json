@@ -1,0 +1,15 @@
+{
+    "name": "show_interface",
+    "uuid": "cab88660-9b7d-4859-ae47-2ad7c629a57f",
+    "label": "Show interface",
+    "description": "Show interface",
+    "access_level": 15,
+    "params": [
+        {
+            "description": "Show interface",
+            "is_required": true,
+            "name": "interface",
+            "type": "interface"
+        }
+    ]
+}

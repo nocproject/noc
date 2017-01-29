@@ -1,0 +1,21 @@
+{
+    "name": "AlliedTelesis | AT9400 | Network | Link | Link Down (SYSLOG)",
+    "uuid": "51ae7a44-ea91-4232-b423-8984e575cbb8",
+    "description": "pcfg: Link DOWN on port 20",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^AlliedTelesis\\.AT9400$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "pcfg: Link DOWN on port (?P<interface>\\d+)"
+        }
+    ]
+}

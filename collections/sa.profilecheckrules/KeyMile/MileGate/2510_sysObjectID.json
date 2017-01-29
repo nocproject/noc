@@ -1,0 +1,13 @@
+{
+    "name": "KeyMile | MileGate | 2510 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "8f858b27-906e-4d6e-84d6-88276e7ff70a",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.21696",
+    "action": "match",
+    "profile": "Generic.Host"
+}

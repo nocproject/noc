@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Failed #11 (SYSLOG)",
+    "uuid": "4374c44e-eb31-40f7-b56d-146bd9c53aa9",
+    "description": "%C4K_IOSMODPORTMAN-4-POWERSUPPLYBAD: Power supply 1 has failed or been turned off",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C4K_IOSMODPORTMAN-4-POWERSUPPLYBAD: (?P<name>Power supply 1) has failed or been turned off"
+        }
+    ]
+}

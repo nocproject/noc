@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | System | Process Exited (SYSLOG)",
+    "uuid": "67d21892-18d9-4e63-b837-37865be972b1",
+    "description": "%OS-DUMPER-4-CRASH_INFO : Crashed pid = 471175 (pkg/bin/l2fib_mgr)",
+    "event_class__name": "System | Process Exited",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%OS-DUMPER-4-CRASH_INFO : Crashed pid = (?P<pid>\\d+) \\((?P<name>\\S+)\\)"
+        }
+    ]
+}

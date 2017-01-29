@@ -1,0 +1,8 @@
+{
+    "name": "Network | UDLD",
+    "$collection": "inv.capabilities",
+    "uuid": "fed131e0-55ba-4bee-8781-b0131cad216f",
+    "description": "UDLD is enabled",
+    "type": "bool",
+    "card_template": ""
+}

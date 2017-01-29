@@ -1,0 +1,7 @@
+{
+    "name": "Power | IEC 60320 C21",
+    "uuid": "8ad6f737-f836-4e73-8ccc-66adff142789",
+    "description": "Earthed/Polarized, Higher current connector",
+    "c_group": ["power_c21"],
+    "genders": "m"
+}

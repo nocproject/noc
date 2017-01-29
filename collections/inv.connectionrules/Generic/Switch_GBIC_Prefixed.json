@@ -1,0 +1,30 @@
+{
+    "name": "Generic | Switch GBIC Prefixed",
+    "uuid": "fd2a51b5-b7bb-4d16-a863-df89588cf63c",
+    "description": "Generic switch following convenction.\n\nTransceiver slots: Gi{N}_gbic\nPower Supply: psuN",
+    "context": [
+        {
+            "reset_scopes": [],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "chassis",
+            "target_connection": "Gi{N}_gbic",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Linksys | SPS2xx | Security | Authentication | Login Failed (SYSLOG)",
+    "uuid": "3d9c9e66-7143-4019-b0d4-45b11760a7ee",
+    "description": "%AAA-W-REJECT: New ssh connection for user aerga, source 10.8.4.19 destination 10.8.3.115  REJECTED",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%AAA-W-REJECT: New (ssh|telnet|http) connection for user (?P<user>.+), source (?P<ip>\\S+) destination \\S+  REJECTED$"
+        }
+    ]
+}

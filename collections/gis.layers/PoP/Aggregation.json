@@ -1,0 +1,16 @@
+{
+    "name": "PoP | Aggregation",
+    "uuid": "65b65bd9-bb6b-450f-94a9-edcb8ae1d372",
+    "description": "Aggregation points of presence",
+    "code": "pop_aggregation",
+    "default_zoom": 12,
+    "fill_color": 13390336,
+    "max_zoom": 19,
+    "min_zoom": 11,
+    "point_radius": 5,
+    "show_labels": true,
+    "stroke_color": 16737792,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 200
+}

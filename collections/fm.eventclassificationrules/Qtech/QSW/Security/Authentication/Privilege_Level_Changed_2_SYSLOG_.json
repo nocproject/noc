@@ -1,0 +1,21 @@
+{
+    "name": "Qtech | QSW | Security | Authentication | Privilege Level Changed #2 (SYSLOG)",
+    "uuid": "3fcc7b63-e515-49fe-ae36-ecbff137735d",
+    "description": "SYSLOG: 0000000003: Jan 26 21:57:20: %CMDLINE-6-COMMAND: (1) enable",
+    "event_class__name": "Security | Authentication | Privilege Level Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Qtech\\.QSW$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CMDLINE-6-COMMAND: \\(1\\) (?P<to_priv>enable)$"
+        }
+    ]
+}

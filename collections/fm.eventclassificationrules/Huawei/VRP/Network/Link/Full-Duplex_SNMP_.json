@@ -1,0 +1,25 @@
+{
+    "name": "Huawei | VRP | Network | Link | Full-Duplex (SNMP)",
+    "uuid": "45088293-d691-42ce-9ec5-fb39aba8d5e8",
+    "description": "HUAWEI-BASE-TRAP-MIB::hwPortPhysicalEthFullDuplexClear",
+    "event_class__name": "Network | Link | Full-Duplex",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^ENTITY-MIB::entPhysicalName\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-BASE-TRAP-MIB::hwPortPhysicalEthFullDuplexClear$"
+        }
+    ]
+}

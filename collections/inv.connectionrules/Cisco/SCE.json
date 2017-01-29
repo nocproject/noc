@@ -1,0 +1,85 @@
+{
+    "name": "Cisco | SCE",
+    "uuid": "8794af60-8d77-4c9d-97d5-1215abbd2602",
+    "description": "Cisco SCE connection rules",
+    "context": [
+        {
+            "reset_scopes": ["scm", "sip"],
+            "scope": "chassis",
+            "type": "CHASSIS"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "scm",
+            "type": "SCM"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "sip",
+            "type": "SIP"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "spa",
+            "type": "SPA"
+        }
+    ],
+    "rules": [
+        {
+            "match_connection": "in",
+            "match_type": "SCM",
+            "scope": "chassis",
+            "target_connection": "scm{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SIP",
+            "scope": "chassis",
+            "target_connection": "sip",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "SPA",
+            "scope": "sip",
+            "target_connection": "spa{N}",
+            "target_number": "",
+            "target_type": "SIP"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "PSU",
+            "scope": "chassis",
+            "target_connection": "psu{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "FAN",
+            "scope": "chassis",
+            "target_connection": "fan{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "spa",
+            "target_connection": "Te{N}_xfp",
+            "target_number": "",
+            "target_type": "SPA"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "spa",
+            "target_connection": "Gi{N}_sfp",
+            "target_number": "",
+            "target_type": "SPA"
+        }
+    ]
+}

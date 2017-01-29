@@ -1,0 +1,35 @@
+{
+    "name": "Network | Monitor | CRC Error Detected",
+    "$collection": "fm.alarmclasses",
+    "uuid": "d9abf793-c82e-485b-8937-e35a9fbddfa4",
+    "is_unique": true,
+    "discriminator": ["interface"],
+    "user_clearable": true,
+    "default_severity__name": "INFO",
+    "datasources": [
+        {
+            "name": "InterfaceDS",
+            "datasource": "inv.InterfaceDS",
+            "search": {
+                "interface": "interface",
+                "managed_object": "managed_object"
+            }
+        }
+    ],
+    "vars": [
+        {
+            "name": "interface",
+            "description": "interface"
+        },
+        {
+            "name": "description",
+            "description": "Interface description",
+            "default": "=InterfaceDS.description"
+        }
+    ],
+    "subject_template": "CRC error detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
+    "body_template": "CRC error detected on port {{interface}}{% if description %} ({{description}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

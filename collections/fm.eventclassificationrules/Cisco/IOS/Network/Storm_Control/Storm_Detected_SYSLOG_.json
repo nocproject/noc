@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | Storm Control | Storm Detected (SYSLOG)",
+    "uuid": "300c3102-c26c-46ca-a1e7-d6cdc3a1ab80",
+    "description": "%PM-SP-4-ERR_DISABLE: storm-control error detected on Gi4/1, putting Gi4/1 in err-disable state",
+    "event_class__name": "Network | Storm Control | Storm Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM(-SP)?-4-ERR_DISABLE: storm-control error detected on (?P<interface>\\S+), putting \\S+ in err-disable state"
+        }
+    ]
+}

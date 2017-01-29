@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | PSU | PSU Changed (SYSLOG)",
+    "uuid": "ca3198e2-63d4-444d-a53b-2c525e94f017",
+    "description": "%ENVM-6-PSCHANGE: Power Supply 1 changed from removed to Zytek AC Power Supply",
+    "event_class__name": "Chassis | PSU | PSU Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%ENVM-6-PS(?:CHANGE|LEV): (?P<name>Power Supply \\d+)( state)? changed from (?P<from_state>.+) to (?P<to_state>.+)$"
+        }
+    ]
+}

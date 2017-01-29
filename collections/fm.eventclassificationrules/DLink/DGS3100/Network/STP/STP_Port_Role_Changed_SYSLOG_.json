@@ -1,0 +1,21 @@
+{
+    "name": "DLink | DGS3100 | Network | STP | STP Port Role Changed (SYSLOG)",
+    "uuid": "9e774dd0-3c92-40b4-8555-8586e01ded7c",
+    "description": "%STP-W-PORTROLE: Spanning Tree port role change (instance 0 port 1:16): Disabled -> Designated",
+    "event_class__name": "Network | STP | STP Port Role Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DGS3100$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%STP-W-PORTROLE: Spanning Tree port role change \\(instance (?P<instance>\\d+) port (P<interface>.+)\\): \\S+ -> (?P<role>\\S+)"
+        }
+    ]
+}

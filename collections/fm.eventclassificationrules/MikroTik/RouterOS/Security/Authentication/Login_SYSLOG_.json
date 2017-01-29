@@ -1,0 +1,21 @@
+{
+    "name": "MikroTik | RouterOS | Security | Authentication | Login (SYSLOG)",
+    "uuid": "cc888865-272d-4db8-ad37-b9fd9346abac",
+    "description": "account user mitya logged in from 193.34.20.2 via ssh",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^MikroTik\\.RouterOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "account user (?P<user>.+?) logged in from (?P<ip>\\S+) via (ssh|telnet|winbox|ftp|api)$"
+        }
+    ]
+}

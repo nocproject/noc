@@ -1,0 +1,39 @@
+{
+    "name": "Chassis | Hardware | Module | Invalid Module",
+    "$collection": "fm.eventclasses",
+    "uuid": "6cbad313-b948-440c-9271-750375b6a116",
+    "action": "A",
+    "vars": [
+        {
+            "name": "module",
+            "description": "Module type",
+            "type": "str",
+            "required": true
+        },
+        {
+            "name": "interface",
+            "description": "Hardware port or slot",
+            "type": "str",
+            "required": false
+        },
+        {
+            "name": "reason",
+            "description": "Reason",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "Invalid {{module}}{% if interface %} in interface {{interface}}{% endif %}",
+    "body_template": "Invalid {{module}}{% if interface %} in interface {{interface}}{% endif %}{% if reason %}\nReason: {{reason}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | Hardware | Module | Invalid Module"
+        }
+    ]
+}

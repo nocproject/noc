@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Hardware Port Error #1 (SYSLOG)",
+    "uuid": "a38a67f7-8ef8-4871-8edc-c52c6989bf78",
+    "description": "%HARDWARE-3-PORTNUM_ERROR: port number 1 is invalid.",
+    "event_class__name": "Chassis | Hardware | Hardware Port Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "HARDWARE-3-PORTNUM_ERROR: port number (?P<interface>\\d+) is invalid."
+        }
+    ]
+}

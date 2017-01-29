@@ -1,0 +1,12 @@
+{
+    "name": "MikroTik | RouterOS | ping",
+    "uuid": "ea73dc9f-c499-4513-b8a7-2d668d28e012",
+    "action__name": "ping",
+    "description": "",
+    "profile": "MikroTik.RouterOS",
+    "config_mode": false,
+    "preference": 1000,
+    "match": [],
+    "commands": "/ping {{address.address}} {% if vrf %}routing-table {{vrf.name}}{% endif %}{% if count %} count {{count}} {% endif %}",
+    "timeout": 60
+}

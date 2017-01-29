@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | DOCSIS | Invalid DOCSIS Message #1 (SYSLOG)",
+    "uuid": "93cfe02e-7f0f-43b2-9872-f4731ecacfeb",
+    "description": "%UBR7200-5-BADMNCSMSG: Invalid DOCSIS Message received from a Cable Modem for interface Cable1/0",
+    "event_class__name": "Network | DOCSIS | Invalid DOCSIS Message",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%UBR\\d+00-5-BADMNCSMSG: Invalid DOCSIS Message received from a Cable Modem for interface (?P<interface>.+)$"
+        }
+    ]
+}

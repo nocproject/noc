@@ -1,0 +1,25 @@
+{
+    "name": "Huawei | VRP | Network | Link | Half-Duplex (SNMP)",
+    "uuid": "3d75df72-2f37-43eb-8af8-9790f74d6206",
+    "description": "HUAWEI-BASE-TRAP-MIB::hwPortPhysicalEthHalfDuplexAlarm",
+    "event_class__name": "Network | Link | Half-Duplex",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Huawei\\.VRP$"
+        },
+        {
+            "key_re": "^ENTITY-MIB::entPhysicalName\\.\\d+$",
+            "value_re": "^(?P<interface>.+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^HUAWEI-BASE-TRAP-MIB::hwPortPhysicalEthHalfDuplexAlarm$"
+        }
+    ]
+}

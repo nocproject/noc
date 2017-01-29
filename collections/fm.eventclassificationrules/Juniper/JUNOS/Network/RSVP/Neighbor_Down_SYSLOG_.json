@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | RSVP | Neighbor Down (SYSLOG)",
+    "uuid": "26f4fc74-6e18-4042-a339-a76f4a33881f",
+    "description": "Jul 22 08:15:16 rpd[1262]: RPD_RSVP_NBRDOWN: RSVP neighbor 10.99.2.2 down on interface em1.0, neighbor seq number change",
+    "event_class__name": "Network | RSVP | Neighbor Down",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "RPD_RSVP_NBRDOWN: RSVP neighbor (?P<neighbor>\\S+) down on interface (?P<interface>.+?), (?P<reason>.+)$"
+        }
+    ]
+}

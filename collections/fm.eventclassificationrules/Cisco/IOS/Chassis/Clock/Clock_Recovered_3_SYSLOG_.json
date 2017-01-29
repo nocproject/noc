@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Clock | Clock Recovered #3 (SYSLOG)",
+    "uuid": "f560f35e-6397-482c-8bd5-c2e3ee1e6912",
+    "description": "%UBR7200-6-REFLOCK: Cable clock locked to [chars] reference",
+    "event_class__name": "Chassis | Clock | Clock Recovered",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%UBR\\+00-6-REFLOCK: (?P<name>Cable clock) locked to .+ reference$"
+        }
+    ]
+}

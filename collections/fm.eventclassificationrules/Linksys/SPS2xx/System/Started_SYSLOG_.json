@@ -1,0 +1,21 @@
+{
+    "name": "Linksys | SPS2xx | System | Started (SYSLOG)",
+    "uuid": "1d28ded9-b972-49f4-a5b4-173c83360ba1",
+    "description": "%INIT-I-Startup: Warm Startup",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%INIT-I-Startup: (Warm|Cold) Startup$"
+        }
+    ]
+}

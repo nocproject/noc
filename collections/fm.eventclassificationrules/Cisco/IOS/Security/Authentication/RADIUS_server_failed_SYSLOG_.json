@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Security | Authentication | RADIUS server failed (SYSLOG)",
+    "uuid": "4539f790-2c83-47be-a6d9-8c986657f9f1",
+    "description": "%RADIUS-4-RADIUS_DEAD: RADIUS server 10.50.245.20:1812,1813 is not responding.",
+    "event_class__name": "Security | Authentication | RADIUS server failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%RADIUS-4-RADIUS_DEAD: RADIUS server (?P<ip>\\S+):\\d+,\\d+ is not responding\\."
+        }
+    ]
+}

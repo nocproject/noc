@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | System | Started (SYSLOG)",
+    "uuid": "453eb5ce-2b55-48bd-80fe-2ae0988a2b3c",
+    "description": "%SYS-5-RESTART: System restarted --",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco.IOS$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-5-RESTART: System restarted --$"
+        }
+    ]
+}

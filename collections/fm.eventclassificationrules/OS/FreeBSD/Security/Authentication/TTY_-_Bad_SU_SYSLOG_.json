@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | TTY - Bad SU (SYSLOG)",
+    "uuid": "71fe401e-0a8d-443e-b68d-ed54454ea1ed",
+    "description": "su: BAD SU mitya to root on /dev/ttyp1",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "su: BAD SU (?P<user>.+?) to \\S+ on /dev/\\S+$"
+        }
+    ]
+}

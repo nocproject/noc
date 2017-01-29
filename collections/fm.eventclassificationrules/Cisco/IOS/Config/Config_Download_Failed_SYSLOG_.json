@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Config | Config Download Failed (SYSLOG)",
+    "uuid": "e58476f1-1853-459f-9fab-ab3c25e1a806",
+    "description": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from (tftp://255.255.255.255/network-confg) failed",
+    "event_class__name": "Config | Config Download Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-4-CONFIG_RESOLVE_FAILURE: System config parse from \\((?P<service>tftp|ftp)://(?P<ip>\\d+\\.\\d+\\.\\d+\\.\\d+)/\\S+\\) failed"
+        }
+    ]
+}

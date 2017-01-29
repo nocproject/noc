@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | System | Process Started (SYSLOG)",
+    "uuid": "c715120f-e6da-42fd-9c09-c871b7d540d9",
+    "description": "Jul 22 14:18:53 init: craft-control (PID 1413) started",
+    "event_class__name": "System | Process Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "init: (?P<name>\\S+) \\(PID (?P<pid>\\d+)\\) started$"
+        }
+    ]
+}

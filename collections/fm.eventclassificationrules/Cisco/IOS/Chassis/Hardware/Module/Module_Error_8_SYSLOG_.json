@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #8 (SYSLOG)",
+    "uuid": "e4ee7ad6-e0f8-4e5f-83d1-c1bc9f911cd8",
+    "description": "%PM_SCP-SP-1-LCP_FW_ERR: System resetting module 13 to recover from error: Linecard received system exception",
+    "event_class__name": "Chassis | Hardware | Module | Module Error",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%PM_SCP-SP-1-LCP_FW_ERR: System resetting module (?P<module>\\d+) to recover from error: (?P<reason>.+)"
+        }
+    ]
+}

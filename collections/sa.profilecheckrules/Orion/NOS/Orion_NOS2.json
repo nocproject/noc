@@ -1,0 +1,13 @@
+{
+    "name": "Orion | NOS2",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "31de18c1-225d-4dbf-b785-1be996a6b8c4",
+    "description": "",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.41970.6.155",
+    "action": "match",
+    "profile": "Orion.NOS"
+}

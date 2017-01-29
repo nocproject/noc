@@ -1,0 +1,28 @@
+{
+    "name": "Security | Access | Door Open",
+    "$collection": "fm.eventclasses",
+    "uuid": "015a0c87-c4ac-4db0-9842-27293161725a",
+    "description": "Door is open",
+    "action": "A",
+    "vars": [
+        {
+            "name": "name",
+            "description": "Name",
+            "type": "str",
+            "required": true
+        }
+    ],
+    "subject_template": "Door {{name}} is open",
+    "body_template": "Door {{name}} is open",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Security | Access | Door Open"
+        }
+    ]
+}

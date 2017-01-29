@@ -1,0 +1,21 @@
+{
+    "name": "Linksys | SPS2xx | Config | Config Changed (SYSLOG)",
+    "uuid": "5585acf6-ad36-40d3-8e33-a24f8b590a32",
+    "description": "%COPY-N-TRAP: The copy operation was completed successfully",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Linksys\\.SPS2xx$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "^%COPY-N-TRAP: The copy operation was completed successfully$"
+        }
+    ]
+}

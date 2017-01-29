@@ -1,0 +1,24 @@
+{
+    "name": "Network | MPLS | LDP Neighbor Down",
+    "$collection": "fm.alarmclasses",
+    "uuid": "e32dfaaf-8cac-4bbc-9328-57c961cbea31",
+    "is_unique": true,
+    "discriminator": ["neighbor"],
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "neighbor",
+            "description": "LDP Neighbor"
+        },
+        {
+            "name": "reason",
+            "description": "Reason"
+        }
+    ],
+    "subject_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if reson %} ({{reson}}){% endif %}",
+    "body_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if reson %} ({{reson}}){% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service #2 (SYSLOG)",
+    "uuid": "fdd43d13-9a2e-4234-ae00-f09683ad56c9",
+    "description": "%CSM_SLB-6-RSERVERSTATE: Module 5 server state changed: SLB-NETMGT: ICMP health probe failed for server 10.20.220.10:80 in serverfarm 'WEBFARM'",
+    "event_class__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%CSM_SLB-6-RSERVERSTATE: Module (?P<module>\\d+) server state changed: SLB-NETMGT: .+ health probe failed for server (?P<name>.+?) in serverfarm '(?P<farm>.+)'"
+        }
+    ]
+}

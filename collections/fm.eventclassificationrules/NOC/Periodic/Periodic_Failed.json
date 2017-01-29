@@ -1,0 +1,29 @@
+{
+    "name": "NOC | Periodic | Periodic Failed",
+    "uuid": "50546a84-f3ef-4ce1-b1fd-7596dc19a978",
+    "description": "Periodic task has been failed",
+    "event_class__name": "NOC | Periodic | Periodic Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^status$",
+            "value_re": "^failure$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^system$"
+        },
+        {
+            "key_re": "^task$",
+            "value_re": "^(?P<task>\\S+)$"
+        },
+        {
+            "key_re": "^type$",
+            "value_re": "^periodic status$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^NOC\\.SAE$"
+        }
+    ]
+}

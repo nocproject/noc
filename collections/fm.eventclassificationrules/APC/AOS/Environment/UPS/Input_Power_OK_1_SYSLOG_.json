@@ -1,0 +1,21 @@
+{
+    "name": "APC | AOS | Environment | UPS | Input Power OK #1 (SYSLOG)",
+    "uuid": "7c5f3ce8-4766-4524-b773-1d92d33c952c",
+    "description": "UPS: No longer on battery power. 0x010A",
+    "event_class__name": "Environment | UPS | Input Power OK",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: No longer on battery power. 0x010A"
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOSXR | Network | OAM | Discovery Timeout (SYSLOG)",
+    "uuid": "225f112f-7518-404b-b3be-3625c9e7224f",
+    "description": "%L2-ELO-6-INTF_DISCOVERY_TIMEOUT : TenGigE0/0/1/0: OAM discovery failed to complete in the specified time",
+    "event_class__name": "Network | OAM | Discovery Timeout",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOSXR$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%L2-ELO-6-INTF_DISCOVERY_TIMEOUT : (?P<interface>\\S+): OAM discovery failed to complete in the specified time"
+        }
+    ]
+}

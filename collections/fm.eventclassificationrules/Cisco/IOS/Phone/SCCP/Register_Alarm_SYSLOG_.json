@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Phone | SCCP | Register Alarm (SYSLOG)",
+    "uuid": "a146ee72-9231-4ee1-8523-bd312fe48199",
+    "description": "Aug 16 02:56:00.191: %IPPHONE-6-REG_ALARM: 12: Name=SEPC89C1DD551D8 Load=9.0.2 Last=CM-reset-TCP",
+    "event_class__name": "Phone | SCCP | Register Alarm",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%IPPHONE-6-REG_ALARM: (?:(?P<socket>\\d+): )?Name=(?P<sn>\\S+) Load=\\s*(?P<image>\\S+) Last=(?P<reason>.+)"
+        }
+    ]
+}

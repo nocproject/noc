@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | Storm Control | Broadcast Storm Detected (SYSLOG)",
+    "uuid": "dad21e46-3a95-4d82-a6b3-6f36b70f107c",
+    "description": "%STORM_CONTROL-3-FILTERED: A Broadcast storm detected on Fa0/1. A packet filter action has been applied on the interface",
+    "event_class__name": "Network | Storm Control | Broadcast Storm Detected",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%STORM_CONTROL-3-FILTERED: A Broadcast storm detected on (?P<interface>.+)\\. A packet filter action has been applied on the interface"
+        }
+    ]
+}

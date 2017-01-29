@@ -1,0 +1,21 @@
+{
+    "name": "Zyxel | ZyNOS | System | Started #2 (SYSLOG)",
+    "uuid": "6880cc2b-8b78-4d8c-af80-72dad088b25d",
+    "description": "Jan  1  0: 1:42 switch-name system: system has reset without management command",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Zyxel\\.ZyNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "system: [Ss]ystem has reset (without|due to a) management command$"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "name": "Power | IEC 60320 C19",
+    "uuid": "1e4d58f8-28e8-43a3-9f8d-05967e5d590f",
+    "description": "Square, high current connector",
+    "c_group": ["power_c19"],
+    "genders": "m"
+}

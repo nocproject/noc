@@ -1,0 +1,28 @@
+{
+    "name": "Chassis | PSU | Power Failed",
+    "$collection": "fm.eventclasses",
+    "uuid": "15815c7f-edb7-45b0-be02-8fe65e9bf174",
+    "description": "Power failed",
+    "action": "A",
+    "vars": [
+        {
+            "name": "condition",
+            "description": "Condition",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "Power failed{% if condition %} due to {{condition}}{% endif %}",
+    "body_template": "Power failed{% if condition %} due to {{condition}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Chassis | PSU | Power Failed"
+        }
+    ]
+}

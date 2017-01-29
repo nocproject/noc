@@ -1,0 +1,21 @@
+{
+    "name": "OS | FreeBSD | Security | Authentication | SSH - Possible break-in attempt #1 (SYSLOG)",
+    "uuid": "7c669e7a-cdec-4917-85b8-00d5dc105735",
+    "description": "sshd[19646]: Address 10.110.0.2 maps to lan.cabletv.dp.ua, but this does not map back to the address - POSSIBLE BREAK-IN ATTEMPT!",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^OS\\.FreeBSD$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "sshd\\[\\d+\\]: Address (?P<ip>\\S+) maps to \\S+, but this does not map back to the address - POSSIBLE BREAK-IN ATTEMPT!$"
+        }
+    ]
+}

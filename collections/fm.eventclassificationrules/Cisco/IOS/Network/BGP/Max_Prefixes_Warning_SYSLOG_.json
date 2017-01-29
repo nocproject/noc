@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Network | BGP | Max Prefixes Warning (SYSLOG)",
+    "uuid": "fd9f7cb6-14aa-4f75-a8a5-8927cf2aa04b",
+    "description": "%BGP-4-MAXPFX: Number of prefixes received from 192.169.10.2 vpn vrf mchs (afi 4) reaches 91, max 100",
+    "event_class__name": "Network | BGP | Max Prefixes Warning",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%BGP-4-MAXPFX: Number of prefixes received from (?P<peer>.+) vpn vrf (?P<vrf>\\S+) \\(afi \\d+\\) reaches (?P<recv>\\d+), max (?P<max>\\d+)"
+        }
+    ]
+}

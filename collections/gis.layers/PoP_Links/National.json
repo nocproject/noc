@@ -1,0 +1,17 @@
+{
+    "name": "PoP Links | National",
+    "uuid": "6b5fd542-600e-4e82-bd08-787f56a80b84",
+    "description": "Links between national level points of presence",
+    "code": "pop_links6",
+    "default_zoom": 12,
+    "fill_color": 13369344,
+    "max_zoom": 19,
+    "min_zoom": 2,
+    "point_graphic": "circle",
+    "point_radius": 5,
+    "show_labels": false,
+    "stroke_color": 16711680,
+    "stroke_dashstyle": "solid",
+    "stroke_width": 1,
+    "zindex": 490
+}

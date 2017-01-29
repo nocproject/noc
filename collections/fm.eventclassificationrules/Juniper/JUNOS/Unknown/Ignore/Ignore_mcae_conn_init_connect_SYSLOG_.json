@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Unknown | Ignore | Ignore mcae_conn_init_connect (SYSLOG)",
+    "uuid": "5dd8d3eb-991c-4861-a775-f2cbbb16c9b4",
+    "description": "Jul 22 08:47:00 lacpd[1284]: mcae_conn_init_connect in evConnect()",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "mcae_conn_init_connect in evConnect\\(\\)$"
+        }
+    ]
+}

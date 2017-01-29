@@ -1,0 +1,13 @@
+{
+    "name": "Vyatta | Vyatta | sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "50af788f-ec33-4697-a65d-409a3921a172",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.30803",
+    "action": "match",
+    "profile": "Vyatta.Vyatta"
+}

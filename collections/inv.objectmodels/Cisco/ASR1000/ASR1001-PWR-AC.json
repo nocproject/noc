@@ -1,0 +1,37 @@
+{
+    "name": "Cisco | ASR1000 | ASR1001-PWR-AC",
+    "$collection": "inv.objectmodels",
+    "uuid": "04da7d69-ae31-43e9-9a91-7117f4aa0ae6",
+    "vendor__code": "CISCO",
+    "description": "Cisco ASR1001 AC Power Supply",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | ASR1000 | ASR1001 PSU"
+        },
+        {
+            "description": "Alarm connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "alarm",
+            "type__name": "Electrical | DB25"
+        },
+        {
+            "description": "AC power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["ASR1001-PWR-AC"]
+        }
+    }
+}

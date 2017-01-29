@@ -1,0 +1,25 @@
+{
+    "name": "Cisco | IOS | Network | BGP | Backward Transition (SNMP)",
+    "uuid": "40602cac-0e29-44fd-8ff2-0a26e4612085",
+    "description": "CISCO-BGP4-MIB::cbgpBackwardTransition",
+    "event_class__name": "Network | BGP | Backward Transition",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^CISCO-BGP4-MIB::cbgpPeerPrevState\\.(?P<peer>\\S+)$",
+            "value_re": "^(?P<state__enum__bgp_state>\\S+)$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^CISCO-BGP4-MIB::cbgpBackwardTransition$"
+        }
+    ]
+}

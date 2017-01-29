@@ -1,0 +1,21 @@
+{
+    "name": "EdgeCore | ES | Security | Authentication | Login (SYSLOG)",
+    "uuid": "dfc19b58-4a69-46f0-9f8c-073a8bdc772f",
+    "description": "Aug 31 15:37:30 test snmp LoginSuccess,admin,TELNET,172.16.3.254",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^EdgeCore\\.ES$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "snmp LoginSuccess,(?P<user>.*),(?:TELNET|Console|WEB),(?P<ip>\\S+)$"
+        }
+    ]
+}

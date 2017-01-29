@@ -1,0 +1,21 @@
+{
+    "name": "Ubiquiti | AirOS | Unknown | Ignore mcad-ctrl(SYSLOG)",
+    "uuid": "eb4a8f21-90bf-4445-9217-c08106559172",
+    "description": "Jan 12 03:07:00 syslog: mcad-ctrl.cl_read(): Processing status request...",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Ubiquiti\\.AirOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": ".* syslog: mcad-ctrl\\..*"
+        }
+    ]
+}

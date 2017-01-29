@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #13 (SYSLOG)",
+    "uuid": "cafe70d4-23b7-446d-830f-74f64ffc0a29",
+    "description": "%C7600_ENV-SP-4-MINORTEMPALARMRECOVER: module 4 device-1 temperature crossed threshold #1(=60C). It has returned to normal operating temperature range.",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%C7600_ENV-SP-4-MINORTEMPALARMRECOVER: (?P<name>.+) temperature crossed threshold #1\\(=(?P<min>\\S+)\\). It has returned to normal operating temperature range."
+        }
+    ]
+}

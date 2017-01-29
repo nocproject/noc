@@ -1,0 +1,29 @@
+{
+    "name": "DLink | DxS | Network | BGP | Backward Transition (SNMP)",
+    "uuid": "30d62b68-0785-4326-86dc-2394aac8b204",
+    "description": "BGP4-MIB::bgpEstablished",
+    "event_class__name": "Network | BGP | Backward Transition",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^SNMP Trap$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^DLink\\.DxS$"
+        },
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID\\.0$",
+            "value_re": "^BGP4-MIB::bgpBackwardTransition$"
+        },
+        {
+            "key_re": "^BGP4-MIB::bgpPeerState$",
+            "value_re": "^established$"
+        },
+        {
+            "key_re": "^BGP4-MIB::bgpPeerRemoteAddr$",
+            "value_re": "^(?P<peer>.+)$"
+        }
+    ]
+}

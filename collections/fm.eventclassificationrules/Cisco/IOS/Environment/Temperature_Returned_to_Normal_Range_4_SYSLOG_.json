@@ -1,0 +1,21 @@
+{
+    "name": "Cisco | IOS | Environment | Temperature Returned to Normal Range #4 (SYSLOG)",
+    "uuid": "c80d1e81-247a-4d47-8efe-f4bbabc98649",
+    "description": "%SYS-2-SUP_TEMPOK: Supervisor in slot 5 EARL temperature OK",
+    "event_class__name": "Environment | Temperature Returned to Normal Range",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Cisco\\.IOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "%SYS-2-SUP_TEMPOK:\\s*(?P<name>Supervisor in slot \\d+) \\S+ temperature OK"
+        }
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "name": "Huawei | HONET | UA5000 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "5b559f15-e6f9-48c4-8c4b-842f6c2cf540",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.2011.2.78",
+    "action": "match",
+    "profile": "Huawei.MA5600T"
+}
