@@ -50,3 +50,4 @@ etc/etl.yml
 speedup/**.c
 speedup/**.so
 ui/bi/**
+collections/**

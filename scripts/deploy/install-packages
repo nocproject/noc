@@ -28,12 +28,20 @@ class NPkg(object):
         self.get_installed_versions()
         self.changed = False
 
+    def get_latest_version(self, r):
+        url = self.url + r["name"] + ".latest"
+        f = urllib2.urlopen(url)
+        version = f.read().splitlines()[0]
+        return version
+
     def read_config(self):
         with open(self.config) as f:
             cfg = json.load(f)
         self.url = cfg["url"]
         self.required_versions = {}
         for r in cfg["packages"]:
+            if r["version"] == "latest":
+                r["version"] = self.get_latest_version(r)
             self.required_versions[r["name"]] = r["version"]
 
     def get_installed_versions(self):
@@ -50,7 +58,7 @@ class NPkg(object):
 
     def get_manifest_path(self, pkg, version):
         return os.path.join(self.VAR, "%s@%s.json" % (pkg, version))
-            
+
     def install(self, pkg):
         self.changed = True
         version = self.required_versions[pkg]
@@ -111,4 +119,8 @@ class NPkg(object):
 
 if __name__ == "__main__":
     import sys
+
+    if len(sys.argv) < 2:
+        print "You have to set file to install to."
+        exit(1)
     NPkg(sys.argv[1]).sync()
