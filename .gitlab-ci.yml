@@ -32,6 +32,8 @@ test:empty:
     - ./noc migrate
     - ./scripts/deploy/install-packages requirements/collections.json
     - ./noc collection sync
+  tags:
+    - docker
 
 upload:
   stage: upload 
