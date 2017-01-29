@@ -29,13 +29,13 @@ test:empty:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
     NOC_PG_PASSWORD: noc
-    NOC_PG_HOST: ${REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR}
-    NOC_MONGO_HOST: ${REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR}
   services:
     - registry.getnoc.com/infrastructure/postgres:master
     - registry.getnoc.com/infrastructure/mongo:master
   script:
     - env | sort
+    - export NOC_PG_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR | awk -F '=' '{print $2}')
+    - export NOC_MONGO_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR | | awk -F '=' '{print $2}')
     - ln -s src/ /opt/noc/collections/
     - cd /opt/noc
     - ls -lah .
