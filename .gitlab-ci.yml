@@ -5,6 +5,7 @@ variables:
 
 stages:
   - build
+  - test
   - upload
 
 build:
@@ -20,6 +21,17 @@ build:
     paths:
       - dist/
     expire_in: 3 min
+
+test:empty:
+  stage: test
+  image: registry.getnoc.com/noc/noc-docker:master
+  services:
+    - registry.getnoc.com/infrastructure/postgres:master
+    - registry.getnoc.com/infrastructure/mongo:master
+  script:
+    - ./noc migrate
+    - ./scripts/deploy/install-packages requirements/collections.json
+    - ./noc collection sync
 
 upload:
   stage: upload 
