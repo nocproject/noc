@@ -1,9 +1,0 @@
-{
-    "name": "Ping | RTT",
-    "$collection": "pm.metrictypes",
-    "uuid": "fcc7e29c-321e-466a-86c4-3a99e6659b43",
-    "description": "ICMP Ping round trip time in seconds",
-    "scope": "o",
-    "measure": "s",
-    "vector_tag": ""
-}

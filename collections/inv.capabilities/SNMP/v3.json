@@ -1,6 +1,0 @@
-{
-    "name": "SNMP | v3",
-    "uuid": "0fb259de-b280-4841-800f-768994e5204b",
-    "description": "SNMP v3 support",
-    "type": "bool"
-}

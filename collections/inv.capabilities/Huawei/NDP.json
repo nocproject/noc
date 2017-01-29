@@ -1,8 +1,0 @@
-{
-    "name": "Huawei | NDP",
-    "$collection": "inv.capabilities",
-    "uuid": "4853bafd-51d5-4bde-82e7-99337e88a82b",
-    "description": "Huawei NDP is enabled",
-    "type": "bool",
-    "card_template": ""
-}
