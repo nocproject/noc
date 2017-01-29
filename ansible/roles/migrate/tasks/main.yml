@@ -29,11 +29,22 @@
   tags:
     - requirements
 
+- name: test if collections dir is empty
+  stat:
+    path: "{{ noc_root }}/collections/sa.profilecheckrules"
+  register: coll_exists
+
+- name: fail if collections not found
+  fail:
+    msg: "Please run install_everything deploy and ensure dir {{ noc_root }}/collections/ is not empty"
+  when: not coll_exists.stat.exists
+
 - name: Synchronize collections
   command: ./noc collection sync
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  when: coll_exists.stat.exists
   tags:
     - coll_sync
 
