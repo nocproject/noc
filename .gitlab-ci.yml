@@ -29,12 +29,12 @@ test:empty:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
     NOC_PG_PASSWORD: noc
-    NOC_PG_HOST: postgres-master.docker
-    NOC_MONGO_HOST: mongo-master.docker
   services:
     - registry.getnoc.com/infrastructure/postgres:master
     - registry.getnoc.com/infrastructure/mongo:master
   script:
+    - export NOC_PG_HOST=$REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR
+    - export NOC_MONGO_HOST=$REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR
     - ln -s src/ /opt/noc/collections/
     - cd /opt/noc
     - ls -lah .
