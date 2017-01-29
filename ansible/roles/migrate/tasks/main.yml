@@ -15,6 +15,20 @@
   register: result
   changed_when: "'CHANGED' in result.stdout"
 
+- name: Install collections
+  command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
+  args:
+    chdir: "{{ noc_root }}"
+  register: s
+  changed_when: "'CHANGED' in s.stdout"
+  with_items:
+    - collections
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
+
 - name: Synchronize collections
   command: ./noc collection sync
   args:
