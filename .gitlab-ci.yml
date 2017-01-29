@@ -25,6 +25,10 @@ build:
 test:empty:
   stage: test
   image: registry.getnoc.com/noc/noc-docker:master
+  variables:
+    NOC_PG_DB: noc
+    NOC_PG_USER: noc
+    NOC_PG_PASSWORD: noc
   services:
     - registry.getnoc.com/infrastructure/postgres:master
     - registry.getnoc.com/infrastructure/mongo:master
