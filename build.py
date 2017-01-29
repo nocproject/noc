@@ -12,7 +12,7 @@ def build(spath):
     with open(spath) as f:
         spec = json.load(f)
     pkg = spec["name"]
-    version = spec["version"]
+    version = os.environ.get("VERSION")
     src_prefix = spec["src_prefix"]
     dst_prefix = spec["dst_prefix"]
     if dst_prefix.startswith("/"):
