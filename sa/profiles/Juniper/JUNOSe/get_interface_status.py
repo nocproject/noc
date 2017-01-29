@@ -44,4 +44,4 @@ class Script(BaseScript):
                         "status": match.group("status") == "Up"
                     }]
         c = self.cli
-            return r
+        return r
