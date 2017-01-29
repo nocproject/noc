@@ -29,6 +29,8 @@ test:empty:
     NOC_PG_DB: noc
     NOC_PG_USER: noc
     NOC_PG_PASSWORD: noc
+    NOC_PG_HOST: postgres-master.docker
+    NOC_MONGO_HOST: mongo-master.docker
   services:
     - registry.getnoc.com/infrastructure/postgres:master
     - registry.getnoc.com/infrastructure/mongo:master
@@ -36,6 +38,7 @@ test:empty:
     - ln -s src/ /opt/noc/collections/
     - cd /opt/noc
     - ls -lah .
+    - env | sort
     - ./noc migrate
     - ./scripts/deploy/install-packages requirements/collections.json
     - ./noc collection sync
