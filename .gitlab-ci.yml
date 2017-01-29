@@ -3,9 +3,6 @@ variables:
   S3_BASE: https://s3.getnoc.com
   S3_BUCKET: $CI_PROJECT_NAMESPACE
 
-before_script:
-  - export VERSION=$(git describe --long --tags --dirty --always)
-
 stages:
   - build
   - upload
@@ -14,7 +11,6 @@ build:
   stage: build
   image: python:2.7-alpine
   script:
-    - echo $VERSION
     - mkdir -p dist 
     - ./build.py package.json
   tags:
