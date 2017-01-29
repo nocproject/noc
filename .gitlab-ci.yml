@@ -21,6 +21,8 @@ build:
     paths:
       - dist/
     expire_in: 3 min
+  only:
+    - master
 
 test:empty:
   stage: test
@@ -49,3 +51,5 @@ upload:
     /tmp/mc -q cp dist/* cdn/$S3_BUCKET/
   tags:
     - docker 
+  only:
+    - master
