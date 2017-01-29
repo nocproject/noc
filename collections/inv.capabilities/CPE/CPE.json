@@ -1,8 +1,0 @@
-{
-    "name": "CPE | CPE",
-    "$collection": "inv.capabilities",
-    "uuid": "8ffea100-13fc-48ac-86d2-78c1b60f8fec",
-    "description": "CPE (Managed by controller)",
-    "type": "bool",
-    "card_template": ""
-}

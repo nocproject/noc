@@ -1,8 +1,0 @@
-{
-    "name": "BRAS | IPoE",
-    "$collection": "inv.capabilities",
-    "uuid": "1f0a2da1-a03f-40e9-9fec-66979d247a3f",
-    "description": "IPoE-capable BRAS",
-    "type": "bool",
-    "card_template": ""
-}

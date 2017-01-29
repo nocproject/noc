@@ -1,8 +1,0 @@
-{
-    "name": "Cisco | IOS | Syntax | IP SLA",
-    "$collection": "inv.capabilities",
-    "uuid": "c473d442-8473-46d6-81c5-5a48d954dd97",
-    "description": "Cisco ip sla command variants:\n0. show ip sla application\n1. show ip sla monitor application",
-    "type": "int",
-    "card_template": null
-}

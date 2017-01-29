@@ -1,8 +1,0 @@
-{
-    "name": "Alcatel | 7450 | CFM",
-    "$collection": "inv.connectiontypes",
-    "uuid": "4e5ff78d-252f-4758-aa38-e52d1cab1f74",
-    "description": "Alcatel 7450 CFM Slot",
-    "c_group": [],
-    "genders": "mf"
-}

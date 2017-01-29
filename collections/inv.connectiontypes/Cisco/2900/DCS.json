@@ -1,8 +1,0 @@
-{
-    "name": "Cisco | 2900 | DCS",
-    "$collection": "inv.connectiontypes",
-    "uuid": "4ac08d8d-9b44-4d78-871b-2594fd9b214c",
-    "description": "Cisco 2900 DaughterCard Slot",
-    "c_group": [],
-    "genders": "mf"
-}

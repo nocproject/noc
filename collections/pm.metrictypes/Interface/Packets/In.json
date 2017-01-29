@@ -1,9 +1,0 @@
-{
-    "name": "Interface | Packets | In",
-    "$collection": "pm.metrictypes",
-    "uuid": "8edc53be-0b58-4ebe-9840-727816288c3c",
-    "description": "",
-    "scope": "i",
-    "measure": "packet/s",
-    "vector_tag": ""
-}

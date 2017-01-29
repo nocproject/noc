@@ -1,9 +1,0 @@
-{
-    "name": "Interface | Status | Oper",
-    "$collection": "pm.metrictypes",
-    "uuid": "e947569e-f369-4c3c-a3cb-8c307872aba2",
-    "description": "Interface admin status",
-    "scope": "i",
-    "measure": "",
-    "vector_tag": ""
-}

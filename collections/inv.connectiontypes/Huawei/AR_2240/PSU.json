@@ -1,8 +1,0 @@
-{
-    "name": "Huawei | AR 2240 | PSU",
-    "$collection": "inv.connectiontypes",
-    "uuid": "5582ad4c-3112-4976-bdc1-2c40ac9e2b80",
-    "description": "Huawei AR 2240 PSU slot (Power module)",
-    "c_group": [],
-    "genders": "mf"
-}

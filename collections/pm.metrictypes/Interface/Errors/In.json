@@ -1,9 +1,0 @@
-{
-    "name": "Interface | Errors | In",
-    "$collection": "pm.metrictypes",
-    "uuid": "1b761068-6bb0-4c98-84c3-67851179fb61",
-    "description": "",
-    "scope": "i",
-    "measure": "packet/s",
-    "vector_tag": ""
-}

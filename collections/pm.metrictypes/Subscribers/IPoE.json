@@ -1,9 +1,0 @@
-{
-    "name": "Subscribers | IPoE",
-    "$collection": "pm.metrictypes",
-    "uuid": "e3657b75-3607-4abb-8a30-cb7c5b8eca5a",
-    "description": "Total active IPoE sessions on the box",
-    "scope": "o",
-    "measure": "sessions",
-    "vector_tag": ""
-}

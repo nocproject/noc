@@ -1,8 +1,0 @@
-{
-    "name": "Cisco | 2900 | PVDM",
-    "$collection": "inv.connectiontypes",
-    "uuid": "aa27763d-c198-4867-8c86-5312f7e7c585",
-    "description": "Cisco 2900 DSP modile slot",
-    "c_group": [],
-    "genders": "mf"
-}

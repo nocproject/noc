@@ -1,8 +1,0 @@
-{
-    "name": "Network | IPv6",
-    "$collection": "inv.capabilities",
-    "uuid": "bec58a96-a0a6-4476-b4b7-f53ffdf6154b",
-    "description": "IPv6 ND is enabled",
-    "type": "bool",
-    "card_template": ""
-}

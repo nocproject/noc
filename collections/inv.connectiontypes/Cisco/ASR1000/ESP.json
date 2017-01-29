@@ -1,8 +1,0 @@
-{
-    "name": "Cisco | ASR1000 | ESP",
-    "$collection": "inv.connectiontypes",
-    "uuid": "7be7316a-7edd-46e2-b717-b4895198269e",
-    "description": "Cisco ASR1000 Embedded Services Processor slot",
-    "c_group": [],
-    "genders": "mf"
-}

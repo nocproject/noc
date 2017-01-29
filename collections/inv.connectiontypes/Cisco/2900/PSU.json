@@ -1,8 +1,0 @@
-{
-    "name": "Cisco | 2900 | PSU",
-    "$collection": "inv.connectiontypes",
-    "uuid": "b5409fed-f481-44a1-b42d-9f4918104ee0",
-    "description": "Cisco 2900 Container of Power Supply",
-    "c_group": [],
-    "genders": "mf"
-}

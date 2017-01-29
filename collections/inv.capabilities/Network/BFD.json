@@ -1,7 +1,0 @@
-{
-    "name": "Network | BFD",
-    "$collection": "inv.capabilities",
-    "uuid": "ead11e46-3ed8-47ca-bab4-71590a0a997e",
-    "description": "BFD is enabled",
-    "type": "bool"
-}

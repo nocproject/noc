@@ -1,8 +1,0 @@
-{
-    "name": "Cisco | ASR1000 | ASR1004 PSU",
-    "$collection": "inv.connectiontypes",
-    "uuid": "366a4cf6-26bd-4e48-9e09-37bc231439d0",
-    "description": "Cisco ASR1004 PSU connection",
-    "c_group": [],
-    "genders": "mf"
-}

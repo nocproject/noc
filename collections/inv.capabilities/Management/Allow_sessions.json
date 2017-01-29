@@ -1,8 +1,0 @@
-{
-    "name": "Management | Allow Sessions",
-    "$collection": "inv.capabilities",
-    "uuid": "e74de82a-2b64-4ecc-9766-2e2c59d8c172",
-    "description": "Use session manager (allow share session between script) in CLI",
-    "type": "bool",
-    "card_template": ""
-}
