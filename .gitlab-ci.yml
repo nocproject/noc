@@ -38,7 +38,6 @@ test:empty:
     - ln -s src/ /opt/noc/collections
     - cd /opt/noc
     - ./noc migrate
-    - ./scripts/deploy/install-packages requirements/collections.json
     - ./noc collection sync
   tags:
     - docker
