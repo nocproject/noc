@@ -38,7 +38,7 @@ test:empty:
     - export NOC_PG_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR | awk -F '=' '{print $2}')
     - export NOC_MONGO_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR | awk -F '=' '{print $2}')
     - mkdir /opt/noc/collections
-    - mount -o bind src /opt/noc/collections
+    - mv src/* /opt/noc/collections
     - ls /opt/noc/collections
     - cd /opt/noc
     - ./noc migrate
