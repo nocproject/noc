@@ -35,6 +35,7 @@ test:empty:
   script:
     - ln -s src/ /opt/noc/collections/
     - cd /opt/noc
+    - ls -lah .
     - ./bin/python ./noc migrate
     - ./scripts/deploy/install-packages requirements/collections.json
     - ./noc collection sync
