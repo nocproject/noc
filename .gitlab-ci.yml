@@ -33,7 +33,9 @@ test:empty:
     - registry.getnoc.com/infrastructure/postgres:master
     - registry.getnoc.com/infrastructure/mongo:master
   script:
-    - ./noc migrate
+    - mount 
+    - ls -lah .
+    - ./bin/python ./noc migrate
     - ./scripts/deploy/install-packages requirements/collections.json
     - ./noc collection sync
   tags:
