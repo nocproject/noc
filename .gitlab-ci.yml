@@ -33,12 +33,12 @@ test:empty:
     - registry.getnoc.com/infrastructure/postgres:master
     - registry.getnoc.com/infrastructure/mongo:master
   script:
+    - env | sort
     - export NOC_PG_HOST=${REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR}
     - export NOC_MONGO_HOST=${REGISTRY.GETNOC.COM_INFRASTRUCTURE_MONGO_PORT_27017_TCP_ADDR}
     - ln -s src/ /opt/noc/collections/
     - cd /opt/noc
     - ls -lah .
-    - env | sort
     - ./noc migrate
     - ./scripts/deploy/install-packages requirements/collections.json
     - ./noc collection sync
