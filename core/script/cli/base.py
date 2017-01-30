@@ -259,7 +259,7 @@ class CLI(object):
                     raise tornado.iostream.StreamClosedError()
             except tornado.gen.TimeoutError:
                 self.logger.info("Timeout error")
-                raise tornado.gen.TimeoutError()
+                raise tornado.gen.TimeoutError("Timeout")
             self.logger.debug("Received: %r", r)
             # Clean input
             if self.buffer.find(
