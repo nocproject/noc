@@ -112,7 +112,7 @@ class Profile(BaseProfile):
             script.cli("disable clipaging")
 
         # Parse path parameters
-        if script.credentials["path"]:
+        if "patch" in script.credentials and script.credentials["path"]:
             for p in script.credentials["path"].split("/"):
                 if p.startswith("cluster:"):
                     self.cluster_member = p[8:].strip()
@@ -242,60 +242,78 @@ class Profile(BaseProfile):
         return ports
 
     rx_vlan = re.compile(
-        r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
-        r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
-        r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.+?"
-        r"^(Current Tagged P|Tagged p)orts\s+:\s*(?P<tagged_ports>\S*?)\s*\n"
-        r"^(Current Untagged P|Untagged p)orts\s*:\s*"
-        r"(?P<untagged_ports>\S*?)\s*\n",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        r"VID\s+:\s+(?P<vlan_id>\d+)\s+VLAN Name\s+:(?P<vlan_name>.*)\n"
+        r"VLAN Type\s+:\s+(?P<vlan_type>\S+).*\n"
+        r"(VLAN Advertisement\s+:.*\n)?"
+        r"(Current )?Tagged ports\s+:(?P<tagged_ports>.*)\n"
+        r"(Current )?Untagged ports\s*:(?P<untagged_ports>.*)",
+        re.IGNORECASE | re.MULTILINE)
     rx_vlan1 = re.compile(
-        r"VID\s+:\s+(?P<vlan_id>\d+)\s+"
-        r"VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
-        r"VLAN Type\s+:\s+(?P<vlan_type>\S+)\s*.*?"
-        r"^Member Ports\s+:\s*(?P<member_ports>\S*?)\s*\n"
-        r"(Static ports\s+:\s*\S+\s*\n)?"
-        r"^(Current )?Untagged ports\s*:\s*(?P<untagged_ports>\S*?)\s*\n",
-        re.IGNORECASE | re.MULTILINE | re.DOTALL)
+        r"VID\s+:\s+(?P<vlan_id>\d+)\s+VLAN Name\s+:(?P<vlan_name>.*)\n"
+        r"VLAN Type\s+:\s+(?P<vlan_type>\S+).*\n"
+        r"(VLAN Advertisement\s+:.*\n)?"
+        r"Member Ports\s+:(?P<member_ports>.*)\n"
+        r"(Static ports\s+:.*\n)?"
+        r"((Current )?Tagged Ports\s+:.*\n)?"
+        r"(VLAN Trunk Ports\s+:.*\n)?"
+        r"(Current )?Untagged ports\s*:(?P<untagged_ports>.*)",
+        re.IGNORECASE | re.MULTILINE)
+
+    def get_vlan(self, script, v):
+        match = self.rx_vlan1.search(v)
+        if match:
+            tagged_ports = []
+            untagged_ports = []
+            member_ports = []
+            if match.group("member_ports"):
+                member_ports = \
+                script.expand_interface_range(
+                match.group("member_ports"))
+            if match.group("untagged_ports"):
+                untagged_ports = \
+                script.expand_interface_range(
+                match.group("untagged_ports"))
+            for port in member_ports:
+                if port not in untagged_ports:
+                    tagged_ports += [port]
+            return {
+                "vlan_id": int(match.group("vlan_id")),
+                "vlan_name": match.group("vlan_name").strip(),
+                "vlan_type": match.group("vlan_type"),
+                "tagged_ports": set(tagged_ports),
+                "untagged_ports": set(untagged_ports)
+            }
+        else:
+            return None
 
     def get_vlans(self, script):
         vlans = []
-        c = script.cli("show vlan")
-        for match in self.rx_vlan.finditer(c):
-            tagged_ports = \
-                script.expand_interface_range(match.group("tagged_ports"))
-            untagged_ports = \
-                script.expand_interface_range(match.group("untagged_ports"))
-            vlans += [{
-                "vlan_id": int(match.group("vlan_id")),
-                "vlan_name": match.group("vlan_name"),
-                "vlan_type": match.group("vlan_type"),
-                "tagged_ports": tagged_ports,
-                "untagged_ports": untagged_ports
-            }]
-        if vlans == []:
-            for match in self.rx_vlan1.finditer(c):
-                tagged_ports = []
-                untagged_ports = []
-                member_ports = []
-                if match.group("member_ports"):
-                    member_ports = \
-                        script.expand_interface_range(
-                        match.group("member_ports"))
-                if match.group("untagged_ports"):
+        match_first = True
+        c = script.cli("show vlan", cached=True)
+        for l in c.split("\n\n"):
+            if match_first:
+                match = self.rx_vlan.search(l)
+                if match:
+                    tagged_ports = \
+                        script.expand_interface_range(match.group("tagged_ports"))
                     untagged_ports = \
-                        script.expand_interface_range(
-                        match.group("untagged_ports"))
-                for port in member_ports:
-                    if port not in untagged_ports:
-                        tagged_ports += [port]
-                vlans += [{
-                    "vlan_id": int(match.group("vlan_id")),
-                    "vlan_name": match.group("vlan_name"),
-                    "vlan_type": match.group("vlan_type"),
-                    "tagged_ports": set(tagged_ports),
-                    "untagged_ports": set(untagged_ports)
-                }]
+                        script.expand_interface_range(match.group("untagged_ports"))
+                    vlans += [{
+                        "vlan_id": int(match.group("vlan_id")),
+                        "vlan_name": match.group("vlan_name").strip(),
+                        "vlan_type": match.group("vlan_type"),
+                        "tagged_ports": tagged_ports,
+                        "untagged_ports": untagged_ports
+                    }]
+                else:
+                    v = self.get_vlan(script, l)
+                    if v is not None:
+                        vlans += [v]
+                        match_first = False
+            else:
+                v = self.get_vlan(script, l)
+                if v is not None:
+                    vlans += [self.get_vlan(script, l)]
         return vlans
 
     rx_blocked_session = re.compile(
