@@ -105,7 +105,7 @@ class ReportFilterApplication(SimpleReport):
             {"$match": match}]
 
         r = get_db()["noc.schedules.discovery.%s" % pool.name].aggregate(pipeline,
-                                                                            read_preference=ReadPreference.SECONDARY_PREFERRED)
+                                                                         read_preference=ReadPreference.SECONDARY_PREFERRED)
 
         for discovery in r["result"]:
 
@@ -130,7 +130,7 @@ class ReportFilterApplication(SimpleReport):
                             mo.address,
                             mo.profile_name,
                             _("Yes") if mo.get_status() else _("No"),
-                            discovery["st"].strftime("%d.%m.%Y"),
+                            discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else "",
                             method,
                             discovery["job"][0]["problems"][method].replace("\n", " ").replace("\r", " ") if
                             isinstance(discovery["job"][0]["problems"][method], str) else
