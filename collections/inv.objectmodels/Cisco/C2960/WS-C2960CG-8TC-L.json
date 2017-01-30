@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | C2960 | WS-C2960-8TC-L",
+    "name": "Cisco | C2960 | WS-C2960CG-8TC-L",
     "$collection": "inv.objectmodels",
-    "uuid": "48ea6bbd-745b-49c4-a5fe-c5133fd43d35",
+    "uuid": "56761c87-7b7e-4f15-a6b3-0cb1739c4430",
     "vendor__code": "CISCO",
-    "description": "8 Ethernet 10/100 ports + 1 combo port",
+    "description": "8 Ethernet 10/100 ports + 2 combo ports",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [
@@ -88,12 +88,44 @@
             "type__name": "Transceiver | SFP"
         },
         {
+            "description": "Gi0/2",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Gi0/2",
+            "direction": "i",
+            "gender": "f",
+            "name": "Gi2_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
             "description": "Console port",
             "direction": "s",
             "gender": "f",
             "name": "console",
             "protocols": [">RS232"],
             "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "micro-usb console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "micro-usb console",
+            "protocols": [">USB10"],
+            "type__name": "Electrical | micro-USB"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "USB",
+            "protocols": ["<USB10"],
+            "type__name": "Electrical | USB"
         },
         {
             "description": "Power inlet",
@@ -106,7 +138,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C2960-8TC-L"]
+            "part_no": ["WS-C2960CG-8TC-L"]
         },
         "management": {
             "managed": true
