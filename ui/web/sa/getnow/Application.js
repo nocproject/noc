@@ -73,10 +73,16 @@ Ext.define("NOC.sa.getnow.Application", {
             }
         });
 
-        me.administrativeDomain = Ext.create("NOC.sa.administrativedomain.LookupField", {
+        me.administrativeDomain = Ext.create("NOC.sa.administrativedomain.TreeCombo", {
             name: "administrative_domain",
             fieldLabel: __("By Adm. domain"),
             allowBlank: true,
+            labelAlign: "left",
+            //labelStyle: "background:#7f8c8d !important;",
+            defaults: {
+                //labelStyle: 'background: rgba(204, 204, 204, 0.5) !important;'
+                labelStyle: 'font-size:11px; background: #e6e6e6 !important;'
+                },
             listeners: {
                 scope: me,
                 select: me.onChangeFilter
