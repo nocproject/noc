@@ -432,6 +432,22 @@
             "type__name": "Electrical | RJ45"
         },
         {
+            "description": "micro-usb console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "micro-usb console",
+            "protocols": [">USB10"],
+            "type__name": "Electrical | micro-USB"
+        },
+        {
+            "description": "Outband Management",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
             "description": "Power inlet",
             "direction": "s",
             "gender": "f",
