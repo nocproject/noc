@@ -46,7 +46,7 @@ class Script(BaseScript):
         r"Interface Admin.? State\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
         r"(DHCPv6 Client State\s+:\s+(?:Enabled|Disabled)\s*\n)?"
         r"(Link Status\s+:\s+(?P<oper_status>Link\s*UP|Link\s*Down)\s*\n)?"
-        r"(IPv4 Address\s+:\s+(?P<ipv4_address>\S+)\s+\(\S+\)\s*\n)?"
+        r"(IP(v4)? Address\s+:\s+(?P<ipv4_address>\S+)\s+\(\S+\)\s*\n)?"
         r"(IPv4 Address\s+:\s+(?P<ipv4_addr_pri>\S+)\s+\(\S+\)\s+Primary\s*\n)?"
         r"(Proxy ARP\s+:\s+(?:Enabled|Disabled)\s+\(Local : \S+\s*\)\s*\n)?"
         r"(IPv4 State\s+:\s+(?P<is_ipv4>Enabled|Disabled)\s*\n)?"
@@ -68,6 +68,15 @@ class Script(BaseScript):
         r"(IPv4 State\s+:\s+(?P<is_ipv4>Enabled|Disabled)\s*\n)?"
         r"(IPv6 State\s+:\s+(?P<is_ipv6>Enabled|Disabled)\s*\n)?",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    # Work only on DGS-1210-XX/ME/BX
+    rx_ipif4 = re.compile(
+        r"Interface Name\s+:\s+(?P<ifname>\S+)\s*\n"
+        r"Interface VLAN Name\s+:\s+(?P<vlan_name>\S+)\s*\n"
+        r"IP Address\s+:\s+(?P<ip_address>\S+)\s*\n"
+        r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n"
+        r"Default Gateway\s+:.+\n"
+        r"Interface Admin State\s+:\s+(?P<admin_state>\S+)\s*\n",
+        re.IGNORECASE | re.MULTILINE)
     rx_ipmgmt = re.compile(
         r"IP Interface\s+:\s+(?P<ifname>mgmt_ipif)\s*\n"
         r"Status\s+:\s+(?P<admin_state>Enabled|Disabled)\s*\n"
@@ -499,6 +508,43 @@ class Script(BaseScript):
                 if ifname in igmp:
                     enabled_protocols += ["IGMP"]
                 i['subinterfaces'][0]["enabled_protocols"] = enabled_protocols
+            interfaces += [i]
+            ipif_found = True
+
+        for match in self.rx_ipif4.finditer(ipif):
+            admin_status = match.group("admin_state") == "Enable"
+            oper_status = admin_status
+            ifname = match.group("ifname")
+            i = {
+                "name": ifname,
+                "type": "SVI",
+                "admin_status": admin_status,
+                "oper_status": oper_status,
+                "subinterfaces": [{
+                    "name": ifname,
+                    "admin_status": admin_status,
+                    "oper_status": oper_status,
+                    "enabled_afi": ["IPv4"]
+                }]
+            }
+            ip_address = match.group("ip_address")
+            ip_subnet = match.group("ip_subnet")
+            ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
+            i['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+            vlan_name = match.group("vlan_name")
+            if not vlan_name:
+                vlan_name = "default"
+            for v in vlans:
+                if vlan_name == v['vlan_name']:
+                    vlan_id = v['vlan_id']
+                    i['subinterfaces'][0].update({"vlan_ids": [vlan_id]})
+                    for f in fdb:
+                        if 'CPU' in f['interfaces'] \
+                        and vlan_id == f['vlan_id']:
+                            i.update({"mac": f['mac']})
+                            i['subinterfaces'][0].update({"mac": f['mac']})
+                            break
+                    break
             interfaces += [i]
             ipif_found = True
 
