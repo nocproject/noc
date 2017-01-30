@@ -125,7 +125,7 @@
             "gender": "f",
             "name": "USB",
             "protocols": ["<USB10"],
-            "type__name": "Electrical | USB10"
+            "type__name": "Electrical | USB"
         },
         {
             "description": "Power inlet",
