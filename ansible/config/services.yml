@@ -45,6 +45,7 @@ services:
     required_assets:
       - web
       - card
+      - bi
 
   grafana:
     description: Graphana server
