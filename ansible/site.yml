@@ -316,6 +316,14 @@
         - node
         - noc
 
+    - role: bi
+      become: yes
+      when: "{{ has_svc_bi | default(False) or consul_env}}"
+      tags:
+        - bi
+        - node
+        - noc
+
 - name: Install and configure dev tools
   hosts: svc-dev
   become: yes
