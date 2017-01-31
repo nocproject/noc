@@ -19,6 +19,7 @@ class Script(BaseScript):
     rx_lldp = re.compile(r"LLDP Status\s+: Enabled?")
     rx_stp = re.compile(r"STP Status\s+: Enabled?")
     rx_oam = re.compile(r"^\s*OAM\s+: Enabled", re.MULTILINE)
+    rx_stack = re.compile(r"^\s*(?P<box_id>\d+)\s+", re.MULTILINE)
 
     @false_on_cli_error
     def has_lldp(self):
@@ -44,3 +45,15 @@ class Script(BaseScript):
         """
         cmd = self.cli("show ethernet_oam ports status")
         return self.rx_oam.search(cmd) is not None
+
+    def execute_platform(self, caps):
+        try:
+            cmd = self.cli("show stack_device")
+            s = []
+            for match in self.rx_stack.finditer(cmd):
+                s += [match.group("box_id")]
+            if s:
+                caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+                caps["Stack | Member Ids"] = " | ".join(s)
+        except:
+            pass

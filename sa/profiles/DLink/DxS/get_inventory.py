@@ -26,6 +26,9 @@ class Script(BaseScript):
     rx_ser = re.compile(
         r"(?:[Ss]erial [Nn]umber|Device S/N)\s+:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
+    rx_stack = re.compile(
+        r"^\s*(?P<box_id>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+"
+        r"(?P<serial>\S*)", re.MULTILINE)
     rx_mod = re.compile(
         r"Module Type\s+: (?P<part_no>\S+)\s*(?P<descr>.*?)\n")
     rx_mod1 = re.compile(
@@ -36,7 +39,7 @@ class Script(BaseScript):
         r"\s+(?P<number>\d+)\s+(?P<part_no>\S+)\s+(?P<revision>\S+)\s+"
         r"(?P<serial>(\xFF)+)\s+(?P<descr>.+?)\s*$")
     rx_media_type = re.compile(
-        r"^\s(\d+:)?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
+        r"^\s(?P<unit>\d+)?:?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
         r"(?P<vendor>.+?)/\s+(?P<part_no>.+?)/\s+(?P<serial>.+?)/\s+\n"
         r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S+)?\s+\d+\s+\n"
         r"\s+Compatibility: Single Mode \(SM\),"
@@ -45,6 +48,7 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
+        stacks = []
         s = self.cli("show switch", cached=True)
         match = self.rx_dev.search(s)
         part_no = match.group("part_no")
@@ -58,7 +62,6 @@ class Script(BaseScript):
             part_no = "%s/%s" % (part_no, revision)
         p = {
             "type": "CHASSIS",
-            "number": "1",
             "vendor": "DLINK",
             "part_no": [part_no],
             "revision": revision
@@ -68,7 +71,14 @@ class Script(BaseScript):
             ser.group("serial") != "Power"):
             p["serial"] = ser.group("serial")
         p["description"] = self.rx_des.search(s).group("descr")
+        try:
+            s = self.cli("show stack_device")
+            for match in self.rx_stack.finditer(s):
+                stacks += [match.groupdict()]
+        except self.CLISyntaxError:
+            pass
         r += [p]
+        box_id = 1
         match = self.rx_mod.search(s)
         if match:
             p = {
@@ -119,6 +129,20 @@ class Script(BaseScript):
         try:
             c = self.cli("show ports media_type")
             for match in self.rx_media_type.finditer(c):
+                if match.group("unit") and match.group("unit") != box_id:
+                    box_id = match.group("unit")
+                    for i in stacks:
+                        if i["box_id"] == box_id:
+                            p = {
+                                "type": "CHASSIS",
+                                "vendor": "DLINK",
+                                "part_no": [i["part_no"]],
+                                "revision": i["revision"]
+                            }
+                            if i["serial"]:
+                                p["serial"] = i["serial"]
+                            r += [p]
+                            break
                 vendor = match.group("vendor")
                 part_no = match.group("part_no")
                 description = match.group("part_no")
@@ -161,7 +185,7 @@ class Script(BaseScript):
                         part_no = part_no + 'Unknown SFP'
 
                 i = {
-                    "type": "MODULE",
+                    "type": "XCVR",
                     "number": match.group("port"),
                     "vendor": vendor,
                     "part_no": part_no,

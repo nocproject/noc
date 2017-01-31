@@ -151,6 +151,10 @@ class Script(BaseScript):
     rx_oam = re.compile(
         r"^Port (?P<port>\d+(?:[:/]\d+)?)\s*\n\-+\s*\nOAM\s+:\s+Enabled\s*\n",
         re.MULTILINE)
+    rx_trunk = re.compile(
+        r"Group ID\s+:\s+(?P<trunk>\d+).+?Type\s+:\s+(?P<type>\S+).+?"
+        r"Member Port\s+:\s+(?P<members>\S+).+?Status\s+:\s+(?P<status>\S+)",
+        re.MULTILINE | re.DOTALL)
 
     def parse_ctp(self, s):
         match = self.rx_ctp.search(s)
@@ -384,6 +388,37 @@ class Script(BaseScript):
                 i["enabled_protocols"] += ["STP"]
             if ifname in oam:
                 i["enabled_protocols"] += ["OAM"]
+            interfaces += [i]
+
+        try:
+            c = self.cli("show link_aggregation")
+        except self.CLISyntaxError:
+            c = ""
+        for match in self.rx_trunk.finditer(c):
+            ifname = "T%s" % match.group("trunk")
+            ifstatus = match.group("status").lower() == "enabled"
+            i = {
+                "name": ifname,
+                "type": "aggregated",
+                "admin_status": ifstatus,
+                "oper_status": ifstatus,
+                "enabled_protocols": [],
+                # 896=64*14 - obtained from DGS-3420-28SC
+                "snmp_ifindex": 896 + int(match.group("trunk")),
+                "subinterfaces": [{
+                    "name": ifname,
+                    "admin_status": ifstatus,
+                    "oper_status": ifstatus,
+                    "enabled_afi": ['BRIDGE']
+                }]
+            }
+            lacp_proto = match.group("type").lower() == "lacp"
+            members = self.expand_interface_range(match.group("members"))
+            for iface in interfaces:
+                if iface["name"] in members:
+                    iface["aggregated_interface"] = ifname
+                    if lacp_proto:
+                        iface["enabled_protocols"] += ["LACP"]
             interfaces += [i]
 
         ipif = self.cli("show ipif")
