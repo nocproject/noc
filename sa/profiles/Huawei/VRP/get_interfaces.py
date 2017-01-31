@@ -228,6 +228,7 @@ class Script(BaseScript):
             a_stat = a_stat.lower().endswith("up")
             o_stat = None
             for l in data.splitlines():
+                l = l.strip()
                 # Oper. status
                 if o_stat is None:
                     match = self.rx_line_proto.search(l)

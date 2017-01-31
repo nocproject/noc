@@ -34,9 +34,13 @@ class Script(BaseScript):
             rx_descr = re.compile(
                 r"^(?P<interface>(?:Eth|GE|TENGE)\d+/\d+/\d+)\s+"
                 r"(?P<status>(?:UP|(?:ADM\s)?DOWN))\s+(?P<speed>.+?)\s+"
-                r"(?P<duplex>.+?)\s+(?P<mode>access|trunk|hybrid|trunking)\s+"
-                r"(?P<pvid>\d+)(\s*(?P<description>\S*?))$" , re.MULTILINE)
-            v = self.cli("display brief interface")
+                r"(?P<duplex>.+?)\s+"
+                r"(?P<mode>access|trunk|hybrid|trunking|A|T|H)\s+"
+                r"(?P<pvid>\d+)\s*(?P<description>.*)$" , re.MULTILINE)
+            try:
+                v = self.cli("display brief interface")
+            except self.CLISyntaxError:
+                v = self.cli("display interface brief")
 
         for match in rx_descr.finditer(v):
             interface = self.profile.convert_interface_name(match.group("interface"))
