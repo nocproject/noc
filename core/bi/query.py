@@ -14,6 +14,11 @@ from noc.core.clickhouse.dictionary import Dictionary
 
 
 class OP(object):
+    """
+    :param min: Minimal count element in query
+    :param max: Maximal count element in query
+    :param convert: Convert function name
+    """
     def __init__(self, min=None, max=None, join=None,
                  prefix=None, convert=None, function=None):
         self.min = min
@@ -61,6 +66,19 @@ def f_lookup(seq):
     return "dictGet%s('%s', '%s', %s)" % (t, dict_name, field_name, id_expr)
 
 
+def in_lookup(seq):
+        """
+        $lookup (field, expr)
+        :param seq:
+        :return:
+        """
+        s3 = " NOT" if ("$not" in seq) or ("$NOT" in seq) else ""
+        if len(seq[1]) == 1:
+            return "%s%s IN %s" % (seq[0]["$field"], s3, seq[1][0])
+        else:
+            return "%s%s IN %s" % (seq[0]["$field"], s3, tuple(seq[1]))
+
+
 OP_MAP = {
     # Comparison
     "$eq": OP(min=2, max=2, join=" = "),
@@ -102,7 +120,9 @@ OP_MAP = {
     "$uniq": OP(min=1, max=1, function="UNIQ"),
     "$median": OP(min=1, max=1, function="MEDIAN"),
     # Dictionary lookup
-    "$lookup": OP(min=2, max=3, convert=f_lookup)
+    "$lookup": OP(min=2, max=3, convert=f_lookup),
+    # List
+    "$in": OP(min=2, max=3, convert=in_lookup)
 }
 
 
