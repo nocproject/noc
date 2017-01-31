@@ -14,6 +14,7 @@ from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
 ## NOC modules
 from noc.fm.models.outage import Outage
+from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.nosql import get_db
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -86,7 +87,7 @@ class ReportAvailabilityApplication(SimpleReport):
         b = now - d
         outages = defaultdict(int)
         q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
-        for o in Outage.objects.filter(q):
+        for o in Outage.objects.filter(q, read_preference=ReadPreference.SECONDARY_PREFERRED):
             start = max(o.start, b)
             stop = o.stop if o.stop else now
             outages[o.object] += total_seconds(stop - start)
@@ -112,6 +113,25 @@ class ReportAvailabilityApplication(SimpleReport):
         # Normalize to percents
         return dict((o, ((td - sum(outages[o])) * 100.0 / td, int(sum(outages[o])), len(outages[o]))) for o in outages)
 
+    @staticmethod
+    def get_reboots(start_date=None, stop_date=None):
+        match = {
+            "ts": {
+                "$gte": start_date,
+                "$lte": stop_date
+            }
+        }
+        pipeline = [
+            {
+                "$match": match
+            },
+            {"$group": {"_id": "$object", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}}
+        ]
+        data = Reboot._get_collection().aggregate(pipeline, read_preference=ReadPreference.SECONDARY_PREFERRED)
+        # data = data["result"]
+        return dict([(rb["_id"], rb["count"]) for rb in data["result"]])
+
     def get_data(self, request, interval=1, from_date=None, to_date=None,
                  skip_avail=False, skip_zero_avail=False, filter_zero_access=False, **kwargs):
         """
@@ -131,6 +151,8 @@ class ReportAvailabilityApplication(SimpleReport):
             to_date = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
 
         a = self.get_availability(start_date=from_date, stop_date=to_date, skip_zero_avail=skip_zero_avail)
+        rb = self.get_reboots(start_date=from_date, stop_date=to_date)
+        print("Reboots: %s" % rb)
         r = [SectionRow("Report from %s to %s" % (from_date, to_date))]
         mos = ManagedObject.objects.filter(is_managed=True)
 
@@ -166,6 +188,7 @@ class ReportAvailabilityApplication(SimpleReport):
                 round(a.get(o.id, (100.0, 0, 0))[0], 2)
             ]
             s.extend(a.get(o.id, (100.0, 0, 0))[1:])
+            s.append(rb[o.id] if o.id in rb else 0)
             r += [s]
             """
             a1.get(o.id, 100),
@@ -181,7 +204,8 @@ class ReportAvailabilityApplication(SimpleReport):
                 # TableColumn(_("Total avail (sec)"), align="right", format="numeric"),
                 _("Avail"),
                 _("Total unavail (sec)"),
-                _("Count outages")
+                _("Count outages"),
+                _("Reboots")
             ],
             data=r,
             enumerate=True

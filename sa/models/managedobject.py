@@ -953,6 +953,16 @@ class ManagedObject(Model):
 
     @classmethod
     def get_search_Q(cls, query):
+        """
+        Filters type:
+        #1 IP address regexp - if .* in query
+        #2 Name regexp - if "+*[]()" in query
+        #3 IPv4 query - if query is valid IPv4 address
+        #4 IPv4 prefix - if query is valid prefix from /16 to /32 (192.168.0.0/16, 192.168.0.0/g, 192.168.0.0/-1)
+        #5 Discovery ID query - Find on MAC Discovery ID
+        :param query: Query from __query request field
+        :return: Django Q filter (Use it: ManagedObject.objects.filter(q))
+        """
         query = query.strip()
         if query:
             if ".*" in query and is_ipv4(query.replace(".*", ".1")):
@@ -973,7 +983,7 @@ class ManagedObject(Model):
             elif is_ipv4_prefix(query):
                 # Match by prefix
                 p = IP.prefix(query)
-                if p.mask >= 20:
+                if p.mask >= 16:
                     return Q(address__gte=p.first.address,
                              address__lte=p.last.address)
             else:
