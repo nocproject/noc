@@ -1,0 +1,147 @@
+{
+    "name": "Cisco | 2800 | 2821 Motherboard",
+    "$collection": "inv.objectmodels",
+    "uuid": "e6cdd83a-fd6b-44a2-9adb-bf5d7a49a2f9",
+    "vendor__code": "CISCO",
+    "description": "Cisco 2821 Motherboard with 2GE and integrated VPN",
+    "connection_rule__name": "Cisco | 2800",
+    "cr_context": "MOTHERBOARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 2800 | MOTHERBOARD"
+        },
+        {
+            "description": "Compact Flash slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk0",
+            "type__name": "Flash | CF"
+        },
+        {
+            "description": "GigabitEthernet 0/0 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "DaughterCard Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs0",
+            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs1",
+            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs2",
+            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs3",
+            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "PVDM (DSP) Slots 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "pvdm4",
+            "type__name": "Cisco | ISR | PVDM2"
+        },
+        {
+            "description": "PVDM (DSP) Slots 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pvdm5",
+            "type__name": "Cisco | ISR | PVDM2"
+        },
+        {
+            "description": "PVDM (DSP) Slots 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "pvdm6",
+            "type__name": "Cisco | ISR | PVDM2"
+        },
+        {
+            "description": "AIM Container Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "aim0",
+            "type__name": "Cisco | ISR | AIM"
+        },
+        {
+            "description": "AIM Container Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "aim1",
+            "type__name": "Cisco | ISR | AIM"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Aux port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["USB10", "USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb1",
+            "protocols": ["USB10", "USB11"],
+            "type__name": "Electrical | USB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO2821-MB"]
+        }
+    }
+}
