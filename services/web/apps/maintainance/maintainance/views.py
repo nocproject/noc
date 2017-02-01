@@ -19,3 +19,5 @@ class MaintainanceApplication(ExtDocApplication):
     title = _("Maintainance")
     menu = _("Maintainance")
     model = Maintainance
+    query_condition = "icontains"
+    query_fields = ["subject"]
