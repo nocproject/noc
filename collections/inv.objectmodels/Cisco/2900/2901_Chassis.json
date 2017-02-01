@@ -1,0 +1,36 @@
+{
+    "name": "Cisco | 2900 | 2901 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "3413ecc0-42f6-45ed-8f94-f807297de046",
+    "vendor__code": "CISCO",
+    "description": "Cisco 2900 Series Integrated Services Routers with K9 Encryption",
+    "connection_rule__name": "Cisco | 2900",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "2901 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 2900 | MOTHERBOARD"
+        },
+        {
+            "description": "Internal Power Supply slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu",
+            "type__name": "Cisco | 1941-2901 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO2901/K9"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

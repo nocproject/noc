@@ -1,0 +1,50 @@
+{
+    "name": "Cisco | 2900 | 2911 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "4f5702b5-82a1-4e2c-b27f-e897f924d15e",
+    "vendor__code": "CISCO",
+    "description": "Cisco 2900 Series Integrated Services Routers with 1 SM slot and K9 Encryption",
+    "connection_rule__name": "Cisco | 2900",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "2911 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 2900 | MOTHERBOARD"
+        },
+        {
+            "description": "Service Module Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sm1",
+            "type__name": "Cisco | ISR | SM"
+        },
+        {
+            "description": "Power Supply slot",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu",
+            "type__name": "Cisco | 2911 | PSU"
+        },
+        {
+            "description": "Cisco redundant power supply connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "rsp",
+            "type__name": "Cisco | Electrical | RSP22"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO2911/K9"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2.0
+        }
+    }
+}

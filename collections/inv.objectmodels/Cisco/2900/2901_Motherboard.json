@@ -1,0 +1,148 @@
+{
+    "name": "Cisco | 2900 | 2901 Motherboard",
+    "$collection": "inv.objectmodels",
+    "uuid": "a8192485-3642-4cc1-b55f-e60c127dd3e7",
+    "vendor__code": "CISCO",
+    "description": "Cisco 2901 Motherboard with 2GE and integrated VPN",
+    "connection_rule__name": "Cisco | 2900",
+    "cr_context": "MOTHERBOARD",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 2900 | MOTHERBOARD"
+        },
+        {
+            "description": "Compact Flash slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk0",
+            "type__name": "Flash | CF"
+        },
+        {
+            "description": "Compact Flash slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "disk1",
+            "type__name": "Flash | CF"
+        },
+        {
+            "description": "GigabitEthernet 0/0 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi0",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASET"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "DaughterCard Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs0",
+            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs1",
+            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs2",
+            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs3",
+            "protocols": ["HWIC", "WIC", "VIC", "VWIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "PVDM3 (DSP) Slots 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "pvdm4",
+            "type__name": "Cisco | ISR | PVDM3"
+        },
+        {
+            "description": "PVDM3 (DSP) Slots 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pvdm5",
+            "type__name": "Cisco | ISR | PVDM3"
+        },
+        {
+            "description": "ISM Container Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "ism0",
+            "type__name": "Cisco | 2900-3900 | ISM"
+        },
+        {
+            "description": "Serial console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console0",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console1",
+            "protocols": [">USB20"],
+            "type__name": "Electrical | mini-USB"
+        },
+        {
+            "description": "Serial Auxiliary Port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb0",
+            "protocols": ["USB10", "USB11", "USB20"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "USB port",
+            "direction": "s",
+            "gender": "f",
+            "name": "usb1",
+            "protocols": ["USB10", "USB11", "USB20"],
+            "type__name": "Electrical | USB"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO2901-MB"]
+        }
+    }
+}
