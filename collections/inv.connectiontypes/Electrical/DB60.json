@@ -1,0 +1,8 @@
+{
+    "name": "Electrical | DB60",
+    "$collection": "inv.connectiontypes",
+    "uuid": "304846fa-6d95-4271-a1b6-cd813777a538",
+    "description": "DB-60 on one end and can be V.35, RS-232, RS-449, X.21 or EIE-530 on the other end depending on your needs",
+    "c_group": [],
+    "genders": "mf"
+}
