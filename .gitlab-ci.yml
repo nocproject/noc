@@ -46,7 +46,7 @@ test:empty:
   tags:
     - docker
 
-test:mongo with data:
+test:with data:
   stage: test
   image: registry.getnoc.com/noc/noc-docker:dev
   variables:
@@ -54,7 +54,7 @@ test:mongo with data:
     NOC_PG_USER: noc
     NOC_PG_PASSWORD: noc
   services:
-    - registry.getnoc.com/infrastructure/postgres:master
+    - registry.getnoc.com/infrastructure/postgres:dev
     - registry.getnoc.com/infrastructure/mongo:dev
   script:
     - export NOC_PG_HOST=$(env | grep REGISTRY.GETNOC.COM_INFRASTRUCTURE_POSTGRES_PORT_5432_TCP_ADDR | awk -F '=' '{print $2}')
