@@ -1,0 +1,36 @@
+{
+    "name": "Cisco | 2800 | 2801 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "0f927e95-b84c-499b-8a00-93c9d3c5e78b",
+    "vendor__code": "CISCO",
+    "description": "Cisco 2800 Series Integrated Services Routers with AC power",
+    "connection_rule__name": "Cisco | 2800",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "2801 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 2800 | MOTHERBOARD"
+        },
+        {
+            "description": "Internal Power Supply",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu",
+            "type__name": "Cisco | 2800 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO2801"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}

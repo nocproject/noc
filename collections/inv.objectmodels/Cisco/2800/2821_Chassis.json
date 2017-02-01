@@ -1,0 +1,57 @@
+{
+    "name": "Cisco | 2800 | 2821 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "7d100a2b-6a95-4807-a039-e27d1d2c0889",
+    "vendor__code": "CISCO",
+    "description": "Cisco 2800 Series Integrated services router with AC power, 1 NME-X, 1 EVM",
+    "connection_rule__name": "Cisco | 2800",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "2821 Motherboard",
+            "direction": "i",
+            "gender": "f",
+            "name": "mb",
+            "type__name": "Cisco | 2800 | MOTHERBOARD"
+        },
+        {
+            "description": "NME 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm0",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "description": "EVM 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "nm1",
+            "type__name": "Cisco | ISR | NM"
+        },
+        {
+            "description": "Internal Power Supply",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu",
+            "type__name": "Cisco | 2800 | PSU"
+        },
+        {
+            "description": "Cisco redundant power supply connector",
+            "direction": "s",
+            "gender": "f",
+            "name": "rsp",
+            "type__name": "Cisco | Electrical | RSP14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO2821"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 2.0
+        }
+    }
+}

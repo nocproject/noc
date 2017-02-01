@@ -1,8 +1,0 @@
-{
-    "name": "Cisco | 2900 | NM",
-    "$collection": "inv.connectiontypes",
-    "uuid": "b7140b2f-91de-4943-917e-5ff107a3dd0c",
-    "description": "Cisco 2900 Network Module slot",
-    "c_group": [],
-    "genders": "mf"
-}

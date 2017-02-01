@@ -1,11 +1,11 @@
 {
-    "name": "Cisco | 2900",
+    "name": "Cisco | 2800",
     "$collection": "inv.connectionrules",
-    "uuid": "7788ff50-b1f4-44d1-ade9-6e09fd39475f",
-    "description": "Cisco ISR 2900 series connection rules",
+    "uuid": "3fc93b59-f4b6-4ece-a258-c67b33a9bfcc",
+    "description": "Cisco ISR series connection rules",
     "context": [
         {
-            "reset_scopes": ["sm", "mb", "nm"],
+            "reset_scopes": ["mb", "nm"],
             "scope": "chassis",
             "type": "CHASSIS"
         },
@@ -13,11 +13,6 @@
             "reset_scopes": [],
             "scope": "mb",
             "type": "MOTHERBOARD"
-        },
-        {
-            "reset_scopes": [],
-            "scope": "sm",
-            "type": "SM"
         },
         {
             "reset_scopes": [],
@@ -36,27 +31,11 @@
         },
         {
             "match_connection": "in",
-            "match_type": "SM",
-            "scope": "chassis",
-            "target_connection": "sm{N}",
-            "target_number": "",
-            "target_type": "CHASSIS"
-        },
-        {
-            "match_connection": "in",
             "match_type": "NM",
-            "scope": "sm",
+            "scope": "chassis",
             "target_connection": "nm{N}",
             "target_number": "",
-            "target_type": "SM"
-        },
-        {
-            "match_connection": "in",
-            "match_type": "XCVR",
-            "scope": "sm",
-            "target_connection": "Gi{N}_sfp",
-            "target_number": "",
-            "target_type": "SM"
+            "target_type": "CHASSIS"
         },
         {
             "match_connection": "in",
@@ -68,9 +47,9 @@
         },
         {
             "match_connection": "in",
-            "match_type": "ISM",
+            "match_type": "AIM",
             "scope": "mb",
-            "target_connection": "ism{N}",
+            "target_connection": "aim{N}",
             "target_number": "",
             "target_type": "MOTHERBOARD"
         },
@@ -84,17 +63,9 @@
         },
         {
             "match_connection": "in",
-            "match_type": "XCVR",
-            "scope": "mb",
-            "target_connection": "Gi{N}_sfp",
-            "target_number": "",
-            "target_type": "MOTHERBOARD"
-        },
-        {
-            "match_connection": "in",
             "match_type": "PSU",
             "scope": "chassis",
-            "target_connection": "psu",
+            "target_connection": "psu{N}",
             "target_number": "",
             "target_type": "CHASSIS"
         },
@@ -127,14 +98,6 @@
             "match_type": "PVDM",
             "scope": "nm",
             "target_connection": "pvdm{N}",
-            "target_number": "",
-            "target_type": "NM"
-        },
-        {
-            "match_connection": "in",
-            "match_type": "DCS",
-            "scope": "nm",
-            "target_connection": "dcs{N}",
             "target_number": "",
             "target_type": "NM"
         }

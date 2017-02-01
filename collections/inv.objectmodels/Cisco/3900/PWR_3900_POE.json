@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | 3900 | PWR-3900-POE",
+    "$collection": "inv.objectmodels",
+    "uuid": "b2b4d31c-fe67-4d63-bb52-5c6312ac21ea",
+    "vendor__code": "CISCO",
+    "description": "C3900 AC-POE Power Supply",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Cisco | 3900 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["PWR-3900-POE"]
+        }
+    }
+}

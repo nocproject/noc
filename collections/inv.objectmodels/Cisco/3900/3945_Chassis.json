@@ -1,0 +1,71 @@
+{
+    "name": "Cisco | 3900 | 3945 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "c6060959-8154-4b8d-a638-bbf96ba42bdd",
+    "vendor__code": "CISCO",
+    "description": "Cisco 3900 Series Integrated Services Routers with 4 SM slot",
+    "connection_rule__name": "Cisco | 3900",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "3945 SPE",
+            "direction": "i",
+            "gender": "f",
+            "name": "spe0",
+            "type__name": "Cisco | 3900 | SPE"
+        },
+        {
+            "description": "Service Module Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "sm1",
+            "type__name": "Cisco | ISR | SM"
+        },
+        {
+            "description": "Service Module Slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "sm2",
+            "type__name": "Cisco | ISR | SM"
+        },
+        {
+            "description": "Service Module Slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "sm3",
+            "type__name": "Cisco | ISR | SM"
+        },
+        {
+            "description": "Service Module Slot 4",
+            "direction": "i",
+            "gender": "f",
+            "name": "sm4",
+            "type__name": "Cisco | ISR | SM"
+        },
+        {
+            "description": "Internal Power Supply 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu1",
+            "type__name": "Cisco | 3900 | PSU"
+        },
+        {
+            "description": "Internal Power Supply 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "psu2",
+            "type__name": "Cisco | 3900 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["CISCO3945-CHASSIS"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 3.0
+        }
+    }
+}
