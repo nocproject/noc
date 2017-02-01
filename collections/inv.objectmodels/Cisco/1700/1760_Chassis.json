@@ -1,0 +1,103 @@
+{
+    "name": "Cisco | 1700 | 1760 Chassis",
+    "$collection": "inv.objectmodels",
+    "uuid": "67eb0ce3-c4d2-4c0c-a309-2e8dcf369b3a",
+    "vendor__code": "CISCO",
+    "description": "Cisco 1760 Modular Access Router",
+    "connection_rule__name": "Cisco | 2800",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "FastEthernet 0/0 port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Fa0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "DaughterCard Slot 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs0",
+            "protocols": ["WIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs1",
+            "protocols": ["WIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs2",
+            "protocols": ["VIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "DaughterCard Slot 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "dcs3",
+            "protocols": ["VIC"],
+            "type__name": "Cisco | ISR | DCS"
+        },
+        {
+            "description": "PVDM (DSP) Slots 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "pvdm0",
+            "protocols": ["PVDM"],
+            "type__name": "Cisco | ISR | PVDM2"
+        },
+        {
+            "description": "PVDM (DSP) Slots 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "pvdm1",
+            "protocols": ["PVDM"],
+            "type__name": "Cisco | ISR | PVDM2"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Aux port",
+            "direction": "s",
+            "gender": "f",
+            "name": "aux",
+            "protocols": [">RS232", "<RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Inline power",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["1760"]
+        },
+        "management": {
+            "managed": true
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
