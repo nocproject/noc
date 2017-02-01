@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | 2800 | PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "f1ce80a8-58c8-448f-b35e-97bc6cb09753",
+    "description": "Cisco 2800 Container of Power Supply",
+    "c_group": [],
+    "genders": "mf"
+}
