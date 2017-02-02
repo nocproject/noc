@@ -18,29 +18,29 @@ class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
-    rx_summary_split = re.compile(r"^LocalPort.+?\n",
-                                    re.MULTILINE | re.IGNORECASE)
+    rx_summary_split = re.compile(
+        r"^LocalPort.+?\n", re.MULTILINE | re.IGNORECASE)
     rx_s_line = re.compile(r"(?P<local_if>\d+)\s+[0-9a-f:]+\s+.+?$")
-
-    rx_remote_port = re.compile("^\s+Port id:(?P<remote_if>.*)",
+    rx_remote_port = re.compile("^\s*Port id:(?P<remote_if>.*)",
         re.MULTILINE | re.IGNORECASE)
-
-    rx_remote_port_desc = re.compile("^Port Description:(?P<remote_if_desc>.*)",
+    rx_remote_port_desc = re.compile(
+        "^\s*Port Description:(?P<remote_if_desc>.*)",
         re.MULTILINE | re.IGNORECASE)
-
-    rx_remote_port_subtype = re.compile("^Port id subtype:(?P<remote_if_subtype>.*)",
+    rx_remote_port_subtype = re.compile(
+        "^\s*Port id subtype:(?P<remote_if_subtype>.*)",
         re.MULTILINE | re.IGNORECASE)
-
-    rx_chassis_id = re.compile(r"^\s+Chassis id:\s*(?P<id>\S+)",
+    rx_chassis_id = re.compile(
+        r"^\s*Chassis id:\s*(?P<id>\S+)", re.MULTILINE | re.IGNORECASE)
+    rx_enabled_caps = re.compile(
+        "^\s*System Capabilities Enabled:\s*(?P<caps>((other|repeater|bridge|router|wlan-access-point|telephone|docsis-cable-device|station-only)\s+)+)\s*$",
         re.MULTILINE | re.IGNORECASE)
-
-    rx_enabled_caps = re.compile("^System Capabilities Enabled:\s*(?P<caps>((other|repeater|bridge|router|wlan-access-point|telephone|docsis-cable-device|station-only)\s+)+)\s*$",
+    rx_system = re.compile(
+        r"^\s*System Name:\s*(?P<name>\S+)", re.MULTILINE | re.IGNORECASE)
+    rx_system_desc = re.compile(
+        r"^\s*System Description:\s*(?P<desc>.*)",
         re.MULTILINE | re.IGNORECASE)
-
-    rx_system = re.compile(r"^\s+System Name:\s*(?P<name>\S+)",
-                           re.MULTILINE | re.IGNORECASE)
-
-    rx_mac = re.compile(r"^[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}$")
+    rx_mac = re.compile(
+        r"^[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}$")
 
     def execute(self):
         r=[]
@@ -79,8 +79,12 @@ class Script(BaseScript):
             match = self.re_search(self.rx_remote_port, v)
             remote_port = match.group("remote_if").strip()
 
-            match = self.re_search(self.rx_remote_port_desc, v)
-            remote_port_desc = match.group('remote_if_desc').strip()
+            #match = self.re_search(self.rx_remote_port_desc, v)
+            match = self.rx_remote_port_desc.search(v)
+            if match:
+                remote_port_desc = match.group('remote_if_desc').strip()
+            else:
+                remote_port_desc = ''
 
             match = self.rx_remote_port_subtype.search(v)
             if match:
@@ -136,6 +140,9 @@ class Script(BaseScript):
             match = self.rx_system.search(v)
             if match:
                 n["remote_system_name"] = match.group("name")
+            match = self.rx_system_desc.search(v)
+            if match:
+                n["remote_system_description"] = match.group("desc")
             i["neighbors"] += [n]
             r += [i]
         return r
