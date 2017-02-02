@@ -1,7 +1,7 @@
 {
     "name": "Cisco | 2900 | 2951 Chassis",
     "$collection": "inv.objectmodels",
-    "uuid": "04b3aa1c-4479-4f42-8e23-f381b115fde8",
+    "uuid": "00e64b98-c095-4bf1-b5aa-79948fa81980",
     "vendor__code": "CISCO",
     "description": "Cisco 2900 Series Integrated Services Routers with 2 SM slot and K9 Encryption",
     "connection_rule__name": "Cisco | 2900",
