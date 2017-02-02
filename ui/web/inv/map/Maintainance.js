@@ -175,43 +175,25 @@ Ext.define('NOC.inv.map.Maintainance', {
 
     loadData: function() {
         var me = this,
-            filter = function(element) {
-                if(this.filter.length === 0 && this.isCompleted) {
-                    return !element.is_completed;
-                }
-                if(this.filter.length === 0 && !this.isCompleted) {
-                    return true;
-                }
-                if(this.filter.length > 0 && this.isCompleted && element.subject.indexOf(this.filter) > -1) {
-                    return !element.is_completed;
-                }
-                return this.filter.length > 0 && !this.isCompleted && element.subject.indexOf(this.filter) > -1;
-
-            },
             filterValue = me.dockMaintainance.down('#filterField') ? me.dockMaintainance.down('#filterField').getValue() : '',
             isCompletedValue = me.dockMaintainance.down('#isCompleted') ? me.dockMaintainance.down('#isCompleted').getValue() : true;
 
-        // ToDo uncomment after create backend request
-        // var params = {};
-        // if(filterValue.length > 0) {
-        //     params = Ext.apply(params, {query: filterValue});
-        // }
-        // if(isCompletedValue) {
-        //     params = Ext.apply(params, {completed: 1})
-        // }
+        var params = {};
+        if(filterValue.length > 0) {
+            params = Ext.apply(params, {__query: filterValue});
+        }
+        if(isCompletedValue) {
+            params = Ext.apply(params, {is_completed: 1})
+        }
 
         Ext.Ajax.request({
             url: me.rest_url,
             method: "GET",
-            // params: params,
+            params: params,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                var filtred = data.filter(filter, {
-                    filter: filterValue,
-                    isCompleted: isCompletedValue
-                });
-                me.store.loadData(filtred);
-                me.dockMaintainance.down('#status').update({count: filtred.length});
+                me.store.loadData(data);
+                me.dockMaintainance.down('#status').update({count: data.length});
             },
             failure: function() {
                 NOC.msg.failed(__("Failed to load data"))
