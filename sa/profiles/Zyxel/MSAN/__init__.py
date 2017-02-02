@@ -16,7 +16,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Zyxel.MSAN"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\s/]+)?[#>]\s*"
+    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.`\s/]+)?[#>]\s*"
     # pattern_unpriveleged_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.\s/]+)?>\s*"
     pattern_syntax_error = "((Unknown|invalid) (command|input)|Commands are:)"
     pattern_more = [
