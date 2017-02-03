@@ -3,60 +3,55 @@
     "$collection": "inv.objectmodels",
     "uuid": "00e64b98-c095-4bf1-b5aa-79948fa81980",
     "vendor__code": "CISCO",
-    "description": "Cisco 2900 Series Integrated Services Routers with 2 NME slots",
+    "description": "Cisco 2900 Series Integrated Services Routers with 2 SM slot and K9 Encryption",
     "connection_rule__name": "Cisco | 2900",
     "cr_context": "CHASSIS",
     "connections": [
         {
-            "description": "2951 Motherboard",
+            "description": "2921 Motherboard",
             "direction": "i",
             "gender": "f",
             "name": "mb",
             "type__name": "Cisco | 2900 | MOTHERBOARD"
         },
         {
-            "description": "NME 1",
+            "description": "Service Module Slot 1",
             "direction": "i",
             "gender": "f",
-            "name": "nm1",
-            "type__name": "Cisco | ISR | NM"
+            "name": "sm1",
+            "type__name": "Cisco | ISR | SM"
         },
         {
-            "description": "NME 2",
+            "description": "Service Module Slot 2",
             "direction": "i",
             "gender": "f",
-            "name": "nm2",
-            "type__name": "Cisco | ISR | NM"
+            "name": "sm2",
+            "type__name": "Cisco | ISR | SM"
         },
         {
-            "description": "Power Supply slot 1",
+            "description": "Power Supply slot",
             "direction": "i",
             "gender": "f",
-            "name": "psu1",
+            "name": "psu",
             "type__name": "Cisco | 2921-2951 | PSU"
         },
         {
-            "description": "Power Supply slot 2",
-            "direction": "i",
+            "description": "Redundant power supply connector",
+            "direction": "s",
             "gender": "f",
-            "name": "psu2",
-            "type__name": "Cisco | 2921-2951 | PSU"
+            "name": "rsp",
+            "type__name": "Cisco | Electrical | RSP22"
         }
     ],
     "data": {
         "asset": {
             "part_no": ["CISCO2951/K9"]
         },
-        "dimensions": {
-            "depth": 469.9,
-            "height": 88.9,
-            "width": 438.2
-        },
         "management": {
             "managed": true
         },
         "rackmount": {
-            "units": 2
+            "units": 2.0
         }
     }
 }
