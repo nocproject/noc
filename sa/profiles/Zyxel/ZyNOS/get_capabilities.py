@@ -42,5 +42,8 @@ class Script(BaseScript):
         """
         Check box has oam enabled
         """
-        r = self.scripts.get_oam_status()
+        try:
+            r = self.scripts.get_oam_status()
+        except:
+            r = False
         return bool(r)
