@@ -62,7 +62,11 @@ class Script(BaseScript):
     def get_inv(self):
         objects = []
         try:
-            v = self.cli("show inventory")
+            if self.match_version(platform__regex=r"2[89]0[01]$"):
+                # Inventory include motherboard for Cisco 2800 and 2900
+                v = self.cli("show inventory raw")
+            else:
+                v = self.cli("show inventory")
             for match in self.rx_item.finditer(v):
                 vendor, serial = "", ""
                 if match.group("name") in self.IGNORED_NAMES:
@@ -79,6 +83,8 @@ class Script(BaseScript):
                             int = match.group("name").split()[1]
                         elif match.group("name").startswith("GigabitEthernet"):
                             int = match.group("name").split()[0]
+                        elif type == 'MOTHERBOARD':
+                            part_no = "CISCO%s-MB" % match.group("descr")[1:5]
                         else:
                             int = match.group("name")
                         vendor, t_sn, t_rev, part_no = self.get_idprom(
@@ -253,8 +259,9 @@ class Script(BaseScript):
                     pid = self.get_transceiver_pid("1000BASE" + pid[5:])
                 return "XCVR", number, pid
         elif ((lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
-        and not pid.startswith("WS-CAC-") and not pid.endswith("-MB")
-        and not "Clock" in descr and not "VTT FRU" in descr):
+              and not pid.startswith("WS-CAC-") and not pid.endswith("-MB")
+              and not "Clock" in descr and not "VTT FRU" in descr
+              and not "C2801 Motherboard " in descr):
             try:
                 number = int(name)
             except ValueError:
@@ -317,6 +324,10 @@ class Script(BaseScript):
             return "PSU", name.split()[2], pid
         elif "FRU Power Supply" in descr:
             return "PSU", name.split()[-1], pid
+        elif " Power Supply" in name:
+            if pid == "PWR-2911-AC":
+                return "PSU", None, pid
+            return "PSU", name[-1], pid
         elif pid.startswith("FAN"):
             # Fan module
             try:
@@ -328,20 +339,36 @@ class Script(BaseScript):
         or pid.startswith("EVM-") or pid.startswith("EM-")):
             # Network Module
             return "NM", name[-1], pid
+        elif pid.startswith("SM-"):
+            # ISR 2900/3900 ServiceModule
+            return "SM", name[-1], pid
         elif "-NM-" in pid:
             # Network module 2
             return "NM", name.split()[5], pid
         elif (pid.startswith("WIC-") or pid.startswith("HWIC-")
-        or pid.startswith("VWIC-") or pid.startswith("VIC2-")
-        or pid.startswith("VIC3-")):
-            # DaughterCard
-            return "DCS", name[-1], pid
+              or pid.startswith("VWIC-") or pid.startswith("VWIC2-")
+              or pid.startswith("EHWIC-") or pid.startswith("VWIC3-")
+              or pid.startswith("VIC2-") or pid.startswith("VIC3-")):
+                # DaughterCard
+                return "DCS", name[-1], pid
         elif pid.startswith("AIM-"):
             # Network Module
             return "AIM", name[-1], pid
+        elif (pid.startswith("PVDM2-") or pid.startswith("PVDM3-")):
+            # PVDM Type 2 and 3
+            return "PVDM", name[-1], pid
         elif pid.endswith("-MB"):
             # Motherboard
             return "MOTHERBOARD", None, pid
+        elif ("Motherboard" in name or "motherboard" in name
+              or "Mother board" in name):
+            # Motherboard for Cisco 2800, 2900
+            if pid == "CISCO2801":
+                return "MOTHERBOARD", None, "CISCO2801-MB"
+            return "MOTHERBOARD", None, pid
+        elif pid.startswith("C3900-SPE"):
+            # SPE for 3900
+            return "SPE", name[-1], pid
         elif "Clock FRU" in descr:
             # Clock module
             return "CLK", name.split()[1], pid
