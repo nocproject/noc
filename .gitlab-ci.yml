@@ -22,7 +22,7 @@ build:
       - dist/
     expire_in: 3 min
   only:
-    - master
+    - master@noc/collections
 
 test:empty:
   stage: test
@@ -76,4 +76,4 @@ upload:
   tags:
     - docker 
   only:
-    - master
+    - master@noc/collections
