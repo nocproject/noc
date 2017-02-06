@@ -150,6 +150,10 @@ class ManagedObjectProfile(models.Model):
     enable_box_discovery_sla = models.BooleanField(default=False)
     # Enable CPE discovery
     enable_box_discovery_cpe = models.BooleanField(default=False)
+    # Enable MAC discovery
+    enable_box_discovery_mac = models.BooleanField(default=False)
+    # Enable Housekeeping
+    enable_box_discovery_hk = models.BooleanField(default=False)
     # Enable periodic discovery.
     # Periodic discovery launched repeatedly
     enable_periodic_discovery = models.BooleanField(default=True)
@@ -190,6 +194,12 @@ class ManagedObjectProfile(models.Model):
     cpe_auth_profile = models.ForeignKey(
         AuthProfile,
         verbose_name="Auth Profile",
+        null=True, blank=True
+    )
+    #
+    hk_handler = models.CharField(
+        _("Housekeeping Handler"),
+        max_length=255,
         null=True, blank=True
     )
     #

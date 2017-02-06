@@ -650,6 +650,28 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             ]
                                         }
                                     ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Housekeeping"),
+                                    layout: "hbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "enable_box_discovery_cpe",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("Housekeeping")
+                                        },
+                                        {
+                                            name: "hk_handler",
+                                            xtype: "textfield",
+                                            fieldLabel: __("Handler"),
+                                            allowBlank: true
+                                        }
+                                    ]
                                 }
                             ]
                         },

@@ -29,6 +29,7 @@ from stp import STPCheck
 from nri import NRICheck
 from sla import SLACheck
 from cpe import CPECheck
+from hk import HouseKeepingCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -91,6 +92,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 check(self).run()
         if self.object.object_profile.enable_box_discovery_sla:
             SLACheck(self).run()
+        if self.object.object_profile.enable_box_discovery_hk:
+            HouseKeepingCheck(self).run()
 
     def can_run(self):
         return (
