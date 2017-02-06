@@ -231,6 +231,16 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "enable_box_discovery_mac",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
+            name: "enable_box_discovery_hk",
+            xtype: "boolean",
+            defaultValue: false
+        },
+        {
             name: "enable_periodic_discovery",
             xtype: "boolean",
             defaultValue: false
@@ -295,6 +305,10 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "cpe_auth_profile__label",
             xtype: "string",
             persist: false
+        },
+        {
+            name: "hk_handler",
+            xtype: "string"
         },
         {
             name: "row_class",
