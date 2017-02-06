@@ -23,7 +23,7 @@ class PhoneRangeApplication(ExtDocApplication):
     model = PhoneRange
     parent_model = PhoneRange
     parent_field = "parent"
-    query_fields = ["name", "description"]
+    query_fields = ["name__icontains", "description__icontains"]
 
     def field_total_numbers(self, o):
         return o.total_numbers
