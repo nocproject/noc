@@ -58,6 +58,7 @@ class ArchivedAlarm(nosql.Document):
     # <external system name>:<external tt id>
     escalation_ts = nosql.DateTimeField(required=False)
     escalation_tt = nosql.StringField(required=False)
+    escalation_error = nosql.StringField(required=False)
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
     direct_services = nosql.ListField(nosql.EmbeddedDocumentField(SummaryItem))
@@ -147,6 +148,7 @@ class ArchivedAlarm(nosql.Document):
             root=self.root,
             escalation_ts=self.escalation_ts,
             escalation_tt=self.escalation_tt,
+            escalation_error=self.escalation_error,
             opening_event=self.opening_event,
             discriminator=self.discriminator,
             reopens=reopens + 1,
