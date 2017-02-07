@@ -32,7 +32,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
 
     def execute(self):
-        s = self.cli("show switch", cached=True)
+        s = self.scripts.get_switch()
         match = self.re_search(self.rx_ver, s)
         r = {
             "vendor": "DLink",

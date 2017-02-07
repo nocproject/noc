@@ -609,7 +609,7 @@ class Script(BaseScript):
                 interfaces += [i]
 
         if not ipif_found:
-            c = self.cli("show switch", cached=True)
+            c = self.scripts.get_switch()
             match = self.rx_ipswitch.search(c)
             if match:
                 i = {

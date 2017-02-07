@@ -49,7 +49,7 @@ class Script(BaseScript):
     def execute(self):
         r = []
         stacks = []
-        s = self.cli("show switch", cached=True)
+        s = self.scripts.get_switch()
         match = self.rx_dev.search(s)
         part_no = match.group("part_no")
         revision = match.group("revision")
