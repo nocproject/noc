@@ -79,6 +79,26 @@ def in_lookup(seq):
             return "%s%s IN %s" % (seq[0]["$field"], s3, tuple(seq[1]))
 
 
+def f_ternary_if(seq):
+    """
+    $?
+    :param seq:
+    :return:
+    """
+    return "((%s) ? (%s) : (%s))" % (to_sql(seq[0]),
+                                     to_sql(seq[1]), to_sql(seq[2]))
+
+
+def f_between(seq):
+    """
+    $between(a, b)
+    :param seq:
+    :return:
+    """
+    return "((%s) BETWEEN (%s) AND (%s))" % (
+        to_sql(seq[0]), to_sql(seq[1]), to_sql(seq[2]))
+
+
 OP_MAP = {
     # Comparison
     "$eq": OP(min=2, max=2, join=" = "),
@@ -88,7 +108,10 @@ OP_MAP = {
     "$lte": OP(min=2, max=2, join=" <= "),
     "$ne": OP(min=2, max=2, join=" != "),
     "$like": OP(min=2, max=2, join=" LIKE "),
+    "$between": OP(min=3, max=3, convert=f_between),
+    "$not": OP(min=1, max=1, function="NOT"),
     # @todo: a?b:c
+    "$?": OP(min=3, max=3, convert=f_ternary_if),
     # Logical
     "$and": OP(min=1, join=" AND "),
     "$or": OP(min=1, join=" OR "),
@@ -117,7 +140,7 @@ OP_MAP = {
     "$max": OP(min=1, max=1, function="MAX"),
     "$sum": OP(min=1, max=1, function="SUM"),
     "$avg": OP(min=1, max=1, function="AVG"),
-    "$uniq": OP(min=1, max=1, function="UNIQ"),
+    "$uniq": OP(min=1, function="uniq"),
     "$median": OP(min=1, max=1, function="MEDIAN"),
     # Dictionary lookup
     "$lookup": OP(min=2, max=3, convert=f_lookup),
