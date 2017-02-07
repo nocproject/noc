@@ -57,6 +57,14 @@
         </td>
     </tr>
     {% endif %}
+    {% if alarm.escalation_error %}
+    <tr>
+        <th scope="row">{{ _("Escalation Error") }}</th>
+        <td>
+            {{ alarm.escalation_error }}
+        </td>
+    </tr>
+    {% endif %}
     <tr>
         <th scope="row">{{ _("Body") }}</th>
         <td><pre>{{ body }}</pre></td>

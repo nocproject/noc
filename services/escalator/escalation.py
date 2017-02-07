@@ -208,6 +208,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                                     "Failed to escalate: %s" % e,
                                     to_save=True
                                 )
+                                alarm.set_escalation_error(str(e))
                         else:
                             log("Cannot find pre reason")
                             metrics["escalation_tt_fail"] += 1
@@ -233,6 +234,9 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                                 login="correlator"
                             )
                             metrics["escalation_tt_comment"] += 1
+                        except NotImplementedError:
+                            log("Cannot add comment to %s: Feature not implemented", ca.escalation_tt)
+                            metrics["escalation_tt_comment_fail"] += 1
                         except tts.TTError as e:
                             log("Failed to add comment to %s: %s",
                                 ca.escalation_tt, e)

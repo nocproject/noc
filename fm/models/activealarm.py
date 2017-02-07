@@ -75,6 +75,7 @@ class ActiveAlarm(nosql.Document):
     # <external system name>:<external tt id>
     escalation_ts = nosql.DateTimeField(required=False)
     escalation_tt = nosql.StringField(required=False)
+    escalation_error = nosql.StringField(required=False)
     # Close tt when alarm cleared
     close_tt = nosql.BooleanField(default=False)
     # Do not clear alarm until *wait_tt* is closed
@@ -222,6 +223,7 @@ class ActiveAlarm(nosql.Document):
             root=self.root,
             escalation_ts=self.escalation_ts,
             escalation_tt=self.escalation_tt,
+            escalation_error=self.escalation_error,
             opening_event=self.opening_event,
             closing_event=self.closing_event,
             discriminator=self.discriminator,
@@ -472,6 +474,15 @@ class ActiveAlarm(nosql.Document):
             },
             "id": self.id
         })
+
+    def set_escalation_error(self, error):
+        self.escalation_error = error
+        self._get_collection().update(
+            {"_id": self.id},
+            {"$set": {
+                "escalation_error": error
+            }}
+        )
 
     def set_clear_notification(self, notification_group, template):
         self.clear_notification_group = notification_group
