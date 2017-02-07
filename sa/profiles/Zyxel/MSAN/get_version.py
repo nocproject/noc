@@ -35,9 +35,9 @@ class Script(BaseScript):
         r"^\s*Serial number: (?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
     rx_ver3 = re.compile(
-        r"^\s*Bootcode Version: (?P<bootprom>\S+)\s*\n"
-        r"^\s*Hardware Version: (?P<hardware>\S+)\s*\n"
-        r"^\s*Serial Number: (?P<serial>\S+)\s*\n"
+        r"^\s*Bootcode Version: (?P<bootprom>.+)\s*\n"
+        r"^\s*Hardware Version: (?P<hardware>.+)\s*\n"
+        r"^\s*Serial Number: (?P<serial>.+)\s*\n"
         r"^\s*F/W Version: (?P<version>\S+)\s*\n",
         re.MULTILINE)
     rx_chips = re.compile(r"^\s*(?P<platform>\S+)\s+")
@@ -54,16 +54,24 @@ class Script(BaseScript):
             match = self.rx_ver3.search(self.cli("sys info show"))
             if match:
                 match1 = self.rx_chips.search(self.cli("chips info"))
-                return {
+                r = {
                     "vendor": "ZyXEL",
                     "platform": match1.group("platform"),
-                    "version": match.group("version"),
-                    "attributes": {
-                        "Boot PROM": match.group("bootprom"),
-                        "HW version": match.group("hardware"),
-                        "Serial Number": match.group("serial")
-                    }
+                    "version": match.group("version")
                 }
+                if match.group("bootprom") != "not defined":
+                    if "attributes" not in r:
+                        r["attributes"] = {}
+                    r["attributes"]["Boot PROM"] = match.group("bootprom")
+                if match.group("hardware") != "not defined":
+                    if "attributes" not in r:
+                        r["attributes"] = {}
+                    r["attributes"]["HW version"] = match.group("hardware")
+                if match.group("serial") != "not defined":
+                    if "attributes" not in r:
+                        r["attributes"] = {}
+                    r["attributes"]["Serial Number"] = match.group("serial")
+                return r
             else:
                 raise self.NotSupportedError()
         r = {
