@@ -26,8 +26,7 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute(self):
-        match = self.re_search(self.rx_ver, self.cli("show switch",
-            cached=True))
+        match = self.re_search(self.rx_ver, self.scripts.get_switch())
         mac = match.group("id")
         try:
             v = self.cli("show fdb static", cached=True)
