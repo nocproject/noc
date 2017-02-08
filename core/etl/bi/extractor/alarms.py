@@ -14,6 +14,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.bi.models.alarms import Alarms
 from noc.core.etl.bi.stream import Stream
+from noc.lib.dateutils import total_seconds
 
 
 class AlarmsExtractor(BaseExtractor):
@@ -39,10 +40,10 @@ class AlarmsExtractor(BaseExtractor):
             mo = ManagedObject.get_by_id(d["managed_object"])
             if not mo:
                 continue
-            version = mo.version
             self.alarm_stream.push(
                 ts=d["timestamp"],
                 close_ts=d["clear_timestamp"],
+                duration=max(0, int(total_seconds(d["clear_timestamp"] - d["timestamp"]))),
                 alarm_id=str(d["_id"]),
                 root=str(d.get("root") or ""),
                 alarm_class=d["alarm_class"],
@@ -56,6 +57,7 @@ class AlarmsExtractor(BaseExtractor):
                 escalation_ts=d.get("escalation_ts"),
                 escalation_tt=d.get("escalation_tt"),
                 managed_object=mo,
+                pool=mo.pool,
                 ip=mo.address,
                 profile=mo.profile_name,
                 object_profile=mo.object_profile,

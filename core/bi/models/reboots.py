@@ -20,6 +20,7 @@ from noc.core.bi.dictionaries.profile import Profile
 from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
 from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.bi.dictionaries.container import Container
+from noc.core.bi.dictionaries.pool import Pool
 
 
 class Reboots(Model):
@@ -30,6 +31,7 @@ class Reboots(Model):
     date = DateField()
     ts = DateTimeField()
     managed_object = ReferenceField(ManagedObject)
+    pool = ReferenceField(Pool)
     ip = IPv4Field()
     profile = ReferenceField(Profile)
     vendor = ReferenceField(Vendor)
