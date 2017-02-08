@@ -59,6 +59,12 @@ class Script(BaseScript):
         "WS-X6724-SFP"
     ])
 
+    ISR_MB = set([
+        "CISCO2801",
+        "CISCO2811"
+    ])
+
+
     def get_inv(self):
         objects = []
         try:
@@ -83,8 +89,6 @@ class Script(BaseScript):
                             int = match.group("name").split()[1]
                         elif match.group("name").startswith("GigabitEthernet"):
                             int = match.group("name").split()[0]
-                        elif type == 'MOTHERBOARD':
-                            part_no = "CISCO%s-MB" % match.group("descr")[1:5]
                         else:
                             int = match.group("name")
                         vendor, t_sn, t_rev, part_no = self.get_idprom(
@@ -95,11 +99,15 @@ class Script(BaseScript):
                         if not part_no:
                             print "!!! UNKNOWN: ", match.groupdict()
                             continue
+                    elif type == 'MOTHERBOARD':
+                        part_no = "CISCO%s-MB" % match.group("descr")[1:5]
                     else:
                         print "!!! UNKNOWN: ", match.groupdict()
                         continue
                 if serial in self.IGNORED_SERIAL:
                     serial = None
+                if part_no in self.ISR_MB and type == 'MOTHERBOARD':
+                    part_no = "%s-MB" % part_no
                 if not vendor:
                     if "NoName" in part_no or "Unknown" in part_no:
                         vendor = "NONAME"
@@ -258,6 +266,12 @@ class Script(BaseScript):
                 or "gigabit" in name.lower())):
                     pid = self.get_transceiver_pid("1000BASE" + pid[5:])
                 return "XCVR", number, pid
+        elif ("Motherboard" in name or "motherboard" in name
+              or "Mother board" in name):
+            # Motherboard for Cisco 2800, 2900
+            if pid == "CISCO2801":
+                return "MOTHERBOARD", None, "CISCO2801-MB"
+            return "MOTHERBOARD", None, pid
         elif ((lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
               and not pid.startswith("WS-CAC-") and not pid.endswith("-MB")
               and not "Clock" in descr and not "VTT FRU" in descr
@@ -359,12 +373,6 @@ class Script(BaseScript):
             return "PVDM", name[-1], pid
         elif pid.endswith("-MB"):
             # Motherboard
-            return "MOTHERBOARD", None, pid
-        elif ("Motherboard" in name or "motherboard" in name
-              or "Mother board" in name):
-            # Motherboard for Cisco 2800, 2900
-            if pid == "CISCO2801":
-                return "MOTHERBOARD", None, "CISCO2801-MB"
             return "MOTHERBOARD", None, pid
         elif pid.startswith("C3900-SPE"):
             # SPE for 3900
