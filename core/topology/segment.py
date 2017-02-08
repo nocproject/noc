@@ -46,6 +46,7 @@ class SegmentTopology(BaseTopology):
         self._rings_cache = {}
         self._isolated_cache = {}
         self.force_spring = force_spring
+        self.segment_objects = set()
         if self.segment.parent:
             self.parent_segment = self.segment.parent
         else:
@@ -102,6 +103,7 @@ class SegmentTopology(BaseTopology):
 
         # Get segment's objects
         mos = list(self.segment.managed_objects)
+        self.segment_objects = set(o.id for o in mos)
         for o in mos:
             self.add_object(o)
         # Get all interfaces
@@ -279,7 +281,7 @@ class SegmentTopology(BaseTopology):
         uplinks = self.get_uplinks()
         r = {}
         for o in self.G.node:
-            if o in uplinks:
+            if o not in self.segment_objects:
                 continue
             ups = {}
             for u in uplinks:
