@@ -170,7 +170,7 @@ class RPCClient(object):
                         body = data
                         logger.debug("[%s] Redirecting to %s", ol, url)
                     else:
-                        raise RPCException("Invalid return code: %s %s" % code, url)
+                        raise RPCException("Invalid return code: %s %s" % (code, url))
                 if code is None:
                     if orig_body:
                         body = orig_body
