@@ -23,6 +23,7 @@ from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
 from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.bi.dictionaries.container import Container
 from noc.core.bi.dictionaries.alarmclass import AlarmClass
+from noc.core.bi.dictionaries.pool import Pool
 
 
 class Alarms(Model):
@@ -33,6 +34,7 @@ class Alarms(Model):
     date = DateField()
     ts = DateTimeField()
     close_ts = DateTimeField()
+    duration = Int32Field()
     alarm_id = StringField()
     root = StringField()
     alarm_class = ReferenceField(AlarmClass)
@@ -48,6 +50,7 @@ class Alarms(Model):
     escalation_tt = StringField()
     #
     managed_object = ReferenceField(ManagedObject)
+    pool = ReferenceField(Pool)
     ip = IPv4Field()
     profile = ReferenceField(Profile)
     vendor = ReferenceField(Vendor)

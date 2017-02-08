@@ -44,6 +44,7 @@ class RebootsExtractor(BaseExtractor):
             self.reboot_stream.push(
                 ts=d["ts"],
                 managed_object=mo,
+                pool=mo.pool,
                 ip=mo.address,
                 profile=mo.profile_name,
                 object_profile=mo.object_profile,
