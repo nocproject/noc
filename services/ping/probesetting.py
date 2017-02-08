@@ -39,7 +39,7 @@ class ProbeSetting(object):
         self.time_cond = self.compile(time_expr)
         self.task = None
 
-    def update(self, interval, report_rtt, time_expr, *args, **kwargs):
+    def update(self, interval, report_rtt, time_expr=None, *args, **kwargs):
         self.interval = interval
         self.report_rtt = report_rtt
         self.time_expr = time_expr
