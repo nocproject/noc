@@ -44,3 +44,9 @@
     dest: "/etc/systemd/system/memcached.service.d/noc.conf"
   tags:
     - config
+
+- name: start memcached
+  service:
+    name: memcached
+    enabled: yes
+    state: started
