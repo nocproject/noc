@@ -118,10 +118,11 @@ class ConduitsPlugin(InvPlugin):
             return []
         r = []
         for ro in Object.objects.filter(
+                id__ne=id,
                 layer__in=layers,
                 data__distance_lte=(
                     o.point, D(m=self.MAX_CONDUIT_LENGTH)
-                )).exclude(object=id).distance(o.point).order_by("distance"):
+                )).distance(o.point).order_by("distance"):
             # Check object has no connection with this one
             if ro in connected:
                 continue
