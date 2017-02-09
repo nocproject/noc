@@ -63,7 +63,7 @@ class AlarmsExtractor(BaseExtractor):
                 object_profile=mo.object_profile,
                 vendor=mo.vendor,
                 platform=mo.platform,
-                version=version.version,
+                version=mo.version.version,
                 administrative_domain=mo.administrative_domain,
                 segment=mo.segment,
                 container=mo.container,
