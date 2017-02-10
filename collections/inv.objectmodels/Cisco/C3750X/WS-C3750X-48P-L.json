@@ -1,9 +1,9 @@
 {
-    "name": "Cisco | C3750X | WS-C3750X-48T-S",
+    "name": "Cisco | C3750X | WS-C3750X-48P-L",
     "$collection": "inv.objectmodels",
-    "uuid": "ff9729dc-0529-4219-8ea8-126cd25c819b",
+    "uuid": "be45820c-78ac-40b5-9ef2-66fb850178e4",
     "vendor__code": "CISCO",
-    "description": "48 Ethernet 10/100/1000 ports, with 350W AC power supply, IP Base feature set ",
+    "description": "48 Ethernet 10/100/1000 PoE+ ports, with 715W AC power supply, LAN Base feature set",
     "connection_rule__name": "Cisco | 3750X",
     "cr_context": "CHASSIS",
     "connections": [
@@ -431,7 +431,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["WS-C3750X-48T-S"]
+            "part_no": ["WS-C3750X-48P-L"]
         },
         "dimensions": {
             "depth": 460,
