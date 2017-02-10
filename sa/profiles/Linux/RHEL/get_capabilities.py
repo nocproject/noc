@@ -18,15 +18,30 @@ class Script(BaseScript):
     @false_on_cli_error
     def has_lldp(self):
         """
-        Check box has lldp enabled
+        Check box has lldp\ladvd daemon enabled
         """
-        r = self.cli("ladvdc -L")
-        return "ladvdc: command not found" not in r
+        r1 = self.cli("/bin/ps aux | grep [l]advd")
+        r2 = self.cli("/bin/ps aux | grep [l]ldpd")
 
+        if r1 or r2:
+            return True
+        else:
+            return False
+        
     @false_on_cli_error
     def has_cdp(self):
         """
         Check box has cdp enabled
         """
-        r = self.cli("ladvdc -L")
-        return "ladvdc: command not found" not in r
+        # Ladvd daemon always listen CDP
+        r1 = self.cli("/bin/ps aux | grep [l]advd")
+        
+        # for lldpd daemon need check CDP enable in config. LLDPD_OPTIONS="-c" in /etc/sysconfig/lldpd
+        r2 = self.cli("/bin/ps aux | grep \"[/]usr/sbin/lldpd -c\"")
+
+        if r1 or r2:
+            return True
+        else:
+            return False
+
+
