@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "213e22d3-14df-463b-99f4-70e15e935441",
     "vendor__code": "CISCO",
-    "description": "Four GbE port network module",
+    "description": "Four 1GbE SFP ports network module",
     "cr_context": "NM",
     "connections": [
         {
