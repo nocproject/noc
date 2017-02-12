@@ -18,6 +18,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
 from noc.gis.models.layer import Layer
 from noc.inv.models.objectconnection import ObjectConnection
+from noc.maintainance.models.maintainance import Maintainance
 
 
 class AlarmHeatCard(BaseCard):
@@ -38,7 +39,9 @@ class AlarmHeatCard(BaseCard):
     TOOLTIP_LIMIT = 5
 
     def get_data(self):
-        return {}
+        return {
+            "maintenance": 0
+        }
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_layer_cache"))
@@ -60,6 +63,7 @@ class AlarmHeatCard(BaseCard):
         east = float(self.handler.get_argument("e"))
         north = float(self.handler.get_argument("n"))
         south = float(self.handler.get_argument("s"))
+        ms = int(self.handler.get_argument("maintenance"))
         active_layers = [l for l in self.get_pop_layers() if l.min_zoom <= zoom <= l.max_zoom]
         alarms = []
         services = {}
@@ -69,6 +73,9 @@ class AlarmHeatCard(BaseCard):
             qs = ActiveAlarm.objects.all()
         else:
             qs = ActiveAlarm.objects.filter(adm_path__in=self.get_user_domains())
+        if ms == 0:
+            # Filter out equipment under maintenance
+            qs = qs.filter(managed_object__nin=Maintainance.currently_affected())
         for a in qs.only("id", "managed_object", "direct_subscribers", "direct_services"):
             s_sub = SummaryItem.items_to_dict(a.direct_subscribers)
             s_service = SummaryItem.items_to_dict(a.direct_services)

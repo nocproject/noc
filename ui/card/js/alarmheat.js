@@ -40,7 +40,8 @@ Heatmap.prototype.parseQuerystring = function() {
     return r;
 };
 
-Heatmap.prototype.run = function () {
+Heatmap.prototype.run = function (maintenance) {
+    this.maintenance = maintenance;
     this.initialize();
 };
 
@@ -77,7 +78,8 @@ Heatmap.prototype.poll_data = function () {
             opacity: 1,
             fillOpacity: 0.8
         };
-    $.ajax("/api/card/view/alarmheat/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s).done(function(data) {
+    // @todo: Get maintenance status from URL
+    $.ajax("/api/card/view/alarmheat/ajax/?z=" + zoom + "&w=" + w + "&e=" + e + "&n=" + n + "&s=" + s + "&maintenance=" + this.maintenance).done(function(data) {
         // Replace heatmap
         var heat_data = [];
         $.each(data.alarms, function(i, v) {
