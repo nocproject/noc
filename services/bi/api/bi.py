@@ -11,6 +11,7 @@ import datetime
 import zlib
 ## Third-party modules
 import ujson
+from mongoengine.queryset import Q
 ## NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
@@ -111,9 +112,6 @@ class BIAPI(API):
             raise APIError("Invalid datasource")
         return model.query(query)
 
-    def get_user(self):
-        return self.handler.current_user.username
-
     @executor("query")
     @api
     def list_dashboards(self, q=None):
@@ -130,6 +128,9 @@ class BIAPI(API):
         :param q:
         :return:
         """
+        user = self.handler.current_user
+        # @todo: Filter by groups
+        aq = Q(owner=user.id) | Q(access__user=user.id)
         return [{
             "id": str(d.id),
             "title": str(d.title),
@@ -139,19 +140,27 @@ class BIAPI(API):
             "created": d.created.isoformat(),
             "changed": d.changed.isoformat()
         } for d in Dashboard.objects
-#                   .filter(owner=self.get_user())
+                   .filter(aq)
                     .exclude("config")]
 
-    def _get_dashboard(self, id):
+    def _get_dashboard(self, id, access_level=0):
         """
         Returns dashboard or None
         :param id:
         :return:
         """
-        return Dashboard.objects.filter(
-#           owner=self.get_user(),
-            id=id
-        ).first()
+        user = self.handler.current_user
+        d = Dashboard.objects.filter(id=id).first()
+        if not d:
+            return None
+        if d.owner == user:
+            return d
+        # @todo: Filter by groups
+        for i in d.access:
+            if i.user == user and i.level >= access_level:
+                return d
+        # No access
+        return None
 
     @executor("query")
     @api
@@ -176,7 +185,7 @@ class BIAPI(API):
         :return: datshboard id
         """
         if "id" in config:
-            d = self._get_dashboard(config["id"])
+            d = self._get_dashboard(config["id"], access_level=1)
             if not d:
                 raise APIError("Dashboard not found")
         else:
@@ -198,7 +207,7 @@ class BIAPI(API):
         :param id:
         :return:
         """
-        d = self._get_dashboard(id)
+        d = self._get_dashboard(id, access_level=2)
         if d:
             d.delete()
         else:
