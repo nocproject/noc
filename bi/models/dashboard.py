@@ -9,9 +9,22 @@
 ## Python modules
 import datetime
 ## Third-party modules
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField, ListField,
-                                IntField, BinaryField)
+                                IntField, BinaryField, EmbeddedDocumentField)
+## NOC modules
+from noc.main.models import User, Group
+from noc.lib.nosql import ForeignKeyField
+
+
+class DashboardAccess(EmbeddedDocument):
+    user = ForeignKeyField(User)
+    group = ForeignKeyField(Group)
+    level = IntField(choices=[
+        (0, "Read-only"),
+        (1, "Modify"),
+        (2, "Admin")
+    ])
 
 
 class Dashboard(Document):
@@ -25,7 +38,7 @@ class Dashboard(Document):
 
     title = StringField()
     # Username
-    owner = StringField()
+    owner = ForeignKeyField(User)
     #
     description = StringField()
     #
@@ -37,6 +50,8 @@ class Dashboard(Document):
     #
     created = DateTimeField(default=datetime.datetime.now)
     changed = DateTimeField(default=datetime.datetime.now)
+    #
+    access = ListField(EmbeddedDocumentField(DashboardAccess))
 
     def __unicode__(self):
         return self.title
