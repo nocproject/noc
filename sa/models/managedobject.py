@@ -902,7 +902,8 @@ class ManagedObject(Model):
                 self.BOX_DISCOVERY_JOB,
                 key=self.id,
                 pool=self.pool.name,
-                delta=self.pool.get_delta()
+                delta=self.pool.get_delta(),
+                keep_ts=True
             )
         else:
             Job.remove(
@@ -917,7 +918,8 @@ class ManagedObject(Model):
                 self.PERIODIC_DISCOVERY_JOB,
                 key=self.id,
                 pool=self.pool.name,
-                delta=self.pool.get_delta()
+                delta=self.pool.get_delta(),
+                keep_ts=True
             )
         else:
             Job.remove(
