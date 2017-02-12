@@ -329,7 +329,8 @@ class Scheduler(object):
             Job.ATTR_ID: jid
         })
 
-    def submit(self, jcls, key=None, data=None, ts=None, delta=None):
+    def submit(self, jcls, key=None, data=None, ts=None, delta=None,
+               keep_ts=False):
         """
         Submit new job or adjust existing one
         :param jcls: Job class name
@@ -337,10 +338,18 @@ class Scheduler(object):
         :param data: Job data (will be passed as handler's arguments)
         :param ts: Set next run time (datetime)
         :param delta: Set next run time after delta seconds
+        :param keep_ts: Do not touch timestamp of existing jobs,
+            set timestamp only for created jobs
         """
         now = datetime.datetime.now()
         data = data or {}
         set_op = {}
+        iset_op = {
+            Job.ATTR_STATUS: Job.S_WAIT,
+            Job.ATTR_RUNS: 0,
+            Job.ATTR_FAULTS: 0,
+            Job.ATTR_OFFSET: random.random()
+        }
         if ts:
             set_op[Job.ATTR_TS] = ts
         elif delta:
@@ -348,6 +357,8 @@ class Scheduler(object):
                                    datetime.timedelta(seconds=delta))
         else:
             set_op[Job.ATTR_TS] = now
+        if keep_ts:
+            iset_op[Job.ATTR_TS] = set_op.pop(Job.ATTR_TS)
         if data:
             set_op[Job.ATTR_DATA] = data
         q = {
@@ -356,12 +367,7 @@ class Scheduler(object):
         }
         op = {
             "$set": set_op,
-            "$setOnInsert": {
-                Job.ATTR_STATUS: Job.S_WAIT,
-                Job.ATTR_RUNS: 0,
-                Job.ATTR_FAULTS: 0,
-                Job.ATTR_OFFSET: random.random()
-            }
+            "$setOnInsert": iset_op
         }
         self.logger.info("Submit job %s(%s, %s) at %s",
                          jcls, key, data, set_op[Job.ATTR_TS])
