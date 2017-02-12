@@ -23,7 +23,7 @@ rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
-def parse_table(s, allow_wrap=False):
+def parse_table(s, allow_wrap=False, allow_extend=False):
     """
     >>> parse_table("First Second Third\\n----- ------ -----\\na     b       c\\nddd   eee     fff\\n")
     [['a', 'b', 'c'], ['ddd', 'eee', 'fff']]
@@ -44,9 +44,15 @@ def parse_table(s, allow_wrap=False):
                 match = rx_col.match(l)
                 if not match:
                     break
-                columns.append((x + len(match.group(1)),
-                                x + len(match.group(1)) + len(
-                                    match.group(2))))
+                if allow_extend:
+                    columns.append((x + len(match.group(1)),
+                                    x + len(match.group(1))*2 + len(
+                                        match.group(2))))
+                else:
+                    columns.append((x + len(match.group(1)),
+                                    x + len(match.group(1)) + len(
+                                        match.group(2))))
+                print x
                 x += match.end()
                 l = l[match.end():]
         elif columns:  # Fetch cells
