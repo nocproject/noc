@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Alstec.ALS.get_lldp_neighbors
+## Alstec.24xx.get_lldp_neighbors
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ from noc.core.mac import MAC
 
 
 class Script(BaseScript):
-    name = "Alstec.ALS.get_lldp_neighbors"
+    name = "Alstec.24xx.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
 
     rx_line = re.compile(
@@ -40,7 +40,7 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             raise self.NotSupportedError()
         v = v.replace("\n\n", "\n")
-        for l in parse_table(v):
+        for l in parse_table(v, allow_extend=True:
             if not l[0]:
                 data[-1] = [s[0]+s[1] for s in zip(data[-1], l)]
                 continue
