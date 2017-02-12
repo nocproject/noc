@@ -31,7 +31,7 @@ class Script(BaseScript):
             v = self.blank_line.sub("", v)
         except self.CLISyntaxError:
             raise self.NotSupportedError()
-        t = parse_table(v, allow_wrap=True)
+        t = parse_table(v, allow_wrap=True, allow_extend=True)
         for i in t:
             chassis_id = i[1]
             if is_ipv4(chassis_id) or is_ipv6(chassis_id):
