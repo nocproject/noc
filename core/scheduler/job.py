@@ -234,7 +234,7 @@ class Job(object):
     @classmethod
     def submit(cls, scheduler, name=None,
                key=None, data=None, pool=None,
-               ts=None, delta=None):
+               ts=None, delta=None, keep_ts=False):
         """
         Submit new job or change schedule for existing one
         :param scheduler: scheduler name
@@ -244,6 +244,8 @@ class Job(object):
         :param pool: Pool name
         :param ts: Next run timestamp
         :param delta: Run after *delta* seconds
+        :param keep_ts: Do not touch timestamp of existing jobs,
+            set timestamp only for created jobs
         """
         from scheduler import Scheduler
         scheduler = Scheduler(
@@ -255,7 +257,8 @@ class Job(object):
             key=key,
             data=data,
             ts=ts,
-            delta=delta
+            delta=delta,
+            keep_ts=keep_ts
         )
 
     @classmethod
