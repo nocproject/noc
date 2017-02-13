@@ -366,9 +366,10 @@ class Scheduler(object):
             Job.ATTR_KEY: key
         }
         op = {
-            "$set": set_op,
             "$setOnInsert": iset_op
         }
+        if set_op:
+            op["$set"] = set_op
         self.logger.info(
             "Submit job %s(%s, %s) at %s",
             jcls, key, data,
