@@ -189,7 +189,7 @@ class BIAPI(API):
             if not d:
                 raise APIError("Dashboard not found")
         else:
-            d = Dashboard(owner=self.get_user())
+            d = Dashboard(owner=self.handler.current_user)
         d.format = config.get("format", 1)
         d.config = zlib.compress(ujson.dumps(config))
         d.changed = datetime.datetime.now()
