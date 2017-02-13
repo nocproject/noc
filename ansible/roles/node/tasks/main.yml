@@ -124,20 +124,6 @@
   args:
     chdir: "{{ noc_root }}"
 
-- name: Calculate md5 of node requirements
-  stat: path="{{noc_root}}/requirements/node.txt"
-  register: node_stat
-  tags:
-    - requirements
-
-- name: Check requirement files for changes
-  command: test "{{ lookup('env', 'NOC_NODE_MD5') }}" = {{ node_stat.stat.md5 }}
-  changed_when: "node_check.rc != 0"
-  failed_when: node_check.stderr
-  register: node_check
-  tags:
-    - requirements
-
 - name: Install node python packages(should take a while for a first time)
   pip:
     chdir: "{{noc_root}}"
@@ -150,7 +136,6 @@
     https_proxy: "{{http_proxy}}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"
     CFLAGS: "{{ pip_cflags | default('') }}"
-  when: node_check.changed
   tags:
     - requirements
 
