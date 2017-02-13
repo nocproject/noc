@@ -369,8 +369,10 @@ class Scheduler(object):
             "$set": set_op,
             "$setOnInsert": iset_op
         }
-        self.logger.info("Submit job %s(%s, %s) at %s",
-                         jcls, key, data, set_op[Job.ATTR_TS])
+        self.logger.info(
+            "Submit job %s(%s, %s) at %s",
+            jcls, key, data,
+            set_op.get(Job.ATTR_TS) or iset_op.get(Job.ATTR_TS))
         self.logger.debug("update(%s, %s, upsert=True)", q, op)
         self.get_collection().update(q, op, upsert=True)
 
