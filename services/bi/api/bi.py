@@ -136,7 +136,7 @@ class BIAPI(API):
             "title": str(d.title),
             "description": str(d.description),
             "tags": str(d.tags),
-            "owner": d.owner,
+            "owner": d.owner.username,
             "created": d.created.isoformat(),
             "changed": d.changed.isoformat()
         } for d in Dashboard.objects
