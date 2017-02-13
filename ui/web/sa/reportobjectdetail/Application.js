@@ -22,17 +22,21 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 type: "boolean"
             }],
             data: [
-                ["id", __("ID"), true],
+                ["id", __("ID"), false],
                 ["object_name", __("Object Name"), true],
                 ["object_address", __("IP"), true],
+                ["object_status", __("Object Status"), true],
                 ["profile_name", __("Profile"), true],
-                ["object_profile", __("Object Profile"), true],
-                ["object_vendor", __("Vendor"), true],
-                ["object_platform", __("Platform"), true],
-                ["avail", __("Avail"), true],
+                ["object_profile", __("Object Profile"), false],
+                ["object_vendor", __("Vendor"), false],
+                ["object_platform", __("Platform"), false],
+                ["object_version", __("SW Version"), false],
+                ["avail", __("Avail"), false],
                 ["admin_domain", __("Admin. Domain"), true],
-                ["container", __("Container"), true],
+                ["container", __("Container"), false],
                 ["segment", __("Segment"), true],
+                ["phys_interface_count", __("Physical Iface Count"), false],
+                ["link_count", __("Link Count"), false],
             ]
         });
 
