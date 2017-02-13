@@ -39,7 +39,10 @@ class CPECheck(DiscoveryCheck):
                     "controller": self.object,
                     "local_cpe_id": cpe["id"],
                     "global_cpe_id": cpe["global_id"],
-                    "address": cpe["ip"],
+                    "address": cpe["ip"] or "0.0.0.0",
+                    "administrative_domain":self.object.administrative_domain,
+                    "segment":self.object.segment,
+                    "tags": [cpe["status"]],
                     "last_seen": now
                 })
                 if changes:
@@ -50,8 +53,11 @@ class CPECheck(DiscoveryCheck):
                     )
             else:
                 name = cpe.get("name") or "cpe-%s" % cpe["global_id"]
-                if ManagedObject.objects.filter(name=name).exists():
-                    name = "cpe-%s" % cpe["global_id"]
+                if ManagedObject.objects.filter(name=name):
+                    name = "%s-%s" % (name, cpe["global_id"])
+                    self.logger.info("[%s|%s] Duplicate CPE name, rename to %s",
+                        cpe["id"], cpe["global_id"], name
+                    )
                 self.logger.info(
                     "[%s|%s] Created CPE %s",
                     cpe["id"], cpe["global_id"], name
@@ -68,6 +74,7 @@ class CPECheck(DiscoveryCheck):
                     address=cpe.get("ip") or "0.0.0.0",
                     controller=self.object,
                     last_seen=now,
+                    tags=[cpe["status"]],
                     local_cpe_id=cpe["id"],
                     global_cpe_id=cpe["global_id"]
                 )
