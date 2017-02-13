@@ -1,4 +1,4 @@
-ipython==4.0.1
+ipython
 Babel==2.3.4
 pojson==0.6
 
