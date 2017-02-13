@@ -24,6 +24,8 @@ class Script(BaseScript):
         r"^\s*\-+\n"
         r"^\s*STP Status\s+: (?P<status>Enabled|Disabled)\s*\n"
         r"^\s*STP Version\s+: (?P<mode>STP|RSTP)\s*\n", re.MULTILINE)
+    rx_instance = re.compile(
+        "^\s*(?P<key>STP Instance Settings)\n", re.MULTILINE)
     rx_ins = re.compile(
         r"^\s*STP Instance Settings\n"
         r"^\s*\-+\n"
@@ -57,7 +59,7 @@ class Script(BaseScript):
     rx_iface = re.compile(
         r"^\s*Port Index\s+: (?P<iface>\d+)\s+,.+\n"
         r"(^\s*.*\n)?"
-        r"^\s*External PathCost : \S+\s+, Edge Port : \S+\s*/(?P<edge>Yes|No) , P2P : \S+\s*/(?P<p2p>Yes|No)\s*\n"
+        r"^\s*External PathCost : \S+\s+, Edge Port : \S+\s*/(?P<edge>Yes|No)\s*, P2P : \S+\s*/(?P<p2p>Yes|No)\s*\n"
         r"(^\s*.*\n)?"
         r"^\s*Port Forward BPDU : (?:Enabled|Disabled)\s*\n"
         r"^\s*MSTI   Designated Bridge   Internal PathCost  Prio  Status      Role\n"
@@ -73,6 +75,7 @@ class Script(BaseScript):
         r"^\s*---- ------------------       -----------------  ----  ----------  ----------\n"
         r"^\s*0\s+(?P<d_bridge>\S+)\s+(?P<patch_cost>\d+)\s+(?P<priority>\d+)\s+(?P<status>\S+)\s+(?P<role>\S+)\s*\n",
         re.MULTILINE)
+
     """
     rx_mst = re.compile(
         r" Current MST Configuration Identification\n"
@@ -111,6 +114,41 @@ class Script(BaseScript):
     }
     designated_bridge = ""
     iface_role = []
+    iter_count = 0
+
+    def parse_instance(self, s):
+        match = self.rx_ins.search(s)
+        if not match:
+            match = self.rx_ins1.search(s)
+            if not match:
+                match = self.rx_ins2.search(s)
+                if not match:
+                    return None
+        key = match.group("bridge_id")
+        obj = {
+            "id": 0,
+            "vlans": "1-4095",
+            "root_id": match.group("root_id"),
+            "root_priority": int(match.group("root_priority")),
+            "bridge_id": match.group("bridge_id"),
+            "bridge_priority": int(match.group("bridge_priority")),
+            "interfaces": []
+        }
+        # Reset array for each iteration
+        self.iface_role = []
+        for match_r in self.rx_iface_role.finditer(s):
+            self.iface_role[int(match_r.group("iface"))] = {
+                "role": match_r.group("role"),
+                "state": match_r.group("status"),
+                "prio_n": match_r.group("prio_n"),
+                "type": match_r.group("type").strip()
+            }
+        self.designated_bridge = match.group("bridge_id")
+        if self.iter_count < 5:
+            self.iter_count += 1
+            return key, obj, s
+        else:
+            return None
 
     def parse_stp(self, s):
         match = self.rx_iface.search(s)
@@ -178,38 +216,14 @@ class Script(BaseScript):
             "mode": match.group("mode"),
             "instances": []
         }
-        # XXX TODO: convert to stream CLI or use pager
-        c = self.cli("show stp instance")
-        match = self.rx_ins.search(c)
-        if not match:
-            match = self.rx_ins1.search(c)
-            if not match:
-                match = self.rx_ins2.search(c)
-                if not match:
-                    return {"mode": "None", "instances": []}
-        self.iface_role = []
-        for match_r in self.rx_iface_role.finditer(c):
-            self.iface_role[int(match_r.group("iface"))] = {
-                "role": match_r.group("role"),
-                "state": match_r.group("status"),
-                "prio_n": match_r.group("prio_n"),
-                "type": match_r.group("type").strip()
-            }
-        inst = {
-            "id": 0,
-            "vlans": "1-4095",
-            "root_id": match.group("root_id"),
-            "root_priority": int(match.group("root_priority")),
-            "bridge_id": match.group("bridge_id"),
-            "bridge_priority": int(match.group("bridge_priority")),
-            "interfaces": []
-        }
-        self.designated_bridge = match.group("bridge_id")
+        inst = self.cli(
+            "show stp instance", obj_parser=self.parse_instance,
+            cmd_next="n", cmd_stop="q")
         c = self.cli(
             "show stp ports", obj_parser=self.parse_stp,
             cmd_next="n", cmd_stop="q"
         )
         for i in c:
-            inst["interfaces"] += [i]
-        stp["instances"] += [inst]
+            inst[0]["interfaces"] += [i]
+        stp["instances"] += [inst][0]
         return stp
