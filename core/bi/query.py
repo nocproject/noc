@@ -141,6 +141,9 @@ OP_MAP = {
     "$sum": OP(min=1, max=1, function="SUM"),
     "$avg": OP(min=1, max=1, function="AVG"),
     "$uniq": OP(min=1, function="uniq"),
+    "$empty": OP(min=1, function="empty"),
+    "$notEmpty": OP(min=1, function="notEmpty"),
+    "$position": OP(min=2, max=2, function="positionCaseInsensitiveUTF8"),
     "$median": OP(min=1, max=1, function="MEDIAN"),
     # Dictionary lookup
     "$lookup": OP(min=2, max=3, convert=f_lookup),
