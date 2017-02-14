@@ -8,12 +8,12 @@ mongo_version: "3.2"
 grafana_version: "4.1.1-1484211277"
 nsq_version: "0.3.8"
 
-consul_version: "0.7.2"
+consul_version: "0.7.4"
 consul_url: "{{ lookup('env','CONSUL_URL')}}"
 consul_token: "{{lookup('env','CONSUL_TOKEN')}}"
 consul_env: "{% if consul_url and consul_token%}True{%endif%}"
 
-consul_template_version: "0.18.0-rc1"
+consul_template_version: "0.18.1"
 consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
 consul_template_templates_dir: "{{consul_template_config_dir}}/templates"
 
