@@ -20,4 +20,4 @@ class Profile(BaseProfile):
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "exit"
-    pattern_prompt = r"^\[(?P<context>\S+)\](?P<hostname>\S+)#"
+    pattern_prompt = r"^(\[(?P<context>\S+)\])?(?P<hostname>\S+)#"
