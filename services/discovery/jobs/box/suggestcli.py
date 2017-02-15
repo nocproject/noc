@@ -69,7 +69,7 @@ class SuggestCLICheck(DiscoveryCheck):
         self.logger.info("Setting credentials")
         self.object.user = user
         self.object.password = password
-        self.object.super_passsword = super_password
+        self.object.super_password = super_password
         self.object.snmp_ro = snmp_ro
         self.object.snmp_rw = snmp_rw
         # Reset auth profile to continue operations with new credentials
