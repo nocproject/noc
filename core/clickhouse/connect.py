@@ -42,7 +42,7 @@ class ClickhouseClient(object):
         if sql:
             if args:
                 sql = sql % tuple(q(v) for v in args)
-            qs += ["query=%s" % urllib.quote(sql)]
+            qs += ["query=%s" % urllib.quote(sql.encode('utf8'))]
         url = "http://%s:%s/?%s" % (self.HOST, self.PORT, "&".join(qs))
         buff = six.StringIO()
         c = pycurl.Curl()
