@@ -135,7 +135,10 @@ class Command(BaseCommand):
                         mc = ""
                         break
                 if self.convert:
+                    try:
                         r = MACAddressParameter().clean(r)
+                    except ValueError:    
+                        pass 
                 self.stdout.write(
                     "%s,%s,%s,%s,%r\r" % (a, s, dt, mc, r)
                 )
