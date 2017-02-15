@@ -19,11 +19,13 @@ class Script(BaseScript):
     cache = True
 
     rx_line = re.compile(
-        r"^(?P<ip>\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)\s+(?P<type>\S+)\s+(?P<status>\S+)",
+        r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+\d+\s+(?P<interface>\S+)\s+(?P<type>\S+)\s+(?P<status>\S+)",
         re.MULTILINE)
-
     rx_line1 = re.compile(
-        r"^(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<port>\S+)\s+(?P<flag>Dynamic|Static)\s+(?P<age>\d+)",
+        r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<port>\S+)\s+(?P<flag>Dynamic|Static)\s+(?P<age>\d+)",
+        re.MULTILINE)
+    rx_line2 = re.compile(
+        r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<type>\S+)\s+(?P<age>\d+)",
         re.MULTILINE)
 
     def execute(self):
@@ -54,23 +56,33 @@ class Script(BaseScript):
         # Fallback to CLI
         try:
             v = self.cli("show arp all", cached=True)
-            rx_iter = self.rx_line
-        except self.CLISyntaxError:
-            v = self.cli("show arp", cached=True)
-            rx_iter = self.rx_line1
-
-        for match in rx_iter.finditer(v):
-            mac = match.group("mac")
-            if mac.lower() == "incomplete":
-                r.append({
-                    "ip": match.group("ip"),
-                    "mac": None,
-                    "interface": None
-                    })
-            else:
-                r.append({
+            for match in self.rx_line.finditer(v):
+                r += [{
                     "ip": match.group("ip"),
                     "mac": match.group("mac"),
-                    "interface": match.group("port")
-                    })
+                    "interface": match.group("interface")
+                }]
+        except self.CLISyntaxError:
+            v = self.cli("show arp", cached=True)
+            for match in self.rx_line1.finditer(v):
+                mac = match.group("mac")
+                if mac.lower() == "incomplete":
+                    r += [{
+                        "ip": match.group("ip"),
+                        "mac": None,
+                        "interface": None
+                    }]
+                else:
+                    r += [{
+                        "ip": match.group("ip"),
+                        "mac": match.group("mac"),
+                        "interface": match.group("port")
+                    }]
+            if not r:
+                for match in self.rx_line2.finditer(v):
+                    r += [{
+                        "ip": match.group("ip"),
+                        "mac": match.group("mac"),
+                        "interface": match.group("interface")
+                    }]
         return r
