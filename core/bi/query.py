@@ -130,6 +130,7 @@ OP_MAP = {
     "$now": OP(min=0, max=0, function="NOW"),
     # today
     # lower
+    "$lower": OP(min=1, max=1, function="lowerUTF8"),
     # upper
     # substring
     # Aggregate functions
