@@ -16,6 +16,7 @@ import tornado.queues
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_ipv4
 from noc.core.ioloop.snmp import snmp_get, SNMPError
+from noc.sa.interfaces.base import MACAddressParameter
 
 
 class Command(BaseCommand):
@@ -58,8 +59,14 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
             help="Object name"
         )
+        parser.add_argument(
+            "--convert",
+            type=bool,
+            default=False,
+            help="convert mac address"
+        )
 
-    def handle(self, input, addresses, jobs, community, oid, timeout,
+    def handle(self, input, addresses, jobs, community, oid, timeout, convert,
                *args, **options):
         self.addresses = set()
         # Direct addresses
@@ -83,6 +90,7 @@ class Command(BaseCommand):
         # Ping
         self.ioloop = IOLoop.current()
         self.jobs = jobs
+        self.convert = convert
         self.queue = tornado.queues.Queue(self.jobs)
         for i in range(self.jobs):
             self.ioloop.spawn_callback(self.poll_worker,
@@ -126,6 +134,8 @@ class Command(BaseCommand):
                         dt = self.ioloop.time() - t0
                         mc = ""
                         break
+                if self.convert:
+                        r = MACAddressParameter().clean(r)
                 self.stdout.write(
                     "%s,%s,%s,%s,%r\r" % (a, s, dt, mc, r)
                 )
