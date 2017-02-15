@@ -39,3 +39,8 @@
   fail:
     msg: "Too many postgres servers seted up {{groups['svc-postgres'] | count }} on {{groups['svc-postgres']}}"
   when: "'svc-postgres' in groups and groups['svc-postgres'] | count > 1"
+
+- name: Monitoring output is not settedup
+  fail:
+    msg: "Either PROMETHEUS_ENABLED or INFLUXDB_ENABLED have to be True. otherwise telegraf will not startup"
+  when: not telegraf_influxdb_enabled and not telegraf_influxdb_enabled
