@@ -40,7 +40,12 @@
     msg: "Too many postgres servers seted up {{groups['svc-postgres'] | count }} on {{groups['svc-postgres']}}"
   when: "'svc-postgres' in groups and groups['svc-postgres'] | count > 1"
 
-- name: Monitoring output is not settedup
+- name: Monitoring output is not choosen
   fail:
     msg: "Either PROMETHEUS_ENABLED or INFLUXDB_ENABLED have to be True. otherwise telegraf will not startup"
   when: not telegraf_influxdb_enabled and not telegraf_influxdb_enabled
+
+- name: Ensure tower url
+  fail:
+    msg: "Please ensure that correct settings has been provided on tower settings page and they was saved."
+  when: noc_repo=="http://example.com/hg/VQ3W6R"
