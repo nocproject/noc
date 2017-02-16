@@ -110,7 +110,7 @@ class BIAPI(API):
         model = Model.get_model_class(query["datasource"])
         if not model:
             raise APIError("Invalid datasource")
-        return model.query(query)
+        return model.query(query, self.handler.current_user)
 
     @executor("query")
     @api
