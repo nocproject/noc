@@ -9,11 +9,62 @@
 ## Python modules
 import datetime
 import itertools
+import operator
+from cachetools import TTLCache, cachedmethod
+from collections import defaultdict
+from django.db import connection
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.nosql import get_db
 from noc.lib.dateutils import humanize_timedelta
 from noc.core.translation import ugettext as _
+from noc.main.models.pool import Pool
+
+
+class PoolConvert(object):
+    """
+    Convert PoolID to PoolName.
+    """
+    def __init__(self):
+        self.convert = self.load()
+
+    @staticmethod
+    def load():
+        return {str(p[0]): p[1] for p in Pool.objects.filter().values_list("id", "name")}
+
+    def __getitem__(self, item):
+        return self.convert[item]
+
+
+class PoolAdConvert(object):
+    """
+    Administrative Domain that contains Pool
+    Use getitem PoolId
+    """
+    _pool_convert_cache = TTLCache(30, 3600)
+
+    def __init__(self):
+        self.convert = self.load()
+
+    @cachedmethod(operator.attrgetter("_pool_convert_cache"))
+    def load(self):
+        d = defaultdict(list)
+
+        query = "select distinct pool,administrative_domain_id from sa_managedobject"
+        cursor = connection.cursor()
+        cursor.execute(query)
+        out = cursor.fetchall()
+
+        for o in out:
+            d[o[0]].append(o[1])
+
+        return d
+
+    def __getitem__(self, item):
+        return self.convert[item]
+
+    def __iter__(self):
+        return itertools.chain(self.convert)
 
 
 class FMMonitorApplication(ExtApplication):
@@ -22,6 +73,8 @@ class FMMonitorApplication(ExtApplication):
     """
     title = _("FM Monitor")
     menu = _("FM Monitor")
+    p_c = PoolConvert()
+    a_p = PoolAdConvert()
 
     @view(url="^data/", method=["GET"], access="read", api=True)
     def api_data(self, request):
@@ -79,7 +132,6 @@ class FMMonitorApplication(ExtApplication):
             } for g, k, v in r
         ]
 
-
     @view(url="^data2/", method=["GET"], access="read", api=True)
     def api_data2(self, request):
         db = get_db()
@@ -133,4 +185,20 @@ class FMMonitorApplication(ExtApplication):
             "archived_alarms": archived_alarms
         }
         # Feed result
+        return r
+
+    @view(url="^data3/", method=["GET"], access="read", api=True)
+    def api_data3(self, request):
+        r = {}
+
+        pipeline = [{"$unwind": "$adm_path"},
+                    {"$group": {"_id": "$adm_path", "tags": {"$sum": 1}}}
+                    ]
+
+        res = get_db()["noc.alarms.active"].aggregate(pipeline)
+        count = {x["_id"]: x["tags"] for x in res["result"]}
+
+        for e in self.a_p:
+            r[self.p_c[e]] = sum([count[x] for x in self.a_p[e] if x in count])
+
         return r
