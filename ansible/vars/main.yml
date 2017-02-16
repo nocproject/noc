@@ -82,3 +82,38 @@ memcahed_conf: /etc/memcached.conf
 # Alerta http://docs.alerta.io/en/latest/api/reference.html
 # seconds
 alerta_blackout_duration: 300
+
+
+vg_name: vg00
+vg_device: /dev/sdb
+
+vg_fast_name: vg_fast
+vg_fast_device: /dev/sdb
+
+wal_lv_size: 128M
+wal_mount_point: /wal
+wal_fs: xfs
+
+influx_data_lv_size: 1G
+influx_data_mount_point: /data/influx
+influx_data_fs: xfs
+
+mongo_index_lv_size: 1G
+mongo_index_mount_point: /data/mongo_index
+mongo_index_fs: xfs
+
+mongo_data_lv_size: 1G
+mongo_data_mount_point: /data/mongo
+mongo_data_fs: xfs
+
+postgres_data_lv_size: 1G
+postgres_data_mount_point: /data/postgres
+postgres_data_fs: xfs
+
+nsq_cache_lv_size: 1G
+nsq_cache_mount_point: /opt/noc/var/db/nsq
+nsq_cache_fs: xfs
+
+opt_lv_size: 1G
+opt_mount_point: /opt/noc
+opt_fs: xfs
