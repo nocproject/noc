@@ -1,0 +1,50 @@
+- name: Configure disks for nodes
+  hosts: nodes
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: node_disks
+      become: yes
+      tags:
+        - disk
+
+- name: Configure disks for mongo
+  hosts: svc-mongod
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: mongod_disks
+      become: yes
+      when: "{{ has_svc_mongod | default(False) or consul_env}}"
+      tags:
+        - disk
+
+- name: Configure disks for postgres
+  hosts: svc-postgres
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: postgres_disks
+      become: yes
+      when: "{{ has_svc_postgres | default(False) or consul_env}}"
+      tags:
+        - disk
+
+- name: Configure disks for influxdb
+  hosts: svc-influxdb
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: influxdb_disks
+      become: yes
+      when: "{{ has_svc_influxdb | default(False) or consul_env}}"
+      tags:
+        - disk

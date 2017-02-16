@@ -1,0 +1,58 @@
+- name: "Create lvm {{vg_fast_name}}"
+  lvg:
+    vg: "{{vg_fast_name}}"
+    pvs: "{{vg_fast_device}}"
+    pesize: 32
+  when: vg_fast_device != vg_device
+
+- name: set same name for vg_fast_device and vg_device
+  set_fact:
+    vg_fast_name: "{{vg_name}}"
+  when: vg_fast_device != vg_device
+
+- name: create wal storage
+  lvol:
+    vg: "{{vg_fast_name}}"
+    lv: wal
+    size: "{{wal_lv_size}}"
+
+- name: format wal storage
+  filesystem:
+    fstype: "{{wal_fs}}"
+    dev: "/dev/{{vg_name}}/wal"
+
+- name: create wal dir
+  file:
+    name: "{{wal_mount_point}}"
+    state: directory
+
+- name: Mount wal storage
+  mount:
+    name: "{{wal_mount_point}}"
+    src: "/dev/{{vg_name}}/wal"
+    fstype: "{{wal_fs}}"
+    state: present
+
+- name: create influx data storage
+  lvol:
+    vg: "{{vg_name}}"
+    lv: influx_data
+    size: "{{influx_data_lv_size}}"
+
+- name: format influx data storage
+  filesystem:
+    fstype: "{{influx_data_fs}}"
+    dev: "/dev/{{vg_name}}/influx_data"
+
+- name: create influx data dir
+  file:
+    name: "{{influx_data_mount_point}}"
+    state: directory
+
+- name: Mount influx data storage
+  mount:
+    name: "{{influx_data_mount_point}}"
+    src: "/dev/{{vg_name}}/influx_data"
+    fstype: "{{influx_data_fs}}"
+    state: present
+
