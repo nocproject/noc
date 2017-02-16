@@ -127,7 +127,7 @@ class Command(BaseCommand):
                         mc = ""
                         break
                 self.stdout.write(
-                    "%s,%s,%s,%s,%r\r" % (a, s, dt, mc, r)
+                    "%s,%s,%s,%s,%r\n" % (a, s, dt, mc, r)
                 )
             self.queue.task_done()
             if not a:
