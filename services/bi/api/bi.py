@@ -89,7 +89,7 @@ class BIAPI(API):
                 d = d._meta.name
             r["fields"] += [{
                 "name": f.name,
-                "description": None,
+                "description": f.description, 
                 "type": f.db_type,
                 "dict": d
             }]
