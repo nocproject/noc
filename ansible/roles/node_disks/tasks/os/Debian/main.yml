@@ -1,0 +1,10 @@
+---
+- name: Install Debian packages
+  apt:
+    name: xfsprogs
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
