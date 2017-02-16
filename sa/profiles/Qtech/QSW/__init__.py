@@ -27,7 +27,7 @@ class Profile(BaseProfile):
         (r"#####"," ")
         ]
     pattern_unpriveleged_prompt = r"^\S+>"
-    pattern_syntax_error = r"% (Unrecognized command, and error|Invalid input) detected at '\^' marker.|% Ambiguous command:|interface error!|Error input in the position market by"
+    pattern_syntax_error = r"% (Unrecognized command, and error|Invalid input) detected at '\^' marker.|% Ambiguous command:|interface error!"
 #    command_disable_pager = "terminal datadump"
     command_super = "enable"
     command_enter_config = "configure"
