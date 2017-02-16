@@ -24,6 +24,7 @@ from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.bi.dictionaries.container import Container
 from noc.core.bi.dictionaries.alarmclass import AlarmClass
 from noc.core.bi.dictionaries.pool import Pool
+from noc.core.translation import ugettext as _
 
 
 class Alarms(Model):
@@ -31,34 +32,34 @@ class Alarms(Model):
         db_table = "alarms"
         engine = MergeTree("date", ("ts", "managed_object"))
 
-    date = DateField()
-    ts = DateTimeField()
-    close_ts = DateTimeField()
-    duration = Int32Field()
-    alarm_id = StringField()
-    root = StringField()
-    alarm_class = ReferenceField(AlarmClass)
-    severity = Int32Field()
-    reopens = Int32Field()
-    direct_services = Int64Field()
-    direct_subscribers = Int64Field()
-    total_objects = Int64Field()
-    total_services = Int64Field()
-    total_subscribers = Int64Field()
+    date = DateField(description=_("Date"))
+    ts = DateTimeField(description=_("Created"))
+    close_ts = DateTimeField(description=_("Close Time"))
+    duration = Int32Field(description=_("Duration"))
+    alarm_id = StringField(description=_("Id"))
+    root = StringField(description=_("Alarm Root"))
+    alarm_class = ReferenceField(AlarmClass, description=_("Alarm Class"))
+    severity = Int32Field(description=_("Severity"))
+    reopens = Int32Field(description=_("Reopens"))
+    direct_services = Int64Field(description=_("Direct Services"))
+    direct_subscribers = Int64Field(description=_("Direct Subscribers"))
+    total_objects = Int64Field(description=_("Total Objects"))
+    total_services = Int64Field(description=_("Total Services"))
+    total_subscribers = Int64Field(description=_("Total Subscribers"))
     #
-    escalation_ts = DateTimeField()
-    escalation_tt = StringField()
+    escalation_ts = DateTimeField(description=_("Escalation Time"))
+    escalation_tt = StringField(description=_("Number of Escalation"))
     #
-    managed_object = ReferenceField(ManagedObject)
-    pool = ReferenceField(Pool)
-    ip = IPv4Field()
-    profile = ReferenceField(Profile)
-    vendor = ReferenceField(Vendor)
-    platform = ReferenceField(Platform)
-    version = ReferenceField(Version)
-    administrative_domain = ReferenceField(AdministrativeDomain)
-    segment = ReferenceField(NetworkSegment)
-    container = ReferenceField(Container)
+    managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
+    pool = ReferenceField(Pool, description=_("Pool Name"))
+    ip = IPv4Field(description=_("IP Address"))
+    profile = ReferenceField(Profile, description=_("Profile"))
+    vendor = ReferenceField(Vendor, description=_("Vendor Name"))
+    platform = ReferenceField(Platform, description=_("Platform"))
+    version = ReferenceField(Version, description=_("Version"))
+    administrative_domain = ReferenceField(AdministrativeDomain, description=_("Admin. Domain"))
+    segment = ReferenceField(NetworkSegment, description=_("Network Segment"))
+    container = ReferenceField(Container, description=_("Container"))
     # Coordinates
     x = Float64Field()
     y = Float64Field()

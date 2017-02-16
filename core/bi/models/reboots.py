@@ -21,6 +21,7 @@ from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
 from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.bi.dictionaries.container import Container
 from noc.core.bi.dictionaries.pool import Pool
+from noc.core.translation import ugettext as _
 
 
 class Reboots(Model):
@@ -28,18 +29,18 @@ class Reboots(Model):
         db_table = "reboots"
         engine = MergeTree("date", ("ts", "managed_object"))
 
-    date = DateField()
-    ts = DateTimeField()
-    managed_object = ReferenceField(ManagedObject)
-    pool = ReferenceField(Pool)
-    ip = IPv4Field()
-    profile = ReferenceField(Profile)
-    vendor = ReferenceField(Vendor)
-    platform = ReferenceField(Platform)
-    version = ReferenceField(Version)
-    administrative_domain = ReferenceField(AdministrativeDomain)
-    segment = ReferenceField(NetworkSegment)
-    container = ReferenceField(Container)
+    date = DateField(description=_("Date"))
+    ts = DateTimeField(description=_("Created"))
+    managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
+    pool = ReferenceField(Pool, description=_("Pool Name"))
+    ip = IPv4Field(description=_("IP Address"))
+    profile = ReferenceField(Profile, description=_("Profile"))
+    vendor = ReferenceField(Vendor, description=_("Vendor Name"))
+    platform = ReferenceField(Platform, description=_("Platform"))
+    version = ReferenceField(Version, description=_("Version"))
+    administrative_domain = ReferenceField(AdministrativeDomain, description=_("Admin. Domain"))
+    segment = ReferenceField(NetworkSegment, description=_("Network Segment"))
+    container = ReferenceField(Container, description=_("Container"))
     # Coordinates
     x = Float64Field()
     y = Float64Field()
