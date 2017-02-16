@@ -63,9 +63,10 @@ class Script(BaseScript):
         """
         see http://www.dmo.ca/blog/detecting-virtualization-on-linux/
         """
+        virtual = None
+        virtual = str(self.cli("dmesg | grep -i -E \"(U Virtual|on KVM|Xen virtual c)\";"))
 
-        virtual = self.cli("dmesg | grep -i -E \"(U Virtual|on KVM|Xen virtual c)\"")
-        if virtual:
+        if virtual and not virtual.startswith('dmesg'):
             rx = self.find_re([
                 self.check_virtual_kvm,
                 self.check_virtual_vmware,
