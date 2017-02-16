@@ -8,7 +8,7 @@
 - name: set same name for vg_fast_device and vg_device
   set_fact:
     vg_fast_name: "{{vg_name}}"
-  when: vg_fast_device != vg_device
+  when: vg_fast_device == vg_device
 
 - name: create wal storage
   lvol:
