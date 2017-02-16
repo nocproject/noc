@@ -17,10 +17,11 @@ class BaseField(object):
     db_type = None
     default_value = ""
 
-    def __init__(self, default=None):
+    def __init__(self, default=None, description=None):
         self.field_number = self.FIELD_NUMBER.next()
         self.name = None
         self.default = default or self.default_value
+        self.description = description
 
     def get_create_sql(self):
         return "%s %s" % (self.name, self.get_db_type())
@@ -139,10 +140,11 @@ class ReferenceField(BaseField):
     default_value = 0
     SELF_REFERENCE = "self"
 
-    def __init__(self, dict_type):
+    def __init__(self, dict_type, description=None):
         super(ReferenceField, self).__init__()
         self.is_self_reference = dict_type == self.SELF_REFERENCE
         self.dict_type = dict_type
+        self.description = description
 
     def to_tsv(self, value):
         if value is None:
