@@ -115,7 +115,17 @@ class Model(six.with_metaclass(ModelBase)):
         return None
 
     @classmethod
-    def query(cls, query):
+    def transform_query(cls, query, user):
+        """
+        Transform query, possibly applying access restrictions
+        :param query:
+        :param user:
+        :return: query dict or None if access denied
+        """
+        return query
+
+    @classmethod
+    def query(cls, query, user=None):
         """
         Execute query and return result
         :param query: dict of
@@ -137,6 +147,7 @@ class Model(six.with_metaclass(ModelBase)):
         fields = query.get("fields", [])
         if not fields:
             return None
+        transformed_query = cls.transform_query(query, user)
         fields_x = []
         aliases = []
         group_by = {}
@@ -157,35 +168,41 @@ class Model(six.with_metaclass(ModelBase)):
                     order_by[int(f["order"])] = "%s DESC" % alias
                 else:
                     order_by[int(f["order"])] = alias
-        # Get where expressions
-        filter_x = to_sql(query.get("filter", {}))
-        # Generate SQL
-        sql = ["SELECT "]
-        sql += [", ".join(fields_x)]
-        sql += ["FROM %s" % cls._meta.db_table]
-        sample = query.get("sample")
-        if sample:
-            sql += ["SAMPLE %s" % float(sample)]
-        if filter_x:
-            sql += ["WHERE %s" % filter_x]
-        # GROUP BY
-        if group_by:
-            sql += ["GROUP BY %s" % ", ".join(group_by[v] for v in sorted(group_by))]
-        # ORDER BY
-        if order_by:
-            sql += ["ORDER BY %s" % ", ".join(order_by[v] for v in sorted(order_by))]
-        # LIMIT
-        if "limit" in query:
-            if "offset" in query:
-                sql += ["LIMIT %d, %d" % (query["offset"], query["limit"])]
-            else:
-                sql += ["LIMIT %d" % query["limit"]]
-        sql = " ".join(sql)
-        # Execute query
-        ch = connection()
-        t0 = time.time()
-        r = ch.execute(sql)
-        dt = time.time() - t0
+        if transformed_query is None:
+            # Access denied
+            r = []
+            dt = 0.0
+            sql = ["SELECT %s FROM %s WHERE 0 = 1" % (", ".join(fields_x), cls._meta.db_table)]
+        else:
+            # Get where expressions
+            filter_x = to_sql(transformed_query.get("filter", {}))
+            # Generate SQL
+            sql = ["SELECT "]
+            sql += [", ".join(fields_x)]
+            sql += ["FROM %s" % cls._meta.db_table]
+            sample = query.get("sample")
+            if sample:
+                sql += ["SAMPLE %s" % float(sample)]
+            if filter_x:
+                sql += ["WHERE %s" % filter_x]
+            # GROUP BY
+            if group_by:
+                sql += ["GROUP BY %s" % ", ".join(group_by[v] for v in sorted(group_by))]
+            # ORDER BY
+            if order_by:
+                sql += ["ORDER BY %s" % ", ".join(order_by[v] for v in sorted(order_by))]
+            # LIMIT
+            if "limit" in query:
+                if "offset" in query:
+                    sql += ["LIMIT %d, %d" % (query["offset"], query["limit"])]
+                else:
+                    sql += ["LIMIT %d" % query["limit"]]
+            sql = " ".join(sql)
+            # Execute query
+            ch = connection()
+            t0 = time.time()
+            r = ch.execute(sql)
+            dt = time.time() - t0
         return {
             "fields": aliases,
             "result": r,
