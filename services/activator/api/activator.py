@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Activator API
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -16,6 +16,7 @@ from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
 from noc.core.script.base import BaseScript
 from noc.core.ioloop.snmp import snmp_get, SNMPError
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c
 
 
 class ActivatorAPI(API):
@@ -77,6 +78,34 @@ class ActivatorAPI(API):
 
     @api
     @tornado.gen.coroutine
+    def snmp_v1_get(self, address, community, oid):
+        """
+        Perform SNMP v1 GET and return result
+        :param address: IP address
+        :param community: SNMP v2c community
+        :param oid: Resolved oid
+        :returns: Result as a string, or None, when no response
+        """
+        self.logger.debug("SNMP v1 GET %s %s", address, oid)
+        try:
+            result = yield snmp_get(
+                address=address,
+                oids=oid,
+                community=community,
+                version=SNMP_v1,
+                tos=self.service.config.tos,
+                ioloop=self.service.ioloop
+            )
+            self.logger.debug("SNMP GET %s %s returns %s",
+                              address, oid, result)
+        except SNMPError as e:
+            result = None
+            self.logger.debug("SNMP GET %s %s returns error %s",
+                              address, oid, e)
+        raise tornado.gen.Return(result)
+
+    @api
+    @tornado.gen.coroutine
     def snmp_v2c_get(self, address, community, oid):
         """
         Perform SNMP v2c GET and return result
@@ -85,12 +114,13 @@ class ActivatorAPI(API):
         :param oid: Resolved oid
         :returns: Result as a string, or None, when no response
         """
-        self.logger.debug("SNMP GET %s %s", address, oid)
+        self.logger.debug("SNMP v2c GET %s %s", address, oid)
         try:
             result = yield snmp_get(
                 address=address,
                 oids=oid,
                 community=community,
+                version=SNMP_v2c,
                 tos=self.service.config.tos,
                 ioloop=self.service.ioloop
             )
