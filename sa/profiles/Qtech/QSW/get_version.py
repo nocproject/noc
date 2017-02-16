@@ -40,18 +40,6 @@ class Script(BaseScript):
         r"^\s+(?:Device serial number\s|Serial No\.:)(?P<serial>\d\S+)$",
         re.MULTILINE)
 
-    rx_plat2 = re.compile(
-        r"^\s*Product Name: (?P<platform>QSW-\S+)", re.MULTILINE)
-    rx_soft2 = re.compile(
-        r"^\s*Software Version: (?P<version>\d\S+)\(.+$", re.MULTILINE)
-    rx_bootprom2 = re.compile(
-        r"^\s*Bootrom Version: (?P<bootprom>\d\S+)$", re.MULTILINE)
-    rx_hardware2 = re.compile(
-         r"^\s*Hardware Version:(?P<hardware>.*?)$", re.MULTILINE)
-    rx_serial2 = re.compile(
-        r"^\s*Serial number: (?P<serial>\d\S+)$",
-        re.MULTILINE)
-
     def execute(self):
         # Try SNMP first
         if self.has_snmp():
@@ -97,18 +85,11 @@ class Script(BaseScript):
             serial = self.re_search(self.rx_serial, ver)
         else:
             match = self.rx_plat1.search(ver)
-            if match:
-                platform = self.re_search(self.rx_plat1, ver).group("platform")
-                version = self.re_search(self.rx_soft1, ver).group("version")
-                bootprom = self.re_search(self.rx_bootprom1, ver)
-                hardware = self.re_search(self.rx_hardware1, ver)
-                serial = self.re_search(self.rx_serial1, ver)
-            else:
-                platform = self.re_search(self.rx_plat2, ver).group("platform")
-                version = self.re_search(self.rx_soft2, ver).group("version")
-                bootprom = self.re_search(self.rx_bootprom2, ver)
-                hardware = self.re_search(self.rx_hardware2, ver)
-                serial = self.re_search(self.rx_serial2, ver)
+            platform = self.re_search(self.rx_plat1, ver).group("platform")
+            version = self.re_search(self.rx_soft1, ver).group("version")
+            bootprom = self.re_search(self.rx_bootprom1, ver)
+            hardware = self.re_search(self.rx_hardware1, ver)
+            serial = self.re_search(self.rx_serial1, ver)
         return {
                 "vendor": "Qtech",
                 "platform": platform,

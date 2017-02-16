@@ -24,9 +24,6 @@ class Script(BaseScript):
     rx_vlan1 = re.compile(
         r"^(?P<vlan_id>\d+)\s+(?P<name>\S+)\s+(?:Static|Dynamic)\s+ENET",
         re.DOTALL | re.MULTILINE)
-    rx_vlan2 = re.compile(
-        r"^(?P<vlan_id>\d+)\s+(?P<name>\S+)\s+active",
-        re.DOTALL | re.MULTILINE)
 
     def execute(self):
         r = []
@@ -71,8 +68,5 @@ class Script(BaseScript):
                     })
                 else:
                     r += [match.groupdict()]
-        if r == []:
-            for match in self.rx_vlan2.finditer(v):
-                r += [match.groupdict()]
 
         return r

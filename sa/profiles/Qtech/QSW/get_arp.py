@@ -24,9 +24,6 @@ class Script(BaseScript):
     rx_line1 = re.compile(
         r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<port>\S+)\s+(?P<flag>Dynamic|Static)\s+(?P<age>\d+)",
         re.MULTILINE)
-    rx_line2 = re.compile(
-        r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s+(?P<type>\S+)\s+(?P<age>\d+)",
-        re.MULTILINE)
 
     def execute(self):
         r = []
@@ -77,12 +74,5 @@ class Script(BaseScript):
                         "ip": match.group("ip"),
                         "mac": match.group("mac"),
                         "interface": match.group("port")
-                    }]
-            if not r:
-                for match in self.rx_line2.finditer(v):
-                    r += [{
-                        "ip": match.group("ip"),
-                        "mac": match.group("mac"),
-                        "interface": match.group("interface")
                     }]
         return r
