@@ -65,8 +65,13 @@ class Command(BaseCommand):
             default=False,
             help="convert mac address"
         )
+        parser.add_argument(
+            "--version",
+            type=int,
+            help="version snmp check"
+        )  
 
-    def handle(self, input, addresses, jobs, community, oid, timeout, convert,
+    def handle(self, input, addresses, jobs, community, oid, timeout, convert, version,
                *args, **options):
         self.addresses = set()
         # Direct addresses
@@ -91,10 +96,11 @@ class Command(BaseCommand):
         self.ioloop = IOLoop.current()
         self.jobs = jobs
         self.convert = convert
+        self.version = version
         self.queue = tornado.queues.Queue(self.jobs)
         for i in range(self.jobs):
             self.ioloop.spawn_callback(self.poll_worker,
-                                       community, oid, timeout)
+                                       community, oid, timeout, version)
         self.ioloop.run_sync(self.poll_task)
 
     @tornado.gen.coroutine
@@ -106,7 +112,7 @@ class Command(BaseCommand):
         yield self.queue.join()
 
     @tornado.gen.coroutine
-    def poll_worker(self, community, oid, timeout):
+    def poll_worker(self, community, oid, timeout, version):
         while True:
             a = yield self.queue.get()
             if a:
@@ -117,6 +123,7 @@ class Command(BaseCommand):
                             address=a,
                             oids=oid,
                             community=c,
+                            version=version,
                             timeout=timeout
                         )
                         s = "OK"
