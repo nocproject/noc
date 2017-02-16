@@ -25,6 +25,7 @@ from noc.core.bi.dictionaries.container import Container
 from noc.core.bi.dictionaries.alarmclass import AlarmClass
 from noc.core.bi.dictionaries.pool import Pool
 from noc.core.translation import ugettext as _
+from noc.sa.models.useraccess import UserAccess
 
 
 class Alarms(Model):
@@ -63,3 +64,46 @@ class Alarms(Model):
     # Coordinates
     x = Float64Field()
     y = Float64Field()
+
+    @classmethod
+    def transform_query(cls, query, user):
+        if not user or user.is_superuser:
+            return query  # No restrictions
+        # Get user domains
+        domains = UserAccess.get_domains(user)
+        # Resolve domains against dict
+        domain_ids = [
+            x["_id"]
+            for x in AdministrativeDomain._get_collection().find({
+                "id": {
+                    "$in": [d.id for d in domains]
+                }
+            }, {
+                "_id": 1
+            })
+        ]
+        filter = query.get("filter", {})
+        dl = len(domain_ids)
+        if not dl:
+            return None
+        elif dl == 1:
+            q = {
+                "$eq": [
+                    {"$field": "administrative_domain"},
+                    domain_ids[0]
+                ]
+            }
+        else:
+            q = {
+                "$in": [
+                    {"$field": "administrative_domain"},
+                    domain_ids
+                ]
+            }
+        if filter:
+            query["filter"] = {
+                "$and": [query["filter"], q]
+            }
+        else:
+            query["filter"] = q
+        return query
