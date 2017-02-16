@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | 4500X | PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "40ab59b9-b21b-43f2-b2d8-0a0249547c10",
+    "description": "Cisco 4500X Container of Power Supply",
+    "c_group": [],
+    "genders": "mf"
+}

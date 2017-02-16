@@ -1,0 +1,22 @@
+{
+    "name": "Cisco | 4500X | C4KX-PWR-750AC-R",
+    "$collection": "inv.objectmodels",
+    "uuid": "14f0baaa-16e5-48fa-a1b5-04339f500ab8",
+    "vendor__code": "CISCO",
+    "description": "Catalyst 4500-X 750W AC Front-to-Back Cooling Power Supply",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": null,
+            "direction": "i",
+            "gender": "m",
+            "name": "PSU",
+            "type__name": "Cisco | 4500X | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["C4KX-PWR-750AC-R"]
+        }
+    }
+}
