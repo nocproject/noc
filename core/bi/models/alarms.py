@@ -74,9 +74,9 @@ class Alarms(Model):
         # Resolve domains against dict
         domain_ids = [
             x["_id"]
-            for x in AdministrativeDomain._get_collection().find({
+            for x in AdministrativeDomain.get_collection().find({
                 "id": {
-                    "$in": [d.id for d in domains]
+                    "$in": domains
                 }
             }, {
                 "_id": 1
