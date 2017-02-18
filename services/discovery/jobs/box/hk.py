@@ -22,7 +22,7 @@ class HouseKeepingCheck(DiscoveryCheck):
             handler = get_handler(self.object.object_profile.hk_handler)
             if handler:
                 self.logger.info("Running housekeeping")
-                handler(self.object)
+                handler(self)
             else:
                 self.logger.info("Invalid handler: %s", self.object.object_profile.hk_handler)
         else:

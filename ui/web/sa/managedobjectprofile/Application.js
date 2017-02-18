@@ -661,7 +661,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     },
                                     items: [
                                         {
-                                            name: "enable_box_discovery_cpe",
+                                            name: "enable_box_discovery_hk",
                                             xtype: "checkboxfield",
                                             boxLabel: __("Housekeeping")
                                         },
