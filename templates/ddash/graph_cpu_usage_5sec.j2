@@ -1,0 +1,119 @@
+{
+  "bars": false,
+  "timeFrom": null,
+  "links": [],
+  "nullPointMode": "connected",
+  "renderer": "flot",
+  "id": "b485a632-cd74-429e-8f69-9839e453ee83",
+  "linewidth": 2,
+  "steppedLine": false,
+  "targets": [
+    {
+      "dsType": "influxdb",
+      "tags": [
+        {
+          "key": "object",
+          "operator": "=",
+          "value": "$device"
+        }
+      ],
+      "refId": "A",
+      "alias": "CPU | Usage | 5sec on slot $tag_slot",
+      "resultFormat": "time_series",
+      "measurement": "CPU | Usage | 5sec",
+      "policy": "default",
+      "groupBy": [
+        {
+          "params": [
+            "$interval"
+          ],
+          "type": "time"
+        },
+        {
+          "type": "tag",
+          "params": [
+            "slot"
+          ]
+        },
+        {
+          "params": [
+            "null"
+          ],
+          "type": "fill"
+        }
+      ],
+      "select": [
+        [
+          {
+            "params": [
+              "value"
+            ],
+            "type": "field"
+          },
+          {
+            "params": [],
+            "type": "mean"
+          }
+        ]
+      ]
+    }
+  ],
+  "fill": 1,
+  "span": 6,
+  "title": "CPU | Usage | 5sec per cpu",
+  "tooltip": {
+    "sort": 0,
+    "shared": true,
+    "value_type": "cumulative",
+    "msResolution": false
+  },
+  "stack": false,
+  "yaxes": [
+    {
+      "logBase": 1,
+      "format": "short",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    },
+    {
+      "logBase": 1,
+      "format": "short",
+      "max": null,
+      "show": true,
+      "label": null,
+      "min": null
+    }
+  ],
+  "xaxis": {
+    "show": true,
+    "mode": "time",
+    "name": null,
+    "values": []
+  },
+  "seriesOverrides": [],
+  "percentage": false,
+  "type": "graph",
+  "error": false,
+  "editable": true,
+  "grid": {},
+  "legend": {
+    "avg": true,
+    "min": true,
+    "max": true,
+    "show": true,
+    "current": true,
+    "values": true,
+    "total": false,
+    "alignAsTable": true,
+    "rightSide": false
+  },
+  "timeShift": null,
+  "aliasColors": {},
+  "lines": true,
+  "points": false,
+  "datasource": null,
+  "pointradius": 5,
+  "thresholds": []
+}
