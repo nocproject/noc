@@ -25,6 +25,7 @@ from cdp import CDPCheck
 from huawei_ndp import HuaweiNDPCheck
 from oam import OAMCheck
 from lldp import LLDPCheck
+from lacp import LACPCheck
 from stp import STPCheck
 from nri import NRICheck
 from sla import SLACheck
@@ -37,6 +38,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
 
     TOPOLOGY_METHODS = [
         OAMCheck,
+        LACPCheck,
         LLDPCheck,
         CDPCheck,
         HuaweiNDPCheck,
