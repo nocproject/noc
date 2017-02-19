@@ -8,6 +8,7 @@
 ##----------------------------------------------------------------------
 """
 """
+import copy
 from noc.core.profile.base import BaseProfile
 import re
 
@@ -91,22 +92,56 @@ class Profile(BaseProfile):
         return v["version"]
 
     @staticmethod
-    def parse_table(e):
-        p = {"table": []}
+    def parse_table(block, part_name=None):
+        """
+        :param part_name: If not None - part name not on block
+        :type part_name: str
+        :param block: Block with table
+        :type block: str
+        :return:
+        """
+        k_v_splitter = re.compile(r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
+        part_splitter = re.compile(r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
+        r = {}
         is_table = False
-        is_next = False
-        header = []
-        for l in e.splitlines():
-            if not l:
-                continue
-            if "-"*10 in l:
+        is_part = False
+        k_v_list = []
+        row = []
+        if part_name:
+            is_part = True
+        for l in block.splitlines(True):
+            # print l
+            # Part section
+            if part_splitter.match(l):
+                is_part = True
+                part_name = part_splitter.match(l).group(1)
+                print("Part start: %s" % part_name)
+            if "-" * 5 in l:
                 is_table = True
-                header = prev_l
+                print("Table start")
                 continue
-            if ":" in l and not is_table:
-                p.update(dict([l.split(":")]))
-            elif is_table:
-                l = l.split()
-                p["table"].append(l)
-            prev_l = l
-        return p
+            if not l.strip() and is_part:
+                # @todo many table in part ?
+                is_part = False
+                is_table = False
+                r[part_name] = dict(k_v_list)
+                r[part_name]["table"] = row
+                print("Key-Val: %s" % k_v_list)
+                print("Part End")
+                k_v_list = []
+                row = []
+            if not l.strip():
+                continue
+            # Parse Section
+            if is_part and is_table:
+                row.append(l.split())
+            elif is_part and not is_table:
+                k_v_list.extend(k_v_splitter.findall(l))
+            continue
+        else:
+            r[part_name] = dict(k_v_list)
+            if row:
+                r[part_name]["table"] = row
+            # r[part_name] = dict(k_v_list)
+            # r[part_name]["table"] = row
+        return r
