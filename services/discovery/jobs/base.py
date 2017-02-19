@@ -342,6 +342,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         self.neighbor_ip_cache = {}  # (method, ip) -> managed object
         self.neighbor_mac_cache = {}  # (method, mac) -> managed object
         self.neighbor_id_cache = {}
+        self.interface_aliases = {}  # (object, alias) -> port name
 
     def handler(self):
         self.logger.info("Checking %s topology", self.name)
@@ -436,9 +437,21 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     remote_object, r
                 )
             for l, r in candidates[remote_object] & confirmed:
+                li = self.clean_interface(self.object, l)
+                if not li:
+                    self.logger.info(
+                        "Cannot clean interface %s:%s. Skipping",
+                        self.object, l)
+                    continue
+                ri = self.clean_interface(self.object, r)
+                if not ri:
+                    self.logger.info(
+                        "Cannot clean interface %s:%s. Skipping",
+                        remote_object, r)
+                    continue
                 self.confirm_link(
-                    self.object, l,
-                    remote_object, r
+                    self.object, li,
+                    remote_object, ri
                 )
         if problems:
             self.set_problem(problems)
@@ -507,10 +520,22 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
     def get_remote_interface(self, remote_object, remote_interface):
         """
         Return normalized remote interface name
+        May return aliases name which can be finally resolved
+        during clean interface
         """
         return remote_object.profile.convert_interface_name(
             remote_interface
         )
+
+    def clean_interface(self, object, interface):
+        """
+        Finaly clean interface name
+        And convert to local conventions
+        :param object:
+        :param interface:
+        :return: Interface name or None if interface cannot be cleaned
+        """
+        return self.interface_aliases.get((object, interface), interface)
 
     def confirm_link(self, local_object, local_interface,
                      remote_object, remote_interface):
@@ -854,3 +879,14 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         Check current discovery method is preferable over *method*
         """
         return self.job.is_preferable_method(self.name, method)
+
+    def set_interface_alias(self, object, interface_name, alias):
+        """
+        Set interface alias
+        Aliases will be finally resolved by clean_interface
+        :param object:
+        :param interface_name:
+        :param alias:
+        :return:
+        """
+        self.interface_aliases[object, alias] = interface_name

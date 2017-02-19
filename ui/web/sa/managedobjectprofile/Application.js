@@ -535,6 +535,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_box_discovery_udld",
                                             xtype: "checkboxfield",
                                             boxLabel: __("UDLD")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_lacp",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("LACP")
                                         }
                                     ]
                                 },
