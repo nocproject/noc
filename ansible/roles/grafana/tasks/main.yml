@@ -29,8 +29,8 @@
     state: started
 
 - name: Set up dynamic dashboards
-  copy:
-    src: noc.js
+  template:
+    src: noc.js.j2
     dest: "{{ grafana_home }}/public/dashboards/noc.js"
 
 - name: Install Grafana simple datasource plugin
