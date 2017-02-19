@@ -71,13 +71,25 @@ class Script(BaseScript):
         Check stack members
         :return:
         """
-        r = self.profile.parse_table(self.cli("display stack peer"))
-        return [l[0] for l in r["table"]]
+        out = self.cli("display stack")
+        r = self.profile.parse_table(out, part_name="stack")
+        return [l[0] for l in r["stack"]["table"]]
         # return len([l for l in r.splitlines() if "STACK" in l])
+
+    @false_on_cli_error
+    def has_lacp(self):
+        """
+        Check stack members
+        :return:
+        """
+        r = self.cli("display lacp statistics eth-trunk")
+        return r
 
     def execute_platform(self, caps):
         if self.has_ndp():
             caps["Huawei | NDP"] = True
+        if self.has_lacp():
+            caps["Network | LACP"] = True
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
