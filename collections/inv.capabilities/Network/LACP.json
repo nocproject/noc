@@ -1,0 +1,8 @@
+{
+    "name": "Network | LACP",
+    "$collection": "inv.capabilities",
+    "uuid": "1751e91f-4b9e-4643-b02f-266665b76bc0",
+    "description": "LACP is enabled",
+    "type": "bool",
+    "card_template": ""
+}
