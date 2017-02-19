@@ -59,7 +59,18 @@ class Script(BaseScript):
         r = self.cli("show slot")
         return [l.splitlines()[0].split(":")[1].strip("-") for l in r.split("\n----") if l]
 
+    @false_on_cli_error
+    def has_lacp(self):
+        """
+        Check stack members
+        :return:
+        """
+        r = self.cli("show port-group brief")
+        return "active" in r
+
     def execute_platform(self, caps):
+        if self.has_lacp():
+            caps["Network | LACP"] = True
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
