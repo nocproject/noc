@@ -25,6 +25,12 @@ rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 def parse_table(s, allow_wrap=False, allow_extend=False):
     """
+    :param s: Table for parsing
+    :type s: str
+    :param allow_wrap:
+    :type allow_wrap: bool
+    :param allow_extend: Check if column on row longest then column width, and fix it
+    :type allow_extend: bool
     >>> parse_table("First Second Third\\n----- ------ -----\\na     b       c\\nddd   eee     fff\\n")
     [['a', 'b', 'c'], ['ddd', 'eee', 'fff']]
     >>> parse_table("First Second Third\\n----- ------ -----\\na             c\\nddd   eee     fff\\n")
@@ -39,23 +45,39 @@ def parse_table(s, allow_wrap=False, allow_extend=False):
         if rx_header_start.match(l):
             # Column delimiters found. try to determine column's width
             columns = []
+            column_spaces = []
             x = 0
+            c = 0
             while l:
                 match = rx_col.match(l)
                 if not match:
                     break
+                columns.append((x + len(match.group(1)),
+                                x + len(match.group(1)) + len(
+                                    match.group(2))))
                 if allow_extend:
-                    columns.append((x + len(match.group(1)),
-                                    x + len(match.group(1))*2 + len(
-                                        match.group(2))))
-                else:
-                    columns.append((x + len(match.group(1)),
-                                    x + len(match.group(1)) + len(
-                                        match.group(2))))
-                print x
+                    # calculate spaces between column
+                    column_spaces.append((c, x + len(match.group(1))))
+                    c = x + len(match.group(1)) + len(
+                                    match.group(2))
                 x += match.end()
                 l = l[match.end():]
         elif columns:  # Fetch cells
+            if allow_extend:
+                # Find which spaces between column not empty
+                s = [column_spaces.index((f, t)) for f, t in column_spaces
+                     if column_spaces.index((f, t)) != 0 and l[f:t].strip()]
+                if s:
+                    # If spaces not empty - shift column width equal size row
+                    # @todo Perhaps, loop or max shift
+                    index = s[0] - 1
+                    shift = len(l[columns[index][0]:].split()[0]) - (columns[index][1] - columns[index][0])
+                    v = columns.pop(index)
+                    columns.insert(index, (v[0], v[1] + shift))
+                    for i in range(index + 1, len(columns)):
+                        v = columns.pop(i)
+                        columns.insert(i, (v[0] + shift, v[1] + shift))
+                    print("Too many: %s" % s)
             if allow_wrap:
                 row = [l[f:t] for f, t in columns]
                 if row[0].startswith(" ") and r:
