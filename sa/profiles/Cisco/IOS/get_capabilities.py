@@ -109,6 +109,15 @@ class Script(BaseScript):
         )
         return sum(1 for _ in self.rx_ip_sla_probe_entry.finditer(r))
 
+    @false_on_cli_error
+    def has_lacp(self):
+        """
+        Check LACP Status
+        :return:
+        """
+        r = self.cli("show lacp counters")
+        return r
+
     def execute_platform(self, caps):
         # Check IP SLA status
         sla_v = self.get_syntax_variant(self.SYNTAX_IP_SLA_APPLICATION)
@@ -123,3 +132,5 @@ class Script(BaseScript):
             np = self.get_ip_sla_probes()
             if np:
                 caps["Cisco | IP | SLA | Probes"] = np
+            if self.has_lacp():
+                caps["Network | LACP"] = True
