@@ -19,10 +19,10 @@ class LACPCheck(TopologyDiscoveryCheck):
     required_capabilities = ["Network | LACP"]
 
     def iter_neighbors(self, mo):
-        result = mo.scripts.get_cdp_neighbors()
+        result = mo.scripts.get_lacp_neighbors()
         for lag in result:
             for n in lag["bundle"]:
-                self.set_interface_alias(mo, n["local_interface"], n["local_port_id"])
+                self.set_interface_alias(mo, n["interface"], n["local_port_id"])
                 # We yield local port id instead of real name
                 # as we set interface alias
                 # Real port name will be set during clean_interface
