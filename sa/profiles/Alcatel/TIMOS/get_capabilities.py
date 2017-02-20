@@ -53,3 +53,16 @@ class Script(BaseScript):
         """
         cmd = self.cli("show router bfd interface")
         return not "No Matching Entries Found" in cmd
+
+    @false_on_cli_error
+    def has_lacp(self):
+        """
+        Check stack members
+        :return:
+        """
+        r = self.cli("show lag statistics")
+        return r
+
+    def execute_platform(self, caps):
+        if self.has_lacp():
+            caps["Network | LACP"] = True
