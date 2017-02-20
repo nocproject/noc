@@ -10,6 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
+from noc.lib.text import parse_table
 import re
 
 
@@ -95,6 +96,13 @@ class Script(BaseScript):
         stp = self.get_stp()
         ctp = self.get_ctp()
         oam = self.get_oam()
+        v = self.cli("show snmp mib ifmib ifIndex")
+        for row in parse_table(v, max_width=80):
+            snmp_indexes += [{
+                "ifindex": int(row[0].strip()),
+                "ifdescr": row[1].strip(),
+                "ifname": row[2].strip()
+            }]
         for match in self.rx_port.finditer(self.cli("show interface * status")):
             ifname = match.group("port")
             iface = {
@@ -115,6 +123,11 @@ class Script(BaseScript):
                 iface["enabled_protocols"] += ["OAM"]
             # Always enabled
             iface["enabled_protocols"] += ["LLDP"]
+            for i in snmp_indexes:
+                if ifname == i["ifname"]:
+                    iface["snmp_ifindex"] = i["ifindex"]
+                    iface["description"] = i["ifdescr"]
+                    break
             sub = {
                 "name": ifname,
                 "admin_status": match.group("admin_status") != "Down",
@@ -138,7 +151,7 @@ class Script(BaseScript):
         for match in self.rx_vlan.finditer(v):
             vlan_id = match.group("vlan")
             l = self.cli("show interface vlan %s" % vlan_id)
-            ifname = "VLAN%s" % vlan_id
+            ifname = "vlan %s" % vlan_id
             match1 = self.rx_link.search(l)
             iface = {
                 "name": ifname,
@@ -164,5 +177,10 @@ class Script(BaseScript):
             if match1:
                 iface["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
                 iface["subinterfaces"][0]["ipv6_addresses"] = [match1.group("ip")]
+            for i in snmp_indexes:
+                if ifname == i["ifname"]:
+                    iface["snmp_ifindex"] = i["ifindex"]
+                    iface["description"] = i["ifdescr"]
+                    break
             interfaces += [iface]
         return [{"interfaces": interfaces}]
