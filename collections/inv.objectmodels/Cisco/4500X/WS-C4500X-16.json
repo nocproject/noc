@@ -4,14 +4,14 @@
     "uuid": "8f437e57-ef44-4702-a9c4-26d6c3e7077b",
     "vendor__code": "CISCO",
     "description": "16 SFP+ 1/10Gbit Ethernet ports\n",
-    "connection_rule__name": "Generic | Switch SFP Prefixed",
+    "connection_rule__name": "Cisco | 4500X",
     "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "Uplink Module Slot",
             "direction": "i",
             "gender": "f",
-            "name": "UM",
+            "name": "Linecard(slot 2)",
             "protocols": ["Upl"],
             "type__name": "Cisco | 4500X | UM"
         },
@@ -19,7 +19,7 @@
             "description": "Power Supply 1",
             "direction": "i",
             "gender": "f",
-            "name": "psu 1",
+            "name": "psu1",
             "protocols": ["Power"],
             "type__name": "Cisco | 4500X | PSU"
         },
@@ -27,7 +27,7 @@
             "description": "Power Supply 2",
             "direction": "i",
             "gender": "f",
-            "name": "psu 2",
+            "name": "psu2",
             "protocols": ["Power"],
             "type__name": "Cisco | 4500X | PSU"
         },

@@ -11,7 +11,7 @@
             "description": "Uplink Module Slot",
             "direction": "i",
             "gender": "f",
-            "name": "UM",
+            "name": "Linecard(slot 2)",
             "protocols": ["Upl"],
             "type__name": "Cisco | 4500X | UM"
         },

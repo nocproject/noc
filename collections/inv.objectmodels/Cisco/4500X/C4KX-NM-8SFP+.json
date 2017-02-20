@@ -9,10 +9,10 @@
     "connections": [
         {
             "description": "Uplink Module Slot",
-            "direction": "i",
+            "direction": "o",
             "gender": "m",
-            "name": "UM",
-            "protocols": ["Upl"],
+            "name": "in",
+            "protocols": ["Uplinkmodule"],
             "type__name": "Cisco | 4500X | UM"
         },
         {
@@ -78,19 +78,11 @@
             "name": "Te 2/8",
             "protocols": ["TransEth1G", "TransEth10G"],
             "type__name": "Transceiver | SFP+"
-        },
-        {
-            "description": "Console port",
-            "direction": "s",
-            "gender": "f",
-            "name": "console",
-            "protocols": [">RS232"],
-            "type__name": "Electrical | RJ45"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["C4KX-NM-8SFP+"]
+            "part_no": ["C4KX-NM-8"]
         },
         "management": {
             "managed": true
