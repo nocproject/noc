@@ -73,13 +73,13 @@ class Alarms(Model):
         domains = UserAccess.get_domains(user)
         # Resolve domains against dict
         domain_ids = [
-            x["_id"]
+            x["id"]
             for x in AdministrativeDomain.get_collection().find({
-                "id": {
+                "_id": {
                     "$in": domains
                 }
             }, {
-                "_id": 1
+                "id": 1
             })
         ]
         filter = query.get("filter", {})
