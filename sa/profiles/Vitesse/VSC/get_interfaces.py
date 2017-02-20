@@ -151,7 +151,7 @@ class Script(BaseScript):
         for match in self.rx_vlan.finditer(v):
             vlan_id = match.group("vlan")
             l = self.cli("show interface vlan %s" % vlan_id)
-            ifname = "vlan %s" % vlan_id
+            ifname = "VLAN%s" % vlan_id
             match1 = self.rx_link.search(l)
             iface = {
                 "name": ifname,
@@ -178,7 +178,7 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
                 iface["subinterfaces"][0]["ipv6_addresses"] = [match1.group("ip")]
             for i in snmp_indexes:
-                if ifname == i["ifname"]:
+                if ifname.lower() == i["ifname"].replace(" ", ""):
                     iface["snmp_ifindex"] = i["ifindex"]
                     iface["description"] = i["ifdescr"]
                     break
