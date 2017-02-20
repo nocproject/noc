@@ -28,7 +28,9 @@ class Script(BaseScript):
         try:
             s = self.cli("show etherchannel summary")
         except self.CLISyntaxError:
-            raise self.NotSupportedError
+            # ASR100X do not have this command
+            # raise self.NotSupportedError
+            return []
         for i in parse_table(s, allow_wrap=True):
             iface = {
                 "interface": self.extract_iface(i[1]),
