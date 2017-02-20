@@ -432,9 +432,21 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 )
             for l, r in candidates[remote_object] - confirmed:
                 problems[l] = "Pending link: %s - %s:%s" % (l, remote_object, r)
+                li = self.clean_interface(self.object, l)
+                if not li:
+                    self.logger.info(
+                        "Cannot clean interface %s:%s. Skipping",
+                        self.object, l)
+                    continue
+                ri = self.clean_interface(self.object, r)
+                if not ri:
+                    self.logger.info(
+                        "Cannot clean interface %s:%s. Skipping",
+                        remote_object, r)
+                    continue
                 self.reject_link(
-                    self.object, l,
-                    remote_object, r
+                    self.object, li,
+                    remote_object, ri
                 )
             for l, r in candidates[remote_object] & confirmed:
                 li = self.clean_interface(self.object, l)
@@ -443,7 +455,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         "Cannot clean interface %s:%s. Skipping",
                         self.object, l)
                     continue
-                ri = self.clean_interface(remote_object, r)
+                ri = self.clean_interface(self.object, r)
                 if not ri:
                     self.logger.info(
                         "Cannot clean interface %s:%s. Skipping",
