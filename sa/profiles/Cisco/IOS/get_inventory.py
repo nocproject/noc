@@ -46,6 +46,9 @@ class Script(BaseScript):
         r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? "
         r"(?:Universal Broadband Router|chassis)")
 
+    rx_c4xk = re.compile(
+        r"^Linecard\(slot\s(\d+)\)", re.IGNORECASE)
+
     IGNORED_SERIAL = set([
         "H22L714"
     ])
@@ -358,6 +361,8 @@ class Script(BaseScript):
             return "SM", name[-1], pid
         elif "-NM-" in pid:
             # Network module 2
+            if self.rx_c4xk.match(name):
+                return "NM", self.rx_c4xk.match(name).group(1), pid
             return "NM", name.split()[5], pid
         elif (pid.startswith("WIC-") or pid.startswith("HWIC-")
               or pid.startswith("VWIC-") or pid.startswith("VWIC2-")
