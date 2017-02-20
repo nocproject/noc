@@ -23,7 +23,7 @@ rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
-def parse_table(s, allow_wrap=False, allow_extend=False):
+def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0):
     """
     :param s: Table for parsing
     :type s: str
@@ -31,6 +31,8 @@ def parse_table(s, allow_wrap=False, allow_extend=False):
     :type allow_wrap: bool
     :param allow_extend: Check if column on row longest then column width, and fix it
     :type allow_extend: bool
+    :param max_width: Max table width, if table width < max_width extend length, else - nothing
+    :type max_width: int
     >>> parse_table("First Second Third\\n----- ------ -----\\na     b       c\\nddd   eee     fff\\n")
     [['a', 'b', 'c'], ['ddd', 'eee', 'fff']]
     >>> parse_table("First Second Third\\n----- ------ -----\\na             c\\nddd   eee     fff\\n")
@@ -62,6 +64,9 @@ def parse_table(s, allow_wrap=False, allow_extend=False):
                                     match.group(2))
                 x += match.end()
                 l = l[match.end():]
+            if max_width and columns[-1][-1] < max_width:
+                last = columns.pop()
+                columns.append((last[0], max_width))
         elif columns:  # Fetch cells
             if allow_extend:
                 # Find which spaces between column not empty
