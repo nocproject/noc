@@ -8,9 +8,9 @@
     "connections": [
         {
             "description": null,
-            "direction": "i",
+            "direction": "o",
             "gender": "m",
-            "name": "PSU",
+            "name": "in",
             "type__name": "Cisco | 4500X | PSU"
         }
     ],
