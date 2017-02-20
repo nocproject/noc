@@ -48,8 +48,21 @@ class Script(BaseScript):
         v = parse_table(v.replace("\n\n", "\n"))
         return [l[0].split("-")[1] for l in v if "NI-" in l[0]]
 
+    @false_on_cli_error
+    def has_lacp(self):
+        """
+        Check lacp ports
+        @todo scripts.get_portchannel
+        :return:
+        """
+        r = self.cli("show linkagg")
+        # r = self.scripts.get_portchannel()
+        return r
+
     def execute_platform(self, caps):
         s = self.has_stack()
         if s:
             caps["Stack | Members"] = len(s) if len(s) != 1 else 0
             caps["Stack | Member Ids"] = " | ".join(s)
+        if self.has_lacp():
+            caps["Network | LACP"] = True
