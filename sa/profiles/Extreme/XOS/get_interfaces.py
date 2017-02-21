@@ -66,19 +66,20 @@ class Script(BaseScript):
                     portchannel_members[m] = (i, t)
         # get IfIndex
         ifidxs = {}
-        try:
-            for oid, vv in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2"):
-                vv = self.profile.convert_interface_name(vv)
-                match = self.rx_ifidx_phys.match(vv)
-                if match:
-                    vv = match.group("port")
-                    ifidxs[vv] = int(oid.split(".")[-1])
-                match = self.rx_ifidx_vlan.match(vv)
-                if match:
-                    vv = match.group("port")
-                    ifidxs[vv] = int(oid.split(".")[-1])
-        except self.snmp.TimeOutError:
-            ifidxs = {}
+        if self.has_snmp():
+            try:
+                for oid, vv in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2"):
+                    vv = self.profile.convert_interface_name(vv)
+                    match = self.rx_ifidx_phys.match(vv)
+                    if match:
+                        vv = match.group("port")
+                        ifidxs[vv] = int(oid.split(".")[-1])
+                    match = self.rx_ifidx_vlan.match(vv)
+                    if match:
+                        vv = match.group("port")
+                        ifidxs[vv] = int(oid.split(".")[-1])
+            except self.snmp.TimeOutError:
+                ifidxs = {}
         # Get port-to-vlan mappings
         pvm = {}
         switchports = {}  # interface -> (untagged, tagged)
@@ -178,58 +179,58 @@ class Script(BaseScript):
                             )
                         }]
                     }
-                if switchports[ifname][1]:
-                    aggriface["subinterfaces"][0]["tagged_vlans"] = \
-                        switchports[ifname][1]
+                    if switchports[ifname][1]:
+                        aggriface["subinterfaces"][0]["tagged_vlans"] = \
+                            switchports[ifname][1]
+                    else:
+                        iface["subinterfaces"][0]["tagged_vlans"] = []
+                    if switchports[ifname][0]:
+                        aggriface["subinterfaces"][0]["untagged_vlan"] = \
+                            switchports[ifname][0]
+                    else:
+                        iface["subinterfaces"][0]["untagged_vlan"] = ""
+                    aggriface["description"] = switchports[ifname][2]
+                    aggrifaces += [aggriface]
                 else:
-                    iface["subinterfaces"][0]["tagged_vlans"] = []
-                if switchports[ifname][0]:
-                    aggriface["subinterfaces"][0]["untagged_vlan"] = \
-                        switchports[ifname][0]
-                else:
-                    iface["subinterfaces"][0]["untagged_vlan"] = ""
-                aggriface["description"] = switchports[ifname][2]
-                aggrifaces += [aggriface]
-            else:
-                iftype = "physical"
-                iface = {
-                    "name": ifname,
-                    "type": iftype,
-                    "admin_status": switchports[ifname][3],
-                    "oper_status": o_stat,
-                    "mac": mac,
-                    "description": switchports[ifname][2],
-                    "snmp_ifindex": (ifidxs[ifname] if ifidxs else None),
-                    "subinterfaces": [{
+                    iftype = "physical"
+                    iface = {
                         "name": ifname,
-                        "description": switchports[ifname][2],
+                        "type": iftype,
                         "admin_status": switchports[ifname][3],
                         "oper_status": o_stat,
-                        "enabled_afi": ["BRIDGE"],
                         "mac": mac,
-                        "snmp_ifindex": (ifidxs[ifname] if ifidxs else None)
-                    }]
-                }
+                        "description": switchports[ifname][2],
+                        "snmp_ifindex": (ifidxs[ifname] if ifidxs else None),
+                        "subinterfaces": [{
+                            "name": ifname,
+                            "description": switchports[ifname][2],
+                            "admin_status": switchports[ifname][3],
+                            "oper_status": o_stat,
+                            "enabled_afi": ["BRIDGE"],
+                            "mac": mac,
+                            "snmp_ifindex": (ifidxs[ifname] if ifidxs else None)
+                        }]
+                    }
 
-            if switchports[ifname][1]:
-                iface["subinterfaces"][0]["tagged_vlans"] = \
-                    switchports[ifname][1]
-            else:
-                iface["subinterfaces"][0]["tagged_vlans"] = []
-            if switchports[ifname][0]:
-                iface["subinterfaces"][0]["untagged_vlan"] = \
-                    switchports[ifname][0]
-            else:
-                iface["subinterfaces"][0]["untagged_vlan"] = ""
-            iface["description"] = switchports[ifname][2]
+                    if switchports[ifname][1]:
+                        iface["subinterfaces"][0]["tagged_vlans"] = \
+                            switchports[ifname][1]
+                    else:
+                        iface["subinterfaces"][0]["tagged_vlans"] = []
+                    if switchports[ifname][0]:
+                        iface["subinterfaces"][0]["untagged_vlan"] = \
+                            switchports[ifname][0]
+                    else:
+                        iface["subinterfaces"][0]["untagged_vlan"] = ""
+                    iface["description"] = switchports[ifname][2]
 
-            # Portchannel member
-            if ifname in portchannel_members:
-                ai, is_lacp = portchannel_members[ifname]
-                iface["aggregated_interface"] = ai
-                if is_lacp:
-                    iface["enabled_protocols"] = ["LACP"]
+                    # Portchannel member
+                    if ifname in portchannel_members:
+                        ai, is_lacp = portchannel_members[ifname]
+                        iface["aggregated_interface"] = ai
+                        if is_lacp:
+                            iface["enabled_protocols"] = ["LACP"]
 
-            interfaces += [iface]
+                    interfaces += [iface]
         interfaces += aggrifaces
         return [{"interfaces": interfaces}]
