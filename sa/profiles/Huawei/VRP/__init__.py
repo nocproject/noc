@@ -132,7 +132,7 @@ class Profile(BaseProfile):
                 # print("Part start: %s" % part_name)
                 continue
             if not l.strip():
-                is_part = False
+                # is_part = False
                 # print("Part End")
                 continue
             # Parse Section
