@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Outage Extractor
+## Alarms Extractor
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import os
+from collections import defaultdict
+import bisect
+import datetime
 ## NOC modules
 from base import BaseExtractor
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.bi.models.alarms import Alarms
 from noc.core.etl.bi.stream import Stream
@@ -25,12 +29,29 @@ class AlarmsExtractor(BaseExtractor):
     clean_delay = int(os.environ.get(
         "NOC_BI_CLEAN_DELAY_ALARMS", 86400
     ))
+    reboot_interval = datetime.timedelta(seconds=int(os.environ.get(
+        "NOC_BI_REBOOT_INTERVAL", 60
+    )))
 
     def __init__(self, prefix, start, stop):
         super(AlarmsExtractor, self).__init__(prefix, start, stop)
         self.alarm_stream = Stream(Alarms, prefix)
 
     def extract(self):
+        # Get reboots
+        reboots = defaultdict(list)
+        for d in Reboot._get_collection().find({
+            "ts": {
+                "$gt": self.start,
+                "$lte": self.stop
+            }
+        }, {
+            "ts": 1,
+            "object": 1
+        }):
+            # Create sorted list
+            bisect.insort(reboots[d["object"]], d["ts"])
+        #
         for d in ArchivedAlarm._get_collection().find({
             "timestamp": {
                 "$gt": self.start,
@@ -40,6 +61,17 @@ class AlarmsExtractor(BaseExtractor):
             mo = ManagedObject.get_by_id(d["managed_object"])
             if not mo:
                 continue
+            # Process reboot data
+            o_reboots = reboots[d["managed_object"]]
+            reboots = 0
+            if o_reboots:
+                i = bisect.bisect_left(o_reboots, d["clear_timestamp"])
+                if i:
+                    t0 = d["timestamp"] - self.reboot_interval
+                    while i > 0 and o_reboots[i] >= t0:
+                        reboots += 1
+                        i -= 1
+            #
             self.alarm_stream.push(
                 ts=d["timestamp"],
                 close_ts=d["clear_timestamp"],
@@ -68,7 +100,8 @@ class AlarmsExtractor(BaseExtractor):
                 segment=mo.segment,
                 container=mo.container,
                 x=mo.x,
-                y=mo.y
+                y=mo.y,
+                reboots=reboots
             )
             self.last_ts = d["timestamp"]
         self.alarm_stream.finish()
