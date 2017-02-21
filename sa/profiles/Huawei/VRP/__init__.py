@@ -112,25 +112,28 @@ class Profile(BaseProfile):
         for l in block.splitlines(True):
             # print l
             # Part section
-            if part_splitter.match(l):
-                is_part = True
-                part_name = part_splitter.match(l).group(1)
-                print("Part start: %s" % part_name)
             if "-" * 5 in l:
                 is_table = True
-                print("Table start")
+                # print("Table start")
                 continue
-            if not l.strip() and is_part:
+            if part_splitter.match(l) and is_part:
                 # @todo many table in part ?
                 is_part = False
                 is_table = False
                 r[part_name] = dict(k_v_list)
                 r[part_name]["table"] = row
-                print("Key-Val: %s" % k_v_list)
-                print("Part End")
+                # print("Key-Val: %s" % k_v_list)
+                # print("Part End")
                 k_v_list = []
                 row = []
+            if part_splitter.match(l) and not is_part:
+                is_part = True
+                part_name = part_splitter.match(l).group(1)
+                # print("Part start: %s" % part_name)
+                continue
             if not l.strip():
+                is_part = False
+                # print("Part End")
                 continue
             # Parse Section
             if is_part and is_table:
