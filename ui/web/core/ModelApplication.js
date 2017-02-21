@@ -988,6 +988,14 @@ Ext.define("NOC.core.ModelApplication", {
             if(Ext.isDefined(field.getLookupData)) {
                 v[field.name + "__label"] = field.getLookupData();
             }
+            if(Ext.String.endsWith(field.xtype, '.TreeCombo')) {
+                v[field.name + "__label"] = field.getValue();
+                if(field.getValue()) {
+                    v[field.name] = field.store.data.items[0].get('id');
+                } else {
+                    v[field.name] = undefined;
+                }
+            }
         });
         me.saveRecord(v);
     },

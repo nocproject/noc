@@ -118,6 +118,7 @@ Ext.define('NOC.core.TreeCombo', {
             fieldLabel: this.fieldLabel,
             itemId: this.itemId,
             xtype: this.xtype,
+            name: this.name,
             labelWidth: this.labelWidth,
             labelAlign: this.labelAlign || "top",
             forceSelection: false,
