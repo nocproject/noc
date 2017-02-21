@@ -66,11 +66,14 @@
     {
       "collapse": false,
       "editable": false,
-      "height": "100px",
+      "height": "250px",
       "showTitle": true,
       "title": "$device $ip $vendor $platform",
       "panels": [
       {% include "panel_device.j2" with context -%}
+      {%if port_types %}
+      ,{% include "panel_errors.j2" with context -%}
+      {%endif%}
       ]
 
     }{%if port_types %},
@@ -104,8 +107,9 @@
         {% from "graph_interface_load_lag.j2" import interface -%}
         {{interface(lag)}}
       ]
-    }
+    },
     {%- endfor %}
+    {% include "row_errors.j2" with context -%}
     {%endif%}
     {%if object_metrics%}
     ,{
