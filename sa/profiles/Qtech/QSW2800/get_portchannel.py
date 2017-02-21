@@ -16,6 +16,7 @@ from noc.sa.interfaces.igetportchannel import IGetPortchannel
 class Script(BaseScript):
     name = "Qtech.QSW2800.get_portchannel"
     interface = IGetPortchannel
+    cache = True
 
     rx_portgroup = re.compile(r"^(?P<pc>\d+)\s+(?P<mode>\S+)\s+(?:\S+\s+)?\S+"
                             r"\s+\S+\s*\n", re.MULTILINE)
