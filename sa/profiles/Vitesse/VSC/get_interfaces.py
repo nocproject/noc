@@ -96,6 +96,7 @@ class Script(BaseScript):
         stp = self.get_stp()
         ctp = self.get_ctp()
         oam = self.get_oam()
+        snmp_indexes = []
         v = self.cli("show snmp mib ifmib ifIndex")
         for row in parse_table(v, max_width=80):
             snmp_indexes += [{
