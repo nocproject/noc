@@ -32,11 +32,19 @@ class Script(BaseScript):
     rx_ipv4 = re.compile(r"^\s+(?P<ip>[\d+\.]+)\s+(?P<mask>[\d+\.]+)\s+")
     rx_mac = re.compile(r"address is (?P<mac>[0-9a-f\-]+)$", re.IGNORECASE)
 
+    def get_lldp(self):
+        v = self.cli("show lldp")
+        r = []
+        for l in v.splitlines():
+            if "LLDP enabled port" in l:
+                r = l.split(":")[1].split()
+        return r
+
     def execute(self):
         # get interfaces' status
         int_status = {}
         for s in self.scripts.get_interface_status():
-            int_status[s["interface"]] = s["status"]
+            int_status[s["interface"]] = s["oper_status"]
 
         # get switchports
         swports = {}
@@ -62,6 +70,8 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             ggvrp = False
 
+        # Get LLDP port
+        lldp = self.get_lldp()
         # process all interfaces and form result
         r = []
         cmd = self.cli("show interface")
@@ -88,6 +98,9 @@ class Script(BaseScript):
                 iface["oper_status"] = int_status.get(ifname, False)
                 if match.group("admin_status").startswith("administratively"):
                     iface["admin_status"] = False
+                # proccess LLDP
+                if ifname in lldp:
+                    iface["enabled_protocols"] += ["LLDP"]
                 # process portchannels' members
                 if ifname in pc_members:
                     iface["aggregated_interface"] = pc_members[ifname][0]
@@ -110,7 +123,7 @@ class Script(BaseScript):
                     }
                     # process switchports
                     if ifname in swports:
-                        u,t = swports[ifname]
+                        u, t = swports[ifname]
                         if u:
                             sub["untagged_vlan"] = u
                         if t:

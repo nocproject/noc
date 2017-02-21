@@ -10,12 +10,13 @@
 import re
 ## NOC modules
 from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
+from noc.sa.interfaces.igetinterfacestatusex import IGetInterfaceStatusEx
 
 
 class Script(BaseScript):
     name = "Qtech.QSW2800.get_interface_status"
-    interface = IGetInterfaceStatus
+    interface = IGetInterfaceStatusEx
+    cache = True
 
     rx_interface_status = re.compile(
         r"^\s*(?P<interface>\S+)\s+is\s+(?:administratively\s+)?"
@@ -23,6 +24,9 @@ class Script(BaseScript):
 
     def execute(self, interface=None):
         r = []
+        snmp = self.scripts.get_interface_status_ex()
+        if snmp:
+            return snmp
         if interface:
             cmd = "show interface %s" % interface
         else:
@@ -33,6 +37,6 @@ class Script(BaseScript):
                 continue
             r.append({
                     "interface": iface,
-                    "status": match.group("status").lower() == "up"
+                    "oper_status": match.group("status").lower() == "up"
             })
         return r

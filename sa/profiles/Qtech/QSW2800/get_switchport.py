@@ -48,7 +48,7 @@ class Script(BaseScript):
         # Get interfaces' status
         int_status = {}
         for istat in self.scripts.get_interface_status():
-            int_status[istat["interface"]] = istat["status"]
+            int_status[istat["interface"]] = istat["oper_status"]
 
         # Get tags
         # Get vlans
