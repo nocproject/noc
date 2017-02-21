@@ -8,7 +8,6 @@
 
 ## Python modules
 import os
-from collections import defaultdict
 import bisect
 import datetime
 ## NOC modules
@@ -39,18 +38,31 @@ class AlarmsExtractor(BaseExtractor):
 
     def extract(self):
         # Get reboots
-        reboots = defaultdict(list)
-        for d in Reboot._get_collection().find({
-            "ts": {
-                "$gt": self.start,
-                "$lte": self.stop
+        reboots = {}  # object -> [ts1, .., tsN]
+        for d in Reboot._get_collection().aggregate([
+            {
+                "$match": {
+                    "ts": {
+                        "$gt": self.start - self.reboot_interval,
+                        "$lte": self.stop
+                    }
+                }
+            },
+            {
+                "$sort": {
+                    "ts": 1
+                }
+            },
+            {
+                "$group": {
+                    "_id": "$object",
+                    "reboots": {
+                        "$push": "$ts"
+                    }
+                }
             }
-        }, {
-            "ts": 1,
-            "object": 1
-        }):
-            # Create sorted list
-            bisect.insort(reboots[d["object"]], d["ts"])
+        ]):
+            reboots[d["_id"]] = d["reboots"]
         #
         for d in ArchivedAlarm._get_collection().find({
             "timestamp": {
@@ -62,7 +74,7 @@ class AlarmsExtractor(BaseExtractor):
             if not mo:
                 continue
             # Process reboot data
-            o_reboots = reboots[d["managed_object"]]
+            o_reboots = reboots.get(d["managed_object"])
             reboots = 0
             if o_reboots:
                 i = bisect.bisect_left(o_reboots, d["clear_timestamp"])
