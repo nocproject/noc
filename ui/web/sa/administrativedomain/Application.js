@@ -58,7 +58,10 @@ Ext.define("NOC.sa.administrativedomain.Application", {
             xtype: "sa.administrativedomain.TreeCombo",
             fieldLabel: __("Parent"),
             allowBlank: true,
-            emptyText: __("Select parent...")
+            emptyText: __("Select parent..."),
+            labelAlign: "left",
+            labelWidth: 100,
+            margin: '0 0 5'
         },
         {
             name: "description",

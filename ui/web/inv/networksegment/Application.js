@@ -10,7 +10,7 @@ Ext.define("NOC.inv.networksegment.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
         "NOC.inv.networksegment.Model",
-        "NOC.inv.networksegment.LookupField",
+        "NOC.inv.networksegment.TreeCombo",
         "NOC.sa.managedobjectselector.LookupField",
         "Ext.ux.form.DictField"
     ],
@@ -95,9 +95,12 @@ Ext.define("NOC.inv.networksegment.Application", {
                 },
                 {
                     name: "parent",
-                    xtype: "inv.networksegment.LookupField",
+                    xtype: "inv.networksegment.TreeCombo",
+                    emptyText: __("Select parent..."),
                     fieldLabel: __("Parent"),
-                    uiStyle: "large",
+                    labelAlign: "left",
+                    labelWidth: 100,
+                    margin: '0 0 5',
                     allowBlank: true
                 },
                 {
@@ -109,9 +112,12 @@ Ext.define("NOC.inv.networksegment.Application", {
                 },
                 {
                     name: "sibling",
-                    xtype: "inv.networksegment.LookupField",
+                    xtype: "inv.networksegment.TreeCombo",
+                    emptyText: __("Select sibling..."),
                     fieldLabel: __("Sibling"),
-                    uiStyle: "large",
+                    labelAlign: "left",
+                    labelWidth: 100,
+                    margin: '0 0 5',
                     allowBlank: true
                 },
                 {
