@@ -54,6 +54,9 @@ class NetworkSegment(Document):
     # Administrative domains which have access to segment
     # Sum of all administrative domains
     adm_domains = ListField(IntField())
+    # Collapse object's downlinks on network map
+    # when count is above the threshold
+    max_shown_downlinks = IntField(default=1000)
     # Objects, services and subscribers belonging to segment directly
     direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     direct_services = ListField(EmbeddedDocumentField(SummaryItem))
