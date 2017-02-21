@@ -37,7 +37,7 @@ class Script(BaseScript):
         r"^Trunk Native Mode VLAN: (?P<native_vlan>\d+)\s*\n"
         r"^Administrative Native VLAN tagging: \S+\s*\n"
         r"^VLAN Trunking: \S+\s*\n"
-        r"^Allowed VLANs: (?P<vlans>\S+)\s*\n", re.MULTILINE)
+        r"^Allowed VLANs:(?P<vlans>.*)\n", re.MULTILINE)
     rx_vlan = re.compile(r"^\s*(?P<vlan>\d+)\s+", re.MULTILINE)
     rx_link = re.compile(
         r"^\s*LINK: (?P<mac>\S+) Mtu:(?P<mtu>\d+) \<(?P<options>.+?)\>",
@@ -143,7 +143,7 @@ class Script(BaseScript):
             elif match1.group("mode") == "trunk":
                 sub["untagged_vlan"] = int(match1.group("native_vlan"))
                 sub["tagged_vlans"] = \
-                self.expand_rangelist(match1.group("vlans"))
+                self.expand_rangelist(match1.group("vlans").strip())
             else:
                 raise self.NotSupportedError()
             iface["subinterfaces"] += [sub]
