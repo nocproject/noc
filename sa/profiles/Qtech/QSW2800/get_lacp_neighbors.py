@@ -36,7 +36,7 @@ class Script(BaseScript):
         pc_name = ""
         # for block in itertools.islice(self.split_re.split(v), 1, None, 4):
         for block in self.split_re.split(v)[1:]:
-            print("Split %s\n\n" % self.split_re.split(v))
+            # print("Split %s\n\n" % self.split_re.split(v))
             if not block:
                 continue
             if first:
@@ -44,29 +44,35 @@ class Script(BaseScript):
                 pc_name = block
                 continue
             # pc_name = block
-            # self.logger.info("Block is: %s\n\n" % block)
+            self.logger.debug("Block is: %s\n\n" % block)
             out = self.profile.parse_table(block.lstrip(), part_name="lacp")
-            self.logger.info("Out, %s\n\n" % out)
-            i = 0
+            self.logger.debug("Out, %s\n\n" % out)
             bundle = []
             if "Remote" not in out:
                 first = True
                 continue
             for bun in out["Local"]["table"]:
-                index = self.port_id.match(self.cli("show interface %s | i index" % bun[0]))
-                if index:
-                    index = index.group(2)
+                # PortID LACP = ifindex
+                index = self.port_id.findall(self.cli("show interface %s | i index" % bun[0]))
+                # Find in partner table by interface
+                partner = [(i[4].split(",")[1], i[1]) for i in out["Remote"]["table"] if bun[0] in i]
+                if partner:
+                    r_id, r_p_id = partner[0]
+                else:
+                    self.logger.info("Partner for interface %s not find, skip" % bun[0])
+                    # Partner not find, skip
+                    continue
+
                 bundle += [{
                     "interface": bun[0],
-                    "local_port_id": int(index),
-                    "remote_system_id": out["Remote"]["table"][i][4].split(",")[1],
-                    "remote_port_id": int(out["Remote"]["table"][i][1])
+                    "local_port_id": int(index[0][1]),
+                    "remote_system_id": r_id,
+                    "remote_port_id": int(r_p_id)
                 }]
-                i += 1
 
             r += [{"lag_id": int(pc_name),
                    "interface": "Port-Channel" + pc_name,
-                   "system_id": out["Local"]["System ID"].split(",")[1],
+                   "system_id": out["lacp"]["System ID"].split(",")[1],
                    "bundle": bundle
                    }]
             first = True

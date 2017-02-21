@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""
 ##----------------------------------------------------------------------
 ## Vendor: Qtech
 ## OS:     QSW2800
@@ -6,6 +7,7 @@
 ## Copyright (C) 2007-2014 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
+"""
 
 # Python modules
 import re
@@ -65,17 +67,13 @@ class Profile(BaseProfile):
         if part_name:
             is_part = True
         for l in block.splitlines(True):
-            # print("Line: %s" % l)
+            # print l
             # Part section
-            if part_splitter.match(l):
-                is_part = True
-                part_name = part_splitter.match(l).group(1)
-                # print("Part start: %s" % part_name)
             if "-" * 5 in l:
                 is_table = True
                 # print("Table start")
                 continue
-            if not l.strip() and is_part:
+            if part_splitter.match(l) and is_part:
                 # @todo many table in part ?
                 is_part = False
                 is_table = False
@@ -85,7 +83,14 @@ class Profile(BaseProfile):
                 # print("Part End")
                 k_v_list = []
                 row = []
+            if part_splitter.match(l) and not is_part:
+                is_part = True
+                part_name = part_splitter.match(l).group(1)
+                # print("Part start: %s" % part_name)
+                continue
             if not l.strip():
+                # is_part = False
+                # print("Part End")
                 continue
             # Parse Section
             if is_part and is_table:
