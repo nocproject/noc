@@ -9,6 +9,7 @@
 ## NOC modules
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (DateField, DateTimeField,
+                                        Int16Field,
                                         Int32Field, Int64Field,
                                         StringField,
                                         Float64Field, ReferenceField,
@@ -50,6 +51,8 @@ class Alarms(Model):
     #
     escalation_ts = DateTimeField(description=_("Escalation Time"))
     escalation_tt = StringField(description=_("Number of Escalation"))
+    # Amount of reboots during alarm
+    reboots = Int16Field()
     #
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     pool = ReferenceField(Pool, description=_("Pool Name"))
