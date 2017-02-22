@@ -68,65 +68,78 @@
       "editable": false,
       "height": "250px",
       "showTitle": true,
+      "internal_comment": "info_row",
       "title": "$device $ip $vendor $platform",
       "panels": [
       {% include "panel_device.j2" with context -%}
       {%if port_types %}
-      ,{% include "panel_errors.j2" with context -%}
+          ,
+          {% include "panel_errors.j2" with context -%}
       {%endif%}
       ]
 
-    }{%if port_types %},
-    {% set comma = joiner(",") -%}
-    {% for port in port_types -%}
-
-    {{ comma() }}{
-      "collapse": true,
-      "editable": false,
-      "height": "250px",
-      "showTitle": true,
-      "title": "{{port.name}}",
-      "panels": [
-        {% from "graph_interface_load.j2" import interface -%}
-        {{interface(port)}}
-      ]
     }
-    {%- endfor %}
+    {%if port_types %}
+    ,
+        {% set comma = joiner(",") -%}
+        {% for port in port_types -%}
+            {{ comma() }}
+            {
+              "collapse": true,
+              "editable": false,
+              "height": "250px",
+              "showTitle": true,
+              "title": "{{port.name}}",
+              "internal_comment": "port_row",
+              "panels": [
+                {% from "graph_interface_load.j2" import interface -%}
+                {{interface(port)}}
+              ]
+            }
+        {%- endfor %}
     {%endif%}
-    {%if lags %},
-    {% set comma = joiner(",") -%}
-    {% for lag in lags -%}
+    {%if lags %}
+    ,
+        {% set comma = joiner(",") -%}
+        {% for lag in lags -%}
 
-    {{ comma() }}{
-      "collapse": true,
-      "editable": false,
-      "height": "250px",
-      "showTitle": true,
-      "title": "{{lag.name}} ({{lag.descr}})",
-      "panels": [
-        {% from "graph_interface_load_lag.j2" import interface -%}
-        {{interface(lag)}}
-      ]
-    },
-    {%- endfor %}
-    {% include "row_errors.j2" with context -%}
+            {{ comma() }}{
+              "collapse": true,
+              "editable": false,
+              "height": "250px",
+              "showTitle": true,
+              "title": "{{lag.name}} ({{lag.descr}})",
+              "internal_comment": "lags_row",
+              "panels": [
+                {% from "graph_interface_load_lag.j2" import interface -%}
+                {{interface(lag)}}
+              ]
+            }
+        {%- endfor %}
+    {%endif%}
+
+    {%if port_types %}
+    ,
+        {% include "row_errors.j2" with context -%}
     {%endif%}
     {%if object_metrics%}
-    ,{
-      "collapse": false,
-      "editable": false,
-      "height": "250px",
-      "showTitle": true,
-      "title": "Objects metrics",
-      "panels": [
-        {% set comma = joiner(",") -%}
-        {% for graph in object_metrics -%}
-          {% set template = 'graph_' + graph | lower() |replace(" ","") | replace("|","_") + '.j2' %}
-          {{ comma() }}{% include [template, "graph_default.j2"] ignore missing with context %}
-        {%- endfor %}
-      ]
+        ,
+        {
+          "collapse": false,
+          "editable": false,
+          "height": "250px",
+          "showTitle": true,
+          "internal_comment": "object_metrics",
+          "title": "Objects metrics",
+          "panels": [
+            {% set comma = joiner(",") -%}
+            {% for graph in object_metrics -%}
+              {% set template = 'graph_' + graph | lower() |replace(" ","") | replace("|","_") + '.j2' %}
+              {{ comma() }}{% include [template, "graph_default.j2"] ignore missing with context %}
+            {%- endfor %}
+          ]
 
-    }
+        }
     {%endif%}
   ]
 }
