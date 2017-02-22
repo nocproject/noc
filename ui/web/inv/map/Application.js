@@ -245,6 +245,15 @@ Ext.define("NOC.inv.map.Application", {
             handler: me.onStp
         });
 
+        me.viewAllNodeButton = Ext.create("Ext.button.Button", {
+            glyph: NOC.glyph.eye,
+            enableToggle: true,
+            pressed: false,
+            tooltip: __("Show all nodes"),
+            scope: me,
+            handler: me.onReload
+        });
+
         me.legendButton = Ext.create("Ext.button.Button", {
             glyph: NOC.glyph.info,
             tooltip: __("Show/Hide legend"),
@@ -298,6 +307,7 @@ Ext.define("NOC.inv.map.Application", {
                         me.viewLoadButton,
                         "-",
                         me.viewStpButton,
+                        me.viewAllNodeButton,
                         "->",
                         me.basketButton,
                         me.miniMapButton,

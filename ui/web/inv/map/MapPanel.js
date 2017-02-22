@@ -274,6 +274,10 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.graph.clear();
         // Create nodes
         Ext.each(data.nodes, function(node) {
+            if(!me.app.viewAllNodeButton.pressed && data.links.length > data.max_links && node.external === true) {
+                // skip create
+                return;
+            }
             cells.push(me.createNode(node));
             Ext.each(node.ports, function(port) {
                 me.portObjects[port.id] = node.id;
@@ -286,11 +290,13 @@ Ext.define("NOC.inv.map.MapPanel", {
                         }
                     });
                 });
-            })
+            });
         });
         // Create links
         Ext.each(data.links, function(link) {
-            cells.push(me.createLink(link));
+            if(me.objectNodes[me.portObjects[link.ports[0]]] &&
+                me.objectNodes[me.portObjects[link.ports[1]]])
+                cells.push(me.createLink(link));
         });
         me.graph.addCells(cells);
         // Run status polling
