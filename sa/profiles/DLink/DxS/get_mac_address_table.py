@@ -61,6 +61,7 @@ class Script(BaseScript):
                     "dynamic":"D",
                     "static":"S",
                     "self":"C",
+                    "cpu":"C",
                     "permanent":"S",
                     "deleteontimeout":"D",
                     "del_on_timeout":"D",
