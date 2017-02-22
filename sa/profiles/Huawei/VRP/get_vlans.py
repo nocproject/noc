@@ -25,13 +25,13 @@ class Script(BaseScript):
                 result = []
                 oids = {}
                 # Get OID -> VLAN ID mapping
-                for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.2.1.3",
-                    bulk=True):  # dot1qVlanFdbId
+                # dot1qVlanFdbId
+                for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.2.1.3"):
                     oids[oid.split(".")[-1]] = v
                 if oids:
                     # Get VLAN names
-                    for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1.1",
-                        bulk=True):  # dot1qVlanStaticName
+                    # dot1qVlanStaticName
+                    for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1.1"):
                         o = oid.split(".")[-1]
                         result += [{
                             "vlan_id":int(oids[o]),
@@ -39,8 +39,8 @@ class Script(BaseScript):
                         }]
                 else:
                     tmp_vlan = []
-                    for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1",
-                        bulk=True):  # dot1qVlanStaticName
+                    # dot1qVlanStaticName
+                    for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1"):
                         vlan_id = int(oid.split(".")[-1])
                         if vlan_id in tmp_vlan:
                             break
