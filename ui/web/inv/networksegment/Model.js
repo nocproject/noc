@@ -67,6 +67,10 @@ Ext.define("NOC.inv.networksegment.Model", {
         {
             name: "tags",
             type: "auto"
+        },
+        {
+            name: "max_shown_downlinks",
+            type: "integer"
         }
     ]
 });

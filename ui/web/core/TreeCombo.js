@@ -18,6 +18,7 @@ Ext.define('NOC.core.TreeCombo', {
 
     alias: 'widget.nocTreeCombo',
 
+    isLookupField: true,
     layout: {
         type: 'hbox',
         align: 'bottom'
@@ -119,6 +120,7 @@ Ext.define('NOC.core.TreeCombo', {
             itemId: this.itemId,
             xtype: this.xtype,
             name: this.name,
+            isLookupField: this.isLookupField,
             labelWidth: this.labelWidth,
             labelAlign: this.labelAlign || "top",
             forceSelection: false,
@@ -281,6 +283,21 @@ Ext.define('NOC.core.TreeCombo', {
             return this.fieldValue.id;
         }
         return null;
+    },
+
+    getLookupData: function() {
+        return this.getValue();
+    },
+
+    getModelData: function() {
+        var obj = {};
+
+        obj[this.name] = this.getValue();
+        return obj;
+    },
+
+    getName: function() {
+        return this.name;
     },
 
     reset: function() {

@@ -82,6 +82,11 @@ Ext.define("NOC.inv.networksegment.Application", {
                     align: "right",
                     sortable: false,
                     renderer: NOC.render.Badge
+                },
+                {
+                    text: __("Max Links"),
+                    dataIndex: "max_shown_downlinks",
+                    width: 70
                 }
             ],
 
@@ -93,16 +98,15 @@ Ext.define("NOC.inv.networksegment.Application", {
                     uiStyle: "large",
                     allowBlank: false
                 },
-                {
+                Ext.create('NOC.inv.networksegment.TreeCombo', {
                     name: "parent",
-                    xtype: "inv.networksegment.TreeCombo",
                     emptyText: __("Select parent..."),
                     fieldLabel: __("Parent"),
                     labelAlign: "left",
                     labelWidth: 100,
                     margin: '0 0 5',
                     allowBlank: true
-                },
+                }),
                 {
                     name: "description",
                     xtype: "textarea",
@@ -110,16 +114,15 @@ Ext.define("NOC.inv.networksegment.Application", {
                     uiStyle: "extra",
                     allowBlank: true
                 },
-                {
+                Ext.create('NOC.inv.networksegment.TreeCombo', {
                     name: "sibling",
-                    xtype: "inv.networksegment.TreeCombo",
                     emptyText: __("Select sibling..."),
                     fieldLabel: __("Sibling"),
                     labelAlign: "left",
                     labelWidth: 100,
                     margin: '0 0 5',
                     allowBlank: true
-                },
+                }),
                 {
                     name: "settings",
                     xtype: "dictfield",
@@ -129,6 +132,12 @@ Ext.define("NOC.inv.networksegment.Application", {
                     name: "selector",
                     xtype: "sa.managedobjectselector.LookupField",
                     fieldLabel: __("Selector"),
+                    allowBlank: true
+                },
+                {
+                    name: "max_shown_downlinks",
+                    xtype: "numberfield",
+                    fieldLabel: __("Max Links"),
                     allowBlank: true
                 },
                 {
