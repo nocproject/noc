@@ -17,6 +17,8 @@ class Script(BaseScript):
     name = "Zyxel.MSAN.get_spanning_tree"
     interface = IGetSpanningTree
 
+    rx_status = re.compile(
+        "^status\s+: (?P<status>enabled|disabled)\s*\n", re.MULTILINE)
     rx_config = re.compile(
         r"^config name\s+: (?P<region>\S+)\s*\n"
         r"^revision level\s+: (?P<revision>\S+)\s*\n"
@@ -110,13 +112,17 @@ class Script(BaseScript):
         return i
 
     def execute(self):
-        v = self.cli("switch mstp show", cached=True)
-        match = self.rx_config.search(v)
+        try:
+            v = self.cli("switch mstp show", cached=True)
+        except self.CLISyntaxError:
+            v = self.cli("switch rstp show", cached=True)
+        match = self.rx_status.search(v)
         if match.group("status") != "enabled":
             return {
                 "mode": "None",
                 "instances": []
             }
+        match = self.rx_config.search(v)
         if match.group("version") == "rstp":
             r = {
                 "mode": "RSTP",
