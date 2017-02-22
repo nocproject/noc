@@ -40,8 +40,7 @@ class Script(BaseScript):
         r"^\s*Subnet Mask\s*\.+ (?P<ip_subnet>\S+)\s*.+"
         r"^\s*(MAC Address|Burned In MAC Address)\s*\.+ (?P<mac>\S+)\s*.+"
         r"^\s*Management VLAN ID\s*\.+ (?P<vlan_id>\d+)\s*\n",
-        re.MULTILINE | re.DOTALL
-    )
+        re.MULTILINE | re.DOTALL)
     rx_ipv6 = re.compile(r"^(IPv6 address|IPv6 Prefix is )\.+ (?P<ipv6_address>\S+)\s*", re.MULTILINE)
 
     def execute(self):
@@ -74,11 +73,12 @@ class Script(BaseScript):
                             self.expand_rangelist(match1.group("tagged"))
             interfaces += [iface]
             snmp_ifindex += 1
-        match = self.rx_ip2.search(self.cli("show network"))
+        v = self.cli("show network")
+        match = self.rx_ip2.search(v)
         ip_address = match.group("ip_address")
         ip_subnet = match.group("ip_subnet")
         ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-        interfaces += [{
+        iface = {
             "name": "0/0",
             "type": "SVI",
             "admin_status": True,
@@ -88,9 +88,15 @@ class Script(BaseScript):
                 "name": "0/0",
                 "admin_status": True,
                 "oper_status": True,
-                "enabled_afi": ['IPv4', 'IPv6'],
+                "enabled_afi": ['IPv4'],
                 "ipv4_addresses": [ip_address],
                 "vlan_ids": [int(match.group("vlan_id"))]
             }]
-        }]
+        }
+        match = self.rx_ipv6.search(v)
+        if match:
+            iface["subinterfaces"][0]["enabled_afi"] += ['IPv6']
+            iface["subinterfaces"][0]["ipv6_addresses"] = \
+              [match.group("ipv6_address")]
+        interfaces += [iface]
         return [{"interfaces": interfaces}]

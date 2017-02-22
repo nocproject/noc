@@ -15,8 +15,8 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Alstec.24xx"
     pattern_username = r"^User:"
-    pattern_unpriveleged_prompt = r"^\S+ >"
-    pattern_prompt = r"^\S+ #"
+    pattern_unpriveleged_prompt = r"^(?P<hostname>[ \S]+) >"
+    pattern_prompt = r"^(?P<hostname>[ \S]+) #"
     pattern_more = r"^--More-- or \(q\)uit$"
     pattern_syntax_error = r"ERROR: Wrong or incomplete command"
     command_super = "enable"
