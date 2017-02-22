@@ -70,8 +70,8 @@ class MapApplication(ExtApplication):
         def q_mo(d):
             x = d.copy()
             del x["mo"]
+            x["external"] = x["id"] not in mos if is_view else x.get("role") != "segment"
             x["id"] = str(x["id"])
-            x["external"] = x.get("role") != "segment"
             return x
 
         # Find segment
@@ -83,6 +83,10 @@ class MapApplication(ExtApplication):
                 "name": segment.name,
                 "error": _("Too many objects")
             }
+        # if we set selector in segment
+        is_view = segment.selector
+        if is_view:
+            mos = segment.selector.managed_objects.values_list("id", flat=True)
         # Load settings
         settings = MapSettings.objects.filter(segment=id).first()
         node_hints = {}
@@ -111,6 +115,7 @@ class MapApplication(ExtApplication):
         # Build output
         r = {
             "id": str(segment.id),
+            "max_links": int(segment.max_shown_downlinks),
             "name": segment.name,
             "caps": list(topology.caps),
             "nodes": [q_mo(x) for x in six.itervalues(topology.G.node)],
