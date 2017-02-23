@@ -10,6 +10,7 @@
 import datetime
 import csv
 import tempfile
+from collections import defaultdict
 ## Third-party modules
 from django.db import connection
 from django.http import HttpResponse
@@ -77,12 +78,13 @@ class ReportObjectIfacesTypeStat(object):
 
 class ReportObjectIfacesStatusStat(object):
     """Report for interfaces speed and status count"""
-    def __init__(self, mo_ids):
+    def __init__(self, mo_ids, columns=list("-")):
         self.mo_ids = mo_ids
+        # self.columns = ["1G_UP", "1G_DOWN"]
+        self.columns = columns
         self.out = self.load()
 
-    @staticmethod
-    def load():
+    def load(self):
         # @todo Make reports field
         """
         { "_id" : { "managed_object" : 6757 }, "count_in_speed" : 3 }
@@ -99,11 +101,43 @@ class ReportObjectIfacesStatusStat(object):
                                 "managed_object": "$managed_object"},
                         "count": {"$sum": 1}}}
         ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+        def_l = [""] * len(self.columns)
+        r = defaultdict(lambda: [""] * len(self.columns))
+        for v in value["result"]:
+            c = {
+                True: "Up",
+                False: "Down",
+                None: "-"
+            }[v["_id"].get("oper_status", None)]
 
-        return dict((v["_id"]["managed_object"], v["count"]) for v in value["result"])
+            if v["_id"].get("in_speed", None):
+                c += "/" + self.humanize_speed(v["_id"]["in_speed"])
+            else:
+                c += "/-"
+            # r[v["_id"]["managed_object"]].append((c, v["count"]))
+            if c in self.columns:
+                r[v["_id"]["managed_object"]][self.columns.index(c)] = v["count"]
+        return r
+        # return dict((v["_id"]["managed_object"], v["count"]) for v in value["result"])
+
+    @staticmethod
+    def humanize_speed(speed):
+        if not speed:
+            return "-"
+        for t, n in [
+            (1000000, "G"),
+            (1000, "M"),
+            (1, "k")
+        ]:
+            if speed >= t:
+                if speed // t * t == speed:
+                    return "%d%s" % (speed // t, n)
+                else:
+                    return "%.2f%s" % (float(speed) / t, n)
+        return str(speed)
 
     def __getitem__(self, item):
-        return self.out.get(item, 0)
+        return self.out.get(item, ["", "", "", ""])
 
 
 class ReportObjectAttributes(object):
@@ -209,6 +243,8 @@ class ReportObjectDetailApplication(ExtApplication):
         def translate_row(row, cmap):
             return [row[i] for i in cmap]
 
+        type_columns = ["Up/10G", "Up/1G", "Up/100M", "Down/-", "-"]
+
         cols = [
             "id",
             "object_name",
@@ -225,6 +261,7 @@ class ReportObjectDetailApplication(ExtApplication):
             "segment",
             "phys_interface_count",
             "link_count"
+            # "interface_type_count"
         ]
 
         header_row = [
@@ -243,6 +280,7 @@ class ReportObjectDetailApplication(ExtApplication):
          "SEGMENT",
          "PHYS_INTERFACE_COUNT",
          "LINK_COUNT"
+         # "INTERFACE_TYPE_COUNT"
         ]
 
         if columns:
@@ -256,6 +294,8 @@ class ReportObjectDetailApplication(ExtApplication):
             cmap = list(range(len(cols)))
 
         r = [translate_row(header_row, cmap)]
+        if "interface_type_count" in columns.split(","):
+            r[-1].extend(type_columns)
 
         self.logger.info(r)
         self.logger.info("---------------------------------")
@@ -281,12 +321,15 @@ class ReportObjectDetailApplication(ExtApplication):
         moss = []
         iface_count = {}
         link_count = {}
+        iface_type_count = {}
         if "segment" in columns.split(","):
             segment_lookup = dict(NetworkSegment.objects.all().values_list("id", "name"))
         if "avail" in columns.split(","):
             avail = ObjectStatus.get_statuses(mos_id)
         if "phys_interface_count" in columns.split(","):
             iface_count = ReportObjectIfacesTypeStat([])
+        if "interface_type_count" in columns.split(","):
+            iface_type_count = ReportObjectIfacesStatusStat([], columns=type_columns)
         if "link_count" in columns.split(","):
             link_count = ReportObjectLinkCount([])
         if len(mos_id) < 70000:
@@ -318,14 +361,17 @@ class ReportObjectDetailApplication(ExtApplication):
                 segment_lookup.get(bson.objectid.ObjectId(moss[6]), "No segment") if segment_lookup else "",
                 iface_count[mo] if iface_count else "",
                 link_count[mo] if link_count else ""
+                # iface_type_count[mo] if iface_type_count else ["", "", "", ""]
             ]), cmap)]
-
+            if "interface_type_count" in columns.split(","):
+                r[-1].extend(iface_type_count[mo] if iface_type_count else ["", "", "", ""])
             pass
 
+        filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%M%d")
         if format == "csv":
             response = HttpResponse(content_type="text/csv")
             response[
-                "Content-Disposition"] = "attachment; filename=\"objectss.csv\""
+                "Content-Disposition"] = "attachment; filename=\"%s.csv\"" % filename
             writer = csv.writer(response, dialect='excel', delimiter=';')
             writer.writerows(r)
             return response
@@ -341,7 +387,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 response = HttpResponse(
                     content_type="application/x-ms-excel")
                 response[
-                    "Content-Disposition"] = "attachment; filename=\"objects.xlsx\""
+                    "Content-Disposition"] = "attachment; filename=\"%s.xlsx\"" % filename
                 with open(f.name) as ff:
                     response.write(ff.read())
                 return response
