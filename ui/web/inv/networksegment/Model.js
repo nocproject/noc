@@ -70,7 +70,8 @@ Ext.define("NOC.inv.networksegment.Model", {
         },
         {
             name: "max_shown_downlinks",
-            type: "integer"
+            type: "integer",
+            defaultValue: 1000
         }
     ]
 });
