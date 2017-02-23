@@ -198,7 +198,7 @@ _MODELS = {
     "fm.EventClassCategory": "noc.fm.models.eventclass.EventClassCategory",
     "fm.EventClassificationRule": "noc.fm.models.eventclassificationrule.EventClassificationRule",
     "fm.EventClassificationRuleCategory": "noc.fm.models.eventclassificationrule.EventClassificationRuleCategory",
-    "fm.EventTrigger": "noc.fm.models.EventTrigger",
+    "fm.EventTrigger": "noc.fm.models.eventtrigger.EventTrigger",
     "fm.EscalationItem": "noc.fm.models.alarmescalation.EscalationItem",
     "fm.FailedEvent": "noc.fm.models.failedevent.FailedEvent",
     "fm.IgnoreEventRules": "noc.fm.models.IgnoreEventRules",
