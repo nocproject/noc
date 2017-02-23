@@ -37,6 +37,7 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                 ["segment", __("Segment"), true],
                 ["phys_interface_count", __("Physical Iface Count"), false],
                 ["link_count", __("Link Count"), false],
+                ["interface_type_count", __("Interface count by type"), false],
             ]
         });
 
