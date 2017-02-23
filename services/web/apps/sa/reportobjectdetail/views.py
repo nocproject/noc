@@ -35,6 +35,8 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
 
 # @todo ThreadingCount
+# @todo SerialNumber Report
+# @todo ReportDiscovery Problem
 
 
 class ReportObjectLinkCount(object):
@@ -61,12 +63,16 @@ class ReportObjectIfacesTypeStat(object):
     """Report for MO interfaces count"""
     def __init__(self, mo_ids, i_type="physical"):
         self.mo_ids = mo_ids
-        self.out = self.load(i_type=i_type)
+        self.out = self.load(i_type, self.mo_ids)
 
     @staticmethod
-    def load(i_type):
+    def load(i_type, ids):
+        match = {"type": i_type}
+        if ids:
+            match = {"type": i_type,
+                     "managed_object": {"$in": ids}}
         value = get_db()["noc.interfaces"].aggregate([
-            {"$match": {"type": i_type}},
+            {"$match": match},
             {"$group": {"_id": "$managed_object", "count": {"$sum": 1}}}
         ], read_preference=ReadPreference.SECONDARY_PREFERRED)
 
@@ -95,8 +101,12 @@ class ReportObjectIfacesStatusStat(object):
         { "_id" : { "oper_status" : false, "in_speed" : 100000, "managed_object" : 6757 }, "count_in_speed" : 1 }
         :return:
         """
+        match = {"type": "physical"}
+        if self.mo_ids:
+            match = {"type": "physical",
+                     "managed_object": {"$in": self.mo_ids}}
         value = get_db()["noc.interfaces"].aggregate([
-            {"$match": {"type": "physical"}},
+            {"$match": match},
             {"$group": {"_id": {"oper_status": "$oper_status", "in_speed": "$in_speed",
                                 "managed_object": "$managed_object"},
                         "count": {"$sum": 1}}}
@@ -327,9 +337,9 @@ class ReportObjectDetailApplication(ExtApplication):
         if "avail" in columns.split(","):
             avail = ObjectStatus.get_statuses(mos_id)
         if "phys_interface_count" in columns.split(","):
-            iface_count = ReportObjectIfacesTypeStat([])
+            iface_count = ReportObjectIfacesTypeStat(mos_id)
         if "interface_type_count" in columns.split(","):
-            iface_type_count = ReportObjectIfacesStatusStat([], columns=type_columns)
+            iface_type_count = ReportObjectIfacesStatusStat(mos_id, columns=type_columns)
         if "link_count" in columns.split(","):
             link_count = ReportObjectLinkCount([])
         if len(mos_id) < 70000:
