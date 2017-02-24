@@ -13,17 +13,19 @@
   tags:
     - repo
 
-- name: Install CentOS packages
+- name: Install Grafana
   yum:
-    name: grafana-{{ grafana_version }}
+    name: "{{ item }}"
     state: present
     update_cache: yes
-  notify: restart grafana
+  with_items:
+    - "grafana-{{grafana_version}}"
+    - open-sans-fonts
   tags:
     - requirements
   environment:
-    https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
 
 - name: Set up Grafana service
   lineinfile:
