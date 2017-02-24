@@ -48,6 +48,6 @@ class Script(BaseScript):
             ser.group("serial") != "Power"):
             r["attributes"]["Serial Number"] = ser.group("serial")
         fwt = self.rx_fwt.search(s)
-        if fwt:
+        if fwt and (fwt.group("fwt") != match.group("version")):
             r["attributes"]["Firmware Type"] = fwt.group("fwt")
         return r
