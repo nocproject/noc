@@ -17,22 +17,16 @@
 
 - name: Install Grafana
   yum:
-    name: grafana-{{grafana_version}}
+    name: "{{ item }}"
     state: present
     update_cache: yes
+  with_items:
+    - "grafana-{{grafana_version}}"
+    - open-sans-fonts
   tags:
     - requirements
   environment:
-    https_proxy: "{{http_proxy}}"
-
-- name: Install fonts for grafana serverside rendering
-  yum:
-    name: wine-fonts
-    state: present
-    update_cache: yes
-  tags:
-    - requirements
-  environment:
+    http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
 
 - name: Set up Grafana service
