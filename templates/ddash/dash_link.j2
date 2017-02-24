@@ -142,10 +142,10 @@
       "panels": [
         {% from "graph_interface_errors.j2" import errors -%}
         {% from "graph_interface_discards.j2" import discards -%}
-        {{errors("$interface_a", "$device_a", "leftE")}},
-        {{discards("$interface_a", "$device_a", "leftD")}},
-        {{errors("$interface_b", "$device_b","rightE")}},
-        {{discards("$interface_b", "$device_b","rightD")}}
+        {{errors("$interface_a", "$device_a", 1)}},
+        {{discards("$interface_a", "$device_a", 2)}},
+        {{errors("$interface_b", "$device_b", 3)}},
+        {{discards("$interface_b", "$device_b", 4)}}
       ]
     },
     {
@@ -156,8 +156,8 @@
       "height": "250px",
       "panels": [
         {% from "graph_interface_load_simple.j2" import interface -%}
-        {{interface("$interface_a", "$device_a", "leftL")}},
-        {{interface("$interface_b", "$device_b", "rightL")}}
+        {{interface("$interface_a", "$device_a", 5)}},
+        {{interface("$interface_b", "$device_b", 6)}}
         ]
     },
     {
@@ -168,8 +168,8 @@
       "height": "250px",
       "panels": [
         {% from "graph_interface_pps.j2" import pps -%}
-        {{pps("$interface_a", "$device_a", "leftP")}},
-        {{pps("$interface_b", "$device_b", "rightP")}}
+        {{pps("$interface_a", "$device_a", 7)}},
+        {{pps("$interface_b", "$device_b", 8)}}
       ]
     }
   ]
