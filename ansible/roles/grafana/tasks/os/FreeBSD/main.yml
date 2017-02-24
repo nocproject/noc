@@ -1,15 +1,14 @@
 ---
 - name: Setting Grafana conf file
-  lineinfile: dest=/etc/rc.conf regexp=^grafana3_conf= line=grafana3_conf=\"{{ noc_root }}/var/etc/grafana/grafana.ini\"
+  lineinfile: dest=/etc/rc.conf regexp=^grafana4_conf= line=grafana4_conf=\"{{ noc_root }}/var/etc/grafana/grafana.ini\"
 
 - name: Install Grafana
-  pkgng: name="grafana3" state=present
+  pkgng: name="grafana4" state=present
 
 - name: Create Grafana directories
   file: path={{item}} state=directory owner={{grafana_user}} mode=0755
   with_items:
-    - /var/run/grafana3
-    - /var/log/grafana3
+    - /var/log/grafana4
   notify: restart grafana
 
 - name: Create newsyslog rules
