@@ -89,7 +89,8 @@ class MODashboard(BaseDashboard):
             "device_id": self.object.id,
             "firmare_version": self.object.version.version or None,
             "segment": self.object.segment.id,
-            "vendor": self.object.vendor or "Unknown platform"
+            "vendor": self.object.vendor or "Unknown platform",
+            "pool": self.object.pool.name
         }
         self.logger.info("Context with data: %s" % context)
         PM_TEMPLATE_PATH = "templates/ddash/"
