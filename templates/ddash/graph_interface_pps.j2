@@ -1,4 +1,4 @@
-{% macro pps(interface,device) -%}
+{% macro pps(interface,device, id) -%}
 
 {
   "title": "PPS {{interface}}",
@@ -14,7 +14,7 @@
     "threshold2": null,
     "threshold2Color": "rgba(234, 112, 112, 0.22)"
   },
-  "id": {{ range(1000, 99999) | random }},
+  "id": "{{ id }}",
   "isNew": true,
   "legend": {
     "avg": false,
