@@ -3,7 +3,7 @@
 etc_prefix: /usr/local/etc
 
 grafana_home: /usr/local/share/grafana
-grafana_system_service: grafana3
+grafana_system_service: grafana4
 influx_path: /usr/local/bin/influx
 influxdb_conf: /usr/local/etc/influxd.conf
 influxdb_db_path: /var/db/influxdb
