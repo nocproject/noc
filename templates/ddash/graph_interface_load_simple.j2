@@ -1,4 +1,4 @@
-{% macro interface(interface, device) -%}
+{% macro interface(interface, device, id) -%}
 {
   "title": "LOAD {{interface}}",
   "aliasColors": {},
@@ -11,7 +11,7 @@
     "threshold2": null,
     "threshold2Color": "rgba(234, 112, 112, 0.22)"
   },
-  "id": {{ range(1000, 99999) | random }},
+  "id": "{{ id }}",
   "legend": {
     "alignAsTable": true,
     "avg": true,

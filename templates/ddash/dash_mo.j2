@@ -1,6 +1,6 @@
 {% set comma = joiner(",") -%}
 {
-  "id": 17,
+  "id": "dca571a2-2018-432e-b6a5-101670b395ca",
   "title": "{{device}}",
   "tags": [],
   "style": "dark",
@@ -93,7 +93,7 @@
               "internal_comment": "port_row",
               "panels": [
                 {% from "graph_interface_load.j2" import interface -%}
-                {{interface(port)}}
+                {{interface(port, loop.index)}}
               ]
             }
         {%- endfor %}
@@ -112,7 +112,7 @@
               "internal_comment": "lags_row",
               "panels": [
                 {% from "graph_interface_load_lag.j2" import interface -%}
-                {{interface(lag)}}
+                {{interface(lag, loop.index)}}
               ]
             }
         {%- endfor %}

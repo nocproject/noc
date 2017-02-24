@@ -1,8 +1,9 @@
-{% macro interface(interface) -%}
+{% macro interface(interface, lindex) -%}
 {
   "title": "${{interface.type}}",
   "aliasColors": {},
   "bars": false,
+  "internal_comment":"graph_interface_load.j2",
   "datasource": null,
   "fill": 1,
   "grid": {
@@ -11,7 +12,7 @@
     "threshold2": null,
     "threshold2Color": "rgba(234, 112, 112, 0.22)"
   },
-  "id": 1,
+  "id": {{lindex + 100}},
   "legend": {
     "alignAsTable": true,
     "avg": true,

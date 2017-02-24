@@ -1,7 +1,6 @@
-{% set comma = joiner(",") -%}
 {
-  "id": 17,
-  "title": "Link {{device_a}}-{{device_b}}",
+  "id": "e3be24d6-8d7e-4b91-9d0a-3a7254bc0d27",
+  "title": "Link {{device_a}} - {{device_b}}",
   "tags": [],
   "style": "dark",
   "timezone": "browser",
@@ -143,10 +142,10 @@
       "panels": [
         {% from "graph_interface_errors.j2" import errors -%}
         {% from "graph_interface_discards.j2" import discards -%}
-        {{errors("$interface_a", "$device_a")}},
-        {{discards("$interface_a", "$device_a")}},
-        {{errors("$interface_b", "$device_b")}},
-        {{discards("$interface_b", "$device_b")}}
+        {{errors("$interface_a", "$device_a", "leftE")}},
+        {{discards("$interface_a", "$device_a", "leftD")}},
+        {{errors("$interface_b", "$device_b","rightE")}},
+        {{discards("$interface_b", "$device_b","rightD")}}
       ]
     },
     {
@@ -157,8 +156,8 @@
       "height": "250px",
       "panels": [
         {% from "graph_interface_load_simple.j2" import interface -%}
-        {{interface("$interface_a", "$device_a")}},
-        {{interface("$interface_b", "$device_b")}}
+        {{interface("$interface_a", "$device_a", "leftL")}},
+        {{interface("$interface_b", "$device_b", "rightL")}}
         ]
     },
     {
@@ -169,8 +168,8 @@
       "height": "250px",
       "panels": [
         {% from "graph_interface_pps.j2" import pps -%}
-        {{pps("$interface_a", "$device_a")}},
-        {{pps("$interface_b", "$device_b")}}
+        {{pps("$interface_a", "$device_a", "leftP")}},
+        {{pps("$interface_b", "$device_b", "rightP")}}
       ]
     }
   ]

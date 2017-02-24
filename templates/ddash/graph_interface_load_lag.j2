@@ -1,4 +1,4 @@
-{% macro interface(interface) -%}
+{% macro interface(interface, lindex) -%}
 {
   "title": "{{interface.name}}",
   "aliasColors": {},
@@ -12,7 +12,7 @@
     "threshold2": null,
     "threshold2Color": "rgba(234, 112, 112, 0.22)"
   },
-  "id": {{ range(1000, 99999) | random }},
+  "id": {{lindex + 100}},
   "legend": {
     "alignAsTable": true,
     "avg": true,

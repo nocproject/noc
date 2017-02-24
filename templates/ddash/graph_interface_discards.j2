@@ -1,4 +1,4 @@
-{% macro discards(interface, device) -%}
+{% macro discards(interface, device, id) -%}
 
 {
   "cacheTimeout": null,
@@ -21,7 +21,7 @@
     "thresholdMarkers": true
   },
   "height": "50",
-  "id": {{ range(1000, 99999) | random }},
+  "id": "{{ id }}",
   "interval": null,
   "isNew": true,
   "links": [],
