@@ -44,7 +44,8 @@ class LinkDashboard(BaseDashboard):
             "segment": mos.managed_objects[0].segment.id,
             "device_a_id": mos.managed_objects[0].id,
             "device_b_id": mos.managed_objects[1].id,
-            "pool": mos.managed_objects[0].pool.name
+            "pool": mos.managed_objects[0].pool.name,
+            "link_id": mos.id
         }
         self.logger.info("Context with data: %s" % context)
         PM_TEMPLATE_PATH = "templates/ddash/"
