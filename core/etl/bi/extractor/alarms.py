@@ -39,7 +39,7 @@ class AlarmsExtractor(BaseExtractor):
     def extract(self):
         # Get reboots
         reboots = {}  # object -> [ts1, .., tsN]
-        for d in Reboot._get_collection().aggregate([
+        r = Reboot._get_collection().aggregate([
             {
                 "$match": {
                     "ts": {
@@ -61,8 +61,9 @@ class AlarmsExtractor(BaseExtractor):
                     }
                 }
             }
-        ]):
-            reboots[d["_id"]] = d["reboots"]
+        ])
+        if r["ok"]:
+            reboots = dict((d["_id"], d["reboots"]) for d in r["result"])
         #
         for d in ArchivedAlarm._get_collection().find({
             "timestamp": {
