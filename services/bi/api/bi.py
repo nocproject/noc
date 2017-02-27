@@ -18,6 +18,7 @@ from noc.core.clickhouse.model import Model
 from noc.core.bi.models.reboots import Reboots
 from noc.core.bi.models.alarms import Alarms
 from noc.bi.models.dashboard import Dashboard
+from noc.lib.nosql import get_db
 
 
 class BIAPI(API):
@@ -57,7 +58,7 @@ class BIAPI(API):
                 "decscription": ds._meta.description,
                 "tags": ds._meta.tags
             } for ds in self.iter_datasources()
-        ]
+            ]
 
     @api
     def get_datasource_info(self, name):
@@ -89,7 +90,7 @@ class BIAPI(API):
                 d = d._meta.name
             r["fields"] += [{
                 "name": f.name,
-                "description": f.description, 
+                "description": f.description,
                 "type": f.db_type,
                 "dict": d
             }]
@@ -132,15 +133,15 @@ class BIAPI(API):
         # @todo: Filter by groups
         aq = Q(owner=user.id) | Q(access__user=user.id)
         return [{
-            "id": str(d.id),
-            "title": str(d.title),
-            "description": str(d.description),
-            "tags": str(d.tags),
-            "owner": d.owner.username,
-            "created": d.created.isoformat(),
-            "changed": d.changed.isoformat()
-        } for d in Dashboard.objects
-                   .filter(aq)
+                    "id": str(d.id),
+                    "title": str(d.title),
+                    "description": str(d.description),
+                    "tags": str(d.tags),
+                    "owner": d.owner.username,
+                    "created": d.created.isoformat(),
+                    "changed": d.changed.isoformat()
+                } for d in Dashboard.objects
+                    .filter(aq)
                     .exclude("config")]
 
     def _get_dashboard(self, id, access_level=0):
@@ -212,3 +213,82 @@ class BIAPI(API):
             d.delete()
         else:
             raise APIError("Dashboard not found")
+
+    @executor("query")
+    @api
+    def get_hierarchy(self, params):
+        """
+        Get Hierarchy data for field
+        :param params:
+        :return:
+        """
+        if "datasource" not in params:
+            raise APIError("No datasource")
+        if "dic_name" not in params:
+            raise APIError("No dictionary name")
+        if "field_name" not in params:
+            raise APIError("No field name")
+        model = Model.get_model_class(params["datasource"])
+        if not model:
+            raise APIError("Invalid datasource")
+        query = {
+            "fields": [
+                {
+                    "expr": {
+                        "$names": [
+                            params["dic_name"],
+                            params["field_name"]
+                        ]
+                    },
+                    "alias": "names"
+                },
+                {
+                    "expr": {
+                        "$hierarchy": [
+                            params["dic_name"],
+                            {
+                                "$field": params["field_name"]
+                            }
+                        ]
+                    },
+                    "alias": "ids"
+                },
+                {
+                    "expr": params["field_name"],
+                    "group": 0
+                }
+            ],
+            "datasource": params["datasource"]
+        }
+        if "limit" in params:
+            query["limit"] = params["limit"]
+        if "filter" in params:
+            query["filter"] = {
+                "$like": [
+                    {
+                        "$lower": {
+                            "$field": "arrayElement(names,1)"
+                        }
+                    },
+                    {
+                        "$lower": "%" + params["filter"] + "%"
+                    }
+                ]
+            }
+
+        result = model.query(query, self.handler.current_user)
+        parents = {}
+        r = []
+        for row in result["result"]:
+            names = map((lambda z: z), row[0].strip("[] ").split(","))
+            ids = map((lambda z: int(z)), row[1].strip("[] ").split(","))
+            x = 1
+            while x < len(ids) - 1:
+                parents[ids[x]] = {"name": names[x], "id": ids[x], "p_id": ids[x + 1]}
+                x += 1
+            if len(ids) > 1:
+                r.append({"name": names[0], "id": ids[0], "p_id": ids[1]})
+            parents['root'] = {"name": names[-1], "id": ids[-1], "p_id": "null"}
+        for k in parents:
+            r.append(parents[k])
+        return r
