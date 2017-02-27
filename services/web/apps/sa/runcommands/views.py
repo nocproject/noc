@@ -79,6 +79,7 @@ class RunCommandsApplication(ExtApplication):
                                          id=int(snippet_id))
         r = {}
         for mo in objects:
+            config["object"] = mo
             r[mo.id] = snippet.expand(config)
         return r
 
