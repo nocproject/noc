@@ -19,8 +19,9 @@ class Profile(BaseProfile):
     name = "Qtech.QSW2800"
     pattern_more = [
         (r"^ --More-- $", " "),
-        (r"^Confirm to overwrite current startup-config configuration","\ny\n"),
-        (r"^Confirm to overwrite the existed destination file?", "\ny\n")
+        (r"^Confirm to overwrite current startup-config configuration [Y/N]:", "\nY\n"),
+        (r"^Confirm to overwrite current startup-config configuration", "\ny\n"),
+        (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
     ]
     pattern_unpriveleged_prompt = r"^\S+>"
     pattern_syntax_error = r"% (?:Invalid input detected at '\^' marker|" \
