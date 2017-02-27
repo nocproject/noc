@@ -67,16 +67,16 @@ def f_lookup(seq):
 
 
 def in_lookup(seq):
-        """
-        $lookup (field, expr)
-        :param seq:
-        :return:
-        """
-        s3 = " NOT" if ("$not" in seq) or ("$NOT" in seq) else ""
-        if len(seq[1]) == 1:
-            return "%s%s IN %s" % (seq[0]["$field"], s3, seq[1][0])
-        else:
-            return "%s%s IN %s" % (seq[0]["$field"], s3, tuple(seq[1]))
+    """
+    $lookup (field, expr)
+    :param seq:
+    :return:
+    """
+    s3 = " NOT" if ("$not" in seq) or ("$NOT" in seq) else ""
+    if len(seq[1]) == 1:
+        return "%s%s IN %s" % (seq[0]["$field"], s3, seq[1][0])
+    else:
+        return "%s%s IN %s" % (seq[0]["$field"], s3, tuple(seq[1]))
 
 
 def f_ternary_if(seq):
@@ -97,6 +97,27 @@ def f_between(seq):
     """
     return "((%s) BETWEEN (%s) AND (%s))" % (
         to_sql(seq[0]), to_sql(seq[1]), to_sql(seq[2]))
+
+
+def f_names(seq):
+    """
+    $names (dict, field)
+    :param seq:
+    :return:
+    """
+    return "arrayMap(k->dictGetString('%s', 'name', toUInt64(k)), dictGetHierarchy('%s', %s))" \
+           % (seq[0], seq[0], seq[1])
+
+
+def f_duration(seq):
+    """
+    $names (dict, field)
+    :param seq:
+    :return:
+    """
+    return "SUM(arraySum(i -> ((i[2] > close_ts ? close_ts: i[2]) - (ts > i[1] ? ts: i[1]) < 0) ? 0 :" \
+           " ((i[2] > close_ts ? close_ts: i[2]) - (ts > i[1] ? ts: i[1])), [%s]))" \
+           % ",".join(seq)
 
 
 OP_MAP = {
@@ -149,7 +170,10 @@ OP_MAP = {
     # Dictionary lookup
     "$lookup": OP(min=2, max=3, convert=f_lookup),
     # List
-    "$in": OP(min=2, max=3, convert=in_lookup)
+    "$in": OP(min=2, max=3, convert=in_lookup),
+    "$hierarchy": OP(min=2, max=2, function="dictGetHierarchy"),
+    "$names": OP(min=2, max=2, convert=f_names),
+    "$duration": OP(min=1, convert=f_duration)
 }
 
 
