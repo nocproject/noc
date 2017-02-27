@@ -52,7 +52,7 @@ class Alarms(Model):
     escalation_ts = DateTimeField(description=_("Escalation Time"))
     escalation_tt = StringField(description=_("Number of Escalation"))
     # Amount of reboots during alarm
-    reboots = Int16Field()
+    reboots = Int16Field(description=_("Qty of Reboots"))
     #
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     pool = ReferenceField(Pool, description=_("Pool Name"))
@@ -65,8 +65,8 @@ class Alarms(Model):
     segment = ReferenceField(NetworkSegment, description=_("Network Segment"))
     container = ReferenceField(Container, description=_("Container"))
     # Coordinates
-    x = Float64Field()
-    y = Float64Field()
+    x = Float64Field(description=_("Longitude"))
+    y = Float64Field(description=_("Latitude"))
 
     @classmethod
     def transform_query(cls, query, user):
