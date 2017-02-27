@@ -28,7 +28,6 @@ class Profile(BaseProfile):
     def setup_session(self, script):
         # Do not erase this.
         # Account, obtained through RADIUS required this.
-        try:
-            script.cli("enable")
-        except BaseScript.CLISyntaxError:
-            pass
+        v = script.cli("show privilege")
+        # if ("15" not in v) and script.credentials["super_password"]:
+        #    script.cli("enable\n%s" % script.credentials["super_password"])
