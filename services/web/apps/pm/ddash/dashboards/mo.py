@@ -87,11 +87,11 @@ class MODashboard(BaseDashboard):
             "lags": self.object_data["lags"],
             "device": self.object.name.replace('\"', ''),
             "ip": self.object.address,
-            "platform": self.object.platform or "Unknown platform",
+            "platform": self.object.version.platform or "Unknown platform",
             "device_id": self.object.id,
             "firmare_version": self.object.version.version or None,
             "segment": self.object.segment.id,
-            "vendor": self.object.vendor or "Unknown platform",
+            "vendor": self.object.vendor or "Unknown version",
             "pool": self.object.pool.name
         }
         self.logger.info("Context with data: %s" % context)
