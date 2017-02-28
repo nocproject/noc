@@ -54,7 +54,7 @@ class MODashboard(BaseDashboard):
             for iface in sorted(ifaces, key=split_alnum):
                 if iface.description:
                     iface.description = iface.description.replace('\"', '')
-                if iface.type == u"aggregated":
+                if iface.type == u"aggregated" and iface.lag_members:
                     lags += [{
                         "name": iface.name,
                         "ports": [i.name for i in iface.lag_members],
@@ -62,6 +62,8 @@ class MODashboard(BaseDashboard):
                     }]
                     continue
                 ports += [{"name": iface.name, "descr": iface.description}]
+            if not ports:
+                continue
             port_types += [{"type": profile.id, "name": profile.name,
                             "ports": ports}]
 
