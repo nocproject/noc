@@ -1,7 +1,7 @@
 {% macro ports(port_type) -%}
-{% if port_type["ports"][0] and {port_type["ports"][0]["descr"] %}
+{% if port_type["ports"][0] and port_type["ports"][0]["descr"] %}
     {% set port_name = port_type["ports"][0]["descr"] %}
-{% elif port_type["ports"][0] and {port_type["ports"][0]["name"] %}
+{% elif port_type["ports"][0] and port_type["ports"][0]["name"] %}
     {% set port_name = port_type["ports"][0]["name"] %}
 {% elif port_type["ports"][0] %}
     {% set port_name = "Lag w/o interfaces" %}
