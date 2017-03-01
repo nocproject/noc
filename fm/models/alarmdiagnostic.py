@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## AlarmDiagnostic model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -19,7 +19,10 @@ import bson
 
 class AlarmDiagnostic(Document):
     meta = {
-        "collection": "noc.alarmdiagnostic"
+        "collection": "noc.alarmdiagnostic",
+        "indexes": [
+            "alarm"
+        ]
     }
 
     alarm = ObjectIdField()
