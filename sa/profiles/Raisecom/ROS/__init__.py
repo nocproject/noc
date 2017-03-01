@@ -35,9 +35,26 @@ class Profile(BaseProfile):
         r"Serial number\s*:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE)
 
+    rx_ver = re.compile(
+        r"Product Name: (?P<platform>\S+)\s*\n"
+        r"Hardware Version: (?P<hw_rev>\S+)\s*\n"
+        r"Bootstrap Version: (?P<bootstrap>\S+)\s*\n"
+        r"Software Version: (?P<version>\S+)\s*\n"
+        r"PCB Version:.+\n"
+        r"CPLD Version:.+\n"
+        r"REAP Version:.+\n"
+        r"Compiled.+\n\n"
+        r"System MacAddress: (?P<mac>\S+)\s*\n"
+        r"Serial number: (?P<serial>\S+)\s*\n",
+        re.MULTILINE)
+
     def get_version(self, script):
         c = script.cli("show version", cached=True)
-        return self.rx_ver.search(c).groupdict()
+        match = self.rx_ver.search(c)
+        if match:
+            return match.groupdict()
+        else:
+        match = self.rx_ver2.search(c)
 
     def get_interface_names(self, name):
         r = []

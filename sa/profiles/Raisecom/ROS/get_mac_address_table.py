@@ -19,8 +19,8 @@ class Script(BaseScript):
 
     rx_line = re.compile(
         r"^(?P<mac>[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4})\s+"
-        r"(?P<interface>\d+)\s+"
-        r"(?P<vlan_id>\d+)\s*(?P<type>Hit|Static)",
+        r"(?P<interface>(?:P|PC)?\d+)\s+"
+        r"(?P<vlan_id>\d+)\s*(?P<type>Hit|Static|dynamic)",
         re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
@@ -33,6 +33,7 @@ class Script(BaseScript):
                 "interfaces": [match.group("interface")],
                 "type": {
                     "hit": "D",
+                    "dynamic": "D",
                     "static": "S"
                 }[match.group("type").lower()]
             }]
