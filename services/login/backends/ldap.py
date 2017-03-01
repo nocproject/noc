@@ -64,14 +64,14 @@ class LdapBackend(BaseAuthBackend):
         user_info["domain"] = domain
         user_info["is_active"] = True
         # Get user groups
-        user_groups = set(self.get_user_groups(connect, ldap_domain, user_info))
-        if ldap_domain.require_group and ldap_domain.require_group not in user_groups:
+        user_groups = set(g.lower() for g in self.get_user_groups(connect, ldap_domain, user_info))
+        if ldap_domain.require_group and ldap_domain.require_group.lower() not in user_groups:
             self.logger.error(
                 "User %s is not a member of required group %s but member of %s",
                 user, ldap_domain.require_group, user_groups
             )
             raise self.LoginError("Login is not permitted")
-        if ldap_domain.deny_group:
+        if ldap_domain.deny_group and ldap_domain.deny_group.lower() in user_groups:
             self.logger.error(
                 "User %s is a member of deny group %s",
                 user, ldap_domain.deny_group
@@ -82,7 +82,7 @@ class LdapBackend(BaseAuthBackend):
         for g in ldap_domain.groups:
             if not g.is_active:
                 continue
-            if g.group_dn in user_groups:
+            if g.group_dn.lower() in user_groups:
                 self.ensure_group(u, g.group)
             else:
                 self.deny_group(u, g.group)
