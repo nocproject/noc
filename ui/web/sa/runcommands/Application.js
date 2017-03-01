@@ -858,15 +858,9 @@ Ext.define("NOC.sa.runcommands.Application", {
         me.viewModel.set('progressState.s', 0);
         me.selectedStore.each(function(record) {
             var v = {};
-            // Copy config
-            Ext.Object.each(cfg, function(key, value) {
-                if(key !== "id") {
-                    v[key] = value;
-                }
-            });
             v.id = record.get("id");
+            params.push(cfg.filter(function(e){return e.id == v.id})[0]);
             record.set('status', 'w');
-            params.push(v);
         });
         //
         me.progressReportButton.setDisabled(true);
@@ -984,7 +978,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                         }
                     }
                     if(commands.length > 0) {
-                        me.sendCommands(commands[0]);
+                        me.sendCommands(commands);
                     } else {
                         NOC.error(__('Empty command'))
                     }
