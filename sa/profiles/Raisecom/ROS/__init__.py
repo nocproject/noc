@@ -54,7 +54,8 @@ class Profile(BaseProfile):
         if match:
             return match.groupdict()
         else:
-        match = self.rx_ver2.search(c)
+            match = self.rx_ver2.search(c)
+            return match.groupdict()
 
     def get_interface_names(self, name):
         r = []
