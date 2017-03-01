@@ -35,7 +35,7 @@ class Profile(BaseProfile):
         r"Serial number\s*:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE)
 
-    rx_ver = re.compile(
+    rx_ver2 = re.compile(
         r"Product Name: (?P<platform>\S+)\s*\n"
         r"Hardware Version: (?P<hw_rev>\S+)\s*\n"
         r"Bootstrap Version: (?P<bootstrap>\S+)\s*\n"
