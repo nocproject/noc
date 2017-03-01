@@ -1,0 +1,112 @@
+# Russian translations for The NOC Project.
+# Copyright (C) 2017 The NOC Project
+# This file is distributed under the same license as the The NOC Project
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: The NOC Project VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-02-28 22:51+0300\n"
+"PO-Revision-Date: 2017-03-01 00:02+0500\n"
+"Last-Translator: \n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#~ msgid "Qty of Reboots"
+#~ msgstr "Число перезагрузок"
+
+#~ msgid "Date11"
+#~ msgstr ""
+
+#~ msgid "Close Time"
+#~ msgstr "Время закрытия"
+
+#~ msgid "Duration"
+#~ msgstr "Продолжительность"
+
+#~ msgid "Id"
+#~ msgstr "Идентификатор"
+
+#~ msgid "Alarm Root"
+#~ msgstr "Корень аварии"
+
+#~ msgid "Alarm Class"
+#~ msgstr "Класс аварии"
+
+#~ msgid "Severity"
+#~ msgstr "Важность"
+
+#~ msgid "Reopens"
+#~ msgstr "Переоткрытия"
+
+#~ msgid "Direct Services"
+#~ msgstr "Повлияло на сервисы"
+
+#~ msgid "Direct Subscribers"
+#~ msgstr "Повлияло на абонентов"
+
+#~ msgid "Total Objects"
+#~ msgstr "Общее кол-во объектов"
+
+#~ msgid "Total Services"
+#~ msgstr "Общее кол-во сервисов"
+
+#~ msgid "Total Subscribers"
+#~ msgstr "Общее кол-во абонентов"
+
+#~ msgid "Escalation Time"
+#~ msgstr "Время когда эскалировано"
+
+#~ msgid "Number of Escalation"
+#~ msgstr "Количество эскалаций"
+
+#~ msgid "Date"
+#~ msgstr "Дата"
+
+#~ msgid "Created"
+#~ msgstr "Создано"
+
+#~ msgid "Object Name"
+#~ msgstr "Имя объекта"
+
+#~ msgid "Pool Name"
+#~ msgstr "Имя пула"
+
+#~ msgid "IP Address"
+#~ msgstr "IP адрес"
+
+#~ msgid "Profile"
+#~ msgstr "Профиль объекта"
+
+#~ msgid "Vendor Name"
+#~ msgstr "Производитель"
+
+#~ msgid "Platform"
+#~ msgstr "Платформа"
+
+#~ msgid "Version"
+#~ msgstr "Версия"
+
+#~ msgid "Admin. Domain"
+#~ msgstr "З.О."
+
+#~ msgid "Network Segment"
+#~ msgstr "Сегмент сети"
+
+#~ msgid "Container"
+#~ msgstr "Адрес"
+
+#~ msgid "Longitude"
+#~ msgstr "Долгота"
+
+#~ msgid "Latitude"
+#~ msgstr "Широта"
+

@@ -1,0 +1,272 @@
+# Russian translations for The NOC Project.
+# Copyright (C) 2017 The NOC Project
+# This file is distributed under the same license as the The NOC Project
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: The NOC Project VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-02-28 22:51+0300\n"
+"PO-Revision-Date: 2017-03-01 11:27+0500\n"
+"Last-Translator: \n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+"X-Generator: Poedit 1.8.12\n"
+
+#: ui/bi/bi.js:9
+msgid "Previous Month"
+msgstr "Предыдущий месяц"
+
+#: ui/bi/bi.js:10
+msgid "Next Month"
+msgstr "Следующий месяц"
+
+#: ui/bi/bi.js:11
+msgid "January"
+msgstr "Январь"
+
+#: ui/bi/bi.js:11
+msgid "February"
+msgstr "Февраль"
+
+#: ui/bi/bi.js:11
+msgid "March"
+msgstr "Март"
+
+#: ui/bi/bi.js:11
+msgid "April"
+msgstr "Апрель"
+
+#: ui/bi/bi.js:11
+msgid "May"
+msgstr "Май"
+
+#: ui/bi/bi.js:11
+msgid "June"
+msgstr "Июнь"
+
+#: ui/bi/bi.js:11
+msgid "July"
+msgstr "Июль"
+
+#: ui/bi/bi.js:11
+msgid "August"
+msgstr "Август"
+
+#: ui/bi/bi.js:11
+msgid "September"
+msgstr "Сентябрь"
+
+#: ui/bi/bi.js:11
+msgid "October"
+msgstr "Октябрь"
+
+#: ui/bi/bi.js:11
+msgid "November"
+msgstr "Ноябрь"
+
+#: ui/bi/bi.js:11
+msgid "December"
+msgstr "Декабрь"
+
+#: ui/bi/bi.js:12
+msgid "Sunday"
+msgstr "Воскресенье"
+
+#: ui/bi/bi.js:12
+msgid "Monday"
+msgstr "Понедельник"
+
+#: ui/bi/bi.js:12
+msgid "Tuesday"
+msgstr "Вторник"
+
+#: ui/bi/bi.js:12
+msgid "Wednesday"
+msgstr "Среда"
+
+#: ui/bi/bi.js:12
+msgid "Thursday"
+msgstr "Четверь"
+
+#: ui/bi/bi.js:12
+msgid "Friday"
+msgstr "Пятница"
+
+#: ui/bi/bi.js:12
+msgid "Saturday"
+msgstr "Суббота"
+
+#: ui/bi/bi.js:13 ui/bi/bi.js:632
+msgid "Sun"
+msgstr "Вскр."
+
+#: ui/bi/bi.js:13 ui/bi/bi.js:632
+msgid "Mon"
+msgstr "Пн."
+
+#: ui/bi/bi.js:13 ui/bi/bi.js:632
+msgid "Tue"
+msgstr "Вт."
+
+#: ui/bi/bi.js:13 ui/bi/bi.js:632
+msgid "Wed"
+msgstr "Ср."
+
+#: ui/bi/bi.js:13 ui/bi/bi.js:632
+msgid "Thu"
+msgstr "Чт."
+
+#: ui/bi/bi.js:13 ui/bi/bi.js:632
+msgid "Fri"
+msgstr "Пт."
+
+#: ui/bi/bi.js:13 ui/bi/bi.js:632
+msgid "Sat"
+msgstr "Сб."
+
+#: ui/bi/bi.js:14
+msgid "Midnight"
+msgstr "Полночь"
+
+#: ui/bi/bi.js:15
+msgid "Noon"
+msgstr "Полдень"
+
+#: ui/bi/bi.js:74
+msgid "Filter by Field"
+msgstr "Фильтровать по полю"
+
+#: ui/bi/bi.js:74
+msgid "List of fields (AND) "
+msgstr "Список полей (И)"
+
+#: ui/bi/bi.js:74
+msgid "Filter"
+msgstr "Фильтр"
+
+#: ui/bi/bi.js:81
+msgid "Field Aggregate"
+msgstr "Поле агрегации"
+
+#: ui/bi/bi.js:81
+msgid "List of fields"
+msgstr "Список полей"
+
+#: ui/bi/bi.js:81
+msgid "Aggregate"
+msgstr "Агрегировать"
+
+#: ui/bi/bi.js:88
+msgid "Today"
+msgstr "Сегодня"
+
+#: ui/bi/bi.js:88
+msgid "This week"
+msgstr "Эта неделя"
+
+#: ui/bi/bi.js:88
+msgid "This month"
+msgstr "Этот месяц"
+
+#: ui/bi/bi.js:88
+msgid "This year"
+msgstr "Этот год"
+
+#: ui/bi/bi.js:88
+msgid "Yesterday"
+msgstr "Вчер"
+
+#: ui/bi/bi.js:88
+msgid "Previous week"
+msgstr "Предыдущая неделя"
+
+#: ui/bi/bi.js:88
+msgid "Previous month"
+msgstr "Предыдущий месяц"
+
+#: ui/bi/bi.js:88
+msgid "Previous year"
+msgstr "Предыдущий год"
+
+#: ui/bi/bi.js:88
+msgid "Select"
+msgstr "Выбор"
+
+#: ui/bi/bi.js:88
+msgid "Time Selector"
+msgstr "Выбор времени"
+
+#: ui/bi/bi.js:315
+msgid "Duration Intervals"
+msgstr "Период для Исключения"
+
+#: ui/bi/bi.js:1537
+msgid "Select a field"
+msgstr "Выберете поле"
+
+#: ui/bi/bi.js:1665
+msgid "Clear"
+msgstr "Очистить"
+
+#: ui/bi/bi.js:1665
+msgid "Apply"
+msgstr "Применить"
+
+#: ui/bi/bi.js:1666
+msgid "type"
+msgstr "тип"
+
+#: ui/bi/bi.js:1670
+msgid "dictionary"
+msgstr "словарь"
+
+#: ui/bi/bi.js:1768
+msgid "Select from"
+msgstr "Выбрать из"
+
+#: ui/bi/bi.js:1911
+msgid "List of fields (OR)"
+msgstr "Список полей (ИЛИ)"
+
+#: ui/bi/bi.js:1911 ui/bi/bi.js:1918
+msgid "Condition"
+msgstr "Условие"
+
+#: ui/bi/bi.js:1911 ui/bi/bi.js:1918
+msgid "Value"
+msgstr "Значение"
+
+#: ui/bi/bi.js:1911 ui/bi/bi.js:1918
+msgid "To Value"
+msgstr "К значению"
+
+#: ui/bi/bi.js:1964
+msgid "Select a condition"
+msgstr "Выберите условие"
+
+#~ msgid "List of fields (AND) :"
+#~ msgstr "Список полей (И)"
+
+#~ msgid "List of fields:"
+#~ msgstr "Список полей"
+
+#~ msgid "type:"
+#~ msgstr "тип:"
+
+#~ msgid "dictionary:"
+#~ msgstr "словарь:"
+
+#~ msgid "List of fields (OR) :"
+#~ msgstr "Список полей (ИЛИ)"
+
+#~ msgid "Condition:"
+#~ msgstr "Условие:"
