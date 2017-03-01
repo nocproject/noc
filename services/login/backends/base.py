@@ -80,7 +80,7 @@ class BaseAuthBackend(object):
     def deny_group(self, user, group):
         if self._user_in_group(user, group):
             self.logger.info("Removing user %s from group %s",
-                             user.username, group.groupname)
+                             user.username, group.name)
             user.groups.remove(group)
 
     @classmethod
