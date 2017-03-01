@@ -26,7 +26,7 @@ class Command(BaseCommand):
                 "services/bi/**.py",
                 "services/bi/**.html.j2"
             ],
-            "messages_js": ["ui/bi/**.js"]
+            "messages_js": ["ui/bi/bi.js"]
         },
         "card": {
             "messages": [
@@ -125,7 +125,10 @@ class Command(BaseCommand):
                 if domain.endswith("_js"):
                     args += ["-k", "__"]
                 for expr in self.SERVICES[svc][domain]:
-                    args += self.glob(expr)
+                    if os.path.isfile(expr):
+                        args += [expr]
+                    else:
+                        args += self.glob(expr)
                 subprocess.check_call(args)
 
     def handle_update(self, services=None, *args, **options):
