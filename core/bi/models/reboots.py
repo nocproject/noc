@@ -42,5 +42,5 @@ class Reboots(Model):
     segment = ReferenceField(NetworkSegment, description=_("Network Segment"))
     container = ReferenceField(Container, description=_("Container"))
     # Coordinates
-    x = Float64Field()
-    y = Float64Field()
+    x = Float64Field(description=_("Longitude"))
+    y = Float64Field(description=_("Latitude"))
