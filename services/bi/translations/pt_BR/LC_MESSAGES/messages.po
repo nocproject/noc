@@ -1,0 +1,111 @@
+# Portuguese (Brazil) translations for The NOC Project.
+# Copyright (C) 2017 The NOC Project
+# This file is distributed under the same license as the The NOC Project
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: The NOC Project VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-02-28 22:51+0300\n"
+"PO-Revision-Date: 2017-02-28 21:55+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: pt_BR\n"
+"Language-Team: pt_BR <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#~ msgid "Qty of Reboots"
+#~ msgstr ""
+
+#~ msgid "Date11"
+#~ msgstr ""
+
+#~ msgid "Close Time"
+#~ msgstr ""
+
+#~ msgid "Duration"
+#~ msgstr ""
+
+#~ msgid "Id"
+#~ msgstr ""
+
+#~ msgid "Alarm Root"
+#~ msgstr ""
+
+#~ msgid "Alarm Class"
+#~ msgstr ""
+
+#~ msgid "Severity"
+#~ msgstr ""
+
+#~ msgid "Reopens"
+#~ msgstr ""
+
+#~ msgid "Direct Services"
+#~ msgstr ""
+
+#~ msgid "Direct Subscribers"
+#~ msgstr ""
+
+#~ msgid "Total Objects"
+#~ msgstr ""
+
+#~ msgid "Total Services"
+#~ msgstr ""
+
+#~ msgid "Total Subscribers"
+#~ msgstr ""
+
+#~ msgid "Escalation Time"
+#~ msgstr ""
+
+#~ msgid "Number of Escalation"
+#~ msgstr ""
+
+#~ msgid "Date"
+#~ msgstr ""
+
+#~ msgid "Created"
+#~ msgstr ""
+
+#~ msgid "Object Name"
+#~ msgstr ""
+
+#~ msgid "Pool Name"
+#~ msgstr ""
+
+#~ msgid "IP Address"
+#~ msgstr ""
+
+#~ msgid "Profile"
+#~ msgstr ""
+
+#~ msgid "Vendor Name"
+#~ msgstr ""
+
+#~ msgid "Platform"
+#~ msgstr ""
+
+#~ msgid "Version"
+#~ msgstr ""
+
+#~ msgid "Admin. Domain"
+#~ msgstr ""
+
+#~ msgid "Network Segment"
+#~ msgstr ""
+
+#~ msgid "Container"
+#~ msgstr ""
+
+#~ msgid "Longitude"
+#~ msgstr ""
+
+#~ msgid "Latitude"
+#~ msgstr ""
+
