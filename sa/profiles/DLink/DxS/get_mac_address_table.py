@@ -62,6 +62,7 @@ class Script(BaseScript):
                     "static":"S",
                     "self":"C",
                     "cpu":"C",
+                    "asymmetric":"C",
                     "permanent":"S",
                     "deleteontimeout":"D",
                     "del_on_timeout":"D",
