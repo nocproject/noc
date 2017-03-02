@@ -76,13 +76,13 @@ class AlarmsExtractor(BaseExtractor):
                 continue
             # Process reboot data
             o_reboots = reboots.get(d["managed_object"])
-            reboots = 0
+            n_reboots = 0
             if o_reboots:
                 i = bisect.bisect_left(o_reboots, d["clear_timestamp"])
                 if i:
                     t0 = d["timestamp"] - self.reboot_interval
                     while i > 0 and o_reboots[i] >= t0:
-                        reboots += 1
+                        n_reboots += 1
                         i -= 1
             #
             self.alarm_stream.push(
@@ -114,7 +114,7 @@ class AlarmsExtractor(BaseExtractor):
                 container=mo.container,
                 x=mo.x,
                 y=mo.y,
-                reboots=reboots
+                reboots=n_reboots
             )
             self.last_ts = d["timestamp"]
         self.alarm_stream.finish()
