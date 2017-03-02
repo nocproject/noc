@@ -78,7 +78,7 @@ class AlarmsExtractor(BaseExtractor):
             o_reboots = reboots.get(d["managed_object"])
             n_reboots = 0
             if o_reboots:
-                i = min(bisect.bisect_left(o_reboots, d["clear_timestamp"]), len(reboots) - 1)
+                i = min(bisect.bisect_left(o_reboots, d["clear_timestamp"]), len(o_reboots) - 1)
                 t0 = d["timestamp"] - self.reboot_interval
                 while i >= 0 and o_reboots[i] >= t0:
                     n_reboots += 1
