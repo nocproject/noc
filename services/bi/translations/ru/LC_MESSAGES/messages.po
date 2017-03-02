@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-02-28 22:51+0300\n"
+"POT-Creation-Date: 2017-03-02 22:56+0300\n"
 "PO-Revision-Date: 2017-03-01 00:02+0500\n"
 "Last-Translator: \n"
 "Language: ru\n"
@@ -20,93 +20,122 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#~ msgid "Qty of Reboots"
-#~ msgstr "Число перезагрузок"
+#: core/bi/models/alarms.py:39
+msgid "Close Time"
+msgstr "Время закрытия"
 
-#~ msgid "Date11"
-#~ msgstr ""
+#: core/bi/models/alarms.py:40
+msgid "Duration"
+msgstr "Продолжительность"
 
-#~ msgid "Close Time"
-#~ msgstr "Время закрытия"
+#: core/bi/models/alarms.py:41
+msgid "Id"
+msgstr "Идентификатор"
 
-#~ msgid "Duration"
-#~ msgstr "Продолжительность"
+#: core/bi/models/alarms.py:42
+msgid "Alarm Root"
+msgstr "Корень аварии"
 
-#~ msgid "Id"
-#~ msgstr "Идентификатор"
+#: core/bi/models/alarms.py:43
+msgid "Alarm Class"
+msgstr "Класс аварии"
 
-#~ msgid "Alarm Root"
-#~ msgstr "Корень аварии"
+#: core/bi/models/alarms.py:44
+msgid "Severity"
+msgstr "Важность"
 
-#~ msgid "Alarm Class"
-#~ msgstr "Класс аварии"
+#: core/bi/models/alarms.py:45
+msgid "Reopens"
+msgstr "Переоткрытия"
 
-#~ msgid "Severity"
-#~ msgstr "Важность"
+#: core/bi/models/alarms.py:46
+msgid "Direct Services"
+msgstr "Повлияло на сервисы"
 
-#~ msgid "Reopens"
-#~ msgstr "Переоткрытия"
+#: core/bi/models/alarms.py:47
+msgid "Direct Subscribers"
+msgstr "Повлияло на абонентов"
 
-#~ msgid "Direct Services"
-#~ msgstr "Повлияло на сервисы"
+#: core/bi/models/alarms.py:48
+msgid "Total Objects"
+msgstr "Общее кол-во объектов"
 
-#~ msgid "Direct Subscribers"
-#~ msgstr "Повлияло на абонентов"
+#: core/bi/models/alarms.py:49
+msgid "Total Services"
+msgstr "Общее кол-во сервисов"
 
-#~ msgid "Total Objects"
-#~ msgstr "Общее кол-во объектов"
+#: core/bi/models/alarms.py:50
+msgid "Total Subscribers"
+msgstr "Общее кол-во абонентов"
 
-#~ msgid "Total Services"
-#~ msgstr "Общее кол-во сервисов"
+#: core/bi/models/alarms.py:52
+msgid "Escalation Time"
+msgstr "Время когда эскалировано"
 
-#~ msgid "Total Subscribers"
-#~ msgstr "Общее кол-во абонентов"
+#: core/bi/models/alarms.py:53
+msgid "Number of Escalation"
+msgstr "Количество эскалаций"
 
-#~ msgid "Escalation Time"
-#~ msgstr "Время когда эскалировано"
+#: core/bi/models/alarms.py:55
+msgid "Qty of Reboots"
+msgstr "Число перезагрузок"
 
-#~ msgid "Number of Escalation"
-#~ msgstr "Количество эскалаций"
+#: core/bi/models/alarms.py:37 core/bi/models/reboots.py:32
+msgid "Date"
+msgstr "Дата"
 
-#~ msgid "Date"
-#~ msgstr "Дата"
+#: core/bi/models/alarms.py:38 core/bi/models/reboots.py:33
+msgid "Created"
+msgstr "Создано"
 
-#~ msgid "Created"
-#~ msgstr "Создано"
+#: core/bi/models/alarms.py:57 core/bi/models/reboots.py:34
+msgid "Object Name"
+msgstr "Имя объекта"
 
-#~ msgid "Object Name"
-#~ msgstr "Имя объекта"
+#: core/bi/models/alarms.py:58 core/bi/models/reboots.py:35
+msgid "Pool Name"
+msgstr "Имя пула"
 
-#~ msgid "Pool Name"
-#~ msgstr "Имя пула"
+#: core/bi/models/alarms.py:59 core/bi/models/reboots.py:36
+msgid "IP Address"
+msgstr "IP адрес"
 
-#~ msgid "IP Address"
-#~ msgstr "IP адрес"
+#: core/bi/models/alarms.py:60 core/bi/models/reboots.py:37
+msgid "Profile"
+msgstr "Профиль объекта"
 
-#~ msgid "Profile"
-#~ msgstr "Профиль объекта"
+#: core/bi/models/alarms.py:61 core/bi/models/reboots.py:38
+msgid "Vendor Name"
+msgstr "Производитель"
 
-#~ msgid "Vendor Name"
-#~ msgstr "Производитель"
+#: core/bi/models/alarms.py:62 core/bi/models/reboots.py:39
+msgid "Platform"
+msgstr "Платформа"
 
-#~ msgid "Platform"
-#~ msgstr "Платформа"
+#: core/bi/models/alarms.py:63 core/bi/models/reboots.py:40
+msgid "Version"
+msgstr "Версия"
 
-#~ msgid "Version"
-#~ msgstr "Версия"
+#: core/bi/models/alarms.py:64 core/bi/models/reboots.py:41
+msgid "Admin. Domain"
+msgstr "З.О."
 
-#~ msgid "Admin. Domain"
-#~ msgstr "З.О."
+#: core/bi/models/alarms.py:65 core/bi/models/reboots.py:42
+msgid "Network Segment"
+msgstr "Сегмент сети"
 
-#~ msgid "Network Segment"
-#~ msgstr "Сегмент сети"
+#: core/bi/models/alarms.py:66 core/bi/models/reboots.py:43
+msgid "Container"
+msgstr "Адрес"
 
-#~ msgid "Container"
-#~ msgstr "Адрес"
+#: core/bi/models/alarms.py:68 core/bi/models/reboots.py:45
+msgid "Longitude"
+msgstr "Долгота"
 
-#~ msgid "Longitude"
-#~ msgstr "Долгота"
+#: core/bi/models/alarms.py:69 core/bi/models/reboots.py:46
+msgid "Latitude"
+msgstr "Широта"
 
-#~ msgid "Latitude"
-#~ msgstr "Широта"
+#~ msgid "Qty Of Reboots"
+#~ msgstr "Количество перезагрузок"
 
