@@ -18,6 +18,7 @@ from noc.core.clickhouse.model import Model
 from noc.core.bi.models.reboots import Reboots
 from noc.core.bi.models.alarms import Alarms
 from noc.bi.models.dashboard import Dashboard
+from noc.core.translation import ugettext as _
 from noc.lib.nosql import get_db
 
 
@@ -90,7 +91,7 @@ class BIAPI(API):
                 d = d._meta.name
             r["fields"] += [{
                 "name": f.name,
-                "description": f.description,
+                "description": _(f.description),
                 "type": f.db_type,
                 "dict": d
             }]
