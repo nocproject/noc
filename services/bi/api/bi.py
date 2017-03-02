@@ -222,6 +222,28 @@ class BIAPI(API):
         :param params:
         :return:
         """
+        def search_parent(node, p_id):
+            if p_id is None:
+                return node
+            if node and node["id"] == p_id:
+                return node
+            else:
+                if node and "nodes" in node.keys():
+                    for child in node["nodes"]:
+                        _searched = search_parent(child, p_id)
+                        if _searched:
+                            return _searched
+                else:
+                    return None
+
+        def sort_nodes(node):
+            if "nodes" not in node.keys():
+                return
+            else:
+                node["nodes"] = sorted(node["nodes"], key=lambda x: x["text"])
+                for n in node["nodes"]:
+                    sort_nodes(n)
+
         if "datasource" not in params:
             raise APIError("No datasource")
         if "dic_name" not in params:
@@ -277,18 +299,24 @@ class BIAPI(API):
             }
 
         result = model.query(query, self.handler.current_user)
-        parents = {}
-        r = []
+        tree = {}
         for row in result["result"]:
-            names = map((lambda z: z), row[0].strip("[] ").split(","))
-            ids = map((lambda z: int(z)), row[1].strip("[] ").split(","))
-            x = 1
-            while x < len(ids) - 1:
-                parents[ids[x]] = {"name": names[x], "id": ids[x], "p_id": ids[x + 1]}
-                x += 1
-            if len(ids) > 1:
-                r.append({"name": names[0], "id": ids[0], "p_id": ids[1]})
-            parents['root'] = {"name": names[-1], "id": ids[-1], "p_id": "null"}
-        for k in parents:
-            r.append(parents[k])
-        return r
+            names = map(lambda x: x[1:-1], row[0][1:-1].split(","))
+            ids = map(lambda x: int(x), row[1][1:-1].split(","))
+            ids.reverse()
+            names.reverse()
+            parent_id = None
+            for col in zip(ids, names):
+                searched = search_parent(tree, parent_id)
+                parent_id = col[0]
+                if searched:
+                    if searched["id"] != col[0]:
+                        if "nodes" not in searched.keys():
+                            searched["nodes"] = []
+                        if not col[0] in map(lambda x: x["id"], searched["nodes"]):
+                            searched["nodes"].append({"id": col[0], "text": col[1]})
+                else:  # start point
+                    tree = {"id": col[0], "text": col[1], "nodes": []}
+
+        sort_nodes(tree)
+        return tree
