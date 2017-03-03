@@ -46,7 +46,7 @@ class Script(BaseScript):
                     "interfaces": [match.group("interfaces")],
                     "type": {
                         "dynamic": "D", "static": "S", "learned": "D",
-                        "Config static": "S", "security": "S"
+                        "config static": "S", "security": "S"
                     }[match.group("type").lower()],
                 })
         return r
