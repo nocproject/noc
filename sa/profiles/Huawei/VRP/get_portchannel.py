@@ -34,7 +34,10 @@ class Script(BaseScript):
         try:
             trunk = self.cli("display eth-trunk", cached=True)
         except self.CLISyntaxError:
-            trunk = self.cli("display link-aggregation summary", cached=True)
+            try:
+                trunk = self.cli("display link-aggregation summary", cached=True)
+            except self.CLISyntaxError:
+                return []
             """
             Need more examples
 
