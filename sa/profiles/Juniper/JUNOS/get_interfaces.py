@@ -72,7 +72,7 @@ class Script(BaseScript):
         for I in ifaces:
             if "." in I["interface"]:
                 continue
-            v = self.cli("show interfaces %s | no-more" % I["interface"])
+            v = self.cli("show interfaces %s" % I["interface"])
             L = self.rx_log_split.split(v)
             phy = L.pop(0)
             phy = phy.replace(" )", "")

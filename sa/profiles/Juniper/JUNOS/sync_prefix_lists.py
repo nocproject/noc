@@ -30,7 +30,7 @@ class Script(BaseScript):
                 continue
             suffix = "exact" if l["strict"] else "orlonger"
             # Retrieve prefix list
-            pl = self.cli("show configuration policy-options policy-statement %s | display set | no-more" % name)
+            pl = self.cli("show configuration policy-options policy-statement %s | display set" % name)
             applied_pl = set()
             for ln in pl.splitlines():
                 match = rx_pl.match(ln)
