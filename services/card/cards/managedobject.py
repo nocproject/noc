@@ -259,7 +259,7 @@ class ManagedObjectCard(BaseCard):
         q = Q(name__icontains=query)
         sq = ManagedObject.get_search_Q(query)
         if sq:
-            q &= sq
+            q |= sq
         if not handler.current_user.is_superuser:
             q &= UserAccess.Q(handler.current_user)
         r = []
