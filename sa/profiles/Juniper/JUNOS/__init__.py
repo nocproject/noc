@@ -81,8 +81,8 @@ class Profile(BaseProfile):
 
     internal_interfaces = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-|"
-        r"em|jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-0|pc-|me0|sp-|fab|mams-|"
-        r"bme|esi)")
+        r"em|jsrv|pfe|pfh|vcp|mt-|pd|pe|vt-|vtep|ms-|pc-|me0|sp-|fab|mams-|"
+        r"bme|esi|ams)")
     internal_interfaces_olive = re.compile(
         r"^(lc-|cbp|demux|dsc|gre|ipip|lsi|mtun|pimd|pime|pp|tap|pip|sp-)")
 
