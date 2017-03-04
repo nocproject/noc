@@ -27,6 +27,8 @@ class SlotRule(OIDRule):
 
         if script.has_capability("Stack | Members"):
             sysSlotIndex = range(1, script.capabilities["Stack | Members"] + 1)
+        else:
+            sysSlotIndex = [1]
 
         for ms in sysSlotIndex:
             r[str(i)] = "%d" % ms
