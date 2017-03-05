@@ -72,6 +72,8 @@ class Script(BaseScript):
         :return:
         """
         out = self.cli("display stack")
+        if "device is not in stacking" in out:
+            return []
         r = self.profile.parse_table(out, part_name="stack")
         return [l[0] for l in r["stack"]["table"]]
         # return len([l for l in r.splitlines() if "STACK" in l])
