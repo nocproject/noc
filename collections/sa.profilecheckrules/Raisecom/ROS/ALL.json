@@ -1,0 +1,13 @@
+{
+    "name": "Raisecom | ROS | ALL",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "dae403fb-40e3-453b-b006-7b2caabf2e99",
+    "description": "",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.8886",
+    "action": "match",
+    "profile": "Raisecom.ROS"
+}
