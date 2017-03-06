@@ -1,0 +1,13 @@
+{
+    "name": "Iskratel | MSAN | ISKRATEL Switching sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "68f75fca-6ac4-40ea-8c25-a2652986a0a5",
+    "description": "",
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "contains",
+    "value": "ISKRATEL Switching",
+    "action": "match",
+    "profile": "Iskratel.MSAN"
+}

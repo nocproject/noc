@@ -1,0 +1,13 @@
+{
+    "name": "Iskratel | MBAN | ISKRATEL VDSL-2 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "10325345-e714-49f9-ab49-c620f4e48431",
+    "description": "",
+    "preference": 5000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "0.0",
+    "action": "match",
+    "profile": "Iskratel.MBAN"
+}
