@@ -377,7 +377,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 r[-1].extend(iface_type_count[mo] if iface_type_count else ["", "", "", ""])
             pass
 
-        filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%M%d")
+        filename = "mo_detail_report_%s" % datetime.datetime.now().strftime("%Y%m%d")
         if format == "csv":
             response = HttpResponse(content_type="text/csv")
             response[
