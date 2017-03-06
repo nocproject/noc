@@ -7,8 +7,9 @@
 ##----------------------------------------------------------------------
 
 ## NOC Modules
-from base import (Interface, DictParameter)
+from noc.core.interface.base import BaseInterface
+from base import DictParameter
 
 
-class IGetCapabilities(Interface):
+class IGetCapabilities(BaseInterface):
     returns = DictParameter()

@@ -7,10 +7,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import Interface, BooleanParameter, StringListParameter
+from noc.core.interface.base import BaseInterface
+from base import BooleanParameter, StringListParameter
 
 
-class ICommands(Interface):
+class ICommands(BaseInterface):
     # List of commands
     commands = StringListParameter()
     # Do not stop on CLI errors

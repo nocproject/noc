@@ -5,9 +5,10 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, VLANIDParameter, BooleanParameter
+from noc.core.interface.base import BaseInterface
+from base import VLANIDParameter, BooleanParameter
 
 
-class IHasVlan(Interface):
+class IHasVlan(BaseInterface):
     vlan_id = VLANIDParameter()
     returns = BooleanParameter()

@@ -5,10 +5,11 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, DictParameter, ListOfParameter, StringParameter
+from noc.core.interface.base import BaseInterface
+from base import DictParameter, ListOfParameter, StringParameter
 
 
-class IGetConfig(Interface):
+class IGetConfig(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "name": StringParameter(),
         "config": StringParameter()

@@ -5,13 +5,14 @@
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from base import (Interface, ListOfParameter, DictParameter, InterfaceNameParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter, InterfaceNameParameter,
                   MACAddressParameter, VLANIDParameter, VLANStackParameter,
                   RDParameter, IPParameter, IPv4PrefixParameter, IPv6PrefixParameter,
                   StringParameter, BooleanParameter, IntParameter)
 
 
-class IGetInterfaces(Interface):
+class IGetInterfaces(BaseInterface):
     """
     IGetInterfaces.
 

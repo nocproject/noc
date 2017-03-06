@@ -5,11 +5,12 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, InterfaceNameParameter, ListOfParameter, StringParameter,
+from noc.core.interface.base import BaseInterface
+from base import (InterfaceNameParameter, ListOfParameter, StringParameter,
                   VLANIDParameter, MACAddressParameter, DictParameter)
 
 
-class IGetMACAddressTable(Interface):
+class IGetMACAddressTable(BaseInterface):
     interface = InterfaceNameParameter(required=False)
     vlan = VLANIDParameter(required=False)
     mac = MACAddressParameter(required=False)

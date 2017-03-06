@@ -8,11 +8,12 @@
 """
 """
 ## NOC modules
-from base import (Interface, ListOfParameter, OIDParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, OIDParameter,
                   StringParameter, IntParameter, BooleanParameter, NoneParameter)
 
 
-class IGetSNMPGetNext(Interface):
+class IGetSNMPGetNext(BaseInterface):
     oid = OIDParameter()
     community_suffix = StringParameter(required=False)
     bulk = BooleanParameter(default=True)

@@ -6,8 +6,9 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from base import Interface, DictParameter
+from noc.core.interface.base import BaseInterface
+from base import DictParameter
 
 
-class IGetIfindexes(Interface):
+class IGetIfindexes(BaseInterface):
     returns = DictParameter()

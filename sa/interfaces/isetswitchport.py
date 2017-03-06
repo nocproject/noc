@@ -6,11 +6,12 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from base import (Interface, ListOfParameter, DictParameter, InterfaceNameParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter, InterfaceNameParameter,
                   VLANIDParameter, StringParameter, BooleanParameter)
 
 
-class ISetSwitchport(Interface):
+class ISetSwitchport(BaseInterface):
     # Port configuration
     configs = ListOfParameter(element=DictParameter(attrs={
         # Interface name

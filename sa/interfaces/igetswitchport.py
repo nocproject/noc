@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, ListOfParameter, DictParameter, VLANIDParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter, VLANIDParameter,
                   InterfaceNameParameter, StringParameter, BooleanParameter)
 
 
@@ -19,7 +20,7 @@ from base import (Interface, ListOfParameter, DictParameter, VLANIDParameter,
 ## For Q-in-Q tunneling both "802.1Q Enabled" and "802.1ad Tunnel"
 ## must be set to True, while "untagged" must contain top label
 ##
-class IGetSwitchport(Interface):
+class IGetSwitchport(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         # Interface name
         "interface": InterfaceNameParameter(),

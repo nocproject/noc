@@ -7,8 +7,9 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, InstanceOfParameter
+from noc.core.interface.base import BaseInterface
+from base import InstanceOfParameter
 
 
-class IEventTrigger(Interface):
+class IEventTrigger(BaseInterface):
     event = InstanceOfParameter("ActiveEvent")

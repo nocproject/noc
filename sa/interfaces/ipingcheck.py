@@ -8,11 +8,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, ListOfParameter, DictParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter,
                   IPParameter, StringParameter, BooleanParameter)
 
 
-class IPingCheck(Interface):
+class IPingCheck(BaseInterface):
     activator_name = StringParameter()
     addresses = ListOfParameter(IPParameter())
     returns = ListOfParameter(DictParameter(attrs={

@@ -7,10 +7,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import Interface, InstanceOfParameter, StringParameter, BooleanParameter
+from noc.core.interface.base import BaseInterface
+from base import InstanceOfParameter, StringParameter, BooleanParameter
 
 
-class IDispositionCondition(Interface):
+class IDispositionCondition(BaseInterface):
     rule_name = StringParameter()
     event = InstanceOfParameter("ActiveEvent")
     returns = BooleanParameter()

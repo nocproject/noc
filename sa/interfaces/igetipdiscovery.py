@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, ListOfParameter, DictParameter, InterfaceNameParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter, InterfaceNameParameter,
                   RDParameter, StringParameter, IPParameter, MACAddressParameter)
 
 
-class IGetIPDiscovery(Interface):
+class IGetIPDiscovery(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "name": StringParameter(),
         "rd": RDParameter(required=False),

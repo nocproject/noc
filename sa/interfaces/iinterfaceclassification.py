@@ -8,10 +8,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import Interface, Parameter, NoneParameter, StringParameter
+from noc.core.interface.base import BaseInterface
+from base import Parameter, NoneParameter, StringParameter
 
 
-class IInterfaceClassification(Interface):
+class IInterfaceClassification(BaseInterface):
     # Interface instance
     interface = Parameter()
     # Interface profile name

@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, DictParameter, ListOfParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictParameter, ListOfParameter,
                   IPParameter, StringParameter, StringListParameter)
 
 
-class IGetResolverConfig(Interface):
+class IGetResolverConfig(BaseInterface):
     returns = DictParameter(attrs={
         "domain": StringParameter(required=False),
         "search": StringListParameter(required=False),

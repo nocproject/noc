@@ -5,10 +5,11 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, DictParameter, StringParameter
+from noc.core.interface.base import BaseInterface
+from base import DictParameter, StringParameter
 
 
-class IGetVersion(Interface):
+class IGetVersion(BaseInterface):
     returns = DictParameter(attrs={
         "vendor": StringParameter(),
         "platform": StringParameter(),

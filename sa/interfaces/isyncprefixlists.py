@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, ListOfParameter, DictParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter,
                   StringParameter, BooleanParameter, IPv4PrefixParameter)
 
 
-class ISyncPrefixLists(Interface):
+class ISyncPrefixLists(BaseInterface):
     changed_prefix_lists = ListOfParameter(element=DictParameter(attrs={
         "name": StringParameter(),
         "prefix_list": ListOfParameter(element=IPv4PrefixParameter()),

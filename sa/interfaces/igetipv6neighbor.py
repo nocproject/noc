@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, ListOfParameter, StringParameter, DictParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, StringParameter, DictParameter,
                   InterfaceNameParameter, IPv6Parameter, MACAddressParameter)
 
 
-class IGetIPv6Neighbor(Interface):
+class IGetIPv6Neighbor(BaseInterface):
     vrf = StringParameter(required=False)
     returns = ListOfParameter(element=DictParameter(attrs={
         "ip": IPv6Parameter(),

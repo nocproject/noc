@@ -7,10 +7,11 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, InstanceOfParameter, StringParameter, StringListParameter
+from noc.core.interface.base import BaseInterface
+from base import InstanceOfParameter, StringParameter, StringListParameter
 
 
-class IConfigValidator(Interface):
+class IConfigValidator(BaseInterface):
     managed_object = InstanceOfParameter("ManagedObject")
     config = StringParameter()
     returns = StringListParameter()

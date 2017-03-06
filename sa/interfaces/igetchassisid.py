@@ -6,10 +6,11 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from base import Interface, DictListParameter, MACAddressParameter
+from noc.core.interface.base import BaseInterface
+from base import DictListParameter, MACAddressParameter
 
 
-class IGetChassisID(Interface):
+class IGetChassisID(BaseInterface):
     returns = DictListParameter(attrs={
         "first_chassis_mac": MACAddressParameter(required=False),
         "last_chassis_mac": MACAddressParameter(required=False)

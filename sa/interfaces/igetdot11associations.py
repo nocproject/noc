@@ -5,10 +5,11 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, ListOfParameter, DictParameter, MACAddressParameter, IPv4Parameter
+from noc.core.interface.base import BaseInterface
+from base import ListOfParameter, DictParameter, MACAddressParameter, IPv4Parameter
 
 
-class IGetDot11Associations(Interface):
+class IGetDot11Associations(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "mac": MACAddressParameter(),
         "ip": IPv4Parameter(required=False)

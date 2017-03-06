@@ -7,10 +7,11 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, ListOfParameter, DictParameter, StringParameter
+from noc.core.interface.base import BaseInterface
+from base import ListOfParameter, DictParameter, StringParameter
 
 
-class IAuthenticationForm(Interface):
+class IAuthenticationForm(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "xtype": StringParameter(),
         "name": StringParameter()

@@ -4,9 +4,10 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-from base import Interface, BooleanParameter
+from noc.core.interface.base import BaseInterface
+from base import BooleanParameter
 
 
-class ILogin(Interface):
+class ILogin(BaseInterface):
     returns = BooleanParameter()
 

@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, ListOfParameter, DictParameter, InterfaceNameParameter,
-                   StringParameter, BooleanParameter, RDParameter)
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter, InterfaceNameParameter,
+                  StringParameter, BooleanParameter, RDParameter)
 
 
-class IGetMPLSVPN(Interface):
+class IGetMPLSVPN(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         # VPN type
         "type": StringParameter(choices=["VRF", "VPLS", "VLL"]),

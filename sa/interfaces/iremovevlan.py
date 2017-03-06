@@ -5,9 +5,10 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, VLANIDParameter, BooleanParameter
+from noc.core.interface.base import BaseInterface
+from base import VLANIDParameter, BooleanParameter
 
 
-class IRemoveVlan(Interface):
+class IRemoveVlan(BaseInterface):
     vlan_id = VLANIDParameter()
     returns = BooleanParameter()

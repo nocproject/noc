@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, ListOfParameter, DictParameter, IPv4Parameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter, IPv4Parameter,
                   MACAddressParameter, DateTimeParameter, StringParameter)
 
 
-class IGetDHCPBinding(Interface):
+class IGetDHCPBinding(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "ip": IPv4Parameter(),
         "mac": MACAddressParameter(),

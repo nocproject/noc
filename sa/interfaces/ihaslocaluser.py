@@ -7,9 +7,10 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, StringParameter, BooleanParameter
+from noc.core.interface.base import BaseInterface
+from base import StringParameter, BooleanParameter
 
 
-class IHasLocalUser(Interface):
+class IHasLocalUser(BaseInterface):
     username = StringParameter()
     returns = BooleanParameter()

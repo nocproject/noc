@@ -5,11 +5,12 @@
 ## Copyright (C) 2007-2012 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from base import (DictParameter, Interface, MACAddressParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictParameter,   MACAddressParameter,
                   StringParameter, IPParameter, DictListParameter)
 
 
-class IGetDiscoveryID(Interface):
+class IGetDiscoveryID(BaseInterface):
     returns = DictParameter(attrs={
         # Chassis MAC ranges
         "chassis_mac": DictListParameter(attrs={

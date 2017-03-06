@@ -7,9 +7,10 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, InterfaceNameParameter, IntParameter, NoneParameter
+from noc.core.interface.base import BaseInterface
+from base import InterfaceNameParameter, IntParameter, NoneParameter
 
 
-class IGetIfIndex(Interface):
+class IGetIfIndex(BaseInterface):
     interface = InterfaceNameParameter()
     returns = IntParameter() | NoneParameter()

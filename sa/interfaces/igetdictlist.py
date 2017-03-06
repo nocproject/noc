@@ -7,8 +7,9 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, DictListParameter
+from noc.core.interface.base import BaseInterface
+from base import DictListParameter
 
 
-class IGetDictList(Interface):
+class IGetDictList(BaseInterface):
     returns = DictListParameter()

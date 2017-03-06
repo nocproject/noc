@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, ListOfParameter, DictParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter,
                   IntParameter, BooleanParameter, NoneParameter)
 
 
-class IGetObjectsStatus(Interface):
+class IGetObjectsStatus(BaseInterface):
     objects = ListOfParameter(element=IntParameter(), required=False)
     returns = ListOfParameter(element=DictParameter(attrs={
         "object_id": IntParameter(),

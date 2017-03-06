@@ -7,8 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import Interface
+from noc.core.interface.base import BaseInterface
 
 
-class IReboot(Interface):
+class IReboot(BaseInterface):
     pass

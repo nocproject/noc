@@ -7,10 +7,11 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, SubclassOfParameter, Parameter, BooleanParameter
+from noc.core.interface.base import BaseInterface
+from base import SubclassOfParameter, Parameter, BooleanParameter
 
 
-class IDBPostSave(Interface):
+class IDBPostSave(BaseInterface):
     model = SubclassOfParameter("Model")
     instance = Parameter()
     created = BooleanParameter()

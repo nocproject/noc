@@ -7,9 +7,10 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, StringParameter, BooleanParameter
+from noc.core.interface.base import BaseInterface
+from base import StringParameter, BooleanParameter
 
 
-class INotifySAE(Interface):
+class INotifySAE(BaseInterface):
     event = StringParameter()
     returns = BooleanParameter()

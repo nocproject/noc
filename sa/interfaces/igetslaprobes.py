@@ -8,11 +8,12 @@
 
 
 ## NOC modules
-from base import (Interface, DictListParameter, StringParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictListParameter, StringParameter,
                   BooleanParameter)
 
 
-class IGetSLAProbes(Interface):
+class IGetSLAProbes(BaseInterface):
     """
     name: Unique probe name
     description: Probe description
