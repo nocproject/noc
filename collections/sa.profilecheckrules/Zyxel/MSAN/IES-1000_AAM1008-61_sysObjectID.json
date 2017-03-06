@@ -1,0 +1,13 @@
+{
+    "name": "Zyxel | ZyNOS | IES-1000 AAM1008-61 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "5ddaef2c-494d-4607-9c83-90967be191a0",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.890.1.5.11.6",
+    "action": "match",
+    "profile": "Zyxel.MSAN"
+}
