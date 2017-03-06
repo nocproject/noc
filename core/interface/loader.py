@@ -51,7 +51,7 @@ class InterfaceLoader(object):
                     os.path.join(
                         "sa", "interfaces", "%s.py" % imname)):
                 # Common script
-                module_name = "noc.sa.interfaces.%s" % name
+                module_name = "noc.sa.interfaces.%s" % imname
             else:
                 logger.error("Interface not found: %s", name)
                 self.interfaces[name] = None
