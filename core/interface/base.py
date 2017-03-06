@@ -7,7 +7,7 @@
 ##----------------------------------------------------------------------
 
 from error import InterfaceTypeError
-from parameter import Parameter
+from noc.core.interface.parameter import BaseParameter as Parameter
 
 
 class BaseInterface(object):
