@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     ##
-    ## Catalyst 2960/3560/3750/3120 on IOS SE
+    ## Catalyst 2960/3560/3750/3750ME/3120 on IOS SE
     ## Catalyst 2960 on IOS FX
     ## Catalyst 2950 on IOS EA
     ## Catalyst 3850 on IOS EX
@@ -30,7 +30,7 @@ class Script(BaseScript):
         r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX")
+    @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX|EY")
     def execute_small_cat(self):
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
@@ -47,7 +47,7 @@ class Script(BaseScript):
         r"MAC Base = (?P<id>\S+).+MAC Count = (?P<count>\d+)",
         re.IGNORECASE | re.MULTILINE | re.DOTALL)
 
-    @BaseScript.match(version__regex=r"SG|\d\d\.\d\d\.\d\d\.E")
+    @BaseScript.match(version__regex=r"SG|\d\d\.\d\d\.\d\d\.E|EWA")
     def execute_cat4000(self):
         try:
             v = self.cli("show idprom chassis")
@@ -91,6 +91,29 @@ class Script(BaseScript):
         macs = []
         for f, t in [(mac, MAC(mac).shift(int(count) - 1))
                 for mac, count in self.rx_iosxe.findall(v)]:
+            if macs and MAC(f).shift(-1) == macs[-1][1]:
+                macs[-1][1] = t
+            else:
+                macs += [[f, t]]
+        return [
+            {
+                "first_chassis_mac": f,
+                "last_chassis_mac": t
+            } for f, t in macs
+        ]
+
+    ##
+    ## 7200, 7301
+    ##
+    rx_7200 = re.compile(
+        r"MAC Pool Size\s+(?P<count>\d+)\s+MAC Addr Base\s+(?P<mac>\S+)")
+
+    @BaseScript.match(platform__regex=r"7200|7301")
+    def execute_7200(self):
+        v = self.cli("show c%s | i MAC" % self.version["platform"])
+        macs = []
+        for f, t in [(mac, MAC(mac).shift(int(count) - 1))
+                for count, mac in self.rx_7200.findall(v)]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:
