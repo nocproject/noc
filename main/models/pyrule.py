@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## pyRule model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ import datetime
 ## Django modules
 from django.db import models
 ## NOC modules
-from noc.sa.interfaces.base import interface_registry
+from noc.core.interface.loader import loader as interface_loader
 from noc.core.handler import get_handler
 from noc.core.model.decorator import on_delete_check
 
@@ -38,8 +38,7 @@ class PyRule(models.Model):
         ordering = ["name"]
 
     name = models.CharField("Name", max_length=64, unique=True)
-    interface = models.CharField("Interface", max_length=64,
-            choices=[(i, i) for i in sorted(interface_registry)])
+    interface = models.CharField("Interface", max_length=64)
     description = models.TextField("Description")
     handler = models.CharField("Handler", max_length=255,
                                null=True, blank=True)
@@ -72,7 +71,11 @@ class PyRule(models.Model):
         """
         Get interface class
         """
-        return interface_registry[self.interface]
+        ic = interface_loader.get_interface(self.interface)
+        if ic:
+            return ic
+        else:
+            raise KeyError(ic)
 
     @classmethod
     def compile_text(self, text):

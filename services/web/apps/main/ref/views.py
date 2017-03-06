@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## main.ref application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ from mongoengine.base.common import _document_registry
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.site import site
-from noc.sa.interfaces.base import interface_registry
+from noc.core.interface.loader import loader as interface_loader
 from noc.lib.stencil import stencil_registry
 from noc import settings
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
@@ -55,8 +55,10 @@ class RefAppplication(ExtApplication):
         Interface names
         :return: (interface name, interface name)
         """
-        return sorted(({"id": n, "label": n} for n in interface_registry),
-                      key=lambda x: x["label"])
+        return [{
+            "id": n,
+            "label": n
+        } for n in interface_loader.iter_interfaces()]
 
     def build_profile(self):
         """
