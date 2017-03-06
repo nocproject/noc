@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, StringParameter, InterfaceNameParameter, ListOfParameter,
+from noc.core.interface.base import BaseInterface
+from base import (StringParameter, InterfaceNameParameter, ListOfParameter,
                   DictParameter, IPv4Parameter, MACAddressParameter)
 
 
-class IGetARP(Interface):
+class IGetARP(BaseInterface):
     vrf = StringParameter(required=False)
     interface = InterfaceNameParameter(required=False)
     returns = ListOfParameter(element=DictParameter(attrs={

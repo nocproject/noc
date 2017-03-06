@@ -7,8 +7,9 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, DictParameter
+from noc.core.interface.base import BaseInterface
+from base import DictParameter
 
 
-class IGetLicense(Interface):
+class IGetLicense(BaseInterface):
     returns = DictParameter()

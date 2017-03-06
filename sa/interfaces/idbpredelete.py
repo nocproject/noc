@@ -7,9 +7,10 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, SubclassOfParameter, Parameter
+from noc.core.interface.base import BaseInterface
+from base import SubclassOfParameter, Parameter
 
 
-class IDBPreDelete(Interface):
+class IDBPreDelete(BaseInterface):
     model = SubclassOfParameter("Model")
     instance = Parameter()

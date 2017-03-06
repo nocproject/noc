@@ -5,11 +5,12 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, ListOfParameter, DictParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter,
                   VLANIDParameter, StringParameter, StringListParameter)
 
 
-class ISyncVlans(Interface):
+class ISyncVlans(BaseInterface):
     vlans = ListOfParameter(element=DictParameter(attrs={
         "vlan_id": VLANIDParameter(),
         "name": StringParameter(required=False)

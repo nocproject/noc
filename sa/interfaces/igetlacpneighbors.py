@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOc modules
-from base import (Interface, IntParameter, InterfaceNameParameter,
+from noc.core.interface.base import BaseInterface
+from base import (IntParameter, InterfaceNameParameter,
                   MACAddressParameter, DictListParameter)
 
 
-class IGetLACPNeighbors(Interface):
+class IGetLACPNeighbors(BaseInterface):
     returns = DictListParameter(attrs={
         # LAG ID
         "lag_id": IntParameter(),

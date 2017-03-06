@@ -7,8 +7,9 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, ListParameter
+from noc.core.interface.base import BaseInterface
+from base import ListParameter
 
 
-class IGetList(Interface):
+class IGetList(BaseInterface):
     returns = ListParameter()

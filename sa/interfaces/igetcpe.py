@@ -7,12 +7,13 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, StringParameter, InterfaceNameParameter,
+from noc.core.interface.base import BaseInterface
+from base import (StringParameter, InterfaceNameParameter,
                   IPv4Parameter, MACAddressParameter, DictListParameter,
                   FloatParameter)
 
 
-class IGetCPE(Interface):
+class IGetCPE(BaseInterface):
     """
     * id - local CPE id (used for management commands)
     * global_id -- global CPE id, used for inter-controller movement tracking

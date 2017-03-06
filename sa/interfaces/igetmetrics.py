@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, DictParameter, DictListParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictParameter, DictListParameter,
                   IntParameter, StringParameter, FloatParameter)
 
 
-class IGetMetrics(Interface):
+class IGetMetrics(BaseInterface):
     metrics = DictParameter()
     hints = DictParameter(required=False)
     returns = DictListParameter(attrs={

@@ -8,9 +8,10 @@
 """
 """
 ## NOC modules
-from base import Interface, StringParameter
+from noc.core.interface.base import BaseInterface
+from base import StringParameter
 
 
-class IGetHTTPGet(Interface):
+class IGetHTTPGet(BaseInterface):
     url = StringParameter()
     returns = StringParameter()

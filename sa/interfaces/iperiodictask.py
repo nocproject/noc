@@ -7,9 +7,10 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, IntParameter, BooleanParameter
+from noc.core.interface.base import BaseInterface
+from base import IntParameter, BooleanParameter
 
 
-class IPeriodicTask(Interface):
+class IPeriodicTask(BaseInterface):
     timeout = IntParameter(default=0)
     returns = BooleanParameter(default=True)

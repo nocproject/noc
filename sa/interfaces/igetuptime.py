@@ -7,10 +7,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import Interface, FloatParameter, NoneParameter
+from noc.core.interface.base import BaseInterface
+from base import FloatParameter, NoneParameter
 
 
-class IGetUptime(Interface):
+class IGetUptime(BaseInterface):
     """
     System uptime in seconds
     """

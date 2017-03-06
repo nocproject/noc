@@ -7,10 +7,11 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, InstanceOfParameter, StringParameter
+from noc.core.interface.base import BaseInterface
+from base import InstanceOfParameter, StringParameter
 
 
-class IConfigDiffFilter(Interface):
+class IConfigDiffFilter(BaseInterface):
     managed_object = InstanceOfParameter("ManagedObject")
     config = StringParameter()
     returns = StringParameter()

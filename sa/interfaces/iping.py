@@ -5,11 +5,12 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, IPParameter, DictParameter,
+from noc.core.interface.base import BaseInterface
+from base import (IPParameter, DictParameter,
                   IntParameter, BooleanParameter, StringParameter, FloatParameter)
 
 
-class IPing(Interface):
+class IPing(BaseInterface):
     address = IPParameter()
     count = IntParameter(required=False)
     source_address = IPParameter(required=False)

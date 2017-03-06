@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, ListOfParameter, DictParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter,
                   InterfaceNameParameter, BooleanParameter)
 
 
@@ -15,7 +16,7 @@ from base import (Interface, ListOfParameter, DictParameter,
 ## Returns a list of interfaces status (up/down),
 ## including port-channels and SVIs
 ##
-class IGetInterfaceStatus(Interface):
+class IGetInterfaceStatus(BaseInterface):
     interface = InterfaceNameParameter(required=False)
     returns = ListOfParameter(element=DictParameter(attrs={
         "interface": InterfaceNameParameter(),

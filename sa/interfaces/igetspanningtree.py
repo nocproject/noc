@@ -7,12 +7,13 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, DictParameter, ListOfParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictParameter, ListOfParameter,
                   VLANIDMapParameter, MACAddressParameter, InterfaceNameParameter,
                   StringParameter, IntParameter, BooleanParameter)
 
 
-class IGetSpanningTree(Interface):
+class IGetSpanningTree(BaseInterface):
     returns = DictParameter(attrs={
         # Spanning-tree mode. Must be one of:
         #    None        - Spanning-tree is disabled

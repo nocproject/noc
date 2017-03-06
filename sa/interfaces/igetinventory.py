@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, DictListParameter, StringParameter, BooleanParameter, FloatParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictListParameter, StringParameter, BooleanParameter, FloatParameter,
                   StringListParameter, REStringParameter)
 
 
-class IGetInventory(Interface):
+class IGetInventory(BaseInterface):
     returns = DictListParameter(attrs={
         # Object type, used in ConnectionRule
         "type": StringParameter(required=False),

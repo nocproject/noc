@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, ListOfParameter, DictParameter, StringParameter, IntParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter, StringParameter, IntParameter,
                   InterfaceNameParameter, MACAddressParameter, IPv4Parameter)
 
 
@@ -42,7 +43,7 @@ from base import (Interface, ListOfParameter, DictParameter, StringParameter, In
 ##
 ## For local(7) - convert to integer and return untouched
 ##
-class IGetLLDPNeighbors(Interface):
+class IGetLLDPNeighbors(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "local_interface": InterfaceNameParameter(),
         # Should be set when platform advertises not LldpPortIdSubtype==5

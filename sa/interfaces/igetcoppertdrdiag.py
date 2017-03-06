@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, DictParameter, ListOfParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictParameter, ListOfParameter,
                   InterfaceNameParameter, StringParameter, IntParameter)
 
 
-class IGetCopperTDRDiag(Interface):
+class IGetCopperTDRDiag(BaseInterface):
     """
     Get copper cable TDR diagnostic results
 

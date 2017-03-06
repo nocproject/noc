@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, ListOfParameter, DictParameter, InterfaceNameParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter, InterfaceNameParameter,
                   MACAddressParameter, StringParameter)
 
 
-class IGetOAMStatus(Interface):
+class IGetOAMStatus(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "interface": InterfaceNameParameter(),
         "remote_mac": MACAddressParameter(),

@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, DictParameter, ListOfParameter, StringParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictParameter, ListOfParameter, StringParameter,
                   InterfaceNameParameter, IPParameter)
 
 
-class IGetCDPNeighbors(Interface):
+class IGetCDPNeighbors(BaseInterface):
     returns = DictParameter(attrs={
         # Local device id: FQDN or serial number
         "device_id": StringParameter(),

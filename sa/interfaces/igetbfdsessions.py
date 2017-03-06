@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC Modules
-from base import (Interface, DictListParameter, IPParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictListParameter, IPParameter,
                   InterfaceNameParameter, StringParameter, IntParameter, ListOfParameter)
 
 
-class IGetBFDSessions(Interface):
+class IGetBFDSessions(BaseInterface):
     returns = DictListParameter(attrs={
         "local_address": IPParameter(required=False),
         "remote_address": IPParameter(),

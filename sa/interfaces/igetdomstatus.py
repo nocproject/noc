@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, ListOfParameter, InterfaceNameParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, InterfaceNameParameter,
                   DictParameter, FloatParameter, NoneParameter)
 
 
-class IGetDOMStatus(Interface):
+class IGetDOMStatus(BaseInterface):
     """
     Get Digital Optical Monitoring status
 

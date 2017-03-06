@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, ListOfParameter, DictParameter, StringParameter, BooleanParameter
+from noc.core.interface.base import BaseInterface
+from base import ListOfParameter, DictParameter, StringParameter, BooleanParameter
 
 
 ##
@@ -15,7 +16,7 @@ from base import Interface, ListOfParameter, DictParameter, StringParameter, Boo
 ## superuser, operator
 ##
 ##
-class IGetLocalUsers(Interface):
+class IGetLocalUsers(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "username": StringParameter(),
         "class": StringParameter(),

@@ -5,11 +5,12 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, ListOfParameter, DictParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter,
                   StringParameter)
 
 
-class IGetTechSupport(Interface):
+class IGetTechSupport(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         "name": StringParameter(),
         "section": StringParameter()

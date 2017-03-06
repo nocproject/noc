@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, DictListParameter, StringParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictListParameter, StringParameter,
                   InterfaceNameParameter, MACAddressParameter)
 
 
-class IGetHuaweiNDPNeighbors(Interface):
+class IGetHuaweiNDPNeighbors(BaseInterface):
     """
     Huawei NDP neighbors interface
     """

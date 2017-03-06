@@ -5,13 +5,13 @@
 ## Copyright (C) 2007-2015 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-
-from base import (Interface, ListOfParameter, DictParameter,
+from noc.core.interface.base import BaseInterface
+from base import (ListOfParameter, DictParameter,
                   InterfaceNameParameter, BooleanParameter,
                   IntParameter)
 
 
-class IGetInterfaceStatusEx(Interface):
+class IGetInterfaceStatusEx(BaseInterface):
     """
     Returns extended interface status for all available interfaces
     including port channels and SVI

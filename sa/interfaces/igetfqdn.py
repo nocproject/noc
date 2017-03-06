@@ -7,8 +7,9 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import Interface, StringParameter
+from noc.core.interface.base import BaseInterface
+from base import StringParameter
 
 
-class IGetFQDN(Interface):
+class IGetFQDN(BaseInterface):
     returns = StringParameter()

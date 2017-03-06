@@ -7,11 +7,12 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import (Interface, DictListParameter, MACAddressParameter,
+from noc.core.interface.base import BaseInterface
+from base import (DictListParameter, MACAddressParameter,
                   StringParameter, IntParameter, BooleanParameter)
 
 
-class IGetREPTopology(Interface):
+class IGetREPTopology(BaseInterface):
     """
     Get REP topology information
     """

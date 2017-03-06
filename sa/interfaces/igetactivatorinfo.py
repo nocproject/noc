@@ -7,10 +7,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import Interface, DictListParameter, StringParameter, IntParameter
+from noc.core.interface.base import BaseInterface
+from base import DictListParameter, StringParameter, IntParameter
 
 
-class IGetActivatorInfo(Interface):
+class IGetActivatorInfo(BaseInterface):
     returns = DictListParameter(attrs={
         "timestamp": IntParameter(),
         "pool": StringParameter(),

@@ -5,11 +5,12 @@
 ##----------------------------------------------------------------------
 """
 """
-from base import (Interface, VLANIDParameter, StringParameter, 
+from noc.core.interface.base import BaseInterface
+from base import (VLANIDParameter, StringParameter,
                   StringListParameter, BooleanParameter)
 
 
-class IAddVlan(Interface):
+class IAddVlan(BaseInterface):
     vlan_id = VLANIDParameter()
     name = StringParameter()
     tagged_ports = StringListParameter(default=[])

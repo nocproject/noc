@@ -7,10 +7,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC Modules
-from base import Interface, Parameter, DictParameter
+from noc.core.interface.base import BaseInterface
+from base import Parameter, DictParameter
 
 
-class IGetDiscoveryCustom(Interface):
+class IGetDiscoveryCustom(BaseInterface):
     instance = Parameter()
     managed_object = Parameter()
     returns = DictParameter()

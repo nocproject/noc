@@ -7,10 +7,11 @@
 ##----------------------------------------------------------------------
 
 ## NOC Modules
-from base import Interface, DictListParameter, InterfaceNameParameter, StringParameter
+from noc.core.interface.base import BaseInterface
+from base import DictListParameter, InterfaceNameParameter, StringParameter
 
 
-class IGetUDLDNeighbors(Interface):
+class IGetUDLDNeighbors(BaseInterface):
     returns = DictListParameter(attrs={
         "local_device": StringParameter(),
         "local_interface": InterfaceNameParameter(),

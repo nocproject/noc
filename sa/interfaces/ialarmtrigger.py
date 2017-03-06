@@ -7,8 +7,9 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import Interface, InstanceOfParameter
+from noc.core.interface.base import BaseInterface
+from base import InstanceOfParameter
 
 
-class IAlarmTrigger(Interface):
+class IAlarmTrigger(BaseInterface):
     alarm = InstanceOfParameter("ActiveAlarm")
