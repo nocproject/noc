@@ -211,6 +211,7 @@ class Script(BaseScript):
             iftype = {
                 "meth": "management",
                 "null": "null",
+                "loopback": "loopback",
                 "vlanif": "SVI"
             }[match.group("ifname").lower()]
             iface = {
