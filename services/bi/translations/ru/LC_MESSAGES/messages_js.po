@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-02-28 22:51+0300\n"
-"PO-Revision-Date: 2017-03-01 11:27+0500\n"
+"POT-Creation-Date: 2017-03-06 18:21+0300\n"
+"PO-Revision-Date: 2017-03-06 21:51+0500\n"
 "Last-Translator: \n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
@@ -21,237 +21,326 @@ msgstr ""
 "Generated-By: Babel 2.3.4\n"
 "X-Generator: Poedit 1.8.12\n"
 
-#: ui/bi/bi.js:9
+#: ui/bi/bi.js:10
 msgid "Previous Month"
 msgstr "Предыдущий месяц"
 
-#: ui/bi/bi.js:10
+#: ui/bi/bi.js:11
 msgid "Next Month"
 msgstr "Следующий месяц"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "January"
 msgstr "Январь"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "February"
 msgstr "Февраль"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "March"
 msgstr "Март"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "April"
 msgstr "Апрель"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "May"
 msgstr "Май"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "June"
 msgstr "Июнь"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "July"
 msgstr "Июль"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "August"
 msgstr "Август"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "September"
 msgstr "Сентябрь"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "October"
 msgstr "Октябрь"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "November"
 msgstr "Ноябрь"
 
-#: ui/bi/bi.js:11
+#: ui/bi/bi.js:12
 msgid "December"
 msgstr "Декабрь"
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:13
 msgid "Sunday"
 msgstr "Воскресенье"
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:13
 msgid "Monday"
 msgstr "Понедельник"
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:13
 msgid "Tuesday"
 msgstr "Вторник"
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:13
 msgid "Wednesday"
 msgstr "Среда"
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:13
 msgid "Thursday"
 msgstr "Четверь"
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:13
 msgid "Friday"
 msgstr "Пятница"
 
-#: ui/bi/bi.js:12
+#: ui/bi/bi.js:13
 msgid "Saturday"
 msgstr "Суббота"
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:14 ui/bi/bi.js:644
 msgid "Sun"
 msgstr "Вскр."
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:14 ui/bi/bi.js:644
 msgid "Mon"
 msgstr "Пн."
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:14 ui/bi/bi.js:644
 msgid "Tue"
 msgstr "Вт."
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:14 ui/bi/bi.js:644
 msgid "Wed"
 msgstr "Ср."
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:14 ui/bi/bi.js:644
 msgid "Thu"
 msgstr "Чт."
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:14 ui/bi/bi.js:644
 msgid "Fri"
 msgstr "Пт."
 
-#: ui/bi/bi.js:13 ui/bi/bi.js:632
+#: ui/bi/bi.js:14 ui/bi/bi.js:644
 msgid "Sat"
 msgstr "Сб."
 
-#: ui/bi/bi.js:14
+#: ui/bi/bi.js:15
 msgid "Midnight"
 msgstr "Полночь"
 
-#: ui/bi/bi.js:15
+#: ui/bi/bi.js:16
 msgid "Noon"
 msgstr "Полдень"
 
-#: ui/bi/bi.js:74
+#: ui/bi/bi.js:75
 msgid "Filter by Field"
 msgstr "Фильтровать по полю"
 
-#: ui/bi/bi.js:74
+#: ui/bi/bi.js:75
 msgid "List of fields (AND) "
 msgstr "Список полей (И)"
 
-#: ui/bi/bi.js:74
+#: ui/bi/bi.js:75
 msgid "Filter"
 msgstr "Фильтр"
 
-#: ui/bi/bi.js:81
+#: ui/bi/bi.js:82
 msgid "Field Aggregate"
 msgstr "Поле агрегации"
 
-#: ui/bi/bi.js:81
+#: ui/bi/bi.js:82
 msgid "List of fields"
 msgstr "Список полей"
 
-#: ui/bi/bi.js:81
+#: ui/bi/bi.js:82
 msgid "Aggregate"
 msgstr "Агрегировать"
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:89
 msgid "Today"
 msgstr "Сегодня"
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:89
 msgid "This week"
 msgstr "Эта неделя"
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:89
 msgid "This month"
 msgstr "Этот месяц"
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:89
 msgid "This year"
 msgstr "Этот год"
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:89
 msgid "Yesterday"
 msgstr "Вчер"
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:89
 msgid "Previous week"
 msgstr "Предыдущая неделя"
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:89
 msgid "Previous month"
 msgstr "Предыдущий месяц"
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:89
 msgid "Previous year"
 msgstr "Предыдущий год"
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:89
 msgid "Select"
 msgstr "Выбор"
 
-#: ui/bi/bi.js:88
+#: ui/bi/bi.js:89
 msgid "Time Selector"
 msgstr "Выбор времени"
 
-#: ui/bi/bi.js:315
+#: ui/bi/bi.js:321
 msgid "Duration Intervals"
 msgstr "Период для Исключения"
 
-#: ui/bi/bi.js:1537
+#: ui/bi/bi.js:478
+msgid "reset"
+msgstr "сбросить"
+
+#: ui/bi/bi.js:1527
+msgid "No"
+msgstr ""
+
+#: ui/bi/bi.js:1529
+msgid "Yes"
+msgstr ""
+
+#: ui/bi/bi.js:1663
 msgid "Select a field"
 msgstr "Выберете поле"
 
-#: ui/bi/bi.js:1665
+#: ui/bi/bi.js:1791
 msgid "Clear"
 msgstr "Очистить"
 
-#: ui/bi/bi.js:1665
+#: ui/bi/bi.js:1791
 msgid "Apply"
 msgstr "Применить"
 
-#: ui/bi/bi.js:1666
+#: ui/bi/bi.js:1792
 msgid "type"
 msgstr "тип"
 
-#: ui/bi/bi.js:1670
+#: ui/bi/bi.js:1796
 msgid "dictionary"
 msgstr "словарь"
 
-#: ui/bi/bi.js:1768
+#: ui/bi/bi.js:1894
 msgid "Select from"
 msgstr "Выбрать из"
 
-#: ui/bi/bi.js:1911
+#: ui/bi/bi.js:1984 ui/bi/bi.js:1989 ui/bi/bi.js:2002 ui/bi/bi.js:2013
+#: ui/bi/bi.js:2026
+msgid "interval"
+msgstr "интервал"
+
+#: ui/bi/bi.js:1990 ui/bi/bi.js:2003 ui/bi/bi.js:2014 ui/bi/bi.js:2027
+msgid "not in interval"
+msgstr "не в интервале"
+
+#: ui/bi/bi.js:1991
+msgid "periodic interval"
+msgstr "периодический интервал"
+
+#: ui/bi/bi.js:1992
+msgid "not in periodic"
+msgstr "не в периодическом"
+
+#: ui/bi/bi.js:2020
+msgid "empty"
+msgstr "пусто"
+
+#: ui/bi/bi.js:2021
+msgid "not empty"
+msgstr "не пусто"
+
+#: ui/bi/bi.js:2022
+msgid "like"
+msgstr "содержит"
+
+#: ui/bi/bi.js:2037
 msgid "List of fields (OR)"
 msgstr "Список полей (ИЛИ)"
 
-#: ui/bi/bi.js:1911 ui/bi/bi.js:1918
+#: ui/bi/bi.js:2037 ui/bi/bi.js:2044
 msgid "Condition"
 msgstr "Условие"
 
-#: ui/bi/bi.js:1911 ui/bi/bi.js:1918
+#: ui/bi/bi.js:2037 ui/bi/bi.js:2044
+msgid "End Value"
+msgstr ""
+
+#: ui/bi/bi.js:2037 ui/bi/bi.js:2044 ui/bi/bi.js:2102
 msgid "Value"
 msgstr "Значение"
 
-#: ui/bi/bi.js:1911 ui/bi/bi.js:1918
-msgid "To Value"
-msgstr "К значению"
-
-#: ui/bi/bi.js:1964
+#: ui/bi/bi.js:2090
 msgid "Select a condition"
 msgstr "Выберите условие"
+
+#: ui/bi/bi.js:2109
+msgid "Start Value"
+msgstr ""
+
+#: ui/bi/bi.js:2206 ui/bi/bi.js:2213
+msgid "empty value"
+msgstr "пустое значение"
+
+#: ui/bi/bi.js:2225 ui/bi/bi.js:2229
+msgid "hour is not number"
+msgstr "значение для часа не число"
+
+#: ui/bi/bi.js:2233 ui/bi/bi.js:2237
+msgid "minute is not number"
+msgstr "значение для минут не число"
+
+#: ui/bi/bi.js:2246 ui/bi/bi.js:2249
+msgid "hour is not in range 0-23"
+msgstr "значение для часа не в диапазоне 0-23"
+
+#: ui/bi/bi.js:2253 ui/bi/bi.js:2256
+msgid "minute is not in range 0-59"
+msgstr "значение для минут не в диапазоне 0-59"
+
+#: ui/bi/bi.js:2265 ui/bi/bi.js:2288 ui/bi/bi.js:2296 ui/bi/bi.js:2348
+msgid "bad interval"
+msgstr "плохой интервал"
+
+#: ui/bi/bi.js:2275 ui/bi/bi.js:2282
+msgid "value is not number"
+msgstr "значение не число"
+
+#: ui/bi/bi.js:2318
+msgid "interval intersected"
+msgstr "интервал пересекается"
+
+#: ui/bi/bi.js:2335 ui/bi/bi.js:2341
+msgid "is not ip address"
+msgstr "это не IP-адрес"
+
+#: ui/bi/bi.js:2671
+msgid "Duration by Report"
+msgstr "Длительность по Отчету"
+
+#: ui/bi/bi.js:2696
+msgid "EI Duration"
+msgstr "ИП Длительность"
 
 #~ msgid "List of fields (AND) :"
 #~ msgstr "Список полей (И)"
@@ -270,3 +359,6 @@ msgstr "Выберите условие"
 
 #~ msgid "Condition:"
 #~ msgstr "Условие:"
+
+#~ msgid "To Value"
+#~ msgstr "К значению"
