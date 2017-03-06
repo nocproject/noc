@@ -48,7 +48,7 @@ class Script(BaseScript):
             out = self.profile.parse_table(block.lstrip(), part_name="lacp")
             self.logger.debug("Out, %s\n\n" % out)
             bundle = []
-            if "Remote" not in out:
+            if not out.get("Remote", None):
                 first = True
                 continue
             for bun in out["Local"]["table"]:
