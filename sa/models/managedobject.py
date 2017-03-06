@@ -36,6 +36,7 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.networksegment import NetworkSegment
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import INETField, TagsField, DocumentReferenceField
+from noc.lib.db import SQL
 from noc.lib.app.site import site
 from noc.lib.stencil import stencil_registry
 from noc.lib.validators import is_ipv4, is_ipv4_prefix
@@ -985,9 +986,7 @@ class ManagedObject(Model):
             elif is_ipv4_prefix(query):
                 # Match by prefix
                 p = IP.prefix(query)
-                if p.mask >= 16:
-                    return Q(address__gte=p.first.address,
-                             address__lte=p.last.address)
+                return SQL("address::inet <<= '%s'" % p)
             else:
                 try:
                     mac = MACAddressParameter().clean(query)
