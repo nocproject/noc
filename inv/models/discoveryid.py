@@ -2,12 +2,16 @@
 ##----------------------------------------------------------------------
 ## Discovery id
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import operator
+from threading import Lock
 ## Third-party modules
 from mongoengine.queryset import DoesNotExist
+import cachetools
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ListField,
@@ -19,6 +23,10 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.core.perf import metrics
+from noc.core.cache.decorator import cachedmethod
+from noc.core.cache.base import cache
+
+mac_lock = Lock()
 
 
 class MACRange(EmbeddedDocument):
@@ -50,6 +58,8 @@ class DiscoveryID(Document):
     router_id = StringField()
     udld_id = StringField()  # UDLD local identifier
 
+    _mac_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
+
     def __unicode__(self):
         return self.object.name
 
@@ -65,13 +75,44 @@ class DiscoveryID(Document):
             ]
         o = cls.objects.filter(object=object.id).first()
         if o:
+            old_macs = set(m.first_mac for m in o.chassis_mac)
             o.chassis_mac = chassis_mac
             o.hostname = hostname
             o.router_id = router_id
             o.save()
+            old_macs -= set(m.first_mac for m in o.chassis_mac)
+            if old_macs:
+                cache.delete_many(["discoveryid-mac-%s" % m for m in old_macs])
         else:
             cls(object=object, chassis_mac=chassis_mac,
                 hostname=hostname, router_id=router_id).save()
+        cache.delete()
+
+    @classmethod
+    @cachedmethod(operator.attrgetter("_mac_cache"),
+                  key="discoveryid-mac-%s",
+                  lock=lambda _: mac_lock)
+    def get_by_mac(cls, mac):
+        c = cls._get_collection()
+        r = c.find_one({"chassis_mac.first_mac": mac},
+               {"_id": 0, "object": 1, "chassis_mac": 1})
+        if r:
+            metrics["discoveryid_mac_first"] += 1
+        else:
+            # Slow path, find by range
+            r = c.find_one({
+                "chassis_mac": {
+                    "$elemMatch": {
+                        "first_mac": {
+                            "$lte": mac
+                        },
+                        "last_mac": {
+                            "$gte": mac
+                        }
+                    }
+                }
+            }, {"_id": 0, "object": 1, "chassis_mac": 1})
+        return r
 
     @classmethod
     def find_object(cls, mac=None, ipv4_address=None):
@@ -91,22 +132,8 @@ class DiscoveryID(Document):
         # Find by mac
         if mac:
             metrics["discoveryid_mac_requests"] += 1
-            r = c.find_one({
-                "chassis_mac": {
-                    "$elemMatch": {
-                        "first_mac": {
-                            "$lte": mac
-                        },
-                        "last_mac": {
-                            "$gte": mac
-                        }
-                    }
-                }
-            }, {"_id": 0, "object": 1, "chassis_mac": 1}, read_preference=ReadPreference.SECONDARY_PREFERRED)
+            r = cls.get_by_mac(mac)
             if r:
-                for m in r["chassis_mac"]:
-                    if m["first_mac"] == mac:
-                        metrics["discoveryid_mac_first"] += 1
                 return ManagedObject.get_by_id(r["object"])
             # Fallback to interface search
             metrics["discoveryid_mac_interface"] += 1
