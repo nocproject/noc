@@ -111,7 +111,7 @@ class DiscoveryID(Document):
                         }
                     }
                 }
-            }, {"_id": 0, "object": 1, "chassis_mac": 1})
+            }, {"_id": 0, "object": 1})
         return r
 
     @classmethod
