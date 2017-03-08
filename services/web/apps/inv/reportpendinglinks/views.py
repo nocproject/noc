@@ -38,7 +38,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
     form = ReportForm
 
     def get_data(self, request, pool, obj_profile=None, **kwargs):
-        rg = re.compile("Pending\slink:\s(?P<local_iface>.+)\s-\s(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
+        rg = re.compile("Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
                         re.IGNORECASE)
         problems = {}  # id -> problem
         problem = {"Not found iface on remote": "->",
