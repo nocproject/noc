@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Various text-processing utilities
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 import re
@@ -23,7 +23,7 @@ rx_header_start = re.compile(r"^\s*[-=]+[\s\+]+[-=]+")
 rx_col = re.compile(r"^([\s\+]*)([\-]+|[=]+)")
 
 
-def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0):
+def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=None):
     """
     :param s: Table for parsing
     :type s: str
@@ -33,6 +33,8 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0):
     :type allow_extend: bool
     :param max_width: Max table width, if table width < max_width extend length, else - nothing
     :type max_width: int
+    :param footer: stop iteration if match expression footer
+    :type footer: string
     >>> parse_table("First Second Third\\n----- ------ -----\\na     b       c\\nddd   eee     fff\\n")
     [['a', 'b', 'c'], ['ddd', 'eee', 'fff']]
     >>> parse_table("First Second Third\\n----- ------ -----\\na             c\\nddd   eee     fff\\n")
@@ -40,10 +42,14 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0):
     """
     r = []
     columns = []
+    if footer is not None:
+        rx_footer = re.compile(footer)
     for l in s.splitlines():
         if not l.strip():
             columns = []
             continue
+        if (footer is not None) and rx_footer.search(l):
+            break
         if rx_header_start.match(l):
             # Column delimiters found. try to determine column's width
             columns = []
