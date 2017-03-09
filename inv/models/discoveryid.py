@@ -86,7 +86,6 @@ class DiscoveryID(Document):
         else:
             cls(object=object, chassis_mac=chassis_mac,
                 hostname=hostname, router_id=router_id).save()
-        cache.delete()
 
     @classmethod
     @cachedmethod(operator.attrgetter("_mac_cache"),
