@@ -109,7 +109,7 @@ class PhoneRange(Document):
             Q(
                 from_number__gt=self.from_number,
                 from_number__lte=self.to_number,
-                to_number__gte=self.to_number
+                to_number__gt=self.to_number
             ) | Q(
                 to_number__lt=self.to_number,
                 from_number__lt=self.from_number,
