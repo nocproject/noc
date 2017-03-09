@@ -25,7 +25,8 @@ Ext.define("NOC.sa.administrativedomain.Application", {
             text: __("Parent"),
             dataIndex: "parent",
             renderer: NOC.render.Lookup("parent"),
-            width: 150
+            width: 150,
+            hidden: true
         },
         {
             text: __("Pool"),
@@ -74,5 +75,20 @@ Ext.define("NOC.sa.administrativedomain.Application", {
             fieldLabel: __("Pool"),
             allowBlank: true
         }
-    ]
+    ],
+
+    filters: [
+        {
+            title: __("By Adm. Domain"),
+            name: "parent",
+            ftype: "tree",
+            lookup: "sa.administrativedomain"
+        }
+    ],
+    levelFilter: {
+        icon: NOC.glyph.level_down,
+        color: NOC.colors.level_down,
+        filter: 'parent',
+        tooltip: __('Parent filter')
+    }
 });
