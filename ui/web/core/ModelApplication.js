@@ -112,6 +112,16 @@ Ext.define("NOC.core.ModelApplication", {
         // Setup Grid toolbar
         var gridToolbar = [];
 
+        if(me.levelFilter) {
+            me.upButton = Ext.create("Ext.button.Button", {
+                glyph: NOC.glyph.level_up,
+                tooltip: __("Level Up"),
+                scope: me,
+                handler: me.onLevelUp
+            });
+            gridToolbar.push(me.upButton);
+        }
+
         me.searchField = Ext.create("Ext.ux.form.SearchField", {
             name: "search_field",
             hideLabel: true,
@@ -203,7 +213,8 @@ Ext.define("NOC.core.ModelApplication", {
                         tree: "NOC.core.modelfilter.Tree"
                     }[f.ftype];
                     var fc = Ext.Object.merge(f, {
-                        referrer: me.appName
+                        referrer: me.appName,
+                        itemId: f.name
                     });
                     var fg = Ext.create(ft, fc);
                     fg.handler = fh;
@@ -1593,6 +1604,31 @@ Ext.define("NOC.core.ModelApplication", {
             }
             me.currentQuery = filterStr;
             me.store.setFilterParams(me.currentQuery);
+        }
+    },
+    //
+    onLevelUp: function() {
+        var me = this,
+            filter = me.grid.getComponent("filters").getComponent(me.levelFilter.filter),
+            currentFilter = me.currentQuery[me.levelFilter.filter];
+
+        if(currentFilter) {
+            Ext.Ajax.request({
+                method: "GET",
+                url: filter.tree.restUrl + "/" + currentFilter + "/get_path/",
+                scope: me,
+                success: function(response) {
+                    var data = Ext.decode(response.responseText).data,
+                        newRoot;
+
+                    if(data.length <= 1) {
+                        newRoot = "_root_"
+                    } else {
+                        newRoot = data[data.length - 2].id
+                    }
+                    filter.tree.restoreById(newRoot)
+                }
+            })
         }
     }
 });
