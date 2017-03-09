@@ -239,7 +239,6 @@ Ext.define('NOC.core.TreeCombo', {
         var me = this;
 
         if(id === '_root_') {
-            console.log(me);
             me.autocomplete.setRawValue(__("Root"));
             return;
         }
