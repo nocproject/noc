@@ -28,6 +28,8 @@ class BaseExtractor(object):
     REPORT_INTERVAL = 1000
     # List of rows to be used as constant data
     data = []
+    # Suppress deduplication message
+    suppress_deduplication_log = False
 
     def __init__(self, system, config=None):
         self.system = system
@@ -71,7 +73,8 @@ class BaseExtractor(object):
         for row in self.iter_data():
             row = self.clean(row)
             if row[0] in seen:
-                self.logger.error("Duplicated row truncated: %r", row)
+                if not self.suppress_deduplication_log:
+                    self.logger.error("Duplicated row truncated: %r", row)
                 continue
             else:
                 seen.add(row[0])
