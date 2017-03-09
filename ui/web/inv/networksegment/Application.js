@@ -16,7 +16,6 @@ Ext.define("NOC.inv.networksegment.Application", {
     ],
     model: "NOC.inv.networksegment.Model",
     search: true,
-    treeFilter: "parent",
 
     initComponent: function() {
         var me = this;
@@ -45,7 +44,8 @@ Ext.define("NOC.inv.networksegment.Application", {
                     text: __("Parent"),
                     dataIndex: "parent",
                     width: 200,
-                    renderer: NOC.render.Lookup("parent")
+                    renderer: NOC.render.Lookup("parent"),
+                    hidden: true
                 },
                 {
                     text: __("Name"),
@@ -166,5 +166,19 @@ Ext.define("NOC.inv.networksegment.Application", {
         NOC.launch("inv.map", "history", {
             args: [me.currentRecord.get("id")]
         });
+    },
+    filters: [
+        {
+            title: __("By Segment"),
+            name: "parent",
+            ftype: "tree",
+            lookup: "inv.networksegment"
+        }
+    ],
+    levelFilter: {
+        icon: NOC.glyph.level_down,
+        color: NOC.colors.level_down,
+        filter: 'parent',
+        tooltip: __('Parent filter')
     }
 });
