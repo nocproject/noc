@@ -1,19 +1,16 @@
 # mongodb RedHat
 ---
-- name: Add GPG key Mongo
-  rpm_key:
-    state: present
-    key: "https://www.mongodb.org/static/pgp/server-{{mongo_version}}.asc"
-    validate_certs: no
-  environment:
-    https_proxy: "{{http_proxy}}"
-  tags:
-    - repo
-
 - name: Add MongoDB repository
-  template:
-    src: "os/RedHat/etc/yum.repos.d/mongodb-org-{{mongo_version}}.repo.j2"
-    dest: "/etc/yum.repos.d/mongodb-org-{{mongo_version}}.repo"
+  yum_repository:
+    name: mongodb
+    description: MongoDB Repository
+    baseurl: https://repo.mongodb.org/yum/redhat/{{ ansible_distribution_major_version }}/mongodb-org/{{ mongo_version }}/x86_64/
+    gpgcheck: yes
+    gpgkey: https://www.mongodb.org/static/pgp/server-{{ mongo_version }}.asc
+    enabled: yes
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
   tags:
     - repo
 
