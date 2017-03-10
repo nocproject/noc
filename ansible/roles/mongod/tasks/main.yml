@@ -15,6 +15,14 @@
   tags:
     - config
 
+- name: symlink for config if version is not 3.2
+  file:
+    src: "{{ noc_root }}/var/etc/mongo/mongod.conf"
+    dest: "{{ etc_prefix }}/mongod.conf"
+    state: link
+    force: yes
+  when: mongo_version != 3.2
+
 - name: Setting mongod-arbiter config
   template:
     src: mongod-arbiter.conf.j2
