@@ -229,21 +229,21 @@ class BIAPI(API):
             if node and node["id"] == p_id:
                 return node
             else:
-                if node and "nodes" in node.keys():
-                    for child in node["nodes"]:
+                if node and "children" in node.keys():
+                    for child in node["children"]:
                         _searched = search_parent(child, p_id)
                         if _searched:
                             return _searched
                 else:
                     return None
 
-        def sort_nodes(node):
-            if "nodes" not in node.keys():
+        def sort_children(node):
+            if "children" not in node.keys():
                 return
             else:
-                node["nodes"] = sorted(node["nodes"], key=lambda x: x["text"])
-                for n in node["nodes"]:
-                    sort_nodes(n)
+                node["children"] = sorted(node["children"], key=lambda x: x["text"])
+                for n in node["children"]:
+                    sort_children(n)
 
         if "datasource" not in params:
             raise APIError("No datasource")
@@ -312,12 +312,12 @@ class BIAPI(API):
                 parent_id = col[0]
                 if searched:
                     if searched["id"] != col[0]:
-                        if "nodes" not in searched.keys():
-                            searched["nodes"] = []
-                        if not col[0] in map(lambda x: x["id"], searched["nodes"]):
-                            searched["nodes"].append({"id": col[0], "text": col[1]})
+                        if "children" not in searched.keys():
+                            searched["children"] = []
+                        if not col[0] in map(lambda x: x["id"], searched["children"]):
+                            searched["children"].append({"id": col[0], "text": col[1]})
                 else:  # start point
-                    tree = {"id": col[0], "text": col[1], "nodes": []}
+                    tree = {"id": col[0], "text": col[1], "children": []}
 
-        sort_nodes(tree)
+        sort_children(tree)
         return tree
