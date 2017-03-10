@@ -55,10 +55,14 @@ class ReportForm(forms.Form):
 class ReportFilterApplication(SimpleReport):
     title = _("Discovery Problem")
     form = ReportForm
+    try:
+        default_pool = Pool.objects.get(name="default")
+    except:
+        default_pool = Pool.objects.all()[0]
     predefined_reports = {
         "default": PredefinedReport(
             _("Failed Discovery 2(default)"), {
-                "pool": Pool.objects.get(name="default")
+                "pool": default_pool
             }
         )
     }
