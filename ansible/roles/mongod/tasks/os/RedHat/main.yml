@@ -48,6 +48,7 @@
     src: "os/RedHat/etc/sysconfig/mongod.j2"
     dest: "/etc/sysconfig/mongod"
   notify: restart mongod
+  when: mongo_version == 3.2
   tags:
     - config
 
