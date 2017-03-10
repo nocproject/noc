@@ -38,7 +38,7 @@ class ReportFilterApplication(SimpleReport):
         )
     }
 
-    def get_data(self, request, pool=Pool.get_by_name("default"), avail_status=None, **kwargs):
+    def get_data(self, request, pool=Pool.objects.filter()[0], avail_status=None, **kwargs):
         data = []
 
         data += [SectionRow(name=pool.name)]
