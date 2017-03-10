@@ -43,7 +43,7 @@
 - name: Monitoring output is not choosen
   fail:
     msg: "Either PROMETHEUS_ENABLED or INFLUXDB_ENABLED have to be True. otherwise telegraf will not startup"
-  when: not telegraf_influxdb_enabled and not telegraf_influxdb_enabled
+  when: not telegraf_influxdb_enabled and not telegraf_prometheus_enabled
 
 - name: Ensure tower url
   fail:
