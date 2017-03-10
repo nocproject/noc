@@ -3,7 +3,7 @@
 - name: Add GPG key Mongo
   rpm_key:
     state: present
-    key: https://www.mongodb.org/static/pgp/server-3.2.asc
+    key: "https://www.mongodb.org/static/pgp/server-{{mongo_version}}.asc"
     validate_certs: no
   environment:
     https_proxy: "{{http_proxy}}"
@@ -12,8 +12,8 @@
 
 - name: Add MongoDB repository
   template:
-    src: os/RedHat/etc/yum.repos.d/mongodb-org-3.2.repo.j2
-    dest: /etc/yum.repos.d/mongodb-org-3.2.repo
+    src: "os/RedHat/etc/yum.repos.d/mongodb-org-{{mongo_version}}.repo.j2"
+    dest: "/etc/yum.repos.d/mongodb-org-{{mongo_version}}.repo"
   tags:
     - repo
 
