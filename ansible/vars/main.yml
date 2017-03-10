@@ -4,7 +4,7 @@
 
 # packages
 postgresql_version: "9.4"
-mongo_version: "3.2"
+mongo_version: "{{ lookup('env','MONGO_VERSION') | default(3.2, True)}}"
 grafana_version: "4.1.2-1486989747"
 nsq_version: "0.3.8"
 
