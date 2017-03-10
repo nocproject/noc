@@ -63,7 +63,7 @@ class ReportFilterApplication(SimpleReport):
         )
     }
 
-    def get_data(self, request, pool=Pool.get_by_name("default"), obj_profile=None,
+    def get_data(self, request, pool=None, obj_profile=None,
                  avail_status=None, profile_check_only=None,
                  failed_scripts_only=None, filter_pending_links=None,
                  filter_none_objects=None,
@@ -71,6 +71,8 @@ class ReportFilterApplication(SimpleReport):
         data = []
         avail = {}
 
+        if not pool:
+            pool = Pool.objects.filter()[0]
         data += [SectionRow(name="Report by %s" % pool.name)]
         mos = ManagedObject.objects.filter(pool=pool, is_managed=True)
         if not request.user.is_superuser:
