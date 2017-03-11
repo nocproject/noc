@@ -1,16 +1,17 @@
+---
 - name: Add InfluxDB repository
-  template:
-    src: os/RedHat/etc/yum.repos.d/influxdb.repo.j2
-    dest: /etc/yum.repos.d/influxdb.repo
-
-- name: Add GPG key influxdb
-  rpm_key:
-    state: present
-    key: https://repos.influxdata.com/influxdb.key
-    validate_certs: no
+  yum_repository:
+    name: influxdb
+    description: CentOS InfluxDB Repository
+    baseurl: https://repos.influxdata.com/centos/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}/stable
+    gpgcheck: yes
+    gpgkey: https://repos.influxdata.com/influxdb.key
+    enabled: yes
   environment:
+    http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
-
+  tags:
+    - repo
 
 - name: Install Telegraf packages
   yum:
