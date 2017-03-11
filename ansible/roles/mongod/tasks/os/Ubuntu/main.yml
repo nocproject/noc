@@ -6,6 +6,7 @@
   with_items:
     - 7F0CEB10
     - EA312927
+    - 0C49F3730359A14518585931BC711F9BA15703C6
   environment:
     https_proxy: "{ {http_proxy }}"
     http_proxy: "{{ http_proxy }}"
