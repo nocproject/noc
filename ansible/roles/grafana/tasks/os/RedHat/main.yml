@@ -1,16 +1,13 @@
 - name: Add Grafana repository
-  template:
-    src: os/RedHat/etc/yum.repos.d/grafana.repo.j2
-    dest: /etc/yum.repos.d/grafana.repo
-  tags:
-    - repo
-
-- name: Add GPG key
-  rpm_key:
-    state: present
-    key: https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
-    validate_certs: no
+  yum_repository:
+    name: grafana
+    description: Grafana repository
+    baseurl: https://packagecloud.io/grafana/stable/el/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+    gpgcheck: yes
+    gpgkey: https://grafanarel.s3.amazonaws.com/RPM-GPG-KEY-grafana
+    enabled: yes
   environment:
+    http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
   tags:
     - repo
