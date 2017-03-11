@@ -5,15 +5,16 @@
   with_items:
     - 7F0CEB10
     - EA312927
+    - 0C49F3730359A14518585931BC711F9BA15703C6
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
   tags:
     - repo
-# there is no pakages for mongodb for jessie. so we will use whezze temporary for jessie too
+
 - name: "Add MongoDB repository"
   apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/{{mongo_version}} main"
+    repo: "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/{{mongo_version}} main"
     state: present
     update_cache: yes
   environment:
@@ -23,7 +24,12 @@
     - repo
 
 - name: Disable Transparent Hugepages (bootloader)
-  lineinfile: "dest=/etc/default/grub state=present backrefs=yes regexp='^GRUB_CMDLINE_LINUX_DEFAULT=\"\"' line='GRUB_CMDLINE_LINUX_DEFAULT=\"transparent_hugepage=never\"'"
+  lineinfile:
+    dest: /etc/default/grub
+    state: present
+    backrefs: yes
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=\"\"'
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT=\"transparent_hugepage=never\"'
   register: dht_status
 
 - shell: update-grub
@@ -53,7 +59,11 @@
     - config
 
 - name: Install MongoDB
-  apt: name="mongodb-org" state=present update_cache=yes cache_valid_time="{{apt_cache_valid_time | default (3600)}}"
+  apt:
+    name: "mongodb-org"
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
