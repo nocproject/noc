@@ -13,16 +13,13 @@
     state: permissive
 
 - name: Add EPEL Repo
-  template:
-    src: os/RedHat/etc/yum.repos.d/epel.repo.j2
-    dest: /etc/yum.repos.d/epel.repo
-  tags:
-    - repo
-
-- name: Add GPG key EPEL
-  rpm_key:
-    key: http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
-    state: present
+  yum_repository:
+    name: epel
+    description: EPEL Repo
+    baseurl: http://download.fedoraproject.org/pub/epel/{{ ansible_distribution_major_version }}/{{ ansible_architecture }}
+    gpgcheck: yes
+    gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
+    enabled: yes
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
