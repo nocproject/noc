@@ -257,16 +257,18 @@ class ServiceSummary(Document):
             "subscriber": 1
         }):
             ds = to_dict(ss["service"])
-            r["interface"][ss["interface"]] = {
-                "service": ds
-            }
+            if ss.get("interface"):
+                r["interface"][ss["interface"]] = {
+                    "service": ds
+                }
             for k, v in ds.items():
                 if k in r["service"]:
                     r["service"][k] += v
                 else:
                     r["service"][k] = v
             ds = to_dict(ss["subscriber"])
-            r["interface"][ss["interface"]]["subscriber"] = ds
+            if ss.get("interface"):
+                r["interface"][ss["interface"]]["subscriber"] = ds
             for k, v in ds.items():
                 if k in r["subscriber"]:
                     r["subscriber"][k] += v
