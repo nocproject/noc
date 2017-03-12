@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Network Segment
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.model.decorator import on_delete_check
+from noc.core.defer import call_later
 
 id_lock = RLock()
 
@@ -292,3 +293,10 @@ class NetworkSegment(Document):
             # Propagate to parents
             if self.parent:
                 self.parent.update_access()
+
+    def update_uplinks(self):
+        call_later(
+            "noc.core.topology.segment.update_uplinks",
+            60,
+            segment_id=self.id
+        )

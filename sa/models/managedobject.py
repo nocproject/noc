@@ -482,7 +482,9 @@ class ManagedObject(Model):
                 iseg = NetworkSegment.get_by_id(iseg)
             if iseg:
                 iseg.update_access()
+                iseg.update_uplinks()
             self.segment.update_access()
+            self.update_topology()
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # Rebuild selector cache
@@ -934,12 +936,7 @@ class ManagedObject(Model):
         """
         Rebuild topology caches
         """
-        # Rebuild uplinks
-        call_later(
-            "noc.core.topology.segment.update_uplinks",
-            60,
-            segment_id=self.segment.id
-        )
+        self.segment.update_uplinks()
         # Rebuild PoP links
         container = self.container
         for o in Object.get_managed(self):
