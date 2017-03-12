@@ -24,10 +24,7 @@ def parse_tlv_header(bytes msg):
     # 0xc0 == 11000000
     tag_class = v & 0xc0
     # 0x20 == 00100000
-    if v & 0x20:
-        is_primitive = False
-    else:
-        is_primitive = True
+    is_primitive = not bool(v & 0x20)
     #
     is_implicit = False
     # 0x1f == 00011111
