@@ -15,7 +15,7 @@ import re
 class Profile(BaseProfile):
     name = "DCN.DCWS"
     pattern_more = [
-        (r"^ --More--", "\n"),
+        (r"^ --More-- ", "\n")
     ]
     pattern_prompt = r"^(?P<hostname>\S+)\s*#"
     command_more = "\n"
