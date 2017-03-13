@@ -3,6 +3,6 @@
     name: keepalived
   tags:
     - keepalived
-  notify: restart keepalived
+  notify: reload keepalived
   environment:
     https_proxy: "{{http_proxy}}"
