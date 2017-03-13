@@ -1,0 +1,6 @@
+- name: Install keepalived
+  apt:
+    name: keepalived
+  tags:
+    - keepalived
+  notify: restart keepalived
