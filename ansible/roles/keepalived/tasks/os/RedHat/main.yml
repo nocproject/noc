@@ -1,0 +1,9 @@
+- name: Install keepalived
+  yum:
+    name: "keepalived"
+    state: present
+    update_cache: yes
+  notify: restart keepalived
+  environment:
+    https_proxy: "{{http_proxy}}"
+

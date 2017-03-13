@@ -1,0 +1,29 @@
+- debug: msg="play_hosts={{play_hosts}}"
+  run_once: true
+
+- debug: msg="{{groups['svc-nginx']}}"
+  run_once: true
+
+- name: "Include OS-specific tasks"
+  include: "os/{{ ansible_distribution }}/main.yml"
+
+- debug: msg="{{keepalived_password}}"
+  run_once: true
+
+- debug: msg="{{keepalived_virtual_ip}}"
+  run_once: true
+
+- name: install keepalived.conf
+  template:
+    src: keepalived.conf.j2
+    dest: "{{etc_prefix}}/keepalived/keepalived.conf"
+  tags:
+    - keepalived
+    - config
+
+- name: Start keepalived
+  service:
+    name: keepalived
+    state: started
+  tags:
+    - keepalived

@@ -154,6 +154,10 @@ services:
     description: Alarm escalator
     level: global
 
+  keepalived:
+    description: Virtual ip sync
+    level: global
+
 config:
   noc:
     installation_name:
@@ -515,4 +519,14 @@ config:
 
     proxy_addres:
       label: Proxy Addres (https://ip:port) If use auth (https://us:pass@ip:port)
+      type: str
+
+  keepalived:
+    password:
+      label: Keepalived password
+      type: str
+      default: noc
+
+    virtual_ip:
+      label: Nginx virtual IP
       type: str
