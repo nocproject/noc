@@ -5,6 +5,7 @@
   template:
     src: keepalived.conf.j2
     dest: "{{etc_prefix}}/keepalived/keepalived.conf"
+  notify: reload keepalived
   tags:
     - keepalived
     - config
@@ -12,6 +13,7 @@
 - name: Start keepalived
   service:
     name: keepalived
-    state: started
+    state: reloaded
+    enabled: yes
   tags:
     - keepalived
