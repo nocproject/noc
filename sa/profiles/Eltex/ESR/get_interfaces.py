@@ -57,7 +57,7 @@ class Script(BaseScript):
             sub = {
                 "name": ifname,
                 "admin_status": astate == "Up",
-                "oper_status": astate == "Up",
+                "oper_status": lstate == "Up",
                 "mtu": mtu,
                 "mac": mac,
                 "enabled_afi": [],
