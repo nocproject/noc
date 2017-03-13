@@ -29,7 +29,7 @@ class Script(BaseScript):
         r"^\s*PortId:\s+(?P<port_id>.+)\s*\n"
         r"^\s*PortDesc:\s+(?P<port_descr>.+)\s*\n"
         r"^\s*SysName:\s+(?P<sys_name>.+)\s*\n"
-        r"^\s*SysDesc:\s+(?P<sys_descr>[\S\s?]+)\n"
+        r"^\s*SysDesc:\s+(?P<sys_descr>[\S\s?]+?)\n"
         r"^\s*SysCapSupported:\s+(?P<sys_caps_supported>\S+)\s*\n"
         r"^\s*SysCapEnabled:\s+(?P<sys_caps_enabled>\S+)\s*\n",
         re.MULTILINE | re.IGNORECASE)
