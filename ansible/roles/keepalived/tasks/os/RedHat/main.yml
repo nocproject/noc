@@ -3,7 +3,7 @@
     name: "keepalived"
     state: present
     update_cache: yes
-  notify: restart keepalived
+  notify: reload keepalived
   environment:
     https_proxy: "{{http_proxy}}"
 
