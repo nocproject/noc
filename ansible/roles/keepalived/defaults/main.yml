@@ -1,0 +1,4 @@
+keepalived_router_id: 51
+keepalived_initial_state: BACKUP
+keepalived_password: noc
+keepalived_virtual_ip: 192.168.1.210
