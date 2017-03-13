@@ -15,6 +15,7 @@
   when: "'nodes' in groups"
   tags:
     - config
+    - fill_hosts
 
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
