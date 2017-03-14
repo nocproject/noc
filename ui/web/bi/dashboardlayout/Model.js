@@ -30,10 +30,6 @@ Ext.define("NOC.bi.dashboardlayout.Model", {
         {
             name: "uuid",
             type: "string"
-        },
-        {
-            name: "uuid",
-            type: "string"
         }
     ]
 });
