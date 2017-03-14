@@ -14,6 +14,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.PON"
+    pattern_username = r"(?<!Last) login: "
     pattern_more = [
         (r"\[Yes/press any key for no\]", "Y")
         ]
