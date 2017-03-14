@@ -226,10 +226,16 @@ class MetricsCheck(DiscoveryCheck):
                         key, r[1], r[0], m["value"], m["ts"]
                     )
                     # Calculate counter
-                    m["value"] = self.convert_counter(
+                    cv = self.convert_counter(
                         m["ts"], m["value"],
                         r[0], r[1]
                     )
+                    if cv is None:
+                        # Counter stepback or other errors
+                        # Remove broken value
+                        del counters[key]
+                        continue
+                    m["value"] = cv
                 else:
                     self.logger.debug(
                         "[%s] COUNTER value is not found. "
@@ -354,7 +360,7 @@ class MetricsCheck(DiscoveryCheck):
                     "Counter stepback: %s -> %s",
                     old_value, new_value
                 )
-                return old_value
+                return None
             else:
                 # Counter wrap
                 self.logger.debug(
