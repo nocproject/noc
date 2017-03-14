@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | ESR | sysDescr.0",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "e8d3d98a-92e3-4fd8-a7e9-8327a0b383f7",
+    "description": "test on Eltex Router ESR-1000",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^Eltex Router ESR",
+    "action": "match",
+    "profile": "Eltex.ESR"
+}
