@@ -17,7 +17,7 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 class Script(BaseScript):
     name = "Huawei.MA5300.get_vlans"
     interface = IGetVlans
-        
+
     rx_vlan = re.compile(r"Vlan ID: (?P<vlanid>\d+)",
         re.MULTILINE)
 

@@ -18,18 +18,20 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_ver = re.compile(r"SmartAX (?P<platform>\S+) (?P<version>\S+)")
+    rx_platform = re.compile(r"SmartAX (?P<platform>\S+) \S+")
+    rx_ver = re.compile(r"Version (?P<version>\S+)")
 
     def execute(self):
         self.cli("en")
-        hostname = self.scripts.get_fqdn()
-        v = self.cli("show version")
+        v = self.cli("show version", cached=True)
         match = self.re_search(self.rx_ver, v)
+        version = match.group("version")
+        match = self.re_search(self.rx_platform, v)
+        platform = match.group("platform")
         r = {
             "vendor": "Huawei",
-            "platform": match.group("platform"),
-            "version": match.group("version"),
-            "hostname" : hostname
+            "platform": platform,
+            "version": version
         }
         return r
 
