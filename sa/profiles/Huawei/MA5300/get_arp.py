@@ -20,10 +20,9 @@ from noc.sa.interfaces.igetarp import IGetARP
 class Script(BaseScript):
     name = "Huawei.MA5300.get_arp"
     interface = IGetARP
-        
 
     rx_line = re.compile(
-        "^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+(?P<type>\S+)$")
+        r"^(?P<ip>\d+\S+)\s+(?P<mac>\S+)\s+(?P<vlan>\d+)\s+(?P<interface>\S+)\s+(?P<type>\S+)$")
 
     def execute(self):
         s = self.cli("show arp all")
