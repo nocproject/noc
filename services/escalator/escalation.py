@@ -208,7 +208,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                                     "Failed to escalate: %s" % e,
                                     to_save=True
                                 )
-                                alarm.set_escalation_error(str(e))
+                                alarm.set_escalation_error(
+                                    "[%s] %s" % (tt_system.name, e))
                         else:
                             log("Cannot find pre reason")
                             metrics["escalation_tt_fail"] += 1
