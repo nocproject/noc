@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     name = "Huawei.MA5300"
     pattern_more = [
         (r"--- More:", " "),
-        (r"---- More \(Press CTRL\+C break\) ---", "\n"),
+        (r"---- More \(Press CTRL\+C break\) ---", " "),
         (r"Note: Terminal", "\n"),
         (r"Warning: Battery is low power!","\n"),
         (r"\{\s<cr>.*\s\}:$", "\n\n"),
