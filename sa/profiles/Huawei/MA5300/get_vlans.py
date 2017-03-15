@@ -17,16 +17,18 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 class Script(BaseScript):
     name = "Huawei.MA5300.get_vlans"
     interface = IGetVlans
+    cache = True
 
-    rx_vlan = re.compile(r"Vlan ID: (?P<vlanid>\d+)",
-        re.MULTILINE)
+    rx_vlan = re.compile(
+        r"Now, the following vlan exist\(s\):\s*\n\s*(?P<vlans>.+)",
+        re.MULTILINE | re.DOTALL)
 
     def execute(self):
         r = []
-        for match in self.rx_vlan.finditer(self.cli("show vlan all")):
-            vlan_id = int(match.group("vlanid"))
+        match = self.rx_vlan.search(self.cli("show vlan\n\n", cached=True))
+        vlans = match.group("vlans").strip().replace("(default)", "")
+        for vlan_id in self.expand_rangelist(vlans):
             r += [{
                     "vlan_id": vlan_id
                 }]
         return r
-
