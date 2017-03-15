@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## AlarmEscalation model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@
 import logging
 import operator
 from threading import Lock
+import datetime
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, IntField, ReferenceField,
@@ -27,6 +28,7 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.selectorcache import SelectorCache
 from noc.lib.nosql import ForeignKeyField
 from noc.core.defer import call_later
+from noc.lib.dateutils import total_seconds
 
 logger = logging.getLogger(__name__)
 ac_lock = Lock()
@@ -105,6 +107,7 @@ class AlarmEscalation(Document):
 
     @classmethod
     def watch_escalations(cls, alarm):
+        now = datetime.datetime.now()
         for esc in cls.get_class_escalations(alarm.alarm_class):
             for e_item in esc.escalations:
                 # Check administrative domain
@@ -121,10 +124,15 @@ class AlarmEscalation(Document):
                     "[%s] Watch for %s after %s seconds",
                     alarm.id, esc.name, e_item.delay
                 )
+                et = alarm.timestamp + datetime.timedelta(seconds=e_item.delay)
+                if et > now:
+                    delay = total_seconds(et - now)
+                else:
+                    delay = None
                 call_later(
                     "noc.services.escalator.escalation.escalate",
                     scheduler="escalator",
-                    delay=e_item.delay,
+                    delay=delay,
                     alarm_id=alarm.id,
                     escalation_id=esc.id,
                     escalation_delay=e_item.delay
