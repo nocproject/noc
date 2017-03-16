@@ -153,13 +153,26 @@ class PhoneRange(Document):
                 "noc.phone.models.phonerange.allocate_numbers",
                 range_id=self.id
             )
+        # Reparent nested ranges
+        for r in PhoneRange.objects.filter(
+            dialplan=self.dialplan,
+            from_number__gte=self.from_number,
+            from_number__lte=self.to_number,
+            to_number__lte=self.to_number,
+            id__ne=self.id
+        ):
+            r.save()
 
     def on_delete(self):
+        # Move nested phone numbers to parent
         from phonenumber import PhoneNumber
-        new_parent = self.parent.id if self.parent else None
         for n in PhoneNumber.objects.filter(phone_range=self.id):
-            n.phone_range = new_parent
+            n.phone_range = self.parent
             n.save()
+        # Move nested ranges to parent
+        for r in PhoneRange.objects.filter(parent=self.id):
+            r.parent = self.parent
+            r.save()
 
     @property
     def has_children(self):
