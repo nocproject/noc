@@ -232,14 +232,14 @@ class Script(BaseScript):
                 igmp = []
 
         lldp = []
-        macs = []
+        macs = {}
         try:
             c = self.cli("show lldp")
             lldp_enable = self.rx_lldp_gs.search(c) is not None
             try:
                 c = self.cli("show lldp local_ports")
                 for match in self.rx_lldp1.finditer(c):
-                    macs += [match.groupdict()]
+                    macs[match.group("port")] = match.group("mac")
             except self.CLISyntaxError:
                 pass
         except self.CLISyntaxError:
@@ -257,10 +257,7 @@ class Script(BaseScript):
                 try:
                     c = self.cli("show ports details")
                     for match in self.rx_pd.finditer(c):
-                        macs += [{
-                            "port": match.group("port"),
-                            "mac":  match.group("mac")
-                        }]
+                        macs[match.group("port")] = match.group("mac")
                 except self.CLISyntaxError:
                     pass
 
@@ -356,10 +353,10 @@ class Script(BaseScript):
             if desc != '' and desc != 'null':
                 i.update({"description": desc})
                 i['subinterfaces'][0].update({"description": desc})
-            for m in macs:
-                if p['port'] == m['port']:
-                    i['mac'] = m['mac']
-                    i['subinterfaces'][0]["mac"] = m['mac']
+            mac = macs.get(ifname)
+            if mac:
+                i['mac'] = mac
+                i['subinterfaces'][0]["mac"] = mac
             if is_int(ifname):
                 i['snmp_ifindex'] = int(ifname)
             else:
