@@ -30,6 +30,12 @@ Ext.define('NOC.core.TreeCombo', {
         idIsNumber: false
     },
 
+    rootNode: {
+        label: __('Root'),
+        id: '_root_',
+        level: 0
+    },
+
     initComponent: function() {
         var me = this,
             path;
@@ -102,11 +108,7 @@ Ext.define('NOC.core.TreeCombo', {
             storeId: 'history',
             model: 'NOC.core.TreeModel',
             sorters: 'level',
-            data: [{
-                label: __('Root'),
-                id: '_root_',
-                level: 0
-            }]
+            data: [me.rootNode]
         });
 
         this.restoreStore = Ext.create('Ext.data.Store', {
@@ -239,7 +241,9 @@ Ext.define('NOC.core.TreeCombo', {
         var me = this;
 
         if(id === '_root_') {
-            me.autocomplete.setRawValue(__("Root"));
+            me.setFieldValue(me.rootNode);
+            me.autocomplete.setValue(me.rootNode.label);
+            this.fireEvent('select', this.autocomplete, me.rootNode);
             return;
         }
         if(id) {
@@ -304,11 +308,7 @@ Ext.define('NOC.core.TreeCombo', {
         this.setFieldValue(null);
         this.pathStore.removeAll();
         this.historyStore.removeAll();
-        this.historyStore.loadRawData({
-            label: __('Root'),
-            id: '_root_',
-            level: 0
-        });
+        this.historyStore.loadRawData(this.rootNode);
         this.panel.byIdQuery('_root_');
     }
 });
