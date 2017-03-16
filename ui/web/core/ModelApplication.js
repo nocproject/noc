@@ -388,6 +388,7 @@ Ext.define("NOC.core.ModelApplication", {
         var gridPanel = Ext.create("Ext.grid.Panel", {
             itemId: "grid",
             store: me.store,
+            emptyText: __("No records"),
             columns: [
                 {
                     xtype: "glyphactioncolumn",
