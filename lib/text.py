@@ -74,6 +74,8 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
                 last = columns.pop()
                 columns.append((last[0], max_width))
         elif columns:  # Fetch cells
+            # Replace tabs with spaces with step 8
+            l = ''.join('%-8s' % item for item in l.split('\t'))
             if allow_extend:
                 # Find which spaces between column not empty
                 s = [column_spaces.index((f, t)) for f, t in column_spaces

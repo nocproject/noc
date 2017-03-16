@@ -28,15 +28,15 @@ class Script(BaseScript):
         try:
             s = self.cli("show etherchannel summary")
         except self.CLISyntaxError:
-            # ASR100X do not have this command
+            # Some ASR100X do not have this command
             # raise self.NotSupportedError
             return []
         for i in parse_table(s, allow_wrap=True):
             iface = {
-                "interface": self.extract_iface(i[1].strip()),
+                "interface": self.extract_iface(i[1]),
                 "members": []
             }
-            if (len(i) == 4) and (i[2].strip() == "LACP"):
+            if (len(i) == 4) and (i[2] == "LACP"):
                 iface["type"] = "L"
             else:
                 iface["type"] = "S"
