@@ -47,8 +47,8 @@ class ScriptLoader(object):
                     return None
                 try:
                     vendor, system, sn = name.split(".")
-                except Exception, why:
-                    logger.error("Error in script name \"%s\": %s", name, why)
+                except Exception as e:
+                    logger.error("Error in script name \"%s\": %s", name, e)
                     return None
                 if os.path.exists(
                         os.path.join(
@@ -82,8 +82,8 @@ class ScriptLoader(object):
                             break
                     if not script:
                         logger.error("Script not found: %s", name)
-                except Exception, why:
-                    logger.error("Failed to load script %s: %s", name, why)
+                except Exception as e:
+                    logger.error("Failed to load script %s: %s", name, e)
                     script = None
                 self.scripts[name] = script
             return script
