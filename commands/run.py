@@ -69,9 +69,9 @@ class Command(BaseCommand):
             for future in as_completed(futures):
                 try:
                     o, result = future.result()
-                    self.stdout.write("[%s]\n%s\n" % (o.name, "".join(result)))
+                    self.stdout.write("@@@ %s %s\n%s\n" % (o.address, o.name, "".join(result)))
                 except Exception as e:
-                    self.stdout.write("[%s] ERROR: %s\n" % (o.name, e))
+                    self.stdout.write("[%s] [%s] ERROR: %s\n" % (o.address, o.name,  e))
 
 if __name__ == "__main__":
     Command().run()
