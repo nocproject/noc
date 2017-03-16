@@ -8,5 +8,6 @@ console.debug("Defining NOC.phone.dialplan.LookupField");
 
 Ext.define("NOC.phone.dialplan.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.phone.dialplan.LookupField"
+    alias: "widget.phone.dialplan.LookupField",
+    uiStyle: "medium"
 });
