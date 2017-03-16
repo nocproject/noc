@@ -136,7 +136,9 @@ class InterfaceClassificationMatch(EmbeddedDocument):
 
     def compile_untagged_in(self, f_name):
         r = [
-            "vcf_%s = VCFilter.objects.get(id=%s)" % (f_name, self.vc_filter.id),
+            "vcf_%s = VCFilter.get_by_id(id=%s)" % (f_name, self.vc_filter.id),
+            "if not vcf_%s:" % self.vc_filter.id,
+            "    raise ValueError('Invalid VC Filter: %s')" % self.vc_filter.name,
             "def %s(iface):" % f_name,
             "    for si in iface.parent.subinterface_set.filter(enabled_afi='BRIDGE'):",
             "        if si.untagged_vlan and vcf_%s.check(si.untagged_vlan):" % f_name,
@@ -158,7 +160,9 @@ class InterfaceClassificationMatch(EmbeddedDocument):
 
     def compile_tagged_in(self, f_name):
         r = [
-            "vcf_%s = VCFilter.objects.get(id=%s)" % (f_name, self.vc_filter.id),
+            "vcf_%s = VCFilter.get_by_id(id=%s)" % (f_name, self.vc_filter.id),
+            "if not vcf_%s:" % self.vc_filter.id,
+            "    raise ValueError('Invalid VC Filter: %s')" % self.vc_filter.name,
             "def %s(iface):" % f_name,
             "    for si in iface.parent.subinterface_set.filter(enabled_afi='BRIDGE'):",
             "        if si.tagged_vlans:",
