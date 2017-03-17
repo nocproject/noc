@@ -86,6 +86,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
             "def %s(iface):" % f_name,
             "    return iface.description and bool(rx_%s.search(iface.description))" % f_name
         ])
+
     # IP
     def compile_ip_eq(self, f_name):
         v = IP.prefix(self.value)
@@ -137,7 +138,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
     def compile_untagged_in(self, f_name):
         r = [
             "vcf_%s = VCFilter.get_by_id(id=%s)" % (f_name, self.vc_filter.id),
-            "if not vcf_%s:" % self.vc_filter.id,
+            "if not vcf_%s:" % f_name,
             "    raise ValueError('Invalid VC Filter: %s')" % self.vc_filter.name,
             "def %s(iface):" % f_name,
             "    for si in iface.parent.subinterface_set.filter(enabled_afi='BRIDGE'):",
@@ -161,7 +162,7 @@ class InterfaceClassificationMatch(EmbeddedDocument):
     def compile_tagged_in(self, f_name):
         r = [
             "vcf_%s = VCFilter.get_by_id(id=%s)" % (f_name, self.vc_filter.id),
-            "if not vcf_%s:" % self.vc_filter.id,
+            "if not vcf_%s:" % f_name,
             "    raise ValueError('Invalid VC Filter: %s')" % self.vc_filter.name,
             "def %s(iface):" % f_name,
             "    for si in iface.parent.subinterface_set.filter(enabled_afi='BRIDGE'):",
