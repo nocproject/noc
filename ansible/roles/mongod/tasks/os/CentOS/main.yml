@@ -47,3 +47,6 @@
 - name: Reload systemd daemon
   command: /usr/bin/systemctl daemon-reload
   when: mongod_service.changed
+
+- name: Enable custom systemd service
+  command: /usr/bin/systemctl enable mongod
