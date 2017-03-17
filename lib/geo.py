@@ -35,6 +35,8 @@ def _get_point(p):
         return GPoint(p.coordinates[1], p.coordinates[0])
     elif isinstance(p, dict) and "coordinates" in p:
         return GPoint(p["coordinates"][1], p["coordinates"][0])
+    elif isinstance(p, dict) and "geopoint" in p:
+        return GPoint(p["geopoint"]["y"], p["geopoint"]["x"])
     else:
         return GPoint(p.y, p.x)
 

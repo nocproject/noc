@@ -135,7 +135,7 @@ class ConduitsPlugin(InvPlugin):
             d = distance(o.point, ro.point)
             sbr = bearing_sym(o.point, ro.point)
             r += [{
-                "id": str(ro),
+                "id": str(ro.id),
                 "label": "%s (%s, %dm)" % (ro.name, sbr, d),
                 "s_bearing": sbr,
                 "map_distance": d,
