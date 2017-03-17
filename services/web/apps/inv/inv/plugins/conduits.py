@@ -110,7 +110,7 @@ class ConduitsPlugin(InvPlugin):
         o = self.app.get_object_or_404(Object, id=id)
         if not o.point:
             return []
-        layers = map.get_conduits_layers()
+        layers = list(map.get_conduits_layers())
         connected = set(
             str(ro.id) for _, ro, _ in o.get_genderless_connections("ducts"))
         if self.is_single_connection(o) and connected:
@@ -120,9 +120,10 @@ class ConduitsPlugin(InvPlugin):
         for ro in Object.objects.filter(
                 id__ne=id,
                 layer__in=layers,
-                data__distance_lte=(
-                    o.point, D(m=self.MAX_CONDUIT_LENGTH)
-                )).distance(o.point).order_by("distance"):
+                point__near=o.point,
+                point__max_distance=self.MAX_CONDUIT_LENGTH
+                ):
+                #  )).distance(o.point).order_by("distance"):
             # Check object has no connection with this one
             if ro in connected:
                 continue
@@ -134,7 +135,7 @@ class ConduitsPlugin(InvPlugin):
             d = distance(o.point, ro.point)
             sbr = bearing_sym(o.point, ro.point)
             r += [{
-                "id": str(g.object),
+                "id": str(ro),
                 "label": "%s (%s, %dm)" % (ro.name, sbr, d),
                 "s_bearing": sbr,
                 "map_distance": d,
