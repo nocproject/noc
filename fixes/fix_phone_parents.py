@@ -29,6 +29,8 @@ def fix():
     # Fix phone numbers with broken parents
     nparents = defaultdict(list)
     for d in PhoneNumber._get_collection().find({}, {"_id": 1, "phone_range": 1}):
+        if not d.get("phone_range"):
+            continue
         nparents[d["phone_range"]] += [d["_id"]]
     pset = set(nparents)
     for p in pset - range_id:
