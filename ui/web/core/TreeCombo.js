@@ -19,6 +19,9 @@ Ext.define('NOC.core.TreeCombo', {
     alias: 'widget.nocTreeCombo',
 
     isLookupField: true,
+    listAlign: 'right',
+    listWidth: 2,
+
     layout: {
         type: 'hbox',
         align: 'bottom'
@@ -192,8 +195,12 @@ Ext.define('NOC.core.TreeCombo', {
                 xtype: 'button',
                 text: '<i class="fa fa-folder-open-o" aria-hidden="true"></i>',
                 handler: function() {
-                    me.selectWindow.showAt(me.getXY());
-                    me.selectWindow.setWidth(me.getWidth());
+                    var coord = me.getXY();
+                    var x_coord = coord[0];
+
+                    if(me.listAlign === 'right') x_coord -= me.getWidth();
+                    me.selectWindow.showAt([x_coord, coord[1]]);
+                    me.selectWindow.setWidth(me.getWidth() * me.listWidth);
                 }
             }
         ];
