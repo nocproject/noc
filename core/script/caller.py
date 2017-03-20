@@ -28,19 +28,16 @@ class Session(object):
     def __init__(self, object, idle_timeout=None):
         self._object = object
         self._id = str(uuid.uuid4())
-        self._cache = {}
         self._idle_timeout = idle_timeout or DEFAULT_IDLE_TIMEOUT
 
     def __del__(self):
         self.close()
 
     def __getattr__(self, name):
-        if name not in self._cache:
-            if not loader.has_script("%s.%s" % (
-                    self._object.profile_name, name)):
-                raise AttributeError("Invalid script %s" % name)
-            self._cache[name] = lambda **kwargs: self._call_script(name, kwargs)
-        return self._cache[name]
+        if not loader.has_script("%s.%s" % (
+                self._object.profile_name, name)):
+            raise AttributeError("Invalid script %s" % name)
+        return lambda **kwargs: self._call_script(name, kwargs)
 
     def __contains__(self, item):
         """
