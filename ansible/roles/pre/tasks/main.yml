@@ -57,7 +57,7 @@
     url: "{{alerta_url}}/api/alert?api-key={{alerta_token}}"
     method: POST
     body:
-      resource: tower
+      resource: "tower {{noc_env}}"
       event: Deploy
       environment: Production
       type: AnsibleDeploy
