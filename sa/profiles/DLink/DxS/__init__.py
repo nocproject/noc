@@ -151,6 +151,7 @@ class Profile(BaseProfile):
             media_type = match.group("media_type")
             descr = match.group("desc")
             if descr:
+                descr = descr.decode("ascii","ignore")
                 descr = descr.strip()
             else:
                 descr = ''
