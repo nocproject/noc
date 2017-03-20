@@ -42,6 +42,7 @@ class Session(object):
         self._idle_timeout = idle_timeout or DEFAULT_IDLE_TIMEOUT
 
     def __del__(self):
+        del self._cache
         self.close()
 
     def __getattr__(self, name):
