@@ -101,6 +101,10 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                     name: "segment",
                     xtype: "inv.networksegment.TreeCombo",
                     fieldLabel: __("Segment"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500,
                     listeners: {
                         scope: me,
                         select: function(combo, record) {
@@ -112,14 +116,17 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
                     name: "administrative_domain",
                     xtype: "sa.administrativedomain.TreeCombo",
                     fieldLabel: __("By Adm. domain"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500,
                     allowBlank: true,
-                    uiStyle: "small",
-                listeners: {
-                    scope: me,
-                    select: function(combo, record) {
+                    listeners: {
+                        scope: me,
+                        select: function(combo, record) {
                             me.adm_domain = record.get("id")
                         }
-                }
+                    }
                 },
                 me.formatButton,
                 me.columnsGrid

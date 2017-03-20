@@ -34,6 +34,7 @@ Ext.define("NOC.inv.map.Application", {
             fieldLabel: __("Segment"),
             labelWidth: 50,
             labelAlign: "left",
+            listAlign: "left",
             minWidth: 400,
             emptyText: __("Select segment..."),
             listeners: {

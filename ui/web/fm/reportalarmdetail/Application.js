@@ -128,6 +128,10 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                     name: "segment",
                     xtype: "inv.networksegment.TreeCombo",
                     fieldLabel: __("Segment"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500,
                     listeners: {
                         scope: me,
                         select: function(combo, record) {
