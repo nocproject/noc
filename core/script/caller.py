@@ -10,6 +10,7 @@
 from threading import Lock
 import uuid
 import itertools
+import functools
 ## NOC modules
 from noc.core.service.client import RPCClient, RPCError
 from noc.core.script.loader import loader
@@ -25,16 +26,6 @@ class Session(object):
     _sessions = {}
     _lock = Lock()
 
-    class CallWrapper(object):
-        def __init__(self, session, script):
-            self.session = session
-            self.script = script
-
-        def __call__(self, **kwargs):
-            return self.session._call_script(
-                self.script, kwargs
-            )
-
     def __init__(self, object, idle_timeout=None):
         self._object = object
         self._id = str(uuid.uuid4())
@@ -42,7 +33,6 @@ class Session(object):
         self._idle_timeout = idle_timeout or DEFAULT_IDLE_TIMEOUT
 
     def __del__(self):
-        del self._cache
         self.close()
 
     def __getattr__(self, name):
@@ -51,7 +41,7 @@ class Session(object):
         if not loader.has_script("%s.%s" % (
                 self._object.profile_name, name)):
             raise AttributeError("Invalid script %s" % name)
-        cw = Session.CallWrapper(self, name)
+        cw = functools.partial(self._call_script, name)
         self._cache[name] = cw
         return cw
 
