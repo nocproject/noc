@@ -82,27 +82,45 @@ class Script(BaseScript):
 
         # Fallback to CLI
         cmd = "show mac"
-        cmd1 = "show mac-address-table"
         if mac is not None:
             cmd += " %s" % self.profile.convert_mac(mac)
-            cmd1 += " %s" % self.profile.convert_mac(mac)
         if interface is not None and mac is None:
             interface = interface[1:]
             cmd += " interface ethernet %s" % interface
-            cmd1 += " interface ethernet %s" % interface
         if vlan is not None:
             cmd += " vlan %s" % vlan
-            cmd1 += " vlan %s" % vlan
+
         try:
             v = self.cli(cmd)
-            rx_iter = self.rx_line
-        except:
-            v = self.cli(cmd1)
-            rx_iter = self.rx_line1
-        for match in rx_iter.finditer(v):
+        except self.CLISyntaxError:
+            cmd = cmd.replace("mac", "mac-address-table")
+            try:
+                v = self.cli(cmd)
+            except self.CLISyntaxError:
+                # Not supported at all
+                raise self.NotSupportedError()
+        for match in self.rx_line.finditer(v):
             interfaces = match.group("interfaces")
             if interfaces == '0' \
-            or interfaces.lower() == 'cpu':
+                    or interfaces.lower() == 'cpu':
+                continue
+            r.append({
+                "vlan_id": match.group("vlan_id"),
+                "mac": match.group("mac"),
+                "interfaces": [
+                    self.profile.convert_interface_name(interfaces)
+                ],
+                "type": {
+                    "dynamic": "D",
+                    "static": "S",
+                    "permanent": "S",
+                    "self": "S"
+                }[match.group("type").lower()],
+            })
+        for match in self.rx_line1.finditer(v):
+            interfaces = match.group("interfaces")
+            if interfaces == '0' \
+                    or interfaces.lower() == 'cpu':
                 continue
             r.append({
                 "vlan_id": match.group("vlan_id"),

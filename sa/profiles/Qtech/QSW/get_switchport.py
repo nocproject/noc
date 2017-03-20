@@ -286,15 +286,20 @@ class Script(BaseScript):
                 members = []
                 write = True
             if write:
+                if name not in port_vlans:
+                    tagged = []
+                else:
+                    tagged = port_vlans[name]["tagged"]
                 swp = {
                         "status": status,
                         "description": description,
-                        "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
+                        "802.1Q Enabled": len(port_vlans.get(name, [])) > 0,
                         "802.1ad Tunnel": vlan_stack_status.get(name, False),
-                        "tagged": port_vlans[name]["tagged"],
+                        "tagged": tagged,
                         }
-                if port_vlans[name]["untagged"]:
-                    swp["untagged"] = port_vlans[name]["untagged"]
+                if name in port_vlans:
+                    if port_vlans[name]["untagged"]:
+                        swp["untagged"] = port_vlans[name]["untagged"]
                 swp["interface"] = self.profile.convert_interface_name(name)
                 swp["members"] = members
                 r.append(swp)
