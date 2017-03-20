@@ -10,7 +10,6 @@
 from threading import Lock
 import uuid
 import itertools
-import functools
 ## NOC modules
 from noc.core.service.client import RPCClient, RPCError
 from noc.core.script.loader import loader
@@ -36,14 +35,12 @@ class Session(object):
         self.close()
 
     def __getattr__(self, name):
-        if name in self._cache:
-            return self._cache[name]
-        if not loader.has_script("%s.%s" % (
-                self._object.profile_name, name)):
-            raise AttributeError("Invalid script %s" % name)
-        cw = functools.partial(self._call_script, name)
-        self._cache[name] = cw
-        return cw
+        if name not in self._cache:
+            if not loader.has_script("%s.%s" % (
+                    self._object.profile_name, name)):
+                raise AttributeError("Invalid script %s" % name)
+            self._cache[name] = lambda **kwargs: self._call_script(name, kwargs)
+        return self._cache[name]
 
     def __contains__(self, item):
         """
