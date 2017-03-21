@@ -3,12 +3,12 @@
 ##----------------------------------------------------------------------
 ## mailsender service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Third-party modules
-
+import re
 import datetime
 import socket
 import json
@@ -43,11 +43,18 @@ class TgSenderService(Service):
 
         return self.send_tb(message.id, address, subject, body)
 
+    def escape_markdown(self, text):
+        """Helper function to escape telegram markup symbols"""
+        escape_chars = '\*_`\['
+        return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
+
     def send_tb(self, messages, address, subject, body):
         RETRY_TIME = 2.0
-        token = self.config.token
+        TOKEN = self.config.token
+        API = 'https://api.telegram.org/bot'
+        URL = API + TOKEN
         proxy_addres = self.config.proxy_addres
-        data = {'chat_id': address, 'text': '*'+subject+'*\n'+body,'parse_mode': 'Markdown'}
+        sendMessage = {'chat_id': address, 'text': '*'+self.escape_markdown(subject)+'*\n'+self.escape_markdown(body),'parse_mode': 'Markdown'}
         time.sleep(RETRY_TIME)
         if self.config.use_proxy:
             try:
@@ -55,8 +62,8 @@ class TgSenderService(Service):
                 auth = urllib2.HTTPBasicAuthHandler()
                 opener = urllib2.build_opener(proxy)
                 urllib2.install_opener(opener)
-                result = urllib2.urlopen("https://api.telegram.org/bot" + token + "/sendMessage",
-                                         urllib.urlencode(data)).read()
+                get = URL + '/sendMessage?' + urllib.urlencode(sendMessage)
+                result = urllib2.urlopen(get).read()
                 check = json.loads(result)
                 self.logger.info("Proxy Send: %s\n" % check)
                 metrics["telegram_proxy_sended_ok"] += 1
@@ -68,19 +75,19 @@ class TgSenderService(Service):
             except urllib2.URLError, e:
                 self.logger.info("Proxy URLError: %s\n" % e.args)
                 metrics["telegram_proxy_failed_urlerror"] += 1
-                return False      
+                return False
             except urllib2.HTTPException, e:
                 self.logger.info("Proxy HTTPException: %s\n" % e.err)
                 metrics["telegram_proxy_failed_urlerror"] += 1
-                return False                         
+                return False
             except Exception, e:
                 self.logger.info("Proxy Generic Exception: %s\n" % e.exp)
                 metrics["telegram_proxy_failed_exceprion"] += 1
                 return False
         else:
             try:
-                result = urllib2.urlopen("https://api.telegram.org/bot" + token + "/sendMessage",
-                                         urllib.urlencode(data)).read()
+                get = URL + '/sendMessage?' + urllib.urlencode(sendMessage)
+                result = urllib2.urlopen(get).read()
                 check = json.loads(result)
                 self.logger.info("Send: %s\n" % check)
                 metrics["telegram_sended_ok"] += 1
