@@ -15,11 +15,13 @@
     vg: "{{vg_fast_name}}"
     lv: wal
     size: "{{wal_lv_size}}"
+  ignore_errors: yes
 
 - name: format wal storage
   filesystem:
     fstype: "{{wal_fs}}"
     dev: "/dev/{{vg_name}}/wal"
+    force: no
 
 - name: create wal dir
   file:
@@ -38,11 +40,13 @@
     vg: "{{vg_name}}"
     lv: influx_data
     size: "{{influx_data_lv_size}}"
+  ignore_errors: yes
 
 - name: format influx data storage
   filesystem:
     fstype: "{{influx_data_fs}}"
     dev: "/dev/{{vg_name}}/influx_data"
+    force: no
 
 - name: create influx data dir
   file:

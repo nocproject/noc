@@ -12,11 +12,13 @@
     vg: "{{vg_name}}"
     lv: nsq_cache
     size: "{{nsq_cache_lv_size}}"
+  ignore_errors: yes
 
 - name: format nsq storage
   filesystem:
     fstype: "{{nsq_cache_fs}}"
     dev: "/dev/{{vg_name}}/nsq_cache"
+    force: no
 
 - name: Mount nsq storage
   mount:
@@ -30,11 +32,13 @@
     vg: "{{vg_name}}"
     lv: opt
     size: "{{opt_lv_size}}"
+  ignore_errors: yes
 
 - name: format opt storage
   filesystem:
     fstype: "{{opt_fs}}"
     dev: "/dev/{{vg_name}}/opt"
+    force: no
 
 - name: Mount opt storage
   mount:
