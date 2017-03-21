@@ -210,7 +210,8 @@ class InterfaceClassificationRule(Document):
     def get_classificator_code(cls):
         r = [
             "import re",
-            "import bson"
+            "import bson",
+            "from noc.sa.models.selectorcache import SelectorCache"
         ]
         mf = [
             "gsc = {}",
@@ -223,7 +224,8 @@ class InterfaceClassificationRule(Document):
             "        else:",
             "            selector = ManagedObjectSelector.get_by_id(s)",
             "            gsc[s] = selector",
-            "        r = o in selector",
+            "        r = SelectorCache.is_in_selector(o, selector)",
+            "        # r = o in selector",
             "        s_cache[s] = r",
             "        return r",
             "    s_cache = {}",
