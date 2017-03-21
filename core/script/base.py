@@ -161,6 +161,9 @@ class BaseScript(object):
         # Suitable only when self.parent is None.
         # Cached results for scripts marked with "cache"
         self.call_cache = {}
+        # Suitable only when self.parent is None
+        # Cached results of self.cli calls
+        self.cli_cache = {}
         #
         if not parent and version and not name.endswith(".get_version"):
             self.logger.debug("Filling get_version cache with %s",
@@ -629,9 +632,25 @@ class BaseScript(object):
         if list_re is regular expression object, return a list of dicts (group name -> value),
             one dict per matched line
         """
+        def format_result(result):
+            if list_re:
+                x = []
+                for l in result.splitlines():
+                    match = list_re.match(l.strip())
+                    if match:
+                        x += [match.groupdict()]
+                return x
+            else:
+                return result
+
         if file:
             with open(file) as f:
-                return f.read()
+                return format_result(f.read())
+        if cached:
+            r = self.root.cli_cache.get(cmd)
+            if r is not None:
+                self.logger.debug("Use cached result")
+                return format_result(r)
         command_submit = command_submit or self.profile.command_submit
         stream = self.get_cli_stream()
         r = stream.execute(cmd + command_submit, obj_parser=obj_parser,
@@ -658,15 +677,10 @@ class BaseScript(object):
                 else:
                     # Some switches, like ProCurve do not send \n after the echo
                     r = r[len(cmd):]
-        # Convert to list of dicts if list_re is defined
-        if list_re:
-            x = []
-            for l in r.splitlines():
-                match = list_re.match(l.strip())
-                if match:
-                    x += [match.groupdict()]
-            r = x
-        return r
+            # Store cli cache when necessary
+            if cached:
+                self.root.cli_cache[cmd] = r
+        return format_result(r)
 
     def get_cli_stream(self):
         if self.parent:
