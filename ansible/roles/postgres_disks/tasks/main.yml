@@ -15,11 +15,13 @@
     vg: "{{vg_fast_name}}"
     lv: wal
     size: "{{wal_lv_size}}"
+  ignore_errors: yes
 
 - name: format wal storage
   filesystem:
     fstype: "{{wal_fs}}"
     dev: "/dev/{{vg_name}}/wal"
+    force: no
 
 - name: create wal dir
   file:
@@ -38,11 +40,13 @@
     vg: "{{vg_name}}"
     lv: postgres_data
     size: "{{postgres_data_lv_size}}"
+  ignore_errors: yes
 
 - name: format postgres data storage
   filesystem:
     fstype: "{{postgres_data_fs}}"
     dev: "/dev/{{vg_name}}/postgres_data"
+    force: no
 
 - name: create postgres_data dir
   file:
