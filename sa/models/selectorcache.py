@@ -16,6 +16,7 @@ import re
 from mongoengine.document import Document
 from mongoengine.fields import IntField
 import cachetools
+from pymongo import ReadPreference
 ## NOC modules
 from noc.core.defer import call_later
 
@@ -50,7 +51,8 @@ class SelectorCache(Document):
         oid = object
         if hasattr(object, "id"):
             oid = object.id
-        return cls.objects.filter(object=oid).values_list("selector")
+        return cls.objects.filter(object=oid,
+                                  read_preference=ReadPreference.SECONDARY_PREFERRED).values_list("selector")
 
     @classmethod
     def is_in_selector(cls, object, selector):
@@ -63,7 +65,7 @@ class SelectorCache(Document):
         return bool(cls._get_collection().find_one({
             "object": oid,
             "selector": sid
-        }))
+        }, read_preference=ReadPreference.SECONDARY_PREFERRED))
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("q_cache"), lock=lambda x: q_lock)
