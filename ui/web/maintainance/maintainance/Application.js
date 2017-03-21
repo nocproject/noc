@@ -19,11 +19,22 @@ Ext.define("NOC.maintainance.maintainance.Application", {
     initComponent: function() {
         var me = this;
 
+        me.ITEM_OBJECTS = me.registerItem(
+            "NOC.maintainance.maintainance.ObjectsPanel"
+        );
+
         me.cardButton = Ext.create("Ext.button.Button", {
             text: __("Card"),
             glyph: NOC.glyph.eye,
             scope: me,
             handler: me.onCard
+        });
+
+        me.affectedButton = Ext.create("Ext.button.Button", {
+            text: __("Affected Objects"),
+            glyph: NOC.glyph.eye,
+            scope: me,
+            handler: me.onObjects
         });
 
         Ext.apply(me, {
@@ -188,7 +199,8 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                 }
             ],
             formToolbar: [
-                me.cardButton
+                me.cardButton,
+                me.affectedButton
             ]
         });
         me.callParent();
@@ -241,5 +253,10 @@ Ext.define("NOC.maintainance.maintainance.Application", {
                 "/api/card/view/maintainance/" + me.currentRecord.get("id") + "/"
             );
         }
+    },
+
+    onObjects: function() {
+        var me = this;
+        me.previewItem(me.ITEM_OBJECTS, me.currentRecord);
     }
 });

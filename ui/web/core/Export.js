@@ -91,18 +91,19 @@ Ext.define("NOC.core.Export", {
     },
 
     save: function(grid, filename) {
-        var renderPlugin = grid.findPlugin('bufferedrenderer'),
-            first = renderPlugin.getFirstVisibleRowIndex(),
-            last = renderPlugin.getLastVisibleRowIndex(),
-            columns = grid.getVisibleColumns();
-        var records;
+        var records, columns;
 
         try {
             if('NOC.core.ModelStore' === Ext.getClassName(grid.getStore())) {
+                var renderPlugin = grid.findPlugin('bufferedrenderer'),
+                    first = renderPlugin.getFirstVisibleRowIndex(),
+                    last = renderPlugin.getLastVisibleRowIndex();
+
                 records = grid.getStore().getRange(first, last);
             } else {
                 records = grid.getStore().getRange(0);
             }
+            columns = grid.getVisibleColumns();
         } catch(e) {
             return false;
         }

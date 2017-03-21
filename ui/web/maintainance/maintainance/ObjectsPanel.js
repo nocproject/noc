@@ -4,11 +4,14 @@
 // Copyright (C) 2007-2013 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.sa.managedobjectselector.ObjectsPanel");
+console.debug("Defining NOC.maintainance.maintainance.ObjectsPanel");
 
-Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
+Ext.define("NOC.maintainance.maintainance.ObjectsPanel", {
     extend: "NOC.core.ApplicationPanel",
-    requires: ["NOC.sa.managedobjectselector.ObjectsModel"],
+    requires: ["NOC.maintainance.maintainance.ObjectsModel"],
+    mixins: [
+        "NOC.core.Export"
+    ],
     app: null,
     autoScroll: true,
 
@@ -22,10 +25,18 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
             handler: me.onRefresh
         });
 
+        me.exportButton = Ext.create("Ext.button.Button", {
+            tooltip: __("Export"),
+            text: __("Export"),
+            glyph: NOC.glyph.arrow_down,
+            scope: me,
+            handler: me.onExport
+        });
+
         me.totalField = Ext.create("Ext.form.field.Display");
 
         me.store = Ext.create("Ext.data.Store", {
-            model: "NOC.sa.managedobjectselector.ObjectsModel"
+            model: "NOC.maintainance.maintainance.ObjectsModel"
         });
 
         me.grid = Ext.create("Ext.grid.Panel", {
@@ -45,17 +56,8 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
                     width: 50
                 },
                 {
-                    text: __("Adm. domain"),
-                    dataIndex: "administrative_domain"
-                },
-                {
                     text: __("Profile"),
                     dataIndex: "profile",
-                    width: 100
-                },
-                {
-                    text: __("Platform"),
-                    dataIndex: "platform",
                     width: 100
                 },
                 {
@@ -82,6 +84,7 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
                     items: [
                         me.getCloseButton(),
                         me.refreshButton,
+                        me.exportButton,
                         "->",
                         me.totalField
                     ]
@@ -98,12 +101,12 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
         var me = this;
         me.callParent(arguments);
         Ext.Ajax.request({
-            url: "/sa/managedobjectselector/" + record.get("id") + "/objects/",
+            url: "/maintainance/maintainance/" + record.get("id") + "/objects/",
             method: "GET",
             scope: me,
             success: function(response) {
                 var data = Ext.decode(response.responseText);
-                me.grid.setTitle(record.get("name") + " " + __("objects"));
+                me.grid.setTitle(record.get("subject") + " " + __("objects"));
                 me.store.loadData(data);
                 me.totalField.setValue(__("Total: ") + data.length);
             },
@@ -111,5 +114,10 @@ Ext.define("NOC.sa.managedobjectselector.ObjectsPanel", {
                 NOC.error(__("Failed to get data"));
             }
         });
+    },
+
+    onExport: function() {
+        var me = this;
+        me.save(me.grid, 'affected.csv');
     }
 });
