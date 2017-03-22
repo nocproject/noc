@@ -142,7 +142,7 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                 },
                                 {
                                     name: "periodic_delay",
-                                    xtype: "main.ref.script.LookupField",
+                                    xtype: "numberfield",
                                     fieldLabel: __("Delay"),
                                     min: 0,
                                     allowBlank: true
@@ -155,7 +155,7 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                 },
                                 {
                                     name: "periodic_script",
-                                    xtype: "textfield",
+                                    xtype: "main.ref.script.LookupField",
                                     fieldLabel: __("Script"),
                                     allowBlank: true
                                 },
