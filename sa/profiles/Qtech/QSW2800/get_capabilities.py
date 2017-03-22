@@ -17,6 +17,7 @@ class Script(BaseScript):
 
     rx_iface = re.compile(
         "^\s*(?P<ifname>Ethernet\d+/\d+)\s+is\s+(?:up|down)", re.MULTILINE)
+    rx_oam = re.compile(r"Doesn\'t (support efmoam|enable EFMOAM!)")
 
     @false_on_cli_error
     def has_lldp(self):
@@ -44,7 +45,8 @@ class Script(BaseScript):
         for match in self.rx_iface.finditer(v):
             try:
                 cmd = self.cli("show ethernet-oam local interface %s" % match.group("ifname"))
-                if not ("Doesn't enable EFMOAM!" in cmd):
+                match = self.rx_oam.search(cmd)
+                if not match:
                     return True
             except self.CLISyntaxError:
                 return False

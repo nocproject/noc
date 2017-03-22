@@ -31,6 +31,8 @@ class Script(BaseScript):
     rx_ifindex = re.compile(r"index is (?P<ifindex>\d+)$")
     rx_ipv4 = re.compile(r"^\s+(?P<ip>[\d+\.]+)\s+(?P<mask>[\d+\.]+)\s+")
     rx_mac = re.compile(r"address is (?P<mac>[0-9a-f\-]+)$", re.IGNORECASE)
+    rx_mtu = re.compile(r"^\s+MTU(?: is)? (?P<mtu>\d+) bytes")
+    rx_oam = re.compile(r"Doesn\'t (support efmoam|enable EFMOAM!)")
 
     def get_lldp(self):
         v = self.cli("show lldp")
@@ -109,7 +111,8 @@ class Script(BaseScript):
                 try:
                     if ifname.startswith("Ethernet"):
                         v = self.cli("show ethernet-oam local interface %s" % ifname )
-                        if not "Doesn't enable EFMOAM!" in v:
+                        match = self.rx_oam.search(v)
+                        if not match:
                             iface["enabled_protocols"] += ["OAM"]
                 except self.CLISyntaxError:
                     pass
@@ -159,6 +162,10 @@ class Script(BaseScript):
             if match:
                 iface["mac"] = match.group("mac")
                 sub["mac"] = iface["mac"]
+            # get mtu address
+            match = self.rx_mtu.search(l)
+            if match:
+                sub["mtu"] = match.group("mtu")
                 if iface.get("aggregated_interface"):
                     iface["subinterfaces"] = []
                 else:

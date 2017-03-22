@@ -40,8 +40,9 @@ class Script(BaseScript):
                     "dynamic": "D",
                     "static": "S",
                     "permanent": "S",
-                    "self": "S",
-                    "secured": "S"
+                    "self": "C",
+                    "secured": "D",
+                    "securec": "S",
                 }[match.group("type").lower()],
             }
             if iface == 'CPU':
