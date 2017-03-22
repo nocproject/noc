@@ -4,7 +4,7 @@
     requirements: "requirements/login-radius.txt"
     virtualenv: "{{noc_root}}"
     extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
-  when: "False"
+  when: "'radius' in login_methods"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
@@ -18,7 +18,7 @@
     requirements: "requirements/login-ldap.txt"
     virtualenv: "{{noc_root}}"
     extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
-  when: "False"
+  when: "'ldap' in login_methods"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
