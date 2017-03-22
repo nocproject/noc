@@ -15,6 +15,7 @@ import tornado.wsgi
 import django.core.handlers.wsgi
 ## NOC modules
 from noc.core.service.base import Service
+from noc.main.models.customfield import CustomField
 
 
 class WebService(Service):
@@ -42,6 +43,8 @@ class WebService(Service):
         from noc.lib.app.site import site
         site.service = self
         site.autodiscover()
+        # Install Custom fields
+        CustomField.install_fields()
 
 
 class NOCWSGIContainer(tornado.wsgi.WSGIContainer):
