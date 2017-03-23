@@ -29,8 +29,16 @@ class ORACLEExtractor(SQLExtractor):
             os.environ.update(env)
             # Connect to database
             self.logger.info("Connecting to database")
+            dsn = self.config.get("dsn")
+            if not dsn:
+                dsn = cx_Oracle.makedsn(
+                    host=self.config.get("host"),
+                    port=self.config.get("port"),
+                    service_name=self.config.get("service_name"),
+                    sid=self.config.get("sid")
+                )
             self.connect = cx_Oracle.connect(
-                self.config["dsn"],
+                dsn,
                 threaded=int(self.config.get("concurrency", 1)) > 1
             )
             os.environ = old_env  # Restore environment
