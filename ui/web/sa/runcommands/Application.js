@@ -845,7 +845,7 @@ Ext.define("NOC.sa.runcommands.Application", {
         this.viewModel.set(state, this.viewModel.get(state) + step)
     },
 
-    sendCommands: function(cfg) {
+    sendCommands: function(mode, cfg) {
         var me = this,
             xhr,
             params = [],
@@ -857,9 +857,28 @@ Ext.define("NOC.sa.runcommands.Application", {
         me.viewModel.set('progressState.f', 0);
         me.viewModel.set('progressState.s', 0);
         me.selectedStore.each(function(record) {
-            var v = {};
-            v.id = record.get("id");
-            params.push(cfg.filter(function(e){return e.id == v.id})[0]);
+            var v = {
+                id: record.get("id")
+            };
+
+
+            if('commands' === mode) {
+                // Copy config
+                Ext.Object.each(cfg, function(key, value) {
+                    if(key !== "id") {
+                        v[key] = value;
+                    }
+                });
+                params.push(v);
+            } else {
+                var param = cfg.filter(function(e) {
+                    return e.id === v.id
+                });
+
+                if(param.length) {
+                    params.push(param[0]);
+                }
+            }
             record.set('status', 'w');
         });
         //
@@ -892,7 +911,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                 ft = ft.substr(lh + l);
                 // Process chunk
                 record = me.selectedStore.getById(chunk.id);
-                if(chunk.error && 'f' != record.get('status')) {
+                if(chunk.error && 'f' !== record.get('status')) {
                     record.set({
                         status: 'f',
                         result: chunk.error
@@ -900,12 +919,12 @@ Ext.define("NOC.sa.runcommands.Application", {
                     me.stateInc('progressState.r', -1);
                     me.stateInc('progressState.f', 1);
                 }
-                if(chunk.running && 'r' != record.get('status')) {
+                if(chunk.running && 'r' !== record.get('status')) {
                     record.set('status', 'r');
                     me.stateInc('progressState.w', -1);
                     me.stateInc('progressState.r', 1);
                 }
-                if(chunk.result && 's' != record.get('status')) {
+                if(chunk.result && 's' !== record.get('status')) {
                     record.set({
                         status: 's',
                         result: chunk.result
@@ -978,7 +997,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                         }
                     }
                     if(commands.length > 0) {
-                        me.sendCommands(commands);
+                        me.sendCommands(mode, commands);
                     } else {
                         NOC.error(__('Empty command'))
                     }
@@ -991,7 +1010,7 @@ Ext.define("NOC.sa.runcommands.Application", {
         };
 
         if('commands' === me.modeField.getValue()) {
-            me.sendCommands({
+            me.sendCommands('commands', {
                 "script": "commands",
                 "args": {
                     "commands": me.commandPanel.getValues().cmd.split("\n")
