@@ -38,7 +38,8 @@ class ORACLEExtractor(SQLExtractor):
                     sid=self.config.get("sid")
                 )
             self.connect = cx_Oracle.connect(
-                dsn,
+                user=self.config.get("user"), password=self.config.get("password"),
+                dsn=dsn,
                 threaded=int(self.config.get("concurrency", 1)) > 1
             )
             os.environ = old_env  # Restore environment
