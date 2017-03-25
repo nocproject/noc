@@ -350,6 +350,9 @@
       value: "{{sentry_js_token}}"
   when: "sentry_secret_key is defined and sentry_secret_key
       and sentry_js_token is defined and sentry_js_token"
+  tags:
+    - config
+    - noc_config
 
 - name: Tune sysctl.conf for node
   sysctl:
