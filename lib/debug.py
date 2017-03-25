@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Various debugging and error logging utilities
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -24,6 +24,7 @@ from noc.settings import TRACEBACK_REVERSE
 from noc.lib.version import get_branch, get_tip
 from noc.lib.fileutils import safe_rewrite
 from noc.core.perf import metrics
+from noc.core.config.base import config
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
@@ -41,15 +42,20 @@ if os.getuid() == 0:
 if not os.path.isdir(CP_NEW):
     try:
         os.makedirs(CP_NEW, 0700)
-    except OSError, why:
-        logger.error("Cannot initialize CP reporting: %s", why)
+    except OSError as e:
+        logger.error("Cannot initialize CP reporting: %s", e)
         ENABLE_CP = False
     if CP_SET_UID:
         try:
             os.chown(CP_NEW, CP_SET_UID, -1)
-        except OSError, why:
-            logger.error("Cannot initialize CP reporting: %s", why)
+        except OSError as e:
+            logger.error("Cannot initialize CP reporting: %s", e)
             ENABLE_CP = False
+
+## Sentry error reporting
+if config.enable_sentry:
+    from raven import Client as RavenClient
+    raven_client = RavenClient(config.sentry_url)
 
 
 def get_lines_from_file(filename, lineno, context_lines,
@@ -283,6 +289,8 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
     r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)
     metrics["errors"] += 1
+    if config.enable_sentry:
+        raven_client.captureException()
     if ENABLE_CP:
         fp = error_fingerprint()
         path = os.path.join(CP_NEW, fp + ".json")
