@@ -1,3 +1,8 @@
+- name: Check ansible version
+  fail:
+    msg: "{{ ansible_version.full }} is not supported by this role. Please use at leat 2.2.0.0. See https://code.getnoc.com/noc/tower/blob/master/UPDATING.md for details."
+  when: ansible_version is defined and ansible_version.full | version_compare('2.2.0.0', '<')
+
 - name: Check distribution compatibility
   fail:
     msg: "{{ ansible_distribution }} is not supported by this role"
