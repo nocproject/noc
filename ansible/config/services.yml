@@ -210,11 +210,6 @@ config:
       type: int
       default: 10
 
-    sentry_url:
-      label: Sentry URL
-      type: str
-      default:
-
   correlator:
     max_threads:
       label: Correlator threads

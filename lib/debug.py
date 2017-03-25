@@ -20,11 +20,10 @@ import uuid
 ## Third-party modules
 import ujson
 ## NOC modules
-from noc.settings import TRACEBACK_REVERSE
+from noc.settings import TRACEBACK_REVERSE, SENTRY_URL
 from noc.lib.version import get_branch, get_tip
 from noc.lib.fileutils import safe_rewrite
 from noc.core.perf import metrics
-from noc.core.config.base import config
 
 logger = logging.getLogger(__name__)
 if not logger.handlers:
@@ -53,9 +52,16 @@ if not os.path.isdir(CP_NEW):
             ENABLE_CP = False
 
 ## Sentry error reporting
-if config.enable_sentry:
+if SENTRY_URL:
     from raven import Client as RavenClient
-    raven_client = RavenClient(config.sentry_url)
+
+    raven_client = RavenClient(
+        SENTRY_URL,
+        processors=(
+            'raven.processors.SanitizePasswordsProcessor',
+        ),
+        release=get_tip()
+    )
 
 
 def get_lines_from_file(filename, lineno, context_lines,
@@ -289,8 +295,10 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
     r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)
     metrics["errors"] += 1
-    if config.enable_sentry:
-        raven_client.captureException()
+    if SENTRY_URL:
+        raven_client.captureException(
+            fingerprint=fp
+        )
     if ENABLE_CP:
         fp = error_fingerprint()
         path = os.path.join(CP_NEW, fp + ".json")
