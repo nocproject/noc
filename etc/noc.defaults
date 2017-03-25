@@ -1,4 +1,8 @@
 [main]
+# Sentry integration
+sentry_url =
+sentry_js_token =
+
 debug = false
 # Load non-minified versions of js libraries, if not false
 debug_js = false
@@ -126,7 +130,7 @@ method = local
 # pyRule, returning login form class.
 # Empty to use default auth_form_user_password
 #
-form_pyrule = 
+form_pyrule =
 
 # LDAP server URI (Applicable only for "ldap" method)
 # If your LDAP server supports partitions (i.e Apache DS),
@@ -139,7 +143,7 @@ ldap_bind_method = simple
 # leave empty for anonymous bind
 ldap_bind_dn =
 # Password for technical DN
-ldap_bind_password = 
+ldap_bind_password =
 # Users search base
 ldap_users_base = ou=Users,ou=nocproject,ou=org
 # Filter to search users by username
@@ -148,7 +152,7 @@ ldap_users_filter = (&(objectClass=inetOrgPerson)(uid={{user}}))
 ldap_groups_base = ou=Groups,ou=nocproject,ou=org
 # Additionaly check user in group, before permitting to log in
 # Set user.is_active flag to false when user is not in a group
-ldap_required_group = 
+ldap_required_group =
 # Filter to search user in required group
 ldap_required_filter = (|(uniqueMember={{dn}})(member={{user}}))
 # Grant superuser permissions if user in group
@@ -167,7 +171,7 @@ ad_bind_method = simple
 # leave empty for anonymous bind
 ad_bind_dn =
 # Password for technical DN
-ad_bind_password = 
+ad_bind_password =
 # Users search base
 ad_users_base = ou=nocproject,ou=org
 # Filter to search users by username
@@ -176,7 +180,7 @@ ad_users_filter = (&(objectClass=organizationalPerson)(sAMAccountName={{user}}))
 ad_groups_base = ou=Groups,ou=nocproject,ou=org
 # Additionaly check user in group, before permitting to log in
 # Set user.is_active flag to false when user is not in a group
-ad_required_group = 
+ad_required_group =
 # Filter to search user in required group
 ad_required_filter = noc_users
 # Grant superuser permissions if user in group
@@ -187,13 +191,13 @@ ad_superuser_filter =
 # Radius server hostname or IP
 radius_server = radius.example.com
 # Radius secret
-radius_secret = 
+radius_secret =
 # NAS Identifier
 radius_nas_identifier = noc-project
 # Attribute to use to determine super user
-radius_superuser_attribute = 
+radius_superuser_attribute =
 # Value of superuser attribute for user to be superuser
-radius_superuser_value = 
+radius_superuser_value =
 
 # Authentication pyrule (for pyrule method)
 pyrule_authentication =

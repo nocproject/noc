@@ -78,8 +78,6 @@ class BaseConfig(object):
         self.geocoding_google_key = None
         self.geocoding_google_language = None
         #
-        self.sentry_url = None
-        #
         self.tt_escalation_limit = None
         #
         self.memcached_pool_size = None
@@ -180,11 +178,6 @@ class BaseConfig(object):
     @property
     def memcached_hosts(self):
         return self.get_service("memcached")
-
-    @property
-    def enable_sentry(self):
-        return bool(self.sentry_url)
-
 
 # Config singleton
 config = BaseConfig()
