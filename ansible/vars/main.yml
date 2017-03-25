@@ -117,3 +117,12 @@ nsq_cache_fs: xfs
 opt_lv_size: 5G
 opt_mount_point: /opt/noc
 opt_fs: xfs
+
+sentry_scheme: "{{ lookup('env','SENTRY_SCHEME') | default('https', True)}}"
+sentry_host: "{{ lookup('env','SENTRY_HOST') | default('localhost', True)}}"
+sentry_public_key: "{{ lookup('env','SENTRY_PUBLIC_KEY') }}"
+sentry_secret_key: "{{ lookup('env','SENTRY_SECRET_KEY') }}"
+sentry_path: "{{ lookup('env','SENTRY_PATH') | default('/', True)}}"
+sentry_project_id: "{{ lookup('env','SENTRY_PROJECT_ID') }}"
+sentry_js_token: "{{ lookup('env','SENTRY_JS_TOKEN') }}"
+sentry_url: "{{sentry_scheme}}://{{sentry_public_key}}:{{sentry_secret_key}}@{{sentry_host}}{{sentry_path}}{{sentry_project_id}}"

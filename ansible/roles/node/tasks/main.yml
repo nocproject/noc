@@ -287,23 +287,13 @@
     - config
     - noc_config
 
-- name: create noc.conf
-  file:
-    state: touch
-    name: "{{ noc_root }}/etc/noc.conf"
-    owner: "{{ noc_user }}"
-  tags:
-    - config
-    - noc_config
-
-- name: Set up noc.conf
+- name: Set up noc.conf 1/2
   ini_file:
     dest: "{{noc_root}}/etc/noc.conf"
     section: "{{item.section}}"
     option: "{{item.option}}"
     value: "{{item.value}}"
-    # works with ansible 2.2+ but brokes 2.1. have to be enabled in 2017
-    #create: yes
+    create: yes
   with_items:
     - section: main
       option: secret_key
@@ -342,6 +332,24 @@
   tags:
     - config
     - noc_config
+
+- name: Set up noc.conf for sentry 2/2
+  ini_file:
+    dest: "{{noc_root}}/etc/noc.conf"
+    section: "{{item.section}}"
+    option: "{{item.option}}"
+    value: "{{item.value}}"
+    create: yes
+  register: noc_cfg4
+  with_items:
+    - section: main
+      option: sentry_url
+      value: "{{sentry_url}}"
+    - section: main
+      option: sentry_js_token
+      value: "{{sentry_js_token}}"
+  when: "sentry_secret_key is defined and sentry_secret_key
+      and sentry_js_token is defined and sentry_js_token"
 
 - name: Tune sysctl.conf for node
   sysctl:
