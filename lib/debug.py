@@ -297,7 +297,7 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
     metrics["errors"] += 1
     if SENTRY_URL:
         raven_client.captureException(
-            fingerprint=fp
+            fingerprint=[fp]
         )
     if ENABLE_CP:
         fp = error_fingerprint()
