@@ -303,7 +303,7 @@ Ext.define("NOC.sa.getnow.Application", {
                     q[k] = v;
                 }
             };
-        setIf("managed_object", me.managedObject.getValue());
+        setIf("id", me.managedObject.getValue());
         setIf("profile_name", me.saProfile.getValue());
         setIf("administrative_domain", me.administrativeDomain.getValue());
         me.currentQuery = q;
