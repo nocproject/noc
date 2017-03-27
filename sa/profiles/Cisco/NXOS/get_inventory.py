@@ -129,7 +129,7 @@ class Script(BaseScript):
             except:
                 number = None
             return "CHASSIS", number, pid
-        elif "GEM" in descr:
+        elif "GEM" in descr or "Ethernet Module" in descr:
             number = name.split()[-1]
             return "GEM", number, pid
         elif "Superv" in descr:
