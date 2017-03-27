@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (IOS-XE Software,\s)?"
+        r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (IOS[\-\s]XE Software,\s)?"
         r"(?P<platform>.+?) Software \((?P<image>[^)]+)\), (Experimental )?"
         r"Version (?P<version>[^\s,]+)", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(
@@ -30,7 +30,8 @@ class Script(BaseScript):
     rx_platform = re.compile(
         r"^cisco (?P<platform>\S+) \(\S+\) processor( \(revision.+?\))? with",
         re.IGNORECASE | re.MULTILINE)
-    rx_invalid_platforms = re.compile("IOS-XE|EGR|Catalyst L3 Switch|s\d+\S+")
+    rx_invalid_platforms = re.compile(
+        r"IOS[\-\s]XE|EGR|Catalyst L3 Switch|s\d+\S+")
 
     def execute(self):
         if self.has_snmp():
