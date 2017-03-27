@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%IOSXE_PEM-3-PEMFAIL: The (?P<name>PEM in slot \\d+) is switched off or encountering a failure condition"
+            "value_re": "%IOSXE_PEM-3-PEMFAIL: The (?P<name>PEM in slot \\S+) is switched off or encountering a failure condition"
         }
     ]
 }

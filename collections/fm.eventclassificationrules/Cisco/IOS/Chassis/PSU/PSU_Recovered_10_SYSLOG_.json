@@ -15,7 +15,7 @@
         },
         {
             "key_re": "^message$",
-            "value_re": "%IOSXE_PEM-6-PEMOK: The (?P<name>PEM in slot \\d+) is functioning properly"
+            "value_re": "%IOSXE_PEM-6-PEMOK: The (?P<name>PEM in slot \\S+) is functioning properly"
         }
     ]
 }
