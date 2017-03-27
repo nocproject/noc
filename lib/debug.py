@@ -51,6 +51,8 @@ if not os.path.isdir(CP_NEW):
             logger.error("Cannot initialize CP reporting: %s", e)
             ENABLE_CP = False
 
+SERVICE_NAME = os.path.relpath(sys.argv[0] or sys.executable)
+
 ## Sentry error reporting
 if SENTRY_URL:
     from raven import Client as RavenClient
@@ -313,7 +315,7 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
                 "ts": datetime.datetime.now().isoformat(),
                 "uuid": fp,
                 # "installation": None,
-                "process": os.path.relpath(sys.argv[0] or sys.executable),
+                "process": SERVICE_NAME,
                 "branch": get_branch(),
                 "tip": get_tip(),
                 "traceback": r
@@ -366,7 +368,7 @@ def error_fingerprint():
         tb = tb.tb_next
     parts = [
         get_branch(),
-        os.path.relpath(sys.argv[0] or sys.executable),  # Process
+        SERVICE_NAME,  # Process
         str(t),  # Exception class
         noc_file, noc_function, str(noc_lineno),  # NOC code point
         tb_file, tb_function, str(tb_lineno)  # Absolute code point
