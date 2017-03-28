@@ -39,7 +39,14 @@ class Command(BaseCommand):
         for d in self.FIX_DIRS:
             if not os.path.isdir(d):
                 continue
-            for f in os.listdir(d):
+            files = os.listdir(d)
+            if "__init__.py" not in files:
+                print "WARNING: %s is missed. Create empty file or all fixes from %s will be ignored" % (
+                    os.path.join(d, "__init__.py"),
+                    d
+                )
+                continue
+            for f in files:
                 if not f.startswith("_") and f.endswith(".py"):
                     fixes.add(f[:-3])
         for f in sorted(fixes):
