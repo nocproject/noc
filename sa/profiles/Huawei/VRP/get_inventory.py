@@ -100,7 +100,11 @@ class Script(BaseScript):
         }
 
     def part_parse(self, type, slot_num, subcard_num=""):
-        v = self.cli("display elabel slot %s %s" % (slot_num or "", subcard_num))
+        try:
+            v = self.cli("display elabel slot %s %s" % (slot_num or "", subcard_num))
+        except self.CLISyntaxError:
+            # For Router Device (not slot part in cli)
+            v = self.cli("display elabel %s" % subcard_num)
         # Avoid of rotten devices, where part_on contains 0xFF characters
         v = v.decode("ascii", "ignore")
         r = []
