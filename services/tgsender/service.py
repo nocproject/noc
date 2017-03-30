@@ -45,7 +45,7 @@ class TgSenderService(Service):
 
     def escape_markdown(self, text):
         """Helper function to escape telegram markup symbols"""
-        escape_chars = '\*_`\['
+        escape_chars = '\*_`'
         return re.sub(r'([%s])' % escape_chars, r'\\\1', text)
 
     def send_tb(self, messages, address, subject, body):
