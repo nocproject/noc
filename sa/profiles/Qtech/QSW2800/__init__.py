@@ -35,6 +35,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
 
     rx_ifname = re.compile(r"^(?P<number>\d+)$")
+    default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
 
     def convert_interface_name(self, s):
         """
