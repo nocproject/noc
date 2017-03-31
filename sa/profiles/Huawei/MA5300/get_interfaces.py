@@ -37,6 +37,9 @@ class Script(BaseScript):
     rx_vlan = re.compile(r"Vlan ID:\s+(?P<vlan_id>\d+)")
     rx_port = re.compile(
         r"(?P<port>(?:Adsl|Ethernet|GigabitEthernet)\d+/\d+/\d+)")
+    rx_snmp = re.compile(
+        r"^(?:Adsl|Ethernet|GigabitEthernet)(?P<card>\d+)/\d+/(?P<port>\d+)",
+        re.MULTILINE)
     rx_tagged = re.compile(
         r"^\s*Tagged\s+Ports:(?P<tagged>.+)Untagged",
         re.MULTILINE | re.DOTALL)
@@ -128,6 +131,15 @@ class Script(BaseScript):
             if description:
                 iface["description"] = description
                 iface["subinterfaces"][0]["description"] = description
+            match = self.rx_snmp.search(name)
+            if match:
+                if name.startswith("Adsl"):
+                    snmp_ifindex = 201326592+int(match.group("card"))*65536+int(match.group("port"))*64
+                if name.startswith("Ethernet"):
+                    snmp_ifindex = 469762306+int(match.group("card"))*65536+int(match.group("port"))*64
+                if name.startswith("Gigabit"):
+                    snmp_ifindex = 503316993+int(match.group("card"))*65536+int(match.group("port"))*64
+                iface["snmp_ifindex"] = snmp_ifindex
             interfaces += [iface]
         for v in self.cli("show ip interface\n").split("\n\n"):
             match = self.rx_ip_iface.search(v)
