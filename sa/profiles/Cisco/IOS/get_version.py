@@ -20,11 +20,11 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (IOS[\-\s]XE Software,\s)?"
+        r"^(?:Cisco IOS Software( \[Everest\])?,.*?|IOS \(tm\)) (IOS[\-\s]XE Software,\s)?"
         r"(?P<platform>.+?) Software \((?P<image>[^)]+)\), (Experimental )?"
         r"Version (?P<version>[^\s,]+)", re.MULTILINE | re.DOTALL)
     rx_snmp_ver = re.compile(
-        r"^(?:Cisco IOS Software,.*?|IOS \(tm\)) (?P<platform>.+?) Software "
+        r"^(?:Cisco IOS Software( \[Everest\])?,.*?|IOS \(tm\)) (?P<platform>.+?) Software "
         r"\((?P<image>[^)]+)\), (Experimental )?Version (?P<version>[^,]+),",
         re.MULTILINE | re.DOTALL)
     rx_platform = re.compile(
