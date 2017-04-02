@@ -174,7 +174,7 @@ class AlarmDiagnosticConfig(Document):
                         "handler": c.on_clear_handler,
                         "header": c.on_clear_header
                     }]
-        # Submit on_raise job
+        # Submit on_clear job
         for delay in cfg:
             call_later(
                 "noc.fm.models.alarmdiagnosticconfig.on_clear",
