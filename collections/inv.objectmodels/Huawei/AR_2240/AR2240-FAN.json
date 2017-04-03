@@ -3,17 +3,18 @@
     "$collection": "inv.objectmodels",
     "uuid": "9477595a-e02c-4b17-8163-40962e76c389",
     "vendor__code": "HUAWEI",
-    "description": "Huawei AR 2240 Fan Module",
+    "description": "Function Module,AR2240,AR2240-FAN,Fan Box For AR2240",
+    "cr_context": "FAN",
     "connections": [],
     "data": {
         "asset": {
-            "part_no": ["02311DCJ"]
+            "part_no": ["AR2240-FAN"]
         },
         "power": {
-            "power": "12"
+            "power": 12.0
         },
         "weight": {
-            "weight": "0.27"
+            "weight": 0.27
         }
     }
 }

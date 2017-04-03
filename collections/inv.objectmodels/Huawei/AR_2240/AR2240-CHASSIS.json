@@ -1,0 +1,61 @@
+{
+    "name": "Huawei | AR 2240 | AR2240-CHASSIS",
+    "$collection": "inv.objectmodels",
+    "uuid": "ac02afea-1581-4cd2-9d11-ef3d4413cf0a",
+    "vendor__code": "HUAWEI",
+    "description": "Huawei Versatile Routing Platform Software",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "FAN slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "FANCARD",
+            "type__name": "Huawei | AR 2240 | FAN"
+        },
+        {
+            "description": "SRU slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "SRU",
+            "type__name": "Huawei | AR 2240 | SRU"
+        },
+        {
+            "description": "SAE slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "SAE",
+            "type__name": "Huawei | AR 2240 | SAE"
+        },
+        {
+            "description": "PSU slot #1",
+            "direction": "i",
+            "gender": "f",
+            "name": "PWRCARD I",
+            "type__name": "Huawei | AR 2240 | PSU"
+        },
+        {
+            "description": "PSU slot #2",
+            "direction": "i",
+            "gender": "f",
+            "name": "PWRCARD II",
+            "type__name": "Huawei | AR 2240 | PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["02113373", "AR0B0024BA", "AR2240 CHASSIS"]
+        },
+        "dimensions": {
+            "depth": 470,
+            "height": 88,
+            "width": 442
+        },
+        "power": {
+            "power": 350.0
+        },
+        "rackmount": {
+            "units": 2.0
+        }
+    }
+}

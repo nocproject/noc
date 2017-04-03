@@ -3,11 +3,12 @@
     "$collection": "inv.objectmodels",
     "uuid": "9d9a05fa-9417-4e51-8426-0327f4af725f",
     "vendor__code": "HUAWEI",
-    "description": "AR Series, AR01PSAC35, 350W AC Power Module",
+    "description": "AR Series,AR01PSAC35,350W AC Power Module",
+    "cr_context": "PSU",
     "connections": [],
     "data": {
         "asset": {
-            "part_no": ["02310CWN"]
+            "part_no": ["AR01PSAC35"]
         }
     }
 }
