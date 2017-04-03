@@ -38,6 +38,35 @@ class Script(BaseScript):
         r"^Port\s+Vlans allowed on trunk\s*\n"
         r"^\S+\s+([0-9\-\,]+)\s*\n", re.MULTILINE)
 
+    rx_conf_iface = re.compile(
+        r"^\s*interface (?P<ifname>\S+)\s*\n"
+        r"(^\s*description (?P<descr>.+?)\n)?"
+        r"(^\s*switchport trunk native vlan (?P<untagged>\d+)\s*\n)?"
+        r"^\s*switchport trunk encapsulation dot1q\s*\n"
+        r"^\s*switchport trunk allowed vlan (?P<vlans>.+?)"
+        r"^\s*switchport mode (?P<mode>trunk|access)",
+        re.MULTILINE | re.DOTALL)
+
+    def parse_config(self):
+        r = []
+        c = self.scripts.get_config()
+        for match in self.rx_conf_iface.finditer(c):
+            vlans = match.group("vlans").replace("switchport trunk allowed vlan add", ",")
+            iface = {
+                "interface": match.group("ifname"),
+                "tagged": self.expand_rangelist(vlans),
+                "members": [],
+                "802.1Q Enabled": True,
+                "802.1ad Tunnel": False,
+            }
+            if match.group("untagged"):
+                iface["untagged"] = match.group("untagged")
+            if match.group("descr"):
+                iface["description"] = match.group("descr")
+            r += [iface]
+        return r
+
+
     def get_description(self):
         r = []
         s = self.cli("show interfaces description", cached=True)
@@ -56,7 +85,9 @@ class Script(BaseScript):
         try:
             v = self.cli("show interfaces switchport")
         except self.CLISyntaxError:
-            raise self.NotSupportedError()
+            # Cisco Catalist 3500 XL do not have this command
+            #raise self.NotSupportedError()
+            return self.parse_config()
         v = "\n" + v
         v = self.rx_cont.sub(",", v)  # Unwind continuation lines
         # Get portchannel members
