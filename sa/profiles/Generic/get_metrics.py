@@ -351,6 +351,7 @@ class Script(BaseScript):
                 oids.update(o)
         oids = list(oids)
         results = {}  # oid -> value
+        self.snmp.set_timeout_limits(3)
         while oids:
             chunk, oids = oids[:self.GET_CHUNK], oids[self.GET_CHUNK:]
             chunk = dict((x, x) for x in chunk)
@@ -363,6 +364,11 @@ class Script(BaseScript):
                     "Failed to get SNMP OIDs %s: %s",
                     oids, e
                 )
+            except self.snmp.FatalTimeoutError:
+                self.logger.error(
+                    "Fatal timeout error on: %s", oids
+                )
+                break
         # Process results
         for oid in batch:
             ts = self.get_ts()
