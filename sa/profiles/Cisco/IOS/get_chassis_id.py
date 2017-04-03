@@ -24,13 +24,14 @@ class Script(BaseScript):
     ## Catalyst 2960 on IOS FX
     ## Catalyst 2950 on IOS EA
     ## Catalyst 3850 on IOS EX
+    ## Catalyst 3500 on IOS WC
     ## Single chassis mac
     ##
     rx_small_cat = re.compile(
         r"^Base ethernet MAC Address\s*:\s*(?P<id>\S+)",
         re.IGNORECASE | re.MULTILINE)
 
-    @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX|EY")
+    @BaseScript.match(version__regex=r"SE|EA|EZ|FX|EX|EY|WC")
     def execute_small_cat(self):
         v = self.cli("show version")
         match = self.re_search(self.rx_small_cat, v)
