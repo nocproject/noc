@@ -238,7 +238,7 @@ class SegmentTopology(BaseTopology):
         for p, nh in self.node_hints.iteritems():
             if "x" in nh and "y" in nh:
                 dpos[p] = np.array([nh["x"], nh["y"]])
-        if len(dpos) != len(self.G):
+        if len(dpos) != len(self.G) and len(self.G):
             # Build layout
             pos = self.get_layout_class()(self).get_layout()
             pos.update(dpos)
