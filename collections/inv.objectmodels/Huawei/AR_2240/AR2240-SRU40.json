@@ -1,17 +1,11 @@
 {
-    "name": "Huawei | AR 2240 | AR2240",
+    "name": "Huawei | AR 2240 | AR2240-SRU40",
     "$collection": "inv.objectmodels",
-    "uuid": "ac02afea-1581-4cd2-9d11-ef3d4413cf0a",
+    "uuid": "d4231dda-82c0-424a-b112-ede3af0ba149",
     "vendor__code": "HUAWEI",
-    "description": "Huawei Versatile Routing Platform Software",
+    "description": "AR,AR01SRU2C,Service and Router Unit 40,3GE WAN(2GE Combo),2 USB,3 DSP Slots,1*1",
+    "cr_context": "SRU",
     "connections": [
-        {
-            "description": "FAN slot",
-            "direction": "i",
-            "gender": "m",
-            "name": "FANCARD",
-            "type__name": "Huawei | AR 2240 | Fan"
-        },
         {
             "description": "Management Console",
             "direction": "s",
@@ -29,18 +23,22 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "PSU slot #1",
-            "direction": "i",
+            "description": "USB port 0",
+            "direction": "s",
             "gender": "f",
-            "name": "PWRCARD I",
-            "type__name": "Huawei | AR 2240 | PSU"
+            "group": "0",
+            "name": "usb0",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
         },
         {
-            "description": "PSU slot #2",
-            "direction": "i",
+            "description": "USB port 1",
+            "direction": "s",
             "gender": "f",
-            "name": "PWRCARD II",
-            "type__name": "Huawei | AR 2240 | PSU"
+            "group": "0",
+            "name": "usb1",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
         },
         {
             "description": "GigabitEthernet 0/0/0 interface sfp",
@@ -85,18 +83,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["02113373", "AR2240"]
-        },
-        "dimensions": {
-            "depth": 470,
-            "height": 88.1,
-            "width": 442
-        },
-        "power": {
-            "power": 350.0
-        },
-        "rackmount": {
-            "units": 2.0
+            "part_no": ["AR01SRU2C"]
         }
     }
 }

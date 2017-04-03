@@ -4,10 +4,11 @@
     "uuid": "521a13ae-19e0-48db-a733-0f5452237013",
     "vendor__code": "HUAWEI",
     "description": "AC-DC Power,-25degC,60degC,90V,290V,12V/29.2A",
+    "cr_context": "PSU",
     "connections": [],
     "data": {
         "asset": {
-            "part_no": ["02131212"]
+            "part_no": ["PAC-350WB-L"]
         }
     }
 }
