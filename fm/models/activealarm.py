@@ -468,12 +468,32 @@ class ActiveAlarm(nosql.Document):
         self.escalation_ts = datetime.datetime.now()
         self.close_tt = close_tt
         self.log_message("Escalated to %s" % tt_id)
-        self.save(save_condition={
-            "managed_object": {
-                "$exists": True
-            },
-            "id": self.id
+        r = ActiveAlarm._get_collection().update({
+            "_id": self.id
+        }, {
+            "$set": {
+                "escalation_tt": self.escalation_tt,
+                "escalation_ts": self.escalation_ts,
+                "close_tt": self.close_tt
+            }
         })
+        if r.get("nModified", 0) == 0:
+            # Already closed, update archive
+            ArchivedAlarm._get_collection().update({
+                "_id": self.id
+            }, {
+                "$set": {
+                    "escalation_tt": self.escalation_tt,
+                    "escalation_ts": self.escalation_ts,
+                    "close_tt": self.close_tt
+                }
+            })
+        # self.save(save_condition={
+        #     "managed_object": {
+        #         "$exists": True
+        #     },
+        #     "id": self.id
+        # })
 
     def set_escalation_error(self, error):
         self.escalation_error = error
