@@ -21,12 +21,26 @@ class SNMP(object):
     class TimeOutError(Exception):
         pass
 
+    class FatalTimeoutError(Exception):
+        pass
+
     def __init__(self, script, beef=None):
         self.script = script
         self.ioloop = None
         self.result = None
         self.beef = beef
         self.logger = PrefixLoggerAdapter(script.logger, "snmp")
+        self.timeouts_limit = 0
+        self.timeouts = 0
+
+    def set_timeout_limits(self, n):
+        """
+        Set sequental timeouts l
+        :param n: 
+        :return: 
+        """
+        self.timeouts_limit = n
+        self.timeouts = n
 
     def close(self):
         if self.ioloop:
@@ -69,11 +83,16 @@ class SNMP(object):
                     ioloop=self.get_ioloop(),
                     version=version
                 )
+                self.timeouts = self.timeouts_limit
                 if self.beef:
                     # Restore from beef
                     self.beef.set_snmp_get(oids, self.result)
             except SNMPError as e:
                 if e.code == TIMED_OUT:
+                    if self.timeouts_limit:
+                        self.timeouts -= 1
+                        if not self.timeouts:
+                            raise self.FatalTimeoutError()
                     raise self.TimeOutError()
                 else:
                     raise
