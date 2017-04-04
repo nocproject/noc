@@ -32,7 +32,7 @@ class Script(BaseScript):
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_mainboard = re.compile(
-        r"\[Main_Board\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
+        r"\[(?:Main_Board|BackPlane_0)\].+?\n\n\[Board\sProperties\](?P<body>.*?)\n\n",
         re.DOTALL | re.MULTILINE | re.VERBOSE
     )
     rx_subitem = re.compile(
@@ -147,14 +147,22 @@ class Script(BaseScript):
             else:
                 self.logger("Not response number place")
                 continue
-            inv.append(
-                {
-                    "type": type,
-                    "number": num,
-                    "vendor": "HUAWEI"
-                }
-            )
-
+            inv += [{
+                "type": type,
+                "number": num,
+                "vendor": "HUAWEI"
+            }]
+        found = False
+        for i in inv:
+            if i["type"] == "CHASSIS":
+                found = True
+                break
+        if not found:
+            inv += [{
+                "type": "CHASSIS",
+                "number": None,
+                "vendor": "HUAWEI"
+            }]
         return inv
 
     @staticmethod
