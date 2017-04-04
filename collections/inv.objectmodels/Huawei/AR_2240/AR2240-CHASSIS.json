@@ -4,12 +4,13 @@
     "uuid": "ac02afea-1581-4cd2-9d11-ef3d4413cf0a",
     "vendor__code": "HUAWEI",
     "description": "Huawei Versatile Routing Platform Software",
+    "connection_rule__name": "Huawei | AR2200",
     "cr_context": "CHASSIS",
     "connections": [
         {
             "description": "FAN slot",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "FANCARD",
             "type__name": "Huawei | AR 2240 | FAN"
         },
@@ -21,11 +22,60 @@
             "type__name": "Huawei | AR 2240 | SRU"
         },
         {
-            "description": "SAE slot",
+            "description": "SIC slot #1",
             "direction": "i",
             "gender": "m",
-            "name": "SAE",
-            "type__name": "Huawei | AR 2240 | SAE"
+            "name": "SIC 1",
+            "type__name": "Huawei | AR 2240 | SIC"
+        },
+        {
+            "description": "SIC slot #2",
+            "direction": "i",
+            "gender": "m",
+            "name": "SIC 2",
+            "type__name": "Huawei | AR 2240 | SIC"
+        },
+        {
+            "description": "SIC slot #3",
+            "direction": "i",
+            "gender": "m",
+            "name": "SIC 3",
+            "type__name": "Huawei | AR 2240 | SIC"
+        },
+        {
+            "description": "SIC slot #4",
+            "direction": "i",
+            "gender": "m",
+            "name": "SIC 4",
+            "type__name": "Huawei | AR 2240 | SIC"
+        },
+        {
+            "description": "WSIC slot #1",
+            "direction": "i",
+            "gender": "m",
+            "name": "WSIC 1",
+            "type__name": "Huawei | AR 2240 | WSIC"
+        },
+        {
+            "description": "WSIC slot #2",
+            "direction": "i",
+            "gender": "m",
+            "name": "WSIC 2",
+            "type__name": "Huawei | AR 2240 | WSIC"
+        },
+        {
+            "description": "XSIC slot #1",
+            "direction": "i",
+            "gender": "m",
+            "name": "XSIC 1",
+            "type__name": "Huawei | AR 2240 | XSIC"
+        },
+        {
+            "description": "XSIC slot #2",
+            "direction": "i",
+            "gender": "m",
+            "name": "XSIC 2",
+            "type__name": "Huawei | AR 2240 | XSIC"
         },
         {
             "description": "PSU slot #1",

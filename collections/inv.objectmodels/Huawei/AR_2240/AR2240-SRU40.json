@@ -7,6 +7,13 @@
     "cr_context": "SRU",
     "connections": [
         {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | AR 2240 | SRU"
+        },
+        {
             "description": "Management Console",
             "direction": "s",
             "gender": "f",

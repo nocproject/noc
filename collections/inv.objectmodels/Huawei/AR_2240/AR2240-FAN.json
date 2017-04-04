@@ -5,7 +5,15 @@
     "vendor__code": "HUAWEI",
     "description": "Function Module,AR2240,AR2240-FAN,Fan Box For AR2240",
     "cr_context": "FAN",
-    "connections": [],
+    "connections": [
+        {
+            "description": "",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | AR 2240 | FAN"
+        }
+    ],
     "data": {
         "asset": {
             "part_no": ["AR2240-FAN"]
