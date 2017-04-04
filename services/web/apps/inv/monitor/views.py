@@ -40,7 +40,13 @@ class InvMonitorApplication(ExtApplication):
                     "$lt": now
                 }
             }
+            exp_q = {
+                Job.ATTR_LAST_STATUS: Job.E_EXCEPTION,
+            }
             t0 = sc.find_one(late_q, limit=1, sort=[("ts", 1)])
+            ldur = sc.aggregate([{"$group": {"_id": "$jcls", "avg": {"$avg": "$ldur"}}},
+                                 {"$sort": {"_id": 1}}])
+            ldur = ldur["result"]
             if t0 and t0["ts"] < now:
                 lag = (now - t0["ts"]).total_seconds()
             else:
@@ -50,8 +56,11 @@ class InvMonitorApplication(ExtApplication):
             r[p.name.lower()] = {
                 "pool": p.name.lower(),
                 "total_tasks": sc.count(),
+                "exception_tasks": sc.find(exp_q).count(),
                 "running_tasks": sc.find({Job.ATTR_STATUS: Job.S_RUN}).count(),
                 "late_tasks": late_count,
-                "lag": lag
+                "lag": lag,
+                "avg_box_tasks": ldur[0]["avg"] if ldur else 0,
+                "avg_periodic_tasks": ldur[1]["avg"] if len(ldur) > 1 else 0
             }
         return r
