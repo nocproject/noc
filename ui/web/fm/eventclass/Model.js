@@ -24,6 +24,14 @@ Ext.define("NOC.fm.eventclass.Model", {
             type: "string"
         },
         {
+            name: "subject_template",
+            type: "string"
+        },
+        {
+            name: "body_template",
+            type: "string"
+        },
+        {
             name: "vars",
             type: "auto"
         },
