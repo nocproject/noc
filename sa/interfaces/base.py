@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Abstract script interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -668,6 +668,8 @@ class IPv4Parameter(StringParameter):
                 self.raise_error(value)
         except:
             self.raise_error(value)
+        # Avoid output like 001.002.003.004
+        v = ".".join("%d" % int(c) for c in X)
         return v
 
 
