@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | LTE | LTE sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "f534503f-9f4c-4e21-9428-b049edbb4986",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35265.1.21.202.1",
+    "action": "match",
+    "profile": "Eltex.LTE"
+}
