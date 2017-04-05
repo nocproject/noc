@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 3750X",
+    "$collection": "inv.connectionrules",
     "uuid": "bb66b362-2830-4611-9023-46b07f55f429",
     "description": "Cisco WS3750X connection rules",
     "context": [

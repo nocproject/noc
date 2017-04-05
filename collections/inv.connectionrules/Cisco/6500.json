@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 6500",
+    "$collection": "inv.connectionrules",
     "uuid": "7ecc9723-93a0-443e-b62c-84477485bdbc",
     "description": "Cisco 6500 series connection rules",
     "context": [

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9001 | FAN",
+    "$collection": "inv.connectiontypes",
     "uuid": "c251d46f-a915-4da2-baf0-d3f447716bbf",
     "description": "ASR9001 FAN  connection",
     "c_group": [],

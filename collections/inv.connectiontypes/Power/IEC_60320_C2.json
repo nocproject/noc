@@ -1,5 +1,6 @@
 {
     "name": "Power | IEC 60320 C2",
+    "$collection": "inv.connectiontypes",
     "uuid": "f278a74e-3b9c-49c0-8d42-e87964f3d18e",
     "description": "Non-polarized C1/C2 inlet",
     "c_group": ["power_c1"],

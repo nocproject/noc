@@ -1,5 +1,6 @@
 {
     "name": "Juniper | EX4200",
+    "$collection": "inv.connectionrules",
     "uuid": "07e41325-c05c-4468-92f0-ee3f04ff01d1",
     "description": "Juniper EX4200/3200 connection rules",
     "context": [

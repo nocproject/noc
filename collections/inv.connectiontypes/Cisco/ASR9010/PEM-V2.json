@@ -1,5 +1,6 @@
 {
     "name": "Cisco | ASR9010 | PEM-V2",
+    "$collection": "inv.connectiontypes",
     "uuid": "a40bd6b1-f790-4b5f-89ac-81e754b8fec5",
     "description": "ASR 9010 PSU version 2 slot",
     "c_group": [],

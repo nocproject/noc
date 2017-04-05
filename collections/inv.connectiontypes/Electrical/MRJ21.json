@@ -1,5 +1,6 @@
 {
     "name": "Electrical | MRJ21",
+    "$collection": "inv.connectiontypes",
     "uuid": "740a029d-1004-42d2-8207-16b6d7b9e276",
     "description": null,
     "c_group": [],

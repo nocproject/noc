@@ -1,5 +1,6 @@
 {
     "name": "Brocade | FastIron SuperX | Mgmt Connector",
+    "$collection": "inv.connectiontypes",
     "uuid": "6f73a03a-c518-41f5-932a-4352d684b94c",
     "description": "Management module connector in SX chassis",
     "c_group": [],

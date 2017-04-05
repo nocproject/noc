@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 3750X | NM",
+    "$collection": "inv.connectiontypes",
     "uuid": "0cb9cc49-5e36-4a6e-ba3f-e49bb193bb57",
     "description": "Cisco 3750X Network Module slot",
     "c_group": [],

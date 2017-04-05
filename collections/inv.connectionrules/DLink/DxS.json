@@ -1,5 +1,6 @@
 {
     "name": "DLink | DxS",
+    "$collection": "inv.connectionrules",
     "uuid": "08b5f8e4-345c-434a-9811-9753d6a1e6cd",
     "description": "D-Link DxS switches",
     "context": [

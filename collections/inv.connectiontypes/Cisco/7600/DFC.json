@@ -1,5 +1,6 @@
 {
     "name": "Cisco | 7600 | DFC",
+    "$collection": "inv.connectiontypes",
     "uuid": "934ffe8a-eaf4-4465-87c9-d307be65ed7f",
     "description": "Cisco DFC slot",
     "c_group": [],
