@@ -11,6 +11,7 @@ import re
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
+from noc.sa.interfaces.base import IPv4Parameter
 
 
 class Script(BaseScript):
@@ -34,5 +35,9 @@ class Script(BaseScript):
                     "interface": None
                 }]
             else:
-                r += [match.groupdict()]
+                r += [{
+                    "ip": IPv4Parameter().clean(match.group("ip")),
+                    "mac": match.group("mac"),
+                    "interface": match.group("interface")
+                }]
         return r
