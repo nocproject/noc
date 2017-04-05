@@ -1,5 +1,6 @@
 {
     "name": "Brocade | JetCore",
+    "$collection": "inv.connectionrules",
     "uuid": "c82bd220-e4dc-4f1b-b501-787d2b537a67",
     "description": "JetCore Connection rules",
     "context": [

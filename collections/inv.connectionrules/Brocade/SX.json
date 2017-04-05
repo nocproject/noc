@@ -1,5 +1,6 @@
 {
     "name": "Brocade | SX",
+    "$collection": "inv.connectionrules",
     "uuid": "3aefbe22-c0b6-421a-9bf7-5a4b49ff4a98",
     "description": "SX connection rules",
     "context": [

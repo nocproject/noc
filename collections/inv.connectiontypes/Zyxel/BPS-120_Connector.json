@@ -1,5 +1,6 @@
 {
     "name": "Zyxel | BPS-120 Connector",
+    "$collection": "inv.connectiontypes",
     "uuid": "ac8ee234-191a-49ae-b2b0-9fc36c2a374f",
     "description": "Zyxel BPS-120 14 pin connector",
     "c_group": [],

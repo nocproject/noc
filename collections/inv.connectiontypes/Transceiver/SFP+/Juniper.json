@@ -1,5 +1,6 @@
 {
     "name": "Transceiver | SFP+ | Juniper",
+    "$collection": "inv.connectiontypes",
     "uuid": "e8236695-3995-4482-83a2-a2f782869c59",
     "description": "Juniper-compatible SFP+ transceiver slot",
     "c_group": [],

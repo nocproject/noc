@@ -1,5 +1,6 @@
 {
     "name": "Cisco | Nexus",
+    "$collection": "inv.connectionrules",
     "uuid": "fd4110ad-1ca1-436f-8384-13371645f58a",
     "description": "Cisco Nexus connection rules",
     "context": [

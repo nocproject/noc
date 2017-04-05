@@ -1,5 +1,6 @@
 {
     "name": "Juniper | J | PIM",
+    "$collection": "inv.connectiontypes",
     "uuid": "941a5963-ce0b-47e2-a81f-bfe77c52e35e",
     "description": "Juniper PIM Slot",
     "c_group": [],

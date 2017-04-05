@@ -1,5 +1,6 @@
 {
     "name": "Transceiver | GBIC",
+    "$collection": "inv.connectiontypes",
     "uuid": "1eb3aa41-ac7c-4ed3-a227-2c565b83e8ad",
     "description": "GBIC transceiver slot",
     "c_group": [],

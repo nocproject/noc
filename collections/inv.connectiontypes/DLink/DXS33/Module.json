@@ -1,5 +1,6 @@
 {
     "name": "DLink | DXS33 | Module",
+    "$collection": "inv.connectiontypes",
     "uuid": "ba78d3f3-eb56-4924-9028-4dfae46582c1",
     "description": "DXS-3326GSR/3350SR module slot",
     "c_group": [],

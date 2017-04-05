@@ -1,5 +1,6 @@
 {
     "name": "Ericsson | SmartEdge",
+    "$collection": "inv.connectionrules",
     "uuid": "a67b67ef-874a-463c-a982-ad06d241fd65",
     "description": "SE600 connection rules",
     "context": [

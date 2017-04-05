@@ -1,5 +1,6 @@
 {
     "name": "Electrical | DB21",
+    "$collection": "inv.connectiontypes",
     "uuid": "a3a85312-fc14-4e26-9b86-6480b0b4ec71",
     "description": null,
     "c_group": [],
