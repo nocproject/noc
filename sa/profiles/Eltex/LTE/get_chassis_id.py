@@ -6,6 +6,8 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+import re
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
@@ -16,12 +18,20 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
+    rx_mac1 = re.compile(r"MAC address:\s*\n^\s+(?P<mac>\S+)", re.MULTILINE)
+    rx_mac2 = re.compile(r"^Port \d+ MAC address: (?P<mac>\S+)", re.MULTILINE)
+
     def execute(self):
-        c = self.scripts.get_mac_address_table()
-        for m in c:
-            if m["type"] == "C":
-                return {
-                    "first_chassis_mac": m["mac"],
-                    "last_chassis_mac": m["mac"]
-                }
-        return []
+        macs = []
+        with self.profile.switch(self):
+            cmd = self.cli("show version")
+            match = self.rx_mac1.search(cmd)
+            if match:
+                macs += [match.group("mac")]
+            cmd = self.cli("show interfaces mac-address")
+        macs += self.rx_mac2.findall(cmd)
+        macs.sort()
+        return [{
+            "first_chassis_mac": f,
+            "last_chassis_mac": t
+        } for f, t in self.macs_to_ranges(macs)]
