@@ -17,6 +17,9 @@ class Script(BaseScript):
 
     def execute(self):
         config = ''
-        for j in ['user', 'adsl', 'iptv', 'snmp', 'pppi', 'dhcp']:
-            config = config + "\n" + self.cli("system show cfg file " + j)
+        try:
+            for j in ['user', 'adsl', 'iptv', 'snmp', 'pppi', 'dhcp']:
+                config = config + "\n" + self.cli("system show cfg file " + j)
+        except self.CLISyntaxError:
+            pass
         return self.cleaned_config(config)
