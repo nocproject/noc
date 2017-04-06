@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | DSLAM | MXA32 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "a59da50d-0418-499b-aca2-1ef8660e1f6b",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35265.1.28",
+    "action": "match",
+    "profile": "Eltex.DSLAM"
+}
