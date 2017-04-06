@@ -1,0 +1,13 @@
+{
+    "name": "Eltex | DSLAM | MXA24 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "b6ca540e-282b-4445-abc3-6b93545d49b1",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.34300.1.6",
+    "action": "match",
+    "profile": "Eltex.DSLAM"
+}
