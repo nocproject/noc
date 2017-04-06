@@ -23,8 +23,15 @@ class Script(BaseScript):
     def execute(self):
         ver = self.cli("system show software info", cached=True)
         match = self.rx_version.search(ver)
-        return {
-            "vendor": "Eltex",
-            "platform": "DSLAM",
-            "version": match.group("version")
-        }
+        if match:
+            return {
+                "vendor": "Eltex",
+                "platform": "DSLAM",
+                "version": match.group("version")
+            }
+        else:
+            return {
+                "vendor": "Eltex",
+                "platform": "DSLAM",
+                "version": "UNKNOWN"
+            }
