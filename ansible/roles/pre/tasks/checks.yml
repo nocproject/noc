@@ -40,10 +40,16 @@
     msg: "No postgres server set. Please setup one."
   when: "'svc-postgres' not in groups"
 
-- name: Too many postgres servers seted up.
+- name: prepare pgbouncer facts
+  set_fact:
+    host_count: "{{hostvars | count}}"
+    pgbouncer_exists: "{{groups['svc-pgbouncer'] | count >1}}"
+    pgbouncer_count: "{{groups['svc-pgbouncer'] | count}}"
+
+- name: Check pgbouncer
   fail:
-    msg: "Too many postgres servers seted up {{groups['svc-postgres'] | count }} on {{groups['svc-postgres']}}"
-  when: "'svc-postgres' in groups and groups['svc-postgres'] | count > 1"
+    msg: "Pgbounser must be either one or one per node."
+  when: "pgbouncer_exists and (pgbouncer_count==1 or pgbouncer_count !=host_count)"
 
 - name: Monitoring output is not choosen
   fail:
