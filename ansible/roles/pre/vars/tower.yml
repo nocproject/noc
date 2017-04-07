@@ -18,8 +18,6 @@ nginx_json_logging: "{{noc_config['config'].get('nginx-global-%s' % ansible_host
 nginx_http_redirect_enabled: "{{noc_config['config'].get('nginx-global-%s' % ansible_hostname, {}).get('http_redirect')}}"
 influx_addr: "{{ noc_config['config'].get('influxdb-global-%s' % ansible_hostname, {}).get('listen', '127.0.0.1:8086')}}"
 postgres_max_connections: "{{ noc_config['config'].get('postgres-global-%s' % ansible_hostname, {}).get('postgres_max_clients', 302) }}"
-postgres_host: "{{ noc_config.services.postgres.0.split(':')[0] }}"
-postgres_host_port: "{{ noc_config.services.postgres.0 }}"
 influx_host: "http://{{ noc_config.services.influxdb.0 }}"
 mongo_hosts: "{{ noc_config.services.mongod | join(',')}}"
 grafana_http_port: "{{ noc_config.services.grafana.0.split(':')[1] }}"
