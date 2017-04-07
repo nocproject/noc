@@ -53,6 +53,8 @@ class BaseDLinkParser(BaseParser):
                 self.parse_config_snmp(ll)
             elif l.startswith("config port_security ports "):
                 self.parse_port_security(ll)
+            elif l.startswith("config traffic control "):
+                self.parse_traffic_control(ll)
             elif len(ll) > 1 and ll[0] in ("enable", "disable"):
                 if ll[1] in self.STATUSES:
                     self.statuses[ll[1]] = ll[0] == "enable"
@@ -276,6 +278,24 @@ class BaseDLinkParser(BaseParser):
             si.port_security = True
             if ps_max is not None:
                 si.port_security_max = ps_max
+
+    def parse_traffic_control(self, tokens):
+        """
+        config traffic control 1 broadcast enable multicast enable unicast enable action drop threshold 64 countdown 0 time_interval 5 
+        config traffic control 49 broadcast disable multicast disable unicast disable action drop threshold 131072 countdown 0 time_interval 5 
+        """
+        ports = self.next_item(tokens, "control") or ""
+        unicast = self.next_item(tokens, "unicast")
+        multicast = self.next_item(tokens, "multicast")
+        broadcast = self.next_item(tokens, "broadcast")
+        for p in self.iter_ports(ports):
+            si = self.get_subinterface_fact(p)
+            if broadcast == "enable":
+                si.traffic_control_broadcast = True
+            if multicast == "enable":
+                si.traffic_control_multicast = True
+            if unicast == "enable":
+                si.traffic_control_unicast = True
 
 
 # Port expression parser
