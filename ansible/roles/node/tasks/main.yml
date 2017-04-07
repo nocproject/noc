@@ -34,11 +34,11 @@
     - config
     - fill_hosts
 
-- name: copty hosts file to nodes
+- name: copy hosts file to nodes
   copy:
     src: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
     dest: /etc/hosts
-  when: "hostsc.changed and 'nodes' in groups"
+  when: "'nodes' in groups"
   tags:
     - config
     - fill_hosts
