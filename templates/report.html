@@ -5,7 +5,15 @@
     <script TYPE="text/javascript"
             SRC="/ui/pkg/pdfmake/vfs_fonts.js"></script>
 {% endblock %}
+{% block extrastyle %}{{ block.super }}
+    {% for s in styles %}
+        <link rel="stylesheet" type="text/css" href="{{ s }}" />
+    {% endfor %}
+{% endblock %}
 {% block content %}
+    {% if inline_styles %}
+    <style>{{ inline_styles | safe }}</style>
+    {% endif %}
     {{ data|safe }}
     <script>
         function getPDF(t) {

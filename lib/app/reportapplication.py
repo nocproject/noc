@@ -18,6 +18,10 @@ class ReportApplication(Application):
         "html": "text/html; charset=utf-8",
         "csv": "text/csv; charser=utf-8",
         }
+    # List of CSS links
+    styles = []
+    # Inline CSS
+    inline_styles = ""
 
     def __init__(self, site):
         super(ReportApplication, self).__init__(site)
@@ -79,7 +83,9 @@ class ReportApplication(Application):
                 # No POST or error - render form
             if not query:
                 return self.render(request, "report_form.html",
-                                   form=form, app=self, is_report=True)
+                                   form=form, app=self, is_report=True,
+                                   styles=self.styles,
+                                   inline_styles=self.inline_styles)
                 # Build result
         rdata = getattr(self, "report_%s" % format)(request=request, **query)
         # Render result
