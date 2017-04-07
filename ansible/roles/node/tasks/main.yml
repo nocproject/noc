@@ -14,6 +14,9 @@
     dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
     force: no
   delegate_to: 127.0.0.1
+  tags:
+    - config
+    - fill_hosts
 
 - name: Setup /etc/hosts
   lineinfile:
@@ -34,6 +37,9 @@
     src: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
     dest: /etc/hosts
   when: "hostsc.changed and 'nodes' in groups"
+  tags:
+    - config
+    - fill_hosts
 
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
