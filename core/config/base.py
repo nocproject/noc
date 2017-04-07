@@ -122,6 +122,8 @@ class BaseConfig(object):
         """
         if not self._pg_connection_args:
             hosts = self.get_service("pgbouncer")
+            if len(hosts) > 1:
+                hosts = ["127.0.0.1:6432"]
             if not hosts:
                 hosts = self.get_service("postgres", limit=1)
             if not hosts:
