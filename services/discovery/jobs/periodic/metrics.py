@@ -133,11 +133,15 @@ class MetricsCheck(DiscoveryCheck):
             metrics[mt.name] = {
                 "scope": "o"
             }
+            le = m.get("low_error")
+            lw = m.get("low_warn")
+            he = m.get("high_error")
+            hw = m.get("high_warn")
             o_thresholds[mt.name] = [
-                m.get("low_error"),
-                m.get("low_warn"),
-                m.get("high_error"),
-                m.get("high_warn")
+                int(le) if le is not None else None,
+                int(lw) if lw is not None else None,
+                int(he) if he is not None else None,
+                int(hw) if hw is not None else None
             ]
         # Get interface metrics
         for i in Interface._get_collection().find({
