@@ -6,16 +6,34 @@
   hostname: name="{{ inventory_hostname }}"
   when: "'Linux' in ansible_system"
 
+- debug: msg="Please setup cluster wide /etc/hosts via /opt/tower/var/tower/data/{{noc_env}}/hosts on Tower server"
+
+- name: Setup default /etc/hosts
+  template:
+    src: "hosts.j2"
+    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    force: no
+  delegate_to: 127.0.0.1
+
 - name: Setup /etc/hosts
   lineinfile:
-    dest: /etc/hosts
+    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
-    regexp: ".*{{ item }}"
+    regexp: ".*{{ item }}$"
+    create: no
   with_items: "{% if 'nodes' in groups %}{{groups['nodes']}}{%endif%}"
+  delegate_to: 127.0.0.1
   when: "'nodes' in groups"
+  register: hostsc
   tags:
     - config
     - fill_hosts
+
+- name: copty hosts file to nodes
+  copy:
+    src: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    dest: /etc/hosts
+  when: "hostsc.changed and 'nodes' in groups"
 
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
