@@ -27,7 +27,8 @@ class SubInterface(BaseFact):
              "isis_l1_metric", "isis_l2_metric",
              "isis_ptp",
              "port_security", "port_security_max",
-             "pim_mode", "pim_version"
+             "pim_mode", "pim_version", "traffic_control_unicast",
+             "traffic_control_broadcast", "traffic_control_multicast"
              ]
     ID = ["name"]
 
@@ -41,7 +42,8 @@ class SubInterface(BaseFact):
                  isis_l1_metric=None, isis_l2_metric=None,
                  isis_ptp=None,
                  port_security=None, port_security_max=None,
-                 pim_mode=None, pim_version=None,
+                 pim_mode=None, pim_version=None, traffic_control_unicast=None,
+                 traffic_control_broadcast=None, traffic_control_multicast=None,
                  **kwargs):
         super(SubInterface, self).__init__()
         self.name = name
@@ -68,6 +70,9 @@ class SubInterface(BaseFact):
         self.port_security_max = port_security_max
         self.pim_mode = pim_mode
         self.pim_version = pim_version
+        self.traffic_control_broadcast = traffic_control_broadcast
+        self.traffic_control_multicast = traffic_control_multicast
+        self.traffic_control_unicast = traffic_control_unicast
 
     def __unicode__(self):
         return "SubInterface %s" % self.name
@@ -275,6 +280,30 @@ class SubInterface(BaseFact):
                 logger.error("Unknown PIM version '%s'", value)
         else:
             self._pim_version = None
+
+    @property
+    def traffic_control_broadcast(self):
+        return self._traffic_control_broadcast
+
+    @traffic_control_broadcast.setter
+    def traffic_control_broadcast(self, value):
+        self._traffic_control_broadcast = bool(value)
+
+    @property
+    def traffic_control_multicast(self):
+        return self._traffic_control_multicast
+
+    @traffic_control_multicast.setter
+    def traffic_control_multicast(self, value):
+        self._traffic_control_multicast = bool(value)
+
+    @property
+    def traffic_control_unicast(self):
+        return self._traffic_control_unicast
+
+    @traffic_control_unicast.setter
+    def traffic_control_unicast(self, value):
+        self._traffic_control_unicast = bool(value)
 
     @property
     def profile(self):
