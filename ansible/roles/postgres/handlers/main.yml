@@ -2,7 +2,7 @@
   become: yes
   service:
     name: "{{postgres_system_service}}"
-    state: restarted
+    state: reloaded
 
 - name: reload telegraf
   become: yes
