@@ -104,7 +104,15 @@ class Script(BaseScript):
             v = self.cli("display elabel slot %s %s" % (slot_num or "", subcard_num))
         except self.CLISyntaxError:
             # For Router Device (not slot part in cli)
-            v = self.cli("display elabel %s" % subcard_num)
+            try:
+                v = self.cli("display elabel %s" % subcard_num)
+            except self.CLISyntaxError:
+                # For old devices
+                try:
+                    v = self.cli("display elabel unit %s" % subcard_num)
+                except self.CLISyntaxError:
+                    print("Exception !!!!!!!!!!!!!")
+                    return []
         # Avoid of rotten devices, where part_on contains 0xFF characters
         v = v.decode("ascii", "ignore")
         r = []
@@ -134,7 +142,11 @@ class Script(BaseScript):
         s = self.parse_table(v)
         for i in s:
             type = i["Type"]
-            if i["Slot"] == "0" and i["Sub"] == "-":
+            if i["SubCard"]:
+                num = i["SubCard"]
+                if i["SubCard"] == 0:
+                    type = "CHASSIS"
+            elif i["Slot"] == "0" and i["Sub"] == "-":
                 num = i["Slot"]
                 type = "CHASSIS"
             elif i["Slot"] == "-":
