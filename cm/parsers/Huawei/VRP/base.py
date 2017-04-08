@@ -110,8 +110,11 @@ class BaseVRPParser(BaseParser):
                         self.on_interface_untagged(ll)
                     elif l.startswith("eth-trunk"):
                         self.on_interface_aggregate(ll)
-                    elif ll[1] in self.PROTOCOLS or ll[0] in self.PROTOCOLS:
+                    elif ll[0] in self.PROTOCOLS:
                         self.on_interface_protocols(ll)
+                    elif len(ll) > 1:
+                        if ll[1] in self.PROTOCOLS:
+                            self.on_interface_protocols(ll)
             elif l.startswith("vlan batch "):
                 # vlan batch 777 1221 to 1244 2478 4010
                 pass
@@ -312,6 +315,7 @@ class BaseVRPParser(BaseParser):
         port hybrid pvid vlan 2925
         undo port hybrid vlan 1
         port hybrid untagged vlan 1223 2478
+        port hybrid vlan 1757 untagged
         """
         si = self.get_current_subinterface()
 
@@ -319,7 +323,10 @@ class BaseVRPParser(BaseParser):
             if si.untagged_vlan == int(tokens[-1]):
                 si.untagged_vlan = None
         else:
-            si.untagged_vlan = int(tokens[4])
+            if tokens[-1] == "untagged":
+                si.untagged_vlan = int(tokens[-2])
+            else:
+                si.untagged_vlan = int(tokens[4])
             si.add_afi("BRIDGE")
 
     def on_interface_tagged(self, tokens):
