@@ -26,6 +26,8 @@ class Script(BaseScript):
             status}
         """
         cli_stp = self.cli("display stp brief")
+        if self.rx_stp_disabled.search(cli_stp):
+            return None
         ports = {}  # instance -> port -> attributes
         for R in cli_stp.splitlines()[1:]:
             if not R.strip():
@@ -103,10 +105,8 @@ class Script(BaseScript):
         r"(?P<designated_bridge_id>\S+)\s/\s(?P<designated_port_id>\S+).*?",
         re.MULTILINE | re.IGNORECASE)
 
-    def process_mstp(self):
+    def process_mstp(self, ports=None):
         check_d = re.compile("\s*\d+\s*")
-        # Save port attributes
-        ports = self.get_ports_attrs()
         #
         v = self.cli("display stp region-configuration")
         match = self.rx_mstp_region.search(v)
@@ -141,7 +141,12 @@ class Script(BaseScript):
         for instance_id in iv:
             if instance_id not in ports:
                 continue
-            for I in self.cli("display stp instance %s" % instance_id).split("-------\[")[0:]:
+            try:
+                instance_list = self.cli("display stp instance %s" % instance_id).split("-------\[")
+            except self.CLISyntaxError:
+                # Not support command "display stp instance NUM"
+                instance_list = self.cli("display stp").split("-------\[")
+            for I in instance_list[0:]:
                 # instance_id = int(instance_id)
                 if instance_id == 0:
                     match = self.rx_mstp0_bridge.search(I)
@@ -188,8 +193,11 @@ class Script(BaseScript):
         return r
 
     def execute(self):
-        cli_stp = self.cli("display stp brief")
-        if self.rx_stp_disabled.search(cli_stp):
+        # Save port attributes
+        # cli_stp = self.cli("display stp brief", cached=True)
+        ports = self.get_ports_attrs()
+        if ports:
+            return self.process_mstp(ports=ports)
+        else:
+            # No STP ports
             return {"mode": None, "instances": []}
-
-        return self.process_mstp()
