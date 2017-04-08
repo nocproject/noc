@@ -193,7 +193,7 @@ def list_to_ranges(s):
 rx_range = re.compile(r"^(\d+)\s*-\s*(\d+)$")
 
 
-def ranges_to_list(s):
+def ranges_to_list(s, splitter=","):
     """
     >>> ranges_to_list("1")
     [1]
@@ -205,7 +205,9 @@ def ranges_to_list(s):
     [1, 10, 11, 12, 15, 17, 18, 19]
     """
     r = []
-    for p in s.split(","):
+    if "to" in s:
+        s = s.replace(" to ", "-")
+    for p in s.split(splitter):
         p = p.strip()
         try:
             r += [int(p)]
