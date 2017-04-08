@@ -38,10 +38,16 @@ class Profile(BaseProfile):
         script.cli("home", ignore_errors=True)
 
     rx_slots = re.compile("slot number should between 1 to (?P<slot>\d+)")
+    rx_slots2 = re.compile("slot id:\s*1 to (?P<slot>\d+)")
 
     def get_slots_n(self, script):
         try:
-            match = self.rx_slots.search(script.cli("lcman show 100", cached=True))
+            slots = script.cli("lcman show 100", cached=True)
+            if "slot id" in slots:
+                # IES-2000
+                match = self.rx_slots2.search(slots)
+            else:
+                match = self.rx_slots.search(slots)
             return int(match.group("slot"))
         except script.CLISyntaxError:
             return 1
