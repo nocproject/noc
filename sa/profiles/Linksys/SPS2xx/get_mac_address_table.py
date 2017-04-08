@@ -30,13 +30,12 @@ class Script(BaseScript):
                 vlan_oid = []
                 if mac is not None:
                     mac = mac.lower()
-                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"],
-                        bulk=True):
+                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"]):
                         vlan_oid.append(v[0])
                 # mac iface type
-                for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.17.4.3.1.1", "1.3.6.1.2.1.17.4.3.1.2",
-                    "1.3.6.1.2.1.17.4.3.1.3"], bulk=True):
+                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.4.3.1.1",
+                                               "1.3.6.1.2.1.17.4.3.1.2",
+                                               "1.3.6.1.2.1.17.4.3.1.3"]):
                     if v[1]:
                         chassis = ":".join(["%02x" % ord(c) for c in v[1]])
                         if mac is not None:
@@ -48,8 +47,7 @@ class Script(BaseScript):
                         continue
                     if int(v[3]) > 3 or int(v[3]) < 1:
                         continue
-                    iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + v[2],
-                            cached=True)  # IF-MIB
+                    iface = self.snmp.get("1.3.6.1.2.1.31.1.1.1.1." + str(v[2]))  # IF-MIB
                     if interface is not None:
                         if iface == interface:
                             pass
@@ -88,22 +86,22 @@ class Script(BaseScript):
                 if interface is not None:
                     if interfaces == interface:
                         r += [{"vlan_id": match.group("vlan_id"),
-                            "mac": match.group("mac"),
-                            "interfaces": [interfaces],
-                            "type": {
-                                "dynamic": "D",
-                                "static": "S",
-                                "permanent": "S",
-                                "self": "S"}[match.group("type").lower()],
-                            }]
+                               "mac": match.group("mac"),
+                               "interfaces": [interfaces],
+                               "type": {
+                                   "dynamic": "D",
+                                   "static": "S",
+                                   "permanent": "S",
+                                   "self": "S"}[match.group("type").lower()],
+                               }]
                 else:
                     r += [{"vlan_id": match.group("vlan_id"),
-                        "mac": match.group("mac"),
-                        "interfaces": [interfaces],
-                        "type": {
-                            "dynamic": "D",
-                            "static": "S",
-                            "permanent": "S",
-                            "self": "S"}[match.group("type").lower()],
-                        }]
+                           "mac": match.group("mac"),
+                           "interfaces": [interfaces],
+                           "type": {
+                               "dynamic": "D",
+                               "static": "S",
+                               "permanent": "S",
+                               "self": "S"}[match.group("type").lower()],
+                           }]
         return r
