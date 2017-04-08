@@ -34,6 +34,7 @@ class Profile(BaseProfile):
     command_save_config = "save"
     command_exit = "quit"
     rogue_chars = [re.compile(r"\x1b\[42D\s+\x1b\[42D"), "\r"]
+    default_parser = "noc.cm.parsers.Huawei.VRP.base.BaseVRPParser"
 
     def generate_prefix_list(self, name, pl, strict=True):
         p = "ip ip-prefix %s permit %%s" % name
