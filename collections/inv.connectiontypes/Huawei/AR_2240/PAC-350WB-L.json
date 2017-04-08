@@ -1,8 +1,8 @@
 {
-    "name": "Huawei | AR 2240 | PSU",
+    "name": "Huawei | AR 2240 | PAC-350WB-L",
     "$collection": "inv.connectiontypes",
     "uuid": "5582ad4c-3112-4976-bdc1-2c40ac9e2b80",
-    "description": "Huawei AR 2240 PSU slot (Power module)",
+    "description": "AC-DC Power,-25degC,60degC,90V,290V,12V/29.2A",
     "c_group": [],
     "genders": "mf"
 }

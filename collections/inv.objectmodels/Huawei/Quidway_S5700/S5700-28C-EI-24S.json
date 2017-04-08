@@ -293,6 +293,9 @@
         "asset": {
             "part_no": ["ES5Z328CM0"]
         },
+        "management": {
+            "managed": true
+        },
         "dimensions": {
             "depth": 220,
             "height": 43.6,

@@ -255,6 +255,9 @@
         "asset": {
             "part_no": ["CX22EFFE"]
         },
+        "management": {
+            "managed": true
+        },
         "dimensions": {
             "depth": 220,
             "height": 43.6,

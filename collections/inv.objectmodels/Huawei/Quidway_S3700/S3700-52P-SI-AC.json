@@ -447,6 +447,9 @@
         "asset": {
             "part_no": ["ES3Z252AM0"]
         },
+        "management": {
+            "managed": true
+        },
         "dimensions": {
             "depth": 220,
             "height": 43.6,

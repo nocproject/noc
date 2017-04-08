@@ -255,6 +255,9 @@
         "asset": {
             "part_no": ["S2328P-EI-AC"]
         },
+        "management": {
+            "managed": true
+        },
         "dimensions": {
             "depth": 220,
             "height": 43,

@@ -4,14 +4,15 @@
     "uuid": "d4231dda-82c0-424a-b112-ede3af0ba149",
     "vendor__code": "HUAWEI",
     "description": "AR,AR01SRU2C,Service and Router Unit 40,3GE WAN(2GE Combo),2 USB,3 DSP Slots,1*1",
-    "cr_context": "SRU",
+    "connection_rule__name": "Huawei | AR2200",
+    "cr_context": "SRU40",
     "connections": [
         {
-            "description": "",
+            "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Huawei | AR 2240 | SRU"
+            "type__name": "Huawei | AR 2240 | SRU40"
         },
         {
             "description": "Management Console",
