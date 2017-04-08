@@ -52,9 +52,13 @@ class Script(BaseScript):
             macs = parse_table(self.cli("show mac-addr-table vlan 1"))
             try:
                 mac_gw = MACAddressParameter().clean(macs[0][0])
-            except ValueError:
+            except (ValueError, IndexError):
                 macs = parse_table(self.cli("show mac-addr-table vlan %s" % gw_vlan[0]))
-                mac_gw = MACAddressParameter().clean([mac[0] for mac in macs if mac[3] == "Learned"][0])
+                if len(macs[0]) == 3:
+                    # Only mac, iface, type
+                    mac_gw = MACAddressParameter().clean([mac[0] for mac in macs if mac[2] == "Learned"][0])
+                else:
+                    mac_gw = MACAddressParameter().clean([mac[0] for mac in macs if mac[3] == "Learned"][0])
         except self.CLISyntaxError:
             macs = parse_table(self.cli("show mac-addr-table"))
             print(macs)
