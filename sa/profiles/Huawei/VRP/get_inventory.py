@@ -142,7 +142,7 @@ class Script(BaseScript):
         s = self.parse_table(v)
         for i in s:
             type = i["Type"]
-            if i["SubCard"]:
+            if "SubCard" in i:
                 num = i["SubCard"]
                 if i["SubCard"] == 0:
                     type = "CHASSIS"
