@@ -248,9 +248,10 @@ class BaseVRPParser(BaseParser):
         self.get_system_fact().location = " ".join(tokens[3:])
 
     def on_system_login_user_class(self, tokens):
-        self.get_user_fact(tokens[1])
-        if "privilege" == tokens[2]:
-            self.get_user_fact(tokens[1]).level = tokens[4]
+        if not self.undo:	
+            self.get_user_fact(tokens[1])
+            if "privilege" == tokens[2]:
+                self.get_user_fact(tokens[1]).level = tokens[4]
 
     def on_logging_host(self, tokens):
         """
