@@ -1,0 +1,8 @@
+{
+    "name": "Stack | Member Ids",
+    "$collection": "inv.capabilities",
+    "uuid": "f5c2c4e8-714f-4ed2-ac03-0f4f53fd91af",
+    "description": "Stack members Id",
+    "type": "str",
+    "card_template": ""
+}
