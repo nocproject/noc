@@ -757,7 +757,12 @@ class BaseScript(object):
         """
         Check whether equipment has SNMP enabled
         """
-        return bool(self.credentials.get("snmp_ro"))
+        if self.has_capability("SNMP", allow_zero=True):
+            # If having SNMP caps - check it and credential
+            return bool(self.credentials.get("snmp_ro")) and self.has_capability("SNMP")
+        else:
+            # if SNMP caps not exist check credential
+            return bool(self.credentials.get("snmp_ro"))
 
     def has_snmp_v1(self):
         return self.has_capability("SNMP | v1")
