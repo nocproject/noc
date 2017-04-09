@@ -7,7 +7,7 @@
     "cr_context": "FAN",
     "connections": [
         {
-            "description": "",
+            "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
             "name": "in",

@@ -14,7 +14,7 @@
             "type__name": "Power | IEC 60320 C14"
         },
         {
-            "description": "",
+            "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
             "name": "in",

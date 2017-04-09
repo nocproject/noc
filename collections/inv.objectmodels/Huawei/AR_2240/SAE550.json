@@ -7,7 +7,7 @@
     "cr_context": "SAE550",
     "connections": [
         {
-            "description": "",
+            "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
             "name": "in",
