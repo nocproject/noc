@@ -19,12 +19,16 @@ class Script(BaseScript):
     interface = IGetInventory
 
     def execute(self):
+        r = {"type": "CHASSIS",
+             "number": "1",
+             "vendor": "QTECH",
+             }
         v = self.scripts.get_version()
-        return [{
-            "type": "CHASSIS",
-            "number": "1",
-            "vendor": "QTECH",
+        if "part_no" not in v:
+            return []
+        r.update({
             "part_no": [v["platform"]],
             "revision": v["attributes"]["HW version"],
             "serial": v["attributes"]["Serial Number"]
-        }]
+        })
+        return [r]
