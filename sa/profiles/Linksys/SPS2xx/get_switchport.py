@@ -70,8 +70,8 @@ class Script(BaseScript):
                 port_vlans = {}
                 for v in self.snmp.get_tables(
                     ["1.3.6.1.2.1.17.7.1.4.2.1.3",
-                    "1.3.6.1.2.1.17.7.1.4.2.1.4",
-                    "1.3.6.1.2.1.17.7.1.4.2.1.5"], bulk=True):
+                     "1.3.6.1.2.1.17.7.1.4.2.1.4",
+                     "1.3.6.1.2.1.17.7.1.4.2.1.5"]):
                     tagged = v[2]
                     untagged = v[3]
 
@@ -110,8 +110,8 @@ class Script(BaseScript):
                 # Get switchport description
                 port_descr = {}
                 for iface, description in self.snmp.join_tables(
-                    "1.3.6.1.2.1.31.1.1.1.1", "1.3.6.1.2.1.31.1.1.1.18",
-                    bulk=True):
+                        "1.3.6.1.2.1.31.1.1.1.1",
+                        "1.3.6.1.2.1.31.1.1.1.18"):
                     port_descr.update({iface: description})
 
                 # Get switchport data and overall result
