@@ -260,13 +260,15 @@ class BaseVRPParser(BaseParser):
         """
         info-center loghost 10.46.147.5 channel 9
         """
-        self.get_sysloghost_fact(tokens[2])
+        if len(tokens) > 2:
+            self.get_sysloghost_fact(tokens[2])
 
     def on_ntp_server(self, tokens):
         """
         ntp-service unicast-server 1.1.1.1
         """
-        self.get_ntpserver_fact(tokens[2])
+        if len(tokens) > 2:
+            self.get_ntpserver_fact(tokens[2])
 
     def on_system_domain_name(self, tokens):
         """
@@ -316,6 +318,7 @@ class BaseVRPParser(BaseParser):
         undo port hybrid vlan 1
         port hybrid untagged vlan 1223 2478
         port hybrid vlan 1757 untagged
+        port hybrid vlan 1757 tagged
         """
         si = self.get_current_subinterface()
 
@@ -325,6 +328,8 @@ class BaseVRPParser(BaseParser):
         else:
             if tokens[-1] == "untagged":
                 si.untagged_vlan = int(tokens[-2])
+            elif tokens[-1] == "tagged":
+                si.tagged_vlan += [int(tokens[-2])]
             else:
                 si.untagged_vlan = int(tokens[4])
             si.add_afi("BRIDGE")
