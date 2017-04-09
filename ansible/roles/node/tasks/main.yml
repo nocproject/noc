@@ -6,7 +6,10 @@
   hostname: name="{{ inventory_hostname }}"
   when: "'Linux' in ansible_system"
 
-- debug: msg="Please setup cluster wide /etc/hosts via /opt/tower/var/tower/data/{{noc_env}}/hosts on Tower server"
+- debug:
+    msg: "Please setup cluster wide /etc/hosts via /opt/tower/var/tower/data/{{noc_env}}/hosts on Tower server"
+    run_once: true
+
 
 - name: Setup default /etc/hosts
   template:
