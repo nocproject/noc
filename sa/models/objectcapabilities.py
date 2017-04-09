@@ -86,6 +86,7 @@ class ObjectCapabilities(Document):
         # Update existing capabilities
         new_caps = []
         seen = set()
+        changed = False
         for ci in oc.get("caps", []):
             c = Capability.get_by_id(ci["capability"])
             cs = ci.get("source")
@@ -104,11 +105,13 @@ class ObjectCapabilities(Document):
                             o_label, cn, cv, caps[cn]
                         )
                         ci["value"] = caps[cn]
+                        changed = True
                 else:
                     logger.info(
                         "[%s] Removing capability %s",
                         o_label, cn
                     )
+                    changed = True
                     continue
             elif cn in caps:
                 logger.info(
@@ -131,8 +134,9 @@ class ObjectCapabilities(Document):
                 "value": caps[cn],
                 "source": source
             }]
+            changed = True
 
-        if oc.get("caps") != new_caps:
+        if changed:
             logger.info("[%s] Saving changes", o_label)
             ObjectCapabilities._get_collection().update({
                 "_id": object
