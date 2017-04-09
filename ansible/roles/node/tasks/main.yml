@@ -8,7 +8,7 @@
 
 - debug:
     msg: "Please setup cluster wide /etc/hosts via /opt/tower/var/tower/data/{{noc_env}}/hosts on Tower server"
-    run_once: true
+  run_once: true
 
 
 - name: Setup default /etc/hosts
