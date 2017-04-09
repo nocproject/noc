@@ -32,9 +32,9 @@ class ActiveAlarm(nosql.Document):
         "collection": "noc.alarms.active",
         "allow_inheritance": False,
         "indexes": [
-            "timestamp", "discriminator", "root", "-severity",
+            "timestamp", "root", "-severity",
             ("alarm_class", "managed_object"),
-            ("discriminator", "managed_object"),  # @todo: Delete discriminator index
+            ("discriminator", "managed_object"),
             ("timestamp", "managed_object"),
             "escalation_tt",
             "escalation_ts",
