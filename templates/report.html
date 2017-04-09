@@ -12,7 +12,7 @@
 {% endblock %}
 {% block content %}
     {% if inline_styles %}
-    <style>{{ inline_styles | safe }}</style>
+    <style>{{ inline_styles|safe }}</style>
     {% endif %}
     {{ data|safe }}
     <script>
