@@ -12,11 +12,12 @@
 
 
 - name: Setup default /etc/hosts
-  template:
+  local_action:
+    module: template
     src: "hosts.j2"
     dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
     force: no
-  delegate_to: 127.0.0.1
+  become: no
   run_once: true
   tags:
     - config
@@ -28,6 +29,7 @@
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     regexp: ".*{{ item }}$"
     create: no
+  become: no
   with_items: "{% if 'nodes' in groups %}{{groups['nodes']}}{%endif%}"
   delegate_to: 127.0.0.1
   when: "'nodes' in groups"
