@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Eltex.MES.get_interfaces
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -135,10 +135,10 @@ class Script(BaseScript):
                         "admin_status": a_stat,
                         "oper_status": o_stat,
                         "enabled_afi": enabled_afi,
-                        ip_interfaces: ip_list,
+                        "ip_interfaces": ip_list,
                         "mac": mac,
                         "vlan_ids": self.expand_rangelist(vlan),
-                        #"snmp_ifindex": 
+                        #"snmp_ifindex":
                     }]
                 }
             interfaces += [iface]
@@ -167,10 +167,10 @@ class Script(BaseScript):
             match = rx_config.search(config)
             a_stat = match.group("admin_status").lower() == "up"
             rx_descr = re.compile(
-                r"^" + ifname + "\s+(?P<desc>\S+)$", re.MULTILINE)
+                r"^" + ifname + "\s+\w+\s+\w+\s+(?P<desc>[\S\ ]+)$", re.MULTILINE)
             match = rx_descr.search(descr)
             if match:
-                description = match.group("desc")
+                description = match.group("desc").strip()
             else:
                 description = ''
 
