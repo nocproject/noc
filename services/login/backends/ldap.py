@@ -77,7 +77,7 @@ class LdapBackend(BaseAuthBackend):
                 user, ldap_domain.deny_group
             )
             user_info["is_active"] = False
-        u = self.ensure_user(user, **user_info)
+        u = self.ensure_user(user.lower(), **user_info)
         # Apply groups
         for g in ldap_domain.groups:
             if not g.is_active:
