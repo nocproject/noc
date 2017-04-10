@@ -385,6 +385,36 @@ class DocumentReferenceField(models.Field):
         else:
             return str(value.id)
 
+
+class CachedForeignKeyDescriptor(object):
+    def __init__(self, field):
+        self.field = field
+        self.cache_name = "_%s" % field.get_cache_name()
+
+    def __get__(self, instance, owner):
+        try:
+            return getattr(instance, self.cache_name)
+        except AttributeError:
+            pass
+        val = getattr(instance, self.field.attname)
+        if val is None:
+            raise AttributeError
+        v = self.field.rel.to.get_by_id(val)
+        if v is not None:
+            setattr(instance, self.cache_name, v)
+            return v
+        raise AttributeError
+
+    def __set__(self, instance, value):
+        setattr(instance, self.cache_name, value)
+
+
+class CachedForeignKey(models.ForeignKey):
+    def contribute_to_class(self, cls, name):
+        super(CachedForeignKey, self).contribute_to_class(cls, name)
+        setattr(cls, self.get_cache_name(),
+                CachedForeignKeyDescriptor(self))
+
 ##
 add_introspection_rules([], ["^noc\.core\.model\.fields\."])
 from django.contrib.admin.widgets import AdminTextInputWidget
