@@ -35,7 +35,7 @@ from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.inv.models.networksegment import NetworkSegment
 from noc.core.profile.loader import loader as profile_loader
-from noc.core.model.fields import INETField, TagsField, DocumentReferenceField
+from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
 from noc.lib.db import SQL
 from noc.lib.app.site import site
 from noc.lib.stencil import stencil_registry
@@ -103,7 +103,7 @@ class ManagedObject(Model):
     container = DocumentReferenceField(
         Object, null=True, blank=True
     )
-    administrative_domain = ForeignKey(
+    administrative_domain = CachedForeignKey(
         AdministrativeDomain,
         verbose_name="Administrative Domain"
     )
@@ -118,14 +118,14 @@ class ManagedObject(Model):
         "SA Profile",
         max_length=128, choices=profile_loader.choices()
     )
-    object_profile = ForeignKey(
+    object_profile = CachedForeignKey(
         ManagedObjectProfile,
         verbose_name="Object Profile")
     description = CharField(
         "Description",
         max_length=256, null=True, blank=True)
     # Access
-    auth_profile = ForeignKey(
+    auth_profile = CachedForeignKey(
         AuthProfile,
         verbose_name="Auth Profile",
         null=True, blank=True
