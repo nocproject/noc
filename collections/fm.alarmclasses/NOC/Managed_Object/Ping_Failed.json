@@ -40,5 +40,6 @@
                 "managed_object": "alarm.managed_object.id"
             }
         }
-    ]
+    ],
+    "topology_rca": true
 }
