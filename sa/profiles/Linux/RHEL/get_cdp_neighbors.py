@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Linux.RHEL.get_cdp_neighbors
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -105,22 +105,40 @@ class Script(BaseScript):
         # try ladvdc
         id_last = 999
         v = self.cli("ladvdc -b -C")
-        if "please add yourself to the ladvd group" in v:
-            logging.error("Add User to ladvd group")
-        else:
+        #print "Status: ", v
+        
+        if "INTERFACE" in v:
             for l in v.splitlines():
                 name, value = l.split('=')
+                #print name, value 
                 id = int(name.split('_')[-1])
+                #print id
+
                 name2 = ''.join(name.split('_')[:-1])
+                #print name2
                 if name2 not in map:
                     continue
+                
                 if id != id_last:
                     neighbors += [{map[name2]: value.strip("'")}]
+                 #   print value.strip("'")
                 else:
-                    neighbors[id][map[name2]] = value.strip("'")
+                    if map[name2] == 'remote_interface':
+                        neighbors[id][map[name2]] = self.profile.convert_interface_name_cisco(value.strip("'"))
+                 #       print map[name2]
+                    else:
+                        neighbors[id][map[name2]] = value.strip("'")
+                  #      print map[name2], value.strip("'")
+
                 id_last = id
+                
+            return {
+                    "device_id": device_id,
+                    "neighbors": neighbors
+                    }
 
         """
+        
         # Regexp block
         for match in self.rx_ladvdc.finditer(self.cli("ladvdc -C")):
             # ladvdc show remote CISCO(!!!) interface ->  "Gi1/0/4"
