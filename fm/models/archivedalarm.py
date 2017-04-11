@@ -72,6 +72,8 @@ class ArchivedAlarm(nosql.Document):
     adm_path = nosql.ListField(nosql.IntField())
     segment_path = nosql.ListField(nosql.ObjectIdField())
     container_path = nosql.ListField(nosql.ObjectIdField())
+    # Uplinks, for topology_rca only
+    uplinks = nosql.ListField(nosql.IntField())
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -156,7 +158,11 @@ class ArchivedAlarm(nosql.Document):
             direct_subscribers=self.direct_subscribers,
             total_objects=self.total_objects,
             total_services=self.total_services,
-            total_subscribers=self.total_subscribers
+            total_subscribers=self.total_subscribers,
+            adm_path=self.adm_path,
+            segment_path=self.segment_path,
+            container_path=self.container_path,
+            uplinks=self.uplinks
         )
         a.save()
         # @todo: Clear related correlator jobs

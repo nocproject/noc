@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## ActiveAlarm model
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectpath import ObjectPath
+from noc.inv.models.objectuplink import ObjectUplink
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
@@ -40,7 +41,8 @@ class ActiveAlarm(nosql.Document):
             "escalation_ts",
             "adm_path",
             "segment_path",
-            "container_path"
+            "container_path",
+            "uplinks"
         ]
     }
     status = "A"
@@ -97,6 +99,8 @@ class ActiveAlarm(nosql.Document):
     adm_path = nosql.ListField(nosql.IntField())
     segment_path = nosql.ListField(nosql.ObjectIdField())
     container_path = nosql.ListField(nosql.ObjectIdField())
+    # Uplinks, for topology_rca only
+    uplinks = nosql.ListField(nosql.IntField())
 
     def __unicode__(self):
         return u"%s" % self.id
@@ -109,6 +113,8 @@ class ActiveAlarm(nosql.Document):
             self.adm_path = path.adm_path
             self.segment_path = path.segment_path
             self.container_path = self.container_path
+        if self.alarm_class.topology_rca:
+            self.uplinks = ObjectUplink.uplinks_for_object(self.managed_object.id)
         return super(ActiveAlarm, self).save(*args, **kwargs)
 
     def change_severity(self, user="", delta=None, severity=None):
@@ -235,7 +241,8 @@ class ActiveAlarm(nosql.Document):
             total_subscribers=self.total_subscribers,
             adm_path=self.adm_path,
             segment_path=self.segment_path,
-            container_path=self.container_path
+            container_path=self.container_path,
+            uplinks=self.uplinks
         )
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
