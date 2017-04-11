@@ -145,7 +145,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             mo = ManagedObject.get_by_id(a["managed_object"])
             if not mo:
                 continue
-            path = ObjectPath.get_path(mo)
+            path = mo.data
             if path:
                 segment_path = [NetworkSegment.get_by_id(s).name
                                 for s in path.segment_path]

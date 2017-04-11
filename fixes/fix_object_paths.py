@@ -8,9 +8,9 @@
 
 ## NOC modules
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.objectpath import ObjectPath
+from noc.sa.models.objectdata import ObjectData
 
 
 def fix():
     for mo in ManagedObject.objects.all():
-        ObjectPath.refresh(mo)
+        ObjectData.refresh_path(mo)

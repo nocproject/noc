@@ -20,8 +20,6 @@ from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.objectpath import ObjectPath
-from noc.sa.models.objectdata import ObjectData
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
@@ -108,13 +106,11 @@ class ActiveAlarm(nosql.Document):
     def save(self, *args, **kwargs):
         if not self.last_update:
             self.last_update = self.timestamp
-        path = ObjectPath.get_path(self.managed_object)
-        if path:
-            self.adm_path = path.adm_path
-            self.segment_path = path.segment_path
-            self.container_path = self.container_path
-        if self.alarm_class.topology_rca:
-            self.uplinks = self.managed_object.data.uplinks
+        data = self.managed_object.data
+        self.adm_path = data.adm_path
+        self.segment_path = data.segment_path
+        self.container_path = data.container_path
+        self.uplinks = data.uplinks
         return super(ActiveAlarm, self).save(*args, **kwargs)
 
     def change_severity(self, user="", delta=None, severity=None):
