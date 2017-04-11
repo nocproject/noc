@@ -67,8 +67,11 @@ class RCACondition(object):
     def check_condition(self, alarm):
         return eval(self.condition, {}, self.get_context(alarm))
 
-    def get_match_condition(self, alarm):
-        return eval(self.match_condition, {}, self.get_context(alarm))
+    def get_match_condition(self, alarm, **kwargs):
+        r = eval(self.match_condition, {}, self.get_context(alarm))
+        if kwargs:
+            r.update(kwargs)
+        return r
 
     def get_reverse_match_condition(self, alarm):
         return eval(self.reverse_match_condition, {},
