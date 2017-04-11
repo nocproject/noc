@@ -28,6 +28,7 @@ from authprofile import AuthProfile
 from managedobjectprofile import ManagedObjectProfile
 from objectstatus import ObjectStatus
 from objectmap import ObjectMap
+from objectdata import ObjectData
 from terminationgroup import TerminationGroup
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
@@ -313,6 +314,18 @@ class ManagedObject(Model):
             return mo[0]
         else:
             return None
+
+    @property
+    def data(self):
+        try:
+            return self._data
+        except AttributeError:
+            pass
+        d = ObjectData.get_by_id(self)
+        if not d:
+            d = ObjectData(object=self.id)
+        self._data = d
+        return d
 
     @property
     def scripts(self):

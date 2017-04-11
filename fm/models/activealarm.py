@@ -21,7 +21,7 @@ from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectpath import ObjectPath
-from noc.inv.models.objectuplink import ObjectUplink
+from noc.sa.models.objectdata import ObjectData
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
@@ -114,7 +114,7 @@ class ActiveAlarm(nosql.Document):
             self.segment_path = path.segment_path
             self.container_path = self.container_path
         if self.alarm_class.topology_rca:
-            self.uplinks = ObjectUplink.uplinks_for_object(self.managed_object.id)
+            self.uplinks = self.managed_object.data.uplinks
         return super(ActiveAlarm, self).save(*args, **kwargs)
 
     def change_severity(self, user="", delta=None, severity=None):

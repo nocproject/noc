@@ -22,7 +22,7 @@ from noc.inv.models.object import Object
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
-from noc.inv.models.objectuplink import ObjectUplink
+from noc.sa.models.objectdata import ObjectData
 from noc.sa.models.service import Service
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.sa.models.servicesummary import ServiceSummary
@@ -106,11 +106,7 @@ class ManagedObjectCard(BaseCard):
                 else:
                     macs += ["%s - %s" % (f, l)]
         # Links
-        uplinks = ObjectUplink.objects.filter(object=self.object.id).first()
-        if uplinks:
-            uplinks = set(uplinks.uplinks)
-        else:
-            uplinks = set()
+        uplinks = set(self.object.data.uplinks)
         if len(uplinks) > 1:
             if self.object.segment.lost_redundancy:
                 redundancy = "L"

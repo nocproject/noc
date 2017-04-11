@@ -296,7 +296,7 @@ class SegmentTopology(BaseTopology):
 
 def update_uplinks(segment_id):
     from noc.inv.models.networksegment import NetworkSegment
-    from noc.inv.models.objectuplink import ObjectUplink
+    from noc.sa.models.objectdata import ObjectData
 
     segment = NetworkSegment.get_by_id(segment_id)
     if not segment:
@@ -304,6 +304,6 @@ def update_uplinks(segment_id):
         return
 
     st = SegmentTopology(segment)
-    ObjectUplink.update_uplinks(
+    ObjectData.update_uplinks(
         st.get_object_uplinks()
     )

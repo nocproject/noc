@@ -24,7 +24,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.inv.models.objectuplink import ObjectUplink
+from noc.sa.models.objectdata import ObjectData
 from noc.core.config.base import config
 
 
@@ -120,7 +120,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
         #
         segment = alarm.managed_object.segment
         if segment.is_redundant:
-            uplinks = ObjectUplink.uplinks_for_object(alarm.managed_object)
+            uplinks = alarm.managed_object.data.uplinks
             lost_redundancy = len(uplinks) > 1
             affected_subscribers = summary_to_list(segment.total_subscribers, SubscriberProfile)
             affected_services = summary_to_list(segment.total_services, ServiceProfile)
