@@ -76,6 +76,7 @@ class AlarmClass(nosql.Document):
     # RCA
     root_cause = fields.ListField(
         fields.EmbeddedDocumentField(AlarmRootCauseCondition))
+    topology_rca = fields.BooleanField(default=False)
     # List of handlers to be called on alarm raising
     handlers = fields.ListField(fields.StringField())
     # List of handlers to be called on alarm clear
@@ -243,6 +244,10 @@ class AlarmClass(nosql.Document):
             r += ["    \"root_cause\": ["]
             r += [",\n".join(rc)]
             r += ["    ]"]
+        if self.topology_rca:
+            if r[-1][-1] != ",":
+                r[-1] += ","
+            r += ["    \"topology_rca\": true"]
         # Plugins
         if self.plugins:
             if r[-1][-1] != ",":
