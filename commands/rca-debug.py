@@ -14,7 +14,7 @@ import operator
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.archivedalarm import ArchivedAlarm
-from noc.inv.models.objectuplink import ObjectUplink
+from noc.sa.models.objectdata import ObjectData
 from noc.core.config.base import config
 from noc.lib.dateutils import total_seconds
 
@@ -69,7 +69,7 @@ class Command(BaseCommand):
         r = []
         for mo in mos:
             uplink1, uplink2 = "", ""
-            d = ObjectUplink.objects.filter(object=mo.id).first()
+            d = ObjectData.get_by_id(mo)
             if d:
                 uplinks = [ManagedObject.get_by_id(u) for u in d.uplinks]
                 uplinks = [u for u in uplinks if u]
@@ -128,12 +128,12 @@ class Command(BaseCommand):
         # Get neighbor objects
         neighbors = set()
         uplinks = []
-        ou = ObjectUplink.objects.filter(object=o_id).first()
+        ou = ObjectData.get_by_id(object=o_id)
         if ou and ou.uplinks:
             uplinks = ou.uplinks
             neighbors.update(uplinks)
-        for du in ObjectUplink.objects.filter(uplinks=o_id):
-            neighbors.add(du.object)
+        for du in ObjectData.get_neighbors(o_id):
+            neighbors.add(du)
         if not neighbors:
             print("<<< no neighbors")
             return
