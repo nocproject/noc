@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Segment handlers
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import logging
 ## Third-party modules
 import six
 ## NOC modules
-from noc.inv.models.objectuplink import ObjectUplink
+from noc.sa.models.objectdata import ObjectData
 from noc.fm.models.activealarm import ActiveAlarm
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ def set_segment_redundancy(alarm):
     mo = alarm.managed_object
     seg = mo.segment
     if seg.is_redundant and not seg.lost_redundancy:
-        u = ObjectUplink.uplinks_for_object(mo)
+        u = mo.data.uplinks
         if len(u) > 1:
             logger.info("[%s] Redundancy lost for %s", alarm.id, seg.name)
             seg.set_lost_redundancy(True)
@@ -45,7 +45,7 @@ def check_segment_redundancy(alarm):
     seg = mo.segment
     if not seg.is_redundant or not seg.lost_redundancy:
         return
-    u = ObjectUplink.uplinks_for_object(mo)
+    u = mo.data.uplinks
     if len(u) < 2:
         return
     seg_objects = [long(x) for x in seg.managed_objects.values_list("id", flat=True)]
@@ -56,7 +56,7 @@ def check_segment_redundancy(alarm):
         }, {"_id": 0, "managed_object": 1})
         if d["managed_object"] != mo.id
     ]
-    uplinks = ObjectUplink.uplinks_for_objects(alarms)
+    uplinks = ObjectData.uplinks_for_objects(alarms)
     if not any(x for x in six.itervalues(uplinks) if len(x) > 1):
         logger.info("[%s] Redundancy recovered for %s", alarm.id, seg.name)
         seg.set_lost_redundancy(False)

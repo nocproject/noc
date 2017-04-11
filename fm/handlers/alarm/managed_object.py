@@ -9,7 +9,7 @@
 ## Python modules
 import logging
 ## NOC modules
-from noc.inv.models.objectuplink import ObjectUplink
+from noc.sa.models.objectdata import ObjectData
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.core.perf import metrics
 from noc.core.config.base import config
@@ -34,10 +34,10 @@ def topology_rca(alarm, seen=None):
     o_id = alarm.managed_object.id
     # Get neighbor objects
     neighbors = set()
-    uplinks = ObjectUplink.uplinks_for_object(o_id)
+    uplinks = alarm.managed_object.data.uplinks
     if uplinks:
         neighbors.update(uplinks)
-    neighbors.update(ObjectUplink.neighbors_for_object(o_id))
+    neighbors.update(ObjectData.get_neighbors(o_id))
     if not neighbors:
         logger.info("[%s] No neighbors found. Exiting", alarm.id)
         return

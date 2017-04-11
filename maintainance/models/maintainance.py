@@ -23,7 +23,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
 from noc.lib.nosql import ForeignKeyField
 from noc.core.model.decorator import on_save
-from noc.inv.models.objectuplink import ObjectUplink
+from noc.sa.models.objectdata import ObjectData
 from noc.main.models.timepattern import TimePattern
 from noc.core.defer import call_later
 
@@ -103,7 +103,7 @@ class Maintainance(Document):
         def get_downlinks(objects):
             r = set()
             # Get all additional objects which may be affected
-            for d in ObjectUplink._get_collection().find({
+            for d in ObjectData._get_collection().find({
                 "uplinks": {
                     "$in": list(objects)
                 }
@@ -116,7 +116,7 @@ class Maintainance(Document):
                 return r
             # Leave only objects with all uplinks affected
             rr = set()
-            for d in ObjectUplink._get_collection().find({
+            for d in ObjectData._get_collection().find({
                 "_id": {
                     "$in": list(r)
                 }

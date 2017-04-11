@@ -8,13 +8,13 @@
 
 ## NOC modules
 from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.objectuplink import ObjectUplink
+from noc.sa.models.objectdata import ObjectData
 from noc.core.topology.segment import SegmentTopology
 
 
 def fix():
     for ns in NetworkSegment.objects.timeout(False):
         st = SegmentTopology(ns)
-        ObjectUplink.update_uplinks(
+        ObjectData.update_uplinks(
             st.get_object_uplinks()
         )
