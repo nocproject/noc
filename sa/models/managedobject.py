@@ -53,7 +53,6 @@ from noc.sa.mtmanager import MTManager
 from noc.core.script.loader import loader as script_loader
 from noc.core.model.decorator import on_save, on_init, on_delete, on_delete_check
 from noc.inv.models.object import Object
-from objectpath import ObjectPath
 from noc.core.defer import call_later
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
@@ -468,7 +467,7 @@ class ManagedObject(Model):
             "segment" in self.changed_fields or
             "container" in self.changed_fields
         ):
-            ObjectPath.refresh(self)
+            ObjectData.refresh_path(self)
             if self.container and "container" in self.changed_fields:
                 x, y, zoom = self.container.get_coordinates_zoom()
                 ManagedObject.objects.filter(id=self.id).update(

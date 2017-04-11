@@ -11,7 +11,7 @@ from threading import Lock
 import operator
 ## Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import IntField, ListField
+from mongoengine.fields import IntField, ListField, ObjectIdField
 import cachetools
 import six
 
@@ -25,7 +25,12 @@ class ObjectData(Document):
         "indexes": ["uplinks"]
     }
     object = IntField(primary_key=True)
+    # Uplinks
     uplinks = ListField(IntField())
+    # Paths
+    adm_path = ListField(IntField())
+    segment_path = ListField(ObjectIdField())
+    container_path = ListField(ObjectIdField())
 
     _id_cache = cachetools.TTLCache(10000, ttl=120)
     _neighbor_cache = cachetools.TTLCache(1000, ttl=300)
@@ -88,3 +93,19 @@ class ObjectData(Document):
                 }
             })
         bulk.execute()
+
+    @classmethod
+    def refresh_path(cls, obj):
+        ObjectData._get_collection().update(
+            {
+                "_id": obj.id
+            },
+            {
+                "$set": {
+                    "adm_path": obj.administrative_domain.get_path(),
+                    "segment_path": obj.segment.get_path(),
+                    "container_path": obj.container.get_path() if obj.container else []
+                }
+            },
+            upsert=True
+        )
