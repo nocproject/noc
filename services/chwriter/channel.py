@@ -26,6 +26,7 @@ class Channel(object):
         self.n = 0
         self.data = []
         self.last_updated = time.time()
+        self.last_flushed = time.time()
         self.flushing = False
 
     def feed(self, data):
@@ -44,7 +45,7 @@ class Channel(object):
         if self.n >= self.service.config.batch_size:
             return True
         t = time.time()
-        return (t - self.last_updated) * 1000 >= self.service.batch_delay_ms
+        return (t - self.last_flushed) * 1000 >= self.service.batch_delay_ms
 
     def get_data(self):
         self.n = 0
@@ -57,6 +58,7 @@ class Channel(object):
 
     def stop_flushing(self):
         self.flushing = False
+        self.last_flushed = time.time()
 
     def get_insert_sql(self):
         return self.sql
