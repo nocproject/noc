@@ -30,7 +30,10 @@ class Script(BaseScript):
                         "last_chassis_mac": mac
                         }
                 else:
-                    return [{}]
+                    return [{
+                        "first_chassis_mac": "00:00:00:00:00:00",
+                        "last_chassis_mac": "00:00:00:00:00:00"
+                    }]
 
             except self.snmp.TimeOutError:
                 pass
