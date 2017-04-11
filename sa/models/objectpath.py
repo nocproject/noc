@@ -2,17 +2,19 @@
 ##----------------------------------------------------------------------
 ## ObjectPath
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+## Python modules
+from threading import Lock
+import operator
 ## Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import ListField, ObjectIdField, IntField
-## NOC modules
-from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.object import Object
+import cachetools
+
+id_lock = Lock()
 
 
 class ObjectPath(Document):
@@ -25,6 +27,8 @@ class ObjectPath(Document):
     adm_path = ListField(IntField())
     segment_path = ListField(ObjectIdField())
     container_path = ListField(ObjectIdField())
+
+    _object_cache = cachetools.TTLCache(10000, ttl=300)
 
     @classmethod
     def refresh(cls, obj):
@@ -43,5 +47,12 @@ class ObjectPath(Document):
         )
 
     @classmethod
-    def get_path(cls, object):
+    @cachetools.cachedmethod(operator.attrgetter("_object_cache"), lock=lambda _: id_lock)
+    def _get_path(cls, object_id):
         return ObjectPath.objects.filter(object=object.id).first()
+
+    @classmethod
+    def get_path(cls, object):
+        if hasattr(object, "id"):
+            object = object.id
+        return cls._get_path(object)
