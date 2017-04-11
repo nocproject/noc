@@ -190,7 +190,7 @@ class ReportObjectAttributes(object):
 
 class ReportObjects(object):
     """MO fields report"""
-    def __init__(self, mo_ids):
+    def __init__(self, mo_ids=()):
         self.mo_ids = mo_ids
         self.out = self.load(mo_ids)
         self.element = None
@@ -214,6 +214,42 @@ class ReportObjects(object):
     def __getitem__(self, item):
         # @todo Create dynamic column
         return self.element[item]
+
+
+class ReportObjectsHostname(object):
+    """MO hostname"""
+    def __init__(self, mo_ids=(), use_facts=False):
+        self.mo_ids = mo_ids
+        self.out = self.load_discovery(mo_ids)
+        if use_facts:
+            self.out.update(self.load_facts(mo_ids))
+        self.element = None
+
+    @staticmethod
+    def load_facts(mos_ids):
+        db = get_db()["noc.objectfacts"]
+        mos_filter = {"label": "system"}
+        if mos_ids:
+            mos_filter["object"] = {"$in": mos_ids}
+        value = db.find(mos_filter,
+                        {"_id": 0, "object": 1, "attrs.hostname": 1},
+                        read_preference=ReadPreference.SECONDARY_PREFERRED)
+        return {v["object"]: v["attrs"].get("hostname") for v in value}
+
+    @staticmethod
+    def load_discovery(mos_ids):
+        db = get_db()["noc.inv.discovery_id"]
+        mos_filter = {}
+        if mos_ids:
+            mos_filter["object"] = {"$in": mos_ids}
+        value = db.find(mos_filter,
+                        {"_id": 0, "object": 1, "hostname": 1},
+                        read_preference=ReadPreference.SECONDARY_PREFERRED)
+        return {v["object"]: v.get("hostname") for v in value}
+
+    def __getitem__(self, item):
+        # @todo Create dynamic column
+        return self.out.get(item)
 
 
 class ReportObjectDetailApplication(ExtApplication):

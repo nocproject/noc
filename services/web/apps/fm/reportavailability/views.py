@@ -23,6 +23,7 @@ from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.lib.dateutils import total_seconds
 from noc.lib.nosql import Q
 from pymongo import ReadPreference
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
 from noc.core.translation import ugettext as _
 
 
@@ -161,8 +162,8 @@ class ReportAvailabilityApplication(SimpleReport):
                 administrative_domain__in=UserAccess.get_domains(request.user))
         if skip_avail:
             mos = mos.filter(id__in=list(a))
+        mos_id = list(mos.values_list("id", flat=True))
         if filter_zero_access:
-            mos_id = list(mos.values_list("id", flat=True))
             iface_p = InterfaceProfile.objects.get(name="Клиентский порт")
             match = {
                 "profile": iface_p.id,
@@ -179,10 +180,12 @@ class ReportAvailabilityApplication(SimpleReport):
             data = [d["_id"] for d in data["result"]]
             mos = mos.exclude(id__in=data)
 
+        mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
         for o in mos:
             s = [
                 o.administrative_domain.name,
                 o.name,
+                mo_hostname[o.id],
                 o.address,
                 o.profile_name,
                 round(a.get(o.id, (100.0, 0, 0))[0], 2)
@@ -199,7 +202,7 @@ class ReportAvailabilityApplication(SimpleReport):
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Adm. Domain"), _("Managed Object"), _("Address"), _("Profile"),
+                _("Adm. Domain"), _("Managed Object"), _("Hostname"), _("Address"), _("Profile"),
                 # TableColumn(_("Avail"), align="right", format="percent"),
                 # TableColumn(_("Total avail (sec)"), align="right", format="numeric"),
                 _("Avail"),
