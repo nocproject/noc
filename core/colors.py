@@ -10,10 +10,14 @@
 import math
 
 
-##
-## HSV -> RGB convertor, for Python 2.5 compatibility
-##
 def hsv_to_rgb(h, s, v):
+    """
+    HSV -> RGB convertor, for Python 2.5 compatibility
+    :param h: 
+    :param s: 
+    :param v: 
+    :return: 
+    """
     h = float(h)
     hi = math.floor(h / 60.0) % 6
     f = (h / 60.0) - math.floor(h / 60.0)
@@ -30,11 +34,9 @@ def hsv_to_rgb(h, s, v):
     }[hi]
 
 
-##
-## Generate N contrast colors
-##
 def get_colors(N):
     """
+    Generate N contrast colors
     >>> list(get_colors(1))
     ['#ff0000']
     >>> list(get_colors(2))
@@ -63,24 +65,24 @@ def get_colors(N):
             V = V * 3 // 4
 
 
-def get_float_pallete(N):
+def get_float_pallete(n):
     """
     Generate tuple of floats for reportlab colors
     """
-    MP = 12  # Maximum points on color circle
-    p = min(N, MP)  # Points on color circle
+    m_p = 12  # Maximum points on color circle
+    p = min(n, m_p)  # Points on color circle
     d = 360 // p  # Step on color circle
-    V = 255  # Value
-    S = 1  # Saturation
+    v = 255  # Value
+    s = 1  # Saturation
     hs = []
-    while N:
+    while n:
         if not hs:
             # Rebuild colors
             hs = [i * d for i in range(p)]
-        H = hs.pop(len(hs) / 2 if N % 2 else 0)
+        h = hs.pop(len(hs) / 2 if n % 2 else 0)
         # Yield current color
-        yield [float(x)/256.0 for x in hsv_to_rgb(H, S, V)]
-        N = N - 1
+        yield [float(x)/256.0 for x in hsv_to_rgb(h, s, v)]
+        n = n - 1
         if not hs:
             # Reduce value for next round
-            V = V * 3 // 4
+            v = v * 3 // 4
