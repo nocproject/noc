@@ -10,9 +10,9 @@
 from django.db import models
 ## NOC modules
 from rir import RIR
-from person import Person
+from noc.core.crypto import md5crypt
 from noc.lib.rpsl import rpsl_format
-from noc.lib.crypto import md5crypt
+from person import Person
 
 
 class Maintainer(models.Model):
