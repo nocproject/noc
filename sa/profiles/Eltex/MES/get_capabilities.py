@@ -21,7 +21,7 @@ class Script(BaseScript):
     @false_on_cli_error
     def has_lldp(self):
         """
-        Check box has lldp enabled
+        Check box has lldp enabled on Eltex
         """
         cmd = self.cli("show lldp configuration")
         return self.rx_lldp.search(cmd) is not None
