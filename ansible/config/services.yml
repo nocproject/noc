@@ -64,6 +64,10 @@ services:
     description: PMWriter
     level: global
 
+  chwriter:
+    description: PMWriter
+    level: global
+
   omap:
     description: OMap
     level: global
@@ -226,6 +230,27 @@ config:
       label: Metrics buffer size (metrics)
       type: int
       default: 50000
+
+  chwriter:
+    batch_size:
+      label: Write batch size (rows)
+      type: int
+      default: 50000
+
+    batch_delay_ms:
+      label: Delay batch write up to ms
+      type: int
+      default: 1000
+
+    channel_expire_interval:
+      label: Channel expiration interval (s)
+      type: int
+      default: 300
+
+    metrics_buffer:
+      label: Metrics buffer
+      type: int
+      default: 1000000
 
   classifier:
     lookup_solution:
