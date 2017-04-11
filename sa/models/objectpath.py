@@ -49,7 +49,7 @@ class ObjectPath(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_object_cache"), lock=lambda _: id_lock)
     def _get_path(cls, object_id):
-        return ObjectPath.objects.filter(object=object.id).first()
+        return ObjectPath.objects.filter(object=object_id).first()
 
     @classmethod
     def get_path(cls, object):
