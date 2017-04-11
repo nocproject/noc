@@ -2,47 +2,49 @@
 ##----------------------------------------------------------------------
 ## IP Address space management application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 # Python modules
-import re
 from operator import attrgetter, itemgetter
+
+import re
+from django import forms
+from django.db.models import Q
+from django.utils.simplejson.encoder import JSONEncoder
 # Django modules
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import Q
-from django import forms
-from django.utils.simplejson.encoder import JSONEncoder
+from noc.core.ip import IP
+from noc.ip.models.address import Address
+from noc.ip.models.addressrange import AddressRange
+from noc.ip.models.prefix import Prefix
+from noc.ip.models.prefixaccess import PrefixAccess
+from noc.ip.models.prefixbookmark import PrefixBookmark
+from noc.ip.models.vrf import VRF
+from noc.ip.models.vrfgroup import VRFGroup
 # NOC modules
 from noc.lib.app.application import Application, view
-from noc.core.ip import IP
+from noc.lib.db import SQL
+from noc.lib.forms import NOCForm
 from noc.lib.validators import (is_ipv4, is_ipv4_prefix, is_ipv6,
                                 is_ipv6_prefix, check_ipv4_prefix,
                                 check_ipv6_prefix, check_fqdn,
                                 check_ipv4, check_ipv6, check_prefix,
                                 ValidationError)
-from noc.lib.forms import NOCForm
 from noc.lib.widgets import *
-from noc.lib.colors import *
-from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
-from noc.ip.models.address import Address
-from noc.ip.models.prefix import Prefix
-from noc.ip.models.vrf import VRF
-from noc.ip.models.addressrange import AddressRange
-from noc.ip.models.prefixaccess import PrefixAccess
-from noc.ip.models.prefixbookmark import PrefixBookmark
-from noc.main.models.permission import Permission
-from noc.ip.models.vrfgroup import VRFGroup
-from noc.main.models.style import Style
 from noc.main.models.customfield import CustomField
+from noc.main.models.permission import Permission
 from noc.main.models.resourcestate import ResourceState
-from noc.project.models.project import Project
+from noc.main.models.style import Style
 from noc.peer.models import AS
-from noc.vc.models import VCBindFilter
-from noc.sa.models.reducetask import ReduceTask
+from noc.project.models.project import Project
+from noc.sa.interfaces.base import MACAddressParameter, \
+    InterfaceTypeError
 from noc.sa.models.managedobject import ManagedObject
-from noc.lib.db import SQL
+from noc.sa.models.reducetask import ReduceTask
+from noc.vc.models import VCBindFilter
+from noc.core.colors import *
 
 
 class IPAMAppplication(Application):
