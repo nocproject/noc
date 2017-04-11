@@ -48,7 +48,7 @@ class Channel(object):
 
     def get_data(self):
         self.n = 0
-        data = "\n".join(self.data)
+        data = "".join(self.data)
         self.data = []
         return data
 
