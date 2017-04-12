@@ -12,8 +12,8 @@ from optparse import make_option
 ## Django modules
 from django.core.management.base import BaseCommand
 from django.db import models
-## Python modules
-from noc.lib.csvutils import csv_export
+## NOC modules
+from noc.core.csvutils import csv_export
 
 
 class Command(BaseCommand):

@@ -194,8 +194,8 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
                     # Convert integers
                     try:
                         vars[h] = int(v)
-                    except ValueError, why:
-                        raise ValueError("Invalid integer: %s" % why)
+                    except ValueError as e:
+                        raise ValueError("Invalid integer: %s" % e)
                 elif h == "tags":
                     vars[h] = [x.strip() for x in v.split(",") if x.strip()]
         # Find object
@@ -243,7 +243,6 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
         # Save
         try:
             o.save()
-        except Exception, why:
-            return None, "Failed to save line %d: %s. %s" % (count, str(why),
-                                                             repr(vars))
+        except Exception as e:
+            return None, "Failed to save line %d: %s. %r" % (count, e, vars)
     return count, None
