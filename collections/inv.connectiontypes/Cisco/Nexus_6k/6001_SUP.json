@@ -1,0 +1,8 @@
+{
+    "name": "Cisco | Nexus 6k | 6001 SUP",
+    "$collection": "inv.connectiontypes",
+    "uuid": "61ef4a49-9fa2-4d49-8b36-15df1927d8b5",
+    "description": "Cisco Nexus C6001-64P SUP connection (internal motherboard)",
+    "c_group": [],
+    "genders": "mf"
+}
