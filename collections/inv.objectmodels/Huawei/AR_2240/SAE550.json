@@ -4,8 +4,15 @@
     "uuid": "ebfc65a3-64fc-4cd6-bd76-4f46ea003d78",
     "vendor__code": "HUAWEI",
     "description": "Industrial Computer,Ivy Bridgei3/i5/i7,DDR3 SO-DIMM,2.5inch 1T enterprise HDD,CFAST 4G",
-    "cr_context": "SAE",
+    "cr_context": "SAE550",
     "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | AR 2240 | SAE550"
+        },
         {
             "description": "Management Console",
             "direction": "s",

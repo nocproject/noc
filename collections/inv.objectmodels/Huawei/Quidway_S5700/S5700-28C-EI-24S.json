@@ -291,7 +291,10 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["02352350", "S5700-28C-EI-24S"]
+            "part_no": ["ES5Z328CM0"]
+        },
+        "management": {
+            "managed": true
         },
         "dimensions": {
             "depth": 220,

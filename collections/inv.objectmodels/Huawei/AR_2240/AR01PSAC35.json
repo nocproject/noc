@@ -4,8 +4,23 @@
     "uuid": "9d9a05fa-9417-4e51-8426-0327f4af725f",
     "vendor__code": "HUAWEI",
     "description": "AR Series,AR01PSAC35,350W AC Power Module",
-    "cr_context": "PSU",
-    "connections": [],
+    "cr_context": "PWR350A",
+    "connections": [
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | AR 2240 | PWR350A"
+        }
+    ],
     "data": {
         "asset": {
             "part_no": ["AR01PSAC35"]

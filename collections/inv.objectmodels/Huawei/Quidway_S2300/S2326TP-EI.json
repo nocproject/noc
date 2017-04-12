@@ -253,7 +253,10 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["02351366", "CX4Z126AM", "CX22EFFE", "S2326TP-EI"]
+            "part_no": ["CX22EFFE"]
+        },
+        "management": {
+            "managed": true
         },
         "dimensions": {
             "depth": 220,

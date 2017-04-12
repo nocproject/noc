@@ -1,8 +1,8 @@
 {
-    "name": "Huawei | AR 2240 | SRU",
+    "name": "Huawei | AR 2240 | SRU40",
     "$collection": "inv.connectiontypes",
     "uuid": "56797628-fc2f-4273-b3fb-18af7ca322e7",
-    "description": "Huawei AR 2240 SRU slot",
+    "description": "Huawei AR 2240 SRU40 slot",
     "c_group": [],
     "genders": "mf"
 }
