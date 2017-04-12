@@ -7,7 +7,7 @@ class Migration:
         dc = get_db()["noc.objectdata"]
         bulk = dc.initialize_unordered_bulk_op()
         n = 0
-        for d in uc:
+        for d in uc.find():
             bulk.find({
                 "_id": d["_id"]
             }).upsert().update({
