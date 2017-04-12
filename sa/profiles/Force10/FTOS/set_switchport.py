@@ -7,7 +7,6 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 from collections import defaultdict
 ## NOC modules
 from noc.core.script.base import BaseScript

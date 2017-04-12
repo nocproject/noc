@@ -40,7 +40,7 @@ class SummaryItem(EmbeddedDocument):
     @classmethod
     def dict_to_items(cls, d):
         """
-        Convert a dict of profile -> sumamry to list of SummaryItem
+        Convert a dict of profile -> summary to list of SummaryItem
         """
         return [SummaryItem(profile=k, summary=d[k]) for k in sorted(d)]
 
@@ -62,7 +62,7 @@ class ObjectSummaryItem(EmbeddedDocument):
     @classmethod
     def dict_to_items(cls, d):
         """
-        Convert a dict of profile -> sumamry to list of SummaryItem
+        Convert a dict of profile -> summary to list of SummaryItem
         """
         return [ObjectSummaryItem(profile=k, summary=d[k]) for k in sorted(d)]
 

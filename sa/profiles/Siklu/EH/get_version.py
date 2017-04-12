@@ -26,7 +26,7 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute(self):
-        v =self.cli("show sw")
+        v = self.cli("show sw")
         match_ver = self.re_search(self.rx_ver, v)
 
         v = self.cli("show system description")
