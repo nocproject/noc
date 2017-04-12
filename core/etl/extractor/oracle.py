@@ -37,11 +37,19 @@ class ORACLEExtractor(SQLExtractor):
                     service_name=self.config.get("service_name"),
                     sid=self.config.get("sid")
                 )
-            self.connect = cx_Oracle.connect(
-                user=self.config.get("user"), password=self.config.get("password"),
-                dsn=dsn,
-                threaded=int(self.config.get("concurrency", 1)) > 1
-            )
+            user = self.config.get("user")
+            password = self.config.get("password"),
+            if user and password:
+                self.connect = cx_Oracle.connect(
+                    user=self.config.get("user"), password=self.config.get("password"),
+                    dsn=dsn,
+                    threaded=int(self.config.get("concurrency", 1)) > 1
+                )
+            else:
+                self.connect = cx_Oracle.connect(
+                    dsn,
+                    threaded=int(self.config.get("concurrency", 1)) > 1
+                )
             os.environ = old_env  # Restore environment
         cursor = self.connect.cursor()
         if self.config.get("arraysize"):
