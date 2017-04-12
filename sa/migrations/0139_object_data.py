@@ -13,7 +13,8 @@ class Migration:
                 "uplinks": d.get("uplinks", [])
             })
             n += 1
-        bulk.execute()
+        if n:
+            bulk.execute()
 
     def backwards(self):
         pass
