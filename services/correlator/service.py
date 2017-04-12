@@ -3,7 +3,7 @@
 ##----------------------------------------------------------------------
 ## noc-correlator daemon
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016, The NOC Project
+## Copyright (C) 2007-2017, The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -15,6 +15,7 @@ from collections import defaultdict
 from threading import Lock
 ## Third-party modules
 import tornado.gen
+from mongoengine.queryset import Q
 ## NOC modules
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
@@ -34,6 +35,7 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.lib.version import get_version
 from noc.lib.debug import format_frames, get_traceback_frames, error_report
 import utils
+from noc.lib.dateutils import total_seconds
 
 
 class CorrelatorService(Service):
@@ -50,7 +52,8 @@ class CorrelatorService(Service):
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
         self.scheduler = None
-        self.correlate_lock = defaultdict(Lock)
+        self.rca_lock = Lock()
+        self.topology_rca_lock = Lock()
 
     def on_activate(self):
         self.scheduler = Scheduler(
@@ -200,9 +203,8 @@ class CorrelatorService(Service):
                 if not rc.check_condition(ca):
                     continue
                 # Try to set root cause
-                q = rc.get_match_condition(ca)
-                q["id"] = a.id
-                rr = ActiveAlarm.objects.filter(**q).first()
+                qq = rc.get_match_condition(ca, id=a.id)
+                rr = ActiveAlarm.objects.filter(**qq).first()
                 if rr:
                     # Reverse root cause found
                     self.logger.info(
@@ -305,8 +307,7 @@ class CorrelatorService(Service):
             a.alarm_class.name, a.id, a.vars
         )
         self.perf_metrics["alarm_raise"] += 1
-        with self.correlate_lock[a.managed_object.pool.name]:
-            self.correlate(r, a)
+        self.correlate(r, a)
         # Notify about new alarm
         if not a.root:
             a.managed_object.event(a.managed_object.EV_ALARM_RISEN, {
@@ -324,13 +325,18 @@ class CorrelatorService(Service):
             AlarmEscalation.watch_escalations(a)
 
     def correlate(self, r, a):
-        # RCA
-        if a.alarm_class.id in self.rca_forward:
-            # Check alarm is a consequence of existing one
-            self.set_root_cause(a)
-        if a.alarm_class.id in self.rca_reverse:
-            # Check alarm is the root cause for existing ones
-            self.set_reverse_root_cause(a)
+        # Topology RCA
+        if a.alarm_class.topology_rca:
+            with self.topology_rca_lock:
+                self.topology_rca(a)
+        # Rule-based RCA
+        with self.rca_lock:
+            if a.alarm_class.id in self.rca_forward:
+                # Check alarm is a consequence of existing one
+                self.set_root_cause(a)
+            if a.alarm_class.id in self.rca_reverse:
+                # Check alarm is the root cause for existing ones
+                self.set_reverse_root_cause(a)
         # Call handlers
         for h in a.alarm_class.get_handlers():
             try:
@@ -526,6 +532,52 @@ class CorrelatorService(Service):
                 if r.stop_disposition:
                     break
         self.logger.info("[%s] Disposition complete", event_id)
+
+    def topology_rca(self, alarm, seen=None):
+        def can_correlate(a1, a2):
+            return (
+                not self.config.topology_rca_window or
+                total_seconds(a1.timestamp - a2.timestamp) <= self.config.topology_rca_window
+            )
+
+        self.logger.debug("[%s] Topology RCA", alarm.id)
+        seen = seen or set()
+        if alarm.root or alarm.id in seen:
+            self.logger.debug("[%s] Already correlated", alarm.id)
+            return  # Already correlated
+        seen.add(alarm.id)
+        # Get neighboring alarms
+        na = {}
+        # Downlinks
+        q = Q(
+            alarm_class=alarm.alarm_class.id,
+            uplinks=alarm.managed_object.id
+        )
+        # Uplinks
+        # @todo: Try to use $graphLookup to find affinity alarms
+        if alarm.uplinks:
+            q |= Q(alarm_class=alarm.alarm_class.id,
+                   managed_object__in=list(alarm.uplinks))
+        for a in ActiveAlarm.objects.filter(q):
+            na[a.managed_object.id] = a
+        # Correlate with uplinks
+        if alarm.uplinks and len([na[o] for o in alarm.uplinks if o in na]) == len(alarm.uplinks):
+            # All uplinks are faulty
+            # uplinks are ordered according to path length
+            # Correlate with first applicable
+            self.logger.info("[%s] All uplinks are faulty. Correlating", alarm.id)
+            for u in alarm.uplinks:
+                a = na[u]
+                if can_correlate(alarm, a):
+                    self.logger.info("[%s] Set root to %s", alarm.id, a.id)
+                    alarm.set_root(a)
+                    self.perf_metrics["alarm_correlated_topology"] += 1
+                    break
+        # Correlate neighbors' alarms
+        for d in na:
+            self.topology_rca(na[d], seen)
+        self.logger.debug("[%s] Correlation completed", alarm.id)
+
 
 if __name__ == "__main__":
     CorrelatorService().start()
