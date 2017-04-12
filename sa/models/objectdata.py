@@ -37,8 +37,14 @@ class ObjectData(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id):
-        return ObjectData.objects.filter(id=id).first()
+    def _get_by_id(cls, object_id):
+        return ObjectData.objects.filter(object=object_id).first()
+
+    @classmethod
+    def get_by_id(cls, object):
+        if hasattr(object, "id"):
+            object = object.id
+        return cls._get_by_id(object)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_neighbor_cache"), lock=lambda _: neighbor_lock)
