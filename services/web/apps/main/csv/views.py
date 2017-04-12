@@ -2,22 +2,22 @@
 ##----------------------------------------------------------------------
 ## CSV Export/Import application
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Django modules
-from django.contrib.contenttypes.models import ContentType
-from django.shortcuts import get_object_or_404
 from django import forms
 from django.contrib import admin
-from django.http import HttpResponse
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from noc.core.translation import ugettext as _
 ## NOC modules
 from noc.lib.app.application import Application, view
-from noc.lib.csvutils import csv_export, csv_import, get_model_fields,\
+from noc.core.csvutils import csv_export, csv_import, get_model_fields,\
     IR_FAIL, IR_SKIP, IR_UPDATE
-from noc.core.translation import ugettext as _    
 
 
 class CSVApplication(Application):

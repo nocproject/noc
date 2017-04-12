@@ -14,8 +14,8 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.db import models
 ## NOC modules
-from noc.lib.csvutils import csv_import, IR_FAIL, IR_SKIP, IR_UPDATE
 from noc.lib.debug import error_report
+from noc.core.csvutils import csv_import, IR_FAIL, IR_SKIP, IR_UPDATE
 
 
 class Command(BaseCommand):
