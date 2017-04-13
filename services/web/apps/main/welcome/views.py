@@ -27,10 +27,11 @@ class WelcomeApplication(ExtApplication):
 
     @view(url="^welcome/$", access=True, api=True)
     def api_welcome(self, request):
+        setup = {"installation_name": self.config.get("customization", "installation_name")}
         for p in self.WELCOME_PATH:
             if not os.path.exists(p):
                 continue
             with open(p) as f:
                 tpl = Template(f.read())
-            return self.render_response(tpl.render(), "text/html")  # @todo: Fill context
+            return self.render_response(tpl.render(setup=setup), "text/html")  # @todo: Fill context
         return "You are not welcome!"
