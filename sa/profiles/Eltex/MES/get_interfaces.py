@@ -294,6 +294,8 @@ class Script(BaseScript):
                 ifindex = match.group("ifindex")
                 mac = match.group("mac")
                 mtu = match.group("mtu")
+                members = match.group("members")
+                ##@todo fix members
                 description = match.group("descr")
                 if not description:
                     description = ''
