@@ -2,13 +2,14 @@
 ##----------------------------------------------------------------------
 ## Clickhouse Dictionaries
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import operator
 import itertools
+import os
 ## Third-party modules
 import six
 import cachetools
@@ -59,6 +60,17 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
     _lookup_cache = cachetools.LRUCache(10000)
     _collection = None
     _seq = None
+
+    @classmethod
+    def iter_cls(cls):
+        """
+        Generator yielding all known dictionaries
+        :return: 
+        """
+        for f in os.listdir("core/bi/dictionaries"):
+            if not f.endswith(".py") or f.startswith("_"):
+                continue
+            yield Dictionary.get_dictionary_class(f[:-3])
 
     @classmethod
     def get_config(cls):
@@ -180,3 +192,11 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
         :return:
         """
         return cls._fields[name].db_type
+
+    @classmethod
+    def dump(cls, out):
+        for d in cls.get_collection().find({}):
+            out.write("%s\t%s\n" % (
+                str(d["id"]),
+                "\t".join(str(d.get(f.name, "")) for f in cls._fields)
+            ))
