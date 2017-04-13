@@ -192,13 +192,25 @@ class FMMonitorApplication(ExtApplication):
         r = {}
 
         pipeline = [{"$unwind": "$adm_path"},
-                    {"$group": {"_id": "$adm_path", "tags": {"$sum": 1}}}
+                    {"$group": {"_id": {"adm_path": "$adm_path", "root": "$root"}, "tags": {"$sum": 1}}}
                     ]
 
+        z = defaultdict(int)
+        y = {}
         res = get_db()["noc.alarms.active"].aggregate(pipeline)
-        count = {x["_id"]: x["tags"] for x in res["result"]}
+
+        for x in res["result"]:
+            if "root" in x["_id"]:
+                z[x["_id"]["adm_path"]] += x["tags"]
+            else:
+                y[x["_id"]["adm_path"]] = x["tags"]
 
         for e in self.a_p:
-            r[self.p_c[e]] = sum([count[x] for x in self.a_p[e] if x in count])
+            non_root = sum([y[x] for x in self.a_p[e] if x in y])
+            w_root = sum([z[x] for x in self.a_p[e] if x in z])
+            r[self.p_c[e]] = {"non-root": non_root,
+                              "root": w_root,
+                              "total": non_root + w_root
+                              }
 
         return r
