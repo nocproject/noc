@@ -92,14 +92,10 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
             "            <%s />" % cls._meta.layout,
             "        </layout>",
             "        <source>",
-            "            <mongodb>",
-            "                <host>%s</host>" % mongo_host,
-            "                <port>%s</port>" % mongo_port,
-            "                <user>%s</user>" % config.mongo_user,
-            "                <password>%s</password>" % config.mongo_password,
-            "                <db>%s</db>" % config.mongo_db,
-            "                <collection>%s</collection>" % cls.get_collection_name(),
-            "            </mongodb>",
+            "            <file>",
+            "                <path>/opt/dictionaries/%s.tsv</path>" % cls._meta.name,
+            "                <format>TabSeparated</format>",
+            "            </file>",
             "        </source>",
             "        <structure>",
             "             <id>",
@@ -198,5 +194,5 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
         for d in cls.get_collection().find({}):
             out.write("%s\t%s\n" % (
                 str(d["id"]),
-                "\t".join(str(d.get(f.name, "")) for f in cls._fields)
+                "\t".join(str(d.get(f, "")) for f in cls._fields)
             ))
