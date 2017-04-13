@@ -13,6 +13,7 @@ WorkingDirectory={{ noc_root }}
 KillMode=process
 Restart=on-failure
 TimeoutStopSec=240
+LimitNOFILE=8192
 
 [Install]
 WantedBy=multi-user.target
