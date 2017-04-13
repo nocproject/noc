@@ -98,9 +98,11 @@ class ReportFilterApplication(SimpleReport):
 
         for s in res:
             mo, iface = s.split(".")
+            mo = ManagedObject.get_by_id(mo)
             data += [
                 (
-                    ManagedObject.get_by_id(mo).name,
+                    mo.name,
+                    mo.address,
                     iface
                 )
             ]
@@ -108,6 +110,6 @@ class ReportFilterApplication(SimpleReport):
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"), _("Interface")
+                _("Managed Object"), _("Address"), _("Interface")
             ],
             data=data)
