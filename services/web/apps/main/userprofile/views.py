@@ -52,7 +52,8 @@ class UserProfileApplication(ExtApplication):
             )).strip(),
             "email": user.email,
             "preferred_language": language or "en",
-            "contacts": contacts
+            "contacts": contacts,
+            "groups": [g.name for g in user.groups.all().order_by("name")]
         }
 
     @view(url="^$", method=["POST"], access=PermitLogged(), api=True,
