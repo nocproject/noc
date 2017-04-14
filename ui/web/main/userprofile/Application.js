@@ -34,6 +34,10 @@ Ext.define("NOC.main.userprofile.Application", {
             labelWidth: lw,
             allowBlank: false
         });
+        me.groupsField = Ext.create("Ext.form.field.Display", {
+            fieldLabel: __("Groups"),
+            labelWidth: lw
+        });
         // Contacts grid
         me.contactsStore = Ext.create("Ext.data.Store", {
             fields: [
@@ -190,6 +194,7 @@ Ext.define("NOC.main.userprofile.Application", {
         me.nameField.setValue(data.name);
         me.emailField.setValue(data.email);
         me.languageField.setValue(data.preferred_language);
+        me.groupsField.setRawValue((data.groups || []).join(", "));
         me.contactsStore.loadData(data.contacts);
     },
     //
