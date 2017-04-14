@@ -4,20 +4,27 @@
 ## USAGE:
 ## python manage.py convert-moin [--encoding=charset] [--language=lang] [--tags=<taglist>] <path to moin data/ >
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from __future__ import with_statement
+
+## Python modules
+import os
+import re
+import stat
+import datetime
+import sys
+import types
+import gc
+from optparse import OptionParser, make_option
+## Django modules
 from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
+## NOC modules
 from noc.main.models.language import Language
 from noc.main.models.databasestorage import database_storage
 from noc.kb.models import KBEntry,KBEntryAttachment
-from optparse import OptionParser, make_option
-import os,re,stat,datetime,sys,types,gc
 
 ##
 rx_hexseq=re.compile(r"\(((?:[0-9a-f][0-9a-f])+)\)")
