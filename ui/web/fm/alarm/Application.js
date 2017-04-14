@@ -156,7 +156,7 @@ Ext.define("NOC.fm.alarm.Application", {
             width: 95,
             listeners: {
                 scope: me,
-                select: me.onChangeFilter
+                change: me.onChangeFilter
             }
         });
 
@@ -166,7 +166,7 @@ Ext.define("NOC.fm.alarm.Application", {
             width: 95,
             listeners: {
                 scope: me,
-                select: me.onChangeFilter
+                change: me.onChangeFilter
             }
         });
 
