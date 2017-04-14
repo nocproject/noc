@@ -172,6 +172,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         allowBlank: true
                     },
                     {
+                        name: "is_uni",
+                        xtype: "checkbox",
+                        boxLabel: __("User Interface"),
+                        allowBlank: true
+                    },
+                    {
                         name: "metrics",
                         xtype: "gridfield",
                         fieldLabel: __("Metrics"),

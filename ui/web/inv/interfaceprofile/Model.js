@@ -68,6 +68,11 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             name: "metrics",
             type: "auto"
         },
+        {
+            name: "is_uni",
+            type: "bool",
+            defaultValue: false
+        },
         // CSS
         {
             name: "row_class",
