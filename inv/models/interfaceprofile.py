@@ -84,6 +84,9 @@ class InterfaceProfile(Document):
     metrics = ListField(EmbeddedDocumentField(InterfaceProfileMetrics))
     # Alarm weight
     weight = IntField(default=0)
+    # User network interface
+    # MAC discovery can be restricted to UNI
+    is_uni = BooleanField(default=False)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
