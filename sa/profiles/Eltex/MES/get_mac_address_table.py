@@ -24,6 +24,7 @@ class Script(BaseScript):
     def execute(self, interface=None, vlan=None, mac=None):
         r = []
         # Try SNMP first
+        """
         if self.has_snmp():
             try:
                 vlan_oid = []
@@ -83,7 +84,7 @@ class Script(BaseScript):
                 return r
             except self.snmp.TimeOutError:
                 pass
- 
+        """
         # Fallback to CLI
         cmd = "show mac address-table"
         if mac is not None:
