@@ -3,7 +3,7 @@
 ##----------------------------------------------------------------------
 ## Failed Scripts Report
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 """
@@ -16,6 +16,7 @@ from pymongo import ReadPreference
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectsHostname
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
 
@@ -82,13 +83,15 @@ class ReportFilterApplication(SimpleReport):
         bad_cli_cred = get_db()["noc.joblog"].find({"problems.suggest_cli": "Failed to guess CLI credentials",
                                                     "_id": {"$in": is_managed_ng_in}},
                                                    read_preference=ReadPreference.SECONDARY_PREFERRED)
-
+        mos_id = list(is_managed.values_list("id", flat=True))
+        mo_hostname = ReportObjectsHostname(mo_ids=mos_id, use_facts=True)
         for b in is_not_alived_c:
             mo = ManagedObject.get_by_id(b["object"])
             data += [(
                 mo.name,
                 mo.address,
                 mo.profile_name,
+                mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
                 mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,
@@ -102,6 +105,7 @@ class ReportFilterApplication(SimpleReport):
                 mo.name,
                 mo.address,
                 mo.profile_name,
+                mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
                 mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,
@@ -114,6 +118,7 @@ class ReportFilterApplication(SimpleReport):
                 mo.name,
                 mo.address,
                 mo.profile_name,
+                mo_hostname[mo.id],
                 mo.auth_profile if mo.auth_profile else "",
                 mo.auth_profile.user if mo.auth_profile else mo.user,
                 mo.auth_profile.snmp_ro if mo.auth_profile else mo.snmp_ro,
@@ -124,7 +129,7 @@ class ReportFilterApplication(SimpleReport):
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"), _("Address"), _("Profile"),
+                _("Managed Object"), _("Address"), _("Profile"), _("Hostname"),
                 _("Auth Profile"), _("Username"), _("SNMP Community"),
                 _("Avail"), _("Error")
             ],
