@@ -60,7 +60,7 @@ class Script(BaseScript):
             i = pc["interface"]
             t = pc["type"] == "L"
             for m in pc["members"]:
-                portchannel_members[i] = (m, t)
+                portchannel_members[m] = (i, t)
 
         # Get LLDP interfaces
         lldp = []
@@ -90,7 +90,7 @@ class Script(BaseScript):
         mtu = []
         for res in i:
             name = res[0].strip()
-            if self.match_version(version__gte="2.5.44"):
+            if self.match_version(version__regex="[12]\.[15]\.4[4-9]"):
                 v = self.cli("show interface %s" % name)
                 for match in self.rx_sh_int.finditer(v):
                     ifname = match.group("interface")
@@ -142,7 +142,7 @@ class Script(BaseScript):
             name = self.profile.convert_interface_name(name)
             if name in portchannel_members:
                 ai, is_lacp = portchannel_members[name]
-                # iface["aggregated_interface"] = ai
+                iface["aggregated_interface"] = ai
                 if is_lacp:
                     iface["enabled_protocols"] += ["LACP"]
             cmd = self.cli("show interfaces switchport %s" % name)
