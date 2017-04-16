@@ -194,5 +194,5 @@ class Dictionary(six.with_metaclass(DictionaryBase)):
         for d in cls.get_collection().find({}):
             out.write("%s\t%s\n" % (
                 str(d["id"]),
-                "\t".join(str(d.get(f, "")) for f in cls._fields)
+                "\t".join(str(d.get(f, "")).replace("\n", "").replace("\t", "") for f in cls._fields)
             ))
