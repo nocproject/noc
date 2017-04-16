@@ -61,7 +61,7 @@ class Script(BaseScript):
             """
 
         # Fallback to CLI
-        if self.match_version(version__gte="2.5.44"):
+        if self.match_version(version__regex="[12]\.[15]\.4[4-9]"):
             cmd = self.cli("show interfaces channel-group")
             for match in self.rx_lag.finditer(cmd):
                 members = match.group("interfaces1").split(',')
