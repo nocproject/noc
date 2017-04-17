@@ -71,6 +71,11 @@ class Model(six.with_metaclass(ModelBase)):
         ) + "\n"
 
     @classmethod
+    def get_fingerprint(cls):
+        return "%s.%s" % (cls._meta.db_table,
+                          ".".join(cls._fields_order))
+
+    @classmethod
     def ensure_table(cls):
         ch = connection()
         if not ch.has_table(cls._meta.db_table):
