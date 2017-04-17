@@ -39,7 +39,7 @@ class Script(BaseScript):
         r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n^\s+Interface index is (?P<ifindex>\d+)\s*\n^\s+Hardware is\s+.+?, MAC address is (?P<mac>\S+)\s*\n(^\s+Description:(?P<descr>.*?)\n)?^\s+Interface MTU is (?P<mtu>\d+)\s*\n(^\s+Link aggregation type is (?P<link_type>\S+)\s*\n)?(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
         re.MULTILINE | re.DOTALL)
     rx_sh_int_des = re.compile(
-        r"^(?P<ifname>\S+)\s+\S+\s+(?:General|Access|Trunk)\s+\S+\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s*\n(?:^\s+Description:(?P<descr>.*?)\n)?",
+        r"^(?P<ifname>\S+)\s+\S+\s+(?:General|Access|Trunk|Customer|Promiscuous|Host)\s+\S+\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s*\n(?:^\s+Description:(?P<descr>.*?)\n)?",
         re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
     rx_lldp = re.compile(r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
