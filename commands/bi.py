@@ -9,8 +9,10 @@
 ## Python modules
 import os
 import datetime
-from collections import defaultdict
 import gzip
+import functools
+## Third-party modules
+import nsq
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
@@ -25,6 +27,9 @@ class Command(BaseCommand):
     DATA_PREFIX = "var/bi"
     DICT_XML_PREFIX = "var/bi-dict"
     DICT_DATA_PREFIX = "var/bi-dict-data"
+
+    TOPIC = "chwriter"
+    NSQ_PUB_RETRY_DELAY = 0.1
 
     EXTRACTORS = [
         RebootsExtractor,
@@ -105,26 +110,57 @@ class Command(BaseCommand):
             e.clean()
 
     def handle_load(self):
+        def publish():
+            def finish_pub(conn, data):
+                if isinstance(data, nsq.Error):
+                    self.stdout.write(
+                        "Failed to pub to topic '%s'. Retry\n" % self.TOPIC
+                    )
+                    writer.io_loop.call_later(
+                        self.NSQ_PUB_RETRY_DELAY,
+                        functools.partial(
+                            writer.pub, self.TOPIC, msg,
+                            callback=finish_pub
+                        )
+                    )
+                else:
+                    self.stdout.write("Removing %s\n" % fn)
+                    os.unlink(fn)
+
+            try:
+                fn = files.pop(0)
+            except IndexError:
+                # Done
+                writer.io_loop.stop()
+                return
+            tn = fn.split("-", 1)[0]
+            self.stdout.write("Sending %s\n" % fn)
+            with gzip.open(fn, "rb") as f:
+                data = f.read()
+            msg = "%s\n%s" % (tn, data)
+            writer.pub(self.TOPIC, msg, callback=finish_pub)
+            writer.io_loop.add_callback(publish)
+
         ch = connection()
         ch.ensure_db()
-        files = defaultdict(list)
+        files = []
+        models = set()
         for f in sorted(os.listdir(self.DATA_PREFIX)):
             if not f.endswith(".tsv.gz"):
                 continue
-            x = f.split("-", 1)[0]
-            files[x] += [os.path.join(self.DATA_PREFIX, f)]
-        for mn in files:
-            self.stdout.write("Loading %s\n" % mn)
+            models.add(f.split(".", 1)[0])
+            files += [f]
+        # Ensure fields
+        for mn in models:
+            self.stdout.write("Ensuring %s", mn)
             model = Model.get_model_class(mn)
             if not model:
                 self.die("Cannot get model")
             model.ensure_table()
-            for fn in files[mn]:
-                self.stdout.write("    %s\n" % fn)
-                with gzip.open(fn, "rb") as f:
-                    data = f.read()
-                ch.execute("INSERT INTO %s FORMAT TabSeparated" % mn, post=data)
-                os.unlink(fn)
+        # Stream to NSQ
+        writer = nsq.Writer(["127.0.0.1:4150"])
+        writer.io_loop.add_callback(publish)
+        nsq.run()
 
 if __name__ == "__main__":
     Command().run()
