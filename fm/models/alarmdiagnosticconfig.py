@@ -116,19 +116,19 @@ class AlarmDiagnosticConfig(Document):
                         "header": c.on_raise_header
                     }]
             if c.enable_periodic:
-                if c.periodic_interval:
+                if c.periodic_script:
                     p_cfg[c.periodic_interval] += [{
-                        "script": c.periodic_interval,
+                        "script": c.periodic_script,
                         "header": c.periodic_header
                     }]
-                if c.periodic_interval:
+                if c.periodic_action:
                     p_cfg[c.periodic_interval] += [{
-                        "action": c.periodic_interval.id,
+                        "action": c.periodic_action.id,
                         "header": c.periodic_header
                     }]
-                if c.periodic_interval:
+                if c.periodic_handler:
                     p_cfg[c.periodic_interval] += [{
-                        "handler": c.periodic_interval,
+                        "handler": c.periodic_handler,
                         "header": c.periodic_header
                     }]
         # Submit on_raise job
@@ -174,7 +174,7 @@ class AlarmDiagnosticConfig(Document):
                         "handler": c.on_clear_handler,
                         "header": c.on_clear_header
                     }]
-        # Submit on_raise job
+        # Submit on_clear job
         for delay in cfg:
             call_later(
                 "noc.fm.models.alarmdiagnosticconfig.on_clear",

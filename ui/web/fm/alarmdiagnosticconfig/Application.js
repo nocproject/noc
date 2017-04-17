@@ -141,7 +141,7 @@ Ext.define("NOC.fm.alarmdiagnosticconfig.Application", {
                                     boxLabel: __("Enable")
                                 },
                                 {
-                                    name: "periodic_delay",
+                                    name: "periodic_interval",
                                     xtype: "numberfield",
                                     fieldLabel: __("Delay"),
                                     min: 0,
