@@ -73,7 +73,7 @@ upstream grafanads {
 {% endif %}
 
 
-{% if nginx_json_logging %}
+{% if nginx_json_logging == "1" %}
 log_format noc_format '{ "@timestamp": "$time_iso8601", '
                          '"@fields": { '
                          '"remote_addr": "$remote_addr", '
@@ -97,7 +97,7 @@ log_format noc_format '$remote_addr - $remote_user [$time_local] '
 
 {% endif %}
 
-{% if nginx_http_redirect_enabled %}
+{% if nginx_http_redirect_enabled == "1" %}
 server {
     listen 80;
     server_name {{ noc_web_host }};
