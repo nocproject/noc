@@ -135,6 +135,7 @@ Ext.define("NOC.main.userprofile.Application", {
                     },
                     items: [
                         me.usernameField,
+                        me.groupsField,
                         me.nameField,
                         me.emailField,
                         me.languageField,
