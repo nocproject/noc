@@ -58,16 +58,17 @@ class Script(BaseScript):
                 "mac": match.group("mac"),
                 "interfaces": [match.group("interfaces")],
                 "type": {
-                    "dynamic":"D",
-                    "static":"S",
-                    "self":"C",
-                    "cpu":"C",
-                    "asymmetric":"C",
-                    "permanent":"S",
-                    "deleteontimeout":"D",
-                    "del_on_timeout":"D",
-                    "deleteonreset":"D",
-                    "del_on_reset":"D",
-                    "blockbyaddrbind":"D"}[mactype]
+                    "dynamic": "D",
+                    "static": "S",
+                    "self": "C",
+                    "cpu": "C",
+                    "asymmetric": "C",
+                    "permanent": "S",
+                    "deleteontimeout": "D",
+                    "del_on_timeout": "D",
+                    "deleteonreset": "D",
+                    "del_on_reset": "D",
+                    "blockbyaddrbind": "D",
+                    "unblockbyaddrbind": "D"}[mactype]
             }]
         return r
