@@ -38,10 +38,12 @@ dump CDP traffic
 """
 # Python modules
 import re
+import logging
 
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+
 
 
 class Script(BaseScript):
@@ -114,28 +116,35 @@ class Script(BaseScript):
         
         # try lldpd
         r = []
-        for match in self.rx_lldpd.finditer(self.cli("lldpcli show neighbors summary")):
-            if re.match(check_ifcfg, match.group("remote_port")):
-                remote_if = match.group("remote_port")
-            else:
-                remote_if = self.profile.convert_interface_name_cisco(match.group("remote_port"))
-            
-            i = {"local_interface": match.group("local_interface"),
-                 "neighbors": []
-                 }
-            
-            # print (match.group("remote_port"))
+        v = self.cli("lldpcli show neighbors summary")
+        if "Permission denied" in v:
+            logging.error("Add <NOCuser> to _lldpd group. Like that ' # usermod -G _lldpd -a <NOCuser> ' ")
+            return r
 
-            n = {
-                'remote_capabilities': 4,
-                "remote_chassis_id": match.group("remote_id"),
-                'remote_chassis_id_subtype': 4,
-                "remote_port": match.group("remote_chassis_id"),
-                "remote_port_subtype": 3,
-                "remote_system_name": match.group("remote_system_name"),
-            }
-            
-            i["neighbors"] += [n]
-            r += [i]
+        else:
 
-        return r
+            for match in self.rx_lldpd.finditer(self.cli("lldpcli show neighbors summary")):
+                if re.match(check_ifcfg, match.group("remote_port")):
+                    remote_if = match.group("remote_port")
+                else:
+                    remote_if = self.profile.convert_interface_name_cisco(match.group("remote_port"))
+                
+                i = {"local_interface": match.group("local_interface"),
+                     "neighbors": []
+                     }
+                
+                # print (match.group("remote_port"))
+
+                n = {
+                    'remote_capabilities': 4,
+                    "remote_chassis_id": match.group("remote_id"),
+                    'remote_chassis_id_subtype': 4,
+                    "remote_port": match.group("remote_chassis_id"),
+                    "remote_port_subtype": 3,
+                    "remote_system_name": match.group("remote_system_name"),
+                }
+                
+                i["neighbors"] += [n]
+                r += [i]
+
+            return r
