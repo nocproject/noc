@@ -75,8 +75,7 @@ class Script(BaseScript):
         if "device is not in stacking" in out:
             return []
         r = self.profile.parse_table(out, part_name="stack")
-        return [l[0] for l in r["stack"]["table"]] if r["stack"] else []
-        # return len([l for l in r.splitlines() if "STACK" in l])
+        return [l[0] for l in r["stack"]["table"]] if "table" in r["stack"] else []
 
     @false_on_cli_error
     def has_lacp(self):
