@@ -65,7 +65,7 @@
             "match_connection": "in",
             "match_type": "XCVR",
             "scope": "gem",
-            "target_connection": "Eth1/{N}",
+            "target_connection": "Eth2/{N}",
             "target_number": "",
             "target_type": "GEM"
         }

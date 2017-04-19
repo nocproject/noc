@@ -48,14 +48,6 @@
             "type__name": "Cisco | Nexus 6k | 6001 FAN"
         },
         {
-            "description": "FAN 4 Slot",
-            "direction": "i",
-            "gender": "f",
-            "group": "0",
-            "name": "fan4",
-            "type__name": "Cisco | Nexus 6k | 6001 FAN"
-        },
-        {
             "description": "SUP 1 Slot",
             "direction": "i",
             "gender": "f",
