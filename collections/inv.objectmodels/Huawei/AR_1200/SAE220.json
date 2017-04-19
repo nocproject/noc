@@ -1,7 +1,7 @@
 {
     "name": "Huawei | AR 1200 | SAE220",
     "$collection": "inv.objectmodels",
-    "uuid": "b605be13-30b3-4eff-a084-38ede30e4337",
+    "uuid": "fde60cae-5718-48d0-960b-359452d8e45f",
     "vendor__code": "HUAWEI",
     "description": "Industrial Computer,Celeron 847E,DDR3 SO-DIMM,2.5inch 1T enterprise HDD,CFAST 4G",
     "cr_context": "SAE220",
