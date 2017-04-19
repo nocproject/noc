@@ -1,0 +1,8 @@
+{
+    "name": "Huawei | AR 1200 | SAE220",
+    "$collection": "inv.connectiontypes",
+    "uuid": "2ca993f3-d849-4a6b-abd9-c9023d2b04cf",
+    "description": "Huawei AR 1200 SAE220 module",
+    "c_group": [],
+    "genders": "mf"
+}

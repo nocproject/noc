@@ -46,6 +46,9 @@
         "asset": {
             "part_no": ["AR0B0024BA"]
         },
+        "management": {
+            "managed": true
+        },
         "dimensions": {
             "depth": 470,
             "height": 88,

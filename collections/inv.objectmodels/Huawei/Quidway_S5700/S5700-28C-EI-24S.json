@@ -293,6 +293,9 @@
         "asset": {
             "part_no": ["02352350", "S5700-28C-EI-24S"]
         },
+        "management": {
+            "managed": true
+        },
         "dimensions": {
             "depth": 220,
             "height": 43.6,

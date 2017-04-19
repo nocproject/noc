@@ -293,6 +293,9 @@
         "asset": {
             "part_no": ["S5328C-EI", "CX7Z328CM"]
         },
+        "management": {
+            "managed": true
+        },
         "dimensions": {
             "depth": 420,
             "height": 45,
