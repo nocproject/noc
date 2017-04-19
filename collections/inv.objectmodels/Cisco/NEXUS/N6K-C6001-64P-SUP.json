@@ -38,10 +38,10 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "GEM1 expansion slot",
+            "description": "GEM expansion slot",
             "direction": "i",
             "gender": "f",
-            "name": "gem1",
+            "name": "gem",
             "type__name": "Cisco | GEM | GEM2"
         },
         {
