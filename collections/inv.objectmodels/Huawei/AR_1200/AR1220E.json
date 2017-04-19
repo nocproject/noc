@@ -1,0 +1,165 @@
+{
+    "name": "Huawei | AR 1200 | AR1220E",
+    "$collection": "inv.objectmodels",
+    "uuid": "6ec807ea-209f-408b-80f7-617398430231",
+    "vendor__code": "HUAWEI",
+    "description": "Assembling Components,AR1220E,AR1220E,AR1220E,2GE COMBO,8GE LAN,2 USB,2 SIC(customized for Russia)'",
+    "cr_context": "CHASSIS",
+    "connections": [
+        {
+            "description": "Management Console",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "USB port 0",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "usb0",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "USB port 1",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "usb1",
+            "protocols": ["<USB10", "<USB11"],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "description": "GigabitEthernet 0/0/0 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/0",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/1 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/2 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/3 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/4 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/5 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/6 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/7 interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/0/8 interface sfp",
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/8_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "GigabitEthernet 0/0/9 interface sfp",
+            "direction": "i",
+            "gender": "f",
+            "name": "GigabitEthernet0/0/9_sfp",
+            "protocols": ["TransEth100M", "TransEth1G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "SAE slot",
+            "direction": "i",
+            "gender": "m",
+            "name": "sae220",
+            "type__name": "Huawei | AR 1200 | SAE220"
+        },
+        {
+            "description": "SIC slot 1",
+            "direction": "i",
+            "gender": "m",
+            "name": "sic1",
+            "type__name": "Huawei | AR 1200 | SIC"
+        },
+        {
+            "description": "SIC slot 2",
+            "direction": "i",
+            "gender": "m",
+            "name": "sic2",
+            "type__name": "Huawei | AR 1200 | SIC"
+        },
+        {
+            "description": "Power input",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "name": "Power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["AR1220E"]
+        },
+        "management": {
+            "managed": true
+        },
+        "dimensions": {
+            "depth": 220,
+            "height": 44.5,
+            "width": 390
+        },
+        "power": {
+            "power": 60.0
+        },
+        "rackmount": {
+            "units": 1.0
+        }
+    }
+}
