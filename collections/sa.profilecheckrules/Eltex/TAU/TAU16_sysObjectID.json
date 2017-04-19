@@ -1,0 +1,14 @@
+{
+    "name": "Eltex | TAU | TAU16 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "7e4142ee-5d57-4164-ab93-54002b9b0b0f",
+    "description": "",
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.35265.1.9.90.20",
+    "action": "match",
+    "profile": "Generic.Host"
+}
+
