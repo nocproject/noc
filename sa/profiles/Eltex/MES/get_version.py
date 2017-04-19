@@ -42,7 +42,8 @@ class Script(BaseScript):
         "41": "MES-3224F",
         "42": "MES-1024",
         "43": "MES-2124",
-        "52": "MES-1124"
+        "52": "MES-1124",
+        "54": "MES-5248"
     }
 
     def execute(self):
