@@ -40,6 +40,7 @@ dump CDP traffic
 import re
 import logging
 
+
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -49,19 +50,157 @@ from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 class Script(BaseScript):
     name = "Linux.RHEL.get_lldp_neighbors"
     interface = IGetLLDPNeighbors
-    """
-    $ ladvdc -C -v
-    Capability Codes:
-	r - Repeater, B - Bridge, H - Host, R - Router, S - Switch,
-	    W - WLAN Access Point, C - DOCSIS Device, T - Telephone, O - Other
-	    
-	    Device ID                      Local Intf    Proto   Hold-time    Capability    Port ID
-	    gsw2-73-sar                    enp2s0        LLDP     127          S             Gi1/0/4
-	    example.ru                    eth0          LLDP     115          HRS           vnet0
-    """
-    rx_ladvdc = re.compile(r"(?P<device_id>\S+)\s+(?P<local_interface>\S+)\s+LLDP\s+\d+\s+\S+\s+(?P<remote_interface>\S+)\s+\n", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     
-    """
+    
+    rx_lldpd = re.compile(r"Interface:\s+(?P<local_interface>\S+), via: LLDP\n"
+                          r"\s+Chassis:\s+\n"
+                          r"\s+ChassisID:\s+mac\s+(?P<remote_id>\S+)\n"
+                          r"\s+SysName:\s+(?P<remote_system_name>\S+)\n"
+                          r"\s+Port:\s+\n"
+                          r"\s+PortID:\s+(?P<remote_port_type>\S+)\s+(?P<remote_chassis_id>\S+)\n"
+                          r"\s+PortDescr:\s+(?P<remote_port>\S+)\n"
+                          , re.MULTILINE | re.DOTALL | re.IGNORECASE)
+    
+    def execute(self):
+        """
+        https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/
+        """
+        # Linux interface regex
+        check_ifcfg = re.compile(r"(bond\d+|eno\d+|ens\d+|enp\d+s\d+|en[0-9a-fA-F]{8}|eth\d+|vnet\d+|vif\d+)",
+                                 re.MULTILINE | re.DOTALL | re.IGNORECASE)
+
+        device_id = self.scripts.get_fqdn()
+        
+        # Get neighbors
+        neighbors = []
+        remotehost = {}
+
+        # try ladvdc
+        map = {"INTERFACE": "local_interface",
+               "HOSTNAME": "remote_chassis_id",
+               "PORTNAME": "remote_port",
+               "CAPABILITIES": "remote_capabilities"
+               }
+
+
+        # try ladvdc
+        id_last = 999
+        v = self.cli("ladvdc -b -C")
+        #print "Status: ", v
+        
+        if "INTERFACE" in v:
+            for l in v.splitlines():
+                name, value = l.split('=')
+                #print name, value 
+                id = int(name.split('_')[-1])
+                #print id
+
+                name2 = ''.join(name.split('_')[:-1])
+                #print name2
+                if name2 not in map:
+                    continue
+                
+                print name2
+                if id != id_last and map[name2] == 'local_interface':
+                    neighbors += [{map[name2]: value.strip("'") , 'neighbors': [remotehost] }]
+                else:
+                    # chech capabilites
+                    if map[name2] == 'remote_capabilities':
+                        remotehost.update({map[name2]:  '30' })
+                    elif map[name2] == 'remote_port':
+                        # try convert to Cisco format
+                        remotehost.update({'remote_port_subtype': 5})
+                        remotehost.update({map[name2]:  value.strip("'") })
+                    else:
+                        remotehost.update({map[name2]:  value.strip("'") })
+                  
+                id_last = id
+            
+            
+            return neighbors
+
+ 
+
+        ##############
+        # try lldpd
+        
+        r = []
+        v = self.cli("lldpcli show neighbors summary")
+        if "Permission denied" in v:
+            self.logger.info("Add <NOCuser> to _lldpd group. Like that ' # usermod -G _lldpd -a <NOCuser> . And restart lldpd daemon' ")
+            return r
+
+        else:
+
+            for match in self.rx_lldpd.finditer(self.cli("lldpcli show neighbors summary")):
+                if re.match(check_ifcfg, match.group("remote_port")):
+                    remote_if = match.group("remote_port")
+                else:
+                    remote_if = self.profile.convert_interface_name_cisco(match.group("remote_port"))
+                
+                i = {"local_interface": match.group("local_interface"),
+                     "neighbors": []
+                     }
+                
+                print match.group("remote_port_type")
+                if match.group("remote_port_type") == 'ifname':
+                    rps = 5
+                    remote_port = remote_if
+
+                if match.group("remote_port_type") == 'mac':
+                    remote_port = match.group("remote_chassis_id")
+                    rps = 3
+                if match.group("remote_port_type") == 'local':
+                    remote_port = remote_if
+                    rps = 1
+                    
+
+
+
+
+                # print (match.group("remote_port"))
+                # see sa/profiles/HP/Comware/get_lldp_neighbors.py
+                n = {
+                    'remote_capabilities': 20,
+                    "remote_chassis_id": match.group("remote_id"),
+                    "remote_chassis_id_subtype": 4,
+                    #"remote_port": match.group("remote_chassis_id"),
+                    #"remote_port": match.group("remote_port"),
+                    "remote_port": remote_port,
+                    "remote_port_subtype": rps,
+                    "remote_system_name": match.group("remote_system_name"),
+                }
+                
+                i["neighbors"] += [n]
+                r += [i]
+
+            return r
+
+"""
+    # ladvdc -b -C
+    INTERFACE_0='eth1'
+    HOSTNAME_0='xxxxxx.san.ru'
+    PORTNAME_0='GigabitEthernet1/0/1'
+    PROTOCOL_0='CDP'
+    ADDR_INET4_0='10.11.22.22'
+    ADDR_INET6_0=''
+    ADDR_802_0=''
+    CAPABILITIES_0='S'
+    TTL_0='180'
+    HOLDTIME_0='160'
+    INTERFACE_1='eth0'
+    HOSTNAME_1='xxxxxx.san.ru'
+    PORTNAME_1='GigabitEthernet2/0/1'
+    PROTOCOL_1='CDP'
+    ADDR_INET4_1='10.11.22.22'
+    ADDR_INET6_1=''
+    ADDR_802_1=''
+    CAPABILITIES_1='S'
+    TTL_1='180'
+    HOLDTIME_1='160'
+
+    
+    
     $ lldpcli show neighbors summary
     -------------------------------------------------------------------------------
     LLDP neighbors:
@@ -75,25 +214,10 @@ class Script(BaseScript):
          PortDescr:    vnet11
     ------------------------------------------------------------------------------- 
     
-    """
-    
-    rx_lldpd = re.compile(r"Interface:\s+(?P<local_interface>\S+), via: LLDP\n"
-                          r"\s+Chassis:\s+\n"
-                          r"\s+ChassisID:\s+mac\s+(?P<remote_id>\S+)\n"
-                          r"\s+SysName:\s+(?P<remote_system_name>\S+)\n"
-                          r"\s+Port:\s+\n"
-                          r"\s+PortID:\s+mac\s+(?P<remote_chassis_id>\S+)\n"
-                          r"\s+PortDescr:\s+(?P<remote_port>\S+)\n"
-                          , re.MULTILINE | re.DOTALL | re.IGNORECASE)
-    
-    def execute(self):
-        """
-        https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/
-        """
-        # Linux interface regex
-        check_ifcfg = re.compile(r"(bond\d+|eno\d+|ens\d+|enp\d+s\d+|en[0-9a-fA-F]{8}|eth\d+|vnet\d+)",
-                                 re.MULTILINE | re.DOTALL | re.IGNORECASE)
+"""
 
+<<<<<<< local
+=======
         device_id = self.scripts.get_fqdn()
         # Get neighbors
         neighbors = []
@@ -148,3 +272,4 @@ class Script(BaseScript):
                 r += [i]
 
             return r
+>>>>>>> other
