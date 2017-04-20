@@ -8,7 +8,6 @@
 
 # Python modules
 import re
-import time
 from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
