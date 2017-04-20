@@ -26,7 +26,7 @@ class Profile(BaseProfile):
 
     rx_ver = re.compile(
         r"Product name: (?P<platform>\S+)\s*\n"
-        r"ROS\s+Version\s*(?P<version>\S+)\.\s*\(Compiled.+\)\s*\n"
+        r"(ROS|QOS)\s+Version\s*(?P<version>\S+)\.\s*\(Compiled.+\)\s*\n"
         r"(Support ipv6\s*:\s*\S+\s*\n)?"
         r"Bootstrap\s*Version\s*(?P<bootstrap>\S+)\s*\n"
         r"FPGA Version\s*\n"
