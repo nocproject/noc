@@ -113,23 +113,23 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "SAE slot",
+            "description": "WSIC slot",
             "direction": "i",
-            "gender": "m",
-            "name": "sae220",
-            "type__name": "Huawei | AR 1200 | SAE220"
+            "gender": "f",
+            "name": "wsic",
+            "type__name": "Huawei | AR 1200 | WSIC"
         },
         {
             "description": "SIC slot 1",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "sic1",
             "type__name": "Huawei | AR 1200 | SIC"
         },
         {
             "description": "SIC slot 2",
             "direction": "i",
-            "gender": "m",
+            "gender": "f",
             "name": "sic2",
             "type__name": "Huawei | AR 1200 | SIC"
         },

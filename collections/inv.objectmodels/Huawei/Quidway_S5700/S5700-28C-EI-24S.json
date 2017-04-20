@@ -22,9 +22,9 @@
         {
             "description": "FAN slot",
             "direction": "i",
-            "gender": "m",
-            "name": "FANCARD",
-            "type__name": "Huawei | Quidway S5700 | Fan"
+            "gender": "f",
+            "name": "fan",
+            "type__name": "Huawei | Quidway S5700 | FAN"
         },
         {
             "description": "Management Console",
@@ -46,15 +46,15 @@
             "description": "PSU slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "PWRCARD I",
-            "type__name": "Huawei | Quidway S5700 | PSU"
+            "name": "power1",
+            "type__name": "Huawei | Quidway S5700 | POWER"
         },
         {
             "description": "PSU slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "PWRCARD II",
-            "type__name": "Huawei | Quidway S5700 | PSU"
+            "name": "power2",
+            "type__name": "Huawei | Quidway S5700 | POWER"
         },
         {
             "description": "GigabitEthernet X/0/1 interface",
@@ -292,9 +292,6 @@
     "data": {
         "asset": {
             "part_no": ["ES5Z328CM0"]
-        },
-        "management": {
-            "managed": true
         },
         "management": {
             "managed": true

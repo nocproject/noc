@@ -5,22 +5,35 @@
     "description": "Huawei AR 1200 series connection rules",
     "context": [
         {
-            "reset_scopes": ["sae220"],
+            "reset_scopes": ["sic", "wsic"],
             "scope": "chassis",
             "type": "CHASSIS"
         },
         {
             "reset_scopes": [],
-            "scope": "sae220",
-            "type": "SAE220"
+            "scope": "sic",
+            "type": "sic"
+        },
+        {
+            "reset_scopes": [],
+            "scope": "wsic",
+            "type": "wsic"
         }
     ],
     "rules": [
         {
             "match_connection": "in",
-            "match_type": "SAE220",
+            "match_type": "SIC",
             "scope": "chassis",
-            "target_connection": "sae220",
+            "target_connection": "sic{N}",
+            "target_number": "",
+            "target_type": "CHASSIS"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "WSIC",
+            "scope": "chassis",
+            "target_connection": "wsic",
             "target_number": "",
             "target_type": "CHASSIS"
         },
@@ -35,10 +48,18 @@
         {
             "match_connection": "in",
             "match_type": "XCVR",
-            "scope": "sae220",
+            "scope": "sic",
             "target_connection": "Gi{N}_gbic",
             "target_number": "",
-            "target_type": "SAE220"
+            "target_type": "SIC"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "wsic",
+            "target_connection": "Gi{N}_gbic",
+            "target_number": "",
+            "target_type": "WSIC"
         }
     ]
 }
