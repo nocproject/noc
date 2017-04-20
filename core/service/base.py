@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Base service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -14,9 +14,9 @@ import logging
 import signal
 import uuid
 import random
-from collections import defaultdict
 import argparse
 import functools
+import socket
 ## Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -40,6 +40,7 @@ from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
 from .ctl import CtlAPI
 from noc.core.perf import metrics, apply_metrics
+from noc.core.dcs.loader import get_dcs
 
 
 class Service(object):
@@ -53,9 +54,16 @@ class Service(object):
     # Format string to set process name
     # config variables can be expanded as %(name)s
     process_name = "noc-%(name).10s"
+    # Leader lock name
+    # Only one active instace per leader lock can be active
+    # at given moment
+    # Config variables can be expanded as %(varname)s
+    leader_lock_name = None
+
     # Leader group name
     # Only one service in leader group can be running at a time
     # Config variables can be expanded as %(varname)s
+    # @todo: Deprecated, must be removed
     leader_group_name = None
     # Pooled service are used to distribute load between services.
     # Pool name set in NOC_POOL parameter or --pool option.
@@ -86,6 +94,9 @@ class Service(object):
 
     NSQ_PUB_RETRY_DELAY = 0.1
 
+    class RegistrationError(Exception):
+        pass
+
     def __init__(self):
         sys.excepthook = excepthook
         # Monkeypatch error reporting
@@ -103,6 +114,7 @@ class Service(object):
         self._metrics = []
         self.metrics_lock = threading.Lock()
         self.metrics_callback = None
+        self.dcs = None
 
     def create_parser(self):
         """
@@ -172,6 +184,13 @@ class Service(object):
             dest="config",
             default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
             help="Configuration path"
+        )
+        parser.add_argument(
+            "--dcs",
+            action="store",
+            dest="dcs",
+            default=os.environ.get("NOC_DCS", "consul://consul/noc"),
+            help="Distributed Coordinated Storage URL"
         )
         if self.pooled:
             parser.add_argument(
@@ -298,6 +317,9 @@ class Service(object):
                 self.logger.warn("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.instance()
+            # Initialize DCS
+            self.dcs = get_dcs(cmd_options["dcs"])
+            # Activate service
             self.logger.warn("Activating service")
             self.activate()
             self.logger.warn("Starting IOLoop")
@@ -306,6 +328,8 @@ class Service(object):
             self.logger.warn("Interrupted by Ctrl+C")
         except Exception:
             error_report()
+        except self.RegistrationError:
+            self.logger.info("Registration failed")
         finally:
             self.deactivate()
         self.logger.warn("Service %s has been terminated", self.name)
@@ -336,6 +360,10 @@ class Service(object):
         Returns an (address, port) for HTTP service listener
         """
         addr, port = self.config.listen.split(":")
+        if addr == "auto":
+            addr = os.environ.get("HOSTNAME", "auto")
+            self.logger.info("Autodetecting address: auto -> %s", addr)
+        addr = socket.gethostbyname(addr)
         port = int(port) + self.config.instance
         return addr, port
 
@@ -399,15 +427,34 @@ class Service(object):
         http_server.listen(port, addr)
         if self.require_nsq_writer:
             self.get_nsq_writer()
-        self.ioloop.add_callback(self.on_activate)
+        self.ioloop.add_callback(self.on_register)
 
     @tornado.gen.coroutine
     def deactivate(self):
         self.logger.info("Deactivating")
         yield self.on_deactivate()
+        # Release registration
+        if self.dcs:
+            yield self.dcs.deregister()
+            self.dcs = None
         # Finally stop ioloop
         self.logger.info("Stopping IOLoop")
         self.ioloop.stop()
+
+    @tornado.gen.coroutine
+    def on_register(self):
+        addr, port = self.get_service_address()
+        r = yield self.dcs.register(
+            self.name, addr, port,
+            pool=self.config.pool or None,
+            lock=self.get_leader_lock_name()
+        )
+        if r:
+            # Finally call on_activate
+            yield self.on_activate()
+            self.logger.info("Service is active")
+        else:
+            raise self.RegistrationError()
 
     @tornado.gen.coroutine
     def on_activate(self):
@@ -635,3 +682,9 @@ class Service(object):
             self.perf_metrics["http_requests"] += 1
             self.perf_metrics["http_requests_%s" % method.lower()] += 1
             self.perf_metrics["http_response_%s" % status] += 1
+
+    def get_leader_lock_name(self):
+        if self.leader_lock_name:
+            return self.leader_lock_name % self.config
+        else:
+            return None
