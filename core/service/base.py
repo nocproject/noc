@@ -326,10 +326,10 @@ class Service(object):
             self.ioloop.start()
         except KeyboardInterrupt:
             self.logger.warn("Interrupted by Ctrl+C")
-        except Exception:
-            error_report()
         except self.RegistrationError:
             self.logger.info("Registration failed")
+        except Exception:
+            error_report()
         finally:
             self.deactivate()
         self.logger.warn("Service %s has been terminated", self.name)
