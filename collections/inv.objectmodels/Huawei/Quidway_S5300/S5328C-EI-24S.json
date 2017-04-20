@@ -22,9 +22,9 @@
         {
             "description": "FAN slot",
             "direction": "i",
-            "gender": "m",
-            "name": "FANCARD",
-            "type__name": "Huawei | Quidway S5300 | Fan"
+            "gender": "f",
+            "name": "fan",
+            "type__name": "Huawei | Quidway S5300 | FAN"
         },
         {
             "description": "Management Console",

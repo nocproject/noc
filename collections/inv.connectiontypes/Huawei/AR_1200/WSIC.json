@@ -1,8 +1,8 @@
 {
-    "name": "Huawei | AR 1200 | SAE220",
+    "name": "Huawei | AR 1200 | WSIC",
     "$collection": "inv.connectiontypes",
     "uuid": "dcf48293-5794-4a76-8912-0922312513b6",
-    "description": "Huawei AR 1200 SAE220 module",
+    "description": "Huawei AR 1200 WSIC slot",
     "c_group": [],
     "genders": "mf"
 }

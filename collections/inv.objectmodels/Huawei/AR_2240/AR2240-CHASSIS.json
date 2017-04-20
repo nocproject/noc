@@ -12,83 +12,83 @@
             "direction": "i",
             "gender": "f",
             "name": "SRU40",
-            "type__name": "Huawei | AR 2240 | SRU40"
+            "type__name": "Huawei | AR 2240 | SRU"
         },
         {
             "description": "SIC slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "SIC 1",
+            "name": "sic1",
             "type__name": "Huawei | AR 2240 | SIC"
         },
         {
             "description": "SIC slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "SIC 2",
+            "name": "sic2",
             "type__name": "Huawei | AR 2240 | SIC"
         },
         {
             "description": "SIC slot #3",
             "direction": "i",
             "gender": "f",
-            "name": "SIC 3",
+            "name": "sic3",
             "type__name": "Huawei | AR 2240 | SIC"
         },
         {
             "description": "SIC slot #4",
             "direction": "i",
             "gender": "f",
-            "name": "SIC 4",
+            "name": "sic4",
             "type__name": "Huawei | AR 2240 | SIC"
         },
         {
             "description": "WSIC slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "WSIC 1",
+            "name": "wsic1",
             "type__name": "Huawei | AR 2240 | WSIC"
         },
         {
             "description": "WSIC slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "WSIC 2",
+            "name": "wsic2",
             "type__name": "Huawei | AR 2240 | WSIC"
         },
         {
-            "description": "SAE550 slot #1",
+            "description": "XSIC slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "SAE550 1",
-            "type__name": "Huawei | AR 2240 | SAE550"
+            "name": "xsic1",
+            "type__name": "Huawei | AR 2240 | XSIC"
         },
         {
-            "description": "SAE550 slot #2",
+            "description": "XSIC slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "SAE550 2",
-            "type__name": "Huawei | AR 2240 | SAE550"
+            "name": "xsic2",
+            "type__name": "Huawei | AR 2240 | XSIC"
         },
         {
             "description": "PSU slot #1",
             "direction": "i",
             "gender": "f",
-            "name": "PWRCARD I",
-            "type__name": "Huawei | AR 2240 | PAC-350WB-L"
+            "name": "power1",
+            "type__name": "Huawei | AR 2240 | POWER"
         },
         {
             "description": "PSU slot #2",
             "direction": "i",
             "gender": "f",
-            "name": "PWRCARD II",
-            "type__name": "Huawei | AR 2240 | PWR350A"
+            "name": "power2",
+            "type__name": "Huawei | AR 2240 | POWER"
         },
         {
             "description": "FAN slot",
             "direction": "i",
             "gender": "f",
-            "name": "FANCARD",
+            "name": "fan",
             "type__name": "Huawei | AR 2240 | FAN"
         }
     ],

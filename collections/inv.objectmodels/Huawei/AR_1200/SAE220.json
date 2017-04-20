@@ -4,8 +4,15 @@
     "uuid": "fde60cae-5718-48d0-960b-359452d8e45f",
     "vendor__code": "HUAWEI",
     "description": "Industrial Computer,Celeron 847E,DDR3 SO-DIMM,2.5inch 1T enterprise HDD,CFAST 4G",
-    "cr_context": "SAE220",
+    "cr_context": "WSIC",
     "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Huawei | AR 2240 | WSIC"
+        },
         {
             "description": "Management Console",
             "direction": "s",

@@ -8,9 +8,9 @@
         {
             "description": "Fan Slot",
             "direction": "o",
-            "gender": "f",
+            "gender": "m",
             "name": "in",
-            "type__name": "Huawei | Quidway S5700 | Fan"
+            "type__name": "Huawei | Quidway S5700 | FAN"
         }
     ],
     "data": {
