@@ -18,6 +18,7 @@ from noc.core.scheduler.scheduler import Scheduler
 class SchedulerService(Service):
     name = "scheduler"
     leader_group_name = "scheduler"
+    leader_lock_name = "scheduler"
 
     def __init__(self):
         super(SchedulerService, self).__init__()
