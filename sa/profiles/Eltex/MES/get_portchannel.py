@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Eltex.MES.get_portchannel
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
+## Copyright (C) 2007-2013 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -85,18 +85,6 @@ class Script(BaseScript):
                                 memb += [mas[0] + '/' + mas[1] + '/' + str(i)]
                         else:
                             memb += [iface]
-                lacp = self.cli("show lacp Port-Channel")
-                match_ = self.rx_lacp.search(lacp)
-                if match_:
-                    l_type = "L"
-                else:
-                    l_type = "S"
-                r += [{
-                    "interface": match.group("port").lower(),
-                    #                "interface": match.group("port"),
-                    "type": l_type,
-                    "members": memb,
-                }]
         else:
             cmd = self.cli("show interfaces port-channel")
             for match in self.rx_lag.finditer(cmd):
@@ -121,17 +109,17 @@ class Script(BaseScript):
                                 memb += [mas[0] + '/' + mas[1] + '/' + str(i)]
                         else:
                             memb += [iface]
-                lacp = self.cli("show lacp Port-Channel")
-                match_ = self.rx_lacp.search(lacp)
-                if match_:
-                    l_type = "L"
-                else:
-                    l_type = "S"
-                r += [{
-                    "interface": match.group("port").lower(),
-                    #                "interface": match.group("port"),
-                    "type": l_type,
-                    "members": memb,
-                }]
+        lacp = self.cli("show lacp Port-Channel")
+        match_ = self.rx_lacp.search(lacp)
+        if match_:
+            l_type = "L"
+        else:
+            l_type = "S"
+        r += [{
+            "interface": match.group("port").lower(),
+            #                "interface": match.group("port"),
+            "type": l_type,
+            "members": memb,
+        }]
 
         return r

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+import time
 from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -39,7 +40,7 @@ class Script(BaseScript):
         r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n^\s+Interface index is (?P<ifindex>\d+)\s*\n^\s+Hardware is\s+.+?, MAC address is (?P<mac>\S+)\s*\n(^\s+Description:(?P<descr>.*?)\n)?^\s+Interface MTU is (?P<mtu>\d+)\s*\n(^\s+Link aggregation type is (?P<link_type>\S+)\s*\n)?(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
         re.MULTILINE | re.DOTALL)
     rx_sh_int_des = re.compile(
-        r"^(?P<ifname>\S+)\s+\S+\s+(?:General|Access|Trunk|Customer|Promiscuous|Host)\s+\S+\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s*\n(?:^\s+Description:(?P<descr>.*?)\n)?",
+        r"^(?P<ifname>\S+)\s+\S+\s+(?:General|Access|Trunk|Customer|Promiscuous|Host)\s+\S+\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s*\n(?:^\s+Description:(?P<descr>.*\n?))?",
         re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
     rx_lldp = re.compile(r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
@@ -48,7 +49,7 @@ class Script(BaseScript):
     rx_gvrp = re.compile(r"^(?P<ifname>\S+)\s+(?:Enabled\s+)Normal\s+", re.MULTILINE)
 
     rx_stp_en = re.compile(r"Spanning tree enabled mode?")
-    rx_stp = re.compile(r"(?P<ifname>\S+)\s+(?:enabled)\s+\S+\s+\d+\s+\S+\s+\S+\s+(?:Yes|No)", re.MULTILINE)
+    rx_stp = re.compile(r"(?P<ifname>\S+)\s+(?:enabled\s+)\s+\S+\s+\d+\s+\S+\s+\S+\s+(?:Yes|No)", re.MULTILINE)
 
     rx_vlan = re.compile(r"(?P<vlan>\S+)\s+(?P<vdesc>\S+)\s+(?P<vtype>Tagged|Untagged)\s+", re.MULTILINE)
 
@@ -61,34 +62,29 @@ class Script(BaseScript):
             t = pc["type"] == "L"
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
-
-        # Get LLDP interfaces
-        lldp = []
-        c = self.cli("show lldp configuration", ignore_errors=True)
-        if self.rx_lldp_en.search(c):
-            lldp = self.rx_lldp.findall(c)
-
-        # Get GVRP interfaces
-        gvrp = []
-        c = self.cli("show gvrp configuration", ignore_errors=True)
-        if self.rx_gvrp_en.search(c):
-            gvrp = self.rx_gvrp.findall(c)
-
         # Get STP interfaces
         stp = []
-        c = self.cli("show spanning-tree", ignore_errors=True)
-        if self.rx_stp_en.search(c):
-            stp = self.rx_stp.findall(c)
+        s = self.cli("show spanning-tree", ignore_errors=True)
+        if self.rx_stp_en.search(s):
+            stp = self.rx_stp.findall(s)
+            # Get LLDP interfaces
+        lldp = []
+        l = self.cli("show lldp configuration", ignore_errors=True)
+        if self.rx_lldp_en.search(l):
+            lldp = self.rx_lldp.findall(l)
+        # Get GVRP interfaces
+        gvrp = []
+        g = self.cli("show gvrp configuration", ignore_errors=True)
+        if self.rx_gvrp_en.search(g):
+            gvrp = self.rx_gvrp.findall(g)
 
-        i = []
-        c = self.cli("show interfaces description detailed")
-        i = self.rx_sh_int_des.findall(c)
-
+        # Format interfaces
         interfaces = []
         mac = []
         ifindex = []
         mtu = []
-        for res in i:
+        c = self.cli("show interfaces description detailed")
+        for res in self.rx_sh_int_des.findall(c):
             name = res[0].strip()
             if self.match_version(version__regex="[12]\.[15]\.4[4-9]"):
                 v = self.cli("show interface %s" % name)
