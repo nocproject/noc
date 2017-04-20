@@ -77,7 +77,7 @@ class Script(BaseScript):
         part_no = match_body.group("board_type")
         desc = match_body.group("desc")
         manufactured = match_body.group("mnf_date")
-        #todo create dictonary for normalizetion types
+        #todo create dictonary for normalize types
         if part_no == "PAC-350WB-L":
             item_type = "POWER"
         if part_no == "AR01PSAC35":
