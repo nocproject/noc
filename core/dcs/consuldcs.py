@@ -121,7 +121,9 @@ class ConsulDCS(DCSBase):
     def register(self, name, address, port, pool=None, lock=None):
         self.name = name
         self.svc_check_url = "http://%s:%s/health/" % (address, port)
-        svc_id = str(uuid.uuid4())
+        if lock:
+            yield self.acquire_lock(lock)
+        svc_id = self.session or str(uuid.uuid4())
         tags = [svc_id]
         if pool:
             tags += [pool]
@@ -131,8 +133,6 @@ class ConsulDCS(DCSBase):
             "%ds" % self.check_timeout
         )
         checks["DeregisterCriticalServiceAfter"] = self.release_after
-        if lock:
-            yield self.acquire_lock(lock)
         self.logger.info("Registering service %s: %s:%s (id=%s, pool=%s)",
                          name, address, port, svc_id, pool)
         r = yield self.consul.agent.service.register(
