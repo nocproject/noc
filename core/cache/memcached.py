@@ -28,12 +28,7 @@ class MemcachedCache(BaseCache):
             config.memcached_hosts,
             binary=True,
             behaviors={
-                "tcp_nodelay": True,
-                # Failover handling
-                "ketama": True,
-                "remove_failed": 1,
-                "retry_timeout": 1,
-                "dead_timeout": 60
+                "tcp_nodelay": True
             }
         )
         logger.debug(
