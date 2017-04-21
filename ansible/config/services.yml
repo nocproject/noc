@@ -162,6 +162,10 @@ services:
     description: Virtual ip sync
     level: global
 
+  consul:
+    description: Cluster kv
+    level: global
+
 config:
   noc:
     installation_name:
@@ -554,4 +558,13 @@ config:
 
     virtual_ip:
       label: Nginx virtual IP
+      type: str
+
+  consul:
+    token:
+      label: consul token
+      type: str
+
+    replication_token:
+      label: consul replication token
       type: str
