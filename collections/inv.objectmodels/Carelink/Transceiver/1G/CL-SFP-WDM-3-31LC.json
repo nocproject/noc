@@ -1,9 +1,9 @@
 {
-    "name": "Opticin | Transceiver | 1G | SFP-BiDi3.03",
+    "name": "Carelink | Transceiver | 1G | CL-SFP-WDM-3-31LC",
     "$collection": "inv.objectmodels",
-    "uuid": "0aca59d2-8e6a-4007-848b-d704174c9d65",
-    "vendor__code": "OPTICIN",
-    "description": "Opticin SFP WDM transceiver, 1310 tx, 1550 rx, LC, sm, 3km without dom",
+    "uuid": "36f38458-cbec-49cf-8262-274fe603173b",
+    "vendor__code": "CARELINK",
+    "description": "CareLink SFP WDM transceiver (1310 tx, 1550 rx)",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -15,7 +15,7 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "RxTx LC Port",
+            "description": "RxTx SC Port",
             "direction": "s",
             "gender": "f",
             "name": "rxtx",
@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["SFP-BiDi3.03"]
+            "part_no": ["CL-SFP-WDM-3-31-"]
         }
     }
 }

@@ -1,9 +1,9 @@
 {
-    "name": "Nateks | Transceiver | 1G | SFP-GE-SM-40KM",
+    "name": "Opticin | Transceiver | 1G | SFP-WDM3.40",
     "$collection": "inv.objectmodels",
-    "uuid": "e415ea61-bbbb-47bd-b29a-b8d3fb88b9c6",
-    "vendor__code": "NATEKS",
-    "description": "Nateks SFP WDM 40km transceiver 1550",
+    "uuid": "b78d551d-7a31-4fbd-a31a-102406a29c05",
+    "vendor__code": "OPTICIN",
+    "description": "Opticin SFP WDM transceiver, 1310 tx, 1550 rx, SC, sm, 40km",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -15,17 +15,17 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "RxTx LC SFP",
+            "description": "RxTx SC Port",
             "direction": "s",
             "gender": "f",
             "name": "rxtx",
-            "protocols": [">1000BASEZX-1550", "<1000BASEZX-1310"],
-            "type__name": "Optical | LC"
+            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "type__name": "Optical | SC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["GESM40KMBIDI1513"]
+            "part_no": ["SFP-WDM3.40"]
         }
     }
 }

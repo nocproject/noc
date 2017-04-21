@@ -1,0 +1,39 @@
+{
+    "name": "Juniper | Transceiver | 10G | EX-SFP-10GE-DAC-1M",
+    "$collection": "inv.objectmodels",
+    "uuid": "e6c63420-63f3-4af9-a320-ba980a76228c",
+    "vendor__code": "JUNIPER",
+    "description": "Juniper SFP+ 10 Gigabit Ethernet Direct Attach Copper (twinax copper cable) 1m",
+    "cr_context": "XCVR",
+    "connections": [
+        {
+            "cross": "in2",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in1",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "cross": "in1",
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in2",
+            "protocols": ["TransEth10G"],
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "part_no": ["740-030076"]
+        },
+        "twinax": {
+            "alias": "in",
+            "connection1": "in1",
+            "connection2": "in2",
+            "twinax": true
+        }
+    }
+}

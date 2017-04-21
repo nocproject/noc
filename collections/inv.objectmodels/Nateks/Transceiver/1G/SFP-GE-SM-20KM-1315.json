@@ -1,9 +1,9 @@
 {
-    "name": "Opticin | Transceiver | 1G | SFP-BiDi3.03",
+    "name": "Nateks | Transceiver | 1G | SFP-GE-SM-20KM-1315",
     "$collection": "inv.objectmodels",
-    "uuid": "0aca59d2-8e6a-4007-848b-d704174c9d65",
-    "vendor__code": "OPTICIN",
-    "description": "Opticin SFP WDM transceiver, 1310 tx, 1550 rx, LC, sm, 3km without dom",
+    "uuid": "98f3498a-5f00-49ce-ac1d-b2b7b168e2e0",
+    "vendor__code": "NATEKS",
+    "description": "Nateks SFP WDM 20km transceiver 1310",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -15,7 +15,7 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "RxTx LC Port",
+            "description": "RxTx LC SFP",
             "direction": "s",
             "gender": "f",
             "name": "rxtx",
@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["SFP-BiDi3.03"]
+            "part_no": ["GESM20KMBD1315LC", "GESM20KMBIDI1315"]
         }
     }
 }

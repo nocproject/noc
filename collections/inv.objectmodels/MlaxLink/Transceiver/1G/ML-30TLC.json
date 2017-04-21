@@ -1,9 +1,9 @@
 {
-    "name": "Opticin | Transceiver | 1G | SFP-BiDi3.03",
+    "name": "MlaxLink | Transceiver | 1G | ML-30TLC",
     "$collection": "inv.objectmodels",
-    "uuid": "0aca59d2-8e6a-4007-848b-d704174c9d65",
-    "vendor__code": "OPTICIN",
-    "description": "Opticin SFP WDM transceiver, 1310 tx, 1550 rx, LC, sm, 3km without dom",
+    "uuid": "e325dfa8-e187-4f3d-9c82-c34fe2d0622b",
+    "vendor__code": "MLAXLINK",
+    "description": "MlaxLink SFP WDM transceiver, 1310 tx, 1550 rx, LC, 20km without dom",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["SFP-BiDi3.03"]
+            "part_no": ["ML-30TLC"]
         }
     }
 }
