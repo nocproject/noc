@@ -12,7 +12,6 @@
 
     - role: consul
       become: yes
-      when: consul_env
       tags:
         - consul
 
