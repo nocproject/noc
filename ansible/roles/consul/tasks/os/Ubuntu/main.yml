@@ -1,0 +1,8 @@
+---
+- name: systemd script
+  template:
+    src: consul_systemd.service.j2
+    dest: /lib/systemd/system/consul.service
+    owner: root
+    group: root
+    mode: 0644
