@@ -22,7 +22,7 @@ telegraf_influxdb_enabled: "{{lookup('env','INFLUXDB_ENABLED') | default(True, T
 
 tower_ip: 127.0.0.1
 tower_version: "{{lookup('env','TOWER_VERSION')}}"
-tower_minimum_version: "0.1a64"
+tower_minimum_version: "0.1a66"
 http_proxy:  "" # just default. please set actual variable via tower on DC tab
 
 grafana_group: grafana
