@@ -24,7 +24,7 @@ consul_user: "consul"
 consul_group: "bin"
 
 ### Consul settings
-consul_datacenter: "{{noc_env}}"
+consul_datacenter: "{{noc_env | lower}}"
 consul_domain: "consul"
 consul_log_level: "INFO"
 consul_syslog_enable: "True"
