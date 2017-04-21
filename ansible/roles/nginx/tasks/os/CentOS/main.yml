@@ -28,7 +28,7 @@
 - name: Install Nginx
   yum:
     name: nginx
-    state: present
+    state: latest
     update_cache: yes
   environment:
     https_proxy: "{{http_proxy}}"
