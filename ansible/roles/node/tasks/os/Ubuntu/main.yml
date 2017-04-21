@@ -12,7 +12,6 @@
     - python-dev
     - python-virtualenv
     - mercurial
-    - sudo
     - quilt
     - gcc
     - libpq-dev
@@ -21,8 +20,6 @@
     - libffi-dev
     - libmemcached11
     - libmemcached-dev
-    - ca-certificates
-    - unzip
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"

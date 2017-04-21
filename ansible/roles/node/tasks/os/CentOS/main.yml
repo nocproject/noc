@@ -1,18 +1,4 @@
 ---
-- name: Set proxy for yum
-  lineinfile:
-    dest: /etc/yum.conf
-    regexp: "^proxy=.*"
-    line: "proxy=http://{{ http_proxy }}"
-  when: "http_proxy is defined and http_proxy"
-  tags:
-    - config
-
-- name: Disable selinux
-  selinux:
-    policy: targeted
-    state: permissive
-
 - name: Add EPEL Repo
   yum_repository:
     name: epel
@@ -64,7 +50,6 @@
    - libmemcached
    - libmemcached-devel
    - zlib-devel
-   - unzip
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
