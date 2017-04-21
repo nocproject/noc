@@ -10,7 +10,7 @@
   stat:
     path: "/tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
   register: consul_checksum
-  tags: installation
+  tags: requirements
 
 - name: Get Consul package checksum file
   get_url:
@@ -18,11 +18,13 @@
     dest: "/tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
   tags: installation
   when: consul_checksum.stat.exists == False
+  environment:
+    https_proxy: "{{http_proxy}}"
 
 - name: Get Consul package checksum
   shell: "grep {{ consul_pkg }} /tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
   register: consul_sha256
-  tags: installation
+  tags: requirements
 
 - name: Check Consul package file
   stat:
@@ -36,8 +38,10 @@
     dest: "/tmp/consul/{{ consul_pkg }}"
     checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
     timeout: 42
-  tags: installation
+  tags: requirements
   when: consul_package.stat.exists == False
+  environment:
+    https_proxy: "{{http_proxy}}"
 
 - name: Unarchive Consul and install binary
   unarchive:
