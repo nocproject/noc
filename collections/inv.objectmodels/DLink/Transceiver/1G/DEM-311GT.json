@@ -1,9 +1,9 @@
 {
-    "name": "Finisar | Transceiver | 1G | FTLF8519P2BCL",
+    "name": "DLink | Transceiver | 1G | DEM-311GT",
     "$collection": "inv.objectmodels",
-    "uuid": "a96c6815-1c75-401e-b5c7-3c25619a00f6",
-    "vendor__code": "FINISAR",
-    "description": "1000BASE-SX SFP Optical Transceiver\n",
+    "uuid": "39dda6cf-37e6-4f15-92c1-d8a3ffde4634",
+    "vendor__code": "DLINK",
+    "description": "DLink SFP SX transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -12,14 +12,14 @@
             "gender": "m",
             "name": "in",
             "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1GBASESX"],
+            "protocols": [">1000BASESX"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,13 +27,13 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1GBASESX"],
+            "protocols": ["<1000BASESX"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["FTLF8519P2BCL-CS", "FTLF8519P2BCL-C4"]
+            "part_no": ["DEM-311GT"]
         }
     }
 }

@@ -3,7 +3,7 @@
     "$collection": "inv.objectmodels",
     "uuid": "bba3f257-e75a-4138-9ac4-157a0eed8610",
     "vendor__code": "OPTICIN",
-    "description": "Opticin SFP WDM transceiver, 1310 tx, 1550 rx, LC, 20km",
+    "description": "Opticin SFP WDM transceiver, 1310 tx, 1550 rx, LC, sm, 20km without dom",
     "cr_context": "XCVR",
     "connections": [
         {

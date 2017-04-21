@@ -1,9 +1,9 @@
 {
-    "name": "Finisar | Transceiver | 1G | FTLF8519P2BCL",
+    "name": "Optostar | Transceiver | 1G | OP-MP413L1SN-20",
     "$collection": "inv.objectmodels",
-    "uuid": "a96c6815-1c75-401e-b5c7-3c25619a00f6",
-    "vendor__code": "FINISAR",
-    "description": "1000BASE-SX SFP Optical Transceiver\n",
+    "uuid": "3ddb01e4-fc20-470f-849f-dc53ae1984e9",
+    "vendor__code": "OPTOSTAR",
+    "description": "Optostar SFP LH transceiver",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -12,14 +12,14 @@
             "gender": "m",
             "name": "in",
             "protocols": ["TransEth1G"],
-            "type__name": "Transceiver | SFP | Cisco"
+            "type__name": "Transceiver | SFP"
         },
         {
             "description": "RX Port",
             "direction": "s",
             "gender": "f",
             "name": "rx",
-            "protocols": [">1GBASESX"],
+            "protocols": [">1000BASELX-1310"],
             "type__name": "Optical | LC"
         },
         {
@@ -27,13 +27,13 @@
             "direction": "s",
             "gender": "f",
             "name": "tx",
-            "protocols": ["<1GBASESX"],
+            "protocols": ["<1000BASELX-1310"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["FTLF8519P2BCL-CS", "FTLF8519P2BCL-C4"]
+            "part_no": ["OP-MP413L1SN-20C"]
         }
     }
 }

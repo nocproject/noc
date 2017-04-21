@@ -1,9 +1,9 @@
 {
-    "name": "Opticin | Transceiver | 1G | SFP-BiDi3.03",
+    "name": "Opticin | Transceiver | 1G | SFP-BiDi-DDM5.20",
     "$collection": "inv.objectmodels",
-    "uuid": "0aca59d2-8e6a-4007-848b-d704174c9d65",
+    "uuid": "9f6e2118-1b9c-4f6b-8e56-6ff2ad2cd39a",
     "vendor__code": "OPTICIN",
-    "description": "Opticin SFP WDM transceiver, 1310 tx, 1550 rx, LC, sm, 3km without dom",
+    "description": "Opticin SFP WDM transceiver, 1550 tx, 1310 rx, LC, sm, 20km with dom",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -19,13 +19,13 @@
             "direction": "s",
             "gender": "f",
             "name": "rxtx",
-            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "protocols": [">1000BASELX-1310", "<1000BASELX-1550"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["SFP-BiDi3.03"]
+            "part_no": ["SFP-BiDi-DDM5.20"]
         }
     }
 }

@@ -1,9 +1,9 @@
 {
-    "name": "Opticin | Transceiver | 1G | SFP-BiDi3.03",
+    "name": "Nateks | Transceiver | 1G | SFP-GE-SM-80KM-5751",
     "$collection": "inv.objectmodels",
-    "uuid": "0aca59d2-8e6a-4007-848b-d704174c9d65",
-    "vendor__code": "OPTICIN",
-    "description": "Opticin SFP WDM transceiver, 1310 tx, 1550 rx, LC, sm, 3km without dom",
+    "uuid": "6dd304b0-d67f-4bc8-b472-d8c960583453",
+    "vendor__code": "NATEKS",
+    "description": "Nateks SFP WDM 80km transceiver 1570",
     "cr_context": "XCVR",
     "connections": [
         {
@@ -15,17 +15,17 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "description": "RxTx LC Port",
+            "description": "RxTx LC SFP",
             "direction": "s",
             "gender": "f",
             "name": "rxtx",
-            "protocols": [">1000BASELX-1550", "<1000BASELX-1310"],
+            "protocols": [">1000BASEZX-1510", "<1000BASEZX-1570"],
             "type__name": "Optical | LC"
         }
     ],
     "data": {
         "asset": {
-            "part_no": ["SFP-BiDi3.03"]
+            "part_no": ["GESM80KMBIDI5751", "GE80KMBIDI57/51"]
         }
     }
 }
