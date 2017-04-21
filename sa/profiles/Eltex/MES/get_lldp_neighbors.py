@@ -21,6 +21,7 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
+    rx_mac2 = re.compile(r"^[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}$")
 
     CAPS_MAP = {
         "O": 1, "r": 2, "B": 4,
@@ -97,12 +98,17 @@ class Script(BaseScript):
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
                 remote_port_subtype = 3
+            elif self.rx_mac2.match(remote_port):
+                # Actually macAddress(3)
+                # Convert MAC2 to common form
+                remote_port = MACAddressParameter().clean(remote_port)
+                remote_port_subtype = 3
             elif is_ipv4(remote_port):
                 # Actually networkAddress(4)
                 remote_port_subtype = 4
             elif is_int(remote_port):
                 # Actually local(7)
-                remote_port_subtype = 5
+                remote_port_subtype = 7
 
             i = {
                 "local_interface": local_interface,
