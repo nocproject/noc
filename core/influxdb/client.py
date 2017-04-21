@@ -42,7 +42,7 @@ class InfluxDBClient(object):
         c.setopt(c.URL, url)
         c.setopt(c.WRITEDATA, buff)
         c.setopt(c.NOPROXY, "*")
-        c.setopt(c.TIMEOUT, 60)
+        c.setopt(c.TIMEOUT, 30)
         c.setopt(c.CONNECTTIMEOUT, 3)
         try:
             c.perform()
