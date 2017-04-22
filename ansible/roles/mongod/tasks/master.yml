@@ -27,6 +27,11 @@
   tags:
     - config
 
+- name: sleep while mongodb electing primary
+  pause:
+    seconds: 5
+  when: rs_status.rc != 0
+
 - name: Create admin user
   shell: "{{ mongo_path }} admin {{ noc_root }}/var/etc/mongo/admininit.js"
   when: rs_status.rc != 0
