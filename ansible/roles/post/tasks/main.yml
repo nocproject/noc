@@ -103,7 +103,7 @@
   register: ids
   changed_when: ids.status != 409
   failed_when: ids.status == 500
-  when: "{{ has_svc_influxdb | default(False) }}"
+  when: "has_svc_influxdb | default(False)"
   tags:
     - config
 
@@ -127,7 +127,7 @@
   register: gds
   changed_when: gds.status != 409
   failed_when: gds.status == 500
-  when: "{{ has_svc_grafanads | default(False) }}"
+  when: "has_svc_grafanads | default(False)"
   tags:
     - config
 

@@ -28,7 +28,7 @@
     src: mongod-arbiter.conf.j2
     dest: "{{ noc_root }}/var/etc/mongo/mongod-arbiter.conf"
   notify: restart mongod-arbiter
-  when: "{{ has_svc_mongod_arbiter | default(False) }}"
+  when: "has_svc_mongod_arbiter | default(False)"
   tags:
     - config
 
@@ -66,13 +66,13 @@
     group: "{{ mongo_user }}"
     mode: 0700
     state: directory
-  when: "{{ has_svc_mongod_arbiter | default(False) }}"
+  when: "has_svc_mongod_arbiter | default(False)"
 
 - name: Install MongoDB arbiter logrotated config
   template:
     src: "etc/logrotate.d/mongod-arbiter.conf.j2"
     dest: "/etc/logrotate.d/mongod-arbiter.conf"
-  when: "{{ has_svc_mongod_arbiter | default(False) }} and 'Linux' in ansible_system"
+  when: "has_svc_mongod_arbiter | default(False) and 'Linux' in ansible_system"
   tags:
     - config
 
@@ -88,10 +88,10 @@
     name: "{{ mongod_arbiter_system_service }}"
     enabled: yes
     state: started
-  when: "{{ has_svc_mongod_arbiter | default(False) }}"
+  when: "has_svc_mongod_arbiter | default(False)"
 
 - include: "master.yml"
-  when: "{{ has_svc_mongod_master  | default(False) }}"
+  when: "has_svc_mongod_master  | default(False)"
   tags:
     - rs_init
 

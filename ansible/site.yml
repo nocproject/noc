@@ -23,7 +23,7 @@
 
     - role: nsqd
       become: yes
-      when: "{{ has_svc_nsqd | default(False) or consul_env}}"
+      when: "has_svc_nsqd | default(False) or consul_env"
       tags:
         - nsq
         - nsqd
@@ -37,7 +37,6 @@
     - "vars/main.yml"
   roles:
     - role: consul-template
-      when: consul_env
       tags:
         - consul-template
         - external
@@ -51,7 +50,7 @@
   roles:
     - role: mongod
       become: yes
-      when: "{{ has_svc_mongod | default(False) or consul_env}}"
+      when: "has_svc_mongod | default(False) or consul_env"
       tags:
         - mongod
         - external
@@ -65,7 +64,7 @@
   roles:
     - role: postgres
       become: yes
-      when: "{{ has_svc_postgres | default(False) or consul_env}}"
+      when: "has_svc_postgres | default(False) or consul_env"
       tags:
         - postgres
         - external
@@ -79,7 +78,7 @@
   roles:
     - role: pgbouncer
       become: yes
-      when: "{{ has_svc_pgbouncer | default(False) or consul_env}}"
+      when: "has_svc_pgbouncer | default(False) or consul_env"
       tags:
         - pgbouncer
         - external
@@ -93,7 +92,7 @@
   roles:
     - role: influxdb
       become: yes
-      when: "{{ has_svc_influxdb | default(False) or consul_env}}"
+      when: "has_svc_influxdb | default(False) or consul_env"
       tags:
         - influxdb
         - external
@@ -107,7 +106,7 @@
   roles:
     - role: nginx
       become: yes
-      when: "{{ has_svc_nginx | default(False) or consul_env}}"
+      when: "has_svc_nginx | default(False) or consul_env"
       tags:
         - nginx
         - web
@@ -122,7 +121,7 @@
   roles:
     - role: grafana
       become: yes
-      when: "{{ has_svc_grafana | default(False) or consul_env}}"
+      when: "has_svc_grafana | default(False) or consul_env"
       tags:
         - grafana
         - external
@@ -136,7 +135,7 @@
   roles:
     - role: nsqlookupd
       become: yes
-      when: "{{ has_svc_nsqlookupd| default(False) or consul_env}}"
+      when: "has_svc_nsqlookupd| default(False) or consul_env"
       tags:
         - nsq
         - nsqlookupd
@@ -151,7 +150,7 @@
   roles:
     - role: memcached
       become: yes
-      when: "{{ has_svc_memcached | default(False) or consul_env}}"
+      when: "has_svc_memcached | default(False) or consul_env"
       tags:
         - memcached
         - external
@@ -165,7 +164,7 @@
   roles:
     - role: login
       become: yes
-      when: "{{ has_svc_login | default(False) or consul_env}}"
+      when: "has_svc_login | default(False) or consul_env"
       tags:
         - login
         - node
@@ -173,7 +172,7 @@
 
     - role: mrt
       become: yes
-      when: "{{ has_svc_mrt | default(False) or consul_env}}"
+      when: "has_svc_mrt | default(False) or consul_env"
       tags:
         - mrt
         - node
@@ -181,7 +180,7 @@
 
     - role: escalator
       become: yes
-      when: "{{ has_svc_escalator | default(False) or consul_env}}"
+      when: "has_svc_escalator | default(False) or consul_env"
       tags:
         - escalator
         - node
@@ -189,7 +188,7 @@
 
     - role: web
       become: yes
-      when: "{{ has_svc_web | default(False) or consul_env}}"
+      when: "has_svc_web | default(False) or consul_env"
       tags:
         - node
         - web
@@ -197,7 +196,7 @@
 
     - role: card
       become: yes
-      when: "{{ has_svc_card | default(False) or consul_env}}"
+      when: "has_svc_card | default(False) or consul_env"
       tags:
         - node
         - card
@@ -205,7 +204,7 @@
 
     - role: grafanads
       become: yes
-      when: "{{ has_svc_grafanads | default(False) or consul_env}}"
+      when: "has_svc_grafanads | default(False) or consul_env"
       tags:
         - node
         - grafanads
@@ -213,7 +212,7 @@
 
     - role: mailsender
       become: yes
-      when: "{{ has_svc_mailsender | default(False) or consul_env}}"
+      when: "has_svc_mailsender | default(False) or consul_env"
       tags:
         - mailsender
         - node
@@ -221,7 +220,7 @@
 
     - role: tgsender
       become: yes
-      when: "{{ has_svc_tgsender | default(False) or consul_env}}"
+      when: "has_svc_tgsender | default(False) or consul_env"
       tags:
         - tgsender
         - node
@@ -229,7 +228,7 @@
 
     - role: omap
       become: yes
-      when: "{{ has_svc_omap | default(False) or consul_env}}"
+      when: "has_svc_omap | default(False) or consul_env"
       tags:
         - omap
         - node
@@ -237,7 +236,7 @@
 
     - role: pmwriter
       become: yes
-      when: "{{ has_svc_pmwriter | default(False) or consul_env}}"
+      when: "has_svc_pmwriter | default(False) or consul_env"
       tags:
         - pmwriter
         - node
@@ -245,7 +244,7 @@
 
     - role: activator
       become: yes
-      when: "{{ has_svc_activator | default(False) or consul_env}}"
+      when: "has_svc_activator | default(False) or consul_env"
       tags:
         - activator
         - node
@@ -253,7 +252,7 @@
 
     - role: classifier
       become: yes
-      when: "{{ has_svc_classifier | default(False) or consul_env}}"
+      when: "has_svc_classifier | default(False) or consul_env"
       tags:
         - classifier
         - node
@@ -261,7 +260,7 @@
 
     - role: correlator
       become: yes
-      when: "{{ has_svc_correlator | default(False) or consul_env}}"
+      when: "has_svc_correlator | default(False) or consul_env"
       tags:
         - correlator
         - node
@@ -269,7 +268,7 @@
 
     - role: syslogcollector
       become: yes
-      when: "{{ has_svc_syslogcollector | default(False) or consul_env}}"
+      when: "has_svc_syslogcollector | default(False) or consul_env"
       tags:
         - syslogcollector
         - node
@@ -277,7 +276,7 @@
 
     - role: trapcollector
       become: yes
-      when: "{{ has_svc_trapcollector | default(False) or consul_env}}"
+      when: "has_svc_trapcollector | default(False) or consul_env"
       tags:
         - trapcollector
         - node
@@ -285,7 +284,7 @@
 
     - role: ping
       become: yes
-      when: "{{ has_svc_ping | default(False) or consul_env}}"
+      when: "has_svc_ping | default(False) or consul_env"
       tags:
         - ping
         - node
@@ -293,7 +292,7 @@
 
     - role: sae
       become: yes
-      when: "{{ has_svc_sae | default(False) or consul_env}}"
+      when: "has_svc_sae | default(False) or consul_env"
       tags:
         - sae
         - node
@@ -301,7 +300,7 @@
 
     - role: scheduler
       become: yes
-      when: "{{ has_svc_scheduler | default(False) or consul_env}}"
+      when: "has_svc_scheduler | default(False) or consul_env"
       tags:
         - scheduler
         - node
@@ -309,7 +308,7 @@
 
     - role: discovery
       become: yes
-      when: "{{ has_svc_discovery | default(False) or consul_env}}"
+      when: "has_svc_discovery | default(False) or consul_env"
       tags:
         - discovery
         - node
@@ -317,7 +316,7 @@
 
     - role: bi
       become: yes
-      when: "{{ has_svc_bi | default(False) or consul_env}}"
+      when: "has_svc_bi | default(False) or consul_env"
       tags:
         - bi
         - node
@@ -332,13 +331,13 @@
   roles:
     - role: dev
       become: yes
-      when: "{{ has_svc_dev | default(False) }} or {{ has_svc_notebook | default(False)}} or consul_env"
+      when: "has_svc_dev | default(False) or has_svc_notebook | default(False) or consul_env"
       tags:
         - dev
 
     - role: notebook
       become: yes
-      when: "{{ has_svc_notebook | default(False) or consul_env}}"
+      when: "has_svc_notebook | default(False) or consul_env"
       tags:
         - notebook
         - external
@@ -346,7 +345,7 @@
 
     - role: nsqadmin
       become: yes
-      when: "{{ has_svc_nsqadmin | default(False) or consul_env}}"
+      when: "has_svc_nsqadmin | default(False) or consul_env"
       tags:
         - nsq
         - nsqadmin
