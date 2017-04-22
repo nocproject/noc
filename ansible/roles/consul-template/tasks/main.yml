@@ -16,6 +16,7 @@
   get_url:
     url: "{{ consul_template_download_url }}"
     dest: "{{consul_template_dl_dir}}"
+    validate_certs: no
   when: consul_template_archive_stat.stat.exists == False
   environment:
     https_proxy: "{{http_proxy}}"
@@ -29,7 +30,6 @@
     copy: False
     creates: "{{consul_template_dl_dir}}/{{ consul_template_binary }}"
 
-- debug: msg="{{consul_template_dl_dir}}/{{ consul_template_binary }}"
 - name: copy consul-template binary into place
   copy:
     src: "{{consul_template_dl_dir}}/{{ consul_template_binary }}"
