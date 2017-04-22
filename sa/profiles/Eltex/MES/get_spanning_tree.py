@@ -38,6 +38,7 @@ class Script(BaseScript):
     PORT_ROLE = {
         "altn": "alternate",
         "back": "backup",
+        "bkup": "backup",
         "boun": "master",
         "desg": "designated",
         "dsbl": "disabled",
