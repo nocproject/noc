@@ -42,7 +42,7 @@
     dest: /etc/tmpfiles.d/mongo.conf
 
 - include: "arbiter.yml"
-  when: "{{ has_svc_mongo_arbiter | default(False) }}"
+  when: "has_svc_mongo_arbiter | default(False)"
 
 - name: Reload systemd daemon
   command: /usr/bin/systemctl daemon-reload

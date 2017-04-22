@@ -19,7 +19,7 @@
   roles:
     - role: mongod_disks
       become: yes
-      when: "{{ has_svc_mongod | default(False) or consul_env}}"
+      when: "has_svc_mongod | default(False) or consul_env"
       tags:
         - disk
 
@@ -32,7 +32,7 @@
   roles:
     - role: postgres_disks
       become: yes
-      when: "{{ has_svc_postgres | default(False) or consul_env}}"
+      when: "has_svc_postgres | default(False) or consul_env"
       tags:
         - disk
 
@@ -45,6 +45,6 @@
   roles:
     - role: influxdb_disks
       become: yes
-      when: "{{ has_svc_influxdb | default(False) or consul_env}}"
+      when: "has_svc_influxdb | default(False) or consul_env"
       tags:
         - disk
