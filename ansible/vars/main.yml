@@ -13,7 +13,7 @@ consul_url: "{{ lookup('env','CONSUL_URL')}}"
 consul_token: "{{lookup('env','CONSUL_TOKEN')}}"
 consul_env: '{{ True if (consul_url and consul_token) else False}}'
 
-consul_template_version: "0.18.1"
+consul_template_version: "0.18.2"
 consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
 consul_template_templates_dir: "{{consul_template_config_dir}}/templates"
 
