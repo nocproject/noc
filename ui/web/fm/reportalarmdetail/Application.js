@@ -9,7 +9,8 @@ console.debug("Defining NOC.fm.reportalarmdetail.Application");
 Ext.define("NOC.fm.reportalarmdetail.Application", {
     extend: "NOC.core.Application",
     requires: [
-        "NOC.inv.networksegment.TreeCombo"
+        "NOC.inv.networksegment.TreeCombo",
+        "NOC.sa.administrativedomain.TreeCombo"
     ],
 
     initComponent: function() {
@@ -99,6 +100,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         });
 
         me.segment = null;
+        me.adm_domain = null;
 
         me.formPanel = Ext.create("Ext.form.Panel", {
             autoScroll: true,
@@ -140,11 +142,35 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                     }
                 },
                 {
+                    name: "administrative_domain",
+                    xtype: "sa.administrativedomain.TreeCombo",
+                    fieldLabel: __("By Adm. domain"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500,
+                    allowBlank: true,
+                    listeners: {
+                        scope: me,
+                        select: function(combo, record) {
+                            me.adm_domain = record.get("id")
+                        }
+                    }
+                },
+                {
                     name: "min_duration",
                     xtype: "numberfield",
                     fieldLabel: __("Min. Duration"),
                     allowBlank: false,
                     value: 300,
+                    uiStyle: "small"
+                },
+                {
+                    name: "max_duration",
+                    xtype: "numberfield",
+                    fieldLabel: __("Max. Duration"),
+                    allowBlank: false,
+                    value: 0,
                     uiStyle: "small"
                 },
                 {
@@ -209,6 +235,10 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
 
         if(me.segment) {
             url.push("&segment=" + me.segment);
+        }
+
+        if(me.adm_domain) {
+            url.push("&administrative_domain=" + me.adm_domain);
         }
 
         me.columnsStore.each(function(record) {
