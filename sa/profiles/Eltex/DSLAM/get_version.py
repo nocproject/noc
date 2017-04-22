@@ -21,7 +21,10 @@ class Script(BaseScript):
     rx_version = re.compile(r"version:\s+(?P<version>\S+)")
 
     def execute(self):
-        ver = self.cli("system show software info", cached=True)
+        try:
+            ver = self.cli("system show software info", cached=True)
+        except self.CLISyntaxError:
+            ver = self.cli("system show software version", cached=True)
         match = self.rx_version.search(ver)
         if match:
             return {
