@@ -210,11 +210,14 @@
     path: "{{noc_root}}/{{item.name}}"
     state: "directory"
     owner: "{{item.owner}}"
+    mode: 0755
   with_items:
     - name: etc/config/
       owner: root
     - name: etc/config/supervisor
       owner: root
+    - name: var
+      owner: "{{noc_user}}"
     - name: var/etc
       owner: root
     - name: var/db
@@ -241,6 +244,7 @@
       owner: "{{noc_user}}"
     - name: var/bi
       owner: "{{noc_user}}"
+
 
 - name: Install noc.pth
   template:
