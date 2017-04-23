@@ -77,6 +77,19 @@ class Script(BaseScript):
         part_no = match_body.group("board_type")
         desc = match_body.group("desc")
         manufactured = match_body.group("mnf_date")
+        #todo create dictonary for normalize types
+        if part_no == "PAC-350WB-L":
+            item_type = "POWER"
+        if part_no == "AR01PSAC35":
+            item_type = "POWER"
+        if part_no == "AR01SRU2C":
+            item_type = "SRU"
+        if part_no == "AR01XSX550A":
+            item_type = "XSIC"
+        if part_no == "AR01WSX220A":
+            item_type = "WSIC"
+        if part_no == "AR0MSEG1CA00":
+            item_type = "SIC"
         if part_no == "":
             return None
         if vendor == "":
