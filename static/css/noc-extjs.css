@@ -313,3 +313,8 @@ TABLE {
     text-decoration: underline;
 }
 
+.x-treelist-expander-first .x-treelist-item-text {
+    margin-left: 20px;
+    margin-right: 0;
+}
+
