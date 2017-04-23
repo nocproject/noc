@@ -44,6 +44,7 @@ class Script(BaseScript):
             ports[instance_id][interface] = {
                 "role": {
                     "dis": "disabled",
+                    "disa": "disabled",
                     "alte": "alternate",
                     "back": "backup",
                     "root": "root",
