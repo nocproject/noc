@@ -163,7 +163,10 @@ class Script(BaseScript):
                 num = i["Slot"]
                 type = "CHASSIS"
             elif i["Slot"] == "-":
-                num = i["Sub"]
+                if "Sub" in i:
+                    num = i["Sub"]
+                elif "#" in i:
+                    num = i["#"]
             elif i["Slot"] != "-":
                 num = i["Slot"]
             elif self.rx_slot_key.match(i["Slot"]):
