@@ -39,13 +39,13 @@ class Script(BaseScript):
 
         rx_iface = re.compile(
             r"\d+: (?P<name>\S+):\s<(?P<status>\S+)>\s[a-zA-Z0-9,<>_ \-]+\n"
-            r"    link/ether (?P<mac>\S+) brd"
+            r"    link\/ether (?P<mac>\S+) brd"
             , re.I | re.S 
         )
         
         rx_master = re.compile(
             r"\d+: (?P<name>\S+):\s<(?P<status>\S+)>\s[a-zA-Z0-9,<>_ ]+ master (?P<master>\S+)\s.*\n"
-            r"    link/ether (?P<mac>\S+) brd"
+            r"    link\/ether (?P<mac>\S+) brd"
             , re.I | re.S 
         )
 
