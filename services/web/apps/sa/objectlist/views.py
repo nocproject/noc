@@ -6,8 +6,11 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+import itertools
+import bson
 ## Third-party modules
-from django.db.models import Q
+from django.db.models import Q as d_Q
+from noc.lib.nosql import Q as m_Q
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
@@ -29,13 +32,16 @@ class ObjectListApplication(ExtApplication):
         """
         Filter records for lookup
         """
-        q = Q(is_managed=True)
+        self.logger.info("Queryset %s" % query)
+        q = d_Q(is_managed=True)
         if not request.user.is_superuser:
             q &= UserAccess.Q(request.user)
         if query:
             sq = ManagedObject.get_search_Q(query)
             if sq:
                 q &= sq
+            else:
+                q &= d_Q(name__contains=query)
         return self.model.objects.filter(q)
 
     def instance_to_dict(self, o, fields=None):
@@ -51,7 +57,7 @@ class ObjectListApplication(ExtApplication):
     def cleaned_query(self, q):
         nq = {}
         for k in q:
-            if not k.startswith("_"):
+            if not k.startswith("_") and "__" not in k:
                 nq[k] = q[k]
 
         if "administrative_domain" in nq:
@@ -66,12 +72,63 @@ class ObjectListApplication(ExtApplication):
             s = self.get_object_or_404(ManagedObjectSelector,
                                        id=int(q["selector"]))
             if s:
-                nq["id__in"] = list(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
+                nq["id__in"] = set(ManagedObject.objects.filter(s.Q).values_list("id", flat=True))
             del nq["selector"]
-        # @todo Filter capabilities(AND)
-        if "caps" in nq:
-            del nq["caps"]
-            pass
+        mq = None
+        for cc in itertools.ifilter(lambda x: x.startswith("caps"), nq.keys()):
+            """
+            Caps: caps0=CapsID,caps1=CapsID:true....
+            cq - caps query
+            mq - main_query
+            c_ids = set(ObjectCapabilities.objects(cq).distinct('object'))
+            """
+            # @todo Убирать дубликаты (повторно не добавлять)
+            # @todo Добавить исключение (только этот) :!
+
+            c = nq.pop(cc)
+            if not c:
+                continue
+            if not mq:
+                mq = m_Q()
+            self.logger.info("Caps: %s" % c)
+            if ":" not in c:
+                mq &= m_Q(caps__capability=c)
+                continue
+            c_id, c_query = c.split(":", 1)
+            try:
+                c_id = bson.ObjectId(c_id)
+            except bson.errors.InvalidId, why:
+                self.logger.warning(why)
+                continue
+            if "~" in c_query:
+                l, r = c_query.split("~")
+                if not l:
+                    cond = {"$lte": int(r)}
+                elif not r:
+                    cond = {"$gte": int(l)}
+                else:
+                    cond = {"$lte": int(r), "$gte": int(l)}
+                cq = m_Q(__raw__={"caps": {"$elemMatch": {"capability": c_id,
+                                                           "value": cond}}})
+            elif c_query in ("false", "true"):
+                cq = (m_Q(caps__match={"capability": c_id, "value": c_query == "true"}))
+            else:
+                try:
+                    c_query = int(c_query)
+                    cq = m_Q(__raw__={"caps": {"$elemMatch": {"capability": c_id,
+                                                               "value": int(c_query)}}})
+                except ValueError:
+                    cq = m_Q(__raw__={"caps": {"$elemMatch": {"capability": c_id,
+                                                               "value": {"$regex": c_query}}}})
+            mq &= cq
+        if mq:
+            c_ids = set(el["_id"] for el in ObjectCapabilities.objects(mq).values_list('object').as_pymongo())
+            self.logger.info("Caps objects count: %d" % len(c_ids))
+            if "id__in" in nq:
+                 pass
+            else:
+                 nq["id__in"] = c_ids
+        pass
         if "addresses" in nq:
             if isinstance(nq["addresses"], list):
                 nq["address__in"] = nq["addresses"]
