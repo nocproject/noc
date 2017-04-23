@@ -10,6 +10,15 @@
     - keepalived
     - config
 
+- name: install keepalived nginx.cnf
+  template:
+    src: nginx.cnf.j2
+    dest: "{{etc_prefix}}/keepalived/nginx.cnf"
+  notify: reload keepalived
+  tags:
+    - keepalived
+    - config
+
 - name: Start keepalived
   service:
     name: keepalived
