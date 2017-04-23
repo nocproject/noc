@@ -25,7 +25,7 @@ class Profile(BaseProfile):
     ]
     pattern_unpriveleged_prompt = r"^\S+>"
     pattern_syntax_error = r"% (?:Invalid input detected at '\^' marker|" \
-                           r"(?:Ambiguous|Incomplete) command)|" \
+                           r"(?:Ambiguous|Incomplete|.+Unknown) command)|" \
                            r"Error input in the position market by"
     command_disable_pager = "terminal length 0"
     command_super = "enable"
