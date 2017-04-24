@@ -152,7 +152,7 @@ class Command(BaseCommand):
             if not f.endswith(".tsv.gz"):
                 continue
             models.add(f.split(".", 1)[0])
-            files += [f]
+            files += [os.path.join(self.DATA_PREFIX, f)]
         # Ensure fields
         for mn in models:
             self.stdout.write("Ensuring %s\n" % mn)
