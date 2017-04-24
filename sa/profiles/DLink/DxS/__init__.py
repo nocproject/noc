@@ -106,7 +106,14 @@ class Profile(BaseProfile):
         script.cli("")
         # Cache "show switch" command and fetch CLI Paging from it
         #match = self.rx_pager.search(script.cli("show switch", cached=True))
-        match = self.rx_pager.search(script.scripts.get_switch())
+        s_switch = script.scripts.get_switch()
+        match = self.rx_pager.search(s_switch)
+        if "DES-3528" in s_switch or "DES-3552" in s_switch:
+            # "DES-3528" and "DES-3552" not worjing without clipaging
+            if match:
+                script.logger.debug("Enabling CLI Paging...")
+                script.cli("enable clipaging")
+            match = True
         if not match:
             self.dlink_pager = True
             script.logger.debug("Disabling CLI Paging...")
@@ -322,8 +329,9 @@ class Profile(BaseProfile):
         ".*System locked by other session!", re.MULTILINE | re.DOTALL)
 
     def cleaned_config(self, config):
-        if self.rx_blocked_session.search(config):
-            raise BaseException("System locked by other session.")
+        # if self.rx_blocked_session.search(config):
+        if "System locked by other session!" in config:
+            raise BaseException("System locked by other session!")
         config = super(Profile, self).cleaned_config(config)
         return config
 
