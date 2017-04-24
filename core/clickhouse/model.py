@@ -2,12 +2,13 @@
 ##----------------------------------------------------------------------
 ## Clickhouse models
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
 import time
+import hashlib
 ## Third-party modules
 import six
 ## NOC modules
@@ -74,6 +75,12 @@ class Model(six.with_metaclass(ModelBase)):
     def get_fingerprint(cls):
         return "%s.%s" % (cls._meta.db_table,
                           ".".join(cls._fields_order))
+
+    @classmethod
+    def get_short_fingerprint(cls):
+        seed = ".".join(cls._fields_order)
+        h = hashlib.sha256(seed).hexdigest()[:8]
+        return "%s.%s" % (cls._meta.db_table, h)
 
     @classmethod
     def ensure_table(cls):
