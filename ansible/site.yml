@@ -244,6 +244,14 @@
         - node
         - noc
 
+    - role: chwriter
+      become: yes
+      when: "{{ has_svc_chwriter | default(False) or consul_env}}"
+      tags:
+        - chwriter
+        - node
+        - noc
+
     - role: activator
       become: yes
       when: "{{ has_svc_activator | default(False) or consul_env}}"
