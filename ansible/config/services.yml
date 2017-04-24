@@ -247,8 +247,8 @@ config:
       type: int
       default: 300
 
-    metrics_buffer:
-      label: Metrics buffer
+    records_buffer:
+      label: Records buffer size (in records)
       type: int
       default: 1000000
 

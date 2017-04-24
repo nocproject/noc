@@ -29,6 +29,7 @@ class Command(BaseCommand):
     DICT_DATA_PREFIX = "var/bi-dict-data"
 
     TOPIC = "chwriter"
+    NSQ_CONNECT_TIMEOUT = 0.5
     NSQ_PUB_RETRY_DELAY = 0.1
 
     EXTRACTORS = [
@@ -113,27 +114,19 @@ class Command(BaseCommand):
         def publish():
             def finish_pub(conn, data):
                 if isinstance(data, nsq.Error):
-                    self.stdout.write(
-                        "Failed to pub to topic '%s'. Retry\n" % self.TOPIC
-                    )
-                    writer.io_loop.call_later(
-                        self.NSQ_PUB_RETRY_DELAY,
-                        functools.partial(
-                            writer.pub, self.TOPIC, msg,
-                            callback=finish_pub
-                        )
-                    )
+                    self.stdout.write("NSQ pub error: %s\n" % data)
+                    self.stdout.write("Failed to send file: %s\n" % fn)
                 else:
                     self.stdout.write("Removing %s\n" % fn)
                     os.unlink(fn)
                     os.unlink(meta_path)
+                writer.io_loop.add_callback(publish)
 
-            try:
-                fn = files.pop(0)
-            except IndexError:
+            if not files:
                 # Done
                 writer.io_loop.stop()
                 return
+            fn = files.pop(0)
             meta_path = fn[:-7] + ".meta"
             with open(meta_path) as ff:
                 tn = ff.read()
@@ -142,7 +135,15 @@ class Command(BaseCommand):
                 data = ff.read()
             msg = "%s\n%s" % (tn, data)
             writer.pub(self.TOPIC, msg, callback=finish_pub)
-            writer.io_loop.add_callback(publish)
+
+        def on_connect():
+            if writer.conns:
+                # Connected
+                writer.io_loop.add_callback(publish)
+            else:
+                self.stdout.write("Waiting for NSQ connection\n")
+                writer.io_loop.call_later(self.NSQ_CONNECT_TIMEOUT,
+                                          on_connect)
 
         ch = connection()
         ch.ensure_db()
@@ -162,7 +163,7 @@ class Command(BaseCommand):
             model.ensure_table()
         # Stream to NSQ
         writer = nsq.Writer(["127.0.0.1:4150"])
-        writer.io_loop.add_callback(publish)
+        writer.io_loop.add_callback(on_connect)
         nsq.run()
 
 if __name__ == "__main__":
