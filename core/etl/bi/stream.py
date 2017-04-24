@@ -26,7 +26,7 @@ class Stream(object):
         self.out_path = None
         now = datetime.datetime.now()
         self.fs = "%s-%s" % (
-            self.model.get_short_fingerpring(),
+            self.model.get_short_fingerprint(),
             now.strftime("%Y-%m-%d-%H-%M-%S-%f")
         )
         self.meta = self.model.get_fingerprint()
