@@ -26,9 +26,10 @@ class Stream(object):
         self.out_path = None
         now = datetime.datetime.now()
         self.fs = "%s-%s" % (
-            self.model.get_fingerprint(),
+            self.model.get_short_fingerpring(),
             now.strftime("%Y-%m-%d-%H-%M-%S-%f")
         )
+        self.meta = self.model.get_fingerprint()
         self.chunk_size = 0
         self.ts_field = self.model._fields_order[1]
 
@@ -47,6 +48,9 @@ class Stream(object):
                 self.prefix,
                 "%s-%06d.tsv.gz.tmp" % (self.fs, self.chunk_count.next())
             )
+            meta_path = self.out_path[:-11] + ".meta"
+            with open(meta_path, "w") as f:
+                f.write(self.meta)
             self.out = gzip.open(self.out_path, "wb")
             self.chunk_size = 0
         self.out.write(
