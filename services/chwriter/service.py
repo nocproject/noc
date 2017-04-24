@@ -86,8 +86,8 @@ class CHWriterService(Service):
             self.logger.info(
                 "Feeding speed: %.2fmetrics/sec, active channels: %s, buffered metrics: %s",
                 speed,
-                self.perf_metrics["channels_active"].value,
-                self.perf_metrics["metrics_buffered"].value
+                self.perf_metrics["channels_active"],
+                self.perf_metrics["metrics_buffered"]
             )
         self.last_metrics = nm
         self.last_ts = t
