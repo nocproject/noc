@@ -430,6 +430,11 @@ config:
       label: InfluxDB Data directory
       default: /var/lib/influxdb/data/
 
+    max_cache_memory:
+      type: int
+      label: Max cache memory
+      default: 1048576000
+
   postgres:
     postgres_version:
       type: str
