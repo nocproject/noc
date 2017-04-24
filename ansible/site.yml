@@ -15,11 +15,25 @@
       tags:
         - consul
 
+    - role: consul-template
+      become: yes
+      tags:
+        - consul-template
+        - external
+
     - role: node
       become: yes
       tags:
         - node
         - noc
+
+    - role: nsqlookupd
+      become: yes
+      when: "has_svc_nsqlookupd| default(False) or consul_env"
+      tags:
+        - nsq
+        - nsqlookupd
+        - external
 
     - role: nsqd
       become: yes
@@ -27,18 +41,6 @@
       tags:
         - nsq
         - nsqd
-        - external
-
-- name: Consul template installation
-  hosts: svc-mongo,svc-postgres,svc-mongod,svc-postgres,svc-pgbouncer,svc-influxdb,svc-nginx,svc-grafana,svc-nsqlookupd,svc-memcached
-  become: yes
-  any_errors_fatal: true
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: consul-template
-      tags:
-        - consul-template
         - external
 
 - name: Install and configure mongo
@@ -126,20 +128,6 @@
         - grafana
         - external
 
-- name: Install and configure nsqlookupd
-  hosts: svc-nsqlookupd
-  become: yes
-  any_errors_fatal: true
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: nsqlookupd
-      become: yes
-      when: "has_svc_nsqlookupd| default(False) or consul_env"
-      tags:
-        - nsq
-        - nsqlookupd
-        - external
 
 - name: Install and configure memcached
   hosts: svc-memcached
