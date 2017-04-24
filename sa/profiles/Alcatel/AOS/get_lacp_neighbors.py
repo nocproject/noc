@@ -36,7 +36,8 @@ class Script(BaseScript):
                     "remote_system_id": d["Partner Oper System Id"].strip(",[]"),
                     "remote_port_id": d["Partner Oper Port"].strip(",")
                 }]
-
+            if not lag["members"]:
+                return []
             r += [{"lag_id": lag["interface"],
                    "interface": "Ag " + lag["interface"],
                    "system_id": d["Actor System Id"].strip(",[]"),

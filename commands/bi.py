@@ -135,8 +135,8 @@ class Command(BaseCommand):
                 return
             tn = fn.split("-", 1)[0]
             self.stdout.write("Sending %s\n" % fn)
-            with gzip.open(fn, "rb") as f:
-                data = f.read()
+            with gzip.open(fn, "rb") as ff:
+                data = ff.read()
             msg = "%s\n%s" % (tn, data)
             writer.pub(self.TOPIC, msg, callback=finish_pub)
             writer.io_loop.add_callback(publish)
@@ -152,7 +152,7 @@ class Command(BaseCommand):
             files += [f]
         # Ensure fields
         for mn in models:
-            self.stdout.write("Ensuring %s", mn)
+            self.stdout.write("Ensuring %s\n" % mn)
             model = Model.get_model_class(mn)
             if not model:
                 self.die("Cannot get model")

@@ -11,7 +11,7 @@ http {
 {% if noc_config["services"].get("web", []) %}
 upstream noc-web {
 {% for n in noc_config["services"].get("web", []) %}
-    server {{ n }} weight={{web_weight}};
+    server {{ n }} weight={{web_weight}} max_conns=1;
 {% endfor %}
 }
 {% endif %}
@@ -19,7 +19,7 @@ upstream noc-web {
 {% if noc_config["services"].get("login", []) %}
 upstream login {
 {% for n in noc_config["services"].get("login", []) %}
-    server {{ n }} weight={{login_weight}};
+    server {{ n }} weight={{login_weight}} max_conns=1;
 {% endfor %}
 }
 {% endif %}
@@ -27,7 +27,7 @@ upstream login {
 {% if noc_config["services"].get("card", []) %}
 upstream card {
 {% for n in noc_config["services"].get("card", []) %}
-    server {{ n }} weight={{card_weight}};
+    server {{ n }} weight={{card_weight}} max_conns=1;
 {% endfor %}
 }
 {% endif %}
@@ -43,7 +43,7 @@ upstream mrt {
 {% if noc_config["services"].get("bi", []) %}
 upstream bi {
 {% for n in noc_config["services"].get("bi", []) %}
-    server {{ n }} weight={{bi_weight}};
+    server {{ n }} weight={{bi_weight}} max_conns=1;
 {% endfor %}
 }
 {% endif %}
@@ -67,7 +67,7 @@ upstream grafana {
 {% if noc_config["services"].get("grafanads", []) %}
 upstream grafanads {
 {% for n in noc_config["services"].get("grafanads", []) %}
-    server {{ n }} weight={{grafanads_weight}};
+    server {{ n }} weight={{grafanads_weight}} max_conns=1;
 {% endfor %}
 }
 {% endif %}

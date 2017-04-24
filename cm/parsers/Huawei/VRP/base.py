@@ -329,7 +329,7 @@ class BaseVRPParser(BaseParser):
             if tokens[-1] == "untagged":
                 si.untagged_vlan = int(tokens[-2])
             elif tokens[-1] == "tagged":
-                si.tagged_vlan += [int(tokens[-2])]
+                si.tagged_vlans += [int(tokens[-2])]
             else:
                 si.untagged_vlan = int(tokens[4])
             si.add_afi("BRIDGE")
