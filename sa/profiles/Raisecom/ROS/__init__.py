@@ -35,6 +35,16 @@ class Profile(BaseProfile):
         r"Serial number\s*:\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE)
 
+    rx_ver_wipv6 = re.compile(
+        r"Product name: (?P<platform>\S+)\s*\n"
+        r"(ROS|QOS)\s+Version\s*(?P<version>\S+)\.\s*\(Compiled.+\)\s*\n"
+        r"Bootstrap\s*Version\s*(?P<bootstrap>\S+)\s*\n"
+        r"FPGA Version\s*\n"
+        r"Hardware\s*\S+\s*Version Rev\.\s*(?P<hw_rev>\S+)\s*\n\n"
+        r"System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
+        r"Serial number\s*:\s*(?P<serial>\S+)\s*\n",
+        re.MULTILINE)
+
     rx_ver2 = re.compile(
         r"Product Name: (?P<platform>\S+)\s*\n"
         r"Hardware Version: (?P<hw_rev>\S+)\s*\n"
@@ -50,7 +60,10 @@ class Profile(BaseProfile):
 
     def get_version(self, script):
         c = script.cli("show version", cached=True)
-        match = self.rx_ver.search(c)
+        if "Support ipv6" in c:
+            match = self.rx_ver.search(c)
+        else:
+            match = self.rx_ver_wipv6.search(c)
         if match:
             return match.groupdict()
         else:

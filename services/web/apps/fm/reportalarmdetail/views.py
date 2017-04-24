@@ -185,7 +185,9 @@ class ReportAlarmDetailApplication(ExtApplication):
                 [("timestamp", 1)]):
             dt = datetime.datetime.now() - a["timestamp"]
             duration = dt.days * 86400 + dt.seconds
-            if duration and (duration < min_duration or duration > max_duration):
+            if duration and duration < min_duration:
+                continue
+            if duration and max_duration and duration > max_duration:
                 continue
             total_objects = sum(
                 ss["summary"] for ss in a["total_objects"])
