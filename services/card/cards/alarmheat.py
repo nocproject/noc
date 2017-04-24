@@ -42,9 +42,9 @@ class AlarmHeatCard(BaseCard):
         p = self.current_user().get_profile()
         return {
             "maintenance": 0,
-            "lon": p.heatmap_lon || 0,
-            "lat": p.heatmap_lat || 0,
-            "zoom": p.heatmap_zoom || 0
+            "lon": p.heatmap_lon or 0,
+            "lat": p.heatmap_lat or 0,
+            "zoom": p.heatmap_zoom or 0
         }
 
     @classmethod
