@@ -31,6 +31,8 @@ class CHWriterService(Service):
         self.channels = {}
         self.last_ts = None
         self.last_metrics = 0
+        self.table_fields = {}  # table name -> fields
+        self.last_columns = 0
 
     @tornado.gen.coroutine
     def on_activate(self):
