@@ -35,6 +35,7 @@
     name: nginx
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+    state: latest
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
