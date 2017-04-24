@@ -117,12 +117,13 @@ class Model(six.with_metaclass(ModelBase)):
         :param name:
         :return:
         """
-        m = __import__("noc.core.bi.models.%s" % name, {}, {}, "*")
+        mname = name.split("-")[0]
+        m = __import__("noc.core.bi.models.%s" % mname, {}, {}, "*")
         for a in dir(m):
             o = getattr(m, a)
             if not hasattr(o, "_meta"):
                 continue
-            if getattr(o._meta, "db_table", None) == name:
+            if getattr(o._meta, "db_table", None) == mname:
                 return o
         return None
 
