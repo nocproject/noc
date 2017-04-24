@@ -420,11 +420,17 @@ Ext.define("NOC.fm.alarm.Application", {
                     width: 150,
                     sortable: false,
                     renderer: function(v, _, record) {
-                        var tt = record.get("escalation_tt");
-                        return record.get("summary") +
-                                "<br/>" +
-                            (tt ? "<a href='/api/card/view/tt/" + tt + "/' target='_blank'>" + tt + "</a>" : "");
-
+                        var r = [record.get("summary")];
+                        var tt = record.get("escalation_tt") || "";
+                        var ee = record.get("escalation_error") || "";
+                        if(tt !== "") {
+                            r.push("<a href='/api/card/view/tt/" + tt + "/' target='_blank'>" + tt + "</a>");
+                        } else {
+                            if(ee !== "") {
+                                r.push("<i class='fa fa-exclamation-triangle></i> Error")
+                            }
+                        }
+                        return r.join("<br>");
                     }
                 },
                 {

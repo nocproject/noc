@@ -164,6 +164,7 @@ class AlarmApplication(ExtApplication):
             "segment__label": o.managed_object.segment.name,
             "segment": str(o.managed_object.segment.id),
             "escalation_tt": o.escalation_tt,
+            "escalation_error": o.escalation_error,
             "platform": o.managed_object.platform,
             "address": o.managed_object.address,
             "isInMaintenance": mtc,
