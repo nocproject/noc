@@ -126,6 +126,7 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write("Removing %s\n" % fn)
                     os.unlink(fn)
+                    os.unlink(meta_path)
 
             try:
                 fn = files.pop(0)
@@ -133,7 +134,9 @@ class Command(BaseCommand):
                 # Done
                 writer.io_loop.stop()
                 return
-            tn = fn.split("-", 1)[0]
+            meta_path = fn[:-7] + ".meta"
+            with open(meta_path) as ff:
+                tn = ff.read()
             self.stdout.write("Sending %s\n" % fn)
             with gzip.open(fn, "rb") as ff:
                 data = ff.read()
