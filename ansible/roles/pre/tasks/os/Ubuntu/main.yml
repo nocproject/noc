@@ -9,6 +9,7 @@
     - unzip
     - sudo
     - curl
+    - apt-transport-https
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
