@@ -41,7 +41,7 @@ pgbouncer_max_clients: "{{noc_config['config'].get('pgbouncer-global-%s' % ansib
 pgbouncer_max_db_connection: "{{(noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients /10', '300')| int | abs )}}"
 pgbouncer_max_files: "{{(noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients', 3000) * 1.1 )| int | abs}}"
 
-postgres_master: "svc-patroni if "
+postgres_master: "{% for n in groups['svc-postgres-master'] %}{{n}}{% endfor %}"
 postgres_max_connections: "{{ noc_config['config'].get('postgres-global-%s' % ansible_hostname, {}).get('postgres_max_clients', 302) }}"
 
 patroni_rest_password: "{{ noc_config['config'].get('patroni-global-%s' % ansible_hostname, {}).get('rest_password', 'noc') }}"

@@ -35,10 +35,11 @@
     msg: "No mongodb server set. Please setup at least one. "
   when: "'svc-mongod' not in groups"
 
-- name: No postgres server set
-  fail:
-    msg: "No postgres server set. Please setup one."
-  when: "'svc-postgres' not in groups"
+- block:
+  - name: No postgres server set
+    fail:
+      msg: "No postgres server set. Please setup one."
+    when: "'svc-postgres' not in groups and 'svc-patroni' in groups"
 
 - name: prepare pgbouncer facts
   set_fact:
