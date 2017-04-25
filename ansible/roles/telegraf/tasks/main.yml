@@ -1,6 +1,11 @@
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
 
+- name: render facts
+  set_fact:
+    telegraf_prometheus_enabled: "{{telegraf_prometheus_enabled}}"
+    telegraf_influxdb_enabled: "{{telegraf_influxdb_enabled}}"
+
 - name: render telegraf config
   template:
     src: "telegraf/telegraf.conf.j2"
