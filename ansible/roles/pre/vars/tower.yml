@@ -14,7 +14,6 @@ consul_raw_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"
 
 consul_acl_master_token: "{{noc_config['config'].get('consul-global-%s' % ansible_hostname, {}).get('token', '')}}"
 consul_acl_replication_token: "{{noc_config['config'].get('consul-global-%s' % ansible_hostname, {}).get('replication_token', '')}}"
-consul_raw_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"
 
 grafana_http_port: "{{ noc_config.services.grafana.0.split(':')[1] }}"
 grafana_pg_password: "{{noc_config['config'].get('grafana-global-%s' % ansible_hostname, {}).get('password', 'grafana')}}"
@@ -25,8 +24,6 @@ influx_host: "http://{{ noc_config.services.influxdb.0 }}"
 keepalived_password: "{{noc_config['config'].get('keepalived-global-%s' % ansible_hostname, {}).get('password', 'noc')}}"
 keepalived_virtual_ip: "{{noc_config['config'].get('keepalived-global-%s' % ansible_hostname, {}).get('virtual_ip', '192.168.1.210')}}"
 influx_max_cache_memory: "{{noc_config['config'].get('influxdb-global-%s' % ansible_hostname, {}).get('max_cache_memory', 1048576000)}}"
-consul_acl_master_token: "{{noc_config['config'].get('consul-global-%s' % ansible_hostname, {}).get('token', '')}}"
-consul_acl_replication_token: "{{noc_config['config'].get('consul-global-%s' % ansible_hostname, {}).get('replication_token', '')}}"
 
 memcache_address: "{{ noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('listen', '127.0.0.1:11211')}}"
 memcached_max_clients: "{{noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('max_clients', '1024')| int | abs }}"
@@ -44,7 +41,7 @@ pgbouncer_max_clients: "{{noc_config['config'].get('pgbouncer-global-%s' % ansib
 pgbouncer_max_db_connection: "{{(noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients /10', '300')| int | abs )}}"
 pgbouncer_max_files: "{{(noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients', 3000) * 1.1 )| int | abs}}"
 
-postgres_master: "{% for n in groups['svc-postgres-master'] %}{{n}}{% endfor %}"
+postgres_master: "svc-patroni if "
 postgres_max_connections: "{{ noc_config['config'].get('postgres-global-%s' % ansible_hostname, {}).get('postgres_max_clients', 302) }}"
 
 patroni_rest_password: "{{ noc_config['config'].get('patroni-global-%s' % ansible_hostname, {}).get('rest_password', 'noc') }}"
