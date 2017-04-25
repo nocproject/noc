@@ -117,7 +117,7 @@
             "gender": "f",
             "name": "power",
             "protocols": [">+24VDC"],
-            "type__name": "Power | IEC 60130 10"
+            "type__name": "Power | IEC 60130-10"
         }
     ],
     "data": {
