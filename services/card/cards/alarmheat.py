@@ -39,8 +39,12 @@ class AlarmHeatCard(BaseCard):
     TOOLTIP_LIMIT = 5
 
     def get_data(self):
+        p = self.current_user.get_profile()
         return {
-            "maintenance": 0
+            "maintenance": 0,
+            "lon": p.heatmap_lon or 0,
+            "lat": p.heatmap_lat or 0,
+            "zoom": p.heatmap_zoom or 0
         }
 
     @classmethod

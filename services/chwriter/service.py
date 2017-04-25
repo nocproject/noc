@@ -67,34 +67,34 @@ class CHWriterService(Service):
         ...
         <v1>\t...\t<vN>\n
         """
-        if self.perf_metrics["metrics_buffered"].value > self.config.metrics_buffer:
+        if self.perf_metrics["records_buffered"].value > self.config.records_buffer:
             self.perf_metrics["deferred_messages"] += 1
             return False
         fields, data = metrics.split("\n", 1)
         channel = self.get_channel(fields)
         n = channel.feed(data)
-        self.perf_metrics["metrics_received"] += n
-        self.perf_metrics["metrics_buffered"] += n
+        self.perf_metrics["records_received"] += n
+        self.perf_metrics["records_buffered"] += n
         return True
 
     @tornado.gen.coroutine
     def report(self):
-        nm = self.perf_metrics["metrics_written"].value
+        nm = self.perf_metrics["records_written"].value
         t = self.ioloop.time()
         if self.last_ts:
             speed = float(nm - self.last_metrics) / (t - self.last_ts)
             self.logger.info(
-                "Feeding speed: %.2fmetrics/sec, active channels: %s, buffered metrics: %s",
+                "Feeding speed: %.2frecords/sec, active channels: %s, buffered records: %d",
                 speed,
                 self.perf_metrics["channels_active"],
-                self.perf_metrics["metrics_buffered"].value
+                self.perf_metrics["records_buffered"].value
             )
         self.last_metrics = nm
         self.last_ts = t
 
     @tornado.gen.coroutine
     def check_channels(self):
-        expired = [c for c in self.channels if c.is_expired()]
+        expired = [c for c in self.channels if self.channels[c].is_expired()]
         for x in expired:
             self.logger.info("Closing expired channel %s", x)
             del self.channels[x]
@@ -111,11 +111,12 @@ class CHWriterService(Service):
         data = channel.get_data()
         for i in range(10):
             t0 = self.ioloop.time()
-            self.logger.debug("Sending %d metrics to channel %s", n, channel.name)
+            self.logger.debug("Sending %d records to channel %s", n, channel.name)
             client = tornado.httpclient.AsyncHTTPClient()
+            written = False
             try:
                 response = yield client.fetch(
-                    "http://%s:%s/database=%s&query=%s" % (
+                    "http://%s:%s/?database=%s&query=%s" % (
                         self.HOST, self.PORT, self.DB,
                         channel.get_encoded_insert_sql()),
                     method="POST",
@@ -126,24 +127,26 @@ class CHWriterService(Service):
                         "%d metrics sent in %.2fms",
                         n, (self.ioloop.time() - t0) * 1000
                     )
-                    self.perf_metrics["metrics_written"] += n
-                    self.perf_metrics["metrics_buffered"] -= n
+                    self.perf_metrics["records_written"] += n
+                    self.perf_metrics["records_buffered"] -= n
                     channel.stop_flushing()
-                    raise tornado.gen.Return()
+                    written = True
                 else:
                     self.logger.info(
                         "Failed to write metrics: %s",
                         response.body
                     )
-                    self.perf_metrics["metrics_spool_failed"] += 1
+                    self.perf_metrics["records_spool_failed"] += 1
             except tornado.httpclient.HTTPError as e:
-                self.logger.error("Failed to spool %d metrics: %s",
+                self.logger.error("Failed to spool %d records: %s",
                                   n, e)
             except Exception as e:
                 self.logger.error(
-                    "Failed to spool %d metrics due to unknown error: %s",
+                    "Failed to spool %d records due to unknown error: %s",
                     n, e
                 )
+            if written:
+                raise tornado.gen.Return()
             timeout = 1.0
             self.logger.info(
                 "Clickhouse is getting ill. "
@@ -152,7 +155,7 @@ class CHWriterService(Service):
             )
             self.perf_metrics["slept_time"] += int(timeout)
             yield tornado.gen.sleep(timeout)
-        self.logger.info("Recovering metrics")
+        self.logger.info("Recovering records")
         channel.recover(n, data)
         channel.stop_flushing()
 
