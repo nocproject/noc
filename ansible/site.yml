@@ -32,20 +32,24 @@
         - node
         - noc
 
+- name: Install and configure nsq
+  hosts: all
+  become: yes
+  any_errors_fatal: true
+  roles:
+    - role: nsqd
+      become: yes
+      tags:
+        - nsq
+        - nsqd
+        - external
+
     - role: nsqlookupd
       become: yes
       when: "has_svc_nsqlookupd| default(False) or consul_env"
       tags:
         - nsq
         - nsqlookupd
-        - external
-
-    - role: nsqd
-      become: yes
-      when: "has_svc_nsqd | default(False) or consul_env"
-      tags:
-        - nsq
-        - nsqd
         - external
 
 - name: Install and configure mongo

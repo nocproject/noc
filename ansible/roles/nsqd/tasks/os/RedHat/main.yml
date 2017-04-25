@@ -1,4 +1,19 @@
 ---
+
+- name: download nsq daemon
+  get_url:
+    url: https://s3.amazonaws.com/bitly-downloads/nsq/nsq-{{nsq_version}}.linux-amd64.go1.6.2.tar.gz
+    dest: /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz
+    validate_certs: no
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+
+- name: install nsq
+  command: /bin/tar --strip-components=1 -xf /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz -C {{ noc_root }}
+  args:
+    creates: "{{ noc_root }}/bin/nsqd"
+
 - name: install nsqd.service file
   template:
      src: etc/systemd/nsqd.service

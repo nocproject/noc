@@ -402,7 +402,3 @@
     - config
   when: "'Linux' in ansible_system"
 
-- name: install nsq
-  include: "nsq.yml"
-  tags:
-    - nsq
