@@ -104,7 +104,7 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "description": "Micro USB"
+            "description": "Micro USB",
             "direction": "s",
             "gender": "f",
             "name": "usb0",
