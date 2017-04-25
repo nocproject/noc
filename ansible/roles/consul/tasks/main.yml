@@ -60,7 +60,6 @@
     src: "etc/telegraf/telegraf.d/consul.conf.j2"
     dest: "{{etc_prefix}}/telegraf/telegraf.d/consul.conf"
   notify: reload telegraf
-  ignore_errors: yes
   tags:
     - config
     - telegraf
