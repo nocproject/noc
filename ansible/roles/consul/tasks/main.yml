@@ -1,14 +1,12 @@
 ---
 # File: main.yml - Main tasks for Consul
 
+- name: Expose consul_node_role as fact
+  set_fact:
+    consul_node_role: "{{ consul_node_role }}"
 
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
-
-- name: Expose consul_bind_address and consul_node_role as facts
-  set_fact:
-    consul_bind_address: "{{ consul_bind_address }}"
-    consul_node_role: "{{ consul_node_role }}"
 
 - name: Check bootstrapped state
   stat:
