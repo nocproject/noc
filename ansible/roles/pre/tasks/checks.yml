@@ -60,3 +60,20 @@
   fail:
     msg: "Please ensure that correct settings has been provided on tower settings page and they was saved."
   when: noc_repo=="http://example.com/hg/VQ3W6R"
+
+- block:
+  - name: Ensure consul setup
+    fail:
+      msg: "No consul bootstrap was set up"
+    when: groups["svc-consul-server"] | length == 0
+  - name: Ensure consul setup
+    fail:
+      msg: "Consul server have to be not more that on 5 nodes. Set consul service in tower to false"
+    when: groups["svc-consul"] | length > 5
+  - name: Ensure consul setup
+    fail:
+      msg: "consul servers have to be set up on 1,3 or 5 nodes. less is better. current count is {{groups['svc-consul'] | length}}"
+    when: groups["svc-consul"] | length not in [1,3,5]
+  - pause:
+      seconds: 30
+  when: "'svc-consul' in groups"
