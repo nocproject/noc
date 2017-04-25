@@ -96,3 +96,53 @@
   changed_when: False
   tags:
     - restart
+
+- name: Setup hostname
+  hostname: name="{{ inventory_hostname }}"
+  when: "'Linux' in ansible_system"
+  become: true
+  register: hname
+
+
+- debug:
+    msg: "Please setup cluster wide /etc/hosts via /opt/tower/var/tower/data/{{noc_env}}/hosts on Tower server"
+  run_once: true
+
+
+- name: Setup default /etc/hosts
+  local_action:
+    module: template
+    src: "hosts.j2"
+    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    force: no
+  become: true
+  run_once: true
+  tags:
+    - config
+    - fill_hosts
+
+- name: Setup /etc/hosts
+  lineinfile:
+    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    line: "{{ hostvars[item].ansible_host }} {{ item }}"
+    regexp: ".*{{ item }}$"
+    create: no
+  become: true
+  with_items: "{% if 'nodes' in groups %}{{groups['nodes']}}{%endif%}"
+  delegate_to: 127.0.0.1
+  when: "'nodes' in groups"
+  register: hostsc
+  run_once: true
+  tags:
+    - config
+    - fill_hosts
+
+- name: copy hosts file to nodes
+  copy:
+    src: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    dest: /etc/hosts
+  when: "'nodes' in groups"
+  become: true
+  tags:
+    - config
+    - fill_hosts

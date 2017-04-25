@@ -1,15 +1,26 @@
 ---
-- name: Common tasks
+- name: pre tasks
   hosts: all
   become: no
   any_errors_fatal: false
+  gather_facts: True
   vars_files:
     - "vars/main.yml"
   vars:
     ansible_tags: "{{ lookup('get_tags') }}"
   roles:
     - role: pre
+      tags:
+        - always
 
+- name: Common tasks
+  hosts: all
+  become: no
+  any_errors_fatal: false
+  gather_facts: True
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: telegraf
       become: yes
       tags:
@@ -244,7 +255,7 @@
 
     - role: chwriter
       become: yes
-      when: "{{ has_svc_chwriter | default(False) or consul_env}}"
+      when: "has_svc_chwriter | default(False) or consul_env"
       tags:
         - chwriter
         - node
