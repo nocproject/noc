@@ -28,8 +28,6 @@
   tags:
     - requirements
 
-- include: "telegraf.yml"
-
 - name: Install supervisord init script
   template:
     src: "os/Debian/etc/init.d/noc.j2"

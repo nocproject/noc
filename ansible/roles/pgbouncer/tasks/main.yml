@@ -8,6 +8,7 @@
   notify: reload telegraf
   tags:
     - config
+    - telegraf
 
 - name: Install pgbouncer config
   template:

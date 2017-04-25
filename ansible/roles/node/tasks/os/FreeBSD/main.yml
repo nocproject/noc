@@ -25,5 +25,3 @@
 
 - name: Enable NOC system service
   service: name="{{ noc_system_service }}" enabled=yes
-
-- include: "telegraf.yml"

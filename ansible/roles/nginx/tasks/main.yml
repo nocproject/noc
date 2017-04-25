@@ -9,6 +9,8 @@
   notify: reload telegraf
   tags:
     - config
+    - telegraf
+
 
 - name: Set up SSL directory
   file:

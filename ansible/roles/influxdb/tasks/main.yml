@@ -7,6 +7,7 @@
     dest: "{{etc_prefix}}/telegraf/telegraf.d/influxdb.conf"
   tags:
     - config
+    - telegraf
 
 - name: Setup InfluxDB config
   template:

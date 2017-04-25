@@ -8,6 +8,8 @@
   notify: reload telegraf
   tags:
     - config
+    - telegraf
+
 
 - name: Install memcached config
   template:

@@ -63,3 +63,4 @@
   ignore_errors: yes
   tags:
     - config
+    - telegraf

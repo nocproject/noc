@@ -1,0 +1,44 @@
+---
+- name: Add Ubuntu InfluxDB apt key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+
+- name: Add Ubuntu InfluxDB repo
+  apt_repository:
+    repo: "deb https://repos.influxdata.com/ubuntu {{ ansible_lsb.codename }} stable"
+    state: present
+    update_cache: yes
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+
+- name: Install Ubuntu system packages
+  apt:
+    name: "{{ item }}"
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  with_items:
+   - telegraf
+   - lsof
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
+
+- name: create systemd override dir
+  file:
+    path: "/etc/systemd/system/telegraf.service.d/"
+    state: directory
+  tags:
+    - config
+
+- name: Install telegraf override.conf
+  template:
+    src: "etc/telegraph.override.conf.j2"
+    dest: "/etc/systemd/system/telegraf.service.d/noc.conf"
+  tags:
+    - config

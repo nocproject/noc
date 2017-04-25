@@ -9,6 +9,7 @@
   notify: reload telegraf
   tags:
     - config
+    - telegraf
 
 - name: install nsqadmin config
   template:
