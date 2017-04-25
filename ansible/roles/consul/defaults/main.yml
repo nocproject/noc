@@ -35,12 +35,6 @@ consul_node_role: "{% if has_svc_consul_server is defined%}bootstrap{% elif has_
 consul_raw_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"
 
 ### Addresses
-consul_bind_address: "\
-  {% if ansible_system == 'FreeBSD' %}\
-    {{ lookup('env','CONSUL_BIND_ADDRESS') | default(hostvars[inventory_hostname]['ansible_'+ consul_iface ]['ipv4'][0]['address'], true) }}\
-  {% else %}\
-    {{ lookup('env','CONSUL_BIND_ADDRESS') | default(hostvars[inventory_hostname]['ansible_'+ consul_iface ]['ipv4']['address'], true) }}\
-  {% endif %}"
 consul_dns_bind_address: "127.0.0.1"
 consul_http_bind_address: "0.0.0.0"
 consul_https_bind_address: "0.0.0.0"
