@@ -79,7 +79,5 @@
   tags:
     - firewall
 
-- include: "telegraf.yml"
-
 - name: Reload systemd daemon
   command: /usr/bin/systemctl daemon-reload

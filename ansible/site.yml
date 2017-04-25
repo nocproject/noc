@@ -10,6 +10,11 @@
   roles:
     - role: pre
 
+    - role: telegraf
+      become: yes
+      tags:
+        - telegraf
+
     - role: consul
       become: yes
       tags:

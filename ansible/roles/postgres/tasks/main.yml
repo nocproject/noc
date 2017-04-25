@@ -59,7 +59,10 @@
   when: s1.changed or s2.changed or s3.changed
 
 - name: Enable postgres system service
-  service: name="{{postgres_system_service}}" enabled=yes state=started
+  service:
+    name: "{{postgres_system_service}}"
+    enabled: yes
+    state: started
 
 - name: Create postgres NOC user
   postgresql_user:
@@ -118,3 +121,4 @@
   notify: reload telegraf
   tags:
     - config
+    - telegraf
