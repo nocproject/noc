@@ -11,7 +11,7 @@
             "description": "SRU slot",
             "direction": "i",
             "gender": "f",
-            "name": "SRU40",
+            "name": "sru",
             "type__name": "Huawei | AR 2240 | SRU"
         },
         {
