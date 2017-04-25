@@ -18,7 +18,7 @@ import consul.tornado
 ## NOC modules
 from base import DCSBase
 
-ConsulTimeoutErrors = consul.base.Timeout
+ConsulRepeatableErrors = consul.base.Timeout
 
 
 class ConsulDCS(DCSBase):
@@ -35,6 +35,7 @@ class ConsulDCS(DCSBase):
     DEFAULT_CONSUL_RELEASE = "1m"
     DEFAULT_CONSUL_SESSION_TTL = 10
     DEFAULT_CONSUL_LOCK_DELAY = 1
+    DEFAULT_CONSUL_RETRY_TIMEOUT = 1
 
     def __init__(self, url, ioloop=None):
         self.name = None
@@ -92,13 +93,19 @@ class ConsulDCS(DCSBase):
         self.logger.info("Creating session")
         # @todo: Add http healthcheck
         checks = ["serfHealth"]
-        self.session = yield self.consul.session.create(
-            name=self.name,
-            checks=checks,
-            behavior="delete",
-            lock_delay=1,
-            ttl=self.DEFAULT_CONSUL_SESSION_TTL
-        )
+        while True:
+            try:
+                self.session = yield self.consul.session.create(
+                    name=self.name,
+                    checks=checks,
+                    behavior="delete",
+                    lock_delay=1,
+                    ttl=self.DEFAULT_CONSUL_SESSION_TTL
+                )
+                break
+            except ConsulRepeatableErrors:
+                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                continue
         self.logger.info("Session id: %s", self.session)
         self.keep_alive_task = tornado.ioloop.PeriodicCallback(
             self.keep_alive,
@@ -114,7 +121,10 @@ class ConsulDCS(DCSBase):
             if self.keep_alive_task:
                 self.keep_alive_task.stop()
                 self.keep_alive_task = None
-            yield self.consul.session.destroy(self.session)
+            try:
+                yield self.consul.session.destroy(self.session)
+            except ConsulRepeatableErrors:
+                pass  # Ignore consul errors
             self.session = None
 
     @tornado.gen.coroutine
@@ -133,32 +143,47 @@ class ConsulDCS(DCSBase):
             "%ds" % self.check_timeout
         )
         checks["DeregisterCriticalServiceAfter"] = self.release_after
-        self.logger.info("Registering service %s: %s:%s (id=%s, pool=%s)",
-                         name, address, port, svc_id, pool)
-        r = yield self.consul.agent.service.register(
-            name=name,
-            service_id=svc_id,
-            address=address,
-            port=port,
-            tags=tags,
-            check=checks
-        )
-        if r:
-            self.svc_id = svc_id
+        while True:
+            self.logger.info("Registering service %s: %s:%s (id=%s, pool=%s)",
+                             name, address, port, svc_id, pool)
+            try:
+                r = yield self.consul.agent.service.register(
+                    name=name,
+                    service_id=svc_id,
+                    address=address,
+                    port=port,
+                    tags=tags,
+                    check=checks
+                )
+            except ConsulRepeatableErrors:
+                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                continue
+            if r:
+                self.svc_id = svc_id
+            break
         raise tornado.gen.Return(r)
 
     @tornado.gen.coroutine
     def deregister(self):
         if self.session:
-            yield self.destroy_session()
+            try:
+                yield self.destroy_session()
+            except ConsulRepeatableErrors:
+                pass
         if self.svc_id:
-            yield self.consul.agent.service.deregister(self.svc_id)
+            try:
+                yield self.consul.agent.service.deregister(self.svc_id)
+            except ConsulRepeatableErrors:
+                pass
             self.svc_id = None
 
     @tornado.gen.coroutine
     def keep_alive(self):
         if self.session:
-            yield self.consul.session.renew(self.session)
+            try:
+                yield self.consul.session.renew(self.session)
+            except ConsulRepeatableErrors:
+                pass
         else:
             self.keep_alive_task.stop()
             self.keep_alive_task = None
@@ -174,12 +199,16 @@ class ConsulDCS(DCSBase):
         index = None
         while True:
             self.logger.info("Acquiring lock: %s", key)
-            status = yield self.consul.kv.put(
-                key=key,
-                value=self.session,
-                acquire=self.session,
-                token=self.consul_token
-            )
+            try:
+                status = yield self.consul.kv.put(
+                    key=key,
+                    value=self.session,
+                    acquire=self.session,
+                    token=self.consul_token
+                )
+            except ConsulRepeatableErrors:
+                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                continue
             if status:
                 break
             # Waiting for lock release
@@ -196,6 +225,6 @@ class ConsulDCS(DCSBase):
                             self.DEFAULT_CONSUL_LOCK_DELAY * (0.5 + random.random())
                         )
                     break
-                except ConsulTimeoutErrors:
-                    continue
+                except ConsulRepeatableErrors:
+                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
         self.logger.info("Lock acquired")
