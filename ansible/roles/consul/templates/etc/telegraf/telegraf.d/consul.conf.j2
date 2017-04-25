@@ -1,17 +1,8 @@
 [[inputs.procstat]]
-pattern = "noc-consul"
+pattern = "consul"
 
+# will not work until https://github.com/influxdata/telegraf/issues/2422
 [[inputs.consul]]
-  ## Most of these values defaults to the one configured on a Consul's agent level.
-  ## Optional Consul server address (default: "")
   address = "consul:8500"
-  ## Optional URI scheme for the Consul server (default: "")
-  # scheme = ""
-  ## Optional ACL token used in every request (default: "")
   token = "{{ consul_acl_master_token }}"
-  ## Optional username used for request HTTP Basic Authentication (default: "")
-  # username = ""
-  ## Optional password used for HTTP Basic Authentication (default: "")
-  # password = ""
-  ## Optional data centre to query the health checks from (default: "")
   datacentre = "{{ consul_datacenter }}"
