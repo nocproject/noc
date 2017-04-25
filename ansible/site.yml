@@ -110,6 +110,7 @@
 
 - name: Install and configure nginx
   hosts: svc-nginx
+  serial: 1
   become: yes
   any_errors_fatal: true
   vars_files:
