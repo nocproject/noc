@@ -214,7 +214,7 @@ class AlarmDiagnosticConfig(Document):
                 try:
                     h = get_handler(c["handler"])
                     try:
-                        result += [h()]
+                        result += [h(alarm)]
                     except Exception as e:
                         error_report()
                         result += [str(e)]
