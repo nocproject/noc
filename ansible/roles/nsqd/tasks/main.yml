@@ -37,11 +37,6 @@
   set_fact: nsq_version_is_ok=True
   when: "nsq_version in nsq_installed_version and nsq_installed_version is defined"
 
-- name: "Include OS-specific tasks"
-  include: "os/{{ ansible_distribution }}/nsq.yml"
-  when: nsqd_binary.stat.exists==False or nsq_version_is_ok is not defined
-
-
 - name: Install nsqd monitoring
   template:
     src: "etc/telegraf/telegraf.d/nsqd.conf.j2"
@@ -50,8 +45,6 @@
   tags:
     - config
     - telegraf
-
-
 
 - name: install nsqd config
   template:
