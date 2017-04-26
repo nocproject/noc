@@ -54,7 +54,7 @@
     owner: "{{ consul_user }}"
     group: "{{ consul_group }}"
     mode: 0755
-    creates: "{{ consul_bin_path }}"
+    creates: "{{ consul_bin_path }}/consul"
   tags: installation
 
 - name: Cleanup
