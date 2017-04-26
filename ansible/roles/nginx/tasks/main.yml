@@ -39,7 +39,7 @@
   template:
     src: "etc/nginx/conf.d/noc.conf.j2"
     dest: "{{ nginx_conf_path }}"
-  notify: restart nginx
+  notify: reload nginx
   tags:
     - config
 
@@ -73,4 +73,4 @@
   service:
     name: "{{ nginx_system_service }}"
     enabled: yes
-    state: restarted
+    state: started

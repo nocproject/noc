@@ -35,7 +35,10 @@
 
 - name: Find suitable PostgreSQL cluster
   shell: /usr/bin/pg_lsclusters -h | grep 5432 | awk '{print $1 " " $2}'
+  changed_when: false
   register: pgcluster
+  tags:
+    - config
 
 - name: Using PostgreSQL version
   set_fact:

@@ -15,19 +15,11 @@
     src: "etc/pgbouncer/pgbouncer.ini.j2"
     dest: "{{etc_prefix}}/pgbouncer/pgbouncer.ini"
   notify: reload pgbouncer
-  register: pgbouncer_configured
   tags:
     - config
-
-- name: restart pgbouncer
-  service:
-    name: pgbouncer
-    enabled: yes
-    state: restarted
-  when: "pgbouncer_configured.changed==True"
 
 - name: start pgbouncer
   service:
     name: pgbouncer
     enabled: yes
-    state: reloaded
+    state: started
