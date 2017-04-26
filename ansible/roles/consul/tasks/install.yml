@@ -25,6 +25,7 @@
 - name: Get Consul package checksum
   shell: "grep {{ consul_pkg }} /tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
   register: consul_sha256
+  changed_when: false
   tags: requirements
 
 - name: Check Consul package file
@@ -53,6 +54,7 @@
     owner: "{{ consul_user }}"
     group: "{{ consul_group }}"
     mode: 0755
+    creates: "{{ consul_bin_path }}"
   tags: installation
 
 - name: Cleanup

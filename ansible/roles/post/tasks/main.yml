@@ -20,6 +20,7 @@
 
 - name: check if noc running
   shell: "{{ noc_root }}/noc ctl status"
+  changed_when: false
   register: noc_ctl_status
   tags:
     - config

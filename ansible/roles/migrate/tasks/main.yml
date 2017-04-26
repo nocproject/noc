@@ -6,6 +6,8 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  register: migrate_out
+  changed_when: "'Nothing to migrate' not in migrate_out.stdout"
 
 - name: Apply pools
   command: "{{ noc_root }}/scripts/deploy/apply-pools"
@@ -66,3 +68,5 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  register: mibs_out
+  changed_when: mibs_out.stdout | length > 5

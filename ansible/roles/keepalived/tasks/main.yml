@@ -22,7 +22,7 @@
 - name: Start keepalived
   service:
     name: keepalived
-    state: reloaded
+    state: started
     enabled: yes
   tags:
     - keepalived

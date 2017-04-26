@@ -40,6 +40,3 @@
     dest: "/etc/systemd/system/{{ noc_system_service }}.service"
   when: "ansible_service_mgr == 'systemd'"
   notify: reload systemd
-
-- name: reload systemd
-  command: /bin/systemctl daemon-reload
