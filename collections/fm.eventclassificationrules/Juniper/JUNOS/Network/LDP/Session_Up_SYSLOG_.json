@@ -1,0 +1,21 @@
+{
+    "name": "Juniper | JUNOS | Network | LDP | Session Up (SYSLOG)",
+    "uuid": "a47826ea-6078-4fa9-b3db-2ce83c45407a",
+    "description": "Apr 27 13:08:26 pmo-cl2 rpd[873]: RPD_LDP_SESSIONUP: LDP session 10.100.127.40 is up",
+    "event_class__name": "Network | LDP | Session Up",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^profile$",
+            "value_re": "^Juniper\\.JUNOS$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "RPD_LDP_SESSIONUP: LDP session (?P<peer>\\S+) is (?P<state>\\w+)"
+        }
+    ]
+}
