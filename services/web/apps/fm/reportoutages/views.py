@@ -75,7 +75,10 @@ class ReportOutagesApplication(SimpleReport):
             b = datetime.datetime.strptime(from_date, "%d.%m.%Y")
             q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
             if to_date:
-                t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y")
+                if from_date == to_date:
+                    t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(1)
+                else:
+                    t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y")
             else:
                 t1 = now
             q &= Q(start__lte=t1) | Q(stop__lte=t1)
