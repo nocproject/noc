@@ -103,6 +103,7 @@ class ReportFilterApplication(SimpleReport):
                 (
                     mo.name,
                     mo.address,
+                    mo.profile_name,
                     iface
                 )
             ]
@@ -110,6 +111,6 @@ class ReportFilterApplication(SimpleReport):
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"), _("Address"), _("Interface")
+                _("Managed Object"), _("Address"), _("SA Profile"), _("Interface")
             ],
             data=data)
