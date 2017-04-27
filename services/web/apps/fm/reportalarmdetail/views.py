@@ -161,7 +161,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 path = ObjectPath.get_path(mo)
                 if path:
                     segment_path = [NetworkSegment.get_by_id(s).name
-                                    for s in path.segment_path]
+                                    for s in path.segment_path if NetworkSegment.get_by_id(s)]
                     container_path = [Object.get_by_id(s).name for s in
                                       path.container_path if Object.get_by_id(s)]
                 else:
@@ -206,7 +206,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 path = ObjectPath.get_path(mo)
                 if path:
                     segment_path = [NetworkSegment.get_by_id(s).name
-                                    for s in path.segment_path]
+                                    for s in path.segment_path if NetworkSegment.get_by_id(s)]
                     container_path = [Object.get_by_id(s).name for s in
                                       path.container_path if Object.get_by_id(s)]
                 else:
