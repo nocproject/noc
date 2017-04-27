@@ -42,6 +42,7 @@ class ReportAlarmDetailApplication(ExtApplication):
               "max_duration": IntParameter(required=False),
               "min_objects": IntParameter(required=False),
               "min_subscribers": IntParameter(required=False),
+              "source": StringParameter(required=True),
               "segment": StringParameter(required=False),
               "administrative_domain": StringParameter(required=False),
               "columns": StringParameter(required=False),
@@ -49,7 +50,7 @@ class ReportAlarmDetailApplication(ExtApplication):
           })
     def api_report(self, request, from_date, to_date, format,
                    min_duration=0, max_duration=0, min_objects=0, min_subscribers=0,
-                   segment=None, administrative_domain=None, columns=None):
+                   segment=None, administrative_domain=None, columns=None, source="both"):
         def row(row, container_path, segment_path):
             def qe(v):
                 if v is None:
@@ -136,95 +137,97 @@ class ReportAlarmDetailApplication(ExtApplication):
                 q["adm_path"] = {"$in": [int(administrative_domain)]}
             except bson.errors.InvalidId:
                 pass
-        # Archived Alarms
-        for a in ArchivedAlarm._get_collection().find(q).sort(
-                [("timestamp", 1)]):
-            dt = a["clear_timestamp"] - a["timestamp"]
-            duration = dt.days * 86400 + dt.seconds
-            if duration and duration < min_duration:
-                continue
-            if duration and max_duration and duration > max_duration:
-                continue
-            total_objects = sum(
-                ss["summary"] for ss in a["total_objects"])
-            if min_objects and total_objects < min_objects:
-                continue
-            total_subscribers = sum(
-                ss["summary"] for ss in a["total_subscribers"])
-            if min_subscribers and total_subscribers < min_subscribers:
-                continue
-            mo = ManagedObject.get_by_id(a["managed_object"])
-            if not mo:
-                continue
-            path = ObjectPath.get_path(mo)
-            if path:
-                segment_path = [NetworkSegment.get_by_id(s).name
-                                for s in path.segment_path]
-                container_path = [Object.get_by_id(s).name for s in
-                                  path.container_path if Object.get_by_id(s)]
-            else:
-                segment_path = []
-                container_path = []
-            r += [translate_row(row([
-                str(a["_id"]),
-                str(a["root"]) if a.get("root") else "",
-                a["timestamp"],
-                a["clear_timestamp"],
-                str(duration),
-                mo.name,
-                mo.address,
-                mo.platform,
-                AlarmClass.get_by_id(a["alarm_class"]).name,
-                total_objects,
-                total_subscribers,
-                a.get("escalation_tt"),
-                a.get("escalation_ts")
-            ], container_path, segment_path), cmap)]
+        if source in ["archive", "both"]:
+            # Archived Alarms
+            for a in ArchivedAlarm._get_collection().find(q).sort(
+                    [("timestamp", 1)]):
+                dt = a["clear_timestamp"] - a["timestamp"]
+                duration = dt.days * 86400 + dt.seconds
+                if duration and duration < min_duration:
+                    continue
+                if duration and max_duration and duration > max_duration:
+                    continue
+                total_objects = sum(
+                    ss["summary"] for ss in a["total_objects"])
+                if min_objects and total_objects < min_objects:
+                    continue
+                total_subscribers = sum(
+                    ss["summary"] for ss in a["total_subscribers"])
+                if min_subscribers and total_subscribers < min_subscribers:
+                    continue
+                mo = ManagedObject.get_by_id(a["managed_object"])
+                if not mo:
+                    continue
+                path = ObjectPath.get_path(mo)
+                if path:
+                    segment_path = [NetworkSegment.get_by_id(s).name
+                                    for s in path.segment_path]
+                    container_path = [Object.get_by_id(s).name for s in
+                                      path.container_path if Object.get_by_id(s)]
+                else:
+                    segment_path = []
+                    container_path = []
+                r += [translate_row(row([
+                    str(a["_id"]),
+                    str(a["root"]) if a.get("root") else "",
+                    a["timestamp"],
+                    a["clear_timestamp"],
+                    str(duration),
+                    mo.name,
+                    mo.address,
+                    mo.platform,
+                    AlarmClass.get_by_id(a["alarm_class"]).name,
+                    total_objects,
+                    total_subscribers,
+                    a.get("escalation_tt"),
+                    a.get("escalation_ts")
+                ], container_path, segment_path), cmap)]
         # Active Alarms
-        for a in ActiveAlarm._get_collection().find(q).sort(
-                [("timestamp", 1)]):
-            dt = datetime.datetime.now() - a["timestamp"]
-            duration = dt.days * 86400 + dt.seconds
-            if duration and duration < min_duration:
-                continue
-            if duration and max_duration and duration > max_duration:
-                continue
-            total_objects = sum(
-                ss["summary"] for ss in a["total_objects"])
-            if min_objects and total_objects < min_objects:
-                continue
-            total_subscribers = sum(
-                ss["summary"] for ss in a["total_subscribers"])
-            if min_subscribers and total_subscribers < min_subscribers:
-                continue
-            mo = ManagedObject.get_by_id(a["managed_object"])
-            if not mo:
-                continue
-            path = ObjectPath.get_path(mo)
-            if path:
-                segment_path = [NetworkSegment.get_by_id(s).name
-                                for s in path.segment_path]
-                container_path = [Object.get_by_id(s).name for s in
-                                  path.container_path if Object.get_by_id(s)]
-            else:
-                segment_path = []
-                container_path = []
-            r += [translate_row(row([
-                str(a["_id"]),
-                str(a["root"]) if a.get("root") else "",
-                a["timestamp"],
-                # a["clear_timestamp"],
-                "",
-                str(duration),
-                mo.name,
-                mo.address,
-                mo.platform,
-                AlarmClass.get_by_id(a["alarm_class"]).name,
-                total_objects,
-                total_subscribers,
-                a.get("escalation_tt"),
-                a.get("escalation_ts")
-            ], container_path, segment_path), cmap)]
+        if source in ["active", "both"]:
+            for a in ActiveAlarm._get_collection().find(q).sort(
+                    [("timestamp", 1)]):
+                dt = datetime.datetime.now() - a["timestamp"]
+                duration = dt.days * 86400 + dt.seconds
+                if duration and duration < min_duration:
+                    continue
+                if duration and max_duration and duration > max_duration:
+                    continue
+                total_objects = sum(
+                    ss["summary"] for ss in a["total_objects"])
+                if min_objects and total_objects < min_objects:
+                    continue
+                total_subscribers = sum(
+                    ss["summary"] for ss in a["total_subscribers"])
+                if min_subscribers and total_subscribers < min_subscribers:
+                    continue
+                mo = ManagedObject.get_by_id(a["managed_object"])
+                if not mo:
+                    continue
+                path = ObjectPath.get_path(mo)
+                if path:
+                    segment_path = [NetworkSegment.get_by_id(s).name
+                                    for s in path.segment_path]
+                    container_path = [Object.get_by_id(s).name for s in
+                                      path.container_path if Object.get_by_id(s)]
+                else:
+                    segment_path = []
+                    container_path = []
+                r += [translate_row(row([
+                    str(a["_id"]),
+                    str(a["root"]) if a.get("root") else "",
+                    a["timestamp"],
+                    # a["clear_timestamp"],
+                    "",
+                    str(duration),
+                    mo.name,
+                    mo.address,
+                    mo.platform,
+                    AlarmClass.get_by_id(a["alarm_class"]).name,
+                    total_objects,
+                    total_subscribers,
+                    a.get("escalation_tt"),
+                    a.get("escalation_ts")
+                ], container_path, segment_path), cmap)]
 
         if format == "csv":
             response = HttpResponse(content_type="text/csv")
