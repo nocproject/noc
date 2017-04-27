@@ -12,14 +12,20 @@
             "required": true
         },
         {
+            "name": "state",
+            "description": "state",
+            "type": "str",
+            "required": false
+        },
+        {
             "name": "reason",
             "description": "Reason",
             "type": "str",
             "required": false
         }
     ],
-    "subject_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
-    "body_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if reason %} ({{reason}}){% endif %}",
+    "subject_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if state %} ({{state}}){% endif %}{% if reason %} ({{reason}}){% endif %}",
+    "body_template": "MPLS LDP Neighbor Down: {{neighbor}}{% if state %} ({{state}}){% endif %}{% if reason %} ({{reason}}){% endif %}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": "",
