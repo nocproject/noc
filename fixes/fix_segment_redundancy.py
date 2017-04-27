@@ -15,7 +15,7 @@ from noc.sa.models.managedobject import ManagedObject
 
 def fix():
     uplinks = dict(
-        (d["_id"], d["uplinks"])
+        (d["_id"], d.get("uplinks", []))
         for d in ObjectData._get_collection().find()
     )
     seg_status = defaultdict(lambda: False)
