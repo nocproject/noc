@@ -26,6 +26,18 @@
       tags:
         - telegraf
 
+    - role: haproxy
+      become: yes
+      when: "has_svc_haproxy| default(False) or consul_env"
+      tags:
+        - haproxy
+
+    - role: keepalived
+      become: yes
+      when: "has_svc_keepalived | default(False) or consul_env"
+      tags:
+        - keepalived
+
     - role: consul
       become: yes
       tags:
@@ -169,7 +181,7 @@
 - name: Install and upgrade NOC
   hosts: svc-activator,svc-bi,svc-card,svc-classifier,svc-correlator,svc-discovery,svc-escalator,svc-grafanads,svc-login,svc-mailsender,svc-mrt,svc-omap,svc-ping,svc-pmwriter,svc-sae,svc-scheduler,svc-syslogcollector,svc-tgsender,svc-trapcollector,svc-web,
   become: no
-  any_errors_fatal: false
+  any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
   roles:
