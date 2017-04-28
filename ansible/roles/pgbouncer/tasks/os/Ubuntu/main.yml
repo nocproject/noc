@@ -52,5 +52,6 @@
     src: "etc/pgbouncer.j2"
     dest: "/etc/logrotate.d/pgbouncer.conf"
   when: "'Linux' in ansible_system"
+  notify: reload systemd
   tags:
     - config

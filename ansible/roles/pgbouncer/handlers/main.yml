@@ -10,3 +10,8 @@
   service:
     name: pgbouncer
     state: reloaded
+
+- name: reload systemd
+  systemd:
+    name: pgbouncer
+    daemon_reload: yes
