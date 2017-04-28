@@ -21,7 +21,7 @@ class Script(BaseScript):
         r"^(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+"
         r"(?P<interfaces>.*)$")  # Catalyst 3500XL
     ignored_interfaces = (
-        "router", "switch", "stby-switch", "yes", "no", "-", "cpu", "drop", "<drop>"
+        "router", "switch", "stby-switch", "yes", "no", "-", "cpu", "drop"
     )
 
     def is_ignored_interface(self, i):
