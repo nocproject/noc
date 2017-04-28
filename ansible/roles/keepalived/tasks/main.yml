@@ -15,9 +15,22 @@
     src: nginx.cnf.j2
     dest: "{{etc_prefix}}/keepalived/nginx.cnf"
   notify: reload keepalived
+  when: groups['svc-nginx'] | count  > 1
   tags:
     - keepalived
     - config
+    - nginx
+
+- name: install keepalived patroni.cnf
+  template:
+    src: patroni.cnf.j2
+    dest: "{{etc_prefix}}/keepalived/patroni.cnf"
+  notify: reload keepalived
+  when: groups['svc-patroni'] | count  > 1
+  tags:
+    - keepalived
+    - config
+    - patroni
 
 - name: Start keepalived
   service:

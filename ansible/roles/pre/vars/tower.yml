@@ -22,7 +22,8 @@ influx_addr: "{{ noc_config['config'].get('influxdb-global-%s' % ansible_hostnam
 influx_host: "http://{{ noc_config.services.influxdb.0 }}"
 
 keepalived_password: "{{noc_config['config'].get('keepalived-global-%s' % ansible_hostname, {}).get('password', 'noc')}}"
-keepalived_virtual_ip: "{{noc_config['config'].get('keepalived-global-%s' % ansible_hostname, {}).get('virtual_ip', '192.168.1.210')}}"
+keepalived_nginx_virtual_ip: "{{noc_config['config'].get('keepalived-global-%s' % ansible_hostname, {}).get('nginx_virtual_ip', '192.168.1.210')}}"
+keepalived_patroni_virtual_ip: "{{noc_config['config'].get('keepalived-global-%s' % ansible_hostname, {}).get('patroni_virtual_ip', '192.168.1.211')}}"
 influx_max_cache_memory: "{{noc_config['config'].get('influxdb-global-%s' % ansible_hostname, {}).get('max_cache_memory', 1048576000)}}"
 
 memcache_address: "{{ noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('listen', '127.0.0.1:11211')}}"
