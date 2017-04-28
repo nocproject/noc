@@ -152,6 +152,7 @@
 - name: Install and configure grafana
   hosts: svc-grafana
   become: yes
+  serial: 1
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
