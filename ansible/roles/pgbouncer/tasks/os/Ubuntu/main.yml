@@ -13,7 +13,6 @@
     mode: 0700
     state: directory
   with_items:
-    - /var/log/pgbouncer/
     - /var/run/pgbouncer/
 
 - name: Install pgbouncer limits file
