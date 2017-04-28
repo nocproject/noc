@@ -109,6 +109,19 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             },
             items: [
                 {
+                    name: "alarms_source",
+                    xtype: "radiogroup",
+                    columns: 3,
+                    vertical: false,
+                    fieldLabel: __("Alarms source"),
+                    allowBlank: false,
+                    width: 300,
+                    items: [
+                        {boxLabel: 'Active Alarms', name: 'rb', inputValue: 'active', checked: true},
+                        {boxLabel: 'Archived Alarms', name: 'rb', inputValue: 'archive'},
+                        {boxLabel: 'Both', name: 'rb', inputValue: 'both'}]
+                },
+                {
                     name: "from_date",
                     xtype: "datefield",
                     startDay: 1,
@@ -231,6 +244,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             + "&format=" + format + "&min_duration=" + v.min_duration
             + "&min_objects=" + v.min_objects
             + "&min_subscribers=" + v.min_subscribers
+            + "&source=" + v.rb
         ];
 
         if(me.segment) {

@@ -83,9 +83,11 @@ class ObjectListApplication(ExtApplication):
             c_ids = set(ObjectCapabilities.objects(cq).distinct('object'))
             """
             # @todo Убирать дубликаты (повторно не добавлять)
-            # @todo Добавить исключение (только этот) :!
 
             c = nq.pop(cc)
+            if "!" in c:
+                # @todo Добавить исключение (только этот) !ID
+                continue
             if not c:
                 continue
             if not mq:
