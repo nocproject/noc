@@ -19,7 +19,7 @@ upstream noc-web {
 {% if noc_config["services"].get("login", []) %}
 upstream login {
 {% for n in noc_config["services"].get("login", []) %}
-    server {{ n }} weight={{login_weight}} max_conns=1;
+    server {{ n }} weight={{login_weight}};
 {% endfor %}
 }
 {% endif %}
