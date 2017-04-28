@@ -19,6 +19,7 @@ Ext.define('NOC.core.Filter', {
         filterObject: {}
     },
     scrollable: 'y',
+    minWidth: 300,
 
     initComponent: function() {
         this.capabilityModel = Ext.create('Ext.data.TreeModel', {
@@ -32,6 +33,11 @@ Ext.define('NOC.core.Filter', {
                     type: 'string'
                 },
                 {
+                    name: 'capType',
+                    type: 'string',
+                    persist: false
+                },
+                {
                     name: 'id',
                     type: 'string'
                 },
@@ -41,10 +47,12 @@ Ext.define('NOC.core.Filter', {
                 },
                 {
                     name: 'value',
+                    defaultValue: false,
                     type: 'string'
                 },
                 {
                     name: 'checked',
+                    defaultValue: false,
                     type: 'boolean'
                 }
             ]
@@ -100,23 +108,40 @@ Ext.define('NOC.core.Filter', {
                     Ext.ComponentQuery.query('[itemId=capValue]')[0].setHidden(true);
                     Ext.ComponentQuery.query('[itemId=capValueBool]')[0].setHidden(true);
                     Ext.ComponentQuery.query('[itemId=capChecked]')[0].setHidden(true);
+                    Ext.ComponentQuery.query('[itemId=capType]')[0].setHidden(true);
 
                     if(selection && selection.get('leaf')) {
                         var path = selection.getPath('text');
-                        path = path.replace(/^\/Root/, '');
+                        var capTypeValue = Ext.ComponentQuery.query('[itemId=capType]')[0].getValue();
 
                         Ext.ComponentQuery.query('[itemId=capChecked]')[0].setHidden(false);
-                        if('bool' === selection.get('type')) {
-                            Ext.ComponentQuery.query('[itemId=capValueBool]')[0].setHidden(false);
-                        } else if('int' === selection.get('type')) {
-                            Ext.ComponentQuery.query('[itemId=capCondition]')[0].setHidden(false);
-                            Ext.ComponentQuery.query('[itemId=capValue]')[0].setHidden(false);
-                        } else if('str' === selection.get('type')) {
-                            Ext.ComponentQuery.query('[itemId=capValue]')[0].setHidden(false);
+                        Ext.ComponentQuery.query('[itemId=capType]')[0].setHidden(false);
+                        path = path.replace(/^\/Root/, '');
+
+                        if(capTypeValue === 'include') {
+                            if('bool' === selection.get('type')) {
+                                Ext.ComponentQuery.query('[itemId=capValueBool]')[0].setHidden(false);
+                            } else if('int' === selection.get('type')) {
+                                Ext.ComponentQuery.query('[itemId=capCondition]')[0].setHidden(false);
+                                Ext.ComponentQuery.query('[itemId=capValue]')[0].setHidden(false);
+                            } else if('str' === selection.get('type')) {
+                                Ext.ComponentQuery.query('[itemId=capValue]')[0].setHidden(false);
+                            }
                         }
                         return __('Selected') + ' (' + selection.get('type') + '): ' + path;
                     } else {
                         return __('No leaf selected');
+                    }
+                },
+                capTypeRadioValue: {
+                    bind: '{currentCap.capType}',
+                    get: function(value) {
+                        return {
+                            capType: value
+                        };
+                    },
+                    set: function(value) {
+                        this.set('currentCap.capType', value.capType);
                     }
                 }
             }
@@ -141,7 +166,8 @@ Ext.define('NOC.core.Filter', {
             defaults: {
                 labelAlign: 'top',
                 minWidth: 270,
-                margin: '5 10 0 10'
+                width: '100%',
+                margin: '5 10 0 18'
             },
             items: [
                 {
@@ -166,6 +192,7 @@ Ext.define('NOC.core.Filter', {
                     xtype: 'main.ref.profile.LookupField',
                     itemId: 'profile_name', // name of http request query param
                     fieldLabel: __('By SA Profile:'),
+                    uiStyle: undefined,
                     listeners: {
                         scope: this,
                         change: this.setFilter
@@ -175,6 +202,7 @@ Ext.define('NOC.core.Filter', {
                     xtype: 'sa.managedobjectprofile.LookupField',
                     itemId: 'object_profile', // name of http request query param
                     fieldLabel: __('By Obj. Profile:'),
+                    uiStyle: undefined,
                     listeners: {
                         scope: this,
                         change: this.setFilter
@@ -250,7 +278,7 @@ Ext.define('NOC.core.Filter', {
                     isLookupField: true,
                     itemId: 'caps',
                     fieldLabel: __('Capability'),
-                    width: 200,
+                    width: '100%',
                     height: 280,
                     layout: 'border',
                     viewModel: this.viewModel,
@@ -277,6 +305,7 @@ Ext.define('NOC.core.Filter', {
                             region: 'center',
                             bodyPadding: 10,
                             reference: 'capabilityValues',
+                            scrollable: 'y',
                             defaults: {
                                 width: '100%',
                                 labelAlign: 'top',
@@ -291,6 +320,35 @@ Ext.define('NOC.core.Filter', {
                                     }
                                 },
                                 {
+                                    xtype: 'radiogroup',
+                                    itemId: 'capType',
+                                    fieldLabel: __('Value'),
+                                    bind: {
+                                        value: '{capTypeRadioValue}'
+                                    },
+                                    vertical: true,
+                                    columns: 1,
+                                    defaults: {
+                                        xtype: 'radio',
+                                        name: 'capType'
+                                    },
+
+                                    items: [
+                                        {
+                                            boxLabel: __('Exclude'),
+                                            inputValue: 'exclude'
+                                        },
+                                        {
+                                            boxLabel: __('Include'),
+                                            inputValue: 'include'
+                                        }
+                                    ],
+                                    listeners: {
+                                        scope: this,
+                                        change: this.onChangeCapType
+                                    }
+                                },
+                                {
                                     xtype: 'combo',
                                     fieldLabel: __('Condition'),
                                     itemId: 'capCondition',
@@ -299,8 +357,8 @@ Ext.define('NOC.core.Filter', {
                                     store: {
                                         fields: ['abbr', 'name'],
                                         data: [
-                                            {"abbr": ">", "name": ">"},
-                                            {"abbr": "<", "name": "<"},
+                                            {"abbr": ">", "name": "=>"},
+                                            {"abbr": "<", "name": "=<"},
                                             {"abbr": "==", "name": "=="}
                                         ]
                                     },
@@ -322,7 +380,9 @@ Ext.define('NOC.core.Filter', {
                                     xtype: 'checkbox',
                                     itemId: 'capChecked',
                                     boxLabel: __('Checked'),
-                                    bind: '{currentCap.checked}'
+                                    bind: '{currentCap.checked}',
+                                    scope: this,
+                                    handler: this.onUncheckedCap
                                 }
                             ]
                         }
@@ -380,6 +440,7 @@ Ext.define('NOC.core.Filter', {
                         var delimiter = self.filterObject[e].indexOf(':');
                         var condition;
                         var id, value;
+                        var type = 'include';
 
                         if(delimiter >= 0) {
                             id = self.filterObject[e].substring(0, delimiter);
@@ -394,13 +455,18 @@ Ext.define('NOC.core.Filter', {
                             } else {
                                 condition = '==';
                             }
+                        } else if(self.filterObject[e][0] === '!') {
+                            id = self.filterObject[e].substring(1);
+                            type = 'exclude';
                         } else {
                             id = self.filterObject[e];
+                            type = undefined;
                         }
 
                         var exist = self.viewModel.get('capabilityStore').getNodeById(id);
 
                         if(exist) {
+                            exist.set('capType', type);
                             exist.set('condition', condition);
                             exist.set('value', value);
                             exist.set('checked', true);
@@ -542,18 +608,25 @@ Ext.define('NOC.core.Filter', {
                 var condition = element.get('condition');
                 var value;
 
-                if('str' === type) {
-                    value = element.get('id') + ':' + element.get('value');
-                } else if('int' === type) {
-                    if('<' === condition) {
-                        value = element.get('id') + ':~' + element.get('value');
-                    } else if('>' === condition) {
-                        value = element.get('id') + ':' + element.get('value') + '~';
-                    } else {
+                if(element.get('capType') === 'include') {
+                    if('str' === type) {
                         value = element.get('id') + ':' + element.get('value');
+                    } else if('int' === type) {
+                        if('<' === condition) {
+                            value = element.get('id') + ':~' + element.get('value');
+                        } else if('>' === condition) {
+                            value = element.get('id') + ':' + element.get('value') + '~';
+                        } else {
+                            value = element.get('id') + ':' + element.get('value');
+                        }
+                    } else if('bool' === type) {
+                        // value = element.get('id') + (element.get('value') ? ':' + element.get('value') : '');
+                        value = element.get('id') + ':' + (element.get('value') === true ? 'true' : 'false');
                     }
-                } else if('bool' === type) {
-                    value = element.get('id') + (element.get('value') ? ':' + element.get('value') : '');
+                } else if(element.get('capType') === 'exclude') {
+                    value = '!' + element.get('id')
+                } else {
+                    value = element.get('id');
                 }
                 params['caps' + index] = value;
                 index++;
@@ -572,7 +645,43 @@ Ext.define('NOC.core.Filter', {
         this.updateCapsFromUrl({});
     },
 
-    changeCaps: function(self, record) {
-        record.set('checked', true);
+    changeCaps: function(self, record, operation, modifiedFieldNames) {
+        if(modifiedFieldNames.indexOf('checked') !== -1) {
+            // if(!record.get('checked')) {
+            //     record.set('capType', null);
+            // }
+        } else if(modifiedFieldNames.indexOf('capType') !== -1) {
+            record.set('checked', true);
+        }
+    },
+
+    onUncheckedCap: function(self, value) {
+        if(!value) {
+            this.hideAllCaps();
+            Ext.ComponentQuery.query('[itemId=capType]')[0].reset();
+        }
+    },
+
+    viewCapValue: function(type, value) {
+        if('bool' === type) {
+            Ext.ComponentQuery.query('[itemId=capValueBool]')[0].setHidden(value);
+        } else if('int' === type) {
+            Ext.ComponentQuery.query('[itemId=capCondition]')[0].setHidden(value);
+            Ext.ComponentQuery.query('[itemId=capValue]')[0].setHidden(value);
+        } else if('str' === type) {
+            Ext.ComponentQuery.query('[itemId=capValue]')[0].setHidden(value);
+        }
+    },
+
+    hideAllCaps: function() {
+        Ext.ComponentQuery.query('[itemId=capCondition]')[0].setHidden(true);
+        Ext.ComponentQuery.query('[itemId=capValue]')[0].setHidden(true);
+        Ext.ComponentQuery.query('[itemId=capValueBool]')[0].setHidden(true);
+    },
+
+    onChangeCapType: function(self, newVal, oldVal) {
+        if(newVal.capType === 'include') {
+            this.viewCapValue(this.getViewModel().get('currentCap').get('type'), false);
+        }
     }
 });
