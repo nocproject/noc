@@ -25,8 +25,8 @@ Ext.define("NOC.sa.runcommands.Application", {
     filterObject: {},
 
     initComponent: function() {
-        var me = this,
-            bs = 40;
+        var me = this;
+        var bs = Math.ceil(screen.height / 24);
 
         me.viewModel = Ext.create('Ext.app.ViewModel', {
             data: {
@@ -83,9 +83,9 @@ Ext.define("NOC.sa.runcommands.Application", {
             model: 'NOC.sa.runcommands.ApplicationModel',
             autoLoad: false,
             pageSize: bs,
-            leadingBufferZone: bs * 5,
+            leadingBufferZone: bs,
             numFromEdge: Math.ceil(bs / 2),
-            trailingBufferZone: bs * 5,
+            trailingBufferZone: bs,
             purgePageCount: 10,
             actionMethods: {
                 read: 'POST'
@@ -160,7 +160,10 @@ Ext.define("NOC.sa.runcommands.Application", {
                     items: [
                         // @todo: Search
                         {
-                            glyph: NOC.glyph.refresh
+                            glyph: NOC.glyph.refresh,
+                            handler: function() {
+                                selectionGrid.getStore().reload();
+                            }
                         },
                         {
                             text: __("Select Checked"),

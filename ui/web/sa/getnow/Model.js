@@ -1,14 +1,9 @@
-/**
- * Created by boris on 02.09.14.
- */
 //---------------------------------------------------------------------
-// fm.event Model
-//---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.sa.getnow.Model");
 
+console.debug("Defining NOC.sa.getnow.Model");
 Ext.define("NOC.sa.getnow.Model", {
     extend: "Ext.data.Model",
     rest_url: "/sa/getnow/",
@@ -41,6 +36,5 @@ Ext.define("NOC.sa.getnow.Model", {
             name: "in_progress",
             type: "boolean"
         }
-
     ]
 });
