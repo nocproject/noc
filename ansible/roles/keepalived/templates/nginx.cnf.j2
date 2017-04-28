@@ -1,7 +1,8 @@
+
 vrrp_instance nginx  {
     state {{keepalived_initial_state}}
     interface {{ansible_default_ipv4.interface}}
-    virtual_router_id {{keepalived_router_id}}
+    virtual_router_id {{keepalived_nginx_router_id}}
     priority 200
     advert_int 1
     nopreempt
@@ -10,7 +11,7 @@ vrrp_instance nginx  {
         auth_pass {{keepalived_password}}
     }
     virtual_ipaddress {
-        {{keepalived_virtual_ip}}
+        {{keepalived_nginx_virtual_ip}}
     }
     unicast_peer {
 {% for host in groups['svc-nginx'] %}

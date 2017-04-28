@@ -1,3 +1,13 @@
 ! Configuration File for keepalived
 
-include /etc/keepalived/*.cnf
+global_defs {
+   router_id {{ ansible_hostname }}
+}
+
+{% if groups['svc-nginx'] | count  > 1 %}
+include /etc/keepalived/nginx.cnf
+{% endif %}
+
+{% if groups['svc-patroni'] | count  > 1 %}
+include /etc/keepalived/patroni.cnf
+{% endif %}

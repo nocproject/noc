@@ -572,9 +572,14 @@ config:
       type: str
       default: noc
 
-    virtual_ip:
+    nginx_virtual_ip:
       label: Nginx virtual IP
       type: str
+
+    patroni_virtual_ip:
+      label: Patroni virtual IP
+      type: str
+
 
   consul:
     token:
