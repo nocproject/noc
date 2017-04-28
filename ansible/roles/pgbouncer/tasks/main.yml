@@ -10,7 +10,7 @@
     path: "{{item}}"
     state: "directory"
     owner: "{{postgres_user}}"
-    mode: 0755
+    mode: 0700
   with_items:
     - "{{etc_prefix}}/pgbouncer"
     - "/var/log/pgbouncer"
