@@ -165,6 +165,17 @@ services:
   consul:
     description: Cluster kv
     level: global
+    port: 8500
+
+  haproxy:
+    description: HA balancer
+    level: global
+
+  patroni:
+    description: Postgres HA template
+    level: global
+    port: 8008
+
 
 config:
   noc:
@@ -557,7 +568,7 @@ config:
 
   keepalived:
     password:
-      label: Keepalived password
+      label: Keepalived password. max 8 chars
       type: str
       default: noc
 
@@ -572,4 +583,21 @@ config:
 
     replication_token:
       label: consul replication token
+      type: str
+
+  patroni:
+    rest_password:
+      label: Patroni REST password
+      type: str
+
+    postgres_password:
+      label: Patroni postgres password
+      type: str
+
+    replicator_password:
+      label: Patroni replicator password
+      type: str
+
+    virtual_ip:
+      label: cluster wide virtualip
       type: str
