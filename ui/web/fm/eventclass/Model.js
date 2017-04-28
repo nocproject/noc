@@ -77,6 +77,9 @@ Ext.define("NOC.fm.eventclass.Model", {
             persist: false
         },
         {
+            name: "handlers"
+        },
+        {
             name: "repeat_suppression",
             type: "auto"
         },
