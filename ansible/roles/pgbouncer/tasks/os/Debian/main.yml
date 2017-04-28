@@ -22,15 +22,6 @@
   tags:
     - requirements
 
-- name: Create pgbouncer directories
-  file:
-    path: "{{ item }}"
-    owner: "{{postgres_user}}"
-    mode: 0700
-    state: directory
-  with_items:
-    - /var/log/pgbouncer/
-
 - name: Install pgbouncer limits file
   template:
     src: "etc/security/limits.d/pgbouncer_limits.conf.j2"
