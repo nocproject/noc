@@ -99,12 +99,10 @@ Ext.define("NOC.fm.alarmclass.Model", {
             defaultValue: true
         },
         {
-            name: "handlers",
-            xtype: "string"
+            name: "handlers"
         },
         {
-            name: "clear_handlers",
-            xtype: "string"
+            name: "clear_handlers"
         },
         {
             name: "description",
