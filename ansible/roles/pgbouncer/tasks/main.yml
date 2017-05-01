@@ -9,7 +9,7 @@
   file:
     path: "{{item}}"
     state: "directory"
-    owner: "{{postgres_user}}"
+    owner: "{{pgbouncer_user}}"
     mode: 0700
   with_items:
     - "{{etc_prefix}}/pgbouncer"
