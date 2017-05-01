@@ -1,3 +1,5 @@
 pgbouncer_max_clients: 3000
 pgbouncer_max_files: "{{ (pgbouncer_max_clients * 1.1 + pgbouncer_max_clients /10)  | int | abs}}"
 pgbouncer_max_db_connection: "{{ (pgbouncer_max_clients / 10) | int | abs}}"
+
+pgbouncer_user: "{{postgres_user}}"
