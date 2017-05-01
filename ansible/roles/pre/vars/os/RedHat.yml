@@ -8,3 +8,5 @@ postgres_system_service: postgresql-{{ postgresql_version }}
 
 memcahed_user: memcached
 memcahed_conf: "/etc/sysconfig/memcached"
+
+pgbouncer_user: pgbouncer
