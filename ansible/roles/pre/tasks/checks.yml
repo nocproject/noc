@@ -95,32 +95,32 @@
     when: nsqlookupd_count  == "0"
 
 
-- block:
-
-  - name: prepare keepalived facts
-    set_fact:
-      nginx_count: "{{groups['svc-nginx'] | count }}"
-      haproxy_count: "{{groups['svc-haproxy'] | count }}"
-      keepalived_count: "{{groups['svc-keepalived'] | count }}"
-
-  - name: check keepalived
-    fail:
-      msg: "keepalived have to be more than one"
-    when: keepalived_count < "2"
-
-  - name: check keepalived
-    fail:
-      msg: "keepalived have to be used only on when nginx or haproxy services more than one"
-
-    when: nginx_count < "2" and haproxy_count < "2"
-
-  - name: check haproxy
-    fail:
-      msg: "haproxy have to be more than one"
-    when: haproxy_count <= "1"
-
-  - name: check haproxy and keepalived
-    fail:
-      msg: "haproxy have to be used with keepalived"
-    when: haproxy_count != keepalived_count or nginx_count != keepalived_count
-  when: groups['svc-keepalived'] | count >= 1
+#- block:
+#
+#  - name: prepare keepalived facts
+#    set_fact:
+#      nginx_count: "{{groups['svc-nginx'] | count }}"
+#      haproxy_count: "{{groups['svc-haproxy'] | count }}"
+#      keepalived_count: "{{groups['svc-keepalived'] | count }}"
+#
+#  - name: check keepalived
+#    fail:
+#      msg: "keepalived have to be more than one"
+#    when: keepalived_count < "2"
+#
+#  - name: check keepalived
+#    fail:
+#      msg: "keepalived have to be used only on when nginx or haproxy services more than one"
+#
+#    when: nginx_count < "2" and haproxy_count < "2"
+#
+#  - name: check haproxy
+#    fail:
+#      msg: "haproxy have to be more than one"
+#    when: haproxy_count <= "1"
+#
+#  - name: check haproxy and keepalived
+#    fail:
+#      msg: "haproxy have to be used with keepalived"
+#    when: haproxy_count != keepalived_count or nginx_count != keepalived_count
+#  when: groups['svc-keepalived'] | count >= 1
