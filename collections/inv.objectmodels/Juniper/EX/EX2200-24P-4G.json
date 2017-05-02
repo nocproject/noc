@@ -281,7 +281,7 @@
     "data": {
         "asset": {
             "description": ["EX2200-24P-4G, POE"],
-            "order_part_no": ["EX2200-24P-4G"]
+            "order_part_no": ["EX2200-24P-4G"],
             "part_no": ["750-026464"]
         },
         "dimensions": {
