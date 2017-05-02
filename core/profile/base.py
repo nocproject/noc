@@ -134,6 +134,11 @@ class BaseProfile(object):
     cli_timeout_password = 30
     # Timeout after submitting *command_super*
     cli_timeout_super = 10
+    # Aggregate up to *snmp_metrics_get_chunk* oids
+    # to one SNMP GET request
+    snmp_metrics_get_chunk = 15
+    # Timeout for snmp GET request
+    snmp_metrics_get_timeout = 3
 
     def convert_prefix(self, prefix):
         """
