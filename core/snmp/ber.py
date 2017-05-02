@@ -248,7 +248,7 @@ class BERDecoder(object):
                 1: parse_int,  # Counter32
                 2: parse_int,  # Gauge32
                 3: parse_int,  # TimeTicks
-                # 4: 0,  # Opaque
+                4: parse_p_octetstring,  # Opaque
                 6: parse_int   # Counter64
             },
             False: {}
