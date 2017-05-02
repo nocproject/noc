@@ -17,11 +17,11 @@ from noc.core.scheduler.scheduler import Scheduler
 
 class EscalatorService(Service):
     name = "escalator"
+    leader_lock_name = "escalator"
 
     def __init__(self):
         super(EscalatorService, self).__init__()
         self.scheduler = None
-        leader_lock_name = "escalator"
 
     @tornado.gen.coroutine
     def on_activate(self):
