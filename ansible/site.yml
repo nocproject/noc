@@ -10,8 +10,6 @@
     ansible_tags: "{{ lookup('get_tags') }}"
   roles:
     - role: pre
-      tags:
-        - always
 
 - name: Common tasks
   hosts: all
@@ -55,6 +53,20 @@
         - node
         - noc
 
+- name: Install and configure postgres
+  hosts: svc-postgres
+  become: yes
+  any_errors_fatal: true
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: postgres
+      become: yes
+      tags:
+        - postgres
+        - external
+
+
 - name: Install and configure nsq
   hosts: all
   become: yes
@@ -89,20 +101,6 @@
       when: "has_svc_mongod | default(False) or consul_env"
       tags:
         - mongod
-        - external
-
-- name: Install and configure postgres
-  hosts: svc-postgres
-  become: yes
-  any_errors_fatal: true
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: postgres
-      become: yes
-      when: "has_svc_postgres | default(False) or consul_env"
-      tags:
-        - postgres
         - external
 
 - name: Install and configure pgbouncer
