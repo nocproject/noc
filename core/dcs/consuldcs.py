@@ -9,6 +9,8 @@
 ## Python modules
 import uuid
 import random
+import os
+import signal
 ## Third-party modules
 from six.moves.urllib.parse import unquote
 import tornado.gen
@@ -182,7 +184,13 @@ class ConsulDCS(DCSBase):
         if self.session:
             try:
                 yield self.consul.session.renew(self.session)
-            except ConsulRepeatableErrors:
+            except consul.base.NotFound:
+                self.logger.info("Session lost. Forcing quit")
+                self.keep_alive_task.stop()
+                self.keep_alive_task = None
+                self.kill()
+            except ConsulRepeatableErrors as e:
+                self.logger.info("Cannot refresh session due to ignorable error: %s", e)
                 pass
         else:
             self.keep_alive_task.stop()
@@ -228,3 +236,7 @@ class ConsulDCS(DCSBase):
                 except ConsulRepeatableErrors:
                     yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
         self.logger.info("Lock acquired")
+
+    def kill(self):
+        self.logger.info("Shooting self with SIGTERM")
+        os.kill(os.getpid(), signal.SIGTERM)
