@@ -18,11 +18,13 @@
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Juniper | MX | EX4200 PSU"
+            "type__name": "Juniper | EX | 4200 PSU"
         }
     ],
     "data": {
         "asset": {
+            "description": ["PS 320W AC"],
+            "order_part_no": ["EX-PWR-320-AC"],
             "part_no": ["740-020957"]
         }
     }

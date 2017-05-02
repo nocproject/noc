@@ -1,0 +1,32 @@
+{
+    "name": "Juniper | EX | JPSU-350-AC-AFO-A",
+    "$collection": "inv.objectmodels",
+    "uuid": "908b34c1-da49-478f-b182-ae7028e93168",
+    "vendor__code": "JUNIPER",
+    "description": "AC Power Supply, 350W at 220V",
+    "cr_context": "PSU",
+    "connections": [
+        {
+            "description": "Power inlet",
+            "direction": "s",
+            "gender": "f",
+            "name": "power",
+            "protocols": [">220VAC", ">110VAC"],
+            "type__name": "Power | IEC 60320 C20"
+        },
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | 4300 PSU"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["JPSU-350-AC-AFO-A"],
+            "order_part_no": ["JPSU-350-AC-AFO"],
+            "part_no": ["740-046873"]
+        }
+    }
+}

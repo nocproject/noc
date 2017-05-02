@@ -1,0 +1,52 @@
+{
+    "name": "Juniper | EX | EX-UM-2X4SFP",
+    "$collection": "inv.objectmodels",
+    "uuid": "3aa0d2b9-a834-444a-a33f-333d027f1a2b",
+    "vendor__code": "JUNIPER",
+    "description": "2x10G Uplink module for EX",
+    "cr_context": "PIC",
+    "connections": [
+        {
+            "description": "Chassis connection",
+            "direction": "o",
+            "gender": "m",
+            "name": "in",
+            "type__name": "Juniper | EX | Uplink"
+        },
+        {
+            "description": "Port 0",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/0",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 1",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/1",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 2",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/2",
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "description": "Port 3",
+            "direction": "i",
+            "gender": "f",
+            "name": "0/3",
+            "type__name": "Transceiver | SFP"
+        }
+    ],
+    "data": {
+        "asset": {
+            "description": ["4x GE SFP+"],
+            "order_part_no": ["EX-UM-2X4SFP"],
+            "part_no": ["711-026017"]
+        }
+    }
+}
