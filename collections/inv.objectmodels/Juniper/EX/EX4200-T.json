@@ -266,7 +266,7 @@
             "power": 320.0
         },
         "rackmount": {
-            "units": 1
+            "units": 1.0
         },
         "stack": {
             "stackable": true

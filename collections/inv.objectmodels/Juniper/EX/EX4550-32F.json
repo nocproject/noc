@@ -346,6 +346,7 @@
         },
         "management": {
             "managed": true
+        },
         "dimensions": {
             "depth": 470,
             "height": 43,
