@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // fm.alarmclass Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.fm.alarmclass.Model");
@@ -97,6 +97,12 @@ Ext.define("NOC.fm.alarmclass.Model", {
             name: "user_clearable",
             type: "boolean",
             defaultValue: true
+        },
+        {
+            name: "handlers"
+        },
+        {
+            name: "clear_handlers"
         },
         {
             name: "description",

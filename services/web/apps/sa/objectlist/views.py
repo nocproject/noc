@@ -59,6 +59,10 @@ class ObjectListApplication(ExtApplication):
         for k in q:
             if not k.startswith("_") and "__" not in k:
                 nq[k] = q[k]
+        ids = set()
+        if "ids" in nq:
+            ids = set([int(nid) for nid in nq["ids"]])
+            del nq["ids"]
 
         if "administrative_domain" in nq:
             ad = AdministrativeDomain.get_nested_ids(
@@ -137,7 +141,8 @@ class ObjectListApplication(ExtApplication):
             else:
                 nq["address__in"] = [nq["addresses"]]
             del nq["addresses"]
-
+        if ids:
+            nq["id__in"] = list(ids)
         return nq
 
     @view(method=["GET", "POST"], url="^$", access="read", api=True)

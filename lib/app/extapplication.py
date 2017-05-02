@@ -106,8 +106,11 @@ class ExtApplication(Application):
         """
         # Todo: Fix
         if request.method == "POST":
-            q = dict((str(k), v[0] if len(v) == 1 else v)
-                     for k, v in request.POST.lists())
+            if request.body:
+                q = ujson.loads(request.body)
+            else:
+                q = dict((str(k), v[0] if len(v) == 1 else v)
+                         for k, v in request.POST.lists())
         else:
             q = dict((str(k), v[0] if len(v) == 1 else v)
                      for k, v in request.GET.lists())

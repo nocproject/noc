@@ -682,6 +682,8 @@ Ext.define('NOC.core.Filter', {
     onChangeCapType: function(self, newVal, oldVal) {
         if(newVal.capType === 'include') {
             this.viewCapValue(this.getViewModel().get('currentCap').get('type'), false);
+        } else if(newVal.capType === 'exclude') {
+            this.hideAllCaps();
         }
     }
 });
