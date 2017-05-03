@@ -1,0 +1,18 @@
+
+- name: install patroni.service systemd unit
+  template:
+    src: patroni.service.j2
+    dest: /lib/systemd/system/patroni.service
+  notify:
+    - restart patroni
+    - reload systemd
+
+- name: Install python-pip
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-pip
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"

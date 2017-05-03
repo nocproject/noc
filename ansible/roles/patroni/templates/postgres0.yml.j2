@@ -1,0 +1,65 @@
+ttl: &ttl 30
+loop_wait: &loop_wait 10
+scope: &scope {{ patroni_scope }}
+restapi:
+  listen: 0.0.0.0:{{patroni_listen}}
+  connect_address: {{ ansible_default_ipv4.address }}:{{patroni_listen}}
+  auth: 'username:{{ patroni_rest_password }}'
+consul:
+  host: 127.0.0.1:8500
+
+bootstrap:
+  dcs:
+    ttl: 30
+    loop_wait: 10
+    retry_timeout: 10
+    maximum_lag_on_failover: 1048576
+    postgresql:
+      use_pg_rewind: true
+      use_slots: true
+      parameters:
+        wal_level: hot_standby
+
+
+postgresql:
+  name: {{ ansible_hostname }}
+  scope: *scope
+  listen: 0.0.0.0:5432
+  connect_address: {{ ansible_default_ipv4.address }}:5432
+  data_dir: {{postgres_data_dir}}
+  bin_dir: {{postgres_bin_dir}}
+  maximum_lag_on_failover: 1048576 # 1 megabyte in bytes
+  use_slots: True
+  config_base_name: postgresql
+  pg_rewind:
+    username: noc
+    password: {{ postgres_superuser_password }}
+  pg_hba:
+    - host all all 0.0.0.0/0 md5
+  replication:
+    username: replicator
+    password: {{ postgres_replicator_password }}
+    network:  192.168.0.0/16
+  superuser:
+    username: superuser
+    password: {{ patroni_postgres_password }}
+  restore: /opt/patroni/patroni/scripts/restore.py
+  #recovery_conf:
+    #restore_command: cp ../wal_archive/%f %p
+  parameters:
+    archive_mode: "on"
+    wal_level: hot_standby
+    archive_command: mkdir -p ../wal_archive && cp %p ../wal_archive/%f
+    max_wal_senders: 10
+    wal_keep_segments: 8
+    archive_timeout: 1800s
+    max_replication_slots: 5
+    hot_standby: "on"
+    wal_log_hints: "on"
+
+tags:
+    nofailover: false
+    noloadbalance: false
+    clonefrom: {{postgres_master}}
+    nosync: false
+    replicatefrom: {{postgres_master}}

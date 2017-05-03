@@ -1,0 +1,22 @@
+
+- name: install patroni.service systemd unit
+  template:
+    src: patroni.service.j2
+    dest: /usr/lib/systemd/system/patroni.service
+  notify:
+    - restart patroni
+    - reload systemd
+
+- name: Install python deps
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-pip
+    - python-virtualenv
+    - postgresql{{postgresql_version|replace(".","")}}-devel
+    - python-devel
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+    PATH: "{{ ansible_env.PATH }}:{{postgres_bin_dir}}"

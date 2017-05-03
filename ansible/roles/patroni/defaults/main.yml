@@ -1,0 +1,3 @@
+patroni_scope: noc
+patroni_path: /opt/patroni
+patroni_listen: 8008
