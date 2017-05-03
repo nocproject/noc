@@ -12,6 +12,24 @@
   tags:
     - repo
 
+- name: Create required directories
+  file:
+    path: "{{item}}"
+    state: "directory"
+    mode: 0755
+    owner: "{{pgbouncer_user}}"
+  with_items:
+    - "{{etc_prefix}}/pgbouncer"
+    - "/var/log/pgbouncer"
+
+- name: Install pgbouncer config
+  template:
+    src: "etc/pgbouncer/pgbouncer.ini.j2"
+    dest: "{{etc_prefix}}/pgbouncer/pgbouncer.ini"
+  notify: reload pgbouncer
+  tags:
+    - config
+
 - name: Install pgbouncer
   apt:
     name: pgbouncer
@@ -21,6 +39,16 @@
     https_proxy: "{{http_proxy}}"
   tags:
     - requirements
+
+- name: Create required directories
+  file:
+    path: "{{item}}"
+    state: "directory"
+    mode: 0755
+    owner: "{{pgbouncer_user}}"
+  with_items:
+    - "{{etc_prefix}}/pgbouncer"
+    - "/var/log/pgbouncer"
 
 - name: Install pgbouncer limits file
   template:

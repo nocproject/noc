@@ -1,27 +1,3 @@
-- name: create /etc/pgbouncer
-  file:
-    state: directory
-    dest: "{{etc_prefix}}/pgbouncer"
-  tags:
-    - config
-
-- name: Create required directories
-  file:
-    path: "{{item}}"
-    state: "directory"
-    mode: 0755
-  with_items:
-    - "{{etc_prefix}}/pgbouncer"
-    - "/var/log/pgbouncer"
-
-- name: Install pgbouncer config
-  template:
-    src: "etc/pgbouncer/pgbouncer.ini.j2"
-    dest: "{{etc_prefix}}/pgbouncer/pgbouncer.ini"
-  notify: reload pgbouncer
-  tags:
-    - config
-
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
 
@@ -33,7 +9,6 @@
   tags:
     - config
     - telegraf
-
 
 
 - name: start pgbouncer
