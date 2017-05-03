@@ -259,6 +259,8 @@ class ConsulDCS(DCSBase):
         :param limit: Configured limit
         :return: (slot number, number of instances) 
         """
+        if not self.session:
+            yield self.create_session()
         if self.total_slots is not None:
             raise tornado.gen.Return(
                 (self.slot_number, self.total_slots)
