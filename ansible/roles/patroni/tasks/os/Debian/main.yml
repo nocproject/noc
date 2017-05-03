@@ -1,0 +1,30 @@
+
+- name: install patroni.service systemd unit
+  template:
+    src: patroni.service.j2
+    dest: /lib/systemd/system/patroni.service
+  notify:
+    - restart patroni
+    - reload systemd
+
+- name: copy postgresql to datadir
+  copy:
+    src: "{{item}}"
+    dest: "{{postgres_data_dir}}/"
+    remote_src: yes
+  with_items:
+    - "{{postgresql_conf_path}}"
+    - "{{postgresql_hba_path}}"
+
+- name: Install python deps
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-pip
+    - python-virtualenv
+    - libpq-dev
+    - python-dev
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
