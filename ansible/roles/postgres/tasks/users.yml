@@ -16,8 +16,6 @@
     db: postgres
     role_attr_flags: CREATEDB,NOSUPERUSER
 
-- debug: var=postgres_superuser_password,postgres_replicator_password
-
 - name: Create postgres useruser user
   postgresql_user:
     name: "superuser"
