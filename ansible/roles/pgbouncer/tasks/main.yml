@@ -9,8 +9,7 @@
   file:
     path: "{{item}}"
     state: "directory"
-    owner: "{{pgbouncer_user}}"
-    mode: 0700
+    mode: 0755
   with_items:
     - "{{etc_prefix}}/pgbouncer"
     - "/var/log/pgbouncer"
