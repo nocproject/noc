@@ -8,12 +8,12 @@
 
 ## Python modules
 import logging
+import signal
+import os
 ## Third-party modules
 import tornado.gen
 import tornado.ioloop
 from six.moves.urllib.parse import urlparse
-## Python modules
-from noc.core.handler import get_handler
 
 
 class DCSBase(object):
@@ -50,5 +50,19 @@ class DCSBase(object):
         :param pool: 
         :param lock:
         :return: 
+        """
+        raise NotImplementedError()
+
+    def kill(self):
+        self.logger.info("Shooting self with SIGTERM")
+        os.kill(os.getpid(), signal.SIGTERM)
+
+    @tornado.gen.coroutine
+    def acquire_slot(self, name, limit):
+        """
+        Acquire shard slot
+        :param name: <service name>-<pool>
+        :param limit: Configured limit        
+        :return: (slot number, number of instances) 
         """
         raise NotImplementedError()

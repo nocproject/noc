@@ -464,6 +464,18 @@ class Service(object):
         raise tornado.gen.Return()
 
     @tornado.gen.coroutine
+    def acquire_slot(self):
+        if self.pooled:
+            name = "%s-%s" % (self.name, self.config.pool)
+        else:
+            name = self.name
+        slot_number, total_slots = yield self.dcs.acquire_slot(
+            name,
+            self.config.global_n_instances
+        )
+        tornado.gen.Return((slot_number, total_slots))
+
+    @tornado.gen.coroutine
     def on_deactivate(self):
         raise tornado.gen.Return()
 
