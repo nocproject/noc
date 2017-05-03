@@ -25,7 +25,7 @@
     ],
     "data": {
         "asset": {
-            "part_no": ["SP7041", "SP7041-E", "SP7041_R", "SP7041_Rev_F"]
+            "part_no": ["SP7041", "SP7041-E", "SP7041-R", "SP7041_R", "SP7041_Rev_F"]
         }
     }
 }

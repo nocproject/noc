@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | EX | EX-PWR-320-AC",
+    "name": "Juniper | EX | JPSU-350-AC-AFO-A",
     "$collection": "inv.objectmodels",
-    "uuid": "54ecf30a-b209-4a2e-a853-9c52a771cde2",
+    "uuid": "908b34c1-da49-478f-b182-ae7028e93168",
     "vendor__code": "JUNIPER",
-    "description": "320 W AC Power Supply Unit (PSU)",
+    "description": "AC Power Supply, 350W at 220V",
     "cr_context": "PEM",
     "connections": [
         {
@@ -12,21 +12,21 @@
             "gender": "f",
             "name": "power",
             "protocols": [">220VAC", ">110VAC"],
-            "type__name": "Power | IEC 60320 C14"
+            "type__name": "Power | IEC 60320 C20"
         },
         {
-            "description": "Inner slot",
+            "description": "Chassis connection",
             "direction": "o",
             "gender": "m",
             "name": "in",
-            "type__name": "Juniper | EX | 4200 PSU"
+            "type__name": "Juniper | EX | 4300 PSU"
         }
     ],
     "data": {
         "asset": {
-            "description": ["PS 320W AC"],
-            "order_part_no": ["EX-PWR-320-AC"],
-            "part_no": ["740-020957"]
+            "description": ["JPSU-350-AC-AFO-A"],
+            "order_part_no": ["JPSU-350-AC-AFO"],
+            "part_no": ["740-046873"]
         }
     }
 }

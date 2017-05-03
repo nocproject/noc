@@ -280,12 +280,17 @@
     ],
     "data": {
         "asset": {
-            "order_part_no": ["EX2200-24P-4G"]
+            "description": ["EX2200-24P-4G, POE"],
+            "order_part_no": ["EX2200-24P-4G"],
+            "part_no": ["750-026464"]
         },
         "dimensions": {
             "depth": 254.3,
             "height": 44.5,
             "width": 446
+        },
+        "power": {
+            "power": 470.0
         },
         "management": {
             "managed": true

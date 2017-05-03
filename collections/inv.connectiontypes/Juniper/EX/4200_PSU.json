@@ -1,5 +1,5 @@
 {
-    "name": "Juniper | MX | EX4200 PSU",
+    "name": "Juniper | EX | 4200 PSU",
     "$collection": "inv.connectiontypes",
     "uuid": "400d6b14-a397-4b6d-92f0-542019db9a64",
     "description": "Juniper EX3200/EX4200 PSU Slot (Power module)",

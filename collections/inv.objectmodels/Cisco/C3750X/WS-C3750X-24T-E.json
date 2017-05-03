@@ -1,269 +1,256 @@
 {
-    "name": "Juniper | EX | EX4200-T",
+    "name": "Cisco | C3750X | WS-C3750X-24T-E",
     "$collection": "inv.objectmodels",
-    "uuid": "e390fc44-9d33-4378-8501-184302aca58d",
-    "vendor__code": "JUNIPER",
-    "description": "24-port 10/100/1000BASE-T",
-    "connection_rule__name": "Juniper | EX4200",
+    "uuid": "c403e064-09e8-4fb5-b137-261621d9b73d",
+    "vendor__code": "CISCO",
+    "description": "24 Ethernet 10/100/1000 ports, with 350W AC power supply, IP Base feature set ",
+    "connection_rule__name": "Cisco | 3750X",
     "cr_context": "CHASSIS",
     "connections": [
         {
-            "description": "Console port",
-            "direction": "s",
+            "description": "FRULink Slot 1 - FRULink Module",
+            "direction": "i",
             "gender": "f",
-            "group": "0",
-            "name": "console",
-            "protocols": [">RS232"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/0 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/0",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/1 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/1",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/2 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/2",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/3 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/3",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/4 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/4",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/5 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/5",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/6 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/6",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/7 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/7",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/8 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/8",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/9 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/9",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/10 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/10",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/11 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/11",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/12 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/12",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/13 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/13",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/14 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/14",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/15 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/15",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/16 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/16",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/17 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/17",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/18 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/18",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/19 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/19",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/20 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/20",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/21 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/21",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/22 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/22",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "description": "ge-X/0/23 port",
-            "direction": "s",
-            "gender": "f",
-            "group": "0",
-            "name": "0/23",
-            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
-            "type__name": "Electrical | RJ45"
+            "name": "nm1",
+            "type__name": "Cisco | 3750X | NM"
         },
         {
             "description": "Power Supply 0",
             "direction": "i",
             "gender": "f",
-            "group": "0",
-            "name": "pem0",
-            "type__name": "Juniper | EX | 4200 PSU"
+            "name": "psu0",
+            "type__name": "Cisco | 3750X | PSU"
         },
         {
-            "description": "Uplink connection",
+            "description": "Power Supply 1",
             "direction": "i",
             "gender": "f",
-            "name": "pic1",
-            "type__name": "Juniper | EX | Uplink"
+            "name": "psu1",
+            "type__name": "Cisco | 3750X | PSU"
+        },
+        {
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Console",
+            "protocols": [">RS232"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/1 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi1",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "Management interface",
+            "direction": "s",
+            "gender": "f",
+            "name": "Fa0",
+            "protocols": ["10BASET", "100BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/2 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi2",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/3 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi3",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/4 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi4",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/5 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi5",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/6 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi6",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/7 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi7",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/8 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi8",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/9 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi9",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/10 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi10",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/11 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi11",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/12 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi12",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/13 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi13",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/14 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi14",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/15 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi15",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/16 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi16",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/17 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi17",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/18 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi18",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/19 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi19",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/20 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi20",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/21 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi21",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/22 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi22",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/23 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi23",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "description": "GigabitEthernet 0/24 port",
+            "direction": "s",
+            "gender": "f",
+            "name": "Gi24",
+            "protocols": ["10BASET", "100BASETX", "1000BASETX"],
+            "type__name": "Electrical | RJ45"
         }
     ],
     "data": {
         "asset": {
-            "description": ["EX4200-24T"],
-            "order_part_no": ["EX4200-24T"],
-            "part_no": ["EX4200-24T", "750-033065"]
+            "part_no": ["WS-C3750X-24T-E"]
+        },
+        "dimensions": {
+            "depth": 460,
+            "height": 44,
+            "width": 445
+        },
+        "power": {
+            "power": 93.0
         },
         "management": {
             "managed": true
-        },
-        "dimensions": {
-            "depth": 417,
-            "height": 43,
-            "width": 442
-        },
-        "power": {
-            "power": 320.0
         },
         "rackmount": {
             "units": 1.0

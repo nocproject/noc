@@ -1,0 +1,8 @@
+{
+    "name": "Juniper | EX | 4300 PSU",
+    "$collection": "inv.connectiontypes",
+    "uuid": "b0660fc6-ee4a-4e7f-90e3-bcb363b00d20",
+    "description": "Juniper EX4300 PSU Slot (Power module)",
+    "c_group": [],
+    "genders": "mf"
+}
