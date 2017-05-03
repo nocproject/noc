@@ -15,7 +15,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "DLink.DxS"
-    pattern_more = "CTRL\+C.+?a A[Ll][Ll]"
+    pattern_more = "CTRL\+C.+?a A[Ll][Ll]\s*"
     pattern_unpriveleged_prompt = r"\S+:(3|6|user|operator)# ?"
     pattern_syntax_error = \
         r"(Available commands|Next possible completions|Ambiguous token):"
@@ -24,6 +24,7 @@ class Profile(BaseProfile):
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
+    rogue_chars = [re.compile(r"\r\x00\s+\r\x00\x1b\[1A\x1b\[28C\n\r"), "\r"]
     config_volatile = ["^%.*?$"]
     telnet_naws = "\x00\x7f\x00\x7f"
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
@@ -105,11 +106,10 @@ class Profile(BaseProfile):
         #Remove duplicates prompt in DLink DGS-3120-24SC ver. 4.04.R004
         script.cli("")
         # Cache "show switch" command and fetch CLI Paging from it
-        #match = self.rx_pager.search(script.cli("show switch", cached=True))
         s_switch = script.scripts.get_switch()
         match = self.rx_pager.search(s_switch)
         if "DES-3528" in s_switch or "DES-3552" in s_switch:
-            # "DES-3528" and "DES-3552" not worjing without clipaging
+            # "DES-3528" and "DES-3552" not working without clipaging
             if match:
                 script.logger.debug("Enabling CLI Paging...")
                 script.cli("enable clipaging")
