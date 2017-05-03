@@ -4,6 +4,7 @@
     "uuid": "54ecf30a-b209-4a2e-a853-9c52a771cde2",
     "vendor__code": "JUNIPER",
     "description": "320 W AC Power Supply Unit (PSU)",
+    "cr_context": "PEM",
     "connections": [
         {
             "description": "Power inlet",

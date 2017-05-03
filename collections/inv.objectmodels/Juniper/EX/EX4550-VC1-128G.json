@@ -1,9 +1,9 @@
 {
-    "name": "Juniper | EX | 2x-10GE-XFP",
+    "name": "Juniper | EX | EX4550-VC1-128G",
     "$collection": "inv.objectmodels",
-    "uuid": "0dded7f2-4a1f-4026-ba40-d504ae49ccb7",
+    "uuid": "79d31eff-323c-43d9-b3a4-504a5ed7068a",
     "vendor__code": "JUNIPER",
-    "description": "2x10G Uplink module for EX",
+    "description": "128G Uplink module for EX4550",
     "cr_context": "PIC",
     "connections": [
         {
@@ -18,22 +18,22 @@
             "direction": "i",
             "gender": "f",
             "name": "0/0",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
         },
         {
             "description": "Port 1",
             "direction": "i",
             "gender": "f",
             "name": "0/1",
-            "protocols": ["TransEth10G"],
-            "type__name": "Transceiver | XFP"
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
         }
     ],
     "data": {
         "asset": {
-            "order_part_no": ["2x 10GE XFP"],
-            "part_no": ["711-021271"]
+            "order_part_no": ["EX4550-VC1-128G"],
+            "part_no": ["711-039072"]
         }
     }
 }

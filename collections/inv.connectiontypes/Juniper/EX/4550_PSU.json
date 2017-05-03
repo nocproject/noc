@@ -2,7 +2,7 @@
     "name": "Juniper | EX | 4550 PSU",
     "$collection": "inv.connectiontypes",
     "uuid": "639c65db-76af-44d9-878e-63da5e231552",
-    "description": "Juniper EX4550 PSU Slot",
+    "description": "Juniper EX4550 PSU Slot (Power module)",
     "c_group": [],
     "genders": "mf"
 }

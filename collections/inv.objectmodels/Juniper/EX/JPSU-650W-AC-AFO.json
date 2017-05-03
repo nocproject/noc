@@ -4,7 +4,7 @@
     "uuid": "805e772e-abce-4bc0-a58b-40926a7329d5",
     "vendor__code": "JUNIPER",
     "description": "AC Power Supply, 650W at 220V",
-    "cr_context": "PSU",
+    "cr_context": "PEM",
     "connections": [
         {
             "description": "Power inlet",
