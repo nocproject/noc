@@ -21,6 +21,7 @@ telegraf_prometheus_enabled: "{{lookup('env','PROMETHEUS_ENABLED') | default(Fal
 telegraf_influxdb_enabled: "{{lookup('env','INFLUXDB_ENABLED') | default(True, True)}}"
 
 tower_ip: 127.0.0.1
+tower_path: /opt/tower
 tower_version: "{{lookup('env','TOWER_VERSION')}}"
 tower_minimum_version: "0.1a64"
 http_proxy:  "" # just default. please set actual variable via tower on DC tab

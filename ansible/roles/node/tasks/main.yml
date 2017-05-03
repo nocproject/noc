@@ -7,7 +7,7 @@
   when: "'Linux' in ansible_system"
 
 - debug:
-    msg: "Please setup cluster wide /etc/hosts via /opt/tower/var/tower/data/{{noc_env}}/hosts on Tower server"
+    msg: "Please setup cluster wide /etc/hosts via {{tower_path}}/var/tower/data/{{noc_env}}/hosts on Tower server"
   run_once: true
 
 
@@ -15,7 +15,7 @@
   local_action:
     module: template
     src: "hosts.j2"
-    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     force: no
   become: no
   run_once: true
@@ -25,7 +25,7 @@
 
 - name: Setup /etc/hosts
   lineinfile:
-    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     regexp: ".*{{ item }}$"
     create: no
@@ -41,7 +41,7 @@
 
 - name: copy hosts file to nodes
   copy:
-    src: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    src: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     dest: /etc/hosts
   when: "'nodes' in groups"
   tags:
