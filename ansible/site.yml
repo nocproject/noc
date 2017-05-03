@@ -58,29 +58,45 @@
   become: yes
   serial: 1
   any_errors_fatal: true
+  tags:
+    - postgres
+    - patroni
+    - external
   vars_files:
     - "vars/main.yml"
   roles:
     - role: patroni
       become: yes
-      tags:
-        - postgres
-        - patroni
-        - external
+
 
 - name: Install and configure postgres
   hosts: svc-postgres
   become: yes
   serial: 1
   any_errors_fatal: true
+  tags:
+    - postgres
+    - external
   vars_files:
     - "vars/main.yml"
   roles:
     - role: postgres
       become: yes
+
+- name: Install and configure grafana
+  hosts: svc-grafana
+  become: yes
+  serial: 1
+  any_errors_fatal: true
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: grafana
+      become: yes
       tags:
-        - postgres
+        - grafana
         - external
+
 
 - name: Install and configure nsq
   hosts: all
@@ -113,7 +129,6 @@
   roles:
     - role: mongod
       become: yes
-      when: "has_svc_mongod | default(False) or consul_env"
       tags:
         - mongod
         - external
@@ -127,7 +142,6 @@
   roles:
     - role: pgbouncer
       become: yes
-      when: "has_svc_pgbouncer | default(False) or consul_env"
       tags:
         - pgbouncer
         - external
@@ -141,7 +155,6 @@
   roles:
     - role: influxdb
       become: yes
-      when: "has_svc_influxdb | default(False) or consul_env"
       tags:
         - influxdb
         - external
@@ -156,25 +169,9 @@
   roles:
     - role: nginx
       become: yes
-      when: "has_svc_nginx | default(False) or consul_env"
       tags:
         - nginx
         - web
-        - external
-
-- name: Install and configure grafana
-  hosts: svc-grafana
-  become: yes
-  serial: 1
-  any_errors_fatal: true
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: grafana
-      become: yes
-      when: "has_svc_grafana | default(False) or consul_env"
-      tags:
-        - grafana
         - external
 
 
@@ -187,7 +184,6 @@
   roles:
     - role: memcached
       become: yes
-      when: "has_svc_memcached | default(False) or consul_env"
       tags:
         - memcached
         - external
