@@ -25,94 +25,52 @@
   with_items:
     - "{{noc_root}}/var/etc/postgres"
 
-- name: Setting pg_hba.conf
-  lineinfile:
-    dest: "{{postgresql_hba_path}}"
-    line: "host    all             all             0.0.0.0/0            md5"
-  notify: restart postgres
-  register: s1
-  tags:
-    - config
-
-- name: Including postgres.conf
-  lineinfile:
-    dest: "{{postgresql_conf_path}}"
-    line: "include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
-  notify: restart postgres
-  register: s2
-  tags:
-    - config
-
-- name: Setting config
-  template:
-    src: "postgres.conf.j2"
-    dest: "{{ noc_root }}/var/etc/postgres/postgres.conf"
-  notify: restart postgres
-  register: s3
-  tags:
-    - config
-
-- name: Apply PostgreSQL config
-  service:
-    name: "{{postgres_system_service}}"
-    state: restarted
-  when: s1.changed or s2.changed or s3.changed
-
-- name: Enable postgres system service
-  service:
-    name: "{{postgres_system_service}}"
-    enabled: yes
-    state: started
-
-- name: Create postgres NOC user
-  postgresql_user:
-    name: "{{noc_pg_user}}"
-    password: "{{noc_pg_password}}"
-    login_user: "{{ postgres_user }}"
-    db: postgres
-    role_attr_flags: CREATEDB,NOSUPERUSER
-  become_user: "{{postgres_user}}"
-  when: "has_svc_postgres_master | default(False) "
-
-- name: Create postgres NOC database
-  postgresql_db:
-    name: "{{noc_pg_db}}"
-    encoding: "UTF-8"
-    owner: "{{noc_pg_user}}"
-    login_user: "{{ postgres_user }}"
-    state: "present"
-  become_user: "{{postgres_user}}"
-  when: "has_svc_postgres_master | default(False) "
-
-- name: Create postgres Grafana user
-  postgresql_user:
-    name: "{{grafana_pg_user}}"
-    password: '{{grafana_pg_password}}'
-    login_user: "{{ postgres_user }}"
-    db: postgres
-    role_attr_flags: CREATEDB,NOSUPERUSER
-  become_user: "{{postgres_user}}"
-  when: "has_svc_postgres_master | default(False) "
-
-- name: Create postgres Grafana database
-  postgresql_db:
-    name: "{{grafana_pg_db}}"
-    encoding: "UTF-8"
-    owner: "{{grafana_pg_user}}"
-    login_user: "{{ postgres_user }}"
-    state: "present"
-  become_user: "{{postgres_user}}"
-  when: "has_svc_postgres_master | default(False)"
-
 - name: setup env
   template:
     src: "{{item.name}}"
     dest: "{{item.dest}}"
     mode: "{{item.mode}}"
     owner: "{{noc_user}}"
+  ignore_errors: true
   with_items:
     - { name: env.j2, dest: "{{ noc_root }}/var/etc/postgres/env", mode: "u=rw,g=r,o=r" }
     - { name: pgpass.j2, dest: "{{ noc_root }}/var/etc/postgres/.pgpass", mode: "u=rw,g-rwx,o-rwx" }
+
+- block:
+  - name: Enable postgres system service
+    service:
+      name: "{{postgres_system_service}}"
+      enabled: yes
+      state: started
+    when: "has_svc_postgres_master | default(False) and not has_svc_patroni | default(True)"
+
+  - name: Setting pg_hba.conf
+    lineinfile:
+      dest: "{{postgresql_hba_path}}"
+      line: "host    all             all             0.0.0.0/0            md5"
+    notify: reload postgres
+    tags:
+      - config
+
+  - name: Including postgres.conf
+    lineinfile:
+      dest: "{{postgresql_conf_path}}"
+      line: "include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
+    notify: reload postgres
+    tags:
+      - config
+
+  - name: Setting config
+    template:
+      src: "postgres.conf.j2"
+      dest: "{{ noc_root }}/var/etc/postgres/postgres.conf"
+    notify: reload postgres
+    tags:
+      - config
+  - include: "users.yml"
+    become_user: "{{postgres_user}}"
+
+  when: "has_svc_postgres_master | default(False) and not has_svc_patroni | default(True)"
 
 - name: Install postgres monitoring
   template:
