@@ -9,14 +9,13 @@
 ## Python modules
 import uuid
 import random
-import os
-import signal
 ## Third-party modules
 from six.moves.urllib.parse import unquote
 import tornado.gen
 import tornado.ioloop
 import consul.base
 import consul.tornado
+import ujson
 ## NOC modules
 from base import DCSBase
 
@@ -38,6 +37,8 @@ class ConsulDCS(DCSBase):
     DEFAULT_CONSUL_SESSION_TTL = 10
     DEFAULT_CONSUL_LOCK_DELAY = 1
     DEFAULT_CONSUL_RETRY_TIMEOUT = 1
+    DEFAULT_CONSUL_KEEPALIVE_ATTEMPTS = 5
+    EMPTY_HOLDER = ""
 
     def __init__(self, url, ioloop=None):
         self.name = None
@@ -48,12 +49,15 @@ class ConsulDCS(DCSBase):
         self.check_interval = self.DEFAULT_CONSUL_CHECK_INTERVAL
         self.check_timeout = self.DEFAULT_CONSUL_CHECK_TIMEOUT
         self.release_after = self.DEFAULT_CONSUL_RELEASE
+        self.keepalive_attempts = self.DEFAULT_CONSUL_KEEPALIVE_ATTEMPTS
         self.svc_name = None
         self.svc_address = None
         self.svc_port = None
         self.svc_check_url = None
         self.svc_id = None
         self.session = None
+        self.slot_number = None
+        self.total_slots = None
         super(ConsulDCS, self).__init__(url, ioloop)
         self.consul = consul.tornado.Consul(
             host=self.consul_host,
@@ -182,16 +186,23 @@ class ConsulDCS(DCSBase):
     @tornado.gen.coroutine
     def keep_alive(self):
         if self.session:
-            try:
-                yield self.consul.session.renew(self.session)
-            except consul.base.NotFound:
-                self.logger.info("Session lost. Forcing quit")
+            touched = False
+            for n in range(self.keepalive_attempts):
+                try:
+                    yield self.consul.session.renew(self.session)
+                    touched = True
+                    break
+                except consul.base.NotFound:
+                    self.logger.info("Session lost. Forcing quit")
+                    break
+                except ConsulRepeatableErrors as e:
+                    self.logger.info("Cannot refresh session due to ignorable error: %s", e)
+                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+            if not touched:
+                self.logger.info("Cannot refresh session, stopping")
                 self.keep_alive_task.stop()
                 self.keep_alive_task = None
                 self.kill()
-            except ConsulRepeatableErrors as e:
-                self.logger.info("Cannot refresh session due to ignorable error: %s", e)
-                pass
         else:
             self.keep_alive_task.stop()
             self.keep_alive_task = None
@@ -214,11 +225,14 @@ class ConsulDCS(DCSBase):
                     acquire=self.session,
                     token=self.consul_token
                 )
+                if status:
+                    break
+                else:
+                    self.logger.info("Failed to acquire lock")
+                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
             except ConsulRepeatableErrors:
                 yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 continue
-            if status:
-                break
             # Waiting for lock release
             while True:
                 try:
@@ -237,6 +251,102 @@ class ConsulDCS(DCSBase):
                     yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
         self.logger.info("Lock acquired")
 
-    def kill(self):
-        self.logger.info("Shooting self with SIGTERM")
-        os.kill(os.getpid(), signal.SIGTERM)
+    @tornado.gen.coroutine
+    def acquire_slot(self, name, limit):
+        """
+        Acquire shard slot
+        :param name: <service name>-<pool>
+        :param limit: Configured limit
+        :return: (slot number, number of instances) 
+        """
+        if self.total_slots is not None:
+            raise tornado.gen.Return(
+                (self.slot_number, self.total_slots)
+            )
+        prefix = "%s/slots/%s" % (self.consul_prefix, name)
+        contender_path = "%s/%s" % (prefix, self.session)
+        contender_info = self.session
+        manifest_path = "%s/manifest" % prefix
+        self.logger.info("Writing contender slot info into %s", contender_path)
+        while True:
+            try:
+                status = yield self.consul.kv.put(
+                    key=contender_path,
+                    value=contender_info,
+                    acquire=self.session,
+                    token=self.consul_token
+                )
+                if status:
+                    break
+                else:
+                    self.logger.info("Failed to write contender slot info")
+                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+            except ConsulRepeatableErrors:
+                yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+        index = 0
+        cas = 0
+        while True:
+            self.logger.info("Attempting to get slot")
+            seen_sessions = set()
+            dead_contenders = set()
+            manifest = None
+            # Non-blocking for a first time
+            # Block until change every next try
+            index, cv = yield self.consul.kv.get(
+                key=prefix, index=index, recurse=True
+            )
+            for e in cv:
+                if e["Key"] == manifest_path:
+                    cas = e["ModifyIndex"]
+                    # @todo: Handle errors
+                    manifest = ujson.loads(e["Value"])
+                else:
+                    if "Session" in e:
+                        seen_sessions.add(e["Session"])
+                    else:
+                        dead_contenders.add(e["Key"])
+            if manifest:
+                total_slots = manifest["Limit"]
+                holders = [
+                    h if h in seen_sessions else self.EMPTY_HOLDER
+                    for h in manifest["Holders"]
+                ]
+            else:
+                self.logger.info("Initializing manifest")
+                total_slots = limit
+                holders = []
+            # Try to allocate slot
+            if len(holders) < total_slots:
+                # Available slots from the end
+                slot_number = len(holders)
+                holders += [self.session]
+            else:
+                # Try to reclaim slots in the middle
+                try:
+                    slot_number = holders.index(self.EMPTY_HOLDER)
+                    holders[slot_number] = self.session
+                except ValueError:
+                    self.logger.info("All slots a busy, waiting")
+                    continue
+            # Update manifest
+            self.logger.info("Attempting to acquire slot %s/%s",
+                             slot_number, total_slots)
+            try:
+                r = yield self.consul.kv.put(
+                    key=manifest_path,
+                    value=ujson.dumps({
+                        "Limit": total_slots,
+                        "Holders": holders
+                    }),
+                    cas=cas
+                )
+            except ConsulRepeatableErrors as e:
+                self.logger.info("Cannot acquire slot: %s", e)
+                continue
+            if r:
+                self.logger.info("Acquired slot %s/%s",
+                                 slot_number, total_slots)
+                self.slot_number = slot_number
+                self.total_slots = total_slots
+                raise tornado.gen.Return((slot_number, total_slots))
+            self.logger.info("Cannot acquire slot: CAS changed, retry")

@@ -32,17 +32,17 @@ class DiscoveryService(Service):
 
     @tornado.gen.coroutine
     def on_activate(self):
-        if self.config.global_n_instances > 1:
+        slot_number, total_slots = yield self.acquire_slot()
+        if total_slots > 1:
             self.logger.info(
-                "Enabling distributed mode: Slot %d of %d",
-                self.config.instance + self.config.global_offset,
-                self.config.global_n_instances
+                "Enabling distributed mode: Slot %d/%d",
+                slot_number, total_slots
             )
             ifilter = {
                 "key": {
                     "$mod": [
-                        self.config.global_n_instances,
-                        self.config.instance + self.config.global_offset
+                        total_slots,
+                        slot_number
                     ]
                 }
             }
