@@ -457,19 +457,19 @@ config:
       default: 9.4
       description: <strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html> docs </a> before changing that field.
 
-    postgres_wal_directory:
+    superuser_password:
+      label: Postgresql superuser password
       type: str
-      label: Postgresql wal directory
-      default: /var/lib/postgresql/9.4/main/pg_xlog
-      description: Unused
+      default: noc
+      description: Password for user "superuser"
 
-    postgres_data_directory:
+    replicator_password:
+      label: Postgresql replicator password
       type: str
-      label: Postgresql data directory
-      default: /var/lib/postgresql/9.4/main/
-      description: Unused
+      default: noc
+      description: Password for user "replicator"
 
-    postgres_max_clients:
+    max_clients:
       type: int
       label: Postgresql max clients
       default: 300
@@ -593,14 +593,6 @@ config:
   patroni:
     rest_password:
       label: Patroni REST password
-      type: str
-
-    postgres_password:
-      label: Patroni postgres password
-      type: str
-
-    replicator_password:
-      label: Patroni replicator password
       type: str
 
     virtual_ip:

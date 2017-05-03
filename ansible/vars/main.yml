@@ -69,8 +69,6 @@ kernel_shmmax: "{{ kernel_shmall|int() * 4096 }}"
 postgres_path: /usr/bin/postgres
 postgres_system_service: postgresql
 postgres_user: postgres
-postgresql_conf_path: /var/lib/pgsql/data/postgresql.conf
-postgresql_hba_path: /var/lib/pgsql/data/pg_hba.conf
 
 apt_cache_valid_time: 86400
 pycurl_ssl_library: openssl

@@ -53,9 +53,25 @@
         - node
         - noc
 
+- name: Install and configure patroni
+  hosts: svc-patroni
+  become: yes
+  serial: 1
+  any_errors_fatal: true
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: patroni
+      become: yes
+      tags:
+        - postgres
+        - patroni
+        - external
+
 - name: Install and configure postgres
   hosts: svc-postgres
   become: yes
+  serial: 1
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
@@ -65,7 +81,6 @@
       tags:
         - postgres
         - external
-
 
 - name: Install and configure nsq
   hosts: all
