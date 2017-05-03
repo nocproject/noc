@@ -473,7 +473,7 @@ class Service(object):
             name,
             self.config.global_n_instances
         )
-        tornado.gen.Return((slot_number, total_slots))
+        raise tornado.gen.Return((slot_number, total_slots))
 
     @tornado.gen.coroutine
     def on_deactivate(self):
