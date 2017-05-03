@@ -17,6 +17,7 @@
   command: '{{postgres_bin_dir}}/postgresql{{postgresql_version|replace(".","")}}-setup initdb'
   args:
     creates: /var/lib/pgsql/{{ postgresql_version }}/initdb.log
+  when: "has_svc_postgres_master | default(False) or not has_svc_patroni | default(True)"
 
 
 - name: Install postgres limits file

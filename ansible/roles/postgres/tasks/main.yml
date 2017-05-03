@@ -37,13 +37,6 @@
     - { name: pgpass.j2, dest: "{{ noc_root }}/var/etc/postgres/.pgpass", mode: "u=rw,g-rwx,o-rwx" }
 
 - block:
-  - name: Enable postgres system service
-    service:
-      name: "{{postgres_system_service}}"
-      enabled: yes
-      state: started
-    when: "has_svc_postgres_master | default(False) and not has_svc_patroni | default(True)"
-
   - name: Setting pg_hba.conf
     lineinfile:
       dest: "{{postgresql_hba_path}}"
@@ -67,10 +60,17 @@
     notify: reload postgres
     tags:
       - config
+
+  - name: Enable postgres system service
+    service:
+      name: "{{postgres_system_service}}"
+      enabled: yes
+      state: started
+
   - include: "users.yml"
     become_user: "{{postgres_user}}"
 
-  when: "has_svc_postgres_master | default(False) and not has_svc_patroni | default(True)"
+  when: "has_svc_postgres_master | default(False) or not has_svc_patroni | default(True)"
 
 - name: Install postgres monitoring
   template:
