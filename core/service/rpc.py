@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## RPC Wrapper
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -58,18 +58,6 @@ class RPCProxy(object):
                 mw = RPCMethod(self, item)
                 self._methods[item] = mw
             return mw
-
-    def _get_service(self):
-        s = self._service.config.get_service(
-            self._service_name
-        )
-        if not s:
-            raise ValueError("No active services '%s' configured" % self._service_name)
-        return random.choice(s)
-
-    def _get_url(self):
-        svc = self._get_service()
-        return "http://%s/api/%s/" % (svc, self._api)
 
     @tornado.gen.coroutine
     def _call(self, method, *args, **kwargs):
@@ -135,29 +123,18 @@ class RPCProxy(object):
             msg["id"] = tid
         body = ujson.dumps(msg)
         # Get services
-        services = self._service.config.get_service(
-            self._service_name
-        )
-        if not services:
-            raise RPCError("Service is not found")
-        timeouts = list(self._service.iter_rpc_retry_timeout())
-        retries = len(timeouts) + 1
-        if len(services) < retries:
-            services *= retries
         response = None
-        last = None
-        for svc in random.sample(services, retries):
-            # Sleep when trying same instance
-            if svc == last:
-                yield tornado.gen.sleep(timeouts.pop())
-            #
-            last = svc
+        for t in self._service.iter_rpc_retry_timeout():
+            # Resolve service against service catalog
+            svc = yield self._service.dcs.resolve(self._service_name)
             response = yield make_call(
                 "http://%s/api/%s/" % (svc, self._api),
                 body
             )
             if response:
                 break
+            else:
+                yield tornado.gen.sleep(t)
         if response:
             if not is_notify:
                 result = ujson.loads(response.body)
