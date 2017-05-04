@@ -122,14 +122,16 @@ class Command(BaseCommand):
             if remove:
                 os.unlink(fp)
 
-    def handle_export(self, list_collection=False, export_path=None, export_collections=None, export_model_names=None, export_model_uuids=None):
-        MODELS={}
+    def handle_export(self, list_collection=False, 
+                      export_path=None, export_collections=None, 
+                      export_model_names=None, export_model_uuids=None):
+        MODELS = {}
         for c in COLLECTIONS:
             cm = get_model(c)
             cn = cm._meta["json_collection"]
             MODELS[cn] = cm
-        if list_collection != None:
-            if list_collection == True:
+        if list_collection is not None:
+            if list_collection is True:
                 for c in Collection.iter_collections():
                     print "%s" % c.name
             else:
