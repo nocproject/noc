@@ -7,6 +7,10 @@ console.debug("Defining NOC.sa.getnow.Model");
 Ext.define("NOC.sa.getnow.Model", {
     extend: "Ext.data.Model",
     rest_url: "/sa/getnow/",
+    actionMethods:{
+        read   : 'POST'
+    },
+
     fields: [
         {
             name: "id",

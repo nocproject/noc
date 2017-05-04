@@ -9,7 +9,7 @@ Ext.define('NOC.sa.getnow.AppController', {
     alias: 'controller.getnow',
 
     mixins: [
-        "NOC.core.Export"
+        'NOC.core.Export'
     ],
 
     onShowFilter: function() {
