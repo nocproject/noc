@@ -4,7 +4,6 @@
     src: patroni.service.j2
     dest: /usr/lib/systemd/system/patroni.service
   notify:
-    - restart patroni
     - reload systemd
 
 - name: Install python deps
