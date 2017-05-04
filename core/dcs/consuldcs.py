@@ -17,9 +17,31 @@ import consul.base
 import consul.tornado
 import ujson
 ## NOC modules
-from base import DCSBase
+from base import DCSBase, ResolverBase
 
 ConsulRepeatableErrors = consul.base.Timeout
+
+
+class ConsulResolver(ResolverBase):
+    @tornado.gen.coroutine
+    def start(self):
+        index = 0
+        self.logger.info("[%s] Starting resolver", self.name)
+        while not self.to_shutdown:
+            try:
+                index, services = yield self.dcs.consul.catalog.service(
+                    service=self.name,
+                    index=index,
+                    token=self.dcs.consul_token
+                )
+            except ConsulRepeatableErrors:
+                continue
+            r = dict(
+                (svc["ID"], "%s:%s" % (svc["ServiceAddress"], svc["ServicePort"]))
+                for svc in services
+            )
+            self.set_services(r)
+        self.logger.info("[%s] Stopping resolver", self.name)
 
 
 class ConsulDCS(DCSBase):
@@ -39,6 +61,8 @@ class ConsulDCS(DCSBase):
     DEFAULT_CONSUL_RETRY_TIMEOUT = 1
     DEFAULT_CONSUL_KEEPALIVE_ATTEMPTS = 5
     EMPTY_HOLDER = ""
+
+    resolver_cls = ConsulResolver
 
     def __init__(self, url, ioloop=None):
         self.name = None
@@ -66,6 +90,7 @@ class ConsulDCS(DCSBase):
         )
         self.session = None
         self.keep_alive_task = None
+        self.service_watchers = {}
 
     def parse_url(self, u):
         if ":" in u.netloc:
@@ -134,15 +159,12 @@ class ConsulDCS(DCSBase):
             self.session = None
 
     @tornado.gen.coroutine
-    def register(self, name, address, port, pool=None, lock=None):
+    def register(self, name, address, port, lock=None):
         self.name = name
         self.svc_check_url = "http://%s:%s/health/" % (address, port)
         if lock:
             yield self.acquire_lock(lock)
         svc_id = self.session or str(uuid.uuid4())
-        tags = [svc_id]
-        if pool:
-            tags += [pool]
         checks = consul.Check.http(
             self.svc_check_url,
             self.check_interval,
@@ -150,15 +172,15 @@ class ConsulDCS(DCSBase):
         )
         checks["DeregisterCriticalServiceAfter"] = self.release_after
         while True:
-            self.logger.info("Registering service %s: %s:%s (id=%s, pool=%s)",
-                             name, address, port, svc_id, pool)
+            self.logger.info("Registering service %s: %s:%s (id=%s)",
+                             name, address, port, svc_id)
             try:
                 r = yield self.consul.agent.service.register(
                     name=name,
                     service_id=svc_id,
                     address=address,
                     port=port,
-                    tags=tags,
+                    tags=[svc_id],
                     check=checks
                 )
             except ConsulRepeatableErrors:
