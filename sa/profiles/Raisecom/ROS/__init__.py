@@ -22,6 +22,7 @@ class Profile(BaseProfile):
     pattern_prompt = r"^\S+?#"
     command_more = " "
     command_exit = "exit"
+    pattern_syntax_error = r"% \".+\"  (?:Unknown command.)"
     rogue_chars = [re.compile(r"\x08+\s+\x08+"), "\r"]
 
     rx_ver = re.compile(
