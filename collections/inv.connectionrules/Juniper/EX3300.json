@@ -1,5 +1,5 @@
 {
-    "name": "Juniper | EX2200",
+    "name": "Juniper | EX3300",
     "$collection": "inv.connectionrules",
     "uuid": "7cc03adc-6420-4ed4-a8a6-66ba3c542679",
     "description": "Juniper EX3300 connection rules",
