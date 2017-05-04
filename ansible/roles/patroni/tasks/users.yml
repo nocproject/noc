@@ -3,7 +3,7 @@
   postgresql_user:
     name: "{{noc_pg_user}}"
     password: "{{noc_pg_password}}"
-    login_user: "{{ postgres_user }}"
+    login_user: "superuser"
     db: postgres
     role_attr_flags: CREATEDB,NOSUPERUSER
 
@@ -12,7 +12,7 @@
   postgresql_user:
     name: "{{grafana_pg_user}}"
     password: '{{grafana_pg_password}}'
-    login_user: "{{ postgres_user }}"
+    login_user: "superuser"
     db: postgres
     role_attr_flags: CREATEDB,NOSUPERUSER
 
@@ -21,15 +21,14 @@
     name: "{{noc_pg_db}}"
     encoding: "UTF-8"
     owner: "{{noc_pg_user}}"
-    login_user: "{{ postgres_user }}"
+    login_user: "superuser"
     state: "present"
-
 
 - name: Create postgres Grafana database
   postgresql_db:
     name: "{{grafana_pg_db}}"
     encoding: "UTF-8"
     owner: "{{grafana_pg_user}}"
-    login_user: "{{ postgres_user }}"
+    login_user: "superuser"
     state: "present"
 

@@ -35,26 +35,24 @@
   template:
     src: postgres0.yml.j2
     dest: /etc/patroni/postgres.yml
-  notify: restart patroni
+  register: config_install
 
 - name: start patroni
   service:
     name: patroni
     state: started
     enabled: yes
-  when: "has_svc_postgres_master | default(False)"
+  when: config_install.changed
 
 - name: Waiting for patroni on master
   wait_for:
     host: "0.0.0.0"
     port: "{{patroni_listen}}"
-    timeout: 30
+    timeout: 90
     state: present
-  when: "has_svc_postgres_master | default(False)"
 
-- name: start patroni on slaves
-  service:
-    name: patroni
-    state: started
-    enabled: yes
-  when: "not has_svc_postgres_master | default(False)"
+- pause:
+    seconds: 30
+
+- include: "users.yml"
+  when: "has_svc_postgres_master | default(False)"

@@ -8,6 +8,7 @@ restapi:
 consul:
   host: 127.0.0.1:8500
 
+
 bootstrap:
   dcs:
     ttl: 30
@@ -19,6 +20,40 @@ bootstrap:
       use_slots: true
       parameters:
         wal_level: hot_standby
+        max_connections: {{postgres_max_connections}}
+
+  pg_hba:
+    - host all all 0.0.0.0/0 md5
+    - host replication replicator 192.168.0.0/16    md5
+  initdb:
+    - data-checksums
+  users:
+    replicator:
+      password: {{ postgres_replicator_password }}
+      options:
+        - replication
+    superuser:
+      password: {{ patroni_postgres_password }}
+      options:
+        - createrole
+        - createdb
+    {{noc_pg_user}}:
+      password: {{ noc_pg_password }}
+      options:
+        - nosuperuser
+        - createdb
+    {{grafana_pg_user}}:
+      password: {{ grafana_pg_password }}
+      options:
+        - nosuperuser
+        - createdb
+  pg_rewind:
+    username: replicator
+    password: {{ postgres_superuser_password }}
+
+  restore: /opt/patroni/patroni/scripts/restore.py
+  #recovery_conf:
+    #restore_command: cp ../wal_archive/%f %p
 
 
 postgresql:
@@ -31,11 +66,6 @@ postgresql:
   maximum_lag_on_failover: 1048576 # 1 megabyte in bytes
   use_slots: True
   config_base_name: postgresql
-  pg_rewind:
-    username: noc
-    password: {{ postgres_superuser_password }}
-  pg_hba:
-    - host all all 0.0.0.0/0 md5
   replication:
     username: replicator
     password: {{ postgres_replicator_password }}
@@ -43,9 +73,7 @@ postgresql:
   superuser:
     username: superuser
     password: {{ patroni_postgres_password }}
-  restore: /opt/patroni/patroni/scripts/restore.py
-  #recovery_conf:
-    #restore_command: cp ../wal_archive/%f %p
+
   parameters:
     archive_mode: "on"
     wal_level: hot_standby

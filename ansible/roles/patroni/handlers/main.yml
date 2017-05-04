@@ -1,11 +1,4 @@
 ---
-- name: restart patroni
-  become: yes
-  service:
-    name: patroni
-    state: restarted
-    enabled: yes
-
 - name: reload systemd
   become: yes
   systemd:
