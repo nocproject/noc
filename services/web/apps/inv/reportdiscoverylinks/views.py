@@ -45,7 +45,7 @@ class ReportFilterApplication(SimpleReport):
                 continue
             count[v["count"]].add(v["_id"][0])
 
-        for p in Pool.objects.all():
+        for p in Pool.objects.order_by("name"):
             if p.name == "P0001":
                 continue
             data += [SectionRow(name=p.name)]
