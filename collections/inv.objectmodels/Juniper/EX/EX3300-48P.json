@@ -532,8 +532,8 @@
     ],
     "data": {
         "asset": {
-            "description": ["EX3300-48P"]
-            "order_part_no": ["EX3300-48P"]
+            "description": ["EX3300-48P"],
+            "order_part_no": ["EX3300-48P"],
             "part_no": ["750-034250", "EX3300-48P"]
         },
         "dimensions": {
