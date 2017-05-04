@@ -875,7 +875,8 @@ Ext.define('NOC.sa.runcommands.Application', {
                                 id: key,
                                 script: 'commands',
                                 args: {
-                                    commands: obj[key].split('\n')
+                                    commands: obj[key].split('\n'),
+                                    include_commands: true
                                 }
                             });
                         }
@@ -897,7 +898,8 @@ Ext.define('NOC.sa.runcommands.Application', {
             me.sendCommands('commands', {
                 'script': 'commands',
                 'args': {
-                    'commands': me.commandPanel.getValues().cmd.split('\n')
+                    'commands': me.commandPanel.getValues().cmd.split('\n'),
+                    'include_commands': 'true'
                 }
             });
         } else if('snippets' === me.modeField.getValue()) {
