@@ -65,6 +65,7 @@ test:with data:
     - cd /opt/noc
     - ./noc migrate
     - ./noc collection sync
+    - ./noc verify-model
   tags:
     - docker
 
