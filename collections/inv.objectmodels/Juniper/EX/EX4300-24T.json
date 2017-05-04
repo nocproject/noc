@@ -90,7 +90,7 @@
         },
         {
             "description": "ge-X/0/8 port",
-            "direction": "ss",
+            "direction": "s",
             "gender": "f",
             "group": "0",
             "name": "0/8",
