@@ -4,7 +4,7 @@
     "uuid": "0673fb5b-d669-4fab-8f65-dea15243e264",
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-T (24-ports PoE+) with 4 SFP uplink ports",
-    "connection_rule__name": "Juniper | EX2200",
+    "connection_rule__name": "Juniper | EX3300",
     "cr_context": "CHASSIS",
     "connections": [
         {

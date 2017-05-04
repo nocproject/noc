@@ -17,7 +17,7 @@
             "description": "Port 0",
             "direction": "i",
             "gender": "f",
-            "name": "0/0",
+            "name": "2/0",
             "protocols": ["TransEth40G"],
             "type__name": "Transceiver | QSFP+"
         },
@@ -25,7 +25,7 @@
             "description": "Port 1",
             "direction": "i",
             "gender": "f",
-            "name": "0/1",
+            "name": "2/1",
             "protocols": ["TransEth40G"],
             "type__name": "Transceiver | QSFP+"
         }

@@ -341,11 +341,47 @@
             "type__name": "Transceiver | SFP"
         },
         {
+            "description": "et-X/1/0 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "1/0",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "description": "et-X/1/1 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "1/1",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "description": "et-X/1/2 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "1/2",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
+            "description": "et-X/1/3 port",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "name": "1/3",
+            "protocols": ["TransEth40G"],
+            "type__name": "Transceiver | QSFP+"
+        },
+        {
             "description": "Uplink module",
             "direction": "i",
             "gender": "f",
             "group": "1",
-            "name": "pic1",
+            "name": "pic2",
             "type__name": "Juniper | EX | Uplink"
         },
         {
