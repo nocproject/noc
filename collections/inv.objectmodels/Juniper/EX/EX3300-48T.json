@@ -532,7 +532,9 @@
     ],
     "data": {
         "asset": {
+            "description": ["EX3300-48T"]
             "order_part_no": ["EX3300-48T"]
+            "part_no": ["EX3300-48T"]
         },
         "dimensions": {
             "depth": 331,

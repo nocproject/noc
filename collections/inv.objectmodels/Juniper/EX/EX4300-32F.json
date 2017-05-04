@@ -405,7 +405,7 @@
         "asset": {
             "description": ["EX4300-32F"],
             "order_part_no": ["EX4300-32F"],
-            "part_no": ["650-053003"]
+            "part_no": ["650-053003", "EX4300-32F"]
         },
         "management": {
             "managed": true

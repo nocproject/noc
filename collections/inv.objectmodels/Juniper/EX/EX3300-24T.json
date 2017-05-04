@@ -307,7 +307,9 @@
     ],
     "data": {
         "asset": {
+            "description": ["EX3300-24T"]
             "order_part_no": ["EX3300-24T"]
+            "part_no": ["750-034247", "EX3300-24T"]
         },
         "dimensions": {
             "depth": 331,

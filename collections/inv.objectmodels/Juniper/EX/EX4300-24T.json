@@ -297,7 +297,7 @@
         "asset": {
             "description": ["EX4300-24T"],
             "order_part_no": ["EX4300-24T"],
-            "part_no": ["650-044936"]
+            "part_no": ["650-044936", "EX4300-24T"]
         },
         "management": {
             "managed": true

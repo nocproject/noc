@@ -496,7 +496,9 @@
     ],
     "data": {
         "asset": {
+            "description": ["EX2200-48T-4G"]
             "order_part_no": ["EX2200-48T-4G"]
+            "part_no": ["750-026468", "EX2200-48T-4G"]
         },
         "dimensions": {
             "depth": 254.3,
