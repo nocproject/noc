@@ -85,6 +85,9 @@ class SSHIOStream(IOStream):
             raise self.cli.CLIError("SSH Error: %s" % e)
 
     def write_to_fd(self, data):
+        # libssh2 doesn't accept memoryview
+        if type(data) == memoryview:
+            data = data.tobytes()
         try:
             return self.channel.write(data)
         except _libssh2.Error as e:
