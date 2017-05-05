@@ -100,8 +100,8 @@ Ext.define('NOC.core.filter.FilterController', {
                     return ip.trim();
                 });
 
-            if(value.length > 500) {
-                NOC.msg.failed(__('Too many IP, max 500'));
+            if(value.length > 2000) {
+                NOC.msg.failed(__('Too many IP, max 2000'));
                 return;
             }
         }

@@ -159,7 +159,7 @@ Ext.define('NOC.core.filter.Filter', {
         {
             xtype: 'textarea',
             itemId: 'addresses',
-            fieldLabel: __('By IP list (max. 500):'),
+            fieldLabel: __('By IP list (max. 2000):'),
             listeners: {
                 change: 'setFilter'
             },
