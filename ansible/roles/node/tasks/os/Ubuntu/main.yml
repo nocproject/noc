@@ -32,7 +32,5 @@
     dest: "/etc/systemd/system/{{ noc_system_service }}.service"
     mode: "a+r"
 
-- include: "telegraf.yml"
-
 - name: Reload systemd daemon
   command: /bin/systemctl daemon-reload
