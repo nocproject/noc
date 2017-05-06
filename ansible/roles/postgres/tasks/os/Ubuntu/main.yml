@@ -34,7 +34,7 @@
     http_proxy: "{{http_proxy}}"
 
 - name: Find suitable PostgreSQL cluster
-  shell: /usr/bin/pg_lsclusters -h | grep 5432 | awk '{print $1 " " $2}'
+  shell: /usr/bin/pg_lsclusters -h | grep {{postgres_listen}} | awk '{print $1 " " $2}'
   changed_when: false
   register: pgcluster
   tags:

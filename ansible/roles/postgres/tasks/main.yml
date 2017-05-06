@@ -14,14 +14,11 @@
     - config
   when: "'Linux' in ansible_system"
 
-- include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Creating postgres directories
   file:
     path: "{{item}}"
     state: "directory"
-    owner: "{{postgres_user}}"
-    mode: 0700
   with_items:
     - "{{noc_root}}/var/etc/postgres"
 
@@ -36,27 +33,13 @@
     - { name: env.j2, dest: "{{ noc_root }}/var/etc/postgres/env", mode: "u=rw,g=r,o=r" }
     - { name: pgpass.j2, dest: "{{ noc_root }}/var/etc/postgres/.pgpass", mode: "u=rw,g-rwx,o-rwx" }
 
+- include: "os/{{ ansible_distribution }}/main.yml"
+
 - block:
   - name: Setting pg_hba.conf
     lineinfile:
       dest: "{{postgresql_hba_path}}"
       line: "host    all             all             0.0.0.0/0            md5"
-    notify: reload postgres
-    tags:
-      - config
-
-  - name: Including postgres.conf
-    lineinfile:
-      dest: "{{postgresql_conf_path}}"
-      line: "include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
-    notify: reload postgres
-    tags:
-      - config
-
-  - name: Setting config
-    template:
-      src: "postgres.conf.j2"
-      dest: "{{ noc_root }}/var/etc/postgres/postgres.conf"
     notify: reload postgres
     tags:
       - config
@@ -70,7 +53,7 @@
   - include: "users.yml"
     become_user: "{{postgres_user}}"
 
-  when: "not has_svc_patroni | default(True)"
+  when: not patroni_enabled
 
 - name: Install postgres monitoring
   template:
@@ -80,3 +63,5 @@
   tags:
     - config
     - telegraf
+
+- meta: flush_handlers
