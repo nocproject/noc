@@ -38,6 +38,13 @@
     - config
     - always
 
+- name: Elect postgres master
+  set_fact:
+    postgres_master: "{{keepalived_patroni_virtual_ip}}"
+    postgres_listen: "{{haproxy_patroni_listen}}"
+  when: groups['svc-haproxy'] | count > 1
+
+
 - name: Display all variables/facts known for a host
   debug:
     var: hostvars[inventory_hostname]
