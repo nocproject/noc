@@ -4,8 +4,18 @@
     src: patroni.service.j2
     dest: /lib/systemd/system/patroni.service
   notify:
-    - restart patroni
     - reload systemd
+
+- name: Setting pg_hba.conf
+  lineinfile:
+    dest: "{{postgresql_hba_path}}"
+    line: "{{item}}"
+  with_items:
+    - "host    replication     replicator     192.168.0.0/16       md5"
+    - "host    all             all            0.0.0.0/0            md5"
+  when: "has_svc_postgres_master | default(False)"
+  tags:
+    - config
 
 - name: copy postgresql to datadir
   copy:
@@ -15,6 +25,13 @@
   with_items:
     - "{{postgresql_conf_path}}"
     - "{{postgresql_hba_path}}"
+  when: "has_svc_postgres_master | default(False)"
+
+- name: move postgres datadir away on slaves
+  command: "mv {{postgres_data_dir}} {{postgres_data_dir}}/../data_backup"
+  args:
+    creates: "{{postgres_data_dir}}/../data_backup"
+  when: not patroni_bootstrap_marker.stat.exists and not has_svc_postgres_master | default(False)
 
 - name: Install python deps
   apt:
@@ -28,3 +45,18 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+
+# have to be here, because we need to connect to postgres on patroni startup
+- name: Create postgres superuser user
+  postgresql_user:
+    name: "superuser"
+    password: "{{ patroni_postgres_password }}"
+    login_user: "{{ postgres_user }}"
+    role_attr_flags: SUPERUSER
+  become_user: "{{postgres_user}}"
+  when: "has_svc_postgres_master | default(False)"
+
+- name: disable postgres system service in favour of patroni
+  service:
+    name: "postgresql"
+    enabled: no

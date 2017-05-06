@@ -1,3 +1,4 @@
 patroni_scope: noc
 patroni_path: /opt/patroni
-patroni_listen: 8008
+patroni_config_dir: "{{etc_prefix}}/patroni"
+patroni_bootstrap_file: "{{patroni_config_dir}}/.patroni_bootstrapped"
