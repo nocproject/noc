@@ -13,7 +13,7 @@ defaults
 {% if groups["svc-patroni"] | length > 0   %}
 
 frontend ft_postgresql
-    bind *:5000
+    bind *:{{haproxy_patroni_listen}}
     default_backend postgres-patroni
 
 backend postgres-patroni
@@ -21,7 +21,7 @@ backend postgres-patroni
   http-check expect status 200
   default-server inter 3s fall 3 rise 2
   {% for n in groups['svc-patroni'] %}
-     server cluster-pgsql-{{loop.index}} {{hostvars[n].ansible_host}}:5432 maxconn {{postgres_max_connections}} check port 8008
+     server cluster-pgsql-{{loop.index}} {{hostvars[n].ansible_host}}:5432 maxconn {{postgres_max_connections}} check port {{patroni_listen}}
   {% endfor %}
 
 {%endif%}
