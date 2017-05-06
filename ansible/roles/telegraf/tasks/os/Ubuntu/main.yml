@@ -38,7 +38,7 @@
 
 - name: Install telegraf override.conf
   template:
-    src: "etc/telegraph.override.conf.j2"
+    src: "telegraph.override.conf.j2"
     dest: "/etc/systemd/system/telegraf.service.d/noc.conf"
   tags:
     - config
