@@ -19,7 +19,7 @@ bootstrap:
       use_pg_rewind: true
       use_slots: true
       parameters:
-        wal_level: hot_standby
+        wal_level: replica
         max_connections: {{postgres_max_connections}}
 
   pg_hba:
@@ -76,7 +76,7 @@ postgresql:
 
   parameters:
     archive_mode: "on"
-    wal_level: hot_standby
+    wal_level: replica
     archive_command: mkdir -p ../wal_archive && cp %p ../wal_archive/%f
     max_wal_senders: 10
     wal_keep_segments: 8
@@ -88,6 +88,4 @@ postgresql:
 tags:
     nofailover: false
     noloadbalance: false
-    clonefrom: {{postgres_master}}
     nosync: false
-    replicatefrom: {{postgres_master}}
