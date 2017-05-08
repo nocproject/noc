@@ -11,7 +11,7 @@
     dest: "{{postgresql_hba_path}}"
     line: "{{item}}"
   with_items:
-    - "host    replication     replicator     192.168.0.0/16       md5"
+    - "host    replication     replicator     {{patroni_replication_network| ipaddr}}       md5"
     - "host    all             all            0.0.0.0/0            md5"
   when: "has_svc_postgres_master | default(False)"
   tags:
