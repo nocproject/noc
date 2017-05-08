@@ -24,7 +24,7 @@ bootstrap:
 
   pg_hba:
     - host all all 0.0.0.0/0 md5
-    - host replication replicator 192.168.0.0/16    md5
+    - host replication replicator {{patroni_replication_network| ipaddr}}    md5
   initdb:
     - data-checksums
   users:
@@ -69,7 +69,7 @@ postgresql:
   replication:
     username: replicator
     password: {{ postgres_replicator_password }}
-    network:  192.168.0.0/16
+    network:  {{patroni_replication_network| ipaddr}}
   superuser:
     username: superuser
     password: {{ patroni_postgres_password }}
