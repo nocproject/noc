@@ -21,7 +21,7 @@ backend postgres-patroni
   http-check expect status 200
   default-server inter 3s fall 3 rise 2
   {% for n in groups['svc-patroni'] %}
-     server cluster-pgsql-{{loop.index}} {{hostvars[n].ansible_host}}:5432 maxconn {{postgres_max_connections}} check port {{patroni_listen}}
+     server cluster-pgsql-{{loop.index}} {{hostvars[n].ansible_host}}:5432 maxconn {{postgres_max_connections}} check port {{patroni_listen}} on-marked-down shutdown-sessions
   {% endfor %}
 
 {%endif%}
