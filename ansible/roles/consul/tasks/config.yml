@@ -42,3 +42,13 @@
     - item.when
   notify:
     - restart consul
+
+- name: Client configuration
+  template:
+    src: perfomance.json.j2
+    dest: "{{ consul_configd_path }}/"
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group}}"
+  when: "'prod' in noc_env_type"
+  notify:
+    - restart consul
