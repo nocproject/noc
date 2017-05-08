@@ -17,7 +17,7 @@ frontend ft_postgresql
     default_backend postgres-patroni
 
 backend postgres-patroni
-  option httpchk GET /master
+  option httpchk OPTIONS /master # use OPTIONS instead of GET https://github.com/zalando/patroni/issues/331
   http-check expect status 200
   default-server inter 3s fall 3 rise 2
   {% for n in groups['svc-patroni'] %}
