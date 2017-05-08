@@ -580,7 +580,6 @@ config:
       label: Patroni virtual IP
       type: str
 
-
   consul:
     token:
       label: consul token
@@ -593,8 +592,4 @@ config:
   patroni:
     rest_password:
       label: Patroni REST password
-      type: str
-
-    virtual_ip:
-      label: cluster wide virtualip
       type: str
