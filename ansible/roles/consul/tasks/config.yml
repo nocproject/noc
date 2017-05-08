@@ -14,6 +14,8 @@
     - item.when
   notify:
     - restart consul
+  tags:
+    - config
 
 - name: Server configuration
   template:
@@ -28,6 +30,8 @@
     - item.when
   notify:
     - restart consul
+  tags:
+    - config
 
 - name: Client configuration
   template:
@@ -42,8 +46,10 @@
     - item.when
   notify:
     - restart consul
+  tags:
+    - config
 
-- name: Client configuration
+- name: Perfomance configuration
   template:
     src: perfomance.json.j2
     dest: "{{ consul_configd_path }}/perfomance.json"
@@ -52,3 +58,14 @@
   when: "'prod' in noc_env_type"
   notify:
     - restart consul
+  tags:
+    - config
+
+- name: setup resolv.conf
+  lineinfile:
+    line: "search service.{{consul_datacenter}}.{{consul_domain}}"
+    dest: /etc/resolv.conf
+    regexp: "^search.+"
+  when: "'prod' in noc_env_type"
+  tags:
+    - config
