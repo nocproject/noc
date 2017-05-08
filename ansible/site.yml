@@ -13,7 +13,7 @@
 
 - name: Common tasks
   hosts: all
-  become: no
+  become: yes
   any_errors_fatal: false
   gather_facts: True
   vars_files:
@@ -36,6 +36,15 @@
       tags:
         - keepalived
 
+- name: Consul tasks
+  hosts: all
+  become: yes
+  any_errors_fatal: false
+  serial: 30%
+  gather_facts: True
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: consul
       become: yes
       tags:
@@ -47,6 +56,14 @@
         - consul-template
         - external
 
+- name: Install NOC
+  hosts: all
+  become: yes
+  any_errors_fatal: false
+  gather_facts: True
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: node
       become: yes
       tags:
@@ -68,7 +85,6 @@
     - role: patroni
       become: yes
 
-
 - name: Install and configure postgres
   hosts: svc-postgres
   become: yes
@@ -86,7 +102,7 @@
 - name: Install and configure grafana
   hosts: svc-grafana
   become: yes
-  serial: 1
+  serial: 50%
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
@@ -96,7 +112,6 @@
       tags:
         - grafana
         - external
-
 
 - name: Install and configure nsq
   hosts: all
@@ -123,6 +138,7 @@
 - name: Install and configure mongo
   hosts: svc-mongod
   become: yes
+  serial: 30%
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
@@ -149,6 +165,7 @@
 - name: Install and configure influxdb
   hosts: svc-influxdb
   become: yes
+  serial: 1
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
@@ -161,7 +178,7 @@
 
 - name: Install and configure nginx
   hosts: svc-nginx
-  serial: 1
+  serial: 50%
   become: yes
   any_errors_fatal: true
   vars_files:
