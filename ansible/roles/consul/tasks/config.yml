@@ -46,7 +46,7 @@
 - name: Client configuration
   template:
     src: perfomance.json.j2
-    dest: "{{ consul_configd_path }}/"
+    dest: "{{ consul_configd_path }}/perfomance.json"
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
   when: "'prod' in noc_env_type"
