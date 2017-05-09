@@ -25,14 +25,20 @@ class GoogleGeocoder(BaseGeocoder):
         self.key = key
         self.language = language
 
-    def forward(self, query):
+    def forward(self, query, bounds=None, region=None):
         query = query.lower().strip()
         if not query:
             return None
         url = [
-            "http://maps.googleapis.com/maps/api/geocode/json?",
-            "&address=%s" % urllib.quote(query)
+            "http://maps.googleapis.com/maps/api/geocode/json?"
         ]
+        if region:
+            url += ["&region=%s" % region]
+        if bounds:
+            # &bounds=34.172684,-118.604794|34.236144,-118.500938
+            # bounds = ("34.172684,-118.604794", "34.236144,-118.500938")
+            url += ["&bounds=%s|%s" % bounds]
+        url += ["&address=%s" % urllib.quote(query)]
         if self.key:
             url += ["&key=%s" % urllib.quote(self.key)]
         if self.language:

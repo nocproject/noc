@@ -92,7 +92,7 @@ class GeocoderCache(Document):
         return base64.b64encode(hashlib.sha256(query).digest())[:12]
 
     @classmethod
-    def forward(cls, query):
+    def forward(cls, query, bounds=None):
         # Clean query
         query = cls.clean_query(query)
         if not query:
@@ -122,7 +122,7 @@ class GeocoderCache(Document):
             g = gcls()
             gsys = g.name
             try:
-                r = g.forward(query)
+                r = g.forward(query, bounds)
                 if r and r.exact:
                     if r.lon is not None and r.lat is not None:
                         error = None
