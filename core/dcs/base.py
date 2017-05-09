@@ -159,7 +159,7 @@ class ResolverBase(object):
             raise ResolutionError()
         with self.lock:
             location = self.services[self.policy()]
-        yield tornado.gen.Return(location)
+        raise tornado.gen.Return(location)
 
     def policy_random(self):
         """
