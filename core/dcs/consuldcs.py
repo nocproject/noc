@@ -159,7 +159,9 @@ class ConsulDCS(DCSBase):
             self.session = None
 
     @tornado.gen.coroutine
-    def register(self, name, address, port, lock=None):
+    def register(self, name, address, port, pool=None, lock=None):
+        if pool:
+            name = "%s-%s" % (name, pool)
         self.name = name
         self.svc_check_url = "http://%s:%s/health/" % (address, port)
         if lock:
