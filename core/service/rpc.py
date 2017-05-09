@@ -75,6 +75,8 @@ class SyncRPCMethod(object):
         try:
             result = yield self._proxy._call(self._name, *args, **kwargs)
             self._queue.put(result)
+        except tornado.gen.Return as e:
+            self._queue.put(e.value)
         except Exception as e:
             self._queue.put(e)
 
