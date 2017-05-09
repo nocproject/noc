@@ -71,7 +71,7 @@ class SyncRPCMethod(object):
         self._queue = Queue.Queue()
 
     @tornado.gen.coroutine
-    def _call(self, queue, *args, **kwargs):
+    def _call(self, *args, **kwargs):
         try:
             result = yield self._proxy._call(self._name, *args, **kwargs)
             self._queue.put(result)
