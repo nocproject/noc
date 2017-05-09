@@ -20,6 +20,7 @@ from noc.core.perf import metrics
 
 class ServiceStub(object):
     name = "stub"
+    pooled = False
 
     def __init__(self):
         self.logger = logging.getLogger("stub")
