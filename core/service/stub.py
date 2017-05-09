@@ -23,6 +23,7 @@ class ServiceStub(object):
     def __init__(self):
         self.logger = logging.getLogger("stub")
         self.perf_metrics = metrics
+        self.is_ready = threading.Event()
 
     def start(self):
         t = threading.Thread(target=self._start)
@@ -36,6 +37,7 @@ class ServiceStub(object):
         # Activate service
         self.logger.warn("Activating service")
         self.logger.warn("Starting IOLoop")
+        self.ioloop.add_callback(self.is_ready.set)
         self.ioloop.start()
 
     def open_rpc(self, name, pool=None, sync=False):

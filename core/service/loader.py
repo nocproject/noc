@@ -22,4 +22,5 @@ def get_service():
         from stub import ServiceStub
         _service = ServiceStub()
         _service.start()
+        _service.is_ready.wait()
     return _service
