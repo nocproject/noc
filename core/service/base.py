@@ -39,8 +39,9 @@ from .health import HealthRequestHandler
 from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
 from .ctl import CtlAPI
+from .loader import set_service
 from noc.core.perf import metrics, apply_metrics
-from noc.core.dcs.loader import get_dcs
+from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 
 
 class Service(object):
@@ -98,6 +99,7 @@ class Service(object):
         pass
 
     def __init__(self):
+        set_service(self)
         sys.excepthook = excepthook
         # Monkeypatch error reporting
         tornado.ioloop.IOLoop.handle_callback_exception = self.handle_callback_exception
@@ -189,7 +191,7 @@ class Service(object):
             "--dcs",
             action="store",
             dest="dcs",
-            default=os.environ.get("NOC_DCS", "consul://consul/noc"),
+            default=DEFAULT_DCS,
             help="Distributed Coordinated Storage URL"
         )
         if self.pooled:
@@ -479,7 +481,7 @@ class Service(object):
     def on_deactivate(self):
         raise tornado.gen.Return()
 
-    def open_rpc(self, name, pool=None):
+    def open_rpc(self, name, pool=None, sync=False):
         """
         Returns RPC proxy object.
         """
@@ -487,7 +489,7 @@ class Service(object):
             svc = "%s-%s" % (name, pool)
         else:
             svc = name
-        return RPCProxy(self, svc)
+        return RPCProxy(self, svc, sync)
 
     def get_mon_status(self):
         return True

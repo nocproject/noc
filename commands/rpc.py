@@ -12,7 +12,7 @@ import argparse
 import pprint
 ## NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.service.client import RPCClient, RPCError
+from noc.core.service.client import open_sync_rpc, RPCError
 
 
 class Command(BaseCommand):
@@ -52,10 +52,9 @@ class Command(BaseCommand):
                *args, **options):
         service, method = rpc[0].split(".", 1)
         try:
-            client = RPCClient(
+            client = open_sync_rpc(
                 service,
-                calling_service="cli",
-                hints=hints
+                calling_service="cli"
             )
             method = getattr(client, method)
             result = method(*arguments)

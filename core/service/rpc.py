@@ -10,8 +10,8 @@
 import itertools
 import logging
 import socket
-import random
 import time
+import Queue
 ## Third-party modules
 import tornado.concurrent
 import tornado.gen
@@ -31,13 +31,82 @@ CONNECT_TIMEOUT = 20
 REQUEST_TIMEOUT = 3600
 
 
+class AsyncRPCMethod(object):
+    """
+    API Method wrapper
+    """
+    def __init__(self, proxy, name):
+        self._proxy = proxy
+        self._name = name
+        self._metric = "rpc_call_%s_%s" % (proxy._service_name, name)
+
+    @tornado.gen.coroutine
+    def __call__(self, *args, **kwargs):
+        t0 = time.time()
+        self._proxy._logger.debug(
+            "[CALL>] %s.%s(%s, %s)",
+            self._proxy._service_name,
+            self._name, args, kwargs
+        )
+        self._proxy._service.perf_metrics[self._metric] += 1
+        result = yield self._proxy._call(self._name, *args, **kwargs)
+        t = time.time() - t0
+        self._proxy._logger.debug(
+            "[CALL<] %s.%s (%.2fms)",
+            self._proxy._service_name,
+            self._name,
+            t * 1000
+        )
+        raise tornado.gen.Return(result)
+
+
+class SyncRPCMethod(object):
+    """
+    API Method wrapper
+    """
+    def __init__(self, proxy, name):
+        self._proxy = proxy
+        self._name = name
+        self._metric = "rpc_call_%s_%s" % (proxy._service_name, name)
+        self._queue = Queue.Queue()
+
+    @tornado.gen.coroutine
+    def _call(self, queue, *args, **kwargs):
+        try:
+            result = yield self._proxy._call(self._name, *args, **kwargs)
+            self._queue.put(result)
+        except Exception as e:
+            self._queue.put(e)
+
+    def __call__(self, *args, **kwargs):
+        t0 = time.time()
+        self._proxy._logger.debug(
+            "[SYNC CALL>] %s.%s(%s, %s)",
+            self._proxy._service_name,
+            self._name, args, kwargs
+        )
+        self._proxy._service.perf_metrics[self._metric] += 1
+        self._proxy._service.ioloop.add_callback(self._call, *args, **kwargs)
+        result = q.get()
+        if isinstance(result, Exception):
+            raise result
+        t = time.time() - t0
+        self._proxy._logger.debug(
+            "[SYNC CALL<] %s.%s (%.2fms)",
+            self._proxy._service_name,
+            self._name,
+            t * 1000
+        )
+        return result
+
+
 class RPCProxy(object):
     """
     API Proxy
     """
     RPCError = RPCError
 
-    def __init__(self, service, service_name):
+    def __init__(self, service, service_name, sync=False):
         self._logger = PrefixLoggerAdapter(logger, service_name)
         self._service = service
         self._service_name = service_name
@@ -45,6 +114,10 @@ class RPCProxy(object):
         self._tid = itertools.count()
         self._transactions = {}
         self._methods = {}
+        if sync:
+            self.rpc_cls = SyncRPCMethod
+        else:
+            self.rpc_cls = AsyncRPCMethod
 
     def __del__(self):
         self.close()
@@ -55,7 +128,7 @@ class RPCProxy(object):
         else:
             mw = self._methods.get(item)
             if not mw:
-                mw = RPCMethod(self, item)
+                mw = self.rpc_cls(self, item)
                 self._methods[item] = mw
             return mw
 
@@ -153,32 +226,3 @@ class RPCProxy(object):
             raise RPCNoService(
                 "No active service %s found" % self._service_name
             )
-
-
-class RPCMethod(object):
-    """
-    API Method wrapper
-    """
-    def __init__(self, proxy, name):
-        self._proxy = proxy
-        self._name = name
-        self._metric = "rpc_call_%s_%s" % (proxy._service_name, name)
-
-    @tornado.gen.coroutine
-    def __call__(self, *args, **kwargs):
-        t0 = time.time()
-        self._proxy._logger.debug(
-            "[CALL>] %s.%s(%s, %s)",
-            self._proxy._service_name,
-            self._name, args, kwargs
-        )
-        self._proxy._service.perf_metrics[self._metric] += 1
-        result = yield self._proxy._call(self._name, *args, **kwargs)
-        t = time.time() - t0
-        self._proxy._logger.debug(
-            "[CALL<] %s.%s (%.2fms)",
-            self._proxy._service_name,
-            self._name,
-            t * 1000
-        )
-        raise tornado.gen.Return(result)

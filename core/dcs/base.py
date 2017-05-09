@@ -12,6 +12,7 @@ import signal
 import os
 from threading import Lock
 import random
+import Queue
 ## Third-party modules
 import tornado.gen
 import tornado.locks
@@ -61,7 +62,7 @@ class DCSBase(object):
         self.ioloop.stop()
 
     @tornado.gen.coroutine
-    def register(self, name, address, port, pool=None, lock=None):
+    def register(self, name, address, port, lock=None):
         """
         Register service
         :param name: 
