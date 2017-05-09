@@ -12,7 +12,7 @@ import signal
 import os
 from threading import Lock
 import random
-import Queue
+import datetime
 ## Third-party modules
 import tornado.gen
 import tornado.locks
@@ -25,7 +25,7 @@ class ResolutionError(Exception):
 
 
 class DCSBase(object):
-    DEFAULT_SERVICE_RESOLUTION_TIMEOUT = 60
+    DEFAULT_SERVICE_RESOLUTION_TIMEOUT = datetime.timedelta(seconds=300)
     # Resolver class
     resolver_cls = None
 
