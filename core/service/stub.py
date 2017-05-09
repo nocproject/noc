@@ -14,6 +14,7 @@ import tornado.ioloop
 ## NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from .rpc import RPCProxy
+from noc.core.perf import metrics
 
 
 class ServiceStub(object):
@@ -21,6 +22,7 @@ class ServiceStub(object):
 
     def __init__(self):
         self.logger = logging.getLogger("stub")
+        self.perf_metrics = metrics
 
     def start(self):
         t = threading.Thread(target=self._start)
