@@ -87,7 +87,7 @@ class SyncRPCMethod(object):
         )
         self._proxy._service.perf_metrics[self._metric] += 1
         self._proxy._service.ioloop.add_callback(self._call, *args, **kwargs)
-        result = q.get()
+        result = self._queue.get()
         if isinstance(result, Exception):
             raise result
         t = time.time() - t0
