@@ -11,7 +11,7 @@ from threading import Lock
 import uuid
 import itertools
 ## NOC modules
-from noc.core.service.client import RPCClient, RPCError
+from noc.core.service.client import open_sync_rpc, RPCError
 from noc.core.script.loader import loader
 
 CALLING_SERVICE = "MTManager"
@@ -68,17 +68,18 @@ class Session(object):
 
     def _call_script(self, script, args, timeout=None):
         # Call SAE
-        data = RPCClient(
+        data = open_sync_rpc(
             "sae",
             calling_service=CALLING_SERVICE
         ).get_credentials(self._object.id)
         # Get hints from session
         service = self._get_service(self._id, data["service"])
         # Call activator
-        return RPCClient(
-            "activator-%s" % self._object.pool.name,
-            calling_service=CALLING_SERVICE,
-            hints=[service]
+        # @todo: Use hints
+        return open_sync_rpc(
+            "activator",
+            pool=self._object.pool.name,
+            calling_service=CALLING_SERVICE
         ).script(
             "%s.%s" % (self._object.profile_name, script),
             data["credentials"],
@@ -94,10 +95,11 @@ class Session(object):
         service = self._get_service(self._id)
         if service:
             # Close at activator
-            RPCClient(
-                "activator-%s" % self._object.pool.name,
-                calling_service=CALLING_SERVICE,
-                hints=[service]
+            # @todo: Use hints
+            open_sync_rpc(
+                "activator",
+                pool=self._object.pool.name,
+                calling_service=CALLING_SERVICE
             ).close_session(self._id)
             # Remove from cache
             with self._lock:
