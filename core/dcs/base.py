@@ -62,7 +62,7 @@ class DCSBase(object):
         self.ioloop.stop()
 
     @tornado.gen.coroutine
-    def register(self, name, address, port, lock=None):
+    def register(self, name, address, port, pool=None, lock=None):
         """
         Register service
         :param name: 
