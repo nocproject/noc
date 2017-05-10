@@ -45,7 +45,7 @@ class ServiceStub(object):
         self.ioloop.add_callback(self.is_ready.set)
         self.ioloop.start()
 
-    def open_rpc(self, name, pool=None, sync=False):
+    def open_rpc(self, name, pool=None, sync=False, hints=None):
         """
         Returns RPC proxy object.
         """
@@ -53,7 +53,7 @@ class ServiceStub(object):
             svc = "%s-%s" % (name, pool)
         else:
             svc = name
-        return RPCProxy(self, svc, sync)
+        return RPCProxy(self, svc, sync=sync, hints=hints)
 
     def iter_rpc_retry_timeout(self):
         """

@@ -13,6 +13,7 @@ import itertools
 ## NOC modules
 from noc.core.service.client import open_sync_rpc, RPCError
 from noc.core.script.loader import loader
+from noc.core.service.loader import get_dcs
 
 CALLING_SERVICE = "MTManager"
 DEFAULT_IDLE_TIMEOUT = 60
@@ -66,20 +67,31 @@ class Session(object):
                 service = default
         return service
 
+    @classmethod
+    def _get_service(cls, session, pool=None):
+        with cls._lock:
+            svc = cls._sessions.get(session)
+        nsvc = get_dcs().resolve_sync("activator-%s" % pool, hint=svc)
+        if nsvc:
+            if (svc and svc != nsvc) or (not svc):
+                with cls._lock:
+                    cls._sessions[session] = nsvc
+        return nsvc
+
     def _call_script(self, script, args, timeout=None):
         # Call SAE
         data = open_sync_rpc(
             "sae",
             calling_service=CALLING_SERVICE
         ).get_credentials(self._object.id)
-        # Get hints from session
-        service = self._get_service(self._id, data["service"])
+        # Resolve service address
+        service = self._get_service(self._id, data["pool"])
         # Call activator
-        # @todo: Use hints
         return open_sync_rpc(
             "activator",
             pool=self._object.pool.name,
-            calling_service=CALLING_SERVICE
+            calling_service=CALLING_SERVICE,
+            hints=[service]
         ).script(
             "%s.%s" % (self._object.profile_name, script),
             data["credentials"],

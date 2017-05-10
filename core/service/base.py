@@ -481,7 +481,7 @@ class Service(object):
     def on_deactivate(self):
         raise tornado.gen.Return()
 
-    def open_rpc(self, name, pool=None, sync=False):
+    def open_rpc(self, name, pool=None, sync=False, hints=None):
         """
         Returns RPC proxy object.
         """
@@ -489,7 +489,7 @@ class Service(object):
             svc = "%s-%s" % (name, pool)
         else:
             svc = name
-        return RPCProxy(self, svc, sync)
+        return RPCProxy(self, svc, sync=sync, hints=hints)
 
     def get_mon_status(self):
         return True

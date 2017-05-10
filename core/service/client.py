@@ -56,5 +56,6 @@ class RPCRemoteError(RPCError):
     pass
 
 
-def open_sync_rpc(name, pool=None, calling_service=None):
-    return get_service().open_rpc(name, pool=pool, sync=True)
+def open_sync_rpc(name, pool=None, calling_service=None, hints=None):
+    return get_service().open_rpc(name, pool=pool,
+                                  sync=True, hints=hints)

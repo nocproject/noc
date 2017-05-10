@@ -24,3 +24,7 @@ def get_service():
         _service.start()
         _service.is_ready.wait()
     return _service
+
+
+def get_dcs():
+    return get_service().dcs
