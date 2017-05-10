@@ -102,6 +102,7 @@
         timeInterval: ">300s"
   ignore_errors: yes
   register: ids
+  run_once: true
   changed_when: ids.status != 409
   failed_when: ids.status == 500
   when: "has_svc_influxdb | default(False)"
@@ -126,6 +127,7 @@
       isDefault: False
   ignore_errors: yes
   register: gds
+  run_once: true
   changed_when: gds.status != 409
   failed_when: gds.status == 500
   when: "has_svc_grafanads | default(False)"
