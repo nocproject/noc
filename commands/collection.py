@@ -16,6 +16,8 @@ from mongoengine.fields import ListField, EmbeddedDocumentField
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.collection.base import Collection
+from noc.lib.fileutils import safe_rewrite
+from noc.models import COLLECTIONS, get_model
 
 
 class Command(BaseCommand):
@@ -51,6 +53,47 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
             help="List of files"
         )
+        export_parser = subparsers.add_parser(
+            "export",
+            help="Export collections"
+        )
+        export_group_list = export_parser.add_argument_group("List arguments")
+        export_group_list.add_argument(
+            "-l", "--list-collections",
+            dest="list_collection",
+            metavar="collection_name",
+            const=True,
+            nargs="?",
+            help="Show collection names /or list model in [collection_name]"
+        )
+        export_group_exp = export_parser.add_argument_group("Export arguments")
+        export_group_exp.add_argument(
+            "-p", "--path",
+            dest="export_path",
+            metavar="export_directory",
+            help="Path for save exported collections"
+        )
+        export_group_exp.add_argument(
+            "-c", "--collections",
+            dest="export_collections",
+            nargs='+',
+            metavar="collection-name",
+            help="List of collection for export"
+        )
+        export_group_exp.add_argument(
+            "-n", "--object-name",
+            dest="export_model_names",
+            metavar="object-name",
+            nargs='+',
+            help="Export model names"
+        )
+        export_group_exp.add_argument(
+            "-u", "--object-uuid",
+            dest="export_model_uuids",
+            metavar="uuid",
+            nargs='+',
+            help="Export model uuids"
+        )
 
     def handle(self, cmd, *args, **options):
         getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -78,6 +121,54 @@ class Command(BaseCommand):
                 self.die("%s - %s" % (fp, (str(e))))
             if remove:
                 os.unlink(fp)
+
+    def handle_export(self, list_collection=False, 
+                      export_path=None, export_collections=None, 
+                      export_model_names=None, export_model_uuids=None):
+        MODELS = {}
+        for c in COLLECTIONS:
+            cm = get_model(c)
+            cn = cm._meta["json_collection"]
+            MODELS[cn] = cm
+        if list_collection is not None:
+            if list_collection is True:
+                for c in Collection.iter_collections():
+                    print "%s" % c.name
+            else:
+                if list_collection not in MODELS:
+                    print "Collection not found"
+                    return
+                objs = MODELS[list_collection].objects.all().order_by('name')
+                for o in objs:
+                    print "uuid:%s name:\"%s\"" % (o.uuid, o.name)
+        else:
+            if not export_path or not export_collections:
+                return
+            if not os.path.isdir(export_path):
+                self.die("Path not found: %s" % export_path)
+
+            for ecname in export_collections:
+                if ecname not in MODELS:
+                    print "Collection not found"
+                    continue
+                kwargs = {}
+                if export_model_names:
+                    kwargs['name__in'] = export_model_names
+                elif export_model_uuids:
+                    kwargs['uuid__in'] = export_model_uuids
+                objs = MODELS[ecname].objects.filter(**kwargs).order_by('name')
+                for o in objs:
+                    path = os.path.join(
+                        export_path,
+                        ecname,
+                        o.get_json_path()
+                    )
+                    print "export \"%s\" to %s" % (o.name, path)
+                    safe_rewrite(
+                        path,
+                        o.to_json(),
+                        mode=0644
+                    )
 
 if __name__ == "__main__":
     Command().run()
