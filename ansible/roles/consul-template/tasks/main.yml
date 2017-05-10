@@ -18,6 +18,8 @@
     dest: "{{consul_template_dl_dir}}"
     validate_certs: no
   when: consul_template_archive_stat.stat.exists == False
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
 
@@ -29,13 +31,16 @@
     group: "root"
     copy: False
     creates: "{{consul_template_dl_dir}}/{{ consul_template_binary }}"
+  tags:
+    - requirements
 
 - name: copy consul-template binary into place
   copy:
     src: "{{consul_template_dl_dir}}/{{ consul_template_binary }}"
     dest: "{{consul_template_bin_path}}/{{ consul_template_binary }}"
     remote_src: yes
-
+  tags:
+    - requirements
 
 - name: Update consul-template permissions
   file:
@@ -43,19 +48,24 @@
     owner: "{{consul_template_user}}"
     group: "{{consul_template_group}}"
     mode: "0755"
+  tags:
+    - requirements
 
 - name: consul-template config file
   template:
     src: "{{ consul_template_config_file_template }}"
     dest: "{{consul_template_config_dir}}/{{ consul_template_config_file }}"
     mode: 0755
+  tags:
+    - config
 
 - name: copy consul-template systemd service configuration
   template:
     src: consul-template.service.j2
     dest: /etc/systemd/system/consul-template.service
     mode: 0755
-
+  tags:
+    - config
 
 - service:
     name: consul-template
