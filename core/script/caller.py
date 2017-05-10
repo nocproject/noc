@@ -71,6 +71,8 @@ class Session(object):
     def _get_service(cls, session, pool=None):
         with cls._lock:
             svc = cls._sessions.get(session)
+        if not pool:
+            return svc
         nsvc = get_dcs().resolve_sync("activator-%s" % pool, hint=svc)
         if nsvc:
             if (svc and svc != nsvc) or (not svc):
