@@ -10,15 +10,17 @@
   stat:
     path: "/tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
   register: consul_checksum
-  tags: requirements
+  tags:
+    - requirements
 
 - name: Get Consul package checksum file
   get_url:
     url: "{{ consul_checksum_file_url }}"
     dest: "/tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
     validate_certs: no
-  tags: installation
   when: consul_checksum.stat.exists == False
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
 
@@ -26,13 +28,15 @@
   shell: "grep {{ consul_pkg }} /tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
   register: consul_sha256
   changed_when: false
-  tags: requirements
+  tags:
+    - requirements
 
 - name: Check Consul package file
   stat:
     path: "/tmp/consul/{{ consul_pkg }}"
   register: consul_package
-  tags: installation
+  tags:
+    - requirements
 
 - name: Download Consul
   get_url:
@@ -41,8 +45,9 @@
     checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
     timeout: 42
     validate_certs: no
-  tags: requirements
   when: consul_package.stat.exists == False
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
 
@@ -55,11 +60,13 @@
     group: "{{ consul_group }}"
     mode: 0755
     creates: "{{ consul_bin_path }}/consul"
-  tags: installation
+  tags:
+    - requirements
 
 - name: Cleanup
   file:
     path: "{{ item }}"
     state: absent
   with_fileglob: "/tmp/consul"
-  tags: installation
+  tags:
+    - requirements
