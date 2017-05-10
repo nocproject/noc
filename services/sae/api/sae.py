@@ -111,13 +111,7 @@ class SAEAPI(API):
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
             raise APIError("Pool not found")
-        # Get activator
-        svc = yield self.resolve_activator(pool)
-        if not svc:
-            raise APIError(
-                "No activators configured for pool '%s'" % pool
-            )
-        data["service"] = svc
+        data["pool"] = pool
         raise tornado.gen.Return(data)
 
     @cachedmethod(

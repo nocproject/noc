@@ -12,6 +12,7 @@ import logging
 import socket
 import time
 import Queue
+import random
 ## Third-party modules
 import tornado.concurrent
 import tornado.gen
@@ -108,7 +109,7 @@ class RPCProxy(object):
     """
     RPCError = RPCError
 
-    def __init__(self, service, service_name, sync=False):
+    def __init__(self, service, service_name, sync=False, hints=None):
         self._logger = PrefixLoggerAdapter(logger, service_name)
         self._service = service
         self._service_name = service_name
@@ -116,6 +117,7 @@ class RPCProxy(object):
         self._tid = itertools.count()
         self._transactions = {}
         self._methods = {}
+        self._hints = hints
         if sync:
             self.rpc_cls = SyncRPCMethod
         else:
@@ -201,7 +203,10 @@ class RPCProxy(object):
         response = None
         for t in self._service.iter_rpc_retry_timeout():
             # Resolve service against service catalog
-            svc = yield self._service.dcs.resolve(self._service_name)
+            if self._hints:
+                svc = random.choice(self._hints)
+            else:
+                svc = yield self._service.dcs.resolve(self._service_name)
             response = yield make_call(
                 "http://%s/api/%s/" % (svc, self._api),
                 body

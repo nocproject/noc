@@ -13,6 +13,7 @@ import os
 from threading import Lock
 import random
 import datetime
+import Queue
 ## Third-party modules
 import tornado.gen
 import tornado.locks
@@ -100,9 +101,9 @@ class DCSBase(object):
         raise tornado.gen.Return(resolver)
 
     @tornado.gen.coroutine
-    def resolve(self, name):
+    def resolve(self, name, hint=None):
         resolver = yield self.get_resolver(name)
-        r = yield resolver.resolve()
+        r = yield resolver.resolve(hint=hint)
         raise tornado.gen.Return(r)
 
     @tornado.gen.coroutine
@@ -115,6 +116,32 @@ class DCSBase(object):
                     r.stop()
                     del self.resolvers[svc]
 
+    @tornado.gen.coroutine
+    def _resolve_sync(self, queue, name, hint=None):
+        try:
+            result = yield self.resolve(name, hint=hint)
+            queue.put(result)
+        except tornado.gen.Return as e:
+            queue.put(e.value)
+        except Exception as e:
+            queue.put(e)
+
+    def resolve_sync(self, name, hint=None):
+        """
+        Returns *hint* when service is active or new service
+        instance, 
+        :param name: 
+        :param hint: 
+        :return: 
+        """
+        q = Queue.Queue()
+        self.ioloop.add_callback(self._resolve_sync, q, name, hint)
+        result = q.get()
+        if isinstance(result, Exception):
+            raise result
+        else:
+            return result
+
 
 class ResolverBase(object):
     def __init__(self, dcs, name):
@@ -124,6 +151,7 @@ class ResolverBase(object):
         self.logger = self.dcs.logger
         self.services = {}
         self.service_ids = []
+        self.service_addresses = set()
         self.lock = Lock()
         self.policy = self.policy_random
         self.rr_index = -1
@@ -145,20 +173,24 @@ class ResolverBase(object):
         with self.lock:
             self.services = services
             self.service_ids = sorted(services.keys())
+            self.service_addresses = set(services.values())
             if self.services:
                 self.ready_event.set()
             else:
                 self.ready_event.clear()
 
     @tornado.gen.coroutine
-    def resolve(self):
+    def resolve(self, hint=None):
         # Wait until service catalog populated
         try:
             yield self.ready_event.wait(timeout=self.dcs.DEFAULT_SERVICE_RESOLUTION_TIMEOUT)
         except tornado.gen.TimeoutError:
             raise ResolutionError()
         with self.lock:
-            location = self.services[self.policy()]
+            if hint and hint in self.service_addresses:
+                location = hint
+            else:
+                location = self.services[self.policy()]
         raise tornado.gen.Return(location)
 
     def policy_random(self):
