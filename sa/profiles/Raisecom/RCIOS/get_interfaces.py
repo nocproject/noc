@@ -35,14 +35,15 @@ class Script(BaseScript):
             iface = {
                 "name": ifname,
                 "type": self.profile.get_interface_type(ifname),
-                "oper_status": match.group("oper"),
-                "admin_status": match.group("admin"),
+                "oper_status": match.group("oper") == "up",
+                "admin_status": match.group("admin") == "up",
                 "mac": match.group("mac"),
                 "subinterfaces": [{
                     "name": ifname,
-                    "oper_status": match.group("oper"),
-                    "admin_status": match.group("admin"),
+                    "oper_status": match.group("oper") == "up",
+                    "admin_status": match.group("admin") == "up",
                     "mac": match.group("mac"),
+                    "mtu": match.group("mtu"),
                     "enabled_afi": []
                 }]
             }
