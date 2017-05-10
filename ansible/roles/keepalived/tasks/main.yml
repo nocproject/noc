@@ -15,7 +15,7 @@
     src: nginx.cnf.j2
     dest: "{{etc_prefix}}/keepalived/nginx.cnf"
   notify: reload keepalived
-  when: groups['svc-nginx'] | count  > 1
+  when: has_svc_nginx| default(False)
   tags:
     - keepalived
     - config
