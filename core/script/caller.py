@@ -59,15 +59,6 @@ class Session(object):
         )
 
     @classmethod
-    def _get_service(cls, session, default=None):
-        with cls._lock:
-            service = cls._sessions.get(session)
-            if not service and default:
-                cls._sessions[session] = default
-                service = default
-        return service
-
-    @classmethod
     def _get_service(cls, session, pool=None):
         with cls._lock:
             svc = cls._sessions.get(session)
