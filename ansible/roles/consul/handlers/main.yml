@@ -11,3 +11,9 @@
     name: consul
     enabled: yes
     state: started
+
+- name: reload telegraf
+  become: yes
+  service:
+    name: telegraf
+    state: restarted
