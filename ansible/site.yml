@@ -61,7 +61,7 @@
   become: yes
   any_errors_fatal: false
   gather_facts: True
-  stratege: free
+  strategy: free
   vars_files:
     - "vars/main.yml"
   roles:
@@ -117,7 +117,7 @@
 - name: Install and configure nsq
   hosts: all
   become: yes
-  stratege: free
+  strategy: free
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
@@ -155,7 +155,7 @@
   hosts: svc-pgbouncer
   become: yes
   any_errors_fatal: true
-  stratege: free
+  strategy: free
   vars_files:
     - "vars/main.yml"
   roles:
@@ -211,7 +211,7 @@
 - name: Install and upgrade NOC
   hosts: svc-activator,svc-bi,svc-card,svc-classifier,svc-correlator,svc-discovery,svc-escalator,svc-grafanads,svc-login,svc-mailsender,svc-mrt,svc-omap,svc-ping,svc-pmwriter,svc-sae,svc-scheduler,svc-syslogcollector,svc-tgsender,svc-trapcollector,svc-web,
   become: no
-  stratege: free
+  strategy: free
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
@@ -386,7 +386,7 @@
 
 - name: Install and configure dev tools
   hosts: svc-dev
-  stratege: free
+  strategy: free
   become: yes
   any_errors_fatal: false
   vars_files:
