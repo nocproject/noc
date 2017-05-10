@@ -27,6 +27,6 @@ class Script(BaseScript):
             r += [{
                 "ip": match.group("ip"),
                 "mac": match.group("mac"),
-                "interface": "ip%s" % match.group("interface")
+                "interface": match.group("interface")
             }]
         return r
