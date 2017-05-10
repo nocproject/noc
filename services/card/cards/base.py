@@ -200,6 +200,9 @@ class BaseCard(object):
         if "service" in s:
             from noc.sa.models.serviceprofile import ServiceProfile
             r += [get_summary(s["service"], ServiceProfile)]
+        if "fresh_alarms" in s and s["fresh_alarms"]:
+            r += ["<i class=\"fa fa-exclamation-triangle\"></i><span class=\"badge\">%s</span>"
+                  % s["fresh_alarms"]["FreshAlarm"]]
         r = [x for x in r if x]
         return "&nbsp;".join(r)
 

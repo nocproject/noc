@@ -6,6 +6,7 @@
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
+from collections import defaultdict
 import itertools
 import bson
 ## Third-party modules
@@ -14,6 +15,7 @@ from noc.lib.nosql import Q as m_Q
 ## NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.managedobject import Version
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.objectcapabilities import ObjectCapabilities
@@ -27,13 +29,18 @@ class ObjectListApplication(ExtApplication):
     ManagedObject application
     """
     model = ManagedObject
+    # Default filter by is_managed
+    managed_filter = True
 
     def queryset(self, request, query=None):
         """
         Filter records for lookup
         """
         self.logger.info("Queryset %s" % query)
-        q = d_Q(is_managed=True)
+        if self.managed_filter:
+            q = d_Q(is_managed=True)
+        else:
+            q = d_Q()
         if not request.user.is_superuser:
             q &= UserAccess.Q(request.user)
         if query:
@@ -50,8 +57,10 @@ class ObjectListApplication(ExtApplication):
             "name": o.name,
             "address": o.address,
             "profile_name": o.profile_name,
-            "platform": o.platform,
+            # "platform": o.platform,
+            "platform": o.ex_platform,
             "row_class": o.object_profile.style.css_class_name if o.object_profile.style else ""
+            # "row_class": ""
         }
 
     def cleaned_query(self, q):
@@ -131,7 +140,8 @@ class ObjectListApplication(ExtApplication):
             c_ids = set(el["_id"] for el in ObjectCapabilities.objects(mq).values_list('object').as_pymongo())
             self.logger.info("Caps objects count: %d" % len(c_ids))
             if "id__in" in nq:
-                 pass
+                # @todo union IDS
+                pass
             else:
                  nq["id__in"] = c_ids
         pass
@@ -143,7 +153,45 @@ class ObjectListApplication(ExtApplication):
             del nq["addresses"]
         if ids:
             nq["id__in"] = list(ids)
+
+        xf = list((set(nq.keys())) - set(self.model._meta.get_all_field_names()))
+        # @todo move validation fields
+        for x in xf:
+            if x in ["address__in", "id__in", "administrative_domain__in"]:
+                continue
+            self.logger.warning("Remove element not in model: %s" % x)
+            del nq[x]
         return nq
+
+    def extra_query(self, q, order):
+        # Query for MO attributest. Get key - ex_ATTRNAME
+        sql = """SELECT value AS platform 
+                 FROM sa_managedobjectattribute AS saa 
+                 WHERE key=\'%s\' AND saa.managed_object_id=sa_managedobject.id"""
+        # Query for filter by attributest
+        sql_w = """EXISTS (SELECT managed_object_id 
+                           FROM sa_managedobjectattribute 
+                           WHERE managed_object_id=sa_managedobject.id AND key=%s AND value LIKE %s)
+                           """
+        extra = {"select": {}}
+        for v in Version._fields:
+            # key = "ex_" + v
+            extra["select"]["ex_" + v] = sql % v
+            if v in order:
+                extra["order_by"] = ["ex_" + v]
+            elif "-" + v in order:
+                extra["order_by"] = ["-ex_" + v]
+
+        e_q = set(q).intersection(set(Version._fields))
+        # Extra filter query
+        if e_q:
+            extra["where"] = []
+            extra["params"] = []
+            for e in e_q:
+                extra["where"].append(sql_w)
+                extra["params"] += [e, "%" + q[e] + "%"]
+        self.logger.info("Extra: %s" % extra)
+        return extra, [] if "order_by" in extra else order
 
     @view(method=["GET", "POST"], url="^$", access="read", api=True)
     def api_list(self, request):

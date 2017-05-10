@@ -1,12 +1,13 @@
-console.debug("Defining NOC.sa.runcommands.Application");
+console.debug('Defining NOC.sa.runcommands.Application');
 
-Ext.define("NOC.sa.runcommands.Application", {
+Ext.define('NOC.sa.runcommands.Application', {
     extend: 'NOC.core.Application',
     layout: 'card',
+    alias: 'widget.runcommands',
 
     requires: [
         'NOC.sa.runcommands.ApplicationModel',
-        'NOC.core.Filter'
+        'NOC.core.filter.Filter'
     ],
     stateMap: {
         w: __('Waiting'),
@@ -22,13 +23,12 @@ Ext.define("NOC.sa.runcommands.Application", {
         f: 'noc-status-failed'
     },
 
-    filterObject: {},
-
     initComponent: function() {
         var me = this;
         var bs = Math.ceil(screen.height / 24);
 
         me.viewModel = Ext.create('Ext.app.ViewModel', {
+            alias: 'viewmodel.runcommands',
             data: {
                 total: {
                     selection: 0,
@@ -48,6 +48,16 @@ Ext.define("NOC.sa.runcommands.Application", {
                         scope: me,
                         datachanged: me.onStoreSizeChange
                     }
+                },
+                selectionStore: {
+                    xclass: 'NOC.core.ModelStore',
+                    model: 'NOC.sa.runcommands.ApplicationModel',
+                    autoLoad: false,
+                    pageSize: bs,
+                    leadingBufferZone: bs,
+                    numFromEdge: Math.ceil(bs / 2),
+                    trailingBufferZone: bs,
+                    purgePageCount: 10
                 }
             },
             formulas: {
@@ -79,21 +89,19 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         ];
         me.selectedStore = me.viewModel.get('selectedStore');
-        me.selectionStore = Ext.create('NOC.core.ModelStore', {
-            model: 'NOC.sa.runcommands.ApplicationModel',
-            autoLoad: false,
-            pageSize: bs,
-            leadingBufferZone: bs,
-            numFromEdge: Math.ceil(bs / 2),
-            trailingBufferZone: bs,
-            purgePageCount: 10,
-            actionMethods: {
-                read: 'POST'
-            }
-        });
-        me.filterPanel = Ext.create('NOC.core.Filter', {
+        me.selectionStore = me.viewModel.get('selectionStore');
+        me.filterPanel = Ext.create('NOC.core.filter.Filter', {
             appId: me.appId,
-            selectionStore: me.selectionStore
+            region: 'east',
+            width: 300,
+            collapsed: true,
+            border: true,
+            animCollapse: false,
+            collapseMode: 'mini',
+            hideCollapseTool: true,
+            split: true,
+            resizable: true,
+            selectionStore: 'runcommands.selectionStore'
         });
         me.ITEM_SELECT = me.registerItem(
             me.createSelectPanel()
@@ -128,7 +136,7 @@ Ext.define("NOC.sa.runcommands.Application", {
 
         selectionGrid = Ext.create('Ext.grid.Panel', {
             reference: selectionGridStateId,
-            store: me.selectionStore,
+            bind: '{selectionStore}',
             pageSize: 0,
             border: false,
             scrollable: true,
@@ -137,13 +145,13 @@ Ext.define("NOC.sa.runcommands.Application", {
             emptyText: __('Not Found'),
             selModel: {
                 mode: 'SIMPLE',
-                pruneRemoved: false,
+                // pruneRemoved: false,
                 selType: 'checkboxmodel'
             },
             region: 'west',
-            width: "50%",
+            width: '50%',
             columns: me.cols.concat({
-                xtype: "glyphactioncolumn",
+                xtype: 'glyphactioncolumn',
                 width: 25,
                 items: [
                     {
@@ -155,8 +163,8 @@ Ext.define("NOC.sa.runcommands.Application", {
             }),
             dockedItems: [
                 {
-                    xtype: "toolbar",
-                    dock: "top",
+                    xtype: 'toolbar',
+                    dock: 'top',
                     items: [
                         // @todo: Search
                         {
@@ -166,7 +174,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                             }
                         },
                         {
-                            text: __("Select Checked"),
+                            text: __('Select Checked'),
                             glyph: NOC.glyph.check_square_o,
                             bind: {
                                 disabled: selectionGridHasSelection
@@ -178,7 +186,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                             }
                         },
                         {
-                            text: __("Select All"),
+                            text: __('Select All'),
                             glyph: NOC.glyph.plus_circle,
                             handler: function() {
                                 var renderPlugin = selectionGrid.findPlugin('bufferedrenderer');
@@ -186,7 +194,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                             }
                         },
                         {
-                            text: __("Unselect All"),
+                            text: __('Unselect All'),
                             glyph: NOC.glyph.minus_circle,
                             bind: {
                                 disabled: selectionGridHasSelection
@@ -195,7 +203,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                                 selectionGrid.getSelectionModel().deselectAll();
                             }
                         },
-                        "->",
+                        '->',
                         {
                             xtype: 'box',
                             bind: {
@@ -214,11 +222,12 @@ Ext.define("NOC.sa.runcommands.Application", {
                 }
             },
             viewConfig: {
+                enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me, 'row_class', true)
             }
         });
 
-        selectedGrid = Ext.create("Ext.grid.Panel", {
+        selectedGrid = Ext.create('Ext.grid.Panel', {
             reference: selectedGridStateId,
             bind: '{selectedStore}',
             border: false,
@@ -226,12 +235,12 @@ Ext.define("NOC.sa.runcommands.Application", {
             pageSize: 0,
             stateful: true,
             stateId: selectedGridStateId,
-            selModel: "checkboxmodel",
+            selModel: 'checkboxmodel',
             region: 'center',
-            width: "50%",
+            width: '50%',
             columns: [
                 {
-                    xtype: "glyphactioncolumn",
+                    xtype: 'glyphactioncolumn',
                     width: 25,
                     items: [
                         {
@@ -243,11 +252,11 @@ Ext.define("NOC.sa.runcommands.Application", {
                 }].concat(me.cols),
             dockedItems: [
                 {
-                    xtype: "toolbar",
-                    dock: "top",
+                    xtype: 'toolbar',
+                    dock: 'top',
                     items: [
                         {
-                            text: __("Remove Checked"),
+                            text: __('Remove Checked'),
                             glyph: NOC.glyph.check_square_o,
                             bind: {
                                 disabled: selectedGridHasSelection
@@ -259,7 +268,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                             }
                         },
                         {
-                            text: __("Remove All"),
+                            text: __('Remove All'),
                             glyph: NOC.glyph.minus_circle,
                             bind: {
                                 disabled: selectedGridHasRecords
@@ -268,12 +277,11 @@ Ext.define("NOC.sa.runcommands.Application", {
                                 selectedGrid.getStore().removeAll();
                             }
                         },
-                        "->",
+                        '->',
                         {
                             xtype: 'box',
                             bind: {
                                 html: __('Total : {total.selected}')
-                                // html: __('Total : {selected.data.length}')
                             }
                         }
                     ]
@@ -284,8 +292,8 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         });
 
-        me.selectContinueButton = Ext.create("Ext.button.Button", {
-            text: __("Continue"),
+        me.selectContinueButton = Ext.create('Ext.button.Button', {
+            text: __('Continue'),
             glyph: NOC.glyph.play,
             bind: {
                 disabled: selectedGridHasRecords
@@ -296,7 +304,7 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         });
 
-        return Ext.create("Ext.panel.Panel", {
+        return Ext.create('Ext.panel.Panel', {
             layout: 'border',
             scrollable: false,
             items: [
@@ -306,14 +314,15 @@ Ext.define("NOC.sa.runcommands.Application", {
             ],
             dockedItems: [
                 {
-                    xtype: "toolbar",
-                    dock: "top",
+                    xtype: 'toolbar',
+                    dock: 'top',
                     items: [
                         me.selectContinueButton,
                         '->',
                         {
                             text: __('Filter'),
                             glyph: NOC.glyph.filter,
+                            tooltip: __('Show/Hide Filter'),
                             scope: me,
                             handler: function() {
                                 me.filterPanel.toggleCollapse();
@@ -330,22 +339,22 @@ Ext.define("NOC.sa.runcommands.Application", {
             selectedGrid,
             appName = me.appId.replace('.', '_');
 
-        selectedGrid = Ext.create("Ext.grid.Panel", {
+        selectedGrid = Ext.create('Ext.grid.Panel', {
             bind: '{selectedStore}',
             border: false,
             scrollable: true,
             stateful: true,
-            stateId: appName + "-selected-grid",
+            stateId: appName + '-selected-grid',
             region: 'west',
-            width: "50%",
+            width: '50%',
             columns: me.cols,
             viewConfig: {
                 getRowClass: Ext.bind(me.getRowClass, me, 'row_class', true)
             }
         });
 
-        me.runButton = Ext.create("Ext.button.Button", {
-            text: __("Run"),
+        me.runButton = Ext.create('Ext.button.Button', {
+            text: __('Run'),
             glyph: NOC.glyph.play,
             disabled: true,
             scope: me,
@@ -362,7 +371,7 @@ Ext.define("NOC.sa.runcommands.Application", {
             height: 500,
             scrollable: true,
             padding: 30,
-            componentId: "commands",
+            componentId: 'commands',
             itemId: 'commands'
         };
 
@@ -468,17 +477,17 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         });
 
-        return Ext.create("Ext.panel.Panel", {
-            layout: "border",
+        return Ext.create('Ext.panel.Panel', {
+            layout: 'border',
             activeItem: 1,
             items: [
                 selectedGrid,
                 {
                     region: 'east',
-                    width: "50%",
+                    width: '50%',
                     border: false,
                     defaults: {
-                        width: "80%"
+                        width: '80%'
                     },
                     items: [
                         me.modeField,
@@ -490,18 +499,18 @@ Ext.define("NOC.sa.runcommands.Application", {
             ],
             dockedItems: [
                 {
-                    xtype: "toolbar",
-                    dock: "top",
+                    xtype: 'toolbar',
+                    dock: 'top',
                     items: [
                         {
                             glyph: NOC.glyph.arrow_left,
                             scope: me,
-                            tooltip: __("Back"),
+                            tooltip: __('Back'),
                             handler: function() {
                                 me.showItem(me.ITEM_SELECT);
                             }
                         },
-                        "-",
+                        '-',
                         me.runButton
                     ]
                 }
@@ -562,27 +571,27 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         };
 
-        selectedGrid = Ext.create("Ext.grid.Panel", {
+        selectedGrid = Ext.create('Ext.grid.Panel', {
             bind: '{selectedStore}',
             border: false,
             scrollable: true,
             stateful: true,
             region: 'west',
-            width: "50%",
-            stateId: appName + "-selected-grid",
+            width: '50%',
+            stateId: appName + '-selected-grid',
             selModel: {
                 mode: 'SINGLE',
                 selType: 'checkboxmodel'
             },
             columns: me.cols.concat({
-                text: __("Status"),
-                dataIndex: "status",
+                text: __('Status'),
+                dataIndex: 'status',
                 width: 70,
                 renderer: NOC.render.Choices({
-                    w: __("Waiting"),
-                    r: __("Running"),
-                    f: __("Failed"),
-                    s: __("Success")
+                    w: __('Waiting'),
+                    r: __('Running'),
+                    f: __('Failed'),
+                    s: __('Success')
                 })
             }),
             listeners: {
@@ -590,8 +599,8 @@ Ext.define("NOC.sa.runcommands.Application", {
                 select: me.onShowResult
             },
             dockedItems: [{
-                xtype: "toolbar",
-                dock: "top",
+                xtype: 'toolbar',
+                dock: 'top',
                 items: me.progressState
             }],
             viewConfig: {
@@ -660,17 +669,17 @@ Ext.define("NOC.sa.runcommands.Application", {
     //
     createReportPanel: function() {
         var me = this;
-        return Ext.create("Ext.panel.Panel", {
-            html: "",
+        return Ext.create('Ext.panel.Panel', {
+            html: '',
             scrollable: true,
             bodyPadding: 4,
             dockedItems: [{
-                xtype: "toolbar",
-                dock: "top",
+                xtype: 'toolbar',
+                dock: 'top',
                 items: [
                     {
                         glyph: NOC.glyph.arrow_left,
-                        tooltip: __("Back"),
+                        tooltip: __('Back'),
                         scope: me,
                         handler: function() {
                             me.showItem(me.ITEM_PROGRESS);
@@ -733,14 +742,14 @@ Ext.define("NOC.sa.runcommands.Application", {
         me.viewModel.set('progressState.s', 0);
         me.selectedStore.each(function(record) {
             var v = {
-                id: record.get("id")
+                id: record.get('id')
             };
 
 
             if('commands' === mode) {
                 // Copy config
                 Ext.Object.each(cfg, function(key, value) {
-                    if(key !== "id") {
+                    if(key !== 'id') {
                         v[key] = value;
                     }
                 });
@@ -764,11 +773,11 @@ Ext.define("NOC.sa.runcommands.Application", {
         // Start streaming request
         xhr = new XMLHttpRequest();
         xhr.open(
-            "POST",
-            "/api/mrt/",
+            'POST',
+            '/api/mrt/',
             true
         );
-        xhr.setRequestHeader("Content-Type", "text/json");
+        xhr.setRequestHeader('Content-Type', 'text/json');
         xhr.onprogress = function() {
             // Parse incoming chunks
             var ft = xhr.responseText.substr(offset),
@@ -864,9 +873,10 @@ Ext.define("NOC.sa.runcommands.Application", {
                         if(obj.hasOwnProperty(key) && obj[key]) {
                             commands.push({
                                 id: key,
-                                script: "commands",
+                                script: 'commands',
                                 args: {
-                                    commands: obj[key].split("\n")
+                                    commands: obj[key].split('\n'),
+                                    include_commands: true
                                 }
                             });
                         }
@@ -886,9 +896,10 @@ Ext.define("NOC.sa.runcommands.Application", {
 
         if('commands' === me.modeField.getValue()) {
             me.sendCommands('commands', {
-                "script": "commands",
-                "args": {
-                    "commands": me.commandPanel.getValues().cmd.split("\n")
+                'script': 'commands',
+                'args': {
+                    'commands': me.commandPanel.getValues().cmd.split('\n'),
+                    'include_commands': 'true'
                 }
             });
         } else if('snippets' === me.modeField.getValue()) {
@@ -899,17 +910,17 @@ Ext.define("NOC.sa.runcommands.Application", {
     },
     //
     onShowResult: function(grid, record) {
-        this.viewModel.set('resultOutput', record.get("result"))
+        this.viewModel.set('resultOutput', record.get('result'))
     },
 
     buildReport: function() {
         var r = [];
 
         this.selectedStore.each(function(record) {
-            r.push("<div class='noc-mrt-section'>" + record.get("name") + "(" + record.get("address") + ")</div>");
-            r.push("<div class='noc-mrt-result'>" + record.get("result") + "</div>");
+            r.push('<div class=\'noc-mrt-section\'>' + record.get('name') + '(' + record.get('address') + ')</div>');
+            r.push('<div class=\'noc-mrt-result\'>' + record.get('result') + '</div>');
         });
-        return r.join("\n");
+        return r.join('\n');
     },
     //
     onStoreSizeChange: function() {

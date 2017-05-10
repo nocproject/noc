@@ -65,6 +65,8 @@ class ExtFormatMiddleware(object):
     def process_request(self, request):
         if request.GET and request.GET.get("__format") == "ext":
             request.is_extjs = True
+        elif request.POST and request.POST.get("__format") == "ext":
+            request.is_extjs = True
         else:
             request.is_extjs = False
 

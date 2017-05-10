@@ -32,11 +32,21 @@ class Script(BaseScript):
 
     TIMEOUT = 300
 
-    rx_sh_ip_int = re.compile(r"^(?P<ip>\S+)/(?P<mask>\d+)\s+(?P<interface>.+)\s+(:?Static|Dinamic|DHCP)\s",
-                              re.MULTILINE)
-    rx_ifname = re.compile(r"^(?P<ifname>\S+)\s+\S+\s+(?:Enabled|Disabled).+$", re.MULTILINE)
+    rx_sh_ip_int = re.compile(
+        r"^(?P<ip>\d+\S+)/(?P<mask>\d+)\s+(?P<interface>.+?)\s+"
+        r"((?P<admin_status>UP|DOWN)/(?P<oper_status>UP|DOWN)\s+)?"
+        r"(?:Static|Dinamic|DHCP)\s", re.MULTILINE)
+    rx_ifname = re.compile(
+        r"^(?P<ifname>\S+)\s+\S+\s+(?:Enabled|Disabled).+$", re.MULTILINE)
     rx_sh_int = re.compile(
-        r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n^\s+Interface index is (?P<ifindex>\d+)\s*\n^\s+Hardware is\s+.+?, MAC address is (?P<mac>\S+)\s*\n(^\s+Description:(?P<descr>.*?)\n)?^\s+Interface MTU is (?P<mtu>\d+)\s*\n(^\s+Link aggregation type is (?P<link_type>\S+)\s*\n)?(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
+        r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n"
+        r"^\s+Interface index is (?P<ifindex>\d+)\s*\n"
+        r"^\s+Hardware is\s+.+?, MAC address is (?P<mac>\S+)\s*\n"
+        r"(^\s+Description:(?P<descr>.*?)\n)?"
+        r"^\s+Interface MTU is (?P<mtu>\d+)\s*\n"
+        r"(^\s+Link aggregation type is (?P<link_type>\S+)\s*\n)?"
+        r"(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?"
+        r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
         re.MULTILINE | re.DOTALL)
     rx_sh_int_des = re.compile(
         r"^(?P<ifname>\S+)\s+\S+\s+(?:General|Access|Trunk|Customer|Promiscuous|Host)\s+\S+\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s*\n(?:^\s+Description:(?P<descr>.*\n?))?",
@@ -85,7 +95,8 @@ class Script(BaseScript):
         c = self.cli("show interfaces description detailed")
         for res in self.rx_sh_int_des.findall(c):
             name = res[0].strip()
-            if self.match_version(version__regex="[12]\.[15]\.4[4-9]"):
+            if self.match_version(version__regex="[12]\.[15]\.4[4-9]") \
+            or self.match_version(version__regex="4\.0\.[4-5]"):
                 v = self.cli("show interface %s" % name)
                 for match in self.rx_sh_int.finditer(v):
                     ifname = match.group("interface")
@@ -176,8 +187,14 @@ class Script(BaseScript):
                 enabled_afi += ["IPv4"]
             vlan = ifname.split(' ')[1]
             ifname = ifname.strip(' ')
-            a_stat = True  # match.group("admin_status").lower() == "up"
-            o_stat = True  # match.group("oper_status").lower() == "up"
+            if match.group("admin_status"):
+                a_stat = match.group("admin_status").lower() == "up"
+            else:
+                a_stat = True
+            if match.group("oper_status"):
+                o_stat = match.group("oper_status").lower() == "up"
+            else:
+                o_stat = True
             rx_vlan_name = re.compile(
                 r"^\s*" + vlan + "\s+(?P<name>.+?)\s+\S+\s+\S+\s+\S+\s*$",
                 re.MULTILINE)

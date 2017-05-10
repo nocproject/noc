@@ -85,7 +85,7 @@ class Script(BaseScript):
 
         # try ladvdc
         id_last = 999
-        v = self.cli("ladvdc -b -C")
+        v = self.cli("ladvdc -b -L")
         #print "Status: ", v
         
         if "INTERFACE" in v:

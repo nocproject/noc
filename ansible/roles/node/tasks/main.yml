@@ -199,7 +199,6 @@
     - name: var/bi
       owner: "{{noc_user}}"
 
-
 - name: Install noc.pth
   template:
     src: "lib/python/site-packages/noc.pth.j2"

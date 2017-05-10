@@ -287,15 +287,17 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "cpe_segment_policy",
-            xtype: "string"
+            xtype: "string",
+            defaultValue: "C"
         },
         {
             name: "cpe_cooldown",
-            xtype: "int"
+            xtype: "int",
+            defaultValue: 0
         },
         {
             name: "cpe_profile",
-            xtype: "string"
+            xtype: "int"
         },
         {
             name: "cpe_profile__label",

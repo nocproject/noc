@@ -14,6 +14,6 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Alcatel.7302"
-    pattern_prompt = r"^leg:.+#"
+    pattern_prompt = r"^(?:typ:|leg:|)\S+(?:>|#)"
     command_save_config = "admin software-mngt shub database save"
     command_exit = "logout"

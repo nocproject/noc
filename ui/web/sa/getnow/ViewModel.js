@@ -34,7 +34,12 @@ Ext.define('NOC.sa.getnow.ViewModel', {
         objectsStore: {
             xclass: 'NOC.core.ModelStore',
             model: 'NOC.sa.getnow.Model',
-            autoLoad: false
+            autoLoad: false,
+            pageSize: Math.ceil(screen.height / 24),
+            leadingBufferZone: Math.ceil(screen.height / 24),
+            numFromEdge: Math.ceil(Math.ceil(screen.height / 24) / 2),
+            trailingBufferZone: Math.ceil(screen.height / 24),
+            purgePageCount: 10
         }
     }
 });

@@ -142,6 +142,7 @@ class ActivatorAPI(API):
         """
         self.logger.debug("HTTP GET %s", url)
         client = tornado.httpclient.AsyncHTTPClient()
+        client.configure(None, defaults=dict(connect_timeout=20, request_timeout=30))
         result = None
         try:
             response = yield client.fetch(

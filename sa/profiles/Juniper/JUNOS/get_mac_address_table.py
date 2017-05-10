@@ -33,14 +33,17 @@ class Script(BaseScript):
         for l in self.cli(cmd).splitlines():
             match = rx_line.match(l.strip())
             if match:
-                vlan_id = int(vlans[match.group("vlan_name")])
+                if match.group("vlan_name") in vlans:
+                    vlan_id = int(vlans[match.group("vlan_name")])
+                else:
+                    vlan_id = 1
                 r += [{
                     "vlan_id": vlan_id,
                     "mac": match.group("mac"),
                     "interfaces": [match.group("interfaces")],
                     "type": {
-                        "learn":"D",
-                         "static":"S"
+                        "learn": "D",
+                        "static": "S"
                     }[match.group("type").lower()],
                 }]
         return r

@@ -18,15 +18,20 @@ class Script(BaseScript):
     interface = IGetVersion
     cache = True
 
-    rx_version = re.compile(
+    rx_version1 = re.compile(
         r"^SW version+\s+(?P<version>\S+)", re.MULTILINE)
+    rx_version2 = re.compile(
+        r"^Active-image: \S+\s*\n"
+        r"^\s+Version: (?P<version>\S+)", re.MULTILINE)
     rx_bootprom = re.compile(
         r"^Boot version+\s+(?P<bootprom>\S+)", re.MULTILINE)
     rx_hardware = re.compile(
         r"^HW version+\s+(?P<hardware>\S+)$", re.MULTILINE)
 
-    rx_serial = re.compile(
+    rx_serial1 = re.compile(
         r"^Serial number :\s+(?P<serial>\S+)$", re.MULTILINE)
+    rx_serial2 = re.compile(
+        r"^\s+1\s+(?P<serial>\S+)\s*\n", re.MULTILINE)
     rx_platform = re.compile(
         r"^System Object ID:\s+(?P<platform>\S+)$", re.MULTILINE)
 
@@ -82,20 +87,32 @@ class Script(BaseScript):
         platform = self.platforms.get(platform)
 
         ver = self.cli("show version", cached=True)
-        version = self.re_search(self.rx_version, ver)
-        bootprom = self.re_search(self.rx_bootprom, ver)
-        hardware = self.re_search(self.rx_hardware, ver)
+        match = self.rx_version1.search(ver)
+        if match:
+            version = self.re_search(self.rx_version1, ver)
+            bootprom = self.re_search(self.rx_bootprom, ver)
+            hardware = self.re_search(self.rx_hardware, ver)
+        else:
+            version = self.rx_version2.search(ver)
+            bootprom = None
+            hardware = None
 
-        serial = self.cli("show system id", cached=True)
-        serial = self.re_search(self.rx_serial, serial)
+        ser = self.cli("show system id", cached=True)
+        match = self.rx_serial1.search(ser)
+        if match:
+            serial = self.re_search(self.rx_serial1, ser)
+        else:
+            serial = self.re_search(self.rx_serial2, ser)
 
-        return {
-                "vendor": "Eltex",
-                "platform": platform,
-                "version": version.group("version"),
-                "attributes": {
-                    "Boot PROM": bootprom.group("bootprom"),
-                    "HW version": hardware.group("hardware"),
-                    "Serial Number": serial.group("serial")
-                    }
-                }
+        r =  {
+            "vendor": "Eltex",
+            "platform": platform,
+            "version": version.group("version"),
+            "attributes": {
+                "Serial Number": serial.group("serial")
+            }
+        }
+        if bootprom:
+            r["attributes"]["Boot PROM"] = bootprom.group("bootprom")
+            r["attributes"]["HW version"]= hardware.group("hardware")
+        return r

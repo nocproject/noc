@@ -94,6 +94,10 @@ class ExtApplication(Application):
         else:
             return set()
 
+    def extra_query(self, q, order):
+        # raise NotImplementedError
+        return {}, order
+
     def cleaned_query(self, q):
         raise NotImplementedError
 
@@ -106,15 +110,11 @@ class ExtApplication(Application):
         """
         # Todo: Fix
         if request.method == "POST":
-            if request.body:
-                q = ujson.loads(request.body)
-            else:
-                q = dict((str(k), v[0] if len(v) == 1 else v)
-                         for k, v in request.POST.lists())
+            q = dict((str(k), v[0] if len(v) == 1 else v)
+                     for k, v in request.POST.lists())
         else:
             q = dict((str(k), v[0] if len(v) == 1 else v)
                      for k, v in request.GET.lists())
-
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
@@ -133,6 +133,8 @@ class ExtApplication(Application):
         fav_items = None
         if self.fav_status in q:
             fs = q.pop(self.fav_status) == "true"
+        # @todo Filter models field (validate) data.model._meta.get_all_field_names()
+        xaa, ordering = self.extra_query(q, ordering)
         q = self.cleaned_query(q)
         if None in q:
             w = []
@@ -147,6 +149,9 @@ class ExtApplication(Application):
             if p:
                 xa["params"] = p
             data = self.queryset(request, query).filter(**q).extra(**xa)
+        elif xaa:
+            # ExtraQuery
+            data = self.queryset(request, query).filter(**q).extra(**xaa)
         else:
             data = self.queryset(request, query).filter(**q)
         # Favorites filter
