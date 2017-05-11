@@ -435,8 +435,6 @@ class Service(object):
                 ("^/api/%s/sdl.js" % self.name, SDLRequestHandler, {"sdl": sdl})
             ]
         handlers += self.get_handlers()
-        self.logger.info("Running HTTP APIs at http://%s:%s/",
-                         addr, port)
         app = tornado.web.Application(handlers, **self.get_app_settings())
         self.server = tornado.httpserver.HTTPServer(
             app,
@@ -445,6 +443,9 @@ class Service(object):
         self.server.listen(port, addr)
         # Get effective address and port
         self.update_service_address()
+        #
+        self.logger.info("Running HTTP APIs at http://%s:%s/",
+                         self.address, self.port)
         #
         if self.require_nsq_writer:
             self.get_nsq_writer()
