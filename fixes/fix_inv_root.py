@@ -38,7 +38,6 @@ def fix():
     logging.info("Checking Loste&Found object")
     lostfound_model = ObjectModel.objects.get(uuid="b0fae773-b214-4edf-be35-3468b53b03f2")
     lf = Object.objects.filter(model=lostfound_model.id).count()
-    print lf
     if lf == 0:
         # Create missed "Lost&Found"
         logging.info("    ... creating missed Lost&Found")
@@ -69,6 +68,14 @@ def fix():
                 ls.save()
             logging.info("   ... removing duplicated Lost&Found %s", l)
             l.delete()
+        
+        if Object.objects.get(name="Global Lost&Found").container != Object.objects.get(name="Root",model=root_model).id:
+            logging.info("Global Lost&Found object not valid container - fix")  # fix
+            o = Object.objects.get(name="Global Lost&Found")
+            o.container = Object.objects.get(name="Root").id
+            o.save()
+        else:
+            logging.info("Global Lost&Found object container is valid")
 
 
 
