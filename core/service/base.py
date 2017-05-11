@@ -436,7 +436,8 @@ class Service(object):
         app = tornado.web.Application(handlers, **self.get_app_settings())
         self.server = tornado.httpserver.HTTPServer(
             app,
-            xheaders=True
+            xheaders=True,
+            no_keep_alive=True
         )
         self.server.listen(port, addr)
         # Get effective address and port
