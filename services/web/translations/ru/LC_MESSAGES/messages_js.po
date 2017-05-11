@@ -140,7 +140,7 @@ msgstr "Удалить объект"
 
 #: ui/web/core/ModelApplication.js:493
 msgid "Copy existing values to a new object"
-msgstr "Скопировать значение в новый объект"
+msgstr "Скопировать значения в новый объект"
 
 #: ui/web/core/ModelApplication.js:711
 msgid "Invalid data!"
@@ -246,7 +246,7 @@ msgstr "Изменений нет"
 
 #: ui/web/core/Rack.js:149
 msgid "Rack: "
-msgstr "Стойка:"
+msgstr "Стойка: "
 
 #: ui/web/core/JSONPreview.js:138 ui/web/core/RestTemplatePreview.js:39
 msgid "Failed to get JSON"
@@ -1363,7 +1363,7 @@ msgstr "Загрузка"
 
 #: ui/web/fm/mib/MIBUpload.js:65
 msgid "MIBs has been uploaded"
-msgstr "MIB'ы будет загружены"
+msgstr "MIB'ы будут загружены"
 
 #: ui/web/fm/mib/MIBUpload.js:69
 msgid "Failed to upload MIB"
@@ -2246,7 +2246,7 @@ msgstr "Ошибка при запуске приложения"
 
 #: ui/web/inv/inv/Application.js:221
 msgid "Failed to find node"
-msgstr "Ошибка про поиске ноды"
+msgstr "Ошибка про поиске узла"
 
 #: ui/web/inv/inv/Application.js:227
 msgid "Failed to get path"
@@ -2318,7 +2318,7 @@ msgstr ""
 
 #: ui/web/inv/inv/plugins/conduits/ConduitsForm.js:289
 msgid "Failed to save conduits"
-msgstr "Ошибка при сохранении связей."
+msgstr "Ошибка при сохранении связей"
 
 #: ui/web/inv/inv/plugins/conduits/ConduitsLayoutPanel.js:26
 #: ui/web/inv/inv/plugins/conduits/CreateBlockForm.js:11
@@ -2845,7 +2845,7 @@ msgstr "Показать/Скрыть миникарту"
 
 #: ui/web/inv/map/Application.js:281
 msgid "Show/Hide basket"
-msgstr "Показать/Скрыть тележку"
+msgstr "Показать/Скрыть корзину"
 
 #: ui/web/inv/map/Application.js:444
 msgid "Reset Layout"
@@ -2857,7 +2857,7 @@ msgstr "Сбросить раскладку карты и перестроить
 
 #: ui/web/inv/map/Basket.js:27
 msgid "basket empty"
-msgstr "тележка пуста"
+msgstr "корзина пуста"
 
 #: ui/web/inv/map/Basket.js:40
 msgid "Delete object(s)"
@@ -2896,7 +2896,7 @@ msgstr "Стиль полосы пропускания линка"
 
 #: ui/web/inv/map/Legend.js:79
 msgid "data unavailable"
-msgstr "данные недоступны"
+msgstr "данные не доступны"
 
 #: ui/web/inv/map/Legend.js:107
 msgid "Link utilization style"
@@ -2920,7 +2920,7 @@ msgstr ""
 
 #: ui/web/inv/map/Legend.js:171
 msgid "oper down"
-msgstr "порт в дауне"
+msgstr "соединение отсутствует"
 
 #: ui/web/inv/map/Legend.js:181
 msgid ""
@@ -3006,7 +3006,7 @@ msgstr "Выбрать изображение"
 #: ui/web/sa/managedobject/Application.js:362
 #: ui/web/sa/managedobjectprofile/Application.js:178
 msgid "Shape"
-msgstr "Иконка"
+msgstr "Изображение"
 
 #: ui/web/inv/map/SelectIconForm.js:43
 msgid "Set"
@@ -3206,7 +3206,7 @@ msgstr "Направление"
 
 #: ui/web/inv/objectmodel/Application.js:187
 msgid "Gender"
-msgstr "Мама/Папа"
+msgstr "Тип соединителя"
 
 #: ui/web/inv/objectmodel/Application.js:200
 msgid "Cross"
@@ -3492,7 +3492,7 @@ msgstr "сервис"
 
 #: ui/web/ip/prefix/Application.js:117
 msgid "site"
-msgstr "свйт"
+msgstr "сайт"
 
 #: ui/web/ip/prefix/Application.js:123
 msgid "is primary"
@@ -3564,7 +3564,7 @@ msgstr ""
 
 #: ui/web/ip/vrf/Application.js:85 ui/web/ip/vrfgroup/Application.js:54
 msgid "VRF Group"
-msgstr "Группа VRF"
+msgstr "VRF группа"
 
 #: ui/web/ip/vrf/Application.js:146 ui/web/vc/vc/Application.js:30
 msgid "By State"
@@ -3572,15 +3572,15 @@ msgstr "По состоянию"
 
 #: ui/web/ip/vrf/Application.js:152
 msgid "By VRF Group"
-msgstr ""
+msgstr "По VRF группе"
 
 #: ui/web/ip/vrf/Application.js:164
 msgid "By IPv4"
-msgstr ""
+msgstr "По IPv4"
 
 #: ui/web/ip/vrf/Application.js:169
 msgid "By IPv6"
-msgstr ""
+msgstr "По IPv6"
 
 #: ui/web/ip/vrf/Application.js:184
 msgid "Import VRFs"
@@ -4536,7 +4536,7 @@ msgstr ""
 #: ui/web/peer/peeringpoint/Application.js:31
 #: ui/web/peer/peeringpoint/Application.js:67
 msgid "Local AS"
-msgstr ""
+msgstr "Локальная AS"
 
 #: ui/web/peer/peer/Application.js:45 ui/web/peer/peer/Application.js:144
 msgid "Remote AS"
@@ -4552,7 +4552,7 @@ msgstr ""
 
 #: ui/web/peer/peer/Application.js:69
 msgid "Local Address"
-msgstr ""
+msgstr "Локальный адрес"
 
 #: ui/web/peer/peer/Application.js:74
 msgid "Remote Address"
@@ -4560,7 +4560,7 @@ msgstr ""
 
 #: ui/web/peer/peer/Application.js:181
 msgid "Local IP"
-msgstr ""
+msgstr "Локальный IP"
 
 #: ui/web/peer/peer/Application.js:186
 msgid "Local Backup IP"
@@ -4841,7 +4841,7 @@ msgstr "Стиль"
 
 #: ui/web/pm/metrictype/Application.js:79
 msgid "Measure"
-msgstr ""
+msgstr "Единицы измерения"
 
 #: ui/web/project/project/Application.js:23
 msgid "Resources"
@@ -5040,7 +5040,7 @@ msgstr "Запрос конфига"
 
 #: ui/web/sa/getnow/Application.js:52 ui/web/sa/getnow/Application.js:53
 msgid "Stop Polling"
-msgstr ""
+msgstr "Остановить опрос"
 
 #: ui/web/sa/getnow/SelectionGrid.js:33 ui/web/sa/getnow/SelectionGrid.js:34
 msgid "Managed object"
@@ -5058,15 +5058,15 @@ msgstr ""
 
 #: ui/web/sa/getnow/SelectionGrid.js:55 ui/web/sa/getnow/SelectionGrid.js:56
 msgid "Last update"
-msgstr ""
+msgstr "Последнее обновление"
 
 #: ui/web/sa/getnow/SelectionGrid.js:71 ui/web/sa/getnow/SelectionGrid.js:72
 msgid "Last status"
-msgstr ""
+msgstr "Последнее состояние"
 
 #: ui/web/sa/getnow/SelectionGrid.js:87
 msgid "Reload data"
-msgstr ""
+msgstr "Обновить данные"
 
 #: ui/web/sa/getnow/SelectionGrid.js:93
 msgid "Select all records from buffer (screen)"
@@ -5149,7 +5149,7 @@ msgstr "Аварии"
 
 #: ui/web/sa/managedobject/Application.js:135
 msgid "Command Log"
-msgstr "Лог комманд"
+msgstr "Лог команд"
 
 #: ui/web/sa/managedobject/Application.js:150
 msgid "Capabilities"
@@ -5239,7 +5239,7 @@ msgstr "IP адрес источника SNMP Trap"
 
 #: ui/web/sa/managedobject/Application.js:636
 msgid "Syslog Source"
-msgstr "Источник syslog"
+msgstr "Источник Syslog"
 
 #: ui/web/sa/managedobject/Application.js:658
 msgid "Syslog Source IP"
@@ -5288,7 +5288,7 @@ msgstr "По терминирующему сервисы"
 
 #: ui/web/sa/managedobject/Application.js:840
 msgid "Attributes"
-msgstr "Аттрибуты"
+msgstr "Атрибуты"
 
 #: ui/web/fm/ignorepattern/Application.js:22
 #: ui/web/fm/ignorepattern/Application.js:42
@@ -5555,11 +5555,11 @@ msgstr "Админ"
 
 #: ui/web/sa/managedobject/scripts/ShowInterfaceStatusEx.js:30
 msgid "In (kbit/s)"
-msgstr "Вх (Кб/с)"
+msgstr "Вх (Кбит/с)"
 
 #: ui/web/sa/managedobject/scripts/ShowInterfaceStatusEx.js:36
 msgid "Out (kbit/s)"
-msgstr "Вых (Кб/с)"
+msgstr "Исх (Кбит/с)"
 
 #: ui/web/sa/managedobject/scripts/ShowInterfaceStatusEx.js:42
 msgid "Full Duplex"
@@ -5653,7 +5653,7 @@ msgstr ""
 #: ui/web/sa/managedobjectprofile/Application.js:321
 #: ui/web/sa/managedobjectprofile/Application.js:710
 msgid "Interval, sec"
-msgstr "Интервал, с"
+msgstr "Интервал, сек."
 
 #: ui/web/sa/managedobjectprofile/Application.js:277
 msgid "Report ping RTT"
@@ -5661,11 +5661,11 @@ msgstr "Собирать RTT при ping"
 
 #: ui/web/sa/managedobjectprofile/Application.js:304
 msgid "Box discovery intervals"
-msgstr "Интервал Пакетного опроса"
+msgstr "Интервал пакетного опроса"
 
 #: ui/web/sa/managedobjectprofile/Application.js:349
 msgid "Failed Interval, sec"
-msgstr "Интервал при сбое, с"
+msgstr "Интервал при сбое, сек."
 
 #: ui/web/sa/managedobjectprofile/Application.js:377
 msgid "Check on system start after "
@@ -5880,7 +5880,7 @@ msgstr "Источники"
 
 #: ui/web/sa/managedobjectselector/Application.js:250
 msgid "Filter by attributes"
-msgstr "Фильтровать по аттрибутам"
+msgstr "Фильтровать по атрибутам"
 
 #: ui/web/sa/managedobjectselector/Application.js:254
 msgid "Key (RE)"
@@ -5925,7 +5925,7 @@ msgstr "Таймаут"
 
 #: ui/web/sa/objectnotification/Application.js:31
 msgid "Config Changed"
-msgstr "Конфиг изменён"
+msgstr "Конфигурация изменена"
 
 #: ui/web/sa/objectnotification/Application.js:37
 msgid "Alarm Risen"
@@ -5941,7 +5941,7 @@ msgstr "Авария снята"
 
 #: ui/web/sa/objectnotification/Application.js:55
 msgid "Alarm Commented"
-msgstr "Авараия откомментирована"
+msgstr "Авария откомментирована"
 
 #: ui/web/main/audittrail/Application.js:85
 #: ui/web/sa/objectnotification/Application.js:61
@@ -5968,7 +5968,7 @@ msgstr "Конфигурация не соответствует политик�
 
 #: ui/web/sa/objectnotification/Application.js:107
 msgid "Config changed"
-msgstr "Конфиг изменен"
+msgstr "Конфигурация изменена"
 
 #: ui/web/sa/objectnotification/Application.js:112
 msgid "Alarm risen"
@@ -6023,7 +6023,7 @@ msgstr "Имя объекта"
 
 #: ui/web/sa/reportobjectdetail/Application.js:28
 msgid "Object Status"
-msgstr ""
+msgstr "Статус объекта"
 
 #: ui/web/sa/managedobject/Application.js:353
 #: ui/web/sa/reportobjectdetail/Application.js:30
@@ -6032,7 +6032,7 @@ msgstr "Профиль объекта"
 
 #: ui/web/sa/reportobjectdetail/Application.js:33
 msgid "SW Version"
-msgstr ""
+msgstr "Версия ПО"
 
 #: ui/web/sa/reportobjectdetail/Application.js:34
 msgid "Avail"
@@ -6282,7 +6282,7 @@ msgid ""
 "additional support and services"
 msgstr ""
 "Учётная запись не зарегистрирована. Пожалуйста, зарегистрируйте учётную "
-"запись для получения доступа к дополнительной поддержки и сервису."
+"запись для получения доступа к дополнительной поддержке и сервису."
 
 #: ui/web/support/account/AccountPanel.js:22
 msgid "Account is registred. You have access to additional support and serivces"
