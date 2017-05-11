@@ -19,6 +19,8 @@ import tornado.gen
 import tornado.locks
 import tornado.ioloop
 from six.moves.urllib.parse import urlparse
+## Python modules
+from noc.core.perf import metrics
 
 
 class ResolutionError(Exception):
@@ -159,6 +161,7 @@ class ResolverBase(object):
 
     def stop(self):
         self.to_shutdown = True
+        metrics["dcs.resolver.%s.activeservices" % self.name] = 0
 
     @tornado.gen.coroutine
     def start(self):
@@ -170,6 +173,8 @@ class ResolverBase(object):
         :param services: dict of service_id -> <address>:<port>
         :return: 
         """
+        if self.to_shutdown:
+            return
         with self.lock:
             self.services = services
             self.service_ids = sorted(services.keys())
@@ -184,6 +189,7 @@ class ResolverBase(object):
             else:
                 self.logger.info("[%s] No active services", self.name)
                 self.ready_event.clear()
+            metrics["dcs.resolver.%s.activeservices" % self.name] = len(self.services)
 
     @tornado.gen.coroutine
     def resolve(self, hint=None):
