@@ -29,6 +29,7 @@ class ConsulResolver(ResolverBase):
         self.logger.info("[%s] Starting resolver", self.name)
         while not self.to_shutdown:
             try:
+                old_index = index
                 index, services = yield self.dcs.consul.catalog.service(
                     service=self.name,
                     index=index,
@@ -36,6 +37,8 @@ class ConsulResolver(ResolverBase):
                 )
             except ConsulRepeatableErrors:
                 continue
+            if old_index == index:
+                continue  # Timed out
             r = dict(
                 (svc["ServiceID"], "%s:%s" % (svc["ServiceAddress"], svc["ServicePort"]))
                 for svc in services
