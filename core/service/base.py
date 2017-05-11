@@ -418,10 +418,6 @@ class Service(object):
         # Collect and register exposed API
         for a in api:
             url = "^/api/%s/$" % a.name
-            self.logger.info(
-                "Supported API: %s at http://%s:%s/api/%s/",
-                a.name, addr, port, a.name
-            )
             handlers += [(
                 url,
                 self.api_request_handler,
@@ -446,6 +442,11 @@ class Service(object):
         #
         self.logger.info("Running HTTP APIs at http://%s:%s/",
                          self.address, self.port)
+        for a in api:
+            self.logger.info(
+                "Supported API: %s at http://%s:%s/api/%s/",
+                a.name, self.address, self.port, a.name
+            )
         #
         if self.require_nsq_writer:
             self.get_nsq_writer()
