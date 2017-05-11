@@ -18,6 +18,7 @@ import consul.tornado
 import ujson
 ## NOC modules
 from base import DCSBase, ResolverBase
+from noc.core.perf import metrics
 
 ConsulRepeatableErrors = consul.base.Timeout
 
@@ -94,6 +95,7 @@ class ConsulDCS(DCSBase):
         self.session = None
         self.keep_alive_task = None
         self.service_watchers = {}
+        self.in_keep_alive = False
 
     def parse_url(self, u):
         if ":" in u.netloc:
@@ -212,27 +214,36 @@ class ConsulDCS(DCSBase):
 
     @tornado.gen.coroutine
     def keep_alive(self):
-        if self.session:
-            touched = False
-            for n in range(self.keepalive_attempts):
-                try:
-                    yield self.consul.session.renew(self.session)
-                    touched = True
-                    break
-                except consul.base.NotFound:
-                    self.logger.info("Session lost. Forcing quit")
-                    break
-                except ConsulRepeatableErrors as e:
-                    self.logger.info("Cannot refresh session due to ignorable error: %s", e)
-                    yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
-            if not touched:
-                self.logger.info("Cannot refresh session, stopping")
+        metrics["dcs.consul.keepalives"] += 1
+        if self.in_keep_alive:
+            metrics["dcs.consul.overlapped_keepalives"] += 1
+            raise tornado.gen.Return()
+        self.in_keep_alive = True
+        try:
+            if self.session:
+                touched = False
+                for n in range(self.keepalive_attempts):
+                    try:
+                        yield self.consul.session.renew(self.session)
+                        touched = True
+                        break
+                    except consul.base.NotFound:
+                        self.logger.info("Session lost. Forcing quit")
+                        break
+                    except ConsulRepeatableErrors as e:
+                        self.logger.info("Cannot refresh session due to ignorable error: %s", e)
+                        metrics["dcs.consul.keepalive_retries"] += 1
+                        yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                if not touched:
+                    self.logger.info("Cannot refresh session, stopping")
+                    self.keep_alive_task.stop()
+                    self.keep_alive_task = None
+                    self.kill()
+            else:
                 self.keep_alive_task.stop()
                 self.keep_alive_task = None
-                self.kill()
-        else:
-            self.keep_alive_task.stop()
-            self.keep_alive_task = None
+        finally:
+            self.in_keep_alive = False
 
     def get_lock_path(self, lock):
         return self.consul_prefix + "/locks/" + lock
