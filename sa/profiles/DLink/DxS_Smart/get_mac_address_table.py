@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## DLink.DxS_Smart.get_mac_address_table
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -39,15 +39,13 @@ class Script(BaseScript):
                 vlan_oid = []
                 if mac is not None:
                     mac = mac.lower()
-                for v in self.snmp.get_tables(
-                        ["1.3.6.1.2.1.17.7.1.2.2.1.2"],
-                        bulk=True):
+                for v in self.snmp.get_tables(["1.3.6.1.2.1.17.7.1.2.2.1.2"]):
                     vlan_oid.append(v[0])
 
                 # mac iface type
                 for v in self.snmp.get_tables([
                         "1.3.6.1.2.1.17.7.1.2.2.1.2",
-                        "1.3.6.1.2.1.17.7.1.2.2.1.3", ], bulk=True):
+                        "1.3.6.1.2.1.17.7.1.2.2.1.3"]):
                     if v[1]:
                         macar = v[0].split('.')[1:]
                         chassis = ":".join(["%02x" % int(c) for c in macar])
@@ -63,7 +61,7 @@ class Script(BaseScript):
                     if int(v[2]) > 3 or int(v[2]) < 1:
                         continue
                     iface = self.snmp.get(
-                        "1.3.6.1.2.1.31.1.1.1.1." + v[1],
+                        "1.3.6.1.2.1.31.1.1.1.1." + str(v[1]),
                         cached=True)  # IF-MIB
                     if interface is not None:
                         if iface == interface:
