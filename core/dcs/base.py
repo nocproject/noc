@@ -193,16 +193,20 @@ class ResolverBase(object):
 
     @tornado.gen.coroutine
     def resolve(self, hint=None):
+        metrics["dcs.resolver.requests"] += 1
         # Wait until service catalog populated
         try:
             yield self.ready_event.wait(timeout=self.dcs.DEFAULT_SERVICE_RESOLUTION_TIMEOUT)
         except tornado.gen.TimeoutError:
+            metrics["dcs.resolver.errors"] += 1
             raise ResolutionError()
         with self.lock:
             if hint and hint in self.service_addresses:
                 location = hint
+                metrics["dcs.resolver.hints"] += 1
             else:
                 location = self.services[self.policy()]
+        metrics["dcs.resolver.success"] += 1
         raise tornado.gen.Return(location)
 
     def policy_random(self):
