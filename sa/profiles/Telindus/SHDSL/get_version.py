@@ -5,12 +5,10 @@
 ## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-## Python modules
-import re
+
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-
 
 class Script(BaseScript):
     name = "Telindus.SHDSL.get_version"
@@ -28,7 +26,9 @@ class Script(BaseScript):
                 print pr
                 platform = pr[1].strip()
                 vr = v[2].split()
-                version = vr[0].strip()
+                for ver in vr:
+                    if ver.startswith("T"):
+                        version = ver
                 return {
                         "vendor": "Telindus",
                         "version": version,
@@ -36,6 +36,5 @@ class Script(BaseScript):
                         }
             except self.snmp.TimeOutError:
                 pass
-
         # Fallback to CLI
         raise Exception("Not implemented")
