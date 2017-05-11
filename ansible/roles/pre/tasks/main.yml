@@ -123,7 +123,7 @@
     src: "hosts.j2"
     dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
     force: no
-  become: true
+  become: false
   run_once: true
   tags:
     - config
@@ -135,7 +135,7 @@
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     regexp: ".*{{ item }}$"
     create: no
-  become: true
+  become: false
   with_items: "{% if 'nodes' in groups %}{{groups['nodes']}}{%endif%}"
   delegate_to: 127.0.0.1
   when: "'nodes' in groups"
