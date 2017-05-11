@@ -145,13 +145,13 @@
     - config
     - fill_hosts
 
-- name: unsure consul ip is in hosts file
+- name: ensure consul ip is in hosts file
   lineinfile:
     dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
     line: "127.0.0.1 consul"
     regexp: "127.0.0.1 consul"
     create: no
-  become: true
+  become: false
   with_items: "{% if 'nodes' in groups %}{{groups['nodes']}}{%endif%}"
   delegate_to: 127.0.0.1
   when: "'nodes' in groups"
@@ -166,7 +166,7 @@
     src: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
     dest: /etc/hosts
   when: "'nodes' in groups"
-  become: true
+  become: false
   tags:
     - config
     - fill_hosts
