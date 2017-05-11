@@ -117,6 +117,10 @@ class Service(object):
         self.metrics_lock = threading.Lock()
         self.metrics_callback = None
         self.dcs = None
+        # Effective address and port
+        self.server = None
+        self.address = None
+        self.port = None
 
     def create_parser(self):
         """
@@ -361,6 +365,8 @@ class Service(object):
         """
         Returns an (address, port) for HTTP service listener
         """
+        if self.address and self.port:
+            return self.address, self.port
         addr, port = self.config.listen.split(":")
         if addr == "auto":
             addr = os.environ.get("HOSTNAME", "auto")
@@ -368,6 +374,17 @@ class Service(object):
         addr = socket.gethostbyname(addr)
         port = int(port) + self.config.instance
         return addr, port
+
+    def update_service_address(self):
+        """
+        Update service address and port from tornado TCPServer
+        :param server: 
+        :return: 
+        """
+        for f in self.server._sockets:
+            sock = self.server._sockets[f]
+            self.address, self.port = sock.getsockname()
+            break
 
     def get_handlers(self):
         """
@@ -421,11 +438,14 @@ class Service(object):
         self.logger.info("Running HTTP APIs at http://%s:%s/",
                          addr, port)
         app = tornado.web.Application(handlers, **self.get_app_settings())
-        http_server = tornado.httpserver.HTTPServer(
+        self.server = tornado.httpserver.HTTPServer(
             app,
             xheaders=True
         )
-        http_server.listen(port, addr)
+        self.server.listen(port, addr)
+        # Get effective address and port
+        self.update_service_address()
+        #
         if self.require_nsq_writer:
             self.get_nsq_writer()
         self.ioloop.add_callback(self.on_register)
