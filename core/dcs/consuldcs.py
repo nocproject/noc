@@ -37,7 +37,7 @@ class ConsulResolver(ResolverBase):
             except ConsulRepeatableErrors:
                 continue
             r = dict(
-                (svc["ID"], "%s:%s" % (svc["ServiceAddress"], svc["ServicePort"]))
+                (svc["ServiceID"], "%s:%s" % (svc["ServiceAddress"], svc["ServicePort"]))
                 for svc in services
             )
             self.set_services(r)
