@@ -44,6 +44,14 @@
     tags:
       - config
 
+  - name: Including postgres.conf
+    lineinfile:
+      dest: "{{postgresql_conf_path}}"
+      line: "include = '{{ noc_root }}/var/etc/postgres/postgres.conf'"
+    notify: restart postgres
+    tags:
+      - config
+
   - name: Enable postgres system service
     service:
       name: "{{postgres_system_service}}"
