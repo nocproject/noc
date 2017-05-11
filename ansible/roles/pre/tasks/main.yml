@@ -166,7 +166,7 @@
     src: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
     dest: /etc/hosts
   when: "'nodes' in groups"
-  become: false
+  become: true
   tags:
     - config
     - fill_hosts
