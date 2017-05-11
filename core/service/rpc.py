@@ -151,7 +151,8 @@ class RPCProxy(object):
                     body=body,
                     headers={
                         "X-NOC-Calling-Service": self._service.name,
-                        "Content-Type": "text/json"
+                        "Content-Type": "text/json",
+                        "Connection": "close"
                     },
                     follow_redirects=False,
                     raise_error=False,
