@@ -26,7 +26,7 @@
     src: patroni.cnf.j2
     dest: "{{etc_prefix}}/keepalived/patroni.cnf"
   notify: reload keepalived
-  when: groups['svc-patroni'] | count  > 1
+  when: has_svc_haproxy| default(False)
   tags:
     - keepalived
     - config
