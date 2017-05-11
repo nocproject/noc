@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Vendor: Ruckus
-## OS:     AP
+## Vendor: Telindus
+## OS:     SHDSL
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 '''
@@ -14,3 +14,4 @@ import re
 
 class Profile(BaseProfile):
     name = "Telindus.SHDSL"
+    password_submit = "\r"

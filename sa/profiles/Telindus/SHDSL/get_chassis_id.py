@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Ruckus.AP.get_chassis_id
+## Telindus.SHDSL.get_chassis_id
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 ## Python modules
