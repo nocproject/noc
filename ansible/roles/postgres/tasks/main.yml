@@ -52,6 +52,14 @@
     tags:
       - config
 
+  - name: Setting config
+    template:
+      src: "postgres.conf.j2"
+      dest: "{{ noc_root }}/var/etc/postgres/postgres.conf"
+    notify: restart postgres
+    tags:
+      - config
+
   - name: Enable postgres system service
     service:
       name: "{{postgres_system_service}}"
