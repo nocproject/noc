@@ -418,7 +418,6 @@ class Service(object):
                 ("^/api/%s/sdl.js" % self.name, SDLRequestHandler, {"sdl": sdl})
             ]
         handlers += self.get_handlers()
-        addr, port = self.get_service_address()
         self.logger.info("Running HTTP APIs at http://%s:%s/",
                          addr, port)
         app = tornado.web.Application(handlers, **self.get_app_settings())
