@@ -15,3 +15,8 @@
   service:
     name: telegraf
     state: restarted
+
+- name: reload systemd
+  systemd:
+    name: noc
+    daemon_reload: yes
