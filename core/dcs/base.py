@@ -175,8 +175,14 @@ class ResolverBase(object):
             self.service_ids = sorted(services.keys())
             self.service_addresses = set(services.values())
             if self.services:
+                self.logger.info(
+                    "[%s] Set active services to: %s",
+                    self.name,
+                    ", ".join("%s: %s" % (i, self.services[i])
+                              for i in self.services))
                 self.ready_event.set()
             else:
+                self.logger.info("[%s] No active services", self.name)
                 self.ready_event.clear()
 
     @tornado.gen.coroutine
