@@ -518,3 +518,8 @@ class Scheduler(object):
         d.update({
             "%s_jobs_burst": self.jobs_burst
         })
+
+    def shutdown(self):
+        self.to_shutdown = True
+        if self.executor:
+            self.executor.shutdown()
