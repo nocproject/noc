@@ -343,6 +343,7 @@ class Scheduler(object):
                 r.get("nModified", 0),
                 r.get("nRemoved", 0)
             )
+            self.bulk = self.collection.initialize_unordered_bulk_op()
             self.bulk_ops = 0
 
     def remove_job(self, jcls, key=None):
