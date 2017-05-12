@@ -205,11 +205,15 @@ class ConsulDCS(DCSBase):
                 yield self.destroy_session()
             except ConsulRepeatableErrors:
                 pass
+            except Exception as e:
+                self.logger.error("Cannot destroy session: %s", e)
         if self.svc_id:
             try:
                 yield self.consul.agent.service.deregister(self.svc_id)
             except ConsulRepeatableErrors:
                 pass
+            except Exception as e:
+                self.logger.error("Cannot deregister service: %s", e)
             self.svc_id = None
 
     @tornado.gen.coroutine
