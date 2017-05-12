@@ -225,6 +225,7 @@ class ConsulDCS(DCSBase):
                 for n in range(self.keepalive_attempts):
                     try:
                         yield self.consul.session.renew(self.session)
+                        self.logger.info("Session renewed")
                         touched = True
                         break
                     except consul.base.NotFound:
