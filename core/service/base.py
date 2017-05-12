@@ -327,7 +327,10 @@ class Service(object):
                 tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.instance()
             # Report when main ioloop blocked
-            self.ioloop.set_blocking_log_threshold(1.0)
+            try:
+                self.ioloop.set_blocking_log_threshold(1.0)
+            except NotImplementedError:
+                pass
             # Initialize DCS
             self.dcs = get_dcs(cmd_options["dcs"])
             # Activate service
