@@ -65,7 +65,8 @@ class DiscoveryService(Service):
 
     def get_mon_data(self):
         r = super(DiscoveryService, self).get_mon_data()
-        self.scheduler.apply_metrics(r)
+        if self.scheduler:
+            self.scheduler.apply_metrics(r)
         return r
 
 if __name__ == "__main__":
