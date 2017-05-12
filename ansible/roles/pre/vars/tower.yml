@@ -51,3 +51,5 @@ patroni_rest_password: "{{ noc_config['config'].get('patroni-global-%s' % ansibl
 patroni_postgres_password: "{{noc_pg_password}}"
 patroni_replicator_password: "{{noc_pg_password}}"
 patroni_enabled: "{{groups['svc-patroni'] | count > 1}}"
+
+web_ui_language: "{{noc_config['config'].get('web-global-%s' % groups['svc-web'][0], {}).get('language', 'en-us')}}"

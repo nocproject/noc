@@ -287,6 +287,9 @@
     - section: main
       option: secret_key
       value: "{{ django_key }}"
+    - section: main
+      option: language_code
+      value: "{{ web_ui_language }}"
     - section: database
       option: name
       value: "{{ noc_pg_db }}"
