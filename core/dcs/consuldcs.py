@@ -13,6 +13,7 @@ import random
 from six.moves.urllib.parse import unquote
 import tornado.gen
 import tornado.ioloop
+import tornado.httpclient
 import consul.base
 import consul.tornado
 import ujson
@@ -21,6 +22,32 @@ from base import DCSBase, ResolverBase
 from noc.core.perf import metrics
 
 ConsulRepeatableErrors = consul.base.Timeout
+
+
+class ConsulHTTPClient(consul.tornado.HTTPClient):
+    """
+    Gentler version of tornado http client
+    """
+    @tornado.gen.coroutine
+    def _request(self, callback, request):
+        client = tornado.httpclient.AsyncHTTPClient(
+            force_instance=True,
+            max_clients=1
+        )
+        try:
+            response = yield client.fetch(
+                request
+            )
+        except tornado.httpclient.HTTPError as e:
+            if e.code == 599:
+                raise consul.base.Timeout
+            response = e.response
+        raise tornado.gen.Return(callback(self.response(response)))
+
+
+class ConsulClient(consul.base.Consul):
+    def connect(self, host, port, scheme, verify=True):
+        return ConsulHTTPClient(host, port, scheme, verify=verify)
 
 
 class ConsulResolver(ResolverBase):
@@ -87,7 +114,7 @@ class ConsulDCS(DCSBase):
         self.slot_number = None
         self.total_slots = None
         super(ConsulDCS, self).__init__(url, ioloop)
-        self.consul = consul.tornado.Consul(
+        self.consul = ConsulClient(
             host=self.consul_host,
             port=self.consul_port,
             token=self.consul_token
