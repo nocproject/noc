@@ -69,5 +69,10 @@ class DiscoveryService(Service):
             self.scheduler.apply_metrics(r)
         return r
 
+    @tornado.gen.coroutine
+    def on_deactivate(self):
+        if self.scheduler:
+            self.scheduler.shutdown()
+
 if __name__ == "__main__":
     DiscoveryService().start()
