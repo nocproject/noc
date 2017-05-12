@@ -30,6 +30,7 @@ import nsq
 import ujson
 import threading
 ## NOC modules
+import noc.core.service.httpclient  # Use curl
 from noc.lib.debug import excepthook, error_report
 from .config import Config
 from .api import APIRequestHandler
@@ -121,6 +122,7 @@ class Service(object):
         self.server = None
         self.address = None
         self.port = None
+        self.is_active = False
 
     def create_parser(self):
         """
@@ -308,6 +310,7 @@ class Service(object):
         # Setup signal handlers
         self.setup_signal_handlers()
         # Starting IOLoop
+        self.is_active = True
         if self.pooled:
             self.logger.warn(
                 "Running service %s (pool: %s)",
@@ -457,6 +460,9 @@ class Service(object):
 
     @tornado.gen.coroutine
     def deactivate(self):
+        if not self.is_active:
+            raise tornado.gen.Return()
+        self.is_active = False
         self.logger.info("Deactivating")
         yield self.on_deactivate()
         # Release registration
