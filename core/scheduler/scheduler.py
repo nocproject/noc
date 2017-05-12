@@ -16,11 +16,12 @@ import threading
 import pymongo.errors
 import tornado.gen
 import tornado.ioloop
-from concurrent.futures import ThreadPoolExecutor
 ## NOC modules
 from job import Job
 from noc.lib.nosql import get_db
 from noc.core.handler import get_handler
+from noc.core.threadpool import ThreadPoolExecutor
+from noc.core.perf import metrics
 
 
 class Scheduler(object):
@@ -135,7 +136,8 @@ class Scheduler(object):
         if not self.executor:
             self.logger.debug("Run thread executor (%d threads)",
                               self.max_threads)
-            self.executor = ThreadPoolExecutor(self.max_threads)
+            self.executor = ThreadPoolExecutor(self.max_threads,
+                                               name=self.name)
         return self.executor
 
     def reset_running(self):
@@ -190,7 +192,7 @@ class Scheduler(object):
         while not self.to_shutdown:
             t0 = self.ioloop.time()
             n = 0
-            if self.may_submit():
+            if self.get_executor().may_submit():
                 try:
                     n = yield self.run_pending()
                     self.apply_bulk_ops()
@@ -231,14 +233,6 @@ class Scheduler(object):
         except pymongo.errors.AutoReconnect:
             self.logger.error("Auto-reconnect detected. Waiting for next cycle")
 
-    def may_submit(self):
-        return bool(
-            max(
-                self.submit_threshold - self.get_executor()._work_queue.qsize(),
-                0
-            )
-        )
-
     @tornado.gen.coroutine
     def run_pending(self):
         """
@@ -247,7 +241,7 @@ class Scheduler(object):
         executor = self.get_executor()
         collection = self.get_collection()
         n = 0
-        if self.submit_threshold <= executor._work_queue.qsize():
+        if not executor.may_submit():
             raise tornado.gen.Return(n)
         jobs, self.jobs_burst = self.jobs_burst, []
         burst_ids = set(j.attrs[Job.ATTR_ID] for j in jobs)
@@ -257,15 +251,15 @@ class Scheduler(object):
                 if j.attrs[Job.ATTR_ID] not in burst_ids
             ]
         while jobs:
-            may_submit = self.may_submit()
-            if not may_submit:
+            free_workers = executor.get_free_workers()
+            if not free_workers:
                 self.logger.info("All workers are busy. Sending %d jobs to burst", len(jobs))
                 self.jobs_burst = jobs
                 break
             now = datetime.datetime.now()
             rl = min(
                 sum(1 for j in jobs if j.attrs[Job.ATTR_TS] <= now),
-                may_submit
+                free_workers
             )
             rjobs, jobs = jobs[:rl], jobs[rl:]
             if rjobs:
@@ -311,6 +305,7 @@ class Scheduler(object):
                 #
                 for job in rjobs:
                     executor.submit(job.run)
+                    metrics["%s_jobs_started"] += 1
                     n += 1
             if jobs:
                 # Wait for next job within check_interval
@@ -511,3 +506,15 @@ class Scheduler(object):
         self.cache_queue.put(
             (key, value, version)
         )
+
+    def apply_metrics(self, d):
+        """
+        Append scheduler metrics to dictionary d
+        :param d: 
+        :return: 
+        """
+        if self.executor:
+            self.executor.apply_metrics(d)
+        d.update({
+            "%s_jobs_burst": self.jobs_burst
+        })
