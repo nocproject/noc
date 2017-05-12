@@ -184,11 +184,12 @@ class Scheduler(object):
         """
         while not self.to_shutdown:
             t0 = self.ioloop.time()
-            try:
-                n = yield self.run_pending()
-            except Exception as e:
-                self.logger.error("Failed to schedule next tasks: %s", e)
-                n = 0
+            n = 0
+            if self.may_submit():
+                try:
+                    n = yield self.run_pending()
+                except Exception as e:
+                    self.logger.error("Failed to schedule next tasks: %s", e)
             dt = self.check_time - (self.ioloop.time() - t0) * 1000
             if dt > 0:
                 if n:
@@ -223,6 +224,14 @@ class Scheduler(object):
         except pymongo.errors.AutoReconnect:
             self.logger.error("Auto-reconnect detected. Waiting for next cycle")
 
+    def may_submit(self):
+        return bool(
+            max(
+                self.submit_threshold - self.get_executor()._work_queue.qsize(),
+                0
+            )
+        )
+
     @tornado.gen.coroutine
     def run_pending(self):
         """
@@ -241,10 +250,7 @@ class Scheduler(object):
                 if j.attrs[Job.ATTR_ID] not in burst_ids
             ]
         while jobs:
-            may_submit = max(
-                self.submit_threshold - executor._work_queue.qsize(),
-                0
-            )
+            may_submit = self.may_submit()
             if not may_submit:
                 self.logger.info("All workers are busy. Sending %d jobs to burst", len(jobs))
                 self.jobs_burst = jobs
