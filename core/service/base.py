@@ -472,6 +472,7 @@ class Service(object):
         # Finally stop ioloop
         self.logger.info("Stopping IOLoop")
         self.ioloop.stop()
+        self.logger.info("Post-mortem metrics: %s", self.perf_metrics)
 
     @tornado.gen.coroutine
     def on_register(self):
