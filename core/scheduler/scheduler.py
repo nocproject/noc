@@ -60,6 +60,9 @@ class Scheduler(object):
         self.to_reset_running = reset_running
         self.running_groups = set()
         self.collection = None
+        self.bulk = None
+        self.bulk_ops = None
+        self.bulk_lock = threading.Lock()
         self.max_threads = max_threads
         self.executor = None
         self.run_callback = None
@@ -121,6 +124,8 @@ class Scheduler(object):
             self.logger.debug("Open collection %s",
                               self.collection_name)
             self.collection = get_db()[self.collection_name]
+            self.bulk = self.collection.initialize_unordered_bulk_op()
+            self.bulk_ops = 0
         return self.collection
 
     def get_executor(self):
@@ -188,6 +193,7 @@ class Scheduler(object):
             if self.may_submit():
                 try:
                     n = yield self.run_pending()
+                    self.apply_bulk_ops()
                 except Exception as e:
                     self.logger.error("Failed to schedule next tasks: %s", e)
             dt = self.check_time - (self.ioloop.time() - t0) * 1000
@@ -195,6 +201,7 @@ class Scheduler(object):
                 if n:
                     dt = min(dt, self.check_time / n)
                 yield tornado.gen.sleep(dt / 1000.0)
+        self.apply_bulk_ops()
 
     def iter_pending_jobs(self, limit):
         """
@@ -316,6 +323,28 @@ class Scheduler(object):
                     yield tornado.gen.sleep(dt)
         raise tornado.gen.Return(n)
 
+    def apply_bulk_ops(self):
+        t0 = self.ioloop.time()
+        with self.bulk_lock:
+            if not self.bulk_ops:
+                return
+            try:
+                r = self.bulk.execute()
+            except pymongo.errors.BulkWriteError as e:
+                self.logger.error("Cannot apply bulk operations: %s", e.details)
+                return
+            dt = self.ioloop.time() - t0
+            self.logger.info(
+                "%d bulk operations complete in %dms: "
+                "inserted=%d, updated=%d, removed=%d",
+                self.bulk_ops,
+                int(dt * 1000),
+                r.get("nInserted", 0),
+                r.get("nModified", 0),
+                r.get("nRemoved", 0)
+            )
+            self.bulk_ops = 0
+
     def remove_job(self, jcls, key=None):
         """
         Remove job from schedule
@@ -331,9 +360,9 @@ class Scheduler(object):
         Remove job from schedule
         """
         self.logger.info("Remove job %s", jid)
-        self.get_collection().remove({
-            Job.ATTR_ID: jid
-        })
+        with self.bulk_lock:
+            self.bulk.find({Job.ATTR_ID: jid}).remove_one()
+            self.bulk_ops += 1
 
     def submit(self, jcls, key=None, data=None, ts=None, delta=None,
                keep_ts=False):
@@ -439,9 +468,9 @@ class Scheduler(object):
                 Job.ATTR_ID: jid
             }
             self.logger.debug("update(%s, %s)", q, op)
-            r = self.get_collection().update(q, op)
-            if not r["ok"] or r["nModified"] != 1:
-                self.logger.error("Failed to set next run for job %s", jid)
+            with self.bulk_lock:
+                self.bulk.find(q).update(op)
+                self.bulk_ops += 1
 
     def cache_worker(self):
         self.logger.info("Starting cache worker thread")
