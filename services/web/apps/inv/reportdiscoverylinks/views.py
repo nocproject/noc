@@ -43,7 +43,7 @@ class ReportFilterApplication(SimpleReport):
             if v["count"] > 2:
                 count[3].add(v["_id"][0])
                 continue
-            if not v["id"]:
+            if not v["_id"]:
                 self.logger.warning("No IDS in response query")
                 continue
             count[v["count"]].add(v["_id"][0])
