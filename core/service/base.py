@@ -24,7 +24,6 @@ import tornado.web
 import tornado.netutil
 import tornado.httpserver
 import tornado.httpclient
-from concurrent.futures import ThreadPoolExecutor
 import setproctitle
 import nsq
 import ujson
@@ -43,6 +42,7 @@ from .ctl import CtlAPI
 from .loader import set_service
 from noc.core.perf import metrics, apply_metrics
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
+from noc.core.threadpool import ThreadPoolExecutor
 
 
 class Service(object):
@@ -551,8 +551,7 @@ class Service(object):
             r["pool"] = self.config.pool
         if self.executors:
             for x in self.executors:
-                r["threadpool_%s_qsize" % x] = self.executors[x]._work_queue.qsize()
-                r["threadpool_%s_threads" % x] = len(self.executors[x]._threads)
+                x.apply_metrics(r)
         r = apply_metrics(r)
         return r
 
@@ -685,7 +684,7 @@ class Service(object):
         executor = self.executors.get(name)
         if not executor:
             xt = "%s_threads" % name
-            executor = ThreadPoolExecutor(self.config[xt])
+            executor = ThreadPoolExecutor(self.config[xt], name=name)
             self.executors[name] = executor
         return executor
 
