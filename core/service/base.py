@@ -73,16 +73,21 @@ class Service(object):
     # to allow only one instance of services per node or datacenter
     pooled = False
 
-    ## Run NSQ writer on service startup
+    # Run NSQ writer on service startup
     require_nsq_writer = False
-    ## List of API instances
+    # List of API instances
     api = []
-    ## Request handler class
+    # Request handler class
     api_request_handler = APIRequestHandler
-    ## Initialize gettext and process *language* configuration
+    # Initialize gettext and process *language* configuration
     use_translation = False
-    ## Initialize jinja2 templating engine
+    # Initialize jinja2 templating engine
     use_jinja = False
+    # Register traefik backend if not None
+    traefik_backend = None
+    # Traefik frontend rule
+    # i.e. PathPrefix:/api/<name>
+    traefik_frontend_rule = None
 
     LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
 
@@ -482,13 +487,23 @@ class Service(object):
         apply_metrics(m)
         self.logger.info("Post-mortem metrics: %s", m)
 
+    def get_register_tags(self):
+        tags = []
+        if self.traefik_backend and self.traefik_frontend_rule:
+            tags += [
+                "traefik.backend=%s" % self.traefik_backend,
+                "traefik.frontend.rule=%s" % self.traefik_frontend_rule
+            ]
+        return tags
+
     @tornado.gen.coroutine
     def on_register(self):
         addr, port = self.get_service_address()
         r = yield self.dcs.register(
             self.name, addr, port,
             pool=self.config.pool or None,
-            lock=self.get_leader_lock_name()
+            lock=self.get_leader_lock_name(),
+            tags=self.get_register_tags()
         )
         if r:
             # Finally call on_activate

@@ -20,6 +20,9 @@ class CardService(UIService):
     use_translation = True
     use_jinja = True
 
+    traefik_backend = "card"
+    traefik_frontend_rule = "PathPrefix:/api/card"
+
     def get_handlers(self):
         CardRequestHandler.load_cards()
         return super(CardService, self).get_handlers() + [
