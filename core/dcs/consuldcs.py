@@ -42,6 +42,11 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
             if e.code == 599:
                 raise consul.base.Timeout
             response = e.response
+        finally:
+            client.close()
+            # Resolve CurlHTTPClient circular dependencies
+            client._force_timeout_callback = None
+            client._multi = None
         raise tornado.gen.Return(callback(self.response(response)))
 
 
