@@ -58,7 +58,7 @@ class TagsExpression(object):
 
     def as_sql(self, qn, connection):
         t = ",".join(str(adapt(x)) for x in self.tags)
-        return "ARRAY[%s] <@ %s.%s" % (t, self.table, qn("tags")), []
+        return "ARRAY[%s] <@ \"%s\".%s" % (t, self.table, qn("tags")), []
 
 
 class TagsNode(tree.Node):
