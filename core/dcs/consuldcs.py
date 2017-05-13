@@ -9,6 +9,7 @@
 ## Python modules
 import uuid
 import random
+import time
 ## Third-party modules
 from six.moves.urllib.parse import unquote
 import tornado.gen
@@ -23,6 +24,10 @@ from noc.core.perf import metrics
 
 ConsulRepeatableErrors = consul.base.Timeout
 
+CONSUL_CONNECT_TIMEOUT = 5
+CONSUL_REQUEST_TIMEOUT = 3600
+CONSUL_NEAR_RETRY_TIMEOUT = 1
+
 
 class ConsulHTTPClient(consul.tornado.HTTPClient):
     """
@@ -36,7 +41,9 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
         )
         try:
             response = yield client.fetch(
-                request
+                request,
+                connect_timeout=CONSUL_CONNECT_TIMEOUT,
+                request_timeout=CONSUL_REQUEST_TIMEOUT
             )
         except tornado.httpclient.HTTPError as e:
             if e.code == 599:
@@ -427,3 +434,37 @@ class ConsulDCS(DCSBase):
                 self.total_slots = total_slots
                 raise tornado.gen.Return((slot_number, total_slots))
             self.logger.info("Cannot acquire slot: CAS changed, retry")
+
+    def resolve_near(self, name):
+        """
+        Synchronous call to resolve nearby service
+        Commonly used for external services like databases
+        :param name: Service name
+        :return: address:port
+        """
+        self.logger.info("Resolve near service %s", name)
+        client = consul.base.Consul(
+            host=self.consul_host,
+            port=self.consul_port,
+            token=self.consul_token
+        )
+        index = 0
+        while True:
+            try:
+                index, services = client.catalog.service(
+                    service=self.name,
+                    index=index,
+                    near="_agent",
+                    token=self.consul_token
+                )
+            except ConsulRepeatableErrors as e:
+                self.logger.info("Consul error: %s", e)
+                time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
+                continue
+            if not services:
+                self.logger.info("No active service %s. Waiting", name)
+                time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
+                continue
+            for svc in services:
+                return "%s:%s" % (svc["ServiceAddress"],
+                                  svc["ServicePort"])

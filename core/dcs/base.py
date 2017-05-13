@@ -144,6 +144,15 @@ class DCSBase(object):
         else:
             return result
 
+    def resolve_near(self, name):
+        """
+        Synchronous call to resolve nearby service
+        Commonly used for external services like databases
+        :param name: Service name
+        :return: address:port
+        """
+        raise NotImplementedError()
+
 
 class ResolverBase(object):
     def __init__(self, dcs, name):
