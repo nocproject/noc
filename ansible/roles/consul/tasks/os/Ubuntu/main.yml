@@ -6,6 +6,11 @@
     owner: root
     group: root
     mode: 0644
+  tags:
+    - config
+  notify:
+    - reload systemd
+    - restart consul
 
 - name: search for correct consul iface
   shell: "/sbin/ip ro get {{hostvars[groups['svc-consul-server'][0]].ansible_host}} | grep dev | awk '{print $3}'"
