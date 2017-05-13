@@ -6,6 +6,11 @@
     owner: root
     group: root
     mode: 0644
+  tags:
+    - config
+  notify:
+    - reload systemd
+    - restart consul
 
 # ignore erros will be even here or later
 - name: check firewalld state

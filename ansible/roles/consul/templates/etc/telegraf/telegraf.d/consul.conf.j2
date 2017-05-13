@@ -1,5 +1,5 @@
 [[inputs.procstat]]
-pattern = "consul"
+pid_file = "{{ consul_pid_path }}"
 
 # will not work until https://github.com/influxdata/telegraf/issues/2422
 [[inputs.consul]]

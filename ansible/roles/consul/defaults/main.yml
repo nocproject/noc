@@ -17,6 +17,7 @@ consul_config_path: "{{etc_prefix}}/consul"
 consul_configd_path: "{{etc_prefix}}/consul.d"
 consul_data_path: "/var/consul"
 consul_log_path: "/var/log/consul"
+consul_pid_path: "/var/run/consul/consul.pid"
 
 ### System user and group
 consul_manage_user: yes
