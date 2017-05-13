@@ -1,0 +1,48 @@
+# Read metrics about cpu usage
+[[inputs.cpu]]
+  # Whether to report per-cpu stats or not
+  percpu = true
+  # Whether to report total system cpu stats or not
+  totalcpu = true
+  # Comment this line if you want the raw CPU time metrics
+  fielddrop = ["time_*"]
+
+# Read metrics about disk usage by mount point
+[[inputs.disk]]
+  # By default, telegraf gather stats for all mountpoints.
+  # Setting mountpoints will restrict the stats to the specified mountpoints.
+  # mount_points=["/"]
+
+  # Ignore some mountpoints by filesystem type. For example (dev)tmpfs (usually
+  # present on /run, /var/run, /dev/shm or /dev).
+  ignore_fs = ["tmpfs", "devtmpfs", "overlay", "rootfs"]
+
+# Read metrics about disk IO by device
+[[inputs.diskio]]
+  # By default, telegraf will gather stats for all devices including
+  # disk partitions.
+  # Setting devices will restrict the stats to the specified devices.
+  # devices = ["sda", "sdb"]
+  # Uncomment the following line if you do not need disk serial numbers.
+  # skip_serial_number = true
+
+# Read metrics about memory usage
+[[inputs.mem]]
+  # no configuration
+
+# Read metrics about swap memory usage
+[[inputs.swap]]
+  # no configuration
+
+# Read metrics about system load & uptime
+[[inputs.system]]
+  # no configuration
+
+[[inputs.net]]
+  ## By default, telegraf gathers stats from any up interface (excluding loopback)
+  ## Setting interfaces will tell it to gather these explicit interfaces,
+  ## regardless of status.
+  ##
+
+[[inputs.netstat]]
+  # no configuration

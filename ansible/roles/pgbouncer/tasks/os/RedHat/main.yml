@@ -1,4 +1,20 @@
 ---
+- name: Create required directories
+  file:
+    path: "{{item}}"
+    state: "directory"
+    mode: 0755
+  with_items:
+    - "{{etc_prefix}}/pgbouncer"
+
+- name: Install pgbouncer config
+  template:
+    src: "etc/pgbouncer/pgbouncer.ini.j2"
+    dest: "{{etc_prefix}}/pgbouncer/pgbouncer.ini"
+  notify: reload pgbouncer
+  tags:
+    - config
+
 - name: Install pgbouncer
   yum:
     name: pgbouncer
@@ -34,5 +50,6 @@
   template:
     src: "etc/override.conf.j2"
     dest: "/etc/systemd/system/pgbouncer.service.d/noc.conf"
+  notify: reload systemd
   tags:
     - config

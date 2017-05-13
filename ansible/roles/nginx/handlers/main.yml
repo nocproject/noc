@@ -1,9 +1,9 @@
 ---
-- name: restart nginx
+- name: reload nginx
   become: yes
   service:
     name: "{{ nginx_system_service }}"
-    state: restarted
+    state: reloaded
 
 - name: reload telegraf
   become: yes

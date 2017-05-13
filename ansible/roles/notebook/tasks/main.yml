@@ -6,6 +6,9 @@
     src: "etc/telegraf/telegraf.d/notebook.conf.j2"
     dest: "{{etc_prefix}}/telegraf/telegraf.d/notebook.conf"
   notify: reload telegraf
+  tags:
+    - config
+    - telegraf
 
 - name: Install packages
   pip:

@@ -34,7 +34,9 @@
     src:  etc/systemd/system/mongod.service.j2
     dest: /etc/systemd/system/mongod.service
   register: mongod_service
-  notify: restart mongod
+  notify:
+    - reload systemd
+    - restart mongod
 
 - name: Copy systemd tmpfile
   template:
@@ -42,11 +44,4 @@
     dest: /etc/tmpfiles.d/mongo.conf
 
 - include: "arbiter.yml"
-  when: "{{ has_svc_mongo_arbiter | default(False) }}"
-
-- name: Reload systemd daemon
-  command: /usr/bin/systemctl daemon-reload
-  when: mongod_service.changed
-
-- name: Enable custom systemd service
-  command: /usr/bin/systemctl enable mongod
+  when: "has_svc_mongo_arbiter | default(False)"

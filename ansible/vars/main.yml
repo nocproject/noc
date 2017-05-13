@@ -8,12 +8,12 @@ mongo_version: "{{ lookup('env','MONGO_VERSION') | default(3.2, True)}}"
 grafana_version: "4.1.2-1486989747"
 nsq_version: "0.3.8"
 
-consul_version: "0.7.5"
+consul_version: "0.8.1"
 consul_url: "{{ lookup('env','CONSUL_URL')}}"
 consul_token: "{{lookup('env','CONSUL_TOKEN')}}"
-consul_env: "{% if consul_url and consul_token%}True{%endif%}"
+consul_env: '{{ True if (consul_url and consul_token) else False}}'
 
-consul_template_version: "0.18.1"
+consul_template_version: "0.18.2"
 consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
 consul_template_templates_dir: "{{consul_template_config_dir}}/templates"
 
@@ -23,7 +23,7 @@ telegraf_influxdb_enabled: "{{lookup('env','INFLUXDB_ENABLED') | default(True, T
 tower_ip: 127.0.0.1
 tower_path: /opt/tower
 tower_version: "{{lookup('env','TOWER_VERSION')}}"
-tower_minimum_version: "0.1a64"
+tower_minimum_version: "0.1a66"
 http_proxy:  "" # just default. please set actual variable via tower on DC tab
 
 grafana_group: grafana
@@ -70,8 +70,10 @@ kernel_shmmax: "{{ kernel_shmall|int() * 4096 }}"
 postgres_path: /usr/bin/postgres
 postgres_system_service: postgresql
 postgres_user: postgres
-postgresql_conf_path: /var/lib/pgsql/data/postgresql.conf
-postgresql_hba_path: /var/lib/pgsql/data/pg_hba.conf
+postgres_listen: 5432
+
+patroni_listen: 8008
+haproxy_patroni_listen: 5000
 
 apt_cache_valid_time: 86400
 pycurl_ssl_library: openssl

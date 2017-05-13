@@ -9,6 +9,8 @@
   notify: reload telegraf
   tags:
     - config
+    - telegraf
+
 - name: install nsqlookupd config
   template:
     src: config/nsqlookupd.conf.j2

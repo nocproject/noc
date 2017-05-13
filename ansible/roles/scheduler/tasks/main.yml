@@ -9,4 +9,4 @@
   when: noc_cfg1.changed or noc_cfg2.changed or noc_cfg3.changed or noc_cfg4.changed
   tags:
     - config
-
+    - telegraf

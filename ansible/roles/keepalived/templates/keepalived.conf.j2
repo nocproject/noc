@@ -1,22 +1,13 @@
 ! Configuration File for keepalived
 
-vrrp_instance nginx  {
-    state {{keepalived_initial_state}}
-    interface {{ansible_default_ipv4.interface}}
-    virtual_router_id {{keepalived_router_id}}
-    priority 200
-    advert_int 1
-    nopreempt
-    authentication {
-        auth_type PASS
-        auth_pass {{keepalived_password}}
-    }
-    virtual_ipaddress {
-        {{keepalived_virtual_ip}}
-    }
-    unicast_peer {
-{% for host in groups['svc-nginx'] %}
-    {{hostvars[host].ansible_default_ipv4.address}}
-{% endfor %}
-    }
+global_defs {
+   router_id {{ ansible_hostname }}
 }
+
+{% if groups['svc-nginx'] | count  > 1 %}
+include /etc/keepalived/nginx.cnf
+{% endif %}
+
+{% if groups['svc-patroni'] | count  > 1 %}
+include /etc/keepalived/patroni.cnf
+{% endif %}

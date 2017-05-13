@@ -1,106 +1,65 @@
 ---
-# File: tasks/main.yml - Main tasks for Consul
+# File: main.yml - Main tasks for Consul
+
+- name: Expose consul_node_role as fact
+  set_fact:
+    consul_node_role: "{{ consul_node_role }}"
+  tags:
+    - config
+
+- name: "Include OS-specific tasks"
+  include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Check bootstrapped state
   stat:
-    path: "{{consul_config_dir}}/.consul_bootstrapped"
+    path: "{{consul_config_path}}/.consul_bootstrapped"
   register: bootstrap_marker
   ignore_errors: true
+  tags: always
 
-- name: Add Consul user
-  user:
-    name: "{{consul_user}}"
-    comment: 'Consul user'
-    system: yes
+- name: Include user/group settings
+  include: user_group.yml
 
-- name: Install specified packages
+- name: Include dir settings
+  include: dirs.yml
+
+- name: Install OS packages and consul - remotely
   include: install.yml
 
-- name: Directories
-  file:
-    dest: "{{ item }}"
-    state: directory
-    owner: "{{ consul_user }}"
-    group: "{{ consul_group}}"
-    recurse: yes
-  with_items:
-    - "{{consul_data_path}}"
-    - "{{consul_log_path}}"
-    - "{{consul_pid_dir}}"
-    - "{{consul_config_dir}}"
-    - "{{consul_config_dir}}/bootstrap"
-    - "{{consul_config_dir}}/client"
-    - "{{consul_config_dir}}/server"
+- name: Consul config
+  include: config.yml
+  tags:
+    - config
 
-- name: Bootstrap configuration
-  template:
-    src: config_bootstrap.json.j2
-    dest: "{{ consul_config_dir }}/bootstrap/config.json"
-  notify:
-    - restart consul
-
-- name: Client configuration
-  template:
-    src: config_client.json.j2
-    dest: "{{ consul_config_dir }}/client/config.json"
-  notify:
-    - restart consul
-
-- name: Server configuration
-  template:
-    src: config_server.json.j2
-    dest: "{{ consul_config_dir }}/server/config.json"
-  notify:
-    - restart consul
-
-- include: ../tasks/acl.yml
+- name: ACL config
+  include: acl.yml
+  when: consul_acl_enable
+  tags:
+    - config
 
 - block:
-  - name: systemd script
-    template:
-      src: consul_systemd.service.j2
-      dest: /lib/systemd/system/consul.service
-      owner: root
-      group: root
-      mode: 644
-    when: ansible_service_mgr == "systemd"
-
-  - name: look for bootstap consul
-    wait_for:
-      port: 8500
-      state: present
-    register: consul_state
-
-  - name: kill bootstap consul
-    shell: pkill -x consul
-    when: "'present' in consul_state.state"
-
-  - name: Consul down
-    wait_for:
-      port: 8301
-      state: stopped
-
   - name: Start Consul
     service:
       name: consul
       state: started
       enabled: yes
 
-  - name: Consul up?
+  - name: Consul HTTP API reachable?
     wait_for:
-      delay: 5
-      path: "{{consul_pid_dir}}/consul.pid"
-      state: present
+      delay: 15
+      port: 8500
 
-  - name: Bootstrapped marker
+  - name: Create bootstrapped marker
     file:
-      dest: "{{consul_config_dir}}/.consul_bootstrapped"
+      dest: "{{consul_config_path}}/.consul_bootstrapped"
       state: touch
-
-  - include: ../tasks/tls.yml
-    when: consul_tls_enable
-
-  - include: ../tasks/client.yml
-    when: consul_node_role == "client" and ansible_os_family == "Debian"
-  
   when: not bootstrap_marker.stat.exists
+
+- name: Install consul monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/consul.conf.j2"
+    dest: "{{etc_prefix}}/telegraf/telegraf.d/consul.conf"
+  notify: reload telegraf
+  tags:
+    - config
+    - telegraf

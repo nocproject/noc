@@ -1,8 +1,14 @@
-- name: restart postgres
+- name: reload postgres
   become: yes
   service:
     name: "{{postgres_system_service}}"
     state: reloaded
+
+- name: restart postgres
+  become: yes
+  service:
+    name: "{{postgres_system_service}}"
+    state: restarted
 
 - name: reload telegraf
   become: yes

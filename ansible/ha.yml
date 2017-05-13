@@ -11,7 +11,7 @@
 
     - role: keepalived
       become: yes
-      when: "{{ has_svc_nginx | default(False) or consul_env}}"
+      when: "has_svc_nginx | default(False) or consul_env"
       tags:
         - keepalived
     - role: post

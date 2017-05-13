@@ -1,0 +1,50 @@
+---
+- name: create "{{patroni_config_dir}}"
+  file:
+    state: directory
+    dest: "{{patroni_config_dir}}"
+
+- name: Check bootstrapped state
+  stat:
+    path: "{{patroni_bootstrap_file}}"
+  register: patroni_bootstrap_marker
+  ignore_errors: true
+  tags: always
+
+- name: include patroni os specific tasks
+  include: "os/{{ ansible_distribution }}/main.yml"
+
+- name: Upgrade PIP
+  pip:
+    virtualenv: "{{patroni_path}}"
+    name: "pip"
+    state: latest
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+    LC_ALL: C
+
+- name: install python packages
+  pip:
+    name: "{{ item }}"
+    virtualenv: "{{patroni_path}}"
+  with_items:
+    - python-consul
+    - flake8==3.3.0 # some kind of bug. have to be in list upper than patroni.
+    - patroni
+    - PyYAML
+    - urllib3>=1.10
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+
+- name: install patroni postgres
+  template:
+    src: postgres0.yml.j2
+    dest: "{{patroni_config_dir}}/postgres.yml"
+  register: config_install
+
+- name: include patroni bootstrap
+  include: "os/{{ ansible_distribution }}/bootstrap.yml"
+  when: not patroni_bootstrap_marker.stat.exists
+

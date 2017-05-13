@@ -1,0 +1,54 @@
+---
+- name: start patroni
+  service:
+    name: patroni
+    state: started
+    enabled: yes
+  when: config_install.changed
+
+- name: Waiting for patroni on master
+  wait_for:
+    host: "0.0.0.0"
+    port: "{{patroni_listen}}"
+    timeout: 10
+    state: present
+  when: "has_svc_postgres_master | default(False)"
+
+- name: set login user
+  set_fact:
+    pg_login_user: "{{postgres_user}}"
+
+- include: "../../users.yml"
+  become_user: "{{postgres_user}}"
+  when: "has_svc_postgres_master | default(False)"
+
+- include: "../../dbs.yml"
+  become_user: "{{postgres_user}}"
+  when: "has_svc_postgres_master | default(False)"
+
+- pause:
+    seconds: 10
+
+- name: disable postgres system service in favour of patroni
+  service:
+    name: "{{postgres_system_service}}"
+    enabled: no
+    state: stopped
+
+- name: Waiting for postgres to stop on master
+  wait_for:
+    host: "0.0.0.0"
+    port: "{{postgres_listen}}"
+    timeout: 10
+    state: absent
+
+- name: restart patroni
+  service:
+    name: patroni
+    state: restarted
+    enabled: yes
+
+- name: Create bootstrapped marker
+  file:
+    dest: "{{patroni_bootstrap_file}}"
+    state: touch

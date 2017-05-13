@@ -4,6 +4,18 @@
   tags:
     - config
 
+- name: Install FreeBSD system packages
+  pkgng:
+    name: {{item}}
+    state: present
+  with_items:
+    - ca_root_nss
+    - sudo
+    - curl
+    - zip
+  tags:
+    - requirements
+
 #- name: Update hostname
 #  command: hostname {{ ansible_hostname }}
 #  tags:

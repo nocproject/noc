@@ -162,6 +162,21 @@ services:
     description: Virtual ip sync
     level: global
 
+  consul:
+    description: Cluster kv
+    level: global
+    port: 8500
+
+  haproxy:
+    description: HA balancer
+    level: global
+
+  patroni:
+    description: Postgres HA template
+    level: global
+    port: 8008
+
+
 config:
   noc:
     installation_name:
@@ -442,19 +457,19 @@ config:
       default: 9.4
       description: <strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html> docs </a> before changing that field.
 
-    postgres_wal_directory:
+    superuser_password:
+      label: Postgresql superuser password
       type: str
-      label: Postgresql wal directory
-      default: /var/lib/postgresql/9.4/main/pg_xlog
-      description: Unused
+      default: noc
+      description: Password for user "superuser"
 
-    postgres_data_directory:
+    replicator_password:
+      label: Postgresql replicator password
       type: str
-      label: Postgresql data directory
-      default: /var/lib/postgresql/9.4/main/
-      description: Unused
+      default: noc
+      description: Password for user "replicator"
 
-    postgres_max_clients:
+    max_clients:
       type: int
       label: Postgresql max clients
       default: 300
@@ -553,10 +568,28 @@ config:
 
   keepalived:
     password:
-      label: Keepalived password
+      label: Keepalived password. max 8 chars
       type: str
       default: noc
 
-    virtual_ip:
+    nginx_virtual_ip:
       label: Nginx virtual IP
+      type: str
+
+    patroni_virtual_ip:
+      label: Patroni virtual IP
+      type: str
+
+  consul:
+    token:
+      label: consul token
+      type: str
+
+    replication_token:
+      label: consul replication token
+      type: str
+
+  patroni:
+    rest_password:
+      label: Patroni REST password
       type: str

@@ -9,6 +9,8 @@
   notify: reload telegraf
   tags:
     - config
+    - telegraf
+
 
 - name: Set up SSL directory
   file:
@@ -23,7 +25,7 @@
     dest: "{{ nginx_ssl_key_path }}"
     mode: 0400
     owner: "{{ nginx_user }}"
-  notify: restart nginx
+  notify: reload nginx
 
 - name: Set up SSL certificate
   copy:
@@ -31,13 +33,13 @@
     dest: "{{ nginx_ssl_cert_path }}"
     mode: 0400
     owner: "{{ nginx_user }}"
-  notify: restart nginx
+  notify: reload nginx
 
 - name: Setup nginx
   template:
     src: "etc/nginx/conf.d/noc.conf.j2"
     dest: "{{ nginx_conf_path }}"
-  notify: restart nginx
+  notify: reload nginx
   tags:
     - config
 
@@ -47,7 +49,7 @@
     requirements: "requirements/web.txt"
     virtualenv: "{{noc_root}}"
     extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
-  when: "{{ has_svc_web | default(False) }}"
+  when: "has_svc_web | default(False) "
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
@@ -71,4 +73,4 @@
   service:
     name: "{{ nginx_system_service }}"
     enabled: yes
-    state: restarted
+    state: started

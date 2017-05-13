@@ -1,0 +1,32 @@
+---
+- name: start patroni
+  service:
+    name: patroni
+    state: started
+    enabled: yes
+
+- pause:
+    seconds: 10
+
+- name: set login user
+  set_fact:
+    pg_login_user: superuser
+
+- name: Create postgres NOC database
+  postgresql_db:
+    name: "{{noc_pg_db}}"
+    encoding: "UTF-8"
+    owner: "{{noc_pg_user}}"
+    login_user: "{{pg_login_user}}"
+    state: "present"
+  when: "has_svc_postgres_master | default(False)"
+
+
+- name: Create postgres Grafana database
+  postgresql_db:
+    name: "{{grafana_pg_db}}"
+    encoding: "UTF-8"
+    owner: "{{grafana_pg_user}}"
+    login_user: "superuser"
+    state: "present"
+  when: "has_svc_postgres_master | default(False)"
