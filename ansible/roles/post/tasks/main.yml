@@ -20,6 +20,7 @@
 
 - name: check if noc running
   shell: "{{ noc_root }}/noc ctl status"
+  changed_when: false
   register: noc_ctl_status
   tags:
     - config
@@ -101,9 +102,10 @@
         timeInterval: ">300s"
   ignore_errors: yes
   register: ids
+  run_once: true
   changed_when: ids.status != 409
   failed_when: ids.status == 500
-  when: "{{ has_svc_influxdb | default(False) }}"
+  when: "has_svc_influxdb | default(False)"
   tags:
     - config
 
@@ -125,9 +127,10 @@
       isDefault: False
   ignore_errors: yes
   register: gds
+  run_once: true
   changed_when: gds.status != 409
   failed_when: gds.status == 500
-  when: "{{ has_svc_grafanads | default(False) }}"
+  when: "has_svc_grafanads | default(False)"
   tags:
     - config
 

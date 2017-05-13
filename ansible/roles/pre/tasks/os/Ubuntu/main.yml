@@ -1,1 +1,17 @@
 ---
+- name: Install Debian system packages
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+    cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+  with_items:
+    - ca-certificates
+    - unzip
+    - sudo
+    - curl
+    - apt-transport-https
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements

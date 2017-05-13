@@ -1,9 +1,62 @@
 ---
-- name: Install consul dependencies
-  yum:
-    name: "{{item}}"
-    state: present
+- name: systemd script
+  template:
+    src: consul_systemd.service.j2
+    dest: /lib/systemd/system/consul.service
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - config
+  notify:
+    - reload systemd
+    - restart consul
+
+# ignore erros will be even here or later
+- name: check firewalld state
+  shell: systemctl is-active firewalld
+  register: firewalld_state
+  changed_when: false
+  ignore_errors: yes
+  tags:
+    - config
+    - firewall
+
+- name: Add firewall permissions for nodes
+  firewalld:
+    port: "{{item}}"
+    permanent: true
+    state: enabled
+    immediate: true
+  when: "firewalld_state.stdout == 'active'"
   with_items:
-   - unzip
-  environment:
-    http_proxy: "{{http_proxy}}"
+    - 8300/tcp
+    - 8301/tcp
+    - 8301/udp
+    - 8302/tcp
+    - 8302/udp
+    - 8500/tcp
+  tags:
+    - config
+    - firewall
+
+- name: search for correct consul iface
+  shell: "/sbin/ip ro get {{hostvars[groups['svc-consul-server'][0]].ansible_host}} | grep dev | awk '{print $3}'"
+  register: consul_route
+  changed_when: false
+  when: consul_node_role == 'client'
+  tags:
+    - config
+
+- name: Expose consul_iface as fact
+  set_fact:
+    consul_iface: "{{consul_route.stdout}}"
+  when: consul_node_role == 'client'
+  tags:
+    - config
+
+- name: Expose consul_bind_address as fact
+  set_fact:
+    consul_bind_address: "{{ hostvars[inventory_hostname]['ansible_'+ consul_iface ]['ipv4']['address'] }}"
+  tags:
+    - config

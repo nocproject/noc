@@ -1,50 +1,72 @@
 ---
-# File: tasks/install.yml - package installation tasks for Consul
+# File: install_remote.yml - package installation tasks for Consul
 
-- include: "os/{{ ansible_distribution }}/main.yml"
+- name: Ensure remote consul dir exists
+  file:
+    path: /tmp/consul
+    state: directory
 
-- name: Get consul package checksum file
-  become: no
+- name: Check Consul package checksum file2
+  stat:
+    path: "/tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
+  register: consul_checksum
+  tags:
+    - requirements
+
+- name: Get Consul package checksum file
   get_url:
     url: "{{ consul_checksum_file_url }}"
-    dest: "/tmp/consul_{{ consul_version }}_SHA256SUMS"
+    dest: "/tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
+    validate_certs: no
+  when: consul_checksum.stat.exists == False
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
 
 - name: Get Consul package checksum
-  become: no
-  shell: "grep {{ consul_pkg }} /tmp/consul_{{ consul_version }}_SHA256SUMS"
+  shell: "grep {{ consul_pkg }} /tmp/consul/consul_{{ consul_version }}_SHA256SUMS"
   register: consul_sha256
+  changed_when: false
+  tags:
+    - requirements
 
-- name: Create tmp dir
-  become: no
-  file:
-    state: directory
-    path: "/tmp/{{consul_version}}/"
+- name: Check Consul package file
+  stat:
+    path: "/tmp/consul/{{ consul_pkg }}"
+  register: consul_package
+  tags:
+    - requirements
 
 - name: Download Consul
-  become: no
   get_url:
     url: "{{ consul_zip_url }}"
-    dest: "/tmp/{{consul_version}}/{{ consul_pkg }}"
+    dest: "/tmp/consul/{{ consul_pkg }}"
     checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
     timeout: 42
+    validate_certs: no
+  when: consul_package.stat.exists == False
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
 
-- name: Unarchive Consul
-  become: no
+- name: Unarchive Consul and install binary
   unarchive:
-    src: "/tmp/{{consul_version}}/{{ consul_pkg }}"
-    dest: "/tmp/{{consul_version}}/"
-    creates: "/tmp/{{consul_version}}/consul"
     remote_src: yes
-
-- name: Install Consul
-  copy:
-    src: "/tmp/{{consul_version}}/consul"
-    dest: "{{consul_bin_path}}"
+    src: "/tmp/consul/{{ consul_pkg }}"
+    dest: "{{ consul_bin_path }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group }}"
-    mode: "0755"
-    remote_src: yes
+    mode: 0755
+    creates: "{{ consul_bin_path }}/consul"
+  tags:
+    - requirements
+
+- name: Cleanup
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob: "/tmp/consul"
+  tags:
+    - requirements

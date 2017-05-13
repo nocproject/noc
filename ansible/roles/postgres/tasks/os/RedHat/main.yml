@@ -14,16 +14,11 @@
     https_proxy: "{{http_proxy}}"
 
 - name: PostgreSQL init db
-  command: /usr/pgsql-{{ postgresql_version }}/bin/postgresql{{postgresql_version|replace(".","")}}-setup initdb
+  command: '{{postgres_bin_dir}}/postgresql{{postgresql_version|replace(".","")}}-setup initdb'
   args:
     creates: /var/lib/pgsql/{{ postgresql_version }}/initdb.log
+  when: not patroni_enabled
 
-- name: Set config paths
-  set_fact:
-    postgresql_conf_path: "/var/lib/pgsql/{{ postgresql_version }}/data/postgresql.conf"
-    postgresql_hba_path: "/var/lib/pgsql/{{ postgresql_version }}/data/pg_hba.conf"
-  tags:
-    - config
 
 - name: Install postgres limits file
   template:

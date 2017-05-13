@@ -1,0 +1,17 @@
+---
+- name: Install telegraf packages
+  pkgng: name="telegraf" state=present
+
+- name: Create telegraf directories
+  file: path={{item}} state=directory mode=0755
+  with_items:
+    - /usr/local/etc/telegraf
+    - /usr/local/etc/telegraf/telegraf.d
+
+- name: Setting telegraf flags
+  lineinfile: dest=/etc/rc.conf regexp=^telegraf_flags= line="telegraf_flags=\"-config-directory /usr/local/etc/telegraf/telegraf.d\""
+  tags:
+    - config
+
+- name: Create newsyslog rules
+  template: src="os/FreeBSD/telegraf.conf" dest="/usr/local/etc/newsyslog.conf.d/telegraf.conf"

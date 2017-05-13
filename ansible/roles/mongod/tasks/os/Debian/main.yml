@@ -69,4 +69,4 @@
     http_proxy: "{{http_proxy}}"
 
 - include: "arbiter.yml"
-  when: "{{ has_svc_mongo_arbiter | default(False) }}"
+  when: "has_svc_mongo_arbiter | default(False)"

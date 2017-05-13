@@ -74,7 +74,6 @@
    - procmail
    - redhat-rpm-config
    - rpm-build
-   - unzip
    - zip
    - lsof
    - numactl
@@ -98,8 +97,6 @@
    - jemalloc
   environment:
     http_proxy: "{{http_proxy}}"
-
-- include: "telegraf.yml"
 
 - include: "firewall.yml"
   tags:

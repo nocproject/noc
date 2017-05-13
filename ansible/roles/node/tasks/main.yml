@@ -2,52 +2,6 @@
 # node role tasks
 #
 ---
-- name: Setup hostname
-  hostname: name="{{ inventory_hostname }}"
-  when: "'Linux' in ansible_system"
-
-- debug:
-    msg: "Please setup cluster wide /etc/hosts via {{tower_path}}/var/tower/data/{{noc_env}}/hosts on Tower server"
-  run_once: true
-
-
-- name: Setup default /etc/hosts
-  local_action:
-    module: template
-    src: "hosts.j2"
-    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
-    force: no
-  become: no
-  run_once: true
-  tags:
-    - config
-    - fill_hosts
-
-- name: Setup /etc/hosts
-  lineinfile:
-    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
-    line: "{{ hostvars[item].ansible_host }} {{ item }}"
-    regexp: ".*{{ item }}$"
-    create: no
-  become: no
-  with_items: "{% if 'nodes' in groups %}{{groups['nodes']}}{%endif%}"
-  delegate_to: 127.0.0.1
-  when: "'nodes' in groups"
-  register: hostsc
-  run_once: true
-  tags:
-    - config
-    - fill_hosts
-
-- name: copy hosts file to nodes
-  copy:
-    src: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
-    dest: /etc/hosts
-  when: "'nodes' in groups"
-  tags:
-    - config
-    - fill_hosts
-
 - name: "Include OS-specific tasks"
   include: "os/{{ ansible_distribution }}/main.yml"
 
@@ -210,11 +164,14 @@
     path: "{{noc_root}}/{{item.name}}"
     state: "directory"
     owner: "{{item.owner}}"
+    mode: 0755
   with_items:
     - name: etc/config/
       owner: root
     - name: etc/config/supervisor
       owner: root
+    - name: var
+      owner: "{{noc_user}}"
     - name: var/etc
       owner: root
     - name: var/db
@@ -330,6 +287,9 @@
     - section: main
       option: secret_key
       value: "{{ django_key }}"
+    - section: main
+      option: language_code
+      value: "{{ web_ui_language }}"
     - section: database
       option: name
       value: "{{ noc_pg_db }}"
@@ -398,7 +358,3 @@
     - config
   when: "'Linux' in ansible_system"
 
-- name: install nsq
-  include: "nsq.yml"
-  tags:
-    - nsq

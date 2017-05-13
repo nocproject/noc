@@ -1,0 +1,16 @@
+- name: Create postgres NOC database
+  postgresql_db:
+    name: "{{noc_pg_db}}"
+    encoding: "UTF-8"
+    owner: "{{noc_pg_user}}"
+    login_user: "{{pg_login_user}}"
+    state: "present"
+
+- name: Create postgres Grafana database
+  postgresql_db:
+    name: "{{grafana_pg_db}}"
+    encoding: "UTF-8"
+    owner: "{{grafana_pg_user}}"
+    login_user: "{{pg_login_user}}"
+    state: "present"
+
