@@ -40,11 +40,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
             max_clients=1
         )
         try:
-            response = yield client.fetch(
-                request,
-                connect_timeout=CONSUL_CONNECT_TIMEOUT,
-                request_timeout=CONSUL_REQUEST_TIMEOUT
-            )
+            response = yield client.fetch(request)
         except tornado.httpclient.HTTPError as e:
             if e.code == 599:
                 raise consul.base.Timeout
@@ -55,6 +51,52 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
             client._force_timeout_callback = None
             client._multi = None
         raise tornado.gen.Return(callback(self.response(response)))
+
+    def get(self, callback, path, params=None):
+        uri = self.uri(path, params)
+        request = tornado.httpclient.HTTPRequest(
+            uri,
+            method="GET",
+            validate_cert=self.verify,
+            connect_timeout=CONSUL_CONNECT_TIMEOUT,
+            request_timeout=CONSUL_REQUEST_TIMEOUT
+        )
+        return self._request(callback, request)
+
+    def put(self, callback, path, params=None, data=""):
+        uri = self.uri(path, params)
+        request = tornado.httpclient.HTTPRequest(
+            uri,
+            method="PUT",
+            body="" if data is None else data,
+            validate_cert=self.verify,
+            connect_timeout=CONSUL_CONNECT_TIMEOUT,
+            request_timeout=CONSUL_REQUEST_TIMEOUT
+        )
+        return self._request(callback, request)
+
+    def delete(self, callback, path, params=None):
+        uri = self.uri(path, params)
+        request = tornado.httpclient.HTTPRequest(
+            uri,
+            method="DELETE",
+            validate_cert=self.verify,
+            connect_timeout=CONSUL_CONNECT_TIMEOUT,
+            request_timeout=CONSUL_REQUEST_TIMEOUT
+        )
+        return self._request(callback, request)
+
+    def post(self, callback, path, params=None, data=''):
+        uri = self.uri(path, params)
+        request = tornado.httpclient.HTTPRequest(
+            uri,
+            method='POST',
+            body=data,
+            validate_cert=self.verify,
+            connect_timeout=CONSUL_CONNECT_TIMEOUT,
+            request_timeout=CONSUL_REQUEST_TIMEOUT
+        )
+        return self._request(callback, request)
 
 
 class ConsulClient(consul.base.Consul):
@@ -203,7 +245,7 @@ class ConsulDCS(DCSBase):
             self.session = None
 
     @tornado.gen.coroutine
-    def register(self, name, address, port, pool=None, lock=None):
+    def register(self, name, address, port, pool=None, lock=None, tags=None):
         if pool:
             name = "%s-%s" % (name, pool)
         self.name = name
@@ -211,6 +253,8 @@ class ConsulDCS(DCSBase):
         if lock:
             yield self.acquire_lock(lock)
         svc_id = self.session or str(uuid.uuid4())
+        tags = tags[:] if tags else []
+        tags += [svc_id]
         checks = consul.Check.http(
             self.svc_check_url,
             self.check_interval,
@@ -226,7 +270,7 @@ class ConsulDCS(DCSBase):
                     service_id=svc_id,
                     address=address,
                     port=port,
-                    tags=[svc_id],
+                    tags=tags,
                     check=checks
                 )
             except ConsulRepeatableErrors:

@@ -65,7 +65,7 @@ class DCSBase(object):
         self.ioloop.stop()
 
     @tornado.gen.coroutine
-    def register(self, name, address, port, pool=None, lock=None):
+    def register(self, name, address, port, pool=None, lock=None, tags=None):
         """
         Register service
         :param name: 
@@ -73,6 +73,7 @@ class DCSBase(object):
         :param port: 
         :param pool: 
         :param lock:
+        :param tags: List of extra tags
         :return: 
         """
         raise NotImplementedError()
