@@ -123,6 +123,7 @@ class Service(object):
         self.address = None
         self.port = None
         self.is_active = False
+        self.close_callbacks = []
 
     def create_parser(self):
         """
@@ -346,6 +347,8 @@ class Service(object):
             error_report()
         finally:
             self.deactivate()
+        for cb, args, kwargs in self.close_callbacks:
+            cb(*args, **kwargs)
         self.logger.warn("Service %s has been terminated", self.name)
 
     def load_config(self):
@@ -740,3 +743,6 @@ class Service(object):
             return self.leader_lock_name % self.config
         else:
             return None
+
+    def add_close_callback(self, cb, *args, **kwargs):
+        self.close_callbacks += [(cb, args, kwargs)]
