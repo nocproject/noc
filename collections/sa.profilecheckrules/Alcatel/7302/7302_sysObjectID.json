@@ -1,0 +1,13 @@
+{
+    "name": "Alcatel | 7302 | 7302 sysObjectID.0",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "0e8bf9d2-c6b6-46a9-bcd7-b082b8929de5",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.637.61.1",
+    "action": "match",
+    "profile": "Alcatel.7302"
+}

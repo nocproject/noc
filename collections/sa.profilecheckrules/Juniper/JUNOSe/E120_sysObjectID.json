@@ -1,0 +1,13 @@
+{
+    "name": "Juniper | JUNOSe | E120 sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "618cb242-944f-4c31-8707-b196b2312685",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.4874.1.1.1.6.2",
+    "action": "match",
+    "profile": "Juniper.JUNOSe"
+}
