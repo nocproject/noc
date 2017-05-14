@@ -1,0 +1,13 @@
+{
+    "name": "NAG | SNR | SNR-S2940 sysObjectID.0",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "1f4f4cbe-e92c-4398-a21c-fb8784e27070",
+    "description": "",
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.40418.7.2",
+    "action": "match",
+    "profile": "NAG.SNR"
+}
