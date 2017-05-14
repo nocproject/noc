@@ -54,7 +54,8 @@ class Command(BaseCommand):
         try:
             client = open_sync_rpc(
                 service,
-                calling_service="cli"
+                calling_service="cli",
+                hints=hints
             )
             method = getattr(client, method)
             result = method(*arguments)
