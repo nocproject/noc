@@ -1,0 +1,7 @@
+{
+    "name": "Raisecom",
+    "uuid": "d1f274c9-b055-4f93-8ff6-1baf6d4e7755",
+    "code": "RAISECOM",
+    "site": "https://www.raisecom.com",
+    "$collection": "inv.vendors"
+}
