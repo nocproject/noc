@@ -173,19 +173,29 @@ Ext.define('NOC.fm.alarm.Application', {
         me.durationStore = Ext.create('Ext.data.Store', {
             fields: ['value', 'text'],
             data: [
-                {'value': 60, 'text': '1 min'},
-                {'value': 300, 'text': '5 min'},
-                {'value': 600, 'text': '10 min'},
-                {'value': 900, 'text': '15 min'},
-                {'value': 1800, 'text': '30 min'},
-                {'value': 3600, 'text': '60 min'}
+                {'value': 1, 'text': '1 min'},
+                {'value': 5, 'text': '5 min'},
+                {'value': 10, 'text': '10 min'},
+                {'value': 15, 'text': '15 min'},
+                {'value': 30, 'text': '30 min'},
+                {'value': 60, 'text': '60 min'}
             ]
         });
+        me.freshOpacityStore = Ext.create('Ext.data.Store', {
+                fields: ['value', 'text'],
+                data: [
+                    {'value': 1, 'text': '0.3'},
+                    {'value': 2, 'text': '0.5'},
+                    {'value': 3, 'text': '0.7'},
+                    {'value': 4, 'text': '1'}
+                ]
+            }
+        );
         me.freshDuration1 = Ext.create('Ext.form.ComboBox', {
             width: 95,
             queryMode: 'local',
             valueField: 'value',
-            value: 600,
+            value: 10,
             store: me.durationStore,
             validator: me.durationValidator,
             listeners: {
@@ -194,21 +204,13 @@ Ext.define('NOC.fm.alarm.Application', {
             }
         });
         me.freshOpacity1 = Ext.create('Ext.form.ComboBox', {
-            // fieldLabel: __('Old alarm opacity'),
             width: 95,
             queryMode: 'local',
             valueField: 'value',
             value: 4,
             forceSelection: true,
-            store: {
-                fields: ['value', 'text'],
-                data: [
-                    {'value': 1, 'text': '0.3'},
-                    {'value': 2, 'text': '0.5'},
-                    {'value': 3, 'text': '0.7'},
-                    {'value': 4, 'text': '1'}
-                ]
-            },
+            disabled: true,
+            store: me.freshOpacityStore,
             listeners: {
                 scope: me,
                 change: me.onChangeFilter
@@ -219,7 +221,7 @@ Ext.define('NOC.fm.alarm.Application', {
             width: 95,
             queryMode: 'local',
             valueField: 'value',
-            value: 900,
+            value: 15,
             store: me.durationStore,
             validator: me.durationValidator,
             listeners: {
@@ -228,21 +230,12 @@ Ext.define('NOC.fm.alarm.Application', {
             }
         });
         me.freshOpacity2 = Ext.create('Ext.form.ComboBox', {
-            // fieldLabel: __('Old alarm opacity'),
             width: 95,
             queryMode: 'local',
             valueField: 'value',
             value: 3,
             forceSelection: true,
-            store: {
-                fields: ['value', 'text'],
-                data: [
-                    {'value': 1, 'text': '0.3'},
-                    {'value': 2, 'text': '0.5'},
-                    {'value': 3, 'text': '0.7'},
-                    {'value': 4, 'text': '1'}
-                ]
-            },
+            store: me.freshOpacityStore,
             listeners: {
                 scope: me,
                 change: me.onChangeFilter
@@ -253,7 +246,7 @@ Ext.define('NOC.fm.alarm.Application', {
             width: 95,
             queryMode: 'local',
             valueField: 'value',
-            value: 1800,
+            value: 30,
             store: me.durationStore,
             validator: me.durationValidator,
             listeners: {
@@ -262,21 +255,12 @@ Ext.define('NOC.fm.alarm.Application', {
             }
         });
         me.freshOpacity3 = Ext.create('Ext.form.ComboBox', {
-            // fieldLabel: __('Old alarm opacity'),
             width: 95,
             queryMode: 'local',
             valueField: 'value',
             value: 2,
             forceSelection: true,
-            store: {
-                fields: ['value', 'text'],
-                data: [
-                    {'value': 1, 'text': '0.3'},
-                    {'value': 2, 'text': '0.5'},
-                    {'value': 3, 'text': '0.7'},
-                    {'value': 4, 'text': '1'}
-                ]
-            },
+            store: me.freshOpacityStore,
             listeners: {
                 scope: me,
                 change: me.onChangeFilter
@@ -396,13 +380,6 @@ Ext.define('NOC.fm.alarm.Application', {
             itemId: 'grid-panel',
             stateful: true,
             stateId: 'fm.alarm-grid',
-            // plugins: [
-            //     {
-            //         ptype: "bufferedrenderer"
-            //         //trailingBufferZone: 50,
-            //         //leadingBufferZone: 50
-            //     }
-            // ],
             dockedItems: [
                 {
                     xtype: 'form',
@@ -881,9 +858,9 @@ Ext.define('NOC.fm.alarm.Application', {
         }
     },
     //
-    durationValidator: function (value) {
-        var num = Number(value.replace(' min', ''));
+    durationValidator: function(value) {
+        var num = Number(value.replace('min', '').trim());
 
-        return !isNaN(num);
+        return !isNaN(num) && num > 0;
     }
 });
