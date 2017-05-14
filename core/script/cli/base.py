@@ -333,6 +333,7 @@ class CLI(object):
                         stop_sent = True
                     break  # No new objects
                 key, obj, buffer = pr
+                repeats_n = 0
                 if key not in seen:
                     seen.add(key)
                     objects += [obj]
