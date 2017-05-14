@@ -49,7 +49,8 @@ class GeocoderCache(Document):
     #
     expires = DateTimeField()
 
-    NEGATIVE_TTL = 86400
+    NEGATIVE_TTL = 7 * 86400
+
     rx_slash = re.compile(r"\s+/")
     rx_dots = re.compile(r"\.\.+")
     rx_sep = re.compile(r"[ \t;:!]+")
@@ -118,6 +119,7 @@ class GeocoderCache(Document):
         r = None
         error = "Not found"
         gsys = None
+        lr = None
         for gcls in cls.iter_geocoders():
             g = gcls()
             gsys = g.name
@@ -128,6 +130,8 @@ class GeocoderCache(Document):
                         error = None
                         break
                     else:
+                        if r and not lr and r.lon and r.lat:
+                            lr = r  # Save first non-exact
                         r = None
                         error = "No coordinates"
                 else:
@@ -139,12 +143,15 @@ class GeocoderCache(Document):
             "system": gsys,
             "error": error
         }
+        if not r and lr:
+            r = lr  # Reuse first non-exact message
         if r:
             if r.path:
                 sq["path"] = r.path
             if r.lon and r.lat:
                 sq["lon"], sq["lat"] = r.lon, r.lat
-        else:
+            sq["exact"] = r.exact
+        if not r or not r.exact:
             sq["expires"] = datetime.datetime.now() + datetime.timedelta(seconds=cls.NEGATIVE_TTL)
         # Write to database
         c.update({

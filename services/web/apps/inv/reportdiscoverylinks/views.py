@@ -43,6 +43,9 @@ class ReportFilterApplication(SimpleReport):
             if v["count"] > 2:
                 count[3].add(v["_id"][0])
                 continue
+            if not v["_id"]:
+                self.logger.warning("No IDS in response query")
+                continue
             count[v["count"]].add(v["_id"][0])
 
         for p in Pool.objects.order_by("name"):

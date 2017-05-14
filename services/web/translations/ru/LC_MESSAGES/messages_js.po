@@ -8,19 +8,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-01-26 07:38+0500\n"
+"POT-Creation-Date: 2017-05-10 16:05+0300\n"
 "PO-Revision-Date: 2017-01-26 08:14+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
 "Language-Team: ru <LL@li.org>\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
-"X-Generator: Poedit 1.8.11\n"
-"X-Poedit-Basepath: micro/noc_bitbucket\n"
-"X-Poedit-SearchPath-0: .\n"
 
 #: ui/web/bi/dashboardlayout/Application.js:53
 msgid "Cells"
@@ -84,100 +82,99 @@ msgstr "Добавить в коллекцию?"
 msgid "Failed to save JSON"
 msgstr "Ошибка при сохранении JSON"
 
-#: ui/web/core/ModelApplication.js:27 ui/web/core/ModelApplication.js:476
+#: ui/web/core/ModelApplication.js:27 ui/web/core/ModelApplication.js:492
 #: ui/web/ux/form/GridField.js:55
 msgid "Clone"
 msgstr "Клонировать"
 
-#: ui/web/core/ModelApplication.js:137
+#: ui/web/core/ModelApplication.js:118
+msgid "Level Up"
+msgstr ""
+
+#: ui/web/core/ModelApplication.js:149
 msgid "Add new record"
 msgstr "Добавить новую запись"
 
-#: ui/web/core/ModelApplication.js:145
-msgid "Export"
-msgstr "Экспорт"
-
-#: ui/web/core/ModelApplication.js:147 ui/web/fm/alarm/Application.js:245
+#: ui/web/core/ModelApplication.js:159 ui/web/fm/alarm/Application.js:245
 msgid "Save screen"
 msgstr "Сохранить экран"
 
-#: ui/web/core/ModelApplication.js:171 ui/web/main/desktop/Favorites.js:11
+#: ui/web/core/ModelApplication.js:183 ui/web/main/desktop/Favorites.js:11
 msgid "Favorites"
 msgstr "Избранное"
 
-#: ui/web/core/ModelApplication.js:180 ui/web/fm/alarm/Application.js:253
-#: ui/web/fm/alarm/Application.js:298 ui/web/inv/map/Maintainance.js:58
-msgid "Filter"
-msgstr "Фильтр"
-
-#: ui/web/core/ModelApplication.js:185
+#: ui/web/core/ModelApplication.js:197
 msgid "Reset filters"
 msgstr "Сбросить фильтры"
 
-#: ui/web/core/ModelApplication.js:235
+#: ui/web/core/ModelApplication.js:248
 msgid "Mark/Unmark"
 msgstr "Отметить/Убрать отметку"
 
-#: ui/web/core/ModelApplication.js:245
+#: ui/web/core/ModelApplication.js:258
 #: ui/web/inv/inv/plugins/comment/CommentPanel.js:31
 #: ui/web/inv/inv/plugins/rack/RackPanel.js:46 ui/web/inv/map/MapPanel.js:138
 #: ui/web/inv/map/inspectors/ManagedObjectInspector.js:32
 msgid "Edit"
 msgstr "Редактировать"
 
-#: ui/web/core/ModelApplication.js:435 ui/web/wf/workflow/WFEditor.js:64
+#: ui/web/core/ModelApplication.js:391
+msgid "No records"
+msgstr ""
+
+#: ui/web/core/ModelApplication.js:451 ui/web/wf/workflow/WFEditor.js:64
 msgid "Save changes"
 msgstr "Сохранить изменения"
 
-#: ui/web/core/ModelApplication.js:447
+#: ui/web/core/ModelApplication.js:463
 msgid "Close without saving"
 msgstr "Закрыть без сохранения"
 
-#: ui/web/core/ModelApplication.js:456
+#: ui/web/core/ModelApplication.js:472
 msgid "Reset to default values"
 msgstr "Сбросить на настройки по умолчанию"
 
-#: ui/web/core/ModelApplication.js:466
+#: ui/web/core/ModelApplication.js:482
 msgid "Delete object"
 msgstr "Удалить объект"
 
-#: ui/web/core/ModelApplication.js:477
+#: ui/web/core/ModelApplication.js:493
 msgid "Copy existing values to a new object"
-msgstr "Скопировать значение в новый объект"
+msgstr "Скопировать значения в новый объект"
 
-#: ui/web/core/ModelApplication.js:695
+#: ui/web/core/ModelApplication.js:711
 msgid "Invalid data!"
 msgstr "Неверные данные!"
 
-#: ui/web/core/ModelApplication.js:726 ui/web/inv/map/Maintainance.js:167
+#: ui/web/core/ModelApplication.js:742 ui/web/inv/map/Maintainance.js:167
 msgid "Saved"
 msgstr "Сохранено"
 
-#: ui/web/core/ModelApplication.js:977
+#: ui/web/core/ModelApplication.js:1006
 msgid "Error in data"
 msgstr "Ошибка в данных"
 
-#: ui/web/core/ModelApplication.js:1003
+#: ui/web/core/ModelApplication.js:1032
 msgid "Delete record?"
 msgstr "Удалить запись?"
 
-#: ui/web/core/ModelApplication.js:1004
+#: ui/web/core/ModelApplication.js:1033
 msgid "Do you wish to delete record? This operation cannot be undone!"
 msgstr "Вы уверены в удалении записи? Операция не может быть отменена!"
 
-#: ui/web/core/ModelApplication.js:1253
+#: ui/web/core/ModelApplication.js:1282
 msgid "Error"
 msgstr "Ошибка"
 
-#: ui/web/core/ModelApplication.js:1471
+#: ui/web/core/ModelApplication.js:1500
 msgid "Group Edit"
 msgstr "Групповое редактирование"
 
-#: ui/web/core/ModelApplication.js:1491
+#: ui/web/core/ModelApplication.js:1520
 msgid "Group actions"
 msgstr "Групповые действия"
 
-#: ui/web/core/ModelApplication.js:1542
+#: ui/web/core/ModelApplication.js:1571
 msgid "Records has been updated"
 msgstr "Записи будут обновлены"
 
@@ -249,7 +246,7 @@ msgstr "Изменений нет"
 
 #: ui/web/core/Rack.js:149
 msgid "Rack: "
-msgstr "Стойка:"
+msgstr "Стойка: "
 
 #: ui/web/core/JSONPreview.js:138 ui/web/core/RestTemplatePreview.js:39
 msgid "Failed to get JSON"
@@ -262,6 +259,108 @@ msgstr "шаблон"
 #: ui/web/core/TreePanel.js:130
 msgid "empty list"
 msgstr "пустой список"
+
+#: ui/web/core/ModelApplication.js:192 ui/web/core/filter/Filter.js:28
+#: ui/web/fm/alarm/Application.js:253 ui/web/fm/alarm/Application.js:298
+#: ui/web/inv/map/Maintainance.js:58 ui/web/sa/getnow/SelectionGrid.js:106
+#: ui/web/sa/runcommands/Application.js:323
+msgid "Filter"
+msgstr "Фильтр"
+
+#: ui/web/core/filter/Filter.js:60
+msgid "By SA Profile:"
+msgstr "По профилю:"
+
+#: ui/web/core/filter/Filter.js:69
+msgid "By Obj. Profile:"
+msgstr "По профилю объекта:"
+
+#: ui/web/core/filter/Filter.js:79
+msgid "By Adm. Domain:"
+msgstr "По З.О.:"
+
+#: ui/web/core/filter/Filter.js:89
+msgid "By Segment:"
+msgstr "По сегменту:"
+
+#: ui/web/core/filter/Filter.js:98
+msgid "By Selector:"
+msgstr "По Селектору:"
+
+#: ui/web/core/filter/Filter.js:106
+msgid "By Pool:"
+msgstr "По пулу:"
+
+#: ui/web/core/filter/Filter.js:115
+msgid "By Vendor:"
+msgstr ""
+
+#: ui/web/core/filter/Filter.js:131
+msgid "By Platform:"
+msgstr ""
+
+#: ui/web/core/filter/Filter.js:147
+msgid "By version:"
+msgstr ""
+
+#: ui/web/core/filter/Filter.js:162
+msgid "By IP list (max. 2000):"
+msgstr ""
+
+#: ui/web/core/filter/Filter.js:172 ui/web/core/filter/Filter.js:178
+#: ui/web/sa/managedobject/CapsPanel.js:37
+msgid "Capability"
+msgstr "Возможность"
+
+#: ui/web/core/filter/Filter.js:231
+msgid "Exclude"
+msgstr ""
+
+#: ui/web/core/filter/Filter.js:235
+msgid "Include"
+msgstr ""
+
+#: ui/web/core/filter/Filter.js:242 ui/web/fm/alarm/plugins/Thresholds.js:53
+#: ui/web/fm/alarmclass/Application.js:239
+#: ui/web/fm/alarmtrigger/Application.js:36
+#: ui/web/fm/alarmtrigger/Application.js:87
+#: ui/web/fm/eventclass/Application.js:207
+#: ui/web/fm/eventclass/Application.js:306
+#: ui/web/fm/eventtrigger/Application.js:36
+#: ui/web/fm/eventtrigger/Application.js:91
+msgid "Condition"
+msgstr "Условие"
+
+#: ui/web/core/filter/Filter.js:271
+msgid "Yes/No"
+msgstr ""
+
+#: ui/web/core/filter/Filter.js:280
+msgid "Checked"
+msgstr ""
+
+#: ui/web/core/filter/Filter.js:291 ui/web/fm/alarm/AlarmPanel.js:224
+#: ui/web/fm/alarm/plugins/Diagnostic.js:17
+#: ui/web/sa/managedobject/ConsolePanel.js:45
+msgid "Clear"
+msgstr "Очистить"
+
+#: ui/web/core/filter/Filter.js:294 ui/web/vc/vc/AddInterfacesForm.js:110
+#: ui/web/wf/workflow/WFInspector.js:35
+msgid "Apply"
+msgstr "Применить"
+
+#: ui/web/core/filter/Filter.js:303
+msgid "Clean All"
+msgstr "Очистить все"
+
+#: ui/web/core/filter/FilterController.js:104
+msgid "Too many IP, max 2000"
+msgstr ""
+
+#: ui/web/core/filter/ViewModel.js:57
+msgid "No leaf selected"
+msgstr ""
 
 #: ui/web/core/modelfilter/AFI.js:20 ui/web/inv/interface/L3Panel.js:42
 #: ui/web/ip/vrf/Application.js:47 ui/web/ip/vrf/Application.js:103
@@ -342,8 +441,8 @@ msgstr "Прио."
 msgid "Content"
 msgstr "Содержимое"
 
-#: ui/web/core/ModelApplication.js:302 ui/web/core/ModelApplication.js:325
-#: ui/web/core/ModelApplication.js:498 ui/web/dns/dnszone/Application.js:193
+#: ui/web/core/ModelApplication.js:317 ui/web/core/ModelApplication.js:340
+#: ui/web/core/ModelApplication.js:514 ui/web/dns/dnszone/Application.js:193
 msgid "Preview"
 msgstr "Просмотр"
 
@@ -568,104 +667,149 @@ msgstr "Появилась"
 msgid "Changed"
 msgstr "Изменение"
 
-#: ui/web/fm/alarmclass/Application.js:133
+#: ui/web/fm/alarmclass/Application.js:134
 msgid "Default Severity"
 msgstr "Важность по умолчанию"
 
-#: ui/web/fm/alarmclass/Application.js:138
+#: ui/web/fm/alarmclass/Application.js:139
 msgid "Unique"
 msgstr "Уникальный"
 
-#: ui/web/fm/alarmclass/Application.js:143
+#: ui/web/fm/alarmclass/Application.js:144
 msgid "User Clearable"
 msgstr "Закрыто пользователем"
 
-#: ui/web/fm/alarmclass/Application.js:148
+#: ui/web/fm/alarmclass/Application.js:149
 msgid "Discriminator"
 msgstr ""
 
-#: ui/web/fm/alarmclass/Application.js:182
+#: ui/web/fm/alarmclass/Application.js:183
 msgid "Data Sources"
 msgstr "Источники данных"
 
-#: ui/web/fm/alarmclass/Application.js:195
+#: ui/web/fm/alarmclass/Application.js:196
 msgid "Datasource"
 msgstr "Источник данных"
 
-#: ui/web/fm/alarmclass/Application.js:212
+#: ui/web/fm/alarmclass/Application.js:213
 msgid "Root Cause"
 msgstr "Первопричина"
 
-#: ui/web/core/TreeCombo.js:105 ui/web/core/TreeCombo.js:240
-#: ui/web/core/TreeCombo.js:291 ui/web/fm/alarmclass/Application.js:225
+#: ui/web/core/TreeCombo.js:37 ui/web/fm/alarmclass/Application.js:226
 #: ui/web/main/authldapdomain/Application.js:66
 msgid "Root"
 msgstr "Корень"
 
-#: ui/web/fm/alarmclass/Application.js:255
+#: ui/web/fm/alarmclass/Application.js:256
 msgid "Jobs"
 msgstr "Задачи"
 
-#: ui/web/fm/alarmclass/Application.js:268
+#: ui/web/fm/alarmclass/Application.js:269
 msgid "Interval"
 msgstr "Интервал"
 
-#: ui/web/fm/alarmclass/Application.js:274
+#: ui/web/fm/alarmclass/Application.js:275
 #: ui/web/fm/classificationrule/Application.js:138
 msgid "Vars"
 msgstr "Переменные"
 
-#: ui/web/fm/alarmclass/Application.js:295
+#: ui/web/fm/alarmclass/Application.js:296
 msgid "Clear Handlers"
 msgstr "Очистить обработчики"
 
-#: ui/web/fm/alarmclass/Application.js:325
+#: ui/web/fm/alarmclass/Application.js:326
 msgid "Timing"
 msgstr ""
 
-#: ui/web/fm/alarmclass/Application.js:330
+#: ui/web/fm/alarmclass/Application.js:334
 msgid "Flap Condition"
 msgstr ""
 
-#: ui/web/fm/alarmclass/Application.js:334
+#: ui/web/fm/alarmclass/Application.js:335
+msgid "Flap detection"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:339
 msgid "None"
 msgstr ""
 
-#: ui/web/fm/alarmclass/Application.js:341
-msgid "Flap Window"
+#: ui/web/fm/alarmclass/Application.js:349
+msgid "Flap Window (sec)"
 msgstr ""
 
-#: ui/web/fm/alarmclass/Application.js:348
-msgid "Flap Threshold"
+#: ui/web/fm/alarmclass/Application.js:350
+msgid "Time in seconds, while waiting of reopen"
 msgstr ""
 
-#: ui/web/fm/alarmclass/Application.js:355
+#: ui/web/fm/alarmclass/Application.js:360
+msgid "Flap Threshold (pcs)"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:361
+msgid "Number of flaps while close Flap Window"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:371
+msgid "Notification Delay (sec)"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:372
+msgid "Time in seconds to delay alarm risen notification"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:382
+msgid "Control Time 0 (sec)"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:383
+msgid "Control time to reopen alarm instead of creating new"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:393
+msgid "Control Time 1 (sec)"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:394
+msgid "Control time to reopen alarm after 1 reopen"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:404
+msgid "Control Time N (sec)"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:405
+msgid "Control time to reopen alarm after >1 reopen"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:415
+msgid "Recover Time (sec)"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:416
+msgid ""
+"Consequence recover time. Root cause will be detached if consequence "
+"alarm will not clear itself in *recover_time*"
+msgstr ""
+
+#: ui/web/fm/alarmclass/Application.js:444
+msgid "By Builtin"
+msgstr ""
+
 #: ui/web/fm/alarmclassconfig/Application.js:24
 msgid "Notification Delay"
 msgstr "Задержка уведомления"
 
-#: ui/web/fm/alarmclass/Application.js:362
 #: ui/web/fm/alarmclassconfig/Application.js:30
 msgid "Control Time 0"
 msgstr "Контрольное время 0"
 
-#: ui/web/fm/alarmclass/Application.js:369
 #: ui/web/fm/alarmclassconfig/Application.js:36
 msgid "Control Time 1"
 msgstr "Контрольное время 1"
 
-#: ui/web/fm/alarmclass/Application.js:376
 #: ui/web/fm/alarmclassconfig/Application.js:42
 msgid "Control Time N"
 msgstr "Контрольное время N"
-
-#: ui/web/fm/alarmclass/Application.js:383
-msgid "Recover Time"
-msgstr "Время восстановления"
-
-#: ui/web/fm/alarmclass/Application.js:409
-msgid "By Builtin"
-msgstr ""
 
 #: ui/web/fm/alarmclassconfig/Application.js:58
 msgid "Notification Delay (s)"
@@ -701,7 +845,7 @@ msgstr "При создании"
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:182
 #: ui/web/sa/managedobjectprofile/Application.js:233
 #: ui/web/sa/managedobjectprofile/Application.js:300
-#: ui/web/sa/managedobjectprofile/Application.js:662
+#: ui/web/sa/managedobjectprofile/Application.js:689
 msgid "Enable"
 msgstr "Включить"
 
@@ -736,7 +880,7 @@ msgstr "Классы аварий"
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:35
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:71
 #: ui/web/fm/alarmescalation/Application.js:59
-#: ui/web/fm/reportalarmdetail/Application.js:32
+#: ui/web/fm/reportalarmdetail/Application.js:33
 msgid "Alarm Class"
 msgstr "Класс аварии"
 
@@ -777,7 +921,7 @@ msgstr "Зона ответственности"
 #: ui/web/inv/interfaceclassificationrule/Application.js:43
 #: ui/web/inv/interfaceclassificationrule/Application.js:93
 #: ui/web/inv/networksegment/Application.js:67
-#: ui/web/inv/networksegment/Application.js:125
+#: ui/web/inv/networksegment/Application.js:134
 #: ui/web/sa/groupaccess/Application.js:25
 #: ui/web/sa/mrtconfig/Application.js:83
 #: ui/web/sa/objectnotification/Application.js:19
@@ -786,7 +930,7 @@ msgstr "Зона ответственности"
 msgid "Selector"
 msgstr "Селектор"
 
-#: ui/web/fm/alarm/Application.js:397 ui/web/fm/alarmclass/Application.js:128
+#: ui/web/fm/alarm/Application.js:397 ui/web/fm/alarmclass/Application.js:129
 #: ui/web/fm/alarmescalation/Application.js:119
 #: ui/web/fm/alarmseverity/Application.js:31
 #: ui/web/fm/alarmseverity/Application.js:69
@@ -819,7 +963,7 @@ msgid "Clear Template"
 msgstr "Шаблон закрытия"
 
 #: ui/web/fm/alarmescalation/Application.js:146
-#: ui/web/fm/reportalarmdetail/Application.js:35
+#: ui/web/fm/reportalarmdetail/Application.js:36
 #: ui/web/ip/address/Application.js:92
 #: ui/web/ip/addressrange/Application.js:158 ui/web/ip/prefix/Application.js:81
 #: ui/web/ip/vrf/Application.js:122 ui/web/peer/peer/Application.js:79
@@ -993,34 +1137,34 @@ msgstr "Ошибка при переклассификации"
 msgid "Traceback"
 msgstr ""
 
-#: ui/web/fm/alarmclass/Application.js:82
+#: ui/web/fm/alarmclass/Application.js:83
 #: ui/web/fm/eventclass/Application.js:82 ui/web/main/pyrule/Application.js:81
 #: ui/web/sa/managedobject/InteractionsPanel.js:84
 msgid "Text"
 msgstr "Текст"
 
-#: ui/web/cm/errortype/Application.js:61 ui/web/fm/alarmclass/Application.js:93
+#: ui/web/cm/errortype/Application.js:61 ui/web/fm/alarmclass/Application.js:94
 #: ui/web/fm/eventclass/Application.js:93
 msgid "Subject Template"
 msgstr "Шаблон темы"
 
 #: ui/web/cm/errortype/Application.js:67
-#: ui/web/fm/alarmclass/Application.js:100
+#: ui/web/fm/alarmclass/Application.js:101
 #: ui/web/fm/eventclass/Application.js:100
 msgid "Body Template"
 msgstr "Шаблон содерж."
 
-#: ui/web/fm/alarmclass/Application.js:107
+#: ui/web/fm/alarmclass/Application.js:108
 #: ui/web/fm/eventclass/Application.js:107
 msgid "Symptoms"
 msgstr "Симптомы"
 
-#: ui/web/fm/alarmclass/Application.js:114
+#: ui/web/fm/alarmclass/Application.js:115
 #: ui/web/fm/eventclass/Application.js:114
 msgid "Probable Causes"
 msgstr "Возможные причины"
 
-#: ui/web/fm/alarmclass/Application.js:121
+#: ui/web/fm/alarmclass/Application.js:122
 #: ui/web/fm/eventclass/Application.js:121
 msgid "Recommended Actions"
 msgstr "Рекомендованные действия"
@@ -1029,7 +1173,7 @@ msgstr "Рекомендованные действия"
 msgid "Link Event"
 msgstr "Событие на интерфейсе"
 
-#: ui/web/fm/alarmclass/Application.js:153
+#: ui/web/fm/alarmclass/Application.js:154
 #: ui/web/fm/eventclass/Application.js:148
 #: ui/web/wf/workflow/Application.js:102
 msgid "Variables"
@@ -1039,17 +1183,6 @@ msgstr "Переменные"
 #: ui/web/fm/eventclass/Application.js:198
 msgid "Disposition"
 msgstr "Размещение"
-
-#: ui/web/fm/alarm/plugins/Thresholds.js:53
-#: ui/web/fm/alarmclass/Application.js:238
-#: ui/web/fm/alarmtrigger/Application.js:36
-#: ui/web/fm/alarmtrigger/Application.js:87
-#: ui/web/fm/eventclass/Application.js:207
-#: ui/web/fm/eventclass/Application.js:306
-#: ui/web/fm/eventtrigger/Application.js:36
-#: ui/web/fm/eventtrigger/Application.js:91
-msgid "Condition"
-msgstr "Условие"
 
 #: ui/web/fm/eventclass/Application.js:227
 msgid "Alarm"
@@ -1075,7 +1208,7 @@ msgstr "Время жизни события"
 msgid "Repeat Suppression"
 msgstr "Подавление повторов"
 
-#: ui/web/fm/alarmclass/Application.js:232
+#: ui/web/fm/alarmclass/Application.js:233
 #: ui/web/fm/eventclass/Application.js:286
 msgid "Window"
 msgstr "Окно"
@@ -1091,20 +1224,20 @@ msgstr "Подавление"
 msgid "Event Class"
 msgstr "Класс события"
 
-#: ui/web/fm/alarmclass/Application.js:244
+#: ui/web/fm/alarmclass/Application.js:245
 #: ui/web/fm/eventclass/Application.js:312
 msgid "Match Condition"
 msgstr "Критерий совпадения"
 
-#: ui/web/fm/alarmclass/Application.js:285
-#: ui/web/fm/alarmclass/Application.js:290
+#: ui/web/fm/alarmclass/Application.js:286
+#: ui/web/fm/alarmclass/Application.js:291
 #: ui/web/fm/eventclass/Application.js:323
 #: ui/web/fm/eventclass/Application.js:328
 msgid "Handlers"
 msgstr "Обработчики"
 
-#: ui/web/fm/alarmclass/Application.js:300
-#: ui/web/fm/alarmclass/Application.js:305
+#: ui/web/fm/alarmclass/Application.js:301
+#: ui/web/fm/alarmclass/Application.js:306
 #: ui/web/fm/eventclass/Application.js:333
 #: ui/web/fm/eventclass/Application.js:338
 #: ui/web/inv/objectmodel/Application.js:139
@@ -1112,14 +1245,14 @@ msgid "Plugins"
 msgstr "Плагины"
 
 #: ui/web/cm/validationrule/Application.js:191
-#: ui/web/fm/alarmclass/Application.js:314
+#: ui/web/fm/alarmclass/Application.js:315
 #: ui/web/fm/eventclass/Application.js:347
 #: ui/web/sa/managedobject/Application.js:56
 #: ui/web/sa/managedobjectprofile/Application.js:462
 msgid "Config"
 msgstr "Конфиг"
 
-#: ui/web/fm/alarmclass/Application.js:397
+#: ui/web/fm/alarmclass/Application.js:432
 #: ui/web/fm/eventclass/Application.js:364
 msgid "View as JSON"
 msgstr "Посмотреть как JSON"
@@ -1171,18 +1304,20 @@ msgstr ""
 msgid "Last Updated"
 msgstr "Изменен"
 
-#: ui/web/core/ModelApplication.js:385 ui/web/fm/alarm/AlarmPanel.js:26
+#: ui/web/core/ModelApplication.js:401 ui/web/fm/alarm/AlarmPanel.js:26
 #: ui/web/fm/alarm/AlarmPanel.js:136 ui/web/fm/alarm/AlarmPanel.js:177
 #: ui/web/fm/alarm/Application.js:332 ui/web/fm/event/Application.js:160
 #: ui/web/fm/event/EventPanel.js:24 ui/web/fm/event/EventPanel.js:138
 #: ui/web/fm/mib/Application.js:37
-#: ui/web/fm/reportalarmdetail/Application.js:24
-#: ui/web/sa/getnow/Application.js:163 ui/web/sa/managedobject/AlarmPanel.js:37
+#: ui/web/fm/reportalarmdetail/Application.js:25
+#: ui/web/sa/getnow/SelectionGrid.js:25 ui/web/sa/getnow/SelectionGrid.js:26
+#: ui/web/sa/managedobject/AlarmPanel.js:37
 #: ui/web/sa/managedobjectprofile/Application.js:457
+#: ui/web/sa/reportobjectdetail/Application.js:25
 msgid "ID"
 msgstr "ID"
 
-#: ui/web/core/ModelApplication.js:497 ui/web/fm/mib/Application.js:49
+#: ui/web/core/ModelApplication.js:513 ui/web/fm/mib/Application.js:49
 #: ui/web/ip/prefixaccess/Application.js:39
 msgid "View"
 msgstr "Просмотр"
@@ -1206,6 +1341,7 @@ msgstr "Синтаксис"
 #: ui/web/inv/monitor/Application.js:88
 #: ui/web/inv/objectmodel/Application.js:270
 #: ui/web/main/desktop/Application.js:107
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:114
 #: ui/web/sa/managedobject/LinksPanel.js:105
 #: ui/web/sa/managedobjectselector/ObjectsPanel.js:111
 #: ui/web/sa/monitor/Application.js:66
@@ -1227,7 +1363,7 @@ msgstr "Загрузка"
 
 #: ui/web/fm/mib/MIBUpload.js:65
 msgid "MIBs has been uploaded"
-msgstr "MIB'ы будет загружены"
+msgstr "MIB'ы будут загружены"
 
 #: ui/web/fm/mib/MIBUpload.js:69
 msgid "Failed to upload MIB"
@@ -1260,118 +1396,99 @@ msgstr "в OID"
 msgid "Is Builtin"
 msgstr "Встроен"
 
-#: ui/web/fm/reportalarmdetail/Application.js:25
+#: ui/web/fm/reportalarmdetail/Application.js:26
 msgid "Root ID"
 msgstr "ID Корня"
 
-#: ui/web/fm/reportalarmdetail/Application.js:28
+#: ui/web/fm/reportalarmdetail/Application.js:29
 #: ui/web/sa/managedobject/AlarmPanel.js:65
 #: ui/web/sa/monitor/ScriptsPanel.js:61
 msgid "Duration"
 msgstr "Продолж."
 
-#: ui/web/fm/reportalarmdetail/Application.js:29
-#: ui/web/sa/managedobject/scripts/ShowObjectStatus.js:13
-msgid "Object Name"
-msgstr "Имя объекта"
-
-#: ui/web/fm/reportalarmdetail/Application.js:33
-msgid "Affected Objects"
-msgstr "Накрыто Объектов"
-
-#: ui/web/fm/reportalarmdetail/Application.js:34
+#: ui/web/fm/reportalarmdetail/Application.js:35
 msgid "Affected Subscriber"
 msgstr "Накрытых Абонентов"
 
-#: ui/web/fm/reportalarmdetail/Application.js:36
+#: ui/web/fm/reportalarmdetail/Application.js:37
 msgid "Escalation Time"
 msgstr "Время эскалации"
 
-#: ui/web/fm/reportalarmdetail/Application.js:37
+#: ui/web/fm/reportalarmdetail/Application.js:38
 msgid "Container (Level 1)"
 msgstr "Контейнер (Уровень 1)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:38
+#: ui/web/fm/reportalarmdetail/Application.js:39
 msgid "Container (Level 2)"
 msgstr "Контейнер (Уровень 2)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:39
+#: ui/web/fm/reportalarmdetail/Application.js:40
 msgid "Container (Level 3)"
 msgstr "Контейнер (Уровень 3)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:40
+#: ui/web/fm/reportalarmdetail/Application.js:41
 msgid "Container (Level 4)"
 msgstr "Контейнер (Уровень 4)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:41
+#: ui/web/fm/reportalarmdetail/Application.js:42
 msgid "Container (Level 5)"
 msgstr "Контейнер (Уровень 5)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:42
+#: ui/web/fm/reportalarmdetail/Application.js:43
 msgid "Container (Level 6)"
 msgstr "Контейнер (Уровень 6)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:43
+#: ui/web/fm/reportalarmdetail/Application.js:44
 msgid "Container (Level 7)"
 msgstr "Контейнер (Уровень 7)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:44
+#: ui/web/fm/reportalarmdetail/Application.js:45
 msgid "Segment (Level 1)"
 msgstr "Сегмент (Уровень 1)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:45
+#: ui/web/fm/reportalarmdetail/Application.js:46
 msgid "Segment (Level 2)"
 msgstr "Сегмент (Уровень 2)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:46
+#: ui/web/fm/reportalarmdetail/Application.js:47
 msgid "Segment (Level 3)"
 msgstr "Сегмент (Уровень 3)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:47
+#: ui/web/fm/reportalarmdetail/Application.js:48
 msgid "Segment (Level 4)"
 msgstr "Сегмент (Уровень 4)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:48
+#: ui/web/fm/reportalarmdetail/Application.js:49
 msgid "Segment (Level 5)"
 msgstr "Сегмент (Уровень 5)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:49
+#: ui/web/fm/reportalarmdetail/Application.js:50
 msgid "Segment (Level 6)"
 msgstr "Сегмент (Уровень 6)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:50
+#: ui/web/fm/reportalarmdetail/Application.js:51
 msgid "Segment (Level 7)"
 msgstr "Сегмент (Уровень 7)"
 
-#: ui/web/fm/reportalarmdetail/Application.js:66
-#: ui/web/inv/interfaceclassificationrule/Application.js:108
-#: ui/web/main/audittrail/Application.js:77
-msgid "Field"
-msgstr "Поле"
-
-#: ui/web/fm/reportalarmdetail/Application.js:89
-msgid "CSV"
+#: ui/web/fm/reportalarmdetail/Application.js:116
+msgid "Alarms source"
 msgstr ""
 
-#: ui/web/fm/reportalarmdetail/Application.js:94
-msgid "Excel"
-msgstr ""
-
-#: ui/web/fm/reportalarmdetail/Application.js:141
+#: ui/web/fm/reportalarmdetail/Application.js:176
 msgid "Min. Duration"
 msgstr "Мин. продолжительность"
 
-#: ui/web/fm/reportalarmdetail/Application.js:149
+#: ui/web/fm/reportalarmdetail/Application.js:184
+msgid "Max. Duration"
+msgstr ""
+
+#: ui/web/fm/reportalarmdetail/Application.js:192
 msgid "Min. Objects"
 msgstr "Мин. Объектов"
 
-#: ui/web/fm/reportalarmdetail/Application.js:157
+#: ui/web/fm/reportalarmdetail/Application.js:200
 msgid "Min. Subscribers"
 msgstr "Мин. Абонентов"
-
-#: ui/web/fm/reportalarmdetail/Application.js:171
-msgid "Download"
-msgstr "Загрузить"
 
 #: ui/web/fm/ttsystem/Application.js:53
 msgid "Connection"
@@ -1645,7 +1762,7 @@ msgid "Get JSON"
 msgstr "Получить JSON"
 
 #: ui/web/bi/dashboardlayout/Application.js:43
-#: ui/web/cm/errortype/Application.js:51 ui/web/fm/alarmclass/Application.js:67
+#: ui/web/cm/errortype/Application.js:51 ui/web/fm/alarmclass/Application.js:68
 #: ui/web/fm/alarmseverity/Application.js:58
 #: ui/web/fm/classificationrule/Application.js:84
 #: ui/web/fm/eventclass/Application.js:67
@@ -1711,7 +1828,7 @@ msgstr ""
 
 #: ui/web/bi/dashboardlayout/Application.js:102
 #: ui/web/cm/errortype/Application.js:73
-#: ui/web/fm/alarmclass/Application.js:395
+#: ui/web/fm/alarmclass/Application.js:430
 #: ui/web/fm/alarmseverity/Application.js:113
 #: ui/web/fm/classificationrule/Application.js:160
 #: ui/web/fm/event/EventPanel.js:228 ui/web/fm/eventclass/Application.js:362
@@ -1805,6 +1922,7 @@ msgstr ""
 #: ui/web/inv/interface/L1Panel.js:76 ui/web/inv/interface/LAGPanel.js:43
 #: ui/web/inv/interface/LAGPanel.js:49
 #: ui/web/inv/interfaceclassificationrule/Application.js:49
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:59
 #: ui/web/peer/peeringpoint/Application.js:42
 #: ui/web/peer/peeringpoint/Application.js:79
 #: ui/web/phone/phonenumber/Application.js:109
@@ -1817,20 +1935,22 @@ msgstr ""
 #: ui/web/sa/managedobjectselector/ObjectsPanel.js:52
 #: ui/web/sa/profilecheckrule/Application.js:76
 #: ui/web/sa/profilecheckrule/Application.js:183
-#: ui/web/sa/runcommands/Application.js:79
+#: ui/web/sa/reportobjectdetail/Application.js:29
+#: ui/web/sa/runcommands/Application.js:81
 #: ui/web/sla/slaprobe/Application.js:35 ui/web/sla/slaprobe/Application.js:68
 msgid "Profile"
 msgstr "Профиль"
 
 #: ui/web/cm/validationrule/HitsPanel.js:80
-#: ui/web/fm/reportalarmdetail/Application.js:31
+#: ui/web/fm/reportalarmdetail/Application.js:32
 #: ui/web/inv/firmwarepolicy/Application.js:28
 #: ui/web/inv/firmwarepolicy/Application.js:69
 #: ui/web/inv/unknownmodel/Application.js:23
 #: ui/web/sa/managedobject/Application.js:217
 #: ui/web/sa/managedobject/Application.js:322
 #: ui/web/sa/managedobjectselector/ObjectsPanel.js:57
-#: ui/web/sa/runcommands/Application.js:84
+#: ui/web/sa/reportobjectdetail/Application.js:32
+#: ui/web/sa/runcommands/Application.js:86
 msgid "Platform"
 msgstr "Платформа"
 
@@ -1846,12 +1966,13 @@ msgstr ""
 #: ui/web/peer/peer/Application.js:50 ui/web/peer/peer/Application.js:154
 #: ui/web/phone/phonenumber/Application.js:68
 #: ui/web/phone/phonenumber/Application.js:127
+#: ui/web/sa/getnow/SelectionGrid.js:63 ui/web/sa/getnow/SelectionGrid.js:64
 #: ui/web/sa/managedobject/DiscoveryPanel.js:101
 #: ui/web/sa/managedobject/L1Panel.js:53
 #: ui/web/sa/managedobject/scripts/ShowInterfaceStatus.js:18
 #: ui/web/sa/managedobject/scripts/ShowMPLSVPN.js:18
 #: ui/web/sa/managedobject/scripts/ShowObjectStatus.js:18
-#: ui/web/sa/runcommands/Application.js:707
+#: ui/web/sa/runcommands/Application.js:587
 #: ui/web/support/crashinfo/Application.js:56
 #: ui/web/support/crashinfo/Application.js:120
 msgid "Status"
@@ -2015,15 +2136,19 @@ msgid "Status Change Notification"
 msgstr "Уведомление об изменение статуса"
 
 #: ui/web/inv/interfaceprofile/Application.js:177
-#: ui/web/sa/managedobjectprofile/Application.js:730
-#: ui/web/sa/managedobjectprofile/Application.js:737
-#: ui/web/sa/managedobjectprofile/Application.js:742
+msgid "User Interface"
+msgstr ""
+
+#: ui/web/inv/interfaceprofile/Application.js:183
+#: ui/web/sa/managedobjectprofile/Application.js:757
+#: ui/web/sa/managedobjectprofile/Application.js:764
+#: ui/web/sa/managedobjectprofile/Application.js:769
 #: ui/web/sla/slaprofile/Application.js:53
 msgid "Metrics"
 msgstr "Метрики"
 
-#: ui/web/inv/interfaceprofile/Application.js:180
-#: ui/web/sa/managedobjectprofile/Application.js:745
+#: ui/web/inv/interfaceprofile/Application.js:186
+#: ui/web/sa/managedobjectprofile/Application.js:772
 #: ui/web/sla/slaprofile/Application.js:56
 msgid "Metric Type"
 msgstr "Тип метрики"
@@ -2038,14 +2163,14 @@ msgstr "Тип метрики"
 #: ui/web/fm/ignoreeventrule/Application.js:19
 #: ui/web/fm/ignorepattern/Application.js:27
 #: ui/web/fm/ignorepattern/Application.js:52
-#: ui/web/fm/reportalarmdetail/Application.js:59
+#: ui/web/fm/reportalarmdetail/Application.js:60
 #: ui/web/gis/area/Application.js:23 ui/web/gis/area/Application.js:64
 #: ui/web/gis/division/Application.js:42 ui/web/gis/division/Application.js:90
 #: ui/web/gis/overlay/Application.js:23 ui/web/gis/street/Application.js:35
 #: ui/web/gis/street/Application.js:73
 #: ui/web/inv/interfaceclassificationrule/Application.js:31
 #: ui/web/inv/interfaceclassificationrule/Application.js:75
-#: ui/web/inv/interfaceprofile/Application.js:192
+#: ui/web/inv/interfaceprofile/Application.js:198
 #: ui/web/inv/modelmapping/Application.js:44
 #: ui/web/inv/modelmapping/Application.js:89
 #: ui/web/main/authldapdomain/Application.js:26
@@ -2063,33 +2188,34 @@ msgstr "Тип метрики"
 #: ui/web/phone/numbercategory/Application.js:27
 #: ui/web/phone/phonelinktype/Application.js:56
 #: ui/web/sa/managedobject/scripts/ShowLocalUsers.js:23
-#: ui/web/sa/managedobjectprofile/Application.js:757
+#: ui/web/sa/managedobjectprofile/Application.js:784
 #: ui/web/sa/mrtconfig/Application.js:25
+#: ui/web/sa/reportobjectdetail/Application.js:49
 #: ui/web/sla/slaprofile/Application.js:63 ui/web/wf/solution/Application.js:55
 #: ui/web/wf/workflow/Application.js:85
 msgid "Active"
 msgstr "Активный"
 
-#: ui/web/inv/interfaceprofile/Application.js:199
-#: ui/web/sa/managedobjectprofile/Application.js:764
+#: ui/web/inv/interfaceprofile/Application.js:205
+#: ui/web/sa/managedobjectprofile/Application.js:791
 #: ui/web/sla/slaprofile/Application.js:70
 msgid "Low Error"
 msgstr "Нижний порог ошибки"
 
-#: ui/web/inv/interfaceprofile/Application.js:207
-#: ui/web/sa/managedobjectprofile/Application.js:772
+#: ui/web/inv/interfaceprofile/Application.js:213
+#: ui/web/sa/managedobjectprofile/Application.js:799
 #: ui/web/sla/slaprofile/Application.js:78
 msgid "Low Warn"
 msgstr "Нижний порог предупр."
 
-#: ui/web/inv/interfaceprofile/Application.js:215
-#: ui/web/sa/managedobjectprofile/Application.js:780
+#: ui/web/inv/interfaceprofile/Application.js:221
+#: ui/web/sa/managedobjectprofile/Application.js:807
 #: ui/web/sla/slaprofile/Application.js:86
 msgid "High Warn"
 msgstr "Верхний порог предупр."
 
-#: ui/web/inv/interfaceprofile/Application.js:223
-#: ui/web/sa/managedobjectprofile/Application.js:788
+#: ui/web/inv/interfaceprofile/Application.js:229
+#: ui/web/sa/managedobjectprofile/Application.js:815
 #: ui/web/sla/slaprofile/Application.js:94
 msgid "High Error"
 msgstr "Верхний порог ошибки"
@@ -2120,7 +2246,7 @@ msgstr "Ошибка при запуске приложения"
 
 #: ui/web/inv/inv/Application.js:221
 msgid "Failed to find node"
-msgstr "Ошибка про поиске ноды"
+msgstr "Ошибка про поиске узла"
 
 #: ui/web/inv/inv/Application.js:227
 msgid "Failed to get path"
@@ -2139,7 +2265,7 @@ msgid "Failed to delete group"
 msgstr "Ошибка при удалении группы"
 
 #: ui/web/inv/inv/plugins/comment/CommentPanel.js:96
-#: ui/web/inv/map/MapPanel.js:581
+#: ui/web/inv/map/MapPanel.js:587
 msgid "Failed to save data"
 msgstr "Ошибка при сохранении данных"
 
@@ -2192,14 +2318,14 @@ msgstr ""
 
 #: ui/web/inv/inv/plugins/conduits/ConduitsForm.js:289
 msgid "Failed to save conduits"
-msgstr "Ошибка при сохранении связей."
+msgstr "Ошибка при сохранении связей"
 
 #: ui/web/inv/inv/plugins/conduits/ConduitsLayoutPanel.js:26
 #: ui/web/inv/inv/plugins/conduits/CreateBlockForm.js:11
 msgid "Create Block"
 msgstr "Создать блок"
 
-#: ui/web/fm/alarmclass/Application.js:335 ui/web/inv/interface/LAGPanel.js:35
+#: ui/web/fm/alarmclass/Application.js:340 ui/web/inv/interface/LAGPanel.js:35
 #: ui/web/inv/inv/plugins/conduits/CreateBlockForm.js:26
 #: ui/web/sa/managedobject/LAGPanel.js:35
 msgid "Count"
@@ -2308,7 +2434,7 @@ msgstr "Серийный №"
 #: ui/web/cm/validationpolicy/Application.js:23
 #: ui/web/cm/validationpolicy/Application.js:44
 #: ui/web/cm/validationrule/Application.js:58
-#: ui/web/cm/validationrule/Application.js:84
+#: ui/web/cm/validationrule/Application.js:84 ui/web/core/filter/Filter.js:45
 #: ui/web/crm/subscriber/Application.js:24
 #: ui/web/crm/subscriber/Application.js:47
 #: ui/web/crm/subscriberprofile/Application.js:38
@@ -2323,10 +2449,10 @@ msgstr "Серийный №"
 #: ui/web/dns/dnszoneprofile/Application.js:51
 #: ui/web/fm/alarmclass/Application.js:36
 #: ui/web/fm/alarmclass/Application.js:60
-#: ui/web/fm/alarmclass/Application.js:160
-#: ui/web/fm/alarmclass/Application.js:189
-#: ui/web/fm/alarmclass/Application.js:219
-#: ui/web/fm/alarmclass/Application.js:308
+#: ui/web/fm/alarmclass/Application.js:161
+#: ui/web/fm/alarmclass/Application.js:190
+#: ui/web/fm/alarmclass/Application.js:220
+#: ui/web/fm/alarmclass/Application.js:309
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:24
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:46
 #: ui/web/fm/alarmescalation/Application.js:27
@@ -2378,7 +2504,7 @@ msgstr "Серийный №"
 #: ui/web/inv/modelinterface/Application.js:48
 #: ui/web/inv/modelinterface/Application.js:67
 #: ui/web/inv/networksegment/Application.js:51
-#: ui/web/inv/networksegment/Application.js:92
+#: ui/web/inv/networksegment/Application.js:97
 #: ui/web/inv/objectmodel/Application.js:65
 #: ui/web/inv/objectmodel/Application.js:103
 #: ui/web/inv/objectmodel/Application.js:155
@@ -2417,6 +2543,7 @@ msgstr "Серийный №"
 #: ui/web/main/timepattern/Application.js:19
 #: ui/web/main/timepattern/Application.js:33
 #: ui/web/main/userprofile/Application.js:25
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:48
 #: ui/web/maintainance/maintainancetype/Application.js:20
 #: ui/web/maintainance/maintainancetype/Application.js:41
 #: ui/web/peer/asset/Application.js:19 ui/web/peer/asset/Application.js:45
@@ -2441,7 +2568,7 @@ msgstr "Серийный №"
 #: ui/web/sa/actioncommands/Application.js:31
 #: ui/web/sa/actioncommands/Application.js:58
 #: ui/web/sa/administrativedomain/Application.js:20
-#: ui/web/sa/administrativedomain/Application.js:53
+#: ui/web/sa/administrativedomain/Application.js:54
 #: ui/web/sa/authprofile/Application.js:17
 #: ui/web/sa/authprofile/Application.js:48
 #: ui/web/sa/commandsnippet/Application.js:19
@@ -2460,8 +2587,7 @@ msgstr "Серийный №"
 #: ui/web/sa/managedobjectselector/ObjectsPanel.js:37
 #: ui/web/sa/mrtconfig/Application.js:20 ui/web/sa/mrtconfig/Application.js:59
 #: ui/web/sa/profilecheckrule/Application.js:87
-#: ui/web/sa/runcommands/Application.js:69
-#: ui/web/sa/runcommands/Application.js:128
+#: ui/web/sa/runcommands/Application.js:71
 #: ui/web/sa/serviceprofile/Application.js:38
 #: ui/web/sa/serviceprofile/Application.js:63
 #: ui/web/sa/terminationgroup/Application.js:24
@@ -2482,8 +2608,8 @@ msgstr "Имя"
 
 #: ui/web/cm/validationpolicysettings/ValidationSettingsPanel.js:64
 #: ui/web/cm/validationrule/HitsPanel.js:19 ui/web/core/ApplicationPanel.js:38
-#: ui/web/core/JSONPreview.js:24 ui/web/core/ModelApplication.js:446
-#: ui/web/core/ModelApplication.js:1452 ui/web/core/Preview.js:41
+#: ui/web/core/JSONPreview.js:24 ui/web/core/ModelApplication.js:462
+#: ui/web/core/ModelApplication.js:1481 ui/web/core/Preview.js:41
 #: ui/web/core/RepoPreview.js:172 ui/web/core/TemplatePreview.js:27
 #: ui/web/fm/alarm/AlarmPanel.js:273
 #: ui/web/fm/classificationrule/TestForm.js:31
@@ -2506,12 +2632,12 @@ msgstr "Имя"
 msgid "Close"
 msgstr "Закрыть"
 
-#: ui/web/core/M2MField.js:27 ui/web/core/ModelApplication.js:135
-#: ui/web/core/ModelApplication.js:547
+#: ui/web/core/M2MField.js:27 ui/web/core/ModelApplication.js:147
+#: ui/web/core/ModelApplication.js:563
 #: ui/web/inv/inv/plugins/conduits/ConduitsForm.js:41
 #: ui/web/inv/inv/plugins/map/AddObjectForm.js:52
 #: ui/web/inv/inv/plugins/map/MapPanel.js:518 ui/web/inv/map/Maintainance.js:47
-#: ui/web/main/userprofile/Application.js:81 ui/web/ux/form/DictField.js:25
+#: ui/web/main/userprofile/Application.js:85 ui/web/ux/form/DictField.js:25
 #: ui/web/ux/form/GridField.js:40 ui/web/ux/form/ModelDataField.js:63
 #: ui/web/ux/form/MultiIntervalField.js:36 ui/web/ux/form/StringsField.js:25
 #: ui/web/wf/workflow/WFEditor.js:99 ui/web/wf/workflow/WFEditor.js:100
@@ -2526,7 +2652,7 @@ msgstr "Создать новый"
 #: ui/web/inv/inv/plugins/data/DataPanel.js:122
 #: ui/web/inv/inv/plugins/map/AddObjectForm.js:97
 #: ui/web/inv/inv/plugins/rack/RackPanel.js:227
-#: ui/web/main/userprofile/Application.js:215
+#: ui/web/main/userprofile/Application.js:221
 msgid "Failed to save"
 msgstr "Ошибка сохранения"
 
@@ -2597,7 +2723,7 @@ msgstr "Стойка"
 #: ui/web/core/QuickRepoPreview.js:95 ui/web/core/QuickRepoPreview.js:96
 #: ui/web/core/RepoPreview.js:95 ui/web/core/RepoPreview.js:96
 #: ui/web/inv/inv/Application.js:36 ui/web/inv/inv/plugins/rack/RackPanel.js:26
-#: ui/web/inv/map/Application.js:59
+#: ui/web/inv/map/Application.js:60
 msgid "Reload"
 msgstr "Перезагрузить"
 
@@ -2669,65 +2795,69 @@ msgstr "История MAC адресов не найдена"
 msgid "Failed to get MAC history"
 msgstr "Ошибка при получении истории MAC адресов"
 
-#: ui/web/inv/map/Application.js:38
+#: ui/web/inv/map/Application.js:39
 msgid "Select segment..."
 msgstr "Выберите сегмент..."
 
-#: ui/web/inv/map/Application.js:68
+#: ui/web/inv/map/Application.js:69
 msgid "Edit map"
 msgstr "Редактировать карту"
 
-#: ui/web/inv/map/Application.js:75
+#: ui/web/inv/map/Application.js:76
 msgid "Rotate"
 msgstr "Повернуть"
 
-#: ui/web/inv/map/Application.js:91
+#: ui/web/inv/map/Application.js:92
 msgid "Revert"
 msgstr "Отменить"
 
-#: ui/web/inv/map/Application.js:99
+#: ui/web/inv/map/Application.js:100
 msgid "New layout"
 msgstr "Новая раскладка"
 
-#: ui/web/inv/map/Application.js:107
+#: ui/web/inv/map/Application.js:108
 msgid "Name/IP device"
 msgstr "Имя/IP устройства"
 
-#: ui/web/inv/map/Application.js:220
+#: ui/web/inv/map/Application.js:221
 msgid "Show static map"
 msgstr "Статичная карта"
 
-#: ui/web/inv/map/Application.js:231
+#: ui/web/inv/map/Application.js:232
 msgid "Show interface load"
 msgstr "Загрузка интерфейсов"
 
-#: ui/web/inv/map/Application.js:243
+#: ui/web/inv/map/Application.js:244
 msgid "Show STP topology"
 msgstr "Топология STP"
 
-#: ui/web/inv/map/Application.js:250
+#: ui/web/inv/map/Application.js:253
+msgid "Show all nodes"
+msgstr ""
+
+#: ui/web/inv/map/Application.js:260
 msgid "Show/Hide legend"
 msgstr "Показать/Скрыть легенду"
 
-#: ui/web/inv/map/Application.js:260
+#: ui/web/inv/map/Application.js:270
 msgid "Show/Hide miniMap"
 msgstr "Показать/Скрыть миникарту"
 
-#: ui/web/inv/map/Application.js:271
+#: ui/web/inv/map/Application.js:281
 msgid "Show/Hide basket"
-msgstr "Показать/Скрыть тележку"
+msgstr "Показать/Скрыть корзину"
 
-#: ui/web/inv/map/Application.js:433
+#: ui/web/inv/map/Application.js:444
 msgid "Reset Layout"
 msgstr "Сбросить раскладку"
 
-#: ui/web/inv/map/Application.js:434
+#: ui/web/inv/map/Application.js:445
 msgid "Would you like to reset current layout and generate new?"
 msgstr "Сбросить раскладку карты и перестроить заново?"
 
 #: ui/web/inv/map/Basket.js:27
 msgid "basket empty"
-msgstr "тележка пуста"
+msgstr "корзина пуста"
 
 #: ui/web/inv/map/Basket.js:40
 msgid "Delete object(s)"
@@ -2740,6 +2870,13 @@ msgstr "Добавить в существующий РНР"
 #: ui/web/inv/map/Basket.js:58 ui/web/inv/map/MapPanel.js:159
 msgid "Create new maintaince"
 msgstr "Создать новый РНР"
+
+#: ui/web/core/ModelApplication.js:157 ui/web/inv/map/Basket.js:67
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:29
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:30
+#: ui/web/sa/getnow/SelectionGrid.js:112
+msgid "Export"
+msgstr "Экспорт"
 
 #: ui/web/inv/map/Legend.js:17
 msgid "Legend"
@@ -2759,13 +2896,13 @@ msgstr "Стиль полосы пропускания линка"
 
 #: ui/web/inv/map/Legend.js:79
 msgid "data unavailable"
-msgstr "данные недоступны"
+msgstr "данные не доступны"
 
 #: ui/web/inv/map/Legend.js:107
 msgid "Link utilization style"
 msgstr "Стиль заргрузки линка"
 
-#: ui/web/inv/map/Legend.js:149 ui/web/inv/map/MapPanel.js:397
+#: ui/web/inv/map/Legend.js:149 ui/web/inv/map/MapPanel.js:403
 msgid ""
 msgstr ""
 
@@ -2783,7 +2920,7 @@ msgstr ""
 
 #: ui/web/inv/map/Legend.js:171
 msgid "oper down"
-msgstr "порт в дауне"
+msgstr "соединение отсутствует"
 
 #: ui/web/inv/map/Legend.js:181
 msgid ""
@@ -2845,19 +2982,19 @@ msgstr "Добавить в группу"
 msgid "Add all objects to group"
 msgstr "Добавить все объекты в группу"
 
-#: ui/web/inv/map/MapPanel.js:576
+#: ui/web/inv/map/MapPanel.js:582
 msgid "Map has been saved"
 msgstr "Карта будет сохранена"
 
-#: ui/web/inv/map/MapPanel.js:877
+#: ui/web/inv/map/MapPanel.js:883
 msgid "Failed to reset layout"
 msgstr "Ошибка при сбросе уровня"
 
-#: ui/web/inv/map/MapPanel.js:946
+#: ui/web/inv/map/MapPanel.js:952
 msgid "created from map at "
 msgstr "Создано из схемы сегмента для объекта "
 
-#: ui/web/inv/map/MapPanel.js:1044
+#: ui/web/inv/map/MapPanel.js:1050
 msgid "Failed to get STP status"
 msgstr "Ошибка получения статуса STP"
 
@@ -2869,7 +3006,7 @@ msgstr "Выбрать изображение"
 #: ui/web/sa/managedobject/Application.js:362
 #: ui/web/sa/managedobjectprofile/Application.js:178
 msgid "Shape"
-msgstr "Иконка"
+msgstr "Изображение"
 
 #: ui/web/inv/map/SelectIconForm.js:43
 msgid "Set"
@@ -2945,20 +3082,20 @@ msgstr "Поздно"
 msgid "Lag"
 msgstr "Опоздание"
 
-#: ui/web/inv/networksegment/Application.js:29
+#: ui/web/inv/networksegment/Application.js:28
 msgid "Effective Settings"
 msgstr "Действующие настройки"
 
 #: ui/web/fm/alarm/AlarmPanel.js:246 ui/web/fm/event/EventPanel.js:198
-#: ui/web/inv/networksegment/Application.js:36
+#: ui/web/inv/networksegment/Application.js:35
 #: ui/web/sa/managedobject/Application.js:78
 msgid "Show Map"
 msgstr "Карта"
 
 #: ui/web/gis/division/Application.js:48 ui/web/gis/division/Application.js:73
 #: ui/web/gis/street/Application.js:41 ui/web/gis/street/Application.js:56
-#: ui/web/inv/networksegment/Application.js:45
-#: ui/web/inv/networksegment/Application.js:99
+#: ui/web/inv/networksegment/Application.js:44
+#: ui/web/inv/networksegment/Application.js:104
 #: ui/web/ip/prefix/Application.js:33
 #: ui/web/sa/administrativedomain/Application.js:25
 #: ui/web/sa/administrativedomain/Application.js:59
@@ -2975,11 +3112,12 @@ msgstr "Родитель"
 #: ui/web/dns/dnszone/Application.js:75 ui/web/dns/dnszone/Application.js:132
 #: ui/web/dns/dnszone/Application.js:183
 #: ui/web/inv/networksegment/Application.js:61
-#: ui/web/inv/networksegment/Application.js:131
+#: ui/web/inv/networksegment/Application.js:146
 #: ui/web/ip/address/Application.js:86 ui/web/ip/addressrange/Application.js:71
 #: ui/web/ip/addressrange/Application.js:151 ui/web/ip/prefix/Application.js:75
 #: ui/web/ip/vrf/Application.js:64 ui/web/ip/vrf/Application.js:128
 #: ui/web/ip/vrfgroup/Application.js:45 ui/web/ip/vrfgroup/Application.js:82
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:74
 #: ui/web/peer/asset/Application.js:35 ui/web/peer/asset/Application.js:96
 #: ui/web/peer/peer/Application.js:94 ui/web/peer/peer/Application.js:341
 #: ui/web/sa/commandsnippet/Application.js:56
@@ -2999,13 +3137,38 @@ msgstr "Отказоустойчивый"
 msgid "Obj."
 msgstr "Объект"
 
-#: ui/web/inv/networksegment/Application.js:113
+#: ui/web/inv/networksegment/Application.js:87
+#: ui/web/inv/networksegment/Application.js:140
+msgid "Max Links"
+msgstr ""
+
+#: ui/web/inv/networksegment/Application.js:103
+#: ui/web/sa/administrativedomain/Application.js:61
+msgid "Select parent..."
+msgstr "Выбрать родителя..."
+
+#: ui/web/inv/networksegment/Application.js:119
+msgid "Select sibling..."
+msgstr ""
+
+#: ui/web/inv/networksegment/Application.js:120
 msgid "Sibling"
 msgstr "Родственники"
 
-#: ui/web/inv/networksegment/Application.js:120
+#: ui/web/inv/networksegment/Application.js:129
 msgid "Settings"
 msgstr "Настройки"
+
+#: ui/web/inv/networksegment/Application.js:172
+#: ui/web/sa/managedobject/Application.js:785
+msgid "By Segment"
+msgstr "По сегменту"
+
+#: ui/web/inv/networksegment/Application.js:182
+#: ui/web/phone/phonerange/Application.js:181
+#: ui/web/sa/administrativedomain/Application.js:92
+msgid "Parent filter"
+msgstr "Фильтр по родителю"
 
 #: ui/web/inv/objectmodel/Application.js:28
 msgid "By Vendor"
@@ -3043,7 +3206,7 @@ msgstr "Направление"
 
 #: ui/web/inv/objectmodel/Application.js:187
 msgid "Gender"
-msgstr "Мама/Папа"
+msgstr "Тип соединителя"
 
 #: ui/web/inv/objectmodel/Application.js:200
 msgid "Cross"
@@ -3079,6 +3242,7 @@ msgstr "Проверка совместимых типов"
 #: ui/web/inv/objectmodel/Application.js:120
 #: ui/web/inv/unknownmodel/Application.js:28
 #: ui/web/sa/managedobject/scripts/ShowInventory.js:29
+#: ui/web/sa/reportobjectdetail/Application.js:31
 msgid "Vendor"
 msgstr "Производитель"
 
@@ -3115,12 +3279,13 @@ msgstr "Префикс"
 #: ui/web/gis/building/Application.js:25 ui/web/gis/building/Application.js:46
 #: ui/web/ip/address/Application.js:50
 #: ui/web/main/authldapdomain/Application.js:123
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:64
 #: ui/web/peer/organisation/Application.js:60
 #: ui/web/peer/person/Application.js:71
 #: ui/web/sa/managedobject/Application.js:250
 #: ui/web/sa/managedobject/Application.js:448
 #: ui/web/sa/managedobjectselector/ObjectsPanel.js:62
-#: ui/web/sa/monitor/ScriptsPanel.js:46 ui/web/sa/runcommands/Application.js:74
+#: ui/web/sa/monitor/ScriptsPanel.js:46 ui/web/sa/runcommands/Application.js:76
 msgid "Address"
 msgstr "Адрес"
 
@@ -3258,16 +3423,16 @@ msgstr ""
 
 #: ui/web/fm/alarm/AlarmPanel.js:103 ui/web/fm/alarm/Application.js:154
 #: ui/web/fm/event/Application.js:106 ui/web/fm/event/EventPanel.js:95
-#: ui/web/fm/reportalarmdetail/Application.js:26
-#: ui/web/fm/reportalarmdetail/Application.js:113
+#: ui/web/fm/reportalarmdetail/Application.js:27
+#: ui/web/fm/reportalarmdetail/Application.js:128
 #: ui/web/ip/ippool/Application.js:57
 msgid "From"
 msgstr "С"
 
 #: ui/web/fm/alarm/AlarmPanel.js:109 ui/web/fm/alarm/Application.js:164
 #: ui/web/fm/event/Application.js:117 ui/web/fm/event/EventPanel.js:101
-#: ui/web/fm/reportalarmdetail/Application.js:27
-#: ui/web/fm/reportalarmdetail/Application.js:122
+#: ui/web/fm/reportalarmdetail/Application.js:28
+#: ui/web/fm/reportalarmdetail/Application.js:137
 #: ui/web/ip/ippool/Application.js:62
 msgid "To"
 msgstr "По"
@@ -3327,7 +3492,7 @@ msgstr "сервис"
 
 #: ui/web/ip/prefix/Application.js:117
 msgid "site"
-msgstr "свйт"
+msgstr "сайт"
 
 #: ui/web/ip/prefix/Application.js:123
 msgid "is primary"
@@ -3399,7 +3564,7 @@ msgstr ""
 
 #: ui/web/ip/vrf/Application.js:85 ui/web/ip/vrfgroup/Application.js:54
 msgid "VRF Group"
-msgstr "Группа VRF"
+msgstr "VRF группа"
 
 #: ui/web/ip/vrf/Application.js:146 ui/web/vc/vc/Application.js:30
 msgid "By State"
@@ -3407,15 +3572,15 @@ msgstr "По состоянию"
 
 #: ui/web/ip/vrf/Application.js:152
 msgid "By VRF Group"
-msgstr ""
+msgstr "По VRF группе"
 
 #: ui/web/ip/vrf/Application.js:164
 msgid "By IPv4"
-msgstr ""
+msgstr "По IPv4"
 
 #: ui/web/ip/vrf/Application.js:169
 msgid "By IPv6"
-msgstr ""
+msgstr "По IPv6"
 
 #: ui/web/ip/vrf/Application.js:184
 msgid "Import VRFs"
@@ -3447,10 +3612,10 @@ msgstr "Импорт"
 msgid "Select VRFs to import"
 msgstr "Выбрать VRF для импорта"
 
-#: ui/web/core/M2MField.js:34 ui/web/core/ModelApplication.js:465
-#: ui/web/core/ModelApplication.js:558
+#: ui/web/core/M2MField.js:34 ui/web/core/ModelApplication.js:481
+#: ui/web/core/ModelApplication.js:574
 #: ui/web/inv/inv/plugins/file/FilePanel.js:35
-#: ui/web/ip/vrf/VRFImportForm.js:75 ui/web/main/userprofile/Application.js:92
+#: ui/web/ip/vrf/VRFImportForm.js:75 ui/web/main/userprofile/Application.js:96
 #: ui/web/ux/form/DictField.js:32 ui/web/ux/form/GridField.js:47
 #: ui/web/ux/form/ModelDataField.js:69 ui/web/ux/form/StringsField.js:32
 #: ui/web/vc/vc/AddInterfacesForm.js:77 ui/web/vc/vc/VCImportForm.js:60
@@ -3524,6 +3689,7 @@ msgid "Use TLS"
 msgstr "Использовать TLS"
 
 #: ui/web/main/authldapdomain/Application.js:145
+#: ui/web/main/userprofile/Application.js:38
 msgid "Groups"
 msgstr "Группы"
 
@@ -3536,14 +3702,14 @@ msgid "Local Group"
 msgstr "Локальная группа"
 
 #: ui/web/cm/validationpolicysettings/ValidationSettingsPanel.js:72
-#: ui/web/core/ModelApplication.js:434 ui/web/core/ModelApplication.js:1443
+#: ui/web/core/ModelApplication.js:450 ui/web/core/ModelApplication.js:1472
 #: ui/web/inv/inv/AddObjectForm.js:69
 #: ui/web/inv/inv/plugins/comment/CommentPanel.js:38
 #: ui/web/inv/inv/plugins/conduits/ConduitsForm.js:33
-#: ui/web/inv/map/Application.js:83 ui/web/ip/vrf/VRFImportForm.js:112
+#: ui/web/inv/map/Application.js:84 ui/web/ip/vrf/VRFImportForm.js:112
 #: ui/web/main/config/Application.js:41
 #: ui/web/main/jsonimport/Application.js:18
-#: ui/web/main/userprofile/Application.js:156
+#: ui/web/main/userprofile/Application.js:161
 #: ui/web/support/account/AccountPanel.js:53
 #: ui/web/support/account/SystemPanel.js:25 ui/web/vc/vc/VCImportForm.js:77
 #: ui/web/wf/workflow/WFEditor.js:63
@@ -3563,7 +3729,7 @@ msgstr "Секция"
 msgid "Key"
 msgstr "Ключ"
 
-#: ui/web/fm/alarmclass/Application.js:172 ui/web/gis/layer/Application.js:128
+#: ui/web/fm/alarmclass/Application.js:173 ui/web/gis/layer/Application.js:128
 #: ui/web/main/config/Application.js:76
 #: ui/web/main/resourcestate/Application.js:35
 #: ui/web/main/resourcestate/Application.js:86
@@ -3571,6 +3737,7 @@ msgstr "Ключ"
 msgid "Default"
 msgstr "По умолчанию"
 
+#: ui/web/core/filter/Filter.js:219 ui/web/core/filter/Filter.js:262
 #: ui/web/fm/alarm/plugins/Thresholds.js:47
 #: ui/web/fm/classificationrule/Application.js:149
 #: ui/web/fm/monitor/Application.js:46
@@ -3840,7 +4007,7 @@ msgid "Other"
 msgstr "Другие"
 
 #: ui/web/main/notificationgroup/Application.js:79
-#: ui/web/main/userprofile/Application.js:58
+#: ui/web/main/userprofile/Application.js:62
 #: ui/web/sa/managedobject/LinksPanel.js:56
 #: ui/web/sa/profilecheckrule/Application.js:50
 #: ui/web/sa/profilecheckrule/Application.js:120
@@ -3848,7 +4015,7 @@ msgid "Method"
 msgstr "Метод"
 
 #: ui/web/main/notificationgroup/Application.js:93
-#: ui/web/main/userprofile/Application.js:64
+#: ui/web/main/userprofile/Application.js:68
 #: ui/web/sa/action/Application.js:102 ui/web/wf/workflow/WFInspector.js:29
 msgid "Params"
 msgstr "Параметры"
@@ -3894,7 +4061,7 @@ msgstr "Поставка"
 msgid "Step to"
 msgstr "Шагнуть в"
 
-#: ui/web/fm/alarmclass/Application.js:201 ui/web/main/search/Application.js:15
+#: ui/web/fm/alarmclass/Application.js:202 ui/web/main/search/Application.js:15
 msgid "Search"
 msgstr "Поиск"
 
@@ -3914,8 +4081,9 @@ msgstr "Поиск завершен"
 msgid "Failed to search"
 msgstr "Ошибка поиска"
 
-#: ui/web/core/ModelApplication.js:1313 ui/web/fm/alarm/Application.js:687
+#: ui/web/core/ModelApplication.js:1342 ui/web/fm/alarm/Application.js:693
 #: ui/web/main/search/Application.js:106
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:111
 #: ui/web/sa/managedobjectselector/ObjectsPanel.js:108
 msgid "Total: "
 msgstr "Итого:"
@@ -3988,20 +4156,20 @@ msgstr "Почта"
 msgid "Language"
 msgstr "Язык"
 
-#: ui/web/main/userprofile/Application.js:139
+#: ui/web/main/userprofile/Application.js:144
 msgid "Notification Contacts"
 msgstr "Контакты"
 
-#: ui/web/main/userprofile/Application.js:209
+#: ui/web/main/userprofile/Application.js:215
 msgid "Profile saved"
 msgstr "Профиль сохранен"
 
-#: ui/web/main/userprofile/Application.js:211
+#: ui/web/main/userprofile/Application.js:217
 msgid "Changing language"
 msgstr "Смена языка"
 
 #: ui/web/fm/alarm/AlarmPanel.js:260
-#: ui/web/maintainance/maintainance/Application.js:23
+#: ui/web/maintainance/maintainance/Application.js:27
 #: ui/web/phone/dialplan/Application.js:20
 #: ui/web/phone/phonenumber/Application.js:48
 #: ui/web/phone/phonerange/Application.js:26
@@ -4010,6 +4178,11 @@ msgstr "Смена языка"
 #: ui/web/sa/managedobjectprofile/Application.js:196
 msgid "Card"
 msgstr "Карточка"
+
+#: ui/web/fm/reportalarmdetail/Application.js:34
+#: ui/web/maintainance/maintainance/Application.js:34
+msgid "Affected Objects"
+msgstr "Накрыто Объектов"
 
 #: ui/web/dns/dnszone/Application.js:155
 #: ui/web/fm/eventclass/Application.js:161
@@ -4024,8 +4197,8 @@ msgstr "Карточка"
 #: ui/web/main/authldapdomain/Application.js:55
 #: ui/web/main/customfield/Application.js:37
 #: ui/web/main/customfield/Application.js:95
-#: ui/web/maintainance/maintainance/Application.js:32
-#: ui/web/maintainance/maintainance/Application.js:76
+#: ui/web/maintainance/maintainance/Application.js:43
+#: ui/web/maintainance/maintainance/Application.js:87
 #: ui/web/peer/community/Application.js:23
 #: ui/web/peer/community/Application.js:45 ui/web/peer/person/Application.js:29
 #: ui/web/peer/person/Application.js:54
@@ -4045,21 +4218,21 @@ msgid "Type"
 msgstr "Тип"
 
 #: ui/web/inv/map/Maintainance.js:114
-#: ui/web/maintainance/maintainance/Application.js:38
-#: ui/web/maintainance/maintainance/Application.js:86
+#: ui/web/maintainance/maintainance/Application.js:49
+#: ui/web/maintainance/maintainance/Application.js:97
 #: ui/web/sa/monitor/ScriptsPanel.js:50
 msgid "Start"
 msgstr "Начало"
 
 #: ui/web/fm/alarmescalation/Application.js:167
 #: ui/web/fm/eventclass/Application.js:234 ui/web/inv/map/Maintainance.js:119
-#: ui/web/maintainance/maintainance/Application.js:43
-#: ui/web/maintainance/maintainance/Application.js:110
+#: ui/web/maintainance/maintainance/Application.js:54
+#: ui/web/maintainance/maintainance/Application.js:121
 msgid "Stop"
 msgstr "Окончание"
 
-#: ui/web/maintainance/maintainance/Application.js:48
-#: ui/web/maintainance/maintainance/Application.js:130
+#: ui/web/maintainance/maintainance/Application.js:59
+#: ui/web/maintainance/maintainance/Application.js:141
 msgid "Completed"
 msgstr "Завершен"
 
@@ -4070,9 +4243,9 @@ msgstr "Завершен"
 #: ui/web/fm/eventtrigger/Application.js:97
 #: ui/web/main/notificationgroup/Application.js:52
 #: ui/web/main/notificationgroup/Application.js:72
-#: ui/web/main/userprofile/Application.js:51
-#: ui/web/maintainance/maintainance/Application.js:54
-#: ui/web/maintainance/maintainance/Application.js:147
+#: ui/web/main/userprofile/Application.js:55
+#: ui/web/maintainance/maintainance/Application.js:65
+#: ui/web/maintainance/maintainance/Application.js:158
 #: ui/web/sa/managedobject/Application.js:475
 msgid "Time Pattern"
 msgstr "Маска времени"
@@ -4084,8 +4257,8 @@ msgstr "Маска времени"
 #: ui/web/main/reportsubscription/Application.js:74
 #: ui/web/main/template/Application.js:24
 #: ui/web/main/template/Application.js:40
-#: ui/web/maintainance/maintainance/Application.js:60
-#: ui/web/maintainance/maintainance/Application.js:70
+#: ui/web/maintainance/maintainance/Application.js:71
+#: ui/web/maintainance/maintainance/Application.js:81
 #: ui/web/sa/managedobject/AlarmPanel.js:60
 msgid "Subject"
 msgstr "Тема"
@@ -4105,8 +4278,8 @@ msgstr "Тема"
 #: ui/web/dns/dnszone/Application.js:90
 #: ui/web/dns/dnszoneprofile/Application.js:129
 #: ui/web/fm/alarmclass/Application.js:47
-#: ui/web/fm/alarmclass/Application.js:87
-#: ui/web/fm/alarmclass/Application.js:166
+#: ui/web/fm/alarmclass/Application.js:88
+#: ui/web/fm/alarmclass/Application.js:167
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:88
 #: ui/web/fm/alarmescalation/Application.js:43
 #: ui/web/fm/alarmseverity/Application.js:43
@@ -4146,7 +4319,7 @@ msgstr "Тема"
 #: ui/web/inv/modelmapping/Application.js:50
 #: ui/web/inv/modelmapping/Application.js:94
 #: ui/web/inv/networksegment/Application.js:56
-#: ui/web/inv/networksegment/Application.js:106
+#: ui/web/inv/networksegment/Application.js:113
 #: ui/web/inv/objectmodel/Application.js:94
 #: ui/web/inv/objectmodel/Application.js:115
 #: ui/web/inv/objectmodel/Application.js:219
@@ -4174,7 +4347,8 @@ msgstr "Тема"
 #: ui/web/main/systemtemplate/Application.js:42
 #: ui/web/main/timepattern/Application.js:24
 #: ui/web/main/timepattern/Application.js:39
-#: ui/web/maintainance/maintainance/Application.js:135
+#: ui/web/maintainance/maintainance/Application.js:146
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:69
 #: ui/web/maintainance/maintainancetype/Application.js:31
 #: ui/web/maintainance/maintainancetype/Application.js:48
 #: ui/web/peer/asset/Application.js:24 ui/web/peer/asset/Application.js:54
@@ -4204,8 +4378,8 @@ msgstr "Тема"
 #: ui/web/project/project/Application.js:64 ui/web/sa/action/Application.js:46
 #: ui/web/sa/action/Application.js:80 ui/web/sa/action/Application.js:143
 #: ui/web/sa/actioncommands/Application.js:77
-#: ui/web/sa/administrativedomain/Application.js:44
-#: ui/web/sa/administrativedomain/Application.js:66
+#: ui/web/sa/administrativedomain/Application.js:45
+#: ui/web/sa/administrativedomain/Application.js:69
 #: ui/web/sa/authprofile/Application.js:39
 #: ui/web/sa/authprofile/Application.js:54
 #: ui/web/sa/commandsnippet/Application.js:33
@@ -4237,22 +4411,22 @@ msgstr "Тема"
 msgid "Description"
 msgstr "Описание"
 
-#: ui/web/maintainance/maintainance/Application.js:141
+#: ui/web/maintainance/maintainance/Application.js:152
 msgid "Contacts"
 msgstr "Контакты"
 
-#: ui/web/maintainance/maintainance/Application.js:153
+#: ui/web/maintainance/maintainance/Application.js:164
 msgid "Suppress alarms"
 msgstr "Подавлять аварии"
 
-#: ui/web/maintainance/maintainance/Application.js:158
+#: ui/web/maintainance/maintainance/Application.js:169
 msgid "Escalate to"
 msgstr "Эскалировать на (объект)"
 
 #: ui/web/cm/validationrule/Application.js:135
-#: ui/web/fm/alarm/Application.js:431
-#: ui/web/maintainance/maintainance/Application.js:164
-#: ui/web/sa/administrativedomain/Application.js:37
+#: ui/web/fm/alarm/Application.js:437
+#: ui/web/maintainance/maintainance/Application.js:175
+#: ui/web/sa/administrativedomain/Application.js:38
 #: ui/web/sa/managedobjectprofile/Application.js:127
 msgid "Objects"
 msgstr "Объекты"
@@ -4264,23 +4438,36 @@ msgstr "Объекты"
 #: ui/web/inv/coverage/Application.js:79 ui/web/inv/interface/LinkForm.js:41
 #: ui/web/inv/inv/plugins/log/LogPanel.js:58
 #: ui/web/inv/unknownmodel/Application.js:18
-#: ui/web/maintainance/maintainance/Application.js:167
+#: ui/web/maintainance/maintainance/Application.js:178
 #: ui/web/sa/managedobject/LinkForm.js:57 ui/web/sa/monitor/ScriptsPanel.js:42
 msgid "Object"
 msgstr "Объект"
 
-#: ui/web/maintainance/maintainance/Application.js:178
+#: ui/web/maintainance/maintainance/Application.js:189
 msgid "Segments"
 msgstr "Сегменты"
 
 #: ui/web/fm/alarm/Application.js:132 ui/web/fm/alarm/Application.js:263
-#: ui/web/fm/reportalarmdetail/Application.js:130
+#: ui/web/fm/reportalarmdetail/Application.js:145
 #: ui/web/inv/map/Application.js:34
-#: ui/web/maintainance/maintainance/Application.js:181
+#: ui/web/maintainance/maintainance/Application.js:192
 #: ui/web/sa/managedobject/Application.js:211
 #: ui/web/sa/managedobject/Application.js:389
+#: ui/web/sa/reportobjectdetail/Application.js:37
+#: ui/web/sa/reportobjectdetail/Application.js:103
 msgid "Segment"
 msgstr "Сегмент"
+
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:53
+#: ui/web/sa/managedobject/Application.js:205
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:42
+msgid "Managed"
+msgstr "Управляем"
+
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:109
+#: ui/web/sa/managedobjectselector/ObjectsPanel.js:106
+msgid "objects"
+msgstr ""
 
 #: ui/web/maintainance/maintainancetype/Application.js:55
 msgid "Suppress Alarms"
@@ -4349,7 +4536,7 @@ msgstr ""
 #: ui/web/peer/peeringpoint/Application.js:31
 #: ui/web/peer/peeringpoint/Application.js:67
 msgid "Local AS"
-msgstr ""
+msgstr "Локальная AS"
 
 #: ui/web/peer/peer/Application.js:45 ui/web/peer/peer/Application.js:144
 msgid "Remote AS"
@@ -4365,7 +4552,7 @@ msgstr ""
 
 #: ui/web/peer/peer/Application.js:69
 msgid "Local Address"
-msgstr ""
+msgstr "Локальный адрес"
 
 #: ui/web/peer/peer/Application.js:74
 msgid "Remote Address"
@@ -4373,7 +4560,7 @@ msgstr ""
 
 #: ui/web/peer/peer/Application.js:181
 msgid "Local IP"
-msgstr ""
+msgstr "Локальный IP"
 
 #: ui/web/peer/peer/Application.js:186
 msgid "Local Backup IP"
@@ -4494,8 +4681,12 @@ msgid "AS or AS-set"
 msgstr ""
 
 #: ui/web/peer/prefixlistbuilder/Application.js:70
-msgid "Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET, AS-MEGA-SET)"
-msgstr "Введите список валидных номеров AS (н-р, AS1234) или набора (н-р. ex. AS-MEGASET, AS-MEGA-SET)"
+msgid ""
+"Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET, AS-"
+"MEGA-SET)"
+msgstr ""
+"Введите список валидных номеров AS (н-р, AS1234) или набора (н-р. ex. AS-"
+"MEGASET, AS-MEGA-SET)"
 
 #: ui/web/gis/building/Application.js:209
 #: ui/web/peer/prefixlistbuilder/Application.js:77
@@ -4628,10 +4819,6 @@ msgstr ""
 msgid "By Project"
 msgstr "По Проекту"
 
-#: ui/web/phone/phonerange/Application.js:181
-msgid "Parent filter"
-msgstr "Фильтр по родителю"
-
 #: ui/web/phone/phonerangeprofile/Application.js:52
 msgid "Cooldown"
 msgstr ""
@@ -4654,7 +4841,7 @@ msgstr "Стиль"
 
 #: ui/web/pm/metrictype/Application.js:79
 msgid "Measure"
-msgstr ""
+msgstr "Единицы измерения"
 
 #: ui/web/project/project/Application.js:23
 msgid "Resources"
@@ -4698,6 +4885,7 @@ msgstr "Уровень доступа"
 #: ui/web/fm/eventtrigger/Application.js:127
 #: ui/web/fm/ttsystem/Application.js:25 ui/web/fm/ttsystem/Application.js:41
 #: ui/web/main/pyrule/Application.js:66 ui/web/sa/action/Application.js:95
+#: ui/web/sa/managedobjectprofile/Application.js:676
 #: ui/web/wf/workflow/WFInspector.js:77
 msgid "Handler"
 msgstr "Обработчик"
@@ -4723,16 +4911,17 @@ msgid "By Action"
 msgstr "По действию"
 
 #: ui/web/inv/monitor/Application.js:40
-#: ui/web/sa/administrativedomain/Application.js:31
-#: ui/web/sa/administrativedomain/Application.js:72
+#: ui/web/sa/administrativedomain/Application.js:32
+#: ui/web/sa/administrativedomain/Application.js:75
 #: ui/web/sa/managedobject/Application.js:254
 #: ui/web/sa/managedobject/Application.js:397
 msgid "Pool"
 msgstr "Пул"
 
-#: ui/web/sa/administrativedomain/Application.js:61
-msgid "Select parent..."
-msgstr "Выбрать родителя..."
+#: ui/web/sa/administrativedomain/Application.js:82
+#: ui/web/sa/managedobject/Application.js:779
+msgid "By Adm. Domain"
+msgstr "По З.О."
 
 #: ui/web/peer/maintainer/Application.js:53
 #: ui/web/sa/authprofile/Application.js:80
@@ -4845,25 +5034,51 @@ msgstr ""
 msgid "By Ignore CLI Errors"
 msgstr ""
 
-#: ui/web/sa/getnow/Application.js:49 ui/web/sa/getnow/Application.js:50
-msgid "Raw"
-msgstr ""
+#: ui/web/sa/getnow/Application.js:44 ui/web/sa/getnow/Application.js:45
+msgid "Get config NOW"
+msgstr "Запрос конфига"
 
-#: ui/web/sa/getnow/Application.js:57
+#: ui/web/sa/getnow/Application.js:52 ui/web/sa/getnow/Application.js:53
+msgid "Stop Polling"
+msgstr "Остановить опрос"
+
+#: ui/web/sa/getnow/SelectionGrid.js:33 ui/web/sa/getnow/SelectionGrid.js:34
 msgid "Managed object"
 msgstr "Объект"
 
-#: ui/web/sa/getnow/Application.js:78
-msgid "By Adm. domain"
-msgstr "По З.О."
+#: ui/web/sa/getnow/SelectionGrid.js:40 ui/web/sa/getnow/SelectionGrid.js:41
+#: ui/web/sa/managedobject/Application.js:223
+#: ui/web/sa/managedobject/Application.js:433
+msgid "SA Profile"
+msgstr "Профиль SA"
 
-#: ui/web/sa/getnow/Application.js:87
-msgid "Reset filter"
-msgstr "Сброс фильтра"
+#: ui/web/sa/getnow/SelectionGrid.js:47 ui/web/sa/getnow/SelectionGrid.js:48
+msgid "Last success"
+msgstr ""
 
-#: ui/web/sa/getnow/Application.js:108
-msgid "Get config NOW"
-msgstr "Запрос конфига"
+#: ui/web/sa/getnow/SelectionGrid.js:55 ui/web/sa/getnow/SelectionGrid.js:56
+msgid "Last update"
+msgstr "Последнее обновление"
+
+#: ui/web/sa/getnow/SelectionGrid.js:71 ui/web/sa/getnow/SelectionGrid.js:72
+msgid "Last status"
+msgstr "Последнее состояние"
+
+#: ui/web/sa/getnow/SelectionGrid.js:87
+msgid "Reload data"
+msgstr "Обновить данные"
+
+#: ui/web/sa/getnow/SelectionGrid.js:93
+msgid "Select all records from buffer (screen)"
+msgstr ""
+
+#: ui/web/sa/getnow/SelectionGrid.js:114
+msgid "Export all records from buffer (screen)"
+msgstr ""
+
+#: ui/web/core/filter/ViewModel.js:55 ui/web/sa/getnow/SelectionGrid.js:121
+msgid "Selected"
+msgstr ""
 
 #: ui/web/sa/groupaccess/Application.js:57
 msgid "By Group"
@@ -4887,7 +5102,7 @@ msgstr "Время"
 msgid "Class"
 msgstr "Класс"
 
-#: ui/web/fm/alarm/AlarmPanel.js:130 ui/web/fm/alarm/Application.js:438
+#: ui/web/fm/alarm/AlarmPanel.js:130 ui/web/fm/alarm/Application.js:444
 #: ui/web/sa/managedobject/AlarmPanel.js:72
 msgid "Events"
 msgstr "События"
@@ -4934,21 +5149,11 @@ msgstr "Аварии"
 
 #: ui/web/sa/managedobject/Application.js:135
 msgid "Command Log"
-msgstr "Лог комманд"
+msgstr "Лог команд"
 
 #: ui/web/sa/managedobject/Application.js:150
 msgid "Capabilities"
 msgstr "Возможности"
-
-#: ui/web/sa/managedobject/Application.js:205
-#: ui/web/sa/managedobjectselector/ObjectsPanel.js:42
-msgid "Managed"
-msgstr "Управляем"
-
-#: ui/web/sa/managedobject/Application.js:223
-#: ui/web/sa/managedobject/Application.js:433
-msgid "SA Profile"
-msgstr "Профиль SA"
 
 #: ui/web/sa/managedobject/Application.js:227
 msgid "Obj. Profile"
@@ -4966,10 +5171,6 @@ msgstr "Управляемый?"
 #: ui/web/sa/managedobject/Application.js:345
 msgid "Role"
 msgstr "Роль"
-
-#: ui/web/sa/managedobject/Application.js:353
-msgid "Object Profile"
-msgstr "Профиль объекта"
 
 #: ui/web/peer/peeringpoint/Application.js:26
 #: ui/web/peer/peeringpoint/Application.js:62
@@ -5003,8 +5204,8 @@ msgid "Service Terminator"
 msgstr "Терминатор сервиса"
 
 #: ui/web/sa/managedobject/Application.js:561
-#: ui/web/sa/managedobjectprofile/Application.js:579
-#: ui/web/sa/managedobjectprofile/Application.js:596
+#: ui/web/sa/managedobjectprofile/Application.js:584
+#: ui/web/sa/managedobjectprofile/Application.js:601
 msgid "CPE"
 msgstr ""
 
@@ -5038,7 +5239,7 @@ msgstr "IP адрес источника SNMP Trap"
 
 #: ui/web/sa/managedobject/Application.js:636
 msgid "Syslog Source"
-msgstr "Источник syslog"
+msgstr "Источник Syslog"
 
 #: ui/web/sa/managedobject/Application.js:658
 msgid "Syslog Source IP"
@@ -5065,7 +5266,6 @@ msgid "By Managed"
 msgstr "По статусу"
 
 #: ui/web/sa/actioncommands/Application.js:145
-#: ui/web/sa/getnow/Application.js:68
 #: ui/web/sa/managedobject/Application.js:767
 msgid "By SA Profile"
 msgstr "По профилю"
@@ -5073,14 +5273,6 @@ msgstr "По профилю"
 #: ui/web/sa/managedobject/Application.js:773
 msgid "By Obj. Profile"
 msgstr "По профилю объекта"
-
-#: ui/web/sa/managedobject/Application.js:779
-msgid "By Adm. Domain"
-msgstr "По З.О."
-
-#: ui/web/sa/managedobject/Application.js:785
-msgid "By Segment"
-msgstr "По сегменту"
 
 #: ui/web/sa/managedobject/Application.js:797
 msgid "By Pool"
@@ -5096,11 +5288,7 @@ msgstr "По терминирующему сервисы"
 
 #: ui/web/sa/managedobject/Application.js:840
 msgid "Attributes"
-msgstr "Аттрибуты"
-
-#: ui/web/sa/managedobject/CapsPanel.js:37
-msgid "Capability"
-msgstr "Возможность"
+msgstr "Атрибуты"
 
 #: ui/web/fm/ignorepattern/Application.js:22
 #: ui/web/fm/ignorepattern/Application.js:42
@@ -5112,21 +5300,17 @@ msgstr "Исходн."
 msgid ">"
 msgstr ""
 
-#: ui/web/fm/alarm/AlarmPanel.js:224 ui/web/fm/alarm/plugins/Diagnostic.js:17
-#: ui/web/sa/managedobject/ConsolePanel.js:45
-msgid "Clear"
-msgstr "Очистить"
-
 #: ui/web/sa/managedobject/ConsolePanel.js:146
 msgid "Failed to run command"
 msgstr "Ошибка при запуске команды"
 
-#: ui/web/core/ModelApplication.js:128
+#: ui/web/core/ModelApplication.js:140
 #: ui/web/dns/dnszoneprofile/Application.js:83
 #: ui/web/fm/alarm/AlarmPanel.js:279 ui/web/fm/alarm/Application.js:239
 #: ui/web/fm/event/EventPanel.js:217 ui/web/fm/monitor/Application.js:23
 #: ui/web/inv/monitor/Application.js:22
 #: ui/web/inv/networksegment/EffectiveSettingsPanel.js:21
+#: ui/web/maintainance/maintainance/ObjectsPanel.js:22
 #: ui/web/sa/managedobject/AlarmPanel.js:20
 #: ui/web/sa/managedobject/CapsPanel.js:19
 #: ui/web/sa/managedobject/DiscoveryPanel.js:26
@@ -5140,10 +5324,10 @@ msgstr "Ошибка при запуске команды"
 msgid "Refresh"
 msgstr "Обновить"
 
-#: ui/web/core/ModelApplication.js:1248
+#: ui/web/core/ModelApplication.js:1277
 #: ui/web/sa/managedobject/DiscoveryPanel.js:33
 #: ui/web/sa/managedobject/ScriptPanel.js:166
-#: ui/web/sa/runcommands/Application.js:477
+#: ui/web/sa/runcommands/Application.js:357
 msgid "Run"
 msgstr "Запуск"
 
@@ -5151,7 +5335,7 @@ msgstr "Запуск"
 msgid "Disable"
 msgstr "Отключить"
 
-#: ui/web/fm/alarmclass/Application.js:262
+#: ui/web/fm/alarmclass/Application.js:263
 #: ui/web/sa/managedobject/DiscoveryPanel.js:90
 msgid "Job"
 msgstr "Задание"
@@ -5169,9 +5353,9 @@ msgid "Next Run"
 msgstr "Следующий запуск"
 
 #: ui/web/cm/validationrule/HitsPanel.js:115 ui/web/inv/map/Maintainance.js:171
-#: ui/web/inv/map/Maintainance.js:217
+#: ui/web/inv/map/Maintainance.js:199
 #: ui/web/inv/networksegment/EffectiveSettingsPanel.js:86
-#: ui/web/main/userprofile/Application.js:181
+#: ui/web/main/userprofile/Application.js:186
 #: ui/web/sa/managedobject/AlarmPanel.js:119
 #: ui/web/sa/managedobject/CapsPanel.js:90
 #: ui/web/sa/managedobject/DiscoveryPanel.js:204
@@ -5187,7 +5371,6 @@ msgstr "Ошибка загрузки"
 msgid "Job scheduled to start"
 msgstr "Отправлено на запуск"
 
-#: ui/web/sa/getnow/Application.js:268 ui/web/sa/getnow/Application.js:340
 #: ui/web/sa/managedobject/DiscoveryPanel.js:246
 msgid "Failed to run tasks"
 msgstr "Ошибка запуска"
@@ -5303,11 +5486,12 @@ msgstr "Ошибка при запуске скрипта"
 
 #: ui/web/dns/dnsserver/Application.js:24
 #: ui/web/dns/dnsserver/Application.js:50
-#: ui/web/fm/reportalarmdetail/Application.js:30
+#: ui/web/fm/reportalarmdetail/Application.js:31
 #: ui/web/inv/interface/L3Panel.js:38 ui/web/main/prefixtable/Application.js:63
 #: ui/web/sa/managedobject/L3Panel.js:38
 #: ui/web/sa/managedobject/scripts/ShowARP.js:13
 #: ui/web/sa/managedobject/scripts/ShowDHCPBinding.js:13
+#: ui/web/sa/reportobjectdetail/Application.js:27
 msgid "IP"
 msgstr ""
 
@@ -5318,7 +5502,7 @@ msgstr ""
 #: ui/web/sa/managedobject/scripts/ShowARP.js:18
 #: ui/web/sa/managedobject/scripts/ShowDHCPBinding.js:18
 #: ui/web/sa/managedobject/scripts/ShowMAC.js:13
-#: ui/web/sa/managedobjectprofile/Application.js:725
+#: ui/web/sa/managedobjectprofile/Application.js:752
 msgid "MAC"
 msgstr ""
 
@@ -5371,11 +5555,11 @@ msgstr "Админ"
 
 #: ui/web/sa/managedobject/scripts/ShowInterfaceStatusEx.js:30
 msgid "In (kbit/s)"
-msgstr "Вх (Кб/с)"
+msgstr "Вх (Кбит/с)"
 
 #: ui/web/sa/managedobject/scripts/ShowInterfaceStatusEx.js:36
 msgid "Out (kbit/s)"
-msgstr "Вых (Кб/с)"
+msgstr "Исх (Кбит/с)"
 
 #: ui/web/sa/managedobject/scripts/ShowInterfaceStatusEx.js:42
 msgid "Full Duplex"
@@ -5437,7 +5621,7 @@ msgid "Failed interval"
 msgstr "Интервал при сбое"
 
 #: ui/web/sa/managedobjectprofile/Application.js:114
-#: ui/web/sa/managedobjectprofile/Application.js:657
+#: ui/web/sa/managedobjectprofile/Application.js:684
 msgid "Periodic discovery"
 msgstr "Периодический опрос"
 
@@ -5467,9 +5651,9 @@ msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:256
 #: ui/web/sa/managedobjectprofile/Application.js:321
-#: ui/web/sa/managedobjectprofile/Application.js:683
+#: ui/web/sa/managedobjectprofile/Application.js:710
 msgid "Interval, sec"
-msgstr "Интервал, с"
+msgstr "Интервал, сек."
 
 #: ui/web/sa/managedobjectprofile/Application.js:277
 msgid "Report ping RTT"
@@ -5477,11 +5661,11 @@ msgstr "Собирать RTT при ping"
 
 #: ui/web/sa/managedobjectprofile/Application.js:304
 msgid "Box discovery intervals"
-msgstr "Интервал Пакетного опроса"
+msgstr "Интервал пакетного опроса"
 
 #: ui/web/sa/managedobjectprofile/Application.js:349
 msgid "Failed Interval, sec"
-msgstr "Интервал при сбое, с"
+msgstr "Интервал при сбое, сек."
 
 #: ui/web/sa/managedobjectprofile/Application.js:377
 msgid "Check on system start after "
@@ -5551,52 +5735,61 @@ msgstr ""
 msgid "UDLD"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:543
+#: ui/web/sa/managedobjectprofile/Application.js:542
+msgid "LACP"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:548
 msgid "Clear links"
 msgstr "Сброс линков"
 
-#: ui/web/sa/managedobjectprofile/Application.js:552
+#: ui/web/sa/managedobjectprofile/Application.js:557
 msgid "On platform change"
 msgstr "При смене платформы"
 
-#: ui/web/sa/managedobjectprofile/Application.js:564
-#: ui/web/sa/managedobjectprofile/Application.js:573
+#: ui/web/sa/managedobjectprofile/Application.js:569
+#: ui/web/sa/managedobjectprofile/Application.js:578
 msgid "SLA"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:610
+#: ui/web/sa/managedobjectprofile/Application.js:615
 msgid "Segment Policy"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:613
+#: ui/web/sa/managedobjectprofile/Application.js:618
 msgid "Use Controller's"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:614
+#: ui/web/sa/managedobjectprofile/Application.js:619
 msgid "Use uplink object's"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:621
+#: ui/web/sa/managedobjectprofile/Application.js:626
 msgid "CPE Cooldown (days)"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:639
+#: ui/web/sa/managedobjectprofile/Application.js:644
 msgid "CPE Profile"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:646
+#: ui/web/sa/managedobjectprofile/Application.js:651
 msgid "CPE Auth Profile"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:666
+#: ui/web/sa/managedobjectprofile/Application.js:661
+#: ui/web/sa/managedobjectprofile/Application.js:671
+msgid "Housekeeping"
+msgstr ""
+
+#: ui/web/sa/managedobjectprofile/Application.js:693
 msgid "Periodic discovery intervals"
 msgstr "Интервал переодического опроса"
 
-#: ui/web/sa/managedobjectprofile/Application.js:715
+#: ui/web/sa/managedobjectprofile/Application.js:742
 msgid "Uptime"
 msgstr "Время работы"
 
-#: ui/web/sa/managedobjectprofile/Application.js:720
+#: ui/web/sa/managedobjectprofile/Application.js:747
 msgid "Interface status"
 msgstr "Статус интерфейсов"
 
@@ -5687,7 +5880,7 @@ msgstr "Источники"
 
 #: ui/web/sa/managedobjectselector/Application.js:250
 msgid "Filter by attributes"
-msgstr "Фильтровать по аттрибутам"
+msgstr "Фильтровать по атрибутам"
 
 #: ui/web/sa/managedobjectselector/Application.js:254
 msgid "Key (RE)"
@@ -5732,7 +5925,7 @@ msgstr "Таймаут"
 
 #: ui/web/sa/objectnotification/Application.js:31
 msgid "Config Changed"
-msgstr "Конфиг изменён"
+msgstr "Конфигурация изменена"
 
 #: ui/web/sa/objectnotification/Application.js:37
 msgid "Alarm Risen"
@@ -5748,7 +5941,7 @@ msgstr "Авария снята"
 
 #: ui/web/sa/objectnotification/Application.js:55
 msgid "Alarm Commented"
-msgstr "Авараия откомментирована"
+msgstr "Авария откомментирована"
 
 #: ui/web/main/audittrail/Application.js:85
 #: ui/web/sa/objectnotification/Application.js:61
@@ -5775,7 +5968,7 @@ msgstr "Конфигурация не соответствует политик�
 
 #: ui/web/sa/objectnotification/Application.js:107
 msgid "Config changed"
-msgstr "Конфиг изменен"
+msgstr "Конфигурация изменена"
 
 #: ui/web/sa/objectnotification/Application.js:112
 msgid "Alarm risen"
@@ -5822,153 +6015,195 @@ msgstr "Бит"
 msgid "Parameter"
 msgstr "Параметр"
 
-#: ui/web/sa/runcommands/Application.js:20
-#: ui/web/sa/runcommands/Application.js:657
-#: ui/web/sa/runcommands/Application.js:711
+#: ui/web/fm/reportalarmdetail/Application.js:30
+#: ui/web/sa/managedobject/scripts/ShowObjectStatus.js:13
+#: ui/web/sa/reportobjectdetail/Application.js:26
+msgid "Object Name"
+msgstr "Имя объекта"
+
+#: ui/web/sa/reportobjectdetail/Application.js:28
+msgid "Object Status"
+msgstr "Статус объекта"
+
+#: ui/web/sa/managedobject/Application.js:353
+#: ui/web/sa/reportobjectdetail/Application.js:30
+msgid "Object Profile"
+msgstr "Профиль объекта"
+
+#: ui/web/sa/reportobjectdetail/Application.js:33
+msgid "SW Version"
+msgstr "Версия ПО"
+
+#: ui/web/sa/reportobjectdetail/Application.js:34
+msgid "Avail"
+msgstr ""
+
+#: ui/web/sa/reportobjectdetail/Application.js:35
+msgid "Admin. Domain"
+msgstr ""
+
+#: ui/web/sa/reportobjectdetail/Application.js:36
+msgid "Container"
+msgstr ""
+
+#: ui/web/sa/reportobjectdetail/Application.js:38
+msgid "Physical Iface Count"
+msgstr ""
+
+#: ui/web/sa/reportobjectdetail/Application.js:39
+msgid "Link Count"
+msgstr ""
+
+#: ui/web/sa/reportobjectdetail/Application.js:40
+msgid "Interface count by type"
+msgstr ""
+
+#: ui/web/fm/reportalarmdetail/Application.js:67
+#: ui/web/inv/interfaceclassificationrule/Application.js:108
+#: ui/web/main/audittrail/Application.js:77
+#: ui/web/sa/reportobjectdetail/Application.js:56
+msgid "Field"
+msgstr "Поле"
+
+#: ui/web/fm/reportalarmdetail/Application.js:90
+#: ui/web/sa/reportobjectdetail/Application.js:79
+msgid "CSV"
+msgstr ""
+
+#: ui/web/fm/reportalarmdetail/Application.js:95
+#: ui/web/sa/reportobjectdetail/Application.js:84
+msgid "Excel"
+msgstr ""
+
+#: ui/web/fm/reportalarmdetail/Application.js:160
+#: ui/web/sa/reportobjectdetail/Application.js:118
+msgid "By Adm. domain"
+msgstr "По З.О."
+
+#: ui/web/fm/reportalarmdetail/Application.js:214
+#: ui/web/sa/reportobjectdetail/Application.js:140
+msgid "Download"
+msgstr "Загрузить"
+
+#: ui/web/sa/runcommands/Application.js:13
+#: ui/web/sa/runcommands/Application.js:537
+#: ui/web/sa/runcommands/Application.js:591
 msgid "Waiting"
 msgstr "Ожидание"
 
-#: ui/web/inv/monitor/Application.js:51 ui/web/sa/runcommands/Application.js:21
-#: ui/web/sa/runcommands/Application.js:664
-#: ui/web/sa/runcommands/Application.js:712
+#: ui/web/inv/monitor/Application.js:51 ui/web/sa/runcommands/Application.js:14
+#: ui/web/sa/runcommands/Application.js:544
+#: ui/web/sa/runcommands/Application.js:592
 msgid "Running"
 msgstr "Выполняется"
 
-#: ui/web/sa/runcommands/Application.js:22
-#: ui/web/sa/runcommands/Application.js:678
-#: ui/web/sa/runcommands/Application.js:714
+#: ui/web/sa/runcommands/Application.js:15
+#: ui/web/sa/runcommands/Application.js:558
+#: ui/web/sa/runcommands/Application.js:594
 msgid "Success"
 msgstr "Успех"
 
-#: ui/web/core/ModelApplication.js:1229 ui/web/core/ModelApplication.js:1547
-#: ui/web/sa/monitor/PoolsPanel.js:69 ui/web/sa/runcommands/Application.js:23
-#: ui/web/sa/runcommands/Application.js:671
-#: ui/web/sa/runcommands/Application.js:713
+#: ui/web/core/ModelApplication.js:1258 ui/web/core/ModelApplication.js:1576
+#: ui/web/sa/monitor/PoolsPanel.js:69 ui/web/sa/runcommands/Application.js:16
+#: ui/web/sa/runcommands/Application.js:551
+#: ui/web/sa/runcommands/Application.js:593
 msgid "Failed"
 msgstr "Ошибка"
 
+#: ui/web/sa/getnow/SelectionGrid.js:16
 #: ui/web/sa/runcommands/Application.js:145
-msgid "By SA Profile:"
-msgstr "По профилю:"
-
-#: ui/web/sa/runcommands/Application.js:154
-msgid "By Obj. Profile:"
-msgstr "По профилю объекта:"
-
-#: ui/web/sa/runcommands/Application.js:164
-msgid "By Adm. Domain:"
-msgstr "По З.О.:"
-
-#: ui/web/sa/runcommands/Application.js:175
-msgid "By Segment:"
-msgstr "По сегменту:"
-
-#: ui/web/sa/runcommands/Application.js:184
-msgid "By Selector:"
-msgstr "По Селектору:"
-
-#: ui/web/sa/runcommands/Application.js:193
-msgid "By Pool:"
-msgstr "По пулу:"
-
-#: ui/web/sa/runcommands/Application.js:211
-msgid "By IP list (max. 500):"
-msgstr "По списку IP адресов (мак. 500)"
-
-#: ui/web/sa/runcommands/Application.js:224
-msgid "Clean All"
-msgstr "Очистить все"
-
-#: ui/web/sa/runcommands/Application.js:269
 msgid "Not Found"
 msgstr "Не найдено"
 
-#: ui/web/sa/runcommands/Application.js:298
+#: ui/web/sa/runcommands/Application.js:177
 msgid "Select Checked"
 msgstr "Выбрать отмеченные"
 
-#: ui/web/sa/runcommands/Application.js:310
+#: ui/web/sa/getnow/SelectionGrid.js:91
+#: ui/web/sa/runcommands/Application.js:189
 msgid "Select All"
 msgstr "Выбрать все"
 
-#: ui/web/sa/runcommands/Application.js:318
+#: ui/web/sa/getnow/SelectionGrid.js:97 ui/web/sa/getnow/SelectionGrid.js:102
+#: ui/web/sa/runcommands/Application.js:197
 msgid "Unselect All"
 msgstr "Отменить выделение"
 
-#: ui/web/sa/runcommands/Application.js:331
+#: ui/web/sa/runcommands/Application.js:210
 msgid "Selected : {total.selection}"
 msgstr ""
 
-#: ui/web/sa/runcommands/Application.js:379
+#: ui/web/sa/runcommands/Application.js:259
 msgid "Remove Checked"
 msgstr "Удалить отмеченные"
 
-#: ui/web/sa/runcommands/Application.js:391
+#: ui/web/sa/runcommands/Application.js:271
 msgid "Remove All"
 msgstr "Удалить все"
 
-#: ui/web/sa/runcommands/Application.js:404
+#: ui/web/sa/runcommands/Application.js:284
 msgid "Total : {total.selected}"
 msgstr ""
 
-#: ui/web/sa/runcommands/Application.js:417
+#: ui/web/sa/runcommands/Application.js:296
 msgid "Continue"
 msgstr "Продолжить"
 
+#: ui/web/sa/getnow/SelectionGrid.js:108
+#: ui/web/sa/runcommands/Application.js:325
+msgid "Show/Hide Filter"
+msgstr ""
+
 #: ui/web/sa/actioncommands/Application.js:124
-#: ui/web/sa/runcommands/Application.js:486
+#: ui/web/sa/runcommands/Application.js:366
 msgid "Commands"
 msgstr "Команды"
 
-#: ui/web/sa/runcommands/Application.js:516
+#: ui/web/sa/runcommands/Application.js:396
 msgid "Mode"
 msgstr "Режим работы"
 
-#: ui/web/sa/runcommands/Application.js:520
+#: ui/web/sa/runcommands/Application.js:400
 msgid "Run Commands"
 msgstr "Запустить список комманд"
 
-#: ui/web/sa/runcommands/Application.js:521
+#: ui/web/sa/runcommands/Application.js:401
 msgid "Run Snippet"
 msgstr "Запустить Snippet"
 
-#: ui/web/sa/runcommands/Application.js:522
+#: ui/web/sa/runcommands/Application.js:402
 msgid "Run Action"
 msgstr "Запустить действие"
 
-#: ui/web/sa/runcommands/Application.js:571
-#: ui/web/sa/runcommands/Application.js:994
+#: ui/web/sa/runcommands/Application.js:451
+#: ui/web/sa/runcommands/Application.js:892
 msgid "server-side failure with status code "
 msgstr "Ошибка со стороны сервера. Код: "
 
-#: ui/web/sa/runcommands/Application.js:577
+#: ui/web/sa/runcommands/Application.js:457
 msgid "Actions"
 msgstr ""
 
-#: ui/web/sa/runcommands/Application.js:590
+#: ui/web/sa/runcommands/Application.js:470
 msgid "Snippets"
 msgstr ""
 
-#: ui/web/sa/runcommands/Application.js:628
-#: ui/web/sa/runcommands/Application.js:733
-#: ui/web/sa/runcommands/Application.js:798
+#: ui/web/sa/runcommands/Application.js:508
+#: ui/web/sa/runcommands/Application.js:613
+#: ui/web/sa/runcommands/Application.js:682
 msgid "Back"
 msgstr "Назад"
 
 #: ui/web/main/reportsubscription/Application.js:34
 #: ui/web/main/reportsubscription/Application.js:68
-#: ui/web/sa/runcommands/Application.js:743
+#: ui/web/sa/runcommands/Application.js:623
 #: ui/web/support/crashinfo/Application.js:36
 msgid "Report"
 msgstr "Отчет"
 
-#: ui/web/sa/runcommands/Application.js:989
+#: ui/web/sa/runcommands/Application.js:887
 msgid "Empty command"
 msgstr "Пустой вывод"
-
-#: ui/web/sa/runcommands/Application.js:1072
-msgid "Too many IP, max 500"
-msgstr "Слишко много IP адресов (максимум 500)"
 
 #: ui/web/sa/serviceprofile/Application.js:48
 msgid "Summary"
@@ -6042,12 +6277,18 @@ msgid "Account"
 msgstr "Учётная запись"
 
 #: ui/web/support/account/AccountPanel.js:21
-msgid "Account is not registred. Please register account to get access to additional support and services"
-msgstr "Учётная запись не зарегистрирована. Пожалуйста, зарегистрируйте учётную запись для получения доступа к дополнительной поддержки и сервису."
+msgid ""
+"Account is not registred. Please register account to get access to "
+"additional support and services"
+msgstr ""
+"Учётная запись не зарегистрирована. Пожалуйста, зарегистрируйте учётную "
+"запись для получения доступа к дополнительной поддержке и сервису."
 
 #: ui/web/support/account/AccountPanel.js:22
 msgid "Account is registred. You have access to additional support and serivces"
-msgstr "Учётная запись зарегистрирована. Вы получили доступ к дополнительной поддержке и сервисам."
+msgstr ""
+"Учётная запись зарегистрирована. Вы получили доступ к дополнительной "
+"поддержке и сервисам."
 
 #: ui/web/support/account/AccountPanel.js:39
 #: ui/web/support/account/AttachAccountPanel.js:11
@@ -6101,12 +6342,18 @@ msgid "System"
 msgstr "Система"
 
 #: ui/web/support/account/SystemPanel.js:18
-msgid "System is not registred. Please register your system to get access to additional support and services"
-msgstr "Система не зарегистрирована. Пожалуйста, зарегистрируйте систему для получения доступа к дополнительной поддержки и сервису."
+msgid ""
+"System is not registred. Please register your system to get access to "
+"additional support and services"
+msgstr ""
+"Система не зарегистрирована. Пожалуйста, зарегистрируйте систему для "
+"получения доступа к дополнительной поддержки и сервису."
 
 #: ui/web/support/account/SystemPanel.js:19
 msgid "System is registred. You have access to additional support and services"
-msgstr "Система зарегистрирована. Вы получили доступ к дополнительной поддержке и сервисам."
+msgstr ""
+"Система зарегистрирована. Вы получили доступ к дополнительной поддержке и"
+" сервисам."
 
 #: ui/web/support/crashinfo/Application.js:62
 #: ui/web/support/crashinfo/Application.js:126
@@ -6392,15 +6639,11 @@ msgstr "Уменьшить"
 msgid "Zoom Actual"
 msgstr "Ув. по размеру"
 
-#: ui/web/vc/vc/AddInterfacesForm.js:110 ui/web/wf/workflow/WFInspector.js:35
-msgid "Apply"
-msgstr "Применить"
-
 #: ui/web/wf/workflow/WFInspector.js:36
 msgid "Apply changes"
 msgstr "Применить изменения"
 
-#: ui/web/core/ModelApplication.js:455
+#: ui/web/core/ModelApplication.js:471
 #: ui/web/main/desktop/ChangeCredentials.js:46
 #: ui/web/peer/prefixlistbuilder/Application.js:86
 #: ui/web/support/account/AttachAccountPanel.js:59
@@ -6412,3 +6655,25 @@ msgstr "Сброс"
 #: ui/web/wf/workflow/WFInspector.js:45
 msgid "Reset changes"
 msgstr "Сбросить изменения"
+
+#~ msgid "Flap Window"
+#~ msgstr ""
+
+#~ msgid "Flap Threshold"
+#~ msgstr ""
+
+#~ msgid "Recover Time"
+#~ msgstr "Время восстановления"
+
+#~ msgid "Raw"
+#~ msgstr ""
+
+#~ msgid "Reset filter"
+#~ msgstr "Сброс фильтра"
+
+#~ msgid "By IP list (max. 500):"
+#~ msgstr "По списку IP адресов (мак. 500)"
+
+#~ msgid "Too many IP, max 500"
+#~ msgstr "Слишко много IP адресов (максимум 500)"
+

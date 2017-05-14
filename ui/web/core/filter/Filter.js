@@ -12,6 +12,8 @@ Ext.define('NOC.core.filter.Filter', {
         'Ext.ux.form.SearchField',
         'NOC.main.ref.profile.LookupField',
         'NOC.main.pool.LookupField',
+        'NOC.sa.vendor.LookupField',
+        'NOC.sa.platform.LookupField',
         'NOC.sa.administrativedomain.TreeCombo',
         'NOC.inv.networksegment.TreeCombo',
         'NOC.sa.managedobjectprofile.LookupField',
@@ -109,35 +111,21 @@ Ext.define('NOC.core.filter.Filter', {
             }
         },
         {
-            xtype: 'searchfield',
-            isLookupField: true,
+            xtype: 'sa.vendor.LookupField',
             itemId: 'vendor',  // name of http request query param
             fieldLabel: __('By Vendor:'),
-            labelWidth: 50,
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
-            },
+            uiStyle: undefined,
             listeners: {
-                specialkey: 'setFilter'
+                change: 'setFilter'
             }
         },
         {
-            xtype: 'searchfield',
-            isLookupField: true,
+            xtype: 'sa.platform.LookupField',
             itemId: 'platform',  // name of http request query param
             fieldLabel: __('By Platform:'),
-            labelWidth: 50,
-            triggers: {
-                clear: {
-                    cls: 'x-form-clear-trigger',
-                    handler: 'cleanFilter'
-                }
-            },
+            uiStyle: undefined,
             listeners: {
-                specialkey: 'setFilter'
+                change: 'setFilter'
             }
         },
         {
