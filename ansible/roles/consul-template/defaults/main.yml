@@ -1,6 +1,6 @@
 ---
 # defaults file for consul-template
-consul_arch: "{% if 'x86_64' in ansible_architecture %}amd64{%else%}386{%endif%}"
+consul_arch: "{% if 'x86_64' in ansible_architecture %}amd64{% elif 'amd64' in ansible_architecture %}amd64{%else%}386{%endif%}"
 consul_template_release: "consul-template_{{ consul_template_version }}_{{ansible_system | lower}}_{{consul_arch}}"
 consul_template_archive_file: "{{ consul_template_release }}.zip"
 consul_template_download_url: "https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/{{ consul_template_archive_file }}"
