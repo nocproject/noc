@@ -572,8 +572,8 @@ class Service(object):
             r["pool"] = self.config.pool
         if self.executors:
             for x in self.executors:
-                x.apply_metrics(r)
-        r = apply_metrics(r)
+                self.executors[x].apply_metrics(r)
+        apply_metrics(r)
         return r
 
     def resolve_service(self, service, n=None):
