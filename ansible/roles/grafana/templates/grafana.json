@@ -1,0 +1,12 @@
+{
+  "service": {
+    "name": "grafana",
+    "tags": [ ],
+    "port": 8002,
+    "enableTagOverride": false,
+    "check": {
+        "http": "http://localhost:8002/api/health",
+        "interval": "10s"
+    }
+  }
+}
