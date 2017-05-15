@@ -147,8 +147,8 @@ class ThreadPoolExecutor(object):
             workers = len(self.threads)
             idle = self.idle_workers.value
             d.update({
-                "%s_max_workers": self.max_workers,
-                "%s_workers": workers,
-                "%s_idle_workers": idle,
-                "%s_running_workers": workers - idle
+                "%s_max_workers" % self.name: self.max_workers,
+                "%s_workers" % self.name: workers,
+                "%s_idle_workers" % self.name: idle,
+                "%s_running_workers" % self.name: workers - idle
             })
