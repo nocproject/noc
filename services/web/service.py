@@ -45,6 +45,12 @@ class WebService(Service):
         # Install Custom fields
         CustomField.install_fields()
 
+    def get_backend_weight(self):
+        return self.config.max_threads
+
+    def get_backend_limit(self):
+        return self.config.max_threads
+
 
 class NOCWSGIHandler(tornado.web.RequestHandler):
     def initialize(self, service):
