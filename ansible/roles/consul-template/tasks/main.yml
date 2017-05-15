@@ -64,6 +64,7 @@
     src: consul-template.service.j2
     dest: /etc/systemd/system/consul-template.service
     mode: 0755
+  when: "'Linux' in ansible_system"
   tags:
     - config
 
