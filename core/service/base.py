@@ -494,6 +494,12 @@ class Service(object):
                 "traefik.backend=%s" % self.traefik_backend,
                 "traefik.frontend.rule=%s" % self.traefik_frontend_rule
             ]
+            weight = self.get_backend_weight()
+            if weight:
+                tags += ["traefik.backend.weight=%s" % weight]
+            limit = self.get_backend_limit()
+            if limit:
+                tags += ["traefik.backend.maxconn.amount=%s" % limit]
         return tags
 
     @tornado.gen.coroutine
@@ -760,3 +766,21 @@ class Service(object):
 
     def add_close_callback(self, cb, *args, **kwargs):
         self.close_callbacks += [(cb, args, kwargs)]
+
+    def get_backend_weight(self):
+        """
+        Return backend weight for weighted load balancers
+        (i.e. traefik).
+        Return None for default weight
+        :return: 
+        """
+        return None
+
+    def get_backend_limit(self):
+        """
+        Return backend connection limit for load balancers
+        (i.e. traefik)
+        Return None for no limits
+        :return: 
+        """
+        return None
