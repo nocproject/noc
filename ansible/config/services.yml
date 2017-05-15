@@ -479,10 +479,16 @@ config:
       label: Translation language
       type: str
       default: en
+
     weight:
       label: Http nginx Weight
       type: int
       default: 5
+
+    max_threads:
+      label: Web threads
+      type: int
+      default: 10
 
   nginx:
     logging:

@@ -3,14 +3,14 @@
 ##----------------------------------------------------------------------
 ## Web service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Third-party modules
 import tornado.web
 import tornado.httpserver
-import tornado.web
+import tornado.gen
 import tornado.wsgi
 import django.core.handlers.wsgi
 ## NOC modules
@@ -31,13 +31,9 @@ class WebService(Service):
         super(WebService, self).__init__()
 
     def get_handlers(self):
-        wsgi = NOCWSGIContainer(
-            self,
-            django.core.handlers.wsgi.WSGIHandler()
-        )
         return [
             # Pass to NOC
-            (r"^.*$", tornado.web.FallbackHandler, {"fallback": wsgi})
+            (r"^.*$", NOCWSGIHandler, {"service": self})
         ]
 
     def on_activate(self):
@@ -48,6 +44,21 @@ class WebService(Service):
         site.autodiscover()
         # Install Custom fields
         CustomField.install_fields()
+
+
+class NOCWSGIHandler(tornado.web.RequestHandler):
+    def initialize(self, service):
+        self.service = service
+        self.wsgi = NOCWSGIContainer(
+            self.service,
+            django.core.handlers.wsgi.WSGIHandler()
+        )
+        self.executor = self.service.get_executor("max")
+
+    @tornado.gen.coroutine
+    def prepare(self):
+        yield self.executor.submit(self.wsgi, self.request)
+        self._finished = True
 
 
 class NOCWSGIContainer(tornado.wsgi.WSGIContainer):
@@ -67,7 +78,6 @@ class NOCWSGIContainer(tornado.wsgi.WSGIContainer):
         metrics["http_requests"] += 1
         metrics["http_requests_%s" % method.lower()] += 1
         metrics["http_response_%s" % status_code] += 1
-
 
 if __name__ == "__main__":
     WebService().start()
