@@ -1,0 +1,12 @@
+{
+  "service": {
+    "name": "influxdb",
+    "tags": [ ],
+    "port": 8086,
+    "enableTagOverride": false,
+    "check": {
+        "http": "http://localhost:8086/ping",
+        "interval": "10s"
+    }
+  }
+}
