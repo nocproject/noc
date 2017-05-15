@@ -28,7 +28,7 @@
     src: "{{consul_template_dl_dir}}/{{ consul_template_archive_file }}"
     dest: "{{consul_template_dl_dir}}"
     owner: "root"
-    group: "root"
+    group: "{% if 'FreeBSD' in ansible_system %}wheel{%else%}root{%endif%}"
     copy: False
     creates: "{{consul_template_dl_dir}}/{{ consul_template_binary }}"
   tags:
