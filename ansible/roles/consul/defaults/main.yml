@@ -13,8 +13,6 @@ consul_checksum_file_url: "https://releases.hashicorp.com/consul/{{ consul_versi
 
 ### Paths
 consul_bin_path: "/bin"
-consul_config_path: "{{etc_prefix}}/consul"
-consul_configd_path: "{{etc_prefix}}/consul.d"
 consul_data_path: "/var/consul"
 consul_log_path: "/var/log/consul"
 consul_pid_path: "/var/run/consul/consul.pid"
