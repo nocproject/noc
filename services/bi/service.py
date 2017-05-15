@@ -15,13 +15,15 @@ from noc.core.service.authapi import AuthAPIRequestHandler
 
 class BIService(UIService):
     name = "bi"
-    process_name = "noc-%(name).10s-%(instance).3s"
+    process_name = "noc-%(name).10s-%(instance).2s"
     api = [
         BIAPI
     ]
     api_request_handler = AuthAPIRequestHandler
-    process_name = "noc-%(name).10s-%(instance).2s"
     use_translation = True
+    traefik_backend = "bi"
+    traefik_frontend_rule = "PathPrefix:/api/bi"
+
 
     def __init__(self):
         super(BIService, self).__init__()
