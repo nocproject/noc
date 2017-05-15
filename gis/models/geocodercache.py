@@ -130,11 +130,11 @@ class GeocoderCache(Document):
                         error = None
                         break
                     else:
-                        if r and not lr and r.lon and r.lat:
-                            lr = r  # Save first non-exact
                         r = None
                         error = "No coordinates"
                 else:
+                    if r and not lr and r.lon and r.lat:
+                        lr = r  # Save first non-exact
                     r = None
             except GeoCoderError as e:
                 error = str(e)
