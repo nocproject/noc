@@ -6,7 +6,7 @@
 
 - name: Install FreeBSD system packages
   pkgng:
-    name: {{item}}
+    name: "{{item}}"
     state: present
   with_items:
     - ca_root_nss
