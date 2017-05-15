@@ -113,7 +113,7 @@
     - config
 
 - debug:
-    msg: "Please setup cluster wide /etc/hosts via /opt/tower/var/tower/data/{{noc_env}}/hosts on Tower server"
+    msg: "Please setup cluster wide /etc/hosts via {{tower_path}}/var/tower/data/{{noc_env}}/hosts on Tower server"
   run_once: true
 
 
@@ -121,7 +121,7 @@
   local_action:
     module: template
     src: "hosts.j2"
-    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     force: no
   become: false
   run_once: true
@@ -131,7 +131,7 @@
 
 - name: Setup /etc/hosts
   lineinfile:
-    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     line: "{{ hostvars[item].ansible_host }} {{ item }}"
     regexp: ".*{{ item }}$"
     create: no
@@ -147,7 +147,7 @@
 
 - name: ensure consul ip is in hosts file
   lineinfile:
-    dest: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     line: "127.0.0.1 consul"
     regexp: "127.0.0.1 consul"
     create: no
@@ -163,7 +163,7 @@
 
 - name: copy hosts file to nodes
   copy:
-    src: "/opt/tower/var/tower/data/{{noc_env}}/hosts"
+    src: "{{tower_path}}/var/tower/data/{{noc_env}}/hosts"
     dest: /etc/hosts
   when: "'nodes' in groups"
   become: true
