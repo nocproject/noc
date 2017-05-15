@@ -108,14 +108,14 @@
 - name: fail if patroni set only for one node
   fail:
     msg: "patroni have to be installed on atleast two nodes"
-  when: groups['svc-patroni'] | length < 2
+  when: groups['svc-patroni'] | length == 1
 
 - name: fail if haproxy set only for one node
   fail:
     msg: "Haproxy have to be installed on atleast two nodes"
-  when: groups['svc-haproxy'] | length < 2
+  when: groups['svc-haproxy'] | length == 1
 
 - name: fail if keepalived set only for one node
   fail:
     msg: "keepalived have to be installed on atleast two nodes"
-  when: groups['svc-keepalived'] | length < 2
+  when: groups['svc-keepalived'] | length == 1
