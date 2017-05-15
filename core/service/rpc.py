@@ -11,18 +11,19 @@ import itertools
 import logging
 import socket
 import time
-import Queue
 import random
 ## Third-party modules
 import tornado.concurrent
 import tornado.gen
 import tornado.httpclient
 import ujson
+from six.moves import queue
 ## NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from client import (RPCError, RPCNoService, RPCHTTPError,
                     RETRY_SOCKET_ERRORS, RPCException, RPCRemoteError)
 import httpclient  # Setup global httpclient
+from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
 
@@ -30,77 +31,6 @@ logger = logging.getLogger(__name__)
 CONNECT_TIMEOUT = 20
 # Total request time
 REQUEST_TIMEOUT = 3600
-
-
-class AsyncRPCMethod(object):
-    """
-    API Method wrapper
-    """
-    def __init__(self, proxy, name):
-        self._proxy = proxy
-        self._name = name
-        self._metric = "rpc_call_%s_%s" % (proxy._service_name, name)
-
-    @tornado.gen.coroutine
-    def __call__(self, *args, **kwargs):
-        t0 = time.time()
-        self._proxy._logger.debug(
-            "[CALL>] %s.%s(%s, %s)",
-            self._proxy._service_name,
-            self._name, args, kwargs
-        )
-        self._proxy._service.perf_metrics[self._metric] += 1
-        result = yield self._proxy._call(self._name, *args, **kwargs)
-        t = time.time() - t0
-        self._proxy._logger.debug(
-            "[CALL<] %s.%s (%.2fms)",
-            self._proxy._service_name,
-            self._name,
-            t * 1000
-        )
-        raise tornado.gen.Return(result)
-
-
-class SyncRPCMethod(object):
-    """
-    API Method wrapper
-    """
-    def __init__(self, proxy, name):
-        self._proxy = proxy
-        self._name = name
-        self._metric = "rpc_call_%s_%s" % (proxy._service_name, name)
-        self._queue = Queue.Queue()
-
-    @tornado.gen.coroutine
-    def _call(self, *args, **kwargs):
-        try:
-            result = yield self._proxy._call(self._name, *args, **kwargs)
-            self._queue.put(result)
-        except tornado.gen.Return as e:
-            self._queue.put(e.value)
-        except Exception as e:
-            self._queue.put(e)
-
-    def __call__(self, *args, **kwargs):
-        t0 = time.time()
-        self._proxy._logger.debug(
-            "[SYNC CALL>] %s.%s(%s, %s)",
-            self._proxy._service_name,
-            self._name, args, kwargs
-        )
-        self._proxy._service.perf_metrics[self._metric] += 1
-        self._proxy._service.ioloop.add_callback(self._call, *args, **kwargs)
-        result = self._queue.get()
-        if isinstance(result, Exception):
-            raise result
-        t = time.time() - t0
-        self._proxy._logger.debug(
-            "[SYNC CALL<] %s.%s (%.2fms)",
-            self._proxy._service_name,
-            self._name,
-            t * 1000
-        )
-        return result
 
 
 class RPCProxy(object):
@@ -116,25 +46,34 @@ class RPCProxy(object):
         self._api = service_name.split("-")[0]
         self._tid = itertools.count()
         self._transactions = {}
-        self._methods = {}
         self._hints = hints
-        if sync:
-            self.rpc_cls = SyncRPCMethod
-        else:
-            self.rpc_cls = AsyncRPCMethod
-
-    def __del__(self):
-        self.close()
+        self._sync = sync
 
     def __getattr__(self, item):
+        @tornado.gen.coroutine
+        def async_wrapper(*args, **kwargs):
+            result = yield self._call(item, *args, **kwargs)
+            raise tornado.gen.Return(result)
+
+        def sync_wrapper(*args, **kwargs):
+            @tornado.gen.coroutine
+            def _call():
+                r = yield self._call(item, *args, **kwargs)
+                q.put(r)
+
+            q = queue.Queue()
+            self._service.ioloop.add_callback(_call)
+            result = q.get()
+            if isinstance(result, Exception):
+                raise result
+            return result
+
         if item.startswith("_"):
             return self.__dict__[item]
+        elif self._sync:
+            return sync_wrapper
         else:
-            mw = self._methods.get(item)
-            if not mw:
-                mw = self.rpc_cls(self, item)
-                self._methods[item] = mw
-            return mw
+            return async_wrapper
 
     @tornado.gen.coroutine
     def _call(self, method, *args, **kwargs):
@@ -161,7 +100,7 @@ class RPCProxy(object):
                 )
             except socket.error as e:
                 if e.args[0] in RETRY_SOCKET_ERRORS:
-                    logger.debug("Socket error: %s" % e)
+                    self._logger.debug("Socket error: %s" % e)
                     raise tornado.gen.Return(None)
                 raise RPCException(str(e))
             except Exception as e:
@@ -179,11 +118,11 @@ class RPCProxy(object):
                 if not limit:
                     raise RPCException("Redirects limit exceeded")
                 url = response.headers.get("location")
-                logger.debug("Redirecting to %s", url)
+                self._logger.debug("Redirecting to %s", url)
                 r = yield make_call(url, response.body, limit - 1)
                 raise tornado.gen.Return(r)
             elif response.code == 599:
-                logger.debug("Timed out")
+                self._logger.debug("Timed out")
                 raise tornado.gen.Return(None)
             else:
                 raise RPCHTTPError(
@@ -191,6 +130,14 @@ class RPCProxy(object):
                         response.code, response.body
                     ))
 
+        t0 = time.time()
+        self._logger.debug(
+            "[%sCALL>] %s.%s(%s, %s)",
+            "SYNC " if self._sync else "",
+            self._service_name,
+            method, args, kwargs
+        )
+        metrics["rpc_call_%s_%s" % (self._service_name, method)] += 1
         tid = self._tid.next()
         msg = {
             "method": method,
@@ -216,6 +163,13 @@ class RPCProxy(object):
                 break
             else:
                 yield tornado.gen.sleep(t)
+        t = time.time() - t0
+        self._logger.debug(
+            "[CALL<] %s.%s (%.2fms)",
+            self._service_name,
+            method,
+            t * 1000
+        )
         if response:
             if not is_notify:
                 result = ujson.loads(response.body)
