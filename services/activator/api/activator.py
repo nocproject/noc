@@ -25,6 +25,8 @@ class ActivatorAPI(API):
     """
     name = "activator"
 
+    HTTP_CLIENT_DEFAULTS = dict(connect_timeout=20, request_timeout=30)
+
     @api
     @executor("script")
     def script(self, name, credentials,
@@ -141,8 +143,11 @@ class ActivatorAPI(API):
         :returns" Result as a string, or None in case of errors
         """
         self.logger.debug("HTTP GET %s", url)
-        client = tornado.httpclient.AsyncHTTPClient()
-        client.configure(None, defaults=dict(connect_timeout=20, request_timeout=30))
+        client = tornado.httpclient.AsyncHTTPClient(
+            force_instance=True,
+            max_clients=1
+        )
+        client.configure(None, defaults=self.HTTP_CLIENT_DEFAULTS)
         result = None
         try:
             response = yield client.fetch(
