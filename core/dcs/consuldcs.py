@@ -273,7 +273,9 @@ class ConsulDCS(DCSBase):
                     tags=tags,
                     check=checks
                 )
-            except ConsulRepeatableErrors:
+            except ConsulRepeatableErrors as e:
+                self.logger.info("Cannot register service %s: %s",
+                                 name, e)
                 yield tornado.gen.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 continue
             if r:
