@@ -267,6 +267,30 @@ Ext.define('NOC.fm.alarm.Application', {
             }
         });
 
+        me.freshSwitchOff = Ext.create('Ext.form.field.Checkbox', {
+            boxLabel: __('Switch Off'),
+            value: false,
+            listeners: {
+                change: function(self, value) {
+                    if(value) {
+                        me.freshDuration1.disable();
+                        me.freshDuration2.disable();
+                        me.freshDuration3.disable();
+                        me.freshOpacity1.disable();
+                        me.freshOpacity2.disable();
+                        me.freshOpacity3.disable();
+                    } else {
+                        me.freshDuration1.enable();
+                        me.freshDuration2.enable();
+                        me.freshDuration3.enable();
+                        me.freshOpacity2.enable();
+                        me.freshOpacity3.enable();
+                    }
+                    me.onChangeFilter();
+                }
+            }
+        });
+
         me.expandButton = Ext.create('Ext.button.Segmented', {
             items: [
                 {
@@ -418,25 +442,27 @@ Ext.define('NOC.fm.alarm.Application', {
                             xtype: 'fieldset',
                             title: __('Fresh Alarms (time min/opacity)'),
                             layout: 'vbox',
-                            items: [{
-                                layout: 'hbox',
-                                items: [
-                                    me.freshDuration1,
-                                    me.freshOpacity1
-                                ]
-                            }, {
-                                layout: 'hbox',
-                                items: [
-                                    me.freshDuration2,
-                                    me.freshOpacity2
-                                ]
-                            }, {
-                                layout: 'hbox',
-                                items: [
-                                    me.freshDuration3,
-                                    me.freshOpacity3
-                                ]
-                            }
+                            items: [
+                                me.freshSwitchOff,
+                                {
+                                    layout: 'hbox',
+                                    items: [
+                                        me.freshDuration1,
+                                        me.freshOpacity1
+                                    ]
+                                }, {
+                                    layout: 'hbox',
+                                    items: [
+                                        me.freshDuration2,
+                                        me.freshOpacity2
+                                    ]
+                                }, {
+                                    layout: 'hbox',
+                                    items: [
+                                        me.freshDuration3,
+                                        me.freshOpacity3
+                                    ]
+                                }
                             ]
                         }
                     ]
@@ -669,15 +695,19 @@ Ext.define('NOC.fm.alarm.Application', {
         var freshCI = 'fm-blur-1'; // capacity 0.3
 
         if(c) {
-            if(duration < me.freshDuration1.value * 60) {
-                freshCI = 'fm-blur-4';                              // capacity 1
-            } else if(duration < me.freshDuration2.value * 60) {
-                freshCI = 'fm-blur-' + me.freshOpacity2.value;      // capacity 0.7
-            } else if(duration < me.freshDuration3.value * 60) {
-                freshCI = 'fm-blur-' + me.freshOpacity3.value;      // capacity 0.5
-            }
+            if(!me.freshSwitchOff.value) {
+                if(duration < me.freshDuration1.value * 60) {
+                    freshCI = 'fm-blur-4';                              // capacity 1
+                } else if(duration < me.freshDuration2.value * 60) {
+                    freshCI = 'fm-blur-' + me.freshOpacity2.value;      // capacity 0.7
+                } else if(duration < me.freshDuration3.value * 60) {
+                    freshCI = 'fm-blur-' + me.freshOpacity3.value;      // capacity 0.5
+                }
 
-            return c + ' ' + freshCI;
+                return c + ' ' + freshCI;
+            } else {
+                return c;
+            }
         } else {
             return '';
         }
