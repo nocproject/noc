@@ -129,3 +129,7 @@ sentry_path: "{{ lookup('env','SENTRY_PATH') | default('/', True)}}"
 sentry_project_id: "{{ lookup('env','SENTRY_PROJECT_ID') }}"
 sentry_js_token: "{{ lookup('env','SENTRY_JS_TOKEN') }}"
 sentry_url: "{{sentry_scheme}}://{{sentry_public_key}}:{{sentry_secret_key}}@{{sentry_host}}{{sentry_path}}{{sentry_project_id}}"
+
+consul_config_path: "{{etc_prefix}}/consul"
+consul_configd_path: "{{etc_prefix}}/consul.d"
+consul_scripts_path: "{{consul_configd_path}}/scripts"
