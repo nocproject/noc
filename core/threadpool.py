@@ -74,7 +74,7 @@ class ThreadPoolExecutor(object):
         logging.info("Shutdown")
         with self.threads_lock:
             self.to_shutdown = True
-        for _ in self.threads:
+        for _ in range(len(self.threads)):
             self.stop_one_worker()
         logging.info("Waiting for workers")
         self.done_event.wait(timeout=self.shutdown_timeout)
