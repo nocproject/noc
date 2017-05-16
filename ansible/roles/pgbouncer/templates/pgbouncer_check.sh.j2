@@ -1,0 +1,8 @@
+#!/bin/sh
+isok=$(timeout 1 /usr/bin/psql --host 127.0.0.1 -qAt0 --port 6432 noc -c "select 'ok'")
+if [ "$isok" = "ok" ]
+then
+    exit 0
+else
+    exit 2
+fi
