@@ -2,12 +2,8 @@
 - name: Setting Grafana conf file
   lineinfile: dest=/etc/rc.conf regexp=^grafana4_conf= line=grafana4_conf=\"{{ noc_root }}/var/etc/grafana/grafana.ini\"
 
-# Produced `unable to get current rcvar value` error
-#- name: Enable grafana4 system service
-#  service: name="grafana4" enabled=yes state=started
-
-- name: Enable Grafana system service
-  lineinfile: dest=/etc/rc.conf regexp=^grafana4_enable= line=grafana4_enable=\"YES\"
+- name: Enable grafana4 system service
+  service: name="grafana4" enabled=yes state=started
 
 - name: Install Grafana
   pkgng: name="grafana4" state=present

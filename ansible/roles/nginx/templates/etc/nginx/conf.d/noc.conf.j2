@@ -43,7 +43,7 @@ upstream mrt {
 {% if noc_config["services"].get("bi", []) %}
 upstream bi {
 {% for n in noc_config["services"].get("bi", []) %}
-    server {{ n }} weight={{bi_weight}} max_conns=1;
+    server {{ n }};
 {% endfor %}
 }
 {% endif %}
@@ -116,8 +116,8 @@ server {
     ssl_certificate_key {{ nginx_ssl_key_path }};
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
     add_header X-Content-Type-Options nosniff;
-    add_header X-Backend-Server $upstream_addr;
-    add_header X-Front-Server $hostname;
+    add_header X-Backend-Server $upstream_addr always;
+    add_header X-Front-Server $hostname always;
     ssl_stapling on;
     ssl_stapling_verify on;
 
