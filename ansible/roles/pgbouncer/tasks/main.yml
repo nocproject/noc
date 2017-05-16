@@ -10,9 +10,25 @@
     - config
     - telegraf
 
-
 - name: start pgbouncer
   service:
     name: pgbouncer
     enabled: yes
     state: started
+
+- name: copy pgbouncer consul templates
+  template:
+    src: pgbouncer.json
+    dest: "{{consul_configd_path}}"
+  notify: reload consul
+  tags:
+    - consul
+
+- name: copy pgbouncer check script
+  template:
+    src: pgbouncer_check.sh.j2
+    dest: "{{consul_scripts_path}}/pgbouncer_check.sh"
+    mode: 0755
+  notify: reload consul
+  tags:
+    - consul
