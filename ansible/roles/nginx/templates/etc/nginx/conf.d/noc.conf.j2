@@ -43,7 +43,7 @@ upstream mrt {
 {% if noc_config["services"].get("bi", []) %}
 upstream bi {
 {% for n in noc_config["services"].get("bi", []) %}
-    server {{ n }} weight={{bi_weight}} max_conns=1;
+    server {{ n }};
 {% endfor %}
 }
 {% endif %}
