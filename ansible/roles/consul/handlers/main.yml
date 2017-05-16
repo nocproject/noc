@@ -6,6 +6,11 @@
     name: consul
     state: restarted
 
+- name: reload consul
+  service:
+    name: consul
+    state: reloaded
+
 - name: start consul
   service:
     name: consul
