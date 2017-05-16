@@ -1,0 +1,8 @@
+{
+  "service": {
+    "name": "telegraf",
+    "tags": ["telegraf"],
+    "port": 9126,
+    "enableTagOverride": false
+  }
+}

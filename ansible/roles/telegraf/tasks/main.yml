@@ -56,3 +56,12 @@
     state: started
   tags:
     - config
+
+- name: copy telegraf consul templates
+  template:
+    src: telegraf.json
+    dest: "{{consul_configd_path}}"
+  notify: reload consul
+  when: "'Linux' in ansible_system and telegraf_prometheus_enabled"
+  tags:
+    - consul
