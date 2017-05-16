@@ -51,6 +51,8 @@ class Script(BaseScript):
     rx_sh_int_des = re.compile(
         r"^(?P<ifname>\S+)\s+\S+\s+(?:General|Access|Trunk|Customer|Promiscuous|Host)\s+\S+\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s*\n(?:^\s+Description:(?P<descr>.*?)\n)?",
         re.MULTILINE)
+    rx_sh_int_des2 = re.compile(
+        r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
     rx_lldp = re.compile(r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
 
@@ -93,6 +95,8 @@ class Script(BaseScript):
         i = []
         c = self.cli("show interfaces description detailed")
         i = self.rx_sh_int_des.findall(c)
+        if not i:
+            i = self.rx_sh_int_des2.findall(c)
 
         interfaces = []
         mac = []
@@ -115,9 +119,14 @@ class Script(BaseScript):
                     o_stat = match.group("oper_status").lower() == "up"
 
             else:
-                o_stat = res[1].strip().lower() == "up"
-                a_stat = res[2].strip().lower() == "up"
-                description = res[3].strip()
+                if len(res) == 4:
+                    o_stat = res[1].strip().lower() == "up"
+                    a_stat = res[2].strip().lower() == "up"
+                    description = res[3].strip()
+                else:
+                    o_stat = True
+                    a_stat = True
+                    description = res[1].strip()
 
             iface = {
                 "type": self.profile.get_interface_type(name),
