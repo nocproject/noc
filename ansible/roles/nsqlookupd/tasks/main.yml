@@ -24,3 +24,11 @@
     name: "nsqlookupd"
     enabled: yes
     state: started
+
+- name: copy nsqlookupd consul templates
+  template:
+    src: nsqlookupd.json
+    dest: "{{consul_configd_path}}"
+  notify: reload consul
+  tags:
+    - consul

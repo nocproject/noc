@@ -4,3 +4,8 @@
   service:
     name: nsqd
     state: restarted
+
+- name: reload consul
+  service:
+    name: consul
+    state: reloaded
