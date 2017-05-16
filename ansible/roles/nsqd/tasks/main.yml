@@ -60,3 +60,11 @@
     name: "nsqd"
     enabled: yes
     state: started
+
+- name: copy nsqd consul templates
+  template:
+    src: nsqd.json
+    dest: "{{consul_configd_path}}"
+  notify: reload consul
+  tags:
+    - consul

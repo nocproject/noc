@@ -112,12 +112,12 @@ class Profile(BaseProfile):
             # "DES-3528" and "DES-3552" not working without clipaging
             if match:
                 script.logger.debug("Enabling CLI Paging...")
-                script.cli("enable clipaging")
+                script.cli("enable clipaging", ignore_errors=True)
             match = True
         if not match:
             self.dlink_pager = True
             script.logger.debug("Disabling CLI Paging...")
-            script.cli("disable clipaging")
+            script.cli("disable clipaging", ignore_errors=True)
 
         # Parse path parameters
         if "patch" in script.credentials and script.credentials["path"]:
@@ -133,7 +133,7 @@ class Profile(BaseProfile):
         if self.cluster_member:
             script.cli("reconfig exit")
         if self.dlink_pager:
-            script.cli("enable clipaging")
+            script.cli("enable clipaging", ignore_errors=True)
 
     rx_port = re.compile(
         r"^\s*(?P<port>\d+(/|:)?\d*)\s*"
