@@ -2,7 +2,7 @@
   "service": {
     "check": {
       "interval": "10s",
-      "script": "/etc/consul.d/scripts/pgbouncer_check.sh"
+      "script": "{{consul_scripts_path}}/pgbouncer_check.sh"
     },
     "name": "pgbouncer",
     "port": 6432,
