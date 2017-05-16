@@ -20,3 +20,8 @@
   systemd:
     name: noc
     daemon_reload: yes
+
+- name: reload consul
+  service:
+    name: consul
+    state: reloaded

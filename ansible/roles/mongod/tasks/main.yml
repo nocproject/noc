@@ -103,3 +103,20 @@
   tags:
     - config
     - telegraf
+
+- name: copy mongodb consul templates
+  template:
+    src: mongodb.json
+    dest: "{{consul_configd_path}}"
+  notify: reload consul
+  tags:
+    - consul
+
+- name: copy mongodb check script
+  template:
+    src: mongodb.sh.j2
+    dest: "{{consul_scripts_path}}/mongodb.sh"
+    mode: 0755
+  notify: reload consul
+  tags:
+    - consul
