@@ -15,12 +15,14 @@ load_rc_config $name
 
 consul_template_pidfile="/var/run/consul/consul-template.pid"
 command="{{ consul_template_bin_path }}/consul-template"
-command_args="-config={{ consul_template_templates_dir }} -pid-file=${consul_template_pidfile}"
+command_args="-config={{ consul_template_templates_dir }} -pid-file=${consul_template_pidfile} -kill-signal=SIGTERM &"
 start_precmd="${name}_prestart"
 
 consul_template_prestart()
 {
-    mkdir /var/run/consul
+    if [ ! -d /var/run/consul/ ]; then
+        mkdir /var/run/consul
+    fi
     chown -R "{{ consul_user }}:{{ consul_group }}" /var/run/consul/
 }
 
