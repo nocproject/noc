@@ -49,8 +49,10 @@ class Script(BaseScript):
         r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
         re.MULTILINE | re.DOTALL)
     rx_sh_int_des = re.compile(
-        r"^(?P<ifname>\S+)\s+\S+\s+(?:General|Access|Trunk|Customer|Promiscuous|Host)\s+\S+\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s*\n(?:^\s+Description:(?P<descr>.*\n?))?",
+        r"^(?P<ifname>\S+)\s+\S+\s+(?:General|Access|Trunk|Customer|Promiscuous|Host)\s+\S+\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s*\n(?:^\s+Description:(?P<descr>.*?)\n)?",
         re.MULTILINE)
+    rx_sh_int_des2 = re.compile(
+        r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
     rx_lldp = re.compile(r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
 
@@ -58,7 +60,7 @@ class Script(BaseScript):
     rx_gvrp = re.compile(r"^(?P<ifname>\S+)\s+(?:Enabled\s+)Normal\s+", re.MULTILINE)
 
     rx_stp_en = re.compile(r"Spanning tree enabled mode?")
-    rx_stp = re.compile(r"(?P<ifname>\S+)\s+(?:enabled\s+)\s+\S+\s+\d+\s+\S+\s+\S+\s+(?:Yes|No)", re.MULTILINE)
+    rx_stp = re.compile(r"(?P<ifname>\S+)\s+(?:enabled)\s+\S+\s+\d+\s+\S+\s+\S+\s+(?:Yes|No)", re.MULTILINE)
 
     rx_vlan = re.compile(r"(?P<vlan>\S+)\s+(?P<vdesc>\S+)\s+(?P<vtype>Tagged|Untagged)\s+", re.MULTILINE)
 
@@ -71,29 +73,36 @@ class Script(BaseScript):
             t = pc["type"] == "L"
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
-        # Get STP interfaces
-        stp = []
-        s = self.cli("show spanning-tree", ignore_errors=True)
-        if self.rx_stp_en.search(s):
-            stp = self.rx_stp.findall(s)
-            # Get LLDP interfaces
+
+        # Get LLDP interfaces
         lldp = []
-        l = self.cli("show lldp configuration", ignore_errors=True)
-        if self.rx_lldp_en.search(l):
-            lldp = self.rx_lldp.findall(l)
+        c = self.cli("show lldp configuration", ignore_errors=True)
+        if self.rx_lldp_en.search(c):
+            lldp = self.rx_lldp.findall(c)
+
         # Get GVRP interfaces
         gvrp = []
-        g = self.cli("show gvrp configuration", ignore_errors=True)
-        if self.rx_gvrp_en.search(g):
-            gvrp = self.rx_gvrp.findall(g)
+        c = self.cli("show gvrp configuration", ignore_errors=True)
+        if self.rx_gvrp_en.search(c):
+            gvrp = self.rx_gvrp.findall(c)
 
-        # Format interfaces
+        # Get STP interfaces
+        stp = []
+        c = self.cli("show spanning-tree", ignore_errors=True)
+        if self.rx_stp_en.search(c):
+            stp = self.rx_stp.findall(c)
+
+        i = []
+        c = self.cli("show interfaces description detailed")
+        i = self.rx_sh_int_des.findall(c)
+        if not i:
+            i = self.rx_sh_int_des2.findall(c)
+
         interfaces = []
         mac = []
         ifindex = []
         mtu = []
-        c = self.cli("show interfaces description detailed")
-        for res in self.rx_sh_int_des.findall(c):
+        for res in i:
             name = res[0].strip()
             if self.match_version(version__regex="[12]\.[15]\.4[4-9]") \
             or self.match_version(version__regex="4\.0\.[4-5]"):
@@ -110,9 +119,14 @@ class Script(BaseScript):
                     o_stat = match.group("oper_status").lower() == "up"
 
             else:
-                o_stat = res[1].strip().lower() == "up"
-                a_stat = res[2].strip().lower() == "up"
-                description = res[3].strip()
+                if len(res) == 4:
+                    o_stat = res[1].strip().lower() == "up"
+                    a_stat = res[2].strip().lower() == "up"
+                    description = res[3].strip()
+                else:
+                    o_stat = True
+                    a_stat = True
+                    description = res[1].strip()
 
             iface = {
                 "type": self.profile.get_interface_type(name),
@@ -151,13 +165,12 @@ class Script(BaseScript):
                 iface["aggregated_interface"] = ai
                 if is_lacp:
                     iface["enabled_protocols"] += ["LACP"]
+            cmd = self.cli("show interfaces switchport %s" % name)
             iface["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
             # Vlans
             tvlan = []
             utvlan = None
-            cmd = self.cli("show interfaces switchport %s" % name)
-            cmd = cmd.split("\n\n")
-            for vlan in parse_table(cmd[0]):
+            for vlan in parse_table(cmd):
                 vlan_id = vlan[0]
                 rule = vlan[2]
                 if rule == "Tagged":

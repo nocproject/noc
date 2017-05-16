@@ -80,13 +80,21 @@ class Script(BaseScript):
                 pass
 
         # Fallback to CLI
+        stacked = False
         plat = self.cli("show system", cached=True)
+        match = self.rx_platform.search(plat)
+        if not match:
+            plat = self.cli("show system unit 1", cached=True)
+            stacked = True
         match = self.re_search(self.rx_platform, plat)
         platform = match.group("platform")
         platform = platform.split(".")[8]
         platform = self.platforms.get(platform)
 
-        ver = self.cli("show version", cached=True)
+        if stacked:
+            ver = self.cli("show version unit 1", cached=True)
+        else:
+            ver = self.cli("show version", cached=True)
         match = self.rx_version1.search(ver)
         if match:
             version = self.re_search(self.rx_version1, ver)
@@ -97,7 +105,10 @@ class Script(BaseScript):
             bootprom = None
             hardware = None
 
-        ser = self.cli("show system id", cached=True)
+        if stacked:
+            ser = self.cli("show system id unit 1", cached=True)
+        else:
+            ser = self.cli("show system id", cached=True)
         match = self.rx_serial1.search(ser)
         if match:
             serial = self.re_search(self.rx_serial1, ser)

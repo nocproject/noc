@@ -19,6 +19,7 @@ class Script(BaseScript):
     cache = True
 
     rx_mac = re.compile(r"^System MAC Address:\s+(?P<mac>\S+)$", re.MULTILINE)
+    rx_mac2 = re.compile(r"^OOB MAC Address:\s+(?P<mac>\S+)$", re.MULTILINE)
 
     def execute(self):
         # Try SNMP first
@@ -37,8 +38,16 @@ class Script(BaseScript):
 
         # Fallback to CLI
         match = self.rx_mac.search(self.cli("show system", cached=True))
-        mac = match.group("mac")
+        if match:
+            mac_begin = match.group("mac")
+            mac_end = match.group("mac")
+        else:
+            c = self.cli("show system unit 1", cached=True)
+            match = self.rx_mac.search(c)
+            mac_begin = match.group("mac")
+            match = self.rx_mac2.search(c)
+            mac_end = match.group("mac")
         return {
-            "first_chassis_mac": mac,
-            "last_chassis_mac": mac
+            "first_chassis_mac": mac_begin,
+            "last_chassis_mac": mac_end
         }
