@@ -27,6 +27,8 @@ postgres_user: pgsql
 postgresql_conf_path: /usr/local/pgsql/data/postgresql.conf
 postgresql_hba_path: /usr/local/pgsql/data/pg_hba.conf
 tower_path: /usr/local/tower
+consul_bin_path: "/usr/local/bin"
+consul_template_bin_path: "/usr/local/bin"
 consul_template_group: wheel
 
 pip_cflags: "-I/usr/local/include -L/usr/local/lib"
