@@ -2,54 +2,37 @@
 ##----------------------------------------------------------------------
 ## Form widgets
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Django modules
-from django.forms.widgets import Input, PasswordInput
+from django.forms.widgets import Input
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 # Third-party modules
 import ujson
 
-##
-##
-##
-class LabelWidget(Input):
-    def render(self, name, value, attrs=None):
-        return value
-    
 
-class PasswordWidget(PasswordInput):
-    class Media:
-        js = ["/static/js/toggle_password.js"]
-    
-    def render(self, name, value, attrs=None):
-        r= mark_safe("<span>") + super(PasswordWidget, self).render(name, value, attrs)
-        return r + mark_safe(u""" <input type="checkbox" onclick="toggle_password('id_%s',this.checked);"> Show password </span>""" % name)
-
-##
-## Autocomplete Tags
-##
 class AutoCompleteTags(Input):
-    input_type="text"
+    input_type = "text"
+
     class Media:
-        css={
+        css = {
             "all": ["/static/css/jquery.tokeninput.css"]
         }
-        js=["/static/js/jquery.tokeninput.js"]
+        js = ["/static/js/jquery.tokeninput.js"]
 
-    def render(self,name,value=None,attrs=None):
-        initial=[]
+    def render(self, name, value=None, attrs=None):
+        initial = []
         if value:
             for v in value:
-                v=v.strip()
+                v = v.strip()
                 if v:
-                    initial+=[{"id":v,"name":v}]
-        initial=ujson.dumps(initial)
-        html=super(AutoCompleteTags,self).render(name,value,attrs)
-        js="""<script type="text/javascript">
+                    initial += [{"id": v, "name": v}]
+        initial = ujson.dumps(initial)
+        html = super(AutoCompleteTags, self).render(name, value, attrs)
+        js = """<script type="text/javascript">
         $(document).ready(function() {
             $("#%s").tokenInput("%s",{
                 prePopulate: %s,
@@ -70,25 +53,19 @@ class AutoCompleteTags(Input):
                 });
             });
         </script>
-        """%(attrs["id"], "/main/tag/ac_lookup/", initial)
-        return mark_safe("\n".join([html,js]))
+        """ % (attrs["id"], "/main/tag/ac_lookup/", initial)
+        return mark_safe("\n".join([html, js]))
 
 
-##
-## Autocomplete lookup function:
-## 
-def lookup(request,func):
-    result=[]
+def lookup(request, func):
+    result = []
     if request.GET and "q" in request.GET:
-        q=request.GET["q"]
-        if len(q)>2: # Ignore requests shorter than 3 letters
-            result=list(func(q))
+        q = request.GET["q"]
+        if len(q) > 2:  # Ignore requests shorter than 3 letters
+            result = list(func(q))
     return HttpResponse("\n".join(result), mimetype='text/plain')
 
 
-##
-## Render tag list for an object
-##
 def tags_list(o):
     tags = o.tags or []
     s = (["<ul class='tags-list'>"] +
