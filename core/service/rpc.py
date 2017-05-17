@@ -58,8 +58,13 @@ class RPCProxy(object):
         def sync_wrapper(*args, **kwargs):
             @tornado.gen.coroutine
             def _call():
-                r = yield self._call(item, *args, **kwargs)
-                q.put(r)
+                try:
+                    r = yield self._call(item, *args, **kwargs)
+                    q.put(r)
+                except tornado.gen.Return as e:
+                    q.put(e.value)
+                except Exception as e:
+                    q.put(e)
 
             q = queue.Queue()
             self._service.ioloop.add_callback(_call)
