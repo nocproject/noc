@@ -60,7 +60,7 @@
 - name: copy telegraf consul templates
   template:
     src: telegraf.json
-    dest: "{{consul_configd_path}}"
+    dest: "{{consul_configd_path}}/telegraf.json"
   notify: reload consul
   when: "'Linux' in ansible_system and telegraf_prometheus_enabled"
   tags:
