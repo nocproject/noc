@@ -68,14 +68,14 @@ class Config(object):
             "noc",
             self._service.name,
             "%s-global-%s" % (self._service.name,
-                              self._defaults["node"])
+                              self._defaults.get("node", ""))
         ]
         if self._service.pooled:
             paths += [
                 "%s-%s-%s" % (
                     self._service.name,
-                    self._defaults["pool"],
-                    self._defaults["node"]
+                    self._defaults.get("pool", ""),
+                    self._defaults.get("node", "")
                 )
             ]
         # Build effective config
