@@ -97,11 +97,13 @@ class Script(BaseScript):
                     "port id": "remote_port",
                     "portid": "remote_port",
                     "port description": "remote_port_description",
+                    "portdesc": "remote_port_description",
                     "system capabilities enabled": "remote_capabilities",
                     "syscapenabled": "remote_capabilities",
                     "system name": "remote_system_name",
                     "sysname": "remote_system_name",
-                    "system description": "remote_system_description"
+                    "system description": "remote_system_description",
+                    "sysdesc": "remote_system_description"
                 }, ndata)
                 # Convert chassis id
                 n["remote_chassis_id_subtype"] = self.CHASSIS_TYPES[n["remote_chassis_id_subtype"].lower()]

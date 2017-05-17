@@ -9,6 +9,5 @@ console.debug("Defining NOC.main.ref.script.LookupField");
 Ext.define("NOC.main.ref.script.LookupField", {
     extend: "NOC.core.LookupField",
     alias: "widget.main.ref.script.LookupField",
-    restUrl: "/main/ref/script/lookup/",
     uiStyle: "medium"
 });
