@@ -198,6 +198,10 @@
       owner: "{{noc_user}}"
     - name: var/bi
       owner: "{{noc_user}}"
+    - name: var/bi-dict
+      owner: "{{noc_user}}"
+    - name: var/bi-dict-data
+      owner: "{{noc_user}}"
 
 - name: Install noc.pth
   template:
