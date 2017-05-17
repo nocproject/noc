@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ##----------------------------------------------------------------------
-## fm.reportalarmduration
+## fm.reporttraffic
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
@@ -44,7 +44,7 @@ class ReportForm(forms.Form):
     #     label=_("Skip full available"),
     #     required=False
     # )
-    #todo fix MO
+
     #managed_object = forms.ModelChoiceField(
     #    label=_("Managed Object"),
     #    required=False,
@@ -54,13 +54,12 @@ class ReportForm(forms.Form):
         label=_("Object Profile"),
         required=False,
         queryset=ManagedObjectProfile.objects.filter()
-    )
+    )   
     interface_profile = forms.ModelChoiceField(
         label=_("Interface Profile"),
         required=False,
         queryset=InterfaceProfile.objects.filter()
-    )
-
+    )      
 
 class ReportTraffic(SimpleReport):
     title = _("Load Interfaces")
@@ -82,9 +81,8 @@ class ReportTraffic(SimpleReport):
             }
         )
     }
-
-    def get_data(self, request, from_date=None, to_date=None, object_profile=None, interface_profile=None,
-                 managed_object=None, **kwargs):
+    
+    def get_data(self, request, from_date=None, to_date=None, object_profile=None, interface_profile=None, managed_object=None, **kwargs):
         now = datetime.datetime.now()
         b = datetime.datetime.strptime(from_date, "%d.%m.%Y")
         td = b.strftime("%Y-%m-%d")
@@ -96,56 +94,64 @@ class ReportTraffic(SimpleReport):
         # Interval days
         a = td.split('-')
         b = fd.split('-')
-        aa = datetime.date(int(a[0]), int(a[1]), int(a[2]))
-        bb = datetime.date(int(b[0]), int(b[1]), int(b[2]))
-        cc = bb - aa
+        aa = datetime.date(int(a[0]),int(a[1]),int(a[2]))
+        bb = datetime.date(int(b[0]),int(b[1]),int(b[2]))
+        cc = bb-aa
         dd = str(cc)
-        interval = (dd.split()[0])
+        interval = (dd.split()[0])       
         # Load managed objects
         f = []
+        r1 = []
+        r2 = []
+        r11 = []
+        r12 = []
         if object_profile:
             mos = ManagedObject.objects.filter(object_profile=object_profile)
         if managed_object:
-            mos = ManagedObject.objects.filter(id=managed_object.id)
+            mos = ManagedObject.objects.filter(id=managed_object.id) 
         for o in mos:
             ifaces = Interface.objects.filter(managed_object=o, type="physical")
             if interface_profile:
                 ifaces = Interface.objects.filter(managed_object=o, type="physical", profile=interface_profile)
-            for j in ifaces:
+            for j in ifaces:    
                 # print m.name, "," , m.platform  , ",", m.address, ",", j.name, ",",j.description
                 client = InfluxDBClient()
-                query1 = [
-                    "SELECT percentile(\"value\", 98) FROM \"Interface | Load | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                        o.name, j.name, td, fd)]
+                query1 = ["SELECT percentile(\"value\", 98) FROM \"Interface | Load | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
+                    o.name, j.name, td , fd)]
                 result1 = client.query(query1)
                 r = list(result1)
-                if len(r) > 0:
+                if len(r)>0:
                     r = r[0]
                     r1 = r["percentile"]
-                query2 = [
-                    "SELECT percentile(\"value\", 98) FROM \"Interface | Load | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                        o.name, j.name, td, fd)]
+                else:
+                    r1 = 0      
+                query2 = ["SELECT percentile(\"value\", 98) FROM \"Interface | Load | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
+                    o.name, j.name, td , fd)]
                 result2 = client.query(query2)
                 r = list(result2)
-                if len(r) > 0:
+                if len(r)>0:
                     r = r[0]
                     r2 = r["percentile"]
-                query11 = [
-                    "SELECT median(\"value\") FROM \"Interface | Load | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                        o.name, j.name, td, fd)]
+                else:
+                    r2 = 0                          
+                query11 = ["SELECT median(\"value\") FROM \"Interface | Load | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
+                    o.name, j.name, td , fd)]
                 result3 = client.query(query11)
                 r = list(result3)
-                if len(r) > 0:
+                if len(r)>0:
                     r = r[0]
                     r11 = r["median"]
-                query12 = [
-                    "SELECT median(\"value\") FROM \"Interface | Load | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                        o.name, j.name, td, fd)]
+                else:
+                    r11 = 0                            
+                query12 = ["SELECT median(\"value\") FROM \"Interface | Load | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
+                    o.name, j.name, td , fd)]
                 result4 = client.query(query12)
                 r = list(result4)
-                if len(r) > 0:
+                if len(r)>0:
                     r = r[0]
                     r12 = r["median"]
+                else:
+                    r12 = 0                         
                 f += [(
                     o.name,
                     o.description,
@@ -156,7 +162,7 @@ class ReportTraffic(SimpleReport):
                     int(r2),
                     int(r11),
                     int(r12),
-                    interval
+                    interval  
                 )]
         return self.from_dataset(
             title=self.title,
@@ -171,3 +177,4 @@ class ReportTraffic(SimpleReport):
             data=f,
             enumerate=True
         )
+
