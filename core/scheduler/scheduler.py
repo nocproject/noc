@@ -516,7 +516,7 @@ class Scheduler(object):
         if self.executor:
             self.executor.apply_metrics(d)
         d.update({
-            "%s_jobs_burst": self.jobs_burst
+            "%s_jobs_burst" % self.name: len(self.jobs_burst)
         })
 
     def shutdown(self):
