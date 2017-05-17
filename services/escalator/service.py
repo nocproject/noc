@@ -17,6 +17,7 @@ from noc.core.scheduler.scheduler import Scheduler
 
 class EscalatorService(Service):
     name = "escalator"
+    leader_lock_name = "escalator"
 
     def __init__(self):
         super(EscalatorService, self).__init__()

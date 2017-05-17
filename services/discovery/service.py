@@ -32,17 +32,17 @@ class DiscoveryService(Service):
 
     @tornado.gen.coroutine
     def on_activate(self):
-        if self.config.global_n_instances > 1:
+        slot_number, total_slots = yield self.acquire_slot()
+        if total_slots > 1:
             self.logger.info(
-                "Enabling distributed mode: Slot %d of %d",
-                self.config.instance + self.config.global_offset,
-                self.config.global_n_instances
+                "Enabling distributed mode: Slot %d/%d",
+                slot_number, total_slots
             )
             ifilter = {
                 "key": {
                     "$mod": [
-                        self.config.global_n_instances,
-                        self.config.instance + self.config.global_offset
+                        total_slots,
+                        slot_number
                     ]
                 }
             }
@@ -62,6 +62,17 @@ class DiscoveryService(Service):
         )
         self.scheduler.service = self
         self.scheduler.run()
+
+    def get_mon_data(self):
+        r = super(DiscoveryService, self).get_mon_data()
+        if self.scheduler:
+            self.scheduler.apply_metrics(r)
+        return r
+
+    @tornado.gen.coroutine
+    def on_deactivate(self):
+        if self.scheduler:
+            self.add_close_callback(self.scheduler.shutdown)
 
 if __name__ == "__main__":
     DiscoveryService().start()

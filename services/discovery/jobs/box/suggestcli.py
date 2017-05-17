@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.service.client import RPCClient, RPCError
+from noc.core.service.client import open_sync_rpc, RPCError
 
 
 class SuggestCLICheck(DiscoveryCheck):
@@ -44,8 +44,9 @@ class SuggestCLICheck(DiscoveryCheck):
     def check_login(self, user, password, super_password):
         self.logger.info("Checking %s/%s/%s", user, password, super_password)
         try:
-            r = RPCClient(
-                "activator-%s" % self.object.pool.name,
+            r = open_sync_rpc(
+                "activator",
+                pool=self.object.pool.name,
                 calling_service="discovery"
             ).script(
                 "%s.login" % self.object.profile_name,

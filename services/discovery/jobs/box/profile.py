@@ -16,7 +16,7 @@ import operator
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.profilecheckrule import ProfileCheckRule
 from noc.lib.mib import mib
-from noc.core.service.client import RPCClient, RPCError
+from noc.core.service.client import open_sync_rpc, RPCError
 
 rules_lock = threading.Lock()
 
@@ -144,8 +144,9 @@ class ProfileCheck(DiscoveryCheck):
                               param)
             return None
         try:
-            return RPCClient(
-                "activator-%s" % self.object.pool.name,
+            return open_sync_rpc(
+                "activator",
+                pool=self.object.pool.name,
                 calling_service="discovery"
             ).snmp_v2c_get(
                 self.object.address,
@@ -162,8 +163,9 @@ class ProfileCheck(DiscoveryCheck):
         """
         url = "http://%s%s" % (self.object.address, param)
         try:
-            return RPCClient(
-                "activator-%s" % self.object.pool.name,
+            return open_sync_rpc(
+                "activator",
+                pool=self.object.pool.name,
                 calling_service="discovery"
             ).http_get(url)
         except RPCError as e:
@@ -176,8 +178,9 @@ class ProfileCheck(DiscoveryCheck):
         """
         url = "https://%s%s" % (self.object.address, param)
         try:
-            return RPCClient(
-                "activator-%s" % self.object.pool.name,
+            return open_sync_rpc(
+                "activator",
+                pool=self.object.pool.name,
                 calling_service="discovery"
             ).http_get(url)
         except RPCError as e:

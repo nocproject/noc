@@ -24,9 +24,10 @@ class Script(BaseScript):
     rx_ip = re.compile(
         "^\s+Control vid:\s+(?P<vlan_id>\d+)\s*\n"
         "^\s+IP address:\s+(?P<ip_address>\d+\S+)\s*\n"
-        "^\s+Server IP:\s+\S+\s*\n"
+        "^\s+Server IP:\s+\S+(?:\n\S+.*?)?\n"
         "^\s+MAC address:\s+(?P<mac>\S+)\s*\n"
         "^\s+Netmask:\s+(?P<ip_subnet>\d+\S+)\s*\n", re.MULTILINE)
+
 
     def execute(self):
         interfaces = []

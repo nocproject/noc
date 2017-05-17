@@ -16,11 +16,12 @@ import threading
 import pymongo.errors
 import tornado.gen
 import tornado.ioloop
-from concurrent.futures import ThreadPoolExecutor
 ## NOC modules
 from job import Job
 from noc.lib.nosql import get_db
 from noc.core.handler import get_handler
+from noc.core.threadpool import ThreadPoolExecutor
+from noc.core.perf import metrics
 
 
 class Scheduler(object):
@@ -60,6 +61,9 @@ class Scheduler(object):
         self.to_reset_running = reset_running
         self.running_groups = set()
         self.collection = None
+        self.bulk = None
+        self.bulk_ops = None
+        self.bulk_lock = threading.Lock()
         self.max_threads = max_threads
         self.executor = None
         self.run_callback = None
@@ -121,6 +125,8 @@ class Scheduler(object):
             self.logger.debug("Open collection %s",
                               self.collection_name)
             self.collection = get_db()[self.collection_name]
+            self.bulk = self.collection.initialize_unordered_bulk_op()
+            self.bulk_ops = 0
         return self.collection
 
     def get_executor(self):
@@ -130,7 +136,8 @@ class Scheduler(object):
         if not self.executor:
             self.logger.debug("Run thread executor (%d threads)",
                               self.max_threads)
-            self.executor = ThreadPoolExecutor(self.max_threads)
+            self.executor = ThreadPoolExecutor(self.max_threads,
+                                               name=self.name)
         return self.executor
 
     def reset_running(self):
@@ -184,16 +191,19 @@ class Scheduler(object):
         """
         while not self.to_shutdown:
             t0 = self.ioloop.time()
-            try:
-                n = yield self.run_pending()
-            except Exception as e:
-                self.logger.error("Failed to schedule next tasks: %s", e)
-                n = 0
+            n = 0
+            if self.get_executor().may_submit():
+                try:
+                    n = yield self.run_pending()
+                    self.apply_bulk_ops()
+                except Exception as e:
+                    self.logger.error("Failed to schedule next tasks: %s", e)
             dt = self.check_time - (self.ioloop.time() - t0) * 1000
             if dt > 0:
                 if n:
                     dt = min(dt, self.check_time / n)
                 yield tornado.gen.sleep(dt / 1000.0)
+        self.apply_bulk_ops()
 
     def iter_pending_jobs(self, limit):
         """
@@ -231,7 +241,7 @@ class Scheduler(object):
         executor = self.get_executor()
         collection = self.get_collection()
         n = 0
-        if self.submit_threshold <= executor._work_queue.qsize():
+        if not executor.may_submit():
             raise tornado.gen.Return(n)
         jobs, self.jobs_burst = self.jobs_burst, []
         burst_ids = set(j.attrs[Job.ATTR_ID] for j in jobs)
@@ -241,18 +251,15 @@ class Scheduler(object):
                 if j.attrs[Job.ATTR_ID] not in burst_ids
             ]
         while jobs:
-            may_submit = max(
-                self.submit_threshold - executor._work_queue.qsize(),
-                0
-            )
-            if not may_submit:
+            free_workers = executor.get_free_workers()
+            if not free_workers:
                 self.logger.info("All workers are busy. Sending %d jobs to burst", len(jobs))
                 self.jobs_burst = jobs
                 break
             now = datetime.datetime.now()
             rl = min(
                 sum(1 for j in jobs if j.attrs[Job.ATTR_TS] <= now),
-                may_submit
+                free_workers
             )
             rjobs, jobs = jobs[:rl], jobs[rl:]
             if rjobs:
@@ -298,6 +305,7 @@ class Scheduler(object):
                 #
                 for job in rjobs:
                     executor.submit(job.run)
+                    metrics["%s_jobs_started"] += 1
                     n += 1
             if jobs:
                 # Wait for next job within check_interval
@@ -309,6 +317,29 @@ class Scheduler(object):
                     dt = max(dt, self.min_sleep)
                     yield tornado.gen.sleep(dt)
         raise tornado.gen.Return(n)
+
+    def apply_bulk_ops(self):
+        t0 = self.ioloop.time()
+        with self.bulk_lock:
+            if not self.bulk_ops:
+                return
+            try:
+                r = self.bulk.execute()
+            except pymongo.errors.BulkWriteError as e:
+                self.logger.error("Cannot apply bulk operations: %s", e.details)
+                return
+            dt = self.ioloop.time() - t0
+            self.logger.info(
+                "%d bulk operations complete in %dms: "
+                "inserted=%d, updated=%d, removed=%d",
+                self.bulk_ops,
+                int(dt * 1000),
+                r.get("nInserted", 0),
+                r.get("nModified", 0),
+                r.get("nRemoved", 0)
+            )
+            self.bulk = self.collection.initialize_unordered_bulk_op()
+            self.bulk_ops = 0
 
     def remove_job(self, jcls, key=None):
         """
@@ -325,9 +356,9 @@ class Scheduler(object):
         Remove job from schedule
         """
         self.logger.info("Remove job %s", jid)
-        self.get_collection().remove({
-            Job.ATTR_ID: jid
-        })
+        with self.bulk_lock:
+            self.bulk.find({Job.ATTR_ID: jid}).remove_one()
+            self.bulk_ops += 1
 
     def submit(self, jcls, key=None, data=None, ts=None, delta=None,
                keep_ts=False):
@@ -433,9 +464,9 @@ class Scheduler(object):
                 Job.ATTR_ID: jid
             }
             self.logger.debug("update(%s, %s)", q, op)
-            r = self.get_collection().update(q, op)
-            if not r["ok"] or r["nModified"] != 1:
-                self.logger.error("Failed to set next run for job %s", jid)
+            with self.bulk_lock:
+                self.bulk.find(q).update(op)
+                self.bulk_ops += 1
 
     def cache_worker(self):
         self.logger.info("Starting cache worker thread")
@@ -475,3 +506,20 @@ class Scheduler(object):
         self.cache_queue.put(
             (key, value, version)
         )
+
+    def apply_metrics(self, d):
+        """
+        Append scheduler metrics to dictionary d
+        :param d: 
+        :return: 
+        """
+        if self.executor:
+            self.executor.apply_metrics(d)
+        d.update({
+            "%s_jobs_burst" % self.name: len(self.jobs_burst)
+        })
+
+    def shutdown(self):
+        self.to_shutdown = True
+        if self.executor:
+            self.executor.shutdown()

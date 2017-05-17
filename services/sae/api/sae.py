@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## SAE API
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ from noc.core.script.loader import loader
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectcapabilities import ObjectCapabilities
 from noc.core.cache.decorator import cachedmethod
+from noc.core.dcs.base import ResolutionError
 
 
 class SAEAPI(API):
@@ -21,6 +22,9 @@ class SAEAPI(API):
     SAE API
     """
     name = "sae"
+
+    ACTIVATOR_RESOLUTION_RETRIES = 5
+    ACTIVATOR_RESOLUTION_TIMEOUT = 2
 
     RUN_SQL = """
         SELECT
@@ -44,6 +48,25 @@ class SAEAPI(API):
         WHERE mo.id = %s
     """
 
+    @tornado.gen.coroutine
+    def resolve_activator(self, pool):
+        sn = "activator-%s" % pool
+        for i in range(self.ACTIVATOR_RESOLUTION_RETRIES):
+            try:
+                svc = yield self.service.dcs.resolve(sn)
+                raise tornado.gen.Return(svc)
+            except ResolutionError as e:
+                self.logger.info("Cannot resolve %s: %s", sn, e)
+        raise tornado.gen.Return(None)
+
+    @tornado.gen.coroutine
+    def get_activator_url(self, pool):
+        svc = yield self.resolve_activator(pool)
+        if svc:
+            raise tornado.gen.Return("http://%s/api/activator/" % svc)
+        else:
+            raise tornado.gen.Return(None)
+
     @api
     @tornado.gen.coroutine
     def script(self, object_id, script, args=None, timeout=None):
@@ -62,17 +85,14 @@ class SAEAPI(API):
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
             raise APIError("Pool not found")
-        # Pass call to activator
-        activator = self.service.get_activator(pool)
         # Check script is exists
         script_name = "%s.%s" % (data["profile"], script)
         if not loader.has_script(script_name):
             raise APIError("Invalid script")
         #
-        try:
-            url = activator._get_url()
-        except ValueError:
-            raise APIError("No activators configured for pool '%s'" % pool)
+        url = yield self.get_activator_url(pool)
+        if not url:
+            raise APIError("No active activators for pool '%s'" % pool)
         self.redirect(
             url,
             "script",
@@ -91,14 +111,7 @@ class SAEAPI(API):
         pool = self.service.get_pool_name(data["pool_id"])
         if not pool:
             raise APIError("Pool not found")
-        # Get activator
-        activator = self.service.get_activator(pool)
-        try:
-            data["service"] = activator._get_service()
-        except ValueError:
-            raise APIError(
-                "No activators configured for pool '%s'" % pool
-            )
+        data["pool"] = pool
         raise tornado.gen.Return(data)
 
     @cachedmethod(

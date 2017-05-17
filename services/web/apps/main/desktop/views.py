@@ -23,7 +23,7 @@ from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
 from noc.main.models.permission import Permission
 from noc.support.cp import CPClient
-from noc.core.service.client import RPCClient, RPCError
+from noc.core.service.client import open_sync_rpc, RPCError
 from noc.core.translation import ugettext as _
 
 
@@ -249,7 +249,7 @@ class DesktopApplication(ExtApplication):
         """
         credentials = dict((str(k), v) for k, v in request.POST.items())
         credentials["user"] = request.user.username
-        client = RPCClient("login", calling_service="web")
+        client = open_sync_rpc("login", calling_service="web")
         try:
             r = client.change_credentials(credentials)
         except RPCError as e:

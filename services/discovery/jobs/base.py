@@ -26,6 +26,7 @@ from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.lib.nosql import get_db
 from noc.core.service.rpc import RPCError
+from noc.core.service.loader import get_service
 
 
 class MODiscoveryJob(PeriodicJob):
@@ -103,6 +104,7 @@ class DiscoveryCheck(object):
     required_capabilities = None
 
     def __init__(self, job):
+        self.service = get_service()
         self.job = job
         self.object = self.job.object
         self.logger = self.job.logger.get_logger(

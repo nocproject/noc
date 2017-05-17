@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Base service
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -14,9 +14,9 @@ import logging
 import signal
 import uuid
 import random
-from collections import defaultdict
 import argparse
 import functools
+import socket
 ## Third-party modules
 import tornado.ioloop
 import tornado.gen
@@ -24,12 +24,12 @@ import tornado.web
 import tornado.netutil
 import tornado.httpserver
 import tornado.httpclient
-from concurrent.futures import ThreadPoolExecutor
 import setproctitle
 import nsq
 import ujson
 import threading
 ## NOC modules
+import noc.core.service.httpclient  # Use curl
 from noc.lib.debug import excepthook, error_report
 from .config import Config
 from .api import APIRequestHandler
@@ -39,7 +39,10 @@ from .health import HealthRequestHandler
 from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
 from .ctl import CtlAPI
+from .loader import set_service
 from noc.core.perf import metrics, apply_metrics
+from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
+from noc.core.threadpool import ThreadPoolExecutor
 
 
 class Service(object):
@@ -53,9 +56,16 @@ class Service(object):
     # Format string to set process name
     # config variables can be expanded as %(name)s
     process_name = "noc-%(name).10s"
+    # Leader lock name
+    # Only one active instace per leader lock can be active
+    # at given moment
+    # Config variables can be expanded as %(varname)s
+    leader_lock_name = None
+
     # Leader group name
     # Only one service in leader group can be running at a time
     # Config variables can be expanded as %(varname)s
+    # @todo: Deprecated, must be removed
     leader_group_name = None
     # Pooled service are used to distribute load between services.
     # Pool name set in NOC_POOL parameter or --pool option.
@@ -63,16 +73,21 @@ class Service(object):
     # to allow only one instance of services per node or datacenter
     pooled = False
 
-    ## Run NSQ writer on service startup
+    # Run NSQ writer on service startup
     require_nsq_writer = False
-    ## List of API instances
+    # List of API instances
     api = []
-    ## Request handler class
+    # Request handler class
     api_request_handler = APIRequestHandler
-    ## Initialize gettext and process *language* configuration
+    # Initialize gettext and process *language* configuration
     use_translation = False
-    ## Initialize jinja2 templating engine
+    # Initialize jinja2 templating engine
     use_jinja = False
+    # Register traefik backend if not None
+    traefik_backend = None
+    # Traefik frontend rule
+    # i.e. PathPrefix:/api/<name>
+    traefik_frontend_rule = None
 
     LOG_FORMAT = "%(asctime)s [%(name)s] %(message)s"
 
@@ -86,7 +101,11 @@ class Service(object):
 
     NSQ_PUB_RETRY_DELAY = 0.1
 
+    class RegistrationError(Exception):
+        pass
+
     def __init__(self):
+        set_service(self)
         sys.excepthook = excepthook
         # Monkeypatch error reporting
         tornado.ioloop.IOLoop.handle_callback_exception = self.handle_callback_exception
@@ -103,6 +122,13 @@ class Service(object):
         self._metrics = []
         self.metrics_lock = threading.Lock()
         self.metrics_callback = None
+        self.dcs = None
+        # Effective address and port
+        self.server = None
+        self.address = None
+        self.port = None
+        self.is_active = False
+        self.close_callbacks = []
 
     def create_parser(self):
         """
@@ -172,6 +198,13 @@ class Service(object):
             dest="config",
             default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
             help="Configuration path"
+        )
+        parser.add_argument(
+            "--dcs",
+            action="store",
+            dest="dcs",
+            default=DEFAULT_DCS,
+            help="Distributed Coordinated Storage URL"
         )
         if self.pooled:
             parser.add_argument(
@@ -283,6 +316,7 @@ class Service(object):
         # Setup signal handlers
         self.setup_signal_handlers()
         # Starting IOLoop
+        self.is_active = True
         if self.pooled:
             self.logger.warn(
                 "Running service %s (pool: %s)",
@@ -298,16 +332,28 @@ class Service(object):
                 self.logger.warn("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.instance()
+            # Report when main ioloop blocked
+            try:
+                self.ioloop.set_blocking_log_threshold(1.0)
+            except NotImplementedError:
+                pass
+            # Initialize DCS
+            self.dcs = get_dcs(cmd_options["dcs"])
+            # Activate service
             self.logger.warn("Activating service")
             self.activate()
             self.logger.warn("Starting IOLoop")
             self.ioloop.start()
         except KeyboardInterrupt:
             self.logger.warn("Interrupted by Ctrl+C")
+        except self.RegistrationError:
+            self.logger.info("Registration failed")
         except Exception:
             error_report()
         finally:
             self.deactivate()
+        for cb, args, kwargs in self.close_callbacks:
+            cb(*args, **kwargs)
         self.logger.warn("Service %s has been terminated", self.name)
 
     def load_config(self):
@@ -335,9 +381,26 @@ class Service(object):
         """
         Returns an (address, port) for HTTP service listener
         """
+        if self.address and self.port:
+            return self.address, self.port
         addr, port = self.config.listen.split(":")
+        if addr == "auto":
+            addr = os.environ.get("HOSTNAME", "auto")
+            self.logger.info("Autodetecting address: auto -> %s", addr)
+        addr = socket.gethostbyname(addr)
         port = int(port) + self.config.instance
         return addr, port
+
+    def update_service_address(self):
+        """
+        Update service address and port from tornado TCPServer
+        :param server: 
+        :return: 
+        """
+        for f in self.server._sockets:
+            sock = self.server._sockets[f]
+            self.address, self.port = sock.getsockname()
+            break
 
     def get_handlers(self):
         """
@@ -371,10 +434,6 @@ class Service(object):
         # Collect and register exposed API
         for a in api:
             url = "^/api/%s/$" % a.name
-            self.logger.info(
-                "Supported API: %s at http://%s:%s/api/%s/",
-                a.name, addr, port, a.name
-            )
             handlers += [(
                 url,
                 self.api_request_handler,
@@ -388,26 +447,76 @@ class Service(object):
                 ("^/api/%s/sdl.js" % self.name, SDLRequestHandler, {"sdl": sdl})
             ]
         handlers += self.get_handlers()
-        addr, port = self.get_service_address()
-        self.logger.info("Running HTTP APIs at http://%s:%s/",
-                         addr, port)
         app = tornado.web.Application(handlers, **self.get_app_settings())
-        http_server = tornado.httpserver.HTTPServer(
+        self.server = tornado.httpserver.HTTPServer(
             app,
-            xheaders=True
+            xheaders=True,
+            no_keep_alive=True
         )
-        http_server.listen(port, addr)
+        self.server.listen(port, addr)
+        # Get effective address and port
+        self.update_service_address()
+        #
+        self.logger.info("Running HTTP APIs at http://%s:%s/",
+                         self.address, self.port)
+        for a in api:
+            self.logger.info(
+                "Supported API: %s at http://%s:%s/api/%s/",
+                a.name, self.address, self.port, a.name
+            )
+        #
         if self.require_nsq_writer:
             self.get_nsq_writer()
-        self.ioloop.add_callback(self.on_activate)
+        self.ioloop.add_callback(self.on_register)
 
     @tornado.gen.coroutine
     def deactivate(self):
+        if not self.is_active:
+            raise tornado.gen.Return()
+        self.is_active = False
         self.logger.info("Deactivating")
         yield self.on_deactivate()
+        # Release registration
+        if self.dcs:
+            yield self.dcs.deregister()
+            self.dcs = None
         # Finally stop ioloop
         self.logger.info("Stopping IOLoop")
         self.ioloop.stop()
+        m = {}
+        apply_metrics(m)
+        self.logger.info("Post-mortem metrics: %s", m)
+
+    def get_register_tags(self):
+        tags = []
+        if self.traefik_backend and self.traefik_frontend_rule:
+            tags += [
+                "traefik.backend=%s" % self.traefik_backend,
+                "traefik.frontend.rule=%s" % self.traefik_frontend_rule
+            ]
+            weight = self.get_backend_weight()
+            if weight:
+                tags += ["traefik.backend.weight=%s" % weight]
+            limit = self.get_backend_limit()
+            if limit:
+                tags += ["traefik.backend.maxconn.amount=%s" % limit]
+        return tags
+
+    @tornado.gen.coroutine
+    def on_register(self):
+        addr, port = self.get_service_address()
+        r = yield self.dcs.register(
+            self.name, addr, port,
+            pool=self.config.pool or None,
+            lock=self.get_leader_lock_name(),
+            tags=self.get_register_tags()
+        )
+        if r:
+            # Finally call on_activate
+            yield self.on_activate()
+            self.logger.info("Service is active")
+        else:
+            raise self.RegistrationError()
 
     @tornado.gen.coroutine
     def on_activate(self):
@@ -417,10 +526,22 @@ class Service(object):
         raise tornado.gen.Return()
 
     @tornado.gen.coroutine
+    def acquire_slot(self):
+        if self.pooled:
+            name = "%s-%s" % (self.name, self.config.pool)
+        else:
+            name = self.name
+        slot_number, total_slots = yield self.dcs.acquire_slot(
+            name,
+            self.config.global_n_instances
+        )
+        raise tornado.gen.Return((slot_number, total_slots))
+
+    @tornado.gen.coroutine
     def on_deactivate(self):
         raise tornado.gen.Return()
 
-    def open_rpc(self, name, pool=None):
+    def open_rpc(self, name, pool=None, sync=False, hints=None):
         """
         Returns RPC proxy object.
         """
@@ -428,7 +549,7 @@ class Service(object):
             svc = "%s-%s" % (name, pool)
         else:
             svc = name
-        return RPCProxy(self, svc)
+        return RPCProxy(self, svc, sync=sync, hints=hints)
 
     def get_mon_status(self):
         return True
@@ -451,9 +572,8 @@ class Service(object):
             r["pool"] = self.config.pool
         if self.executors:
             for x in self.executors:
-                r["threadpool_%s_qsize" % x] = self.executors[x]._work_queue.qsize()
-                r["threadpool_%s_threads" % x] = len(self.executors[x]._threads)
-        r = apply_metrics(r)
+                self.executors[x].apply_metrics(r)
+        apply_metrics(r)
         return r
 
     def resolve_service(self, service, n=None):
@@ -585,7 +705,7 @@ class Service(object):
         executor = self.executors.get(name)
         if not executor:
             xt = "%s_threads" % name
-            executor = ThreadPoolExecutor(self.config[xt])
+            executor = ThreadPoolExecutor(self.config[xt], name=name)
             self.executors[name] = executor
         return executor
 
@@ -626,6 +746,8 @@ class Service(object):
         if status == 200 and uri == "/mon/" and method == "GET":
             self.logger.debug("Monitoring request (%s)", remote_ip)
             self.perf_metrics["mon_requests"] += 1
+        elif status == 200 and uri == "/health/" and method == "GET":
+            pass
         else:
             self.logger.info(
                 "%s %s (%s) %.2fms",
@@ -635,3 +757,30 @@ class Service(object):
             self.perf_metrics["http_requests"] += 1
             self.perf_metrics["http_requests_%s" % method.lower()] += 1
             self.perf_metrics["http_response_%s" % status] += 1
+
+    def get_leader_lock_name(self):
+        if self.leader_lock_name:
+            return self.leader_lock_name % self.config
+        else:
+            return None
+
+    def add_close_callback(self, cb, *args, **kwargs):
+        self.close_callbacks += [(cb, args, kwargs)]
+
+    def get_backend_weight(self):
+        """
+        Return backend weight for weighted load balancers
+        (i.e. traefik).
+        Return None for default weight
+        :return: 
+        """
+        return None
+
+    def get_backend_limit(self):
+        """
+        Return backend connection limit for load balancers
+        (i.e. traefik)
+        Return None for no limits
+        :return: 
+        """
+        return None

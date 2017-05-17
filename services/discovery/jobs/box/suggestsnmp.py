@@ -8,7 +8,7 @@
 
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.service.client import RPCClient, RPCError
+from noc.core.service.client import open_sync_rpc, RPCError
 from noc.lib.mib import mib
 
 
@@ -43,8 +43,9 @@ class SuggestSNMPCheck(DiscoveryCheck):
         """
         self.logger.info("Trying community '%s': %s", community, oid)
         try:
-            r = RPCClient(
-                "activator-%s" % self.object.pool.name,
+            r = open_sync_rpc(
+                "activator",
+                pool=self.object.pool.name,
                 calling_service="discovery"
             ).snmp_v2c_get(
                 self.object.address,

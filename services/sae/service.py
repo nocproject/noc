@@ -48,16 +48,6 @@ class SAEService(Service):
         """
         return self.pool_cache.get(str(pool_id))
 
-    def get_activator(self, pool):
-        """
-        Returns RPC service for pool
-        """
-        activator = self.activators.get(pool)
-        if not activator:
-            activator = self.open_rpc("activator", pool=pool)
-            self.activators[pool] = activator
-        return activator
-
     @contextlib.contextmanager
     def get_pg_connect(self):
         connect = self.pg_pool.getconn()
