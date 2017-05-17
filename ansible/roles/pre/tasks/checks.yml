@@ -18,6 +18,11 @@
     msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
   when: ansible_distribution == "Debian" and ansible_distribution_version|version_compare(8.0, '<')
 
+- name: Fail for a new release of Ubuntu
+  fail:
+    msg: "{{ ansible_distribution_version }} is not an acceptable version of {{ ansible_distribution }} for this role"
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_version|version_compare("16.04", '>')
+
 - block:
   - name: tower version is too old
     fail:
@@ -90,10 +95,20 @@
       msg: "you have to add at least one nsqlookupd. two recommended"
     when: nsqlookupd_count  == "0"
 
+- name: fail if patroni not for debian/rhel
+  fail:
+    msg: "Patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
+  when: groups['svc-patroni'] | length > 0 and ansible_distribution not in ['RedHat', 'Debian']
+
 - name: fail if patroni set for one node
   fail:
     msg: "Patroni can be installed when node count is more than one."
   when: play_hosts | length == 1 and groups['svc-patroni'] | length > 0
+
+- name: fail if haproxy not for debian/rhel
+  fail:
+    msg: "Haproxy and patroni tested with Debian 8/ Rhel 7.3 only. Welcome to https://t.me/nocproject if you want to check and fix it for {{ansible_distribution}}"
+  when: groups['svc-haproxy'] | length > 0 and ansible_distribution not in ['RedHat', 'Debian']
 
 - name: fail if haproxy set for one node
   fail:
