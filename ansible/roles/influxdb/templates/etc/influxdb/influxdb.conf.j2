@@ -19,8 +19,8 @@ reporting-disabled = true
   query-log-enabled = false
   cache-max-memory-size = {{influx_max_cache_memory}}
   cache-snapshot-memory-size = 26214400
-  cache-snapshot-write-cold-duration = "0h10m0s"
-  compact-full-write-cold-duration = "4h0m0s"
+  cache-snapshot-write-cold-duration = "0h05m0s"
+  compact-full-write-cold-duration = "1h0m0s"
   max-points-per-block = 0
   data-logging-enabled = true
   max-series-per-database = 0
@@ -40,7 +40,7 @@ reporting-disabled = true
 
 [retention]
   enabled = true
-  check-interval = "30m0s"
+  check-interval = "10m0s"
 
 [shard-precreation]
   enabled = true
@@ -68,7 +68,7 @@ reporting-disabled = true
   auth-enabled = false
   log-enabled = false
   write-tracing = false
-  pprof-enabled = false
+  pprof-enabled = true
   https-enabled = false
   https-certificate = "/etc/ssl/influxdb.pem"
   max-row-limit = 10000
