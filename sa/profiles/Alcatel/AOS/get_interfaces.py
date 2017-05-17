@@ -224,9 +224,7 @@ class Script(BaseScript):
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
             i = pc["interface"]
-            print i
             t = pc["type"] == "L"
-            print t
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
             n = {}

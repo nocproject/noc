@@ -104,8 +104,6 @@ class Script(BaseScript):
             add_untagged.keys() + add_tagged.keys() +
             remove_untagged.keys() + remove_tagged.keys()
         ))
-        print "@@@@@ U REMOVE", remove_untagged, "ADD", add_untagged
-        print "@@@@@ T REMOVE", remove_tagged, "ADD", add_tagged
         # Remove interfaces
         for v in vlans:
             vc = []

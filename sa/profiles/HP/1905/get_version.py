@@ -19,11 +19,10 @@ class Script(BaseScript):
 
     def execute(self):
         # Try SNMP first
-        print 1
         if self.has_snmp():
             try:
-                vendor = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.12.1",
-                                        cached=True)
+                # vendor = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.12.1",
+                #                         cached=True)
                 plat = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 plat = plat.split(' ')
                 platform = plat[1]
