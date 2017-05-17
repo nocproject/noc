@@ -3,12 +3,11 @@
 ## Huawei.VRP3.remove_vlan
 ## sergey.sadovnikov@gmail.com
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from __future__ import with_statement
+
+## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iremovevlan import IRemoveVlan
 

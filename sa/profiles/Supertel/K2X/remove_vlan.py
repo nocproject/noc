@@ -2,12 +2,10 @@
 ##----------------------------------------------------------------------
 ## Supertel.K2X.remove_vlan
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
-## Python modules
-from __future__ import with_statement
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iremovevlan import IRemoveVlan

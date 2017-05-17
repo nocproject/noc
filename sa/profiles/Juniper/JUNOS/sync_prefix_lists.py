@@ -2,15 +2,15 @@
 ##----------------------------------------------------------------------
 ## Juniper.JUNOS.sync_prefix_lists
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from __future__ import with_statement
+
+## Python modules
+import re
+## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.isyncprefixlists import ISyncPrefixLists
-import re
 
 rx_pl = re.compile(r"^set policy-options policy-statement \S+ term pass from route-filter (\S+) (\S+)$")
 

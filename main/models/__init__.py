@@ -7,8 +7,6 @@
 ##----------------------------------------------------------------------
 
 ## Python Modules
-from __future__ import with_statement
-
 import datetime
 
 from django.contrib.auth.models import User, Group

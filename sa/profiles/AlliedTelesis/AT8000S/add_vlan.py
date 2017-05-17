@@ -2,13 +2,12 @@
 ##----------------------------------------------------------------------
 ## AlliedTelesis.AT8000S.add_vlan
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## coded by azhur
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from __future__ import with_statement
+
+## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iaddvlan import IAddVlan
 

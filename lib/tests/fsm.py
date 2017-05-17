@@ -2,10 +2,10 @@
 ##----------------------------------------------------------------------
 ## lib/fsm tests
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-from __future__ import with_statement
+
 from unittest import TestCase
 from noc.lib.fsm import *
 from noc.lib.fileutils import temporary_file

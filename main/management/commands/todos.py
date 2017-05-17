@@ -5,13 +5,15 @@
 ## Copyright (C) 2007-2010 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
-"""
-"""
-from __future__ import with_statement
-from django.core.management.base import BaseCommand,CommandError
+
+## Python modules
+import os
+## Third-party modules
+from django.core.management.base import BaseCommand
+## NOC modules
 from noc.settings import INSTALLED_APPS
 from noc.lib.fileutils import read_file
-import os,re
+
 
 class Command(BaseCommand):
     help="Display todo's left in code"

@@ -2,12 +2,11 @@
 ##----------------------------------------------------------------------
 ## Upload bundled MIBs
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
-from __future__ import with_statement
 import os
 from optparse import make_option
 import gzip
