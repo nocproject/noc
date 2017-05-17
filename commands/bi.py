@@ -10,7 +10,6 @@
 import os
 import datetime
 import gzip
-import functools
 ## Third-party modules
 import nsq
 ## NOC modules
@@ -18,8 +17,6 @@ from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
-from noc.core.clickhouse.connect import connection
-from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.dictionary import Dictionary
 
 
@@ -145,22 +142,11 @@ class Command(BaseCommand):
                 writer.io_loop.call_later(self.NSQ_CONNECT_TIMEOUT,
                                           on_connect)
 
-        ch = connection()
-        ch.ensure_db()
         files = []
-        models = set()
         for f in sorted(os.listdir(self.DATA_PREFIX)):
             if not f.endswith(".tsv.gz"):
                 continue
-            models.add(f.split(".", 1)[0])
             files += [os.path.join(self.DATA_PREFIX, f)]
-        # Ensure fields
-        for mn in models:
-            self.stdout.write("Ensuring %s\n" % mn)
-            model = Model.get_model_class(mn)
-            if not model:
-                self.die("Cannot get model")
-            model.ensure_table()
         # Stream to NSQ
         writer = nsq.Writer(["127.0.0.1:4150"])
         writer.io_loop.add_callback(on_connect)
