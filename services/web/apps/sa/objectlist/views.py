@@ -181,6 +181,12 @@ class ObjectListApplication(ExtApplication):
                 extra["order_by"] = ["ex_" + v]
             elif "-" + v in order:
                 extra["order_by"] = ["-ex_" + v]
+        if "address" in order:
+            extra["select"]["ex_address"] = " cast_test_to_inet(address) "
+            extra["order_by"] = ["ex_address", "address"]
+        elif "-address" in order:
+            extra["select"]["ex_address"] = " cast_test_to_inet(address) "
+            extra["order_by"] = ["-ex_address", "-address"]
 
         e_q = set(q).intersection(set(Version._fields))
         # Extra filter query
