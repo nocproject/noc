@@ -25,13 +25,13 @@ class Script(BaseScript):
                 return self.cli(c)
             # except self.CLISyntaxError, why:
             except self.CLISyntaxError as e:
-                return ["%%ERROR: %s" % e]
+                return "%%ERROR: %s" % e
 
         cli = safe_cli if ignore_cli_errors else self.cli
         r = []
         for c in commands:
             if include_commands:
-                r += [c + "\n" + cli(c)]
+                r += [c + "\n\n" + cli(c)]
             else:
                 r += [cli(c)]
         return r

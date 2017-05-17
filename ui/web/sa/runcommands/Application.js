@@ -899,7 +899,8 @@ Ext.define('NOC.sa.runcommands.Application', {
                 'script': 'commands',
                 'args': {
                     'commands': me.commandPanel.getValues().cmd.split('\n'),
-                    'include_commands': 'true'
+                    'include_commands': 'true',
+                    'ignore_cli_errors': 'true'
                 }
             });
         } else if('snippets' === me.modeField.getValue()) {
