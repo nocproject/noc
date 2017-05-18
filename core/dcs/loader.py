@@ -28,6 +28,7 @@ def get_dcs(url=None):
     :param url: 
     :return: 
     """
+    url = url or DEFAULT_DCS
     with _lock:
         if url not in _instances:
             scheme = url.split(":", 1)[0]
