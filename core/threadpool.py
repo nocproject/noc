@@ -168,10 +168,10 @@ class ThreadPoolExecutor(object):
         :return: 
         """
         with self.mutex:
-            return (self.max_workers -
-                    len(self.threads) -
-                    self._qsize() +
-                    len(self.waiters))
+            return max(
+                self.max_workers - len(self.threads) - self._qsize() + len(self.waiters),
+                0
+            )
 
     def apply_metrics(self, d):
         """
