@@ -24,22 +24,22 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"% \".+\"  (?:Unknown command.)"
 
     INTERFACE_TYPES = {
-                   "3g": "tunnel",
-                   "du": "other",
-                   "et": "physical",
-                   "lo": "loopback",
-                   "sh": "physical",
-                   "si": "physical",
-                   "tu": "tunnel",
-                   "vl": "SVI",
-                   }
+        "3g": "tunnel",
+        "du": "other",
+        "et": "physical",
+        "lo": "loopback",
+        "sh": "physical",
+        "si": "physical",
+        "tu": "tunnel",
+        "vl": "SVI",
+    }
 
     def setup_script(self, script):
         if script.parent is None:
             s_password = script.credentials.get("super_password", "")
             self.pattern_more = [
-                (r"^--More-- ", " "),
-                (r"^Enable: ",  s_password +"\n")
+                (r"^--More-- \(\d+% of \d+ bytes\)", "r"),
+                (r"^Enable: ", s_password + "\n")
             ]
 
     @classmethod
