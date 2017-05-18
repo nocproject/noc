@@ -44,6 +44,8 @@
   shell: "/sbin/ip ro get {{hostvars[groups['svc-consul-server'][0]].ansible_host}} | grep dev | awk '{print $(NF-2)}'"
   register: consul_route
   changed_when: false
+  environment:
+    LC_ALL: C
   when: consul_node_role == 'client'
   tags:
     - config
