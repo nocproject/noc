@@ -66,7 +66,7 @@ class ThreadPoolExecutor(object):
                 # Waiting lock
                 if not e:
                     e = thread.allocate_lock()
-                e.acquire()
+                    e.acquire()
                 self.waiters.insert(0, e)
             # Wait for condition or timeout
             t = time.time()
