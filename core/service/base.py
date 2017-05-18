@@ -383,7 +383,10 @@ class Service(object):
         """
         if self.address and self.port:
             return self.address, self.port
-        addr, port = self.config.listen.split(":")
+        if self.config.listen:
+            addr, port = self.config.listen.split(":")
+        else:
+            addr, port = "auto", 0
         if addr == "auto":
             addr = os.environ.get("HOSTNAME", "auto")
             self.logger.info("Autodetecting address: auto -> %s", addr)
