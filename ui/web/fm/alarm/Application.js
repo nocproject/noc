@@ -191,8 +191,36 @@ Ext.define('NOC.fm.alarm.Application', {
                 ]
             }
         );
+        // fresh Alarm control
+        var freshFirstCol = 80;
+        var freshSecondCol = 90;
+        var freshRowHeight = 23;
+        var freshLess = {
+            xtype: 'displayfield',
+            width: 7,
+            padding: '0 5 0 0',
+            value: '<'
+        };
+
+        me.freshDurationOther = Ext.create('Ext.form.Display', {
+            width: freshFirstCol,
+            value: __('Other')
+        });
+        me.freshOpacityOther = Ext.create('Ext.form.ComboBox', {
+            width: freshSecondCol,
+            queryMode: 'local',
+            valueField: 'value',
+            value: 1,
+            forceSelection: true,
+            store: me.freshOpacityStore,
+            listeners: {
+                scope: me,
+                change: me.onChangeFilter
+            }
+        });
+
         me.freshDuration1 = Ext.create('Ext.form.ComboBox', {
-            width: 95,
+            width: freshFirstCol,
             queryMode: 'local',
             valueField: 'value',
             value: 10,
@@ -203,22 +231,14 @@ Ext.define('NOC.fm.alarm.Application', {
                 change: me.onChangeFilter
             }
         });
-        me.freshOpacity1 = Ext.create('Ext.form.ComboBox', {
-            width: 95,
-            queryMode: 'local',
-            valueField: 'value',
-            value: 4,
-            forceSelection: true,
-            disabled: true,
-            store: me.freshOpacityStore,
-            listeners: {
-                scope: me,
-                change: me.onChangeFilter
-            }
+        me.freshOpacity1 = Ext.create('Ext.form.Display', {
+            width: freshSecondCol,
+            padding: '0 0 0 10',
+            value: '1'
         });
 
         me.freshDuration2 = Ext.create('Ext.form.ComboBox', {
-            width: 95,
+            width: freshFirstCol,
             queryMode: 'local',
             valueField: 'value',
             value: 15,
@@ -230,7 +250,7 @@ Ext.define('NOC.fm.alarm.Application', {
             }
         });
         me.freshOpacity2 = Ext.create('Ext.form.ComboBox', {
-            width: 95,
+            width: freshSecondCol,
             queryMode: 'local',
             valueField: 'value',
             value: 3,
@@ -243,7 +263,7 @@ Ext.define('NOC.fm.alarm.Application', {
         });
 
         me.freshDuration3 = Ext.create('Ext.form.ComboBox', {
-            width: 95,
+            width: freshFirstCol,
             queryMode: 'local',
             valueField: 'value',
             value: 30,
@@ -255,7 +275,7 @@ Ext.define('NOC.fm.alarm.Application', {
             }
         });
         me.freshOpacity3 = Ext.create('Ext.form.ComboBox', {
-            width: 95,
+            width: freshSecondCol,
             queryMode: 'local',
             valueField: 'value',
             value: 2,
@@ -267,24 +287,62 @@ Ext.define('NOC.fm.alarm.Application', {
             }
         });
 
+        me.freshRule1 = Ext.create('Ext.form.FieldContainer', {
+            height: freshRowHeight,
+            layout: 'hbox',
+            items: [
+                freshLess,
+                me.freshDuration1,
+                me.freshOpacity1
+            ]
+        });
+
+        me.freshRule2 = Ext.create('Ext.form.FieldContainer', {
+            height: freshRowHeight,
+            layout: 'hbox',
+            items: [
+                freshLess,
+                me.freshDuration2,
+                me.freshOpacity2
+            ]
+        });
+        me.freshRule3 = Ext.create('Ext.form.FieldContainer', {
+            height: freshRowHeight,
+            layout: 'hbox',
+            items: [
+                freshLess,
+                me.freshDuration3,
+                me.freshOpacity3
+            ]
+        });
+        me.freshRuleOther = Ext.create('Ext.form.FieldContainer', {
+            height: freshRowHeight,
+            layout: 'hbox',
+            items: [
+                {
+                    xtype: 'displayfield',
+                    padding: '0 5 0 0',
+                    width: 7
+                },
+                me.freshDurationOther,
+                me.freshOpacityOther
+            ]
+        });
         me.freshSwitchOff = Ext.create('Ext.form.field.Checkbox', {
             boxLabel: __('Switch Off'),
             value: false,
             listeners: {
                 change: function(self, value) {
                     if(value) {
-                        me.freshDuration1.disable();
-                        me.freshDuration2.disable();
-                        me.freshDuration3.disable();
-                        me.freshOpacity1.disable();
-                        me.freshOpacity2.disable();
-                        me.freshOpacity3.disable();
+                        me.freshRule1.hide();
+                        me.freshRule2.hide();
+                        me.freshRule3.hide();
+                        me.freshRuleOther.hide();
                     } else {
-                        me.freshDuration1.enable();
-                        me.freshDuration2.enable();
-                        me.freshDuration3.enable();
-                        me.freshOpacity2.enable();
-                        me.freshOpacity3.enable();
+                        me.freshRule1.show();
+                        me.freshRule2.show();
+                        me.freshRule3.show();
+                        me.freshRuleOther.show();
                     }
                     me.onChangeFilter();
                 }
@@ -440,29 +498,14 @@ Ext.define('NOC.fm.alarm.Application', {
                         },
                         {
                             xtype: 'fieldset',
-                            title: __('Fresh Alarms (time min/opacity)'),
+                            title: __('Fresh Alarms (time/opacity)'),
                             layout: 'vbox',
                             items: [
                                 me.freshSwitchOff,
-                                {
-                                    layout: 'hbox',
-                                    items: [
-                                        me.freshDuration1,
-                                        me.freshOpacity1
-                                    ]
-                                }, {
-                                    layout: 'hbox',
-                                    items: [
-                                        me.freshDuration2,
-                                        me.freshOpacity2
-                                    ]
-                                }, {
-                                    layout: 'hbox',
-                                    items: [
-                                        me.freshDuration3,
-                                        me.freshOpacity3
-                                    ]
-                                }
+                                me.freshRule1,
+                                me.freshRule2,
+                                me.freshRule3,
+                                me.freshRuleOther
                             ]
                         }
                     ]
@@ -473,7 +516,8 @@ Ext.define('NOC.fm.alarm.Application', {
                     text: __('ID'),
                     dataIndex: 'id',
                     width: 150,
-                    hidden: true
+                    hidden: true,
+                    renderer: me.renderer
                 },
                 {
                     xtype: 'glyphactioncolumn',
@@ -692,7 +736,7 @@ Ext.define('NOC.fm.alarm.Application', {
         var me = this;
         var c = record.get('row_class');
         var duration = record.get('duration');
-        var freshCI = 'fm-blur-1'; // capacity 0.3
+        var freshCI = 'fm-blur-' + me.freshOpacityOther.value;          // capacity 0.3
 
         if(c) {
             if(!me.freshSwitchOff.value) {
