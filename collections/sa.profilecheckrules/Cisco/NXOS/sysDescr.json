@@ -1,0 +1,13 @@
+{
+    "name": "Cisco | NXOS | sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "f5095d57-eb5c-4506-867b-27e2b8cb8316",
+    "description": "Examples:\nCisco NX-OS",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^Cisco NX-OS",
+    "action": "match",
+    "profile": "Cisco.NXOS"
+}

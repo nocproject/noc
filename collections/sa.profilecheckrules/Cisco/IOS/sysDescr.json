@@ -1,0 +1,13 @@
+{
+    "name": "Cisco | IOS | sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "e9119c9c-b60f-4ac5-b938-14d21df3408b",
+    "description": "Examples:\nCisco IOS Software",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^Cisco IOS Software",
+    "action": "match",
+    "profile": "Cisco.IOS"
+}

@@ -1,0 +1,13 @@
+{
+    "name": "Cisco | ASA | chassis",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "c97662dc-9237-4d76-bf60-c71ac6c65092",
+    "description": "Examples:\nASA",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "1.3.6.1.2.1.47.1.1.1.1.2.1",
+    "match_method": "re",
+    "value": "^ASA",
+    "action": "match",
+    "profile": "Cisco.ASA"
+}
