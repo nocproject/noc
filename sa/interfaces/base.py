@@ -948,9 +948,6 @@ class MACAddressParameter(StringParameter):
         if value is None and self.default is not None:
             return self.default
         value = super(MACAddressParameter, self).clean(value)
-        if len(value) == 6 and self.accept_bin:
-            # MAC address in binary form
-            return str(MAC(":".join(["%02X" % ord(c) for c in value])))
         try:
             return str(MAC(value))
         except ValueError:
