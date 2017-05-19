@@ -28,7 +28,7 @@ class Script(BaseScript):
         if self.has_snmp():
             try:
                 macs = set()
-                for v in self.snmp.get_table(mib["IF-MIB::ifPhysAddress"]):
+                for v in self.snmp.getnext(mib["IF-MIB::ifPhysAddress"]):
                     macs.add(int(MAC(v[1])))
                 ranges = []
                 for m in sorted(macs):
