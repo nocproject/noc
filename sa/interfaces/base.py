@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Abstract script interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Abstract script interfaces
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 import types
 import datetime
-## NOC Modules
+# Third-party modules
+import six
+# NOC Modules
 from noc.lib.text import list_to_ranges, ranges_to_list
 from noc.core.ip import IPv6
 from noc.core.mac import MAC
@@ -714,9 +716,9 @@ class IPv4PrefixParameter(StringParameter):
         return v
 
 
-##
-## IPv6 Parameter
-##
+#
+# IPv6 Parameter
+#
 class IPv6Parameter(StringParameter):
     """
     >>> IPv6Parameter().clean("::")
@@ -785,9 +787,9 @@ class IPv6PrefixParameter(StringParameter):
         return "%s/%d" % (n, m)
 
 
-##
-## IPv4/IPv6 parameter
-##
+#
+# IPv4/IPv6 parameter
+#
 class IPParameter(StringParameter):
     def clean(self, value):
         """
@@ -802,9 +804,9 @@ class IPParameter(StringParameter):
             return IPv4Parameter().clean(value)
 
 
-##
-## Prefix parameter
-##
+#
+# Prefix parameter
+#
 class PrefixParameter(StringParameter):
     def clean(self, value):
         """
@@ -817,9 +819,9 @@ class PrefixParameter(StringParameter):
             return IPv4PrefixParameter().clean(value)
 
 
-##
-##
-##
+#
+#
+#
 class VLANIDParameter(IntParameter):
     """
     >>> VLANIDParameter().clean(10)
@@ -863,9 +865,9 @@ class VLANStackParameter(ListOfParameter):
         return value
 
 
-##
-##
-##
+#
+#
+#
 class VLANIDListParameter(ListOfParameter):
     """
     >>> VLANIDListParameter().clean(["1","2","3"])
@@ -878,9 +880,9 @@ class VLANIDListParameter(ListOfParameter):
                                            required=required, default=default)
 
 
-##
-##
-##
+#
+#
+#
 class VLANIDMapParameter(StringParameter):
     def clean(self, value):
         """
@@ -947,7 +949,8 @@ class MACAddressParameter(StringParameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        value = super(MACAddressParameter, self).clean(value)
+        if isinstance(value, six.string_types):
+            value = super(MACAddressParameter, self).clean(value)
         try:
             return str(MAC(value))
         except ValueError:
@@ -1189,9 +1192,9 @@ class ObjectIdParameter(REStringParameter):
             "^[0-9a-f]{24}$", required=required, default=default
         )
 
-##
-## Module Test
-##
+#
+# Module Test
+#
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
