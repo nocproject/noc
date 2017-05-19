@@ -13,6 +13,7 @@ import yaml
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
+from noc.main.models.remotesystem import RemoteSystem
 
 
 class Command(BaseCommand):
@@ -30,14 +31,29 @@ class Command(BaseCommand):
         # load command
         load_parser = subparsers.add_parser("load")
         load_parser.add_argument(
+            "system",
+            nargs=1,
+            help="Remote system name"
+        )
+        load_parser.add_argument(
             "loaders",
             nargs=argparse.REMAINDER,
             help="List of extractor names"
         )
         # check command
         check_parser = subparsers.add_parser("check")
+        check_parser.add_argument(
+            "system",
+            nargs=1,
+            help="Remote system name"
+        )
         # diff command
         diff_parser = subparsers.add_parser("diff")
+        diff_parser.add_argument(
+            "system",
+            nargs=1,
+            help="Remote system name"
+        )
         diff_parser.add_argument(
             "--summary",
             action="store_true",
@@ -52,6 +68,11 @@ class Command(BaseCommand):
         # extract command
         extract_parser = subparsers.add_parser("extract")
         extract_parser.add_argument(
+            "system",
+            nargs=1,
+            help="Remote system name"
+        )
+        extract_parser.add_argument(
             "extractors",
             nargs=argparse.REMAINDER,
             help="List of extractor names"
@@ -64,93 +85,44 @@ class Command(BaseCommand):
     def handle(self, cmd, *args, **options):
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
-    def handle_load(self, system=None, *args, **options):
-        from noc.core.etl.loader.chain import LoaderChain
-
-        loaders = set(options.get("loaders", []))
-        config = self.get_config()
-        for s in config:
-            if system and s["system"] not in system:
-                continue
-            chain = LoaderChain(s["system"])
-            for d in s.get("data"):
-                chain.get_loader(d["type"])
-            # Add & Modify
-            for l in chain:
-                if loaders and l.name not in loaders:
-                    l.load_mappings()
-                    continue
-                l.load()
-                l.save_state()
-            # Remove in reverse order
-            for l in reversed(list(chain)):
-                l.purge()
+    def handle_load(self, *args, **options):
+        remote_system = RemoteSystem.get_by_name(options["system"])
+        if not remote_system:
+            self.die("Invalid remote system: %s" % options["system"])
+        remote_system.load(options.get("loaders", []))
 
     def handle_extract(self, system=None, *args, **options):
-        extractors = set(options.get("extractors", []))
-        config = self.get_config()
-        for s in config:
-            if system and s["system"] not in system:
-                continue
-            system_config = s.get("config", {})
-            for x_config in reversed(s.get("data", [])):
-                config = system_config.copy()
-                config.update(x_config.get("config", {}))
-                if extractors and x_config["type"] not in extractors:
-                    continue
-                xc = get_handler(x_config["extractor"])
-                extractor = xc(s["system"], config=config)
-                extractor.extract()
+        remote_system = RemoteSystem.get_by_name(options["system"])
+        if not remote_system:
+            self.die("Invalid remote system: %s" % options["system"])
+        remote_system.extract(options.get("extractors", []))
 
-    def handle_check(self, system=None, *args, **options):
-        from noc.core.etl.loader.chain import LoaderChain
-        config = self.get_config()
-        n_errors = 0
-        summary = []
-        for s in config:
-            if system and s["system"] not in system:
-                continue
-            chain = LoaderChain(s["system"])
-            for d in s.get("data"):
-                chain.get_loader(d["type"])
-            # Check
-            for l in chain:
-                n = l.check(chain)
-                if n:
-                    ss = "%d errors" % n
-                else:
-                    ss = "OK"
-                summary += ["%s.%s: %s" % (s["system"], l.name, ss)]
-                n_errors += n
-        if summary:
-            self.stdout.write("Summary:\n")
-            self.stdout.write("\n".join(summary) + "\n")
+    def handle_check(self,  *args, **options):
+        remote_system = RemoteSystem.get_by_name(options["system"])
+        if not remote_system:
+            self.die("Invalid remote system: %s" % options["system"])
+        n_errors = remote_system.check(self.stdout)
         return 1 if n_errors else 0
 
-    def handle_diff(self, system=None, summary=False, *args, **options):
-        from noc.core.etl.loader.chain import LoaderChain
+    def handle_diff(self, summary=False, *args, **options):
+        remote_system = RemoteSystem.get_by_name(options["system"])
+        if not remote_system:
+            self.die("Invalid remote system: %s" % options["system"])
 
         diffs = set(options.get("diffs", []))
-        config = self.get_config()
         if summary:
             self.stdout.write(self.SUMMARY_MASK % (
                 "Loader", "New", "Updated", "Deleted"))
-        for s in config:
-            if system and s["system"] not in system:
+        chain = remote_system.get_loader_chain()
+        for l in chain:
+            if diffs and l.name not in diffs:
                 continue
-            chain = LoaderChain(s["system"])
-            for d in s.get("data"):
-                chain.get_loader(d["type"])
-            # Check
-            for l in chain:
-                if diffs and l.name not in diffs:
-                    continue
-                if summary:
-                    i, u, d = l.check_diff_summary()
-                    self.stdout.write(self.SUMMARY_MASK % (
-                        l.name, i, u, d))
-                else:
-                    l.check_diff()
+            if summary:
+                i, u, d = l.check_diff_summary()
+                self.stdout.write(self.SUMMARY_MASK % (
+                    l.name, i, u, d))
+            else:
+                l.check_diff()
 
 if __name__ == "__main__":
     Command().run()
