@@ -69,6 +69,12 @@ class MAC(str):
     def __new__(cls, mac):
         return super(MAC, cls).__new__(cls, cls._clean(mac))
 
+    def __long__(self):
+        return int(self.replace(":", ""), 16)
+
+    def __int__(self):
+        return int(self.replace(":", ""), 16)
+
     @classmethod
     def _clean(self, mac):
         value = mac
