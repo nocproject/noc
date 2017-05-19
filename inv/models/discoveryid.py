@@ -88,8 +88,8 @@ class DiscoveryID(Document):
             # MAC index
             macs = []
             for r in chassis_mac:
-                first = MAC(r["first_chassis_mac"])
-                last = MAC(r["last_chassis_mac"])
+                first = MAC(r.first_mac)
+                last = MAC(r.last_mac)
                 macs += [m for m in range(int(first), int(last) + 1)]
             o.macs = macs
         else:
