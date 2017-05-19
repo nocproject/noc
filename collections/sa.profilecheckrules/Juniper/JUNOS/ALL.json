@@ -1,7 +1,7 @@
 {
     "name": "Juniper | JUNOS | ALL",
     "$collection": "sa.profilecheckrules",
-    "uuid": "6d43acce-2caa-4b3d-8561-ac0879fd2675",
+    "uuid": "1c1dc9bf-f372-46ef-ae46-b34283b9fc43",
     "description": "",
     "preference": 1000,
     "method": "snmp_v2c_get",
