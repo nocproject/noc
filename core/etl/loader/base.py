@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Data Loader
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+#  Data Loader
+# ----------------------------------------------------------------------
+#  Copyright (C) 2007-2017 The NOC Project
+#  See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import print_function
 import os
 import logging
 import gzip
 import re
-import StringIO
 import csv
 import time
 import shutil
 import functools
 import itertools
-## NOC modules
+# Third party modules
+import six
+# NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.fileutils import safe_rewrite
 
@@ -177,9 +179,9 @@ class BaseLoader(object):
                              self.archive_dir)
             try:
                 os.mkdir(self.archive_dir)
-            except OSError, why:
+            except OSError as e:
                 self.logger.error("Failed to create directory: %s (%s)",
-                                  self.archive_dir, why)
+                                  self.archive_dir, e)
                 # @todo: Die
         if os.path.isdir(self.archive_dir):
             fn = sorted(
@@ -193,7 +195,7 @@ class BaseLoader(object):
             logger.info("Current state from %s", path)
             return gzip.GzipFile(path, "r")
         # No current state
-        return StringIO.StringIO("")
+        return six.StringIO("")
 
     def diff(self, old, new):
         """
@@ -289,7 +291,7 @@ class BaseLoader(object):
                 try:
                     self.on_change(o, n)
                 except self.Deferred:
-                    deferred_change += [(o,n)]
+                    deferred_change += [(o, n)]
             if len(nd) == len(deferred_change):
                 raise Exception("Unable to defer references")
             deferred_change = nd
@@ -315,7 +317,7 @@ class BaseLoader(object):
                 connection._rollback()
             # Fallback to change object
             o = self.model.objects.get(**{self.unique_field: v[self.unique_field]})
-            for k, nv in v.iteritems():
+            for k, nv in six.iteritems(v):
                 setattr(o, k, nv)
             o.save()
         return o
@@ -332,7 +334,18 @@ class BaseLoader(object):
                 self.name, object_id
             )
             return None
-        for k, nv in v.iteritems():
+        for k, nv in six.iteritems(v):
+            if k == "tags":
+                # Merge tags
+                ov = o.tags or []
+                nv = sorted(
+                    [
+                        x for x in ov
+                        if not x.startswith(self.system.name + ":")
+                    ] + [
+                        "%s:%s" % (self.system.name, x) for x in nv
+                    ]
+                )
             setattr(o, k, nv)
         o.save()
         return o
@@ -435,7 +448,7 @@ class BaseLoader(object):
         if value:
             if isinstance(value, str):
                 return unicode(value, "utf-8")
-            elif not isinstance(value, basestring):
+            elif not isinstance(value, six.string_types):
                 return str(value)
             else:
                 return value
@@ -492,11 +505,10 @@ class BaseLoader(object):
         self.mappings[str(rv)] = str(lv)
 
     def update_document_clean_map(self):
-        from mongoengine.fields import (BooleanField, IntField,
-                                        FloatField, ReferenceField)
+        from mongoengine.fields import BooleanField, ReferenceField
         from noc.lib.nosql import PlainReferenceField, ForeignKeyField
 
-        for fn, ft in self.model._fields.iteritems():
+        for fn, ft in six.iteritems(self.model._fields):
             if fn not in self.clean_map:
                 continue
             if isinstance(ft, BooleanField):
@@ -585,7 +597,8 @@ class BaseLoader(object):
             self.logger.info("No new state, skipping")
             return 0
         new_state = csv.reader(ns)
-        r_index = set(self.fields.index(f) for f in required_fields if f in self.fields)
+        r_index = set(self.fields.index(f) for f in required_fields
+                      if f in self.fields)
         u_index = set(self.fields.index(f) for f in unique_fields)
         m_index = set(self.fields.index(f) for f in self.mapped_fields)
         uv = set()
@@ -641,9 +654,9 @@ class BaseLoader(object):
 
     def check_diff(self):
         def dump(cmd, row):
-            print "%s %s" % (cmd, ",".join(row))
+            print("%s %s" % (cmd, ",".join(row)))
 
-        print "--- %s.%s" % (self.chain.system, self.name)
+        print("--- %s.%s" % (self.chain.system, self.name))
         ns = self.get_new_state()
         if not ns:
             return
