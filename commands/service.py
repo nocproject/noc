@@ -12,7 +12,7 @@ import argparse
 ## Third-party modules
 ## NOC modules
 from noc.core.management.base import BaseCommand
-from noc.core.service.catalog import ServiceCatalog
+from noc.core.service.loader import get_service
 from noc.lib.text import format_table
 
 
@@ -32,28 +32,14 @@ class Command(BaseCommand):
         )
 
     def handle(self, config, services=None, *args, **options):
-        catalog = ServiceCatalog(config)
-        services = set(services or [])
-        # Enumerate services
-        out = [["S", "Service", "Node", "DC", "URL"]]
-        for sn in catalog.iter_services():
-            if services and sn not in services:
-                continue
-            sd = catalog.get_service(sn)
-            for sn in sd.nodes:
-                if sd.external:
-                    url = sn.listen
-                else:
-                    nsn = sd.name.split("-")[0]
-                    url = "http://%s/api/%s/" % (sn.listen, nsn)
-                out += [[
-                    " ",
-                    sd.name,
-                    sn.node,
-                    sn.dc,
-                    url
-                ]]
+        service = get_service()
 
+        out = [["Service", "ID", "Address"]]
+        for sn in services:
+            service.dcs.resolve_sync(sn)
+            if sn in service.dcs.resolvers:
+                for svc_id, address in service.dcs.resolvers[sn].services.items():
+                    out += [[sn, svc_id, address]]
         self.stdout.write(
             format_table(
                 [0, 0, 0, 0, 0],
