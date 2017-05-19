@@ -1,0 +1,13 @@
+{
+    "name": "Cisco | IOSXR | sysDescr",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "ab071d55-ff9b-4bdd-96fc-2feebe05deb3",
+    "description": "Examples:\nCisco IOS XR",
+    "preference": 20,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^Cisco IOS XR",
+    "action": "match",
+    "profile": "Cisco.IOSXR"
+}
