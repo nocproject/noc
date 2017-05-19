@@ -18,7 +18,8 @@ class Migration:
         mdb = get_db()
         for d in mdb.noc.pools.find():
             pid = int(d["name"][1:])
-            db.execute(
+            if pid.isdecimal():
+                db.execute(
                 "UPDATE sa_managedobject SET pool=%s WHERE activator_id=%s",
                 [str(d["_id"]), pid]
             )
