@@ -10,3 +10,8 @@
   service:
     name: memcached
     state: restarted
+
+- name: reload consul
+  service:
+    name: consul
+    state: reloaded

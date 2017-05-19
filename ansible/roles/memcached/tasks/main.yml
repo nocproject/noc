@@ -19,3 +19,10 @@
   tags:
     - config
 
+- name: copy memcached consul templates
+  template:
+    src: memcached.json.j2
+    dest: "{{consul_configd_path}}/memcached.json"
+  notify: reload consul
+  tags:
+    - consul
