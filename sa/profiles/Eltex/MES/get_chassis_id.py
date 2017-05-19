@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Eltex.MES.get_chassis_id
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Eltex.MES.get_chassis_id
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
+from noc.core.mac import MAC
+from noc.lib.mib import mib
 
 
 class Script(BaseScript):
@@ -25,14 +27,19 @@ class Script(BaseScript):
         # Try SNMP first
         if self.has_snmp():
             try:
-                macs = []
-                for v in self.snmp.get_tables(
-                    ["1.3.6.1.2.1.2.2.1.6"], bulk=True):
-                        macs += [v[1]]
-                return {
-                    "first_chassis_mac": min(macs),
-                    "last_chassis_mac": max(macs)
-                }
+                macs = set()
+                for v in self.snmp.get_table(mib["IF-MIB::ifPhysAddress"]):
+                    macs.add(int(MAC(v[1])))
+                ranges = []
+                for m in sorted(macs):
+                    if not ranges or m - ranges[-1][1] != 1:
+                        ranges += [[m, m]]
+                    else:
+                        ranges[-1][1] = m
+                return [{
+                    "first_chassis_mac": r[0],
+                    "last_chassis_mac": r[1]
+                } for r in ranges]
             except self.snmp.TimeOutError:
                 pass
 
