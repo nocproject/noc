@@ -38,7 +38,9 @@ etc_prefix: /etc
 
 influx_path: /usr/bin/influx
 influxdb_conf: /etc/influxdb/influxdb.conf
-influxdb_db_path: /var/lib/influxdb
+influxdb_db_path_meta: "{{ lookup('env','INFLUXDB_META_DIRECTORY') | default('/var/lib/influxdb/meta', True) }}"
+influxdb_db_path_data: "{{ lookup('env','INFLUXDB_DATA_DIRECTORY') | default('/var/lib/influxdb/data', True) }}"
+influxdb_db_path_wal: "{{ lookup('env','INFLUXDB_WAL_DIRECTORY') | default('/var/lib/influxdb/wal', True) }}"
 influxdb_group: influxdb
 influxdb_system_service: influxdb
 influxdb_user: influxdb
