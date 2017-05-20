@@ -30,6 +30,7 @@ mercurial>=3.4.2
 cachetools==1.1.5
 Pygments==1.2.2
 noc-pkg-pyclips==1.0.7
+markerlib>=0.6.0
 distribute>=0.7.3
 pycurl==7.43.0
 PyYAML>=3.11
@@ -38,4 +39,3 @@ ujson>=1.35
 yappi==0.94
 XlsxWriter==0.9.3
 pylibmc==1.5.1
-markerlib>=0.6.0
