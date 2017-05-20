@@ -329,6 +329,16 @@ class Scheduler(object):
                 return
             try:
                 r = self.bulk.execute()
+                dt = self.ioloop.time() - t0
+                self.logger.info(
+                    "%d bulk operations complete in %dms: "
+                    "inserted=%d, updated=%d, removed=%d",
+                    self.bulk_ops,
+                    int(dt * 1000),
+                    r.get("nInserted", 0),
+                    r.get("nModified", 0),
+                    r.get("nRemoved", 0)
+                )
             except pymongo.errors.BulkWriteError as e:
                 self.logger.error(
                     "Cannot apply bulk operations: %s [%s]",
@@ -339,16 +349,6 @@ class Scheduler(object):
                 return
             finally:
                 self.reset_bulk_ops()
-            dt = self.ioloop.time() - t0
-            self.logger.info(
-                "%d bulk operations complete in %dms: "
-                "inserted=%d, updated=%d, removed=%d",
-                self.bulk_ops,
-                int(dt * 1000),
-                r.get("nInserted", 0),
-                r.get("nModified", 0),
-                r.get("nRemoved", 0)
-            )
 
     def remove_job(self, jcls, key=None):
         """
