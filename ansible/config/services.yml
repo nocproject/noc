@@ -431,8 +431,9 @@ config:
 
     mongod_data_directory:
       type: str
-      label: Mongo journal directory
+      label: Mongo data directory
       default: /var/lib/mongo/
+      description: <strong> <a href=https://docs.mongodb.com/manual/ target=_blank> https://docs.mongodb.com/manual/ </a> </strong>
 
   influxdb:
     influxdb_wal_directory:
@@ -445,17 +446,23 @@ config:
       label: InfluxDB Data directory
       default: /var/lib/influxdb/data/
 
+    influxdb_meta_directory:
+      type: str
+      label: InfluxDB Meta directory
+      default: /var/lib/influxdb/meta/
+
     max_cache_memory:
       type: int
       label: Max cache memory
       default: 1048576000
+      description: <strong> <a href=https://docs.influxdata.com/influxdb target=_blank> https://docs.influxdata.com/influxdb </a> </strong>
 
   postgres:
     postgres_version:
       type: str
       label: Postgresql version
       default: 9.4
-      description: <strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html> docs </a> before changing that field.
+      description: <strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html target=_blank> docs </a> before changing that field.
 
     superuser_password:
       label: Postgresql superuser password
@@ -500,12 +507,14 @@ config:
       label: Redirect http to https
       type: bool
       default: true
+      description: <strong> <a href=https://nginx.org/en/docs/ target=_blank> https://nginx.org/en/docs/</a> </strong>
 
   nsqd:
     max_messages_in_memory:
       type: int
-      label: Keep max messanges in memory
+      label: Keep max messages in memory
       default: 10000
+      description: <strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>
 
   bi:
     query_threads:
@@ -541,12 +550,14 @@ config:
       type: str
       label: Grafana postgres password
       default: grafana
+      description: <strong> <a href=http://docs.grafana.org/ target=_blank> http://docs.grafana.org/ </a> </strong>
 
   pgbouncer:
     pgbouncer_max_clients:
       type: int
       label: Pgbouncer max clients
       default: 3000
+      description: <strong> <a href=https://pgbouncer.github.io target=_blank> https://pgbouncer.github.io </a> </strong>
 
   memcached:
     max_clients:
@@ -557,6 +568,7 @@ config:
       type: int
       label: memcached max memory
       default: 64
+      description: <strong> <a href=https://github.com/memcached/memcached/wiki target=_blank> https://github.com/memcached/memcached/wiki </a> </strong>
 
   tgsender:
     use_proxy:
@@ -581,6 +593,7 @@ config:
     nginx_virtual_ip:
       label: Nginx virtual IP
       type: str
+      description: <strong> <a href=http://keepalived.readthedocs.io/en/latest/ target=_blank> http://www.keepalived.org/documentation.html </a> </strong>
 
     patroni_virtual_ip:
       label: Patroni virtual IP
@@ -590,6 +603,7 @@ config:
     token:
       label: consul token
       type: str
+      description: <strong> <a href=https://www.consul.io/docs/guides/acl.html target=_blank> https://www.consul.io/docs/guides/acl.html </a> </strong>
 
     replication_token:
       label: consul replication token
@@ -599,3 +613,4 @@ config:
     rest_password:
       label: Patroni REST password
       type: str
+      description: <strong> <a href=https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst target=_blank> https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst </a> </strong>
