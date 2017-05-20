@@ -36,7 +36,8 @@ class ThreadPoolExecutor(object):
         self.submitted_tasks = 0
         self.worker_id = itertools.count()
         self.name = name or "threadpool"
-        self.done_event = threading.Event()
+        self.done_event = None
+        self.done_future = None
         self.started = time.time()
         self.waiters = []
 
@@ -112,15 +113,19 @@ class ThreadPoolExecutor(object):
         self._put((future, fn, args, kwargs))
         return future
 
-    def shutdown(self):
+    def shutdown(self, sync=False):
         logging.info("Shutdown")
         with self.mutex:
+            self.done_future = Future()
+            if not sync:
+                self.done_event = threading.Event()
             self.to_shutdown = True
         for _ in range(len(self.threads)):
             self.stop_one_worker()
         logging.info("Waiting for workers")
-        self.done_event.wait(timeout=self.shutdown_timeout)
-        logging.info("ThreadPool terminated")
+        if sync:
+            self.done_event.wait(timeout=self.shutdown_timeout)
+        return self.done_future
 
     def worker(self):
         t = threading.current_thread()
@@ -150,7 +155,11 @@ class ThreadPoolExecutor(object):
             with self.mutex:
                 self.threads.remove(t)
                 if self.to_shutdown and not len(self.threads):
-                    self.done_event.set()
+                    logging.info("ThreadPool terminated")
+                    if self.done_event:
+                        self.done_event.set()
+                    if self.done_future:
+                        self.done_future.set_result(True)
 
     def may_submit(self):
         """
