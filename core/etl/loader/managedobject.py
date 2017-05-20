@@ -38,7 +38,8 @@ class ManagedObjectLoader(BaseLoader):
         "super_password",
         "snmp_ro",
         "description",
-        "auth_profile"
+        "auth_profile",
+        "tags"
     ]
 
     mapped_fields = {
@@ -61,6 +62,8 @@ class ManagedObjectLoader(BaseLoader):
         """
         v = super(ManagedObjectLoader, self).clean(row)
         v["pool"] = self.pools[v["pool"]]
+        v["tags"] = [x.strip() for x in v["tags"].split(",")
+                     if x.strip()]
         return v
 
     def purge(self):

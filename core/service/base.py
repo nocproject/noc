@@ -351,7 +351,8 @@ class Service(object):
         except Exception:
             error_report()
         finally:
-            self.deactivate()
+            if self.ioloop:
+                self.ioloop.add_callback(self.deactivate())
         for cb, args, kwargs in self.close_callbacks:
             cb(*args, **kwargs)
         self.logger.warn("Service %s has been terminated", self.name)
@@ -383,7 +384,10 @@ class Service(object):
         """
         if self.address and self.port:
             return self.address, self.port
-        addr, port = self.config.listen.split(":")
+        if self.config.listen:
+            addr, port = self.config.listen.split(":")
+        else:
+            addr, port = "auto", 0
         if addr == "auto":
             addr = os.environ.get("HOSTNAME", "auto")
             self.logger.info("Autodetecting address: auto -> %s", addr)
@@ -475,6 +479,8 @@ class Service(object):
             raise tornado.gen.Return()
         self.is_active = False
         self.logger.info("Deactivating")
+        for x in self.executors:
+            yield self.executors[x].shutdown()
         yield self.on_deactivate()
         # Release registration
         if self.dcs:

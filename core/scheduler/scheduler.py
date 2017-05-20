@@ -16,6 +16,7 @@ import threading
 import pymongo.errors
 import tornado.gen
 import tornado.ioloop
+from concurrent.futures import Future
 ## NOC modules
 from job import Job
 from noc.lib.nosql import get_db
@@ -62,7 +63,7 @@ class Scheduler(object):
         self.running_groups = set()
         self.collection = None
         self.bulk = None
-        self.bulk_ops = None
+        self.bulk_ops = 0
         self.bulk_lock = threading.Lock()
         self.max_threads = max_threads
         self.executor = None
@@ -125,8 +126,7 @@ class Scheduler(object):
             self.logger.debug("Open collection %s",
                               self.collection_name)
             self.collection = get_db()[self.collection_name]
-            self.bulk = self.collection.initialize_unordered_bulk_op()
-            self.bulk_ops = 0
+            self.reset_bulk_ops()
         return self.collection
 
     def get_executor(self):
@@ -195,9 +195,9 @@ class Scheduler(object):
             if self.get_executor().may_submit():
                 try:
                     n = yield self.run_pending()
-                    self.apply_bulk_ops()
                 except Exception as e:
                     self.logger.error("Failed to schedule next tasks: %s", e)
+                self.apply_bulk_ops()
             dt = self.check_time - (self.ioloop.time() - t0) * 1000
             if dt > 0:
                 if n:
@@ -305,7 +305,7 @@ class Scheduler(object):
                 #
                 for job in rjobs:
                     executor.submit(job.run)
-                    metrics["%s_jobs_started"] += 1
+                    metrics["%s_jobs_started" % self.name] += 1
                     n += 1
             if jobs:
                 # Wait for next job within check_interval
@@ -318,6 +318,10 @@ class Scheduler(object):
                     yield tornado.gen.sleep(dt)
         raise tornado.gen.Return(n)
 
+    def reset_bulk_ops(self):
+        self.bulk = self.collection.initialize_unordered_bulk_op()
+        self.bulk_ops = 0
+
     def apply_bulk_ops(self):
         t0 = self.ioloop.time()
         with self.bulk_lock:
@@ -325,21 +329,26 @@ class Scheduler(object):
                 return
             try:
                 r = self.bulk.execute()
+                dt = self.ioloop.time() - t0
+                self.logger.info(
+                    "%d bulk operations complete in %dms: "
+                    "inserted=%d, updated=%d, removed=%d",
+                    self.bulk_ops,
+                    int(dt * 1000),
+                    r.get("nInserted", 0),
+                    r.get("nModified", 0),
+                    r.get("nRemoved", 0)
+                )
             except pymongo.errors.BulkWriteError as e:
-                self.logger.error("Cannot apply bulk operations: %s", e.details)
+                self.logger.error(
+                    "Cannot apply bulk operations: %s [%s]",
+                    e.details, e.code)
                 return
-            dt = self.ioloop.time() - t0
-            self.logger.info(
-                "%d bulk operations complete in %dms: "
-                "inserted=%d, updated=%d, removed=%d",
-                self.bulk_ops,
-                int(dt * 1000),
-                r.get("nInserted", 0),
-                r.get("nModified", 0),
-                r.get("nRemoved", 0)
-            )
-            self.bulk = self.collection.initialize_unordered_bulk_op()
-            self.bulk_ops = 0
+            except Exception as e:
+                self.logger.error("Cannot apply bulk operations: %s", e)
+                return
+            finally:
+                self.reset_bulk_ops()
 
     def remove_job(self, jcls, key=None):
         """
@@ -519,7 +528,11 @@ class Scheduler(object):
             "%s_jobs_burst" % self.name: len(self.jobs_burst)
         })
 
-    def shutdown(self):
+    def shutdown(self, sync=False):
         self.to_shutdown = True
         if self.executor:
-            self.executor.shutdown()
+            return self.executor.shutdown(sync)
+        else:
+            f = Future()
+            f.set_result(True)
+            return f

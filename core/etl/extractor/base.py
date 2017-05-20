@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Data Extractor
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Data Extractor
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import gzip
 import os
 import csv
 import time
-## Python modules
+# NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 
 logger = logging.getLogger(__name__)
@@ -31,9 +31,9 @@ class BaseExtractor(object):
     # Suppress deduplication message
     suppress_deduplication_log = False
 
-    def __init__(self, system, config=None):
+    def __init__(self, system):
         self.system = system
-        self.config = config or {}
+        self.config = system.config
         self.logger = PrefixLoggerAdapter(
             logger, "%s][%s" % (system, self.name)
         )
@@ -65,7 +65,7 @@ class BaseExtractor(object):
 
         # Fetch data
         self.logger.info("Extracting %s from %s",
-                         self.name, self.system)
+                         self.name, self.system.name)
         t0 = time.time()
         data = []
         n = 0
@@ -74,7 +74,8 @@ class BaseExtractor(object):
             row = self.clean(row)
             if row[0] in seen:
                 if not self.suppress_deduplication_log:
-                    self.logger.error("Duplicated row truncated: %r", row)
+                    self.logger.error("Duplicated row truncated: %r",
+                                      row)
                 continue
             else:
                 seen.add(row[0])
