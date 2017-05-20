@@ -305,7 +305,7 @@ class Scheduler(object):
                 #
                 for job in rjobs:
                     executor.submit(job.run)
-                    metrics["%s_jobs_started"] += 1
+                    metrics["%s_jobs_started" % self.name] += 1
                     n += 1
             if jobs:
                 # Wait for next job within check_interval
