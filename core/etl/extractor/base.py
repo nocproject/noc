@@ -37,7 +37,7 @@ class BaseExtractor(object):
         self.logger = PrefixLoggerAdapter(
             logger, "%s][%s" % (system, self.name)
         )
-        self.import_dir = os.path.join(self.PREFIX, system, self.name)
+        self.import_dir = os.path.join(self.PREFIX, system.name, self.name)
 
     def get_new_state(self):
         if not os.path.isdir(self.import_dir):
