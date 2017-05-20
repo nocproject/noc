@@ -3,7 +3,7 @@ reporting-disabled = true
 [registration]
 
 [meta]
-  dir = "{{ influxdb_db_path }}/meta"
+  dir = "{{ influxdb_db_path_meta }}"
   hostname = "{{ ansible_hostname }}"
   bind-address = ":8088"
   retention-autocreate = true
@@ -12,9 +12,9 @@ reporting-disabled = true
   lease-duration = "1m0s"
 
 [data]
-  dir = "{{ influxdb_db_path }}/data"
+  dir = "{{ influxdb_db_path_data }}"
   engine = "tsm1"
-  wal-dir = "{{ influxdb_db_path }}/wal"
+  wal-dir = "{{ influxdb_db_path_wal }}"
   wal-logging-enabled = true
   query-log-enabled = false
   cache-max-memory-size = {{influx_max_cache_memory}}
