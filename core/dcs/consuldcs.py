@@ -123,8 +123,8 @@ class ConsulResolver(ResolverBase):
             if old_index == index:
                 continue  # Timed out
             r = dict(
-                (svc["ID"], "%s:%s" % (svc["Service"]["Address"],
-                                       svc["Service"]["Port"]))
+                (svc["Service"]["ID"], "%s:%s" % (
+                    svc["Service"]["Address"], svc["Service"]["Port"]))
                 for svc in services
             )
             self.set_services(r)
