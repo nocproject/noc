@@ -12,6 +12,7 @@ import datetime
 import random
 import Queue
 import threading
+import time
 ## Third-party modules
 import pymongo.errors
 import tornado.gen
@@ -184,6 +185,19 @@ class Scheduler(object):
         else:
             return q
 
+    def scheduler_tick(self):
+        """
+        Process single scheduler tick
+        :return: 
+        """
+        n = 0
+        try:
+            n = self.run_pending()
+        except Exception as e:
+            self.logger.error("Failed to schedule next tasks: %s", e)
+        self.apply_bulk_ops()
+        return n
+
     @tornado.gen.coroutine
     def scheduler_loop(self):
         """
@@ -194,10 +208,9 @@ class Scheduler(object):
             n = 0
             if self.get_executor().may_submit():
                 try:
-                    n = yield self.run_pending()
+                    n = yield self.executor.submit(self.scheduler_tick)
                 except Exception as e:
-                    self.logger.error("Failed to schedule next tasks: %s", e)
-                self.apply_bulk_ops()
+                    self.logger.error("Failed to execute scheduler tick: %s", e)
             dt = self.check_time - (self.ioloop.time() - t0) * 1000
             if dt > 0:
                 if n:
@@ -233,7 +246,6 @@ class Scheduler(object):
         except pymongo.errors.AutoReconnect:
             self.logger.error("Auto-reconnect detected. Waiting for next cycle")
 
-    @tornado.gen.coroutine
     def run_pending(self):
         """
         Read and launch all pending jobs
@@ -242,7 +254,7 @@ class Scheduler(object):
         collection = self.get_collection()
         n = 0
         if not executor.may_submit():
-            raise tornado.gen.Return(n)
+            return n
         jobs, self.jobs_burst = self.jobs_burst, []
         burst_ids = set(j.attrs[Job.ATTR_ID] for j in jobs)
         if len(jobs) <= self.max_chunk // 2:
@@ -315,8 +327,8 @@ class Scheduler(object):
                     dt = njts - now
                     dt = (dt.microseconds + dt.seconds * 1000000.0) / 1000000.0
                     dt = max(dt, self.min_sleep)
-                    yield tornado.gen.sleep(dt)
-        raise tornado.gen.Return(n)
+                    time.sleep(dt)
+        return n
 
     def reset_bulk_ops(self):
         self.bulk = self.collection.initialize_unordered_bulk_op()
