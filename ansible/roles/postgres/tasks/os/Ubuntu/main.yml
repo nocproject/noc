@@ -25,6 +25,7 @@
     name: "{{ item }}"
     update_cache: yes
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
+    state: present
   with_items:
     - postgresql-{{ postgresql_version }}
     - postgresql-contrib-{{ postgresql_version }}
@@ -32,6 +33,13 @@
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+
+- name: Install postgres limits file
+  template:
+    src: "etc/security/limits.d/postgres_limits.conf.j2"
+    dest: "/etc/security/limits.d/postgres_limits.conf"
+  tags:
+    - config
 
 - name: Find suitable PostgreSQL cluster
   shell: /usr/bin/pg_lsclusters -h | grep {{postgres_listen}} | awk '{print $1 " " $2}'
