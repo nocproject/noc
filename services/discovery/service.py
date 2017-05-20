@@ -57,8 +57,7 @@ class DiscoveryService(Service):
             reset_running=True,
             max_threads=self.config.max_threads,
             ioloop=self.ioloop,
-            filter=ifilter,
-            use_cache=True
+            filter=ifilter
         )
         self.scheduler.service = self
         self.scheduler.run()

@@ -10,7 +10,6 @@
 import logging
 import datetime
 import random
-import Queue
 import threading
 import time
 ## Third-party modules
@@ -33,10 +32,12 @@ class Scheduler(object):
     MAX_CHUNK_FACTOR = 1
     UPDATES_PER_CHECK = 4
 
+    CACHE_DEFAULT_TTL = 7 * 24 * 3600
+
     def __init__(self, name, pool=None, reset_running=False,
                  max_threads=5, ioloop=None, check_time=1000,
                  submit_threshold=None, max_chunk=None,
-                 filter=None, use_cache=None):
+                 filter=None):
         """
         Create scheduler
         :param name: Unique scheduler name
@@ -89,10 +90,17 @@ class Scheduler(object):
         self.to_shutdown = False
         self.min_sleep = float(check_time) / self.UPDATES_PER_CHECK / 1000.0
         self.jobs_burst = []
-        self.use_cache = use_cache
         self.cache = None
-        self.cache_thread = None
-        self.cache_queue = Queue.Queue()
+        self.cache_lock = threading.Lock()
+        self.cache_set_ops = {}
+
+    def get_cache(self):
+        with self.cache_lock:
+            if not self.cache:
+                from noc.core.cache.base import cache
+
+                self.cache = cache
+            return self.cache
 
     def run(self):
         """
@@ -104,20 +112,8 @@ class Scheduler(object):
         if self.to_reset_running:
             self.reset_running()
         self.ensure_indexes()
-        if self.use_cache:
-            self.run_cache_thread()
         self.logger.info("Running scheduler")
         self.ioloop.spawn_callback(self.scheduler_loop)
-
-    def run_cache_thread(self):
-        from noc.core.cache.base import cache
-        self.cache = cache
-        self.cache_thread = threading.Thread(
-            target=self.cache_worker,
-            name="cache_worker"
-        )
-        self.cache_thread.setDaemon(True)
-        self.cache_thread.start()
 
     def get_collection(self):
         """
@@ -198,6 +194,10 @@ class Scheduler(object):
         self.apply_bulk_ops()
         return n
 
+    def apply_ops(self):
+        self.apply_bulk_ops()
+        self.apply_cache_ops()
+
     @tornado.gen.coroutine
     def scheduler_loop(self):
         """
@@ -216,7 +216,7 @@ class Scheduler(object):
                 if n:
                     dt = min(dt, self.check_time / n)
                 yield tornado.gen.sleep(dt / 1000.0)
-        self.apply_bulk_ops()
+        yield self.executor.submit(self.apply_ops)
 
     def iter_pending_jobs(self, limit):
         """
@@ -308,7 +308,7 @@ class Scheduler(object):
                 if cjobs:
                     for v in cjobs:
                         try:
-                            ctx = self.cache.get_many(cjobs[v], version=v) or {}
+                            ctx = self.get_cache().get_many(cjobs[v], version=v) or {}
                         except Exception as e:
                             self.logger.error("Failed to restore context: %s", e)
                             ctx = {}
@@ -489,44 +489,26 @@ class Scheduler(object):
                 self.bulk.find(q).update(op)
                 self.bulk_ops += 1
 
-    def cache_worker(self):
-        self.logger.info("Starting cache worker thread")
-        set_ops = {}  # version -> key -> value
-        SEND_INTERVAL = 0.25
-        DEFAULT_TTL = 7 * 24 * 3600
-        last = 0
-        while True:
-            t0 = self.ioloop.time()
-            timeout = min(last + SEND_INTERVAL - t0, SEND_INTERVAL)
-            if timeout > 0:
-                # Collect operations
-                try:
-                    key, value, version = self.cache_queue.get(
-                        block=True, timeout=timeout
-                    )
-                    if version not in set_ops:
-                        set_ops[version] = {}
-                    set_ops[version][key] = value
-                except Queue.Empty:
-                    pass
-            else:
-                # Apply operations
-                if set_ops:
-                    for version, data in set_ops.items():
-                        try:
-                            self.cache.set_many(
-                                data, version=version,
-                                ttl=DEFAULT_TTL)
-                            del set_ops[version]
-                        except Exception as e:
-                            self.logger.error("Error writing cache: %s", e)
-                last = t0
+    def apply_cache_ops(self):
+        with self.cache_lock:
+            cache_set_ops = self.cache_set_ops
+            self.cache_set_ops = {}
+        for version in cache_set_ops:
+            metrics["%s_cache_set_requests" % self.name] += 1
+            try:
+                self.cache.set_many(
+                    cache_set_ops[version],
+                    version=version,
+                    ttl=self.CACHE_DEFAULT_TTL)
+            except Exception as e:
+                self.logger.error("Error writing cache: %s", e)
+                metrics["%s_cache_set_errors" % self.name] += 1
 
     def cache_set(self, key, value, version):
-        assert self.cache_thread, "Cache management thread is not started"
-        self.cache_queue.put(
-            (key, value, version)
-        )
+        with self.cache_lock:
+            if version not in self.cache_set_ops:
+                self.cache_set_ops[version] = {}
+            self.cache_set_ops[version][key] = value
 
     def apply_metrics(self, d):
         """
