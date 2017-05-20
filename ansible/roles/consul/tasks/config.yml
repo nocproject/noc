@@ -69,3 +69,18 @@
   when: "'prod' in noc_env_type"
   tags:
     - config
+
+# fight against thousands of time-wait connections. good enought reading http://fx-files.ru/archives/602
+- name: Tune sysctl.conf for consul
+  sysctl:
+    name: "{{item.name}}"
+    value: "{{item.value}}"
+    state: present
+    reload: yes
+  with_items:
+    - { name: 'net.ipv4.tcp_tw_reuse', value: 1}
+    - { name: 'net.ipv4.tcp_rfc1337', value: 1}
+    - { name: 'net.ipv4.tcp_tw_recycle', value: 1}
+  tags:
+    - config
+  when: "'Linux' in ansible_system"
