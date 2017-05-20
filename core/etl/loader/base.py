@@ -341,9 +341,9 @@ class BaseLoader(object):
                 nv = sorted(
                     [
                         x for x in ov
-                        if not x.startswith(self.system + ":")
+                        if not x.startswith(self.system.name + ":")
                     ] + [
-                        "%s:%s" % (self.system, x) for x in nv
+                        "%s:%s" % (self.system.name, x) for x in nv
                     ]
                 )
             setattr(o, k, nv)
