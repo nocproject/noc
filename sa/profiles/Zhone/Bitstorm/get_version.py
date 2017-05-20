@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##----------------------------------------------------------------------
-## Zhone.MXK.get_version
+## Zhone.Bitstorm.get_version
 ##----------------------------------------------------------------------
 ## Copyright (C) 2007-2016 The NOC Project
 ## See LICENSE for details
@@ -34,14 +34,16 @@ class Script(BaseScript):
                         r"^MAC Address Eth1\s*(?P<mac1>\S+)\n"
                         r"^MAC Address Eth2\s*(?P<mac2>\S+)\n", re.MULTILINE | re.IGNORECASE)
 
-    rx_ver2 = re.compile(r"\s*System Name\s*(?P<hostname>\S*)\n"
-                         r"\s*System Location\s*(?P<location>\S*)\n"
-                         r"\s*System Contact\s*(?P<contact>\S*)\n"
+    rx_ver2 = re.compile(r"\s*System Name\s*(?P<hostname>\S*)(\s*\n)"
+                         r"\s*System Location\s*(?P<location>\S*)(\s*\n)"
+                         r"\s*System Contact\s*(?P<contact>\S*)(\s*\n)"
                          r"\s*System Description\s*(?P<description>.*)", re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
         v = self.cli("show system information", cached=True)
-        if "Paradyne DSLAM" in v:
+        platform = "Unknown"
+        version = ""
+        if "Paradyne DSLAM" in v or "Zhone DSLAM" in v:
             match = self.rx_ver2.match(v)
             if match:
                 platform = match.group("description")
