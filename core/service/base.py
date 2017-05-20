@@ -332,11 +332,6 @@ class Service(object):
                 self.logger.warn("Using libuv")
                 tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.instance()
-            # Report when main ioloop blocked
-            try:
-                self.ioloop.set_blocking_log_threshold(1.0)
-            except NotImplementedError:
-                pass
             # Initialize DCS
             self.dcs = get_dcs(cmd_options["dcs"])
             # Activate service
