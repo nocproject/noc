@@ -43,7 +43,7 @@ class Script(BaseScript):
             "admin_status": True,
             "enabled_protocols": [],
             "mac": mac,
-            "name": vl,
+            "name": parse_table(ipif)[0][0],
             "oper_status": True,
             "subinterfaces": [{
                 "admin_status": True,
@@ -51,7 +51,7 @@ class Script(BaseScript):
                 "enabled_protocols": [],
                 "ipv4_addresses": ip,
                 "mac": mac,
-                "name": vl,
+                "name": parse_table(ipif)[0][0],
                 "oper_status": True,
                 "vlan_ids": [vl]
             }],

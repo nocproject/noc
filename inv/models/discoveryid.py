@@ -14,7 +14,7 @@ from mongoengine.queryset import DoesNotExist
 import cachetools
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, ListField,
+from mongoengine.fields import (StringField, ListField, LongField,
                                 EmbeddedDocumentField)
 from pymongo import ReadPreference
 ## NOC modules
@@ -25,6 +25,7 @@ from noc.inv.models.subinterface import SubInterface
 from noc.core.perf import metrics
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
+from noc.core.mac import MAC
 
 mac_lock = Lock()
 
@@ -48,8 +49,7 @@ class DiscoveryID(Document):
         "collection": "noc.inv.discovery_id",
         "allow_inheritance": False,
         "indexes": [
-            "object", "hostname", "udld_id",
-            ("chassis_mac.first_mac", "chassis_mac.last_mac")
+            "object", "hostname", "udld_id", "macs"
         ]
     }
     object = ForeignKeyField(ManagedObject)
@@ -57,6 +57,8 @@ class DiscoveryID(Document):
     hostname = StringField()
     router_id = StringField()
     udld_id = StringField()  # UDLD local identifier
+    #
+    macs = ListField(LongField())
 
     _mac_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
 
@@ -83,6 +85,13 @@ class DiscoveryID(Document):
             old_macs -= set(m.first_mac for m in o.chassis_mac)
             if old_macs:
                 cache.delete_many(["discoveryid-mac-%s" % m for m in old_macs])
+            # MAC index
+            macs = []
+            for r in chassis_mac:
+                first = MAC(r.first_mac)
+                last = MAC(r.last_mac)
+                macs += [m for m in range(int(first), int(last) + 1)]
+            o.macs = macs
         else:
             cls(object=object, chassis_mac=chassis_mac,
                 hostname=hostname, router_id=router_id).save()
@@ -92,26 +101,9 @@ class DiscoveryID(Document):
                   key="discoveryid-mac-%s",
                   lock=lambda _: mac_lock)
     def get_by_mac(cls, mac):
-        c = cls._get_collection()
-        r = c.find_one({"chassis_mac.first_mac": mac},
-               {"_id": 0, "object": 1, "chassis_mac": 1})
-        if r:
-            metrics["discoveryid_mac_first"] += 1
-        else:
-            # Slow path, find by range
-            r = c.find_one({
-                "chassis_mac": {
-                    "$elemMatch": {
-                        "first_mac": {
-                            "$lte": mac
-                        },
-                        "last_mac": {
-                            "$gte": mac
-                        }
-                    }
-                }
-            }, {"_id": 0, "object": 1})
-        return r
+        return cls._get_collection().find_one({
+            "macs": int(MAC(mac))
+        }, {"_id": 0, "object": 1})
 
     @classmethod
     def find_object(cls, mac=None, ipv4_address=None):

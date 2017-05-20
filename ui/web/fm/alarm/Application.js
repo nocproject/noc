@@ -178,7 +178,8 @@ Ext.define('NOC.fm.alarm.Application', {
                 {'value': 10, 'text': '10 min'},
                 {'value': 15, 'text': '15 min'},
                 {'value': 30, 'text': '30 min'},
-                {'value': 60, 'text': '60 min'}
+                {'value': 60, 'text': '60 min'},
+                {'value': 1440, 'text': '1440 min'}
             ]
         });
         me.freshOpacityStore = Ext.create('Ext.data.Store', {
@@ -210,7 +211,7 @@ Ext.define('NOC.fm.alarm.Application', {
             width: freshSecondCol,
             queryMode: 'local',
             valueField: 'value',
-            value: 1,
+            value: 2,
             forceSelection: true,
             store: me.freshOpacityStore,
             listeners: {
@@ -223,7 +224,7 @@ Ext.define('NOC.fm.alarm.Application', {
             width: freshFirstCol,
             queryMode: 'local',
             valueField: 'value',
-            value: 10,
+            value: 5,
             store: me.durationStore,
             validator: me.durationValidator,
             listeners: {
@@ -231,17 +232,24 @@ Ext.define('NOC.fm.alarm.Application', {
                 change: me.onChangeFilter
             }
         });
-        me.freshOpacity1 = Ext.create('Ext.form.Display', {
+        me.freshOpacity1 = Ext.create('Ext.form.ComboBox', {
             width: freshSecondCol,
-            padding: '0 0 0 10',
-            value: '1'
+            queryMode: 'local',
+            valueField: 'value',
+            value: 1,
+            forceSelection: true,
+            store: me.freshOpacityStore,
+            listeners: {
+                scope: me,
+                change: me.onChangeFilter
+            }
         });
 
         me.freshDuration2 = Ext.create('Ext.form.ComboBox', {
             width: freshFirstCol,
             queryMode: 'local',
             valueField: 'value',
-            value: 15,
+            value: 30,
             store: me.durationStore,
             validator: me.durationValidator,
             listeners: {
@@ -253,7 +261,7 @@ Ext.define('NOC.fm.alarm.Application', {
             width: freshSecondCol,
             queryMode: 'local',
             valueField: 'value',
-            value: 3,
+            value: 4,
             forceSelection: true,
             store: me.freshOpacityStore,
             listeners: {
@@ -266,7 +274,7 @@ Ext.define('NOC.fm.alarm.Application', {
             width: freshFirstCol,
             queryMode: 'local',
             valueField: 'value',
-            value: 30,
+            value: 1440,
             store: me.durationStore,
             validator: me.durationValidator,
             listeners: {
@@ -278,7 +286,7 @@ Ext.define('NOC.fm.alarm.Application', {
             width: freshSecondCol,
             queryMode: 'local',
             valueField: 'value',
-            value: 2,
+            value: 3,
             forceSelection: true,
             store: me.freshOpacityStore,
             listeners: {
@@ -736,16 +744,16 @@ Ext.define('NOC.fm.alarm.Application', {
         var me = this;
         var c = record.get('row_class');
         var duration = record.get('duration');
-        var freshCI = 'fm-blur-' + me.freshOpacityOther.value;          // capacity 0.3
+        var freshCI = 'fm-blur-' + me.freshOpacityOther.value;
 
         if(c) {
             if(!me.freshSwitchOff.value) {
                 if(duration < me.freshDuration1.value * 60) {
-                    freshCI = 'fm-blur-4';                              // capacity 1
+                    freshCI = 'fm-blur-' + me.freshOpacity1.value;
                 } else if(duration < me.freshDuration2.value * 60) {
-                    freshCI = 'fm-blur-' + me.freshOpacity2.value;      // capacity 0.7
+                    freshCI = 'fm-blur-' + me.freshOpacity2.value;
                 } else if(duration < me.freshDuration3.value * 60) {
-                    freshCI = 'fm-blur-' + me.freshOpacity3.value;      // capacity 0.5
+                    freshCI = 'fm-blur-' + me.freshOpacity3.value;
                 }
 
                 return c + ' ' + freshCI;

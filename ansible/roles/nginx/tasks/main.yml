@@ -74,3 +74,11 @@
     name: "{{ nginx_system_service }}"
     enabled: yes
     state: started
+
+- name: copy nginx consul templates
+  template:
+    src: nginx.json
+    dest: "{{consul_configd_path}}/"
+  notify: reload consul
+  tags:
+    - consul

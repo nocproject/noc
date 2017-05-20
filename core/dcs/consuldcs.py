@@ -112,17 +112,19 @@ class ConsulResolver(ResolverBase):
         while not self.to_shutdown:
             try:
                 old_index = index
-                index, services = yield self.dcs.consul.catalog.service(
+                index, services = yield self.dcs.consul.health.service(
                     service=self.name,
                     index=index,
-                    token=self.dcs.consul_token
+                    token=self.dcs.consul_token,
+                    passing=True
                 )
             except ConsulRepeatableErrors:
                 continue
             if old_index == index:
                 continue  # Timed out
             r = dict(
-                (svc["ServiceID"], "%s:%s" % (svc["ServiceAddress"], svc["ServicePort"]))
+                (svc["Service"]["ID"], "%s:%s" % (
+                    svc["Service"]["Address"], svc["Service"]["Port"]))
                 for svc in services
             )
             self.set_services(r)

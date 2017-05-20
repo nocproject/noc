@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## Alcatel.7324RU.get_switchport
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetSwitchport
     rx_vlan = re.compile(
         r"[ ]*(?P<vid>\d+)[ ]*(?P<vname>[A-Za-z0-9\-\.]+)\n"
-        r"([ 0-9]+)\n[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
+        r"(([ 0-9]+)\n)?[ ]+(?P<vstatus>enabled|disabled)[ 0-9]+\n"
         r"([ \-xnf]+)\n[ ]+(?P<portmask>[\-tu]+)"
         r"[ ]*(?P<uplinkmask>[\-tu]*)",
         re.MULTILINE | re.IGNORECASE)
