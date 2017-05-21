@@ -32,7 +32,6 @@ class Command(BaseCommand):
         load_parser = subparsers.add_parser("load")
         load_parser.add_argument(
             "system",
-            nargs=1,
             help="Remote system name"
         )
         load_parser.add_argument(
@@ -44,14 +43,12 @@ class Command(BaseCommand):
         check_parser = subparsers.add_parser("check")
         check_parser.add_argument(
             "system",
-            nargs=1,
             help="Remote system name"
         )
         # diff command
         diff_parser = subparsers.add_parser("diff")
         diff_parser.add_argument(
             "system",
-            nargs=1,
             help="Remote system name"
         )
         diff_parser.add_argument(
@@ -69,7 +66,6 @@ class Command(BaseCommand):
         extract_parser = subparsers.add_parser("extract")
         extract_parser.add_argument(
             "system",
-            nargs=1,
             help="Remote system name"
         )
         extract_parser.add_argument(
@@ -91,7 +87,7 @@ class Command(BaseCommand):
             self.die("Invalid remote system: %s" % options["system"])
         remote_system.load(options.get("loaders", []))
 
-    def handle_extract(self, system=None, *args, **options):
+    def handle_extract(self, *args, **options):
         remote_system = RemoteSystem.get_by_name(options["system"])
         if not remote_system:
             self.die("Invalid remote system: %s" % options["system"])
