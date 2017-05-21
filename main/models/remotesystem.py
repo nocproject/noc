@@ -9,6 +9,7 @@
 # Python modules
 from threading import Lock
 import operator
+import datetime
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ListField,
@@ -17,6 +18,7 @@ from mongoengine.fields import (StringField, ListField,
 import cachetools
 # NOC modules
 from noc.core.handler import get_handler
+from noc.lib.debug import error_report
 
 id_lock = Lock()
 
@@ -106,8 +108,30 @@ class RemoteSystem(Document):
 
     def extract(self, extractors=None):
         extractors = extractors or self.get_extractors()
-        self.get_handler().extract(extractors)
+        error = None
+        try:
+            self.get_handler().extract(extractors)
+        except Exception as e:
+            error_report()
+            error = str(e)
+        self.last_extract = datetime.datetime.now()
+        if error:
+            self.extract_error = error
+        else:
+            self.last_successful_extract = self.last_extract
+        self.save()
 
     def load(self, extractors=None):
         extractors = extractors or self.get_extractors()
-        self.get_handler().load(extractors)
+        error = None
+        try:
+            self.get_handler().load(extractors)
+        except Exception as e:
+            error_report()
+            error = str(e)
+        self.last_load = datetime.datetime.now()
+        if error:
+            self.load_error = error
+        else:
+            self.last_successful_load = self.last_load
+        self.save()
