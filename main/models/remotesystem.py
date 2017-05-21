@@ -99,8 +99,8 @@ class RemoteSystem(Document):
 
     def get_extractors(self):
         extractors = []
-        for k in self._meta.fields:
-            if k.startwith("enable_") and getattr(self, k):
+        for k in self._fields:
+            if k.startswith("enable_") and getattr(self, k):
                 extractors += [k[7:]]
         return extractors
 
