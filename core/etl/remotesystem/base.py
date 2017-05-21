@@ -51,11 +51,13 @@ class BaseRemoteSystem(object):
         for en in reversed(self.extractors_order):
             if extractors and en not in extractors:
                 self.logger.info("Skipping extractor %s", en)
+                continue
             if en not in self.extractors:
                 self.logger.info(
                     "Extractor %s is not implemented. Skipping", en)
+                continue
             # @todo: Config
-            xc = self.extractors[en]()
+            xc = self.extractors[en](self)
             xc.extract()
 
     def load(self, loaders=None):
