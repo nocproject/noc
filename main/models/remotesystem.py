@@ -97,8 +97,17 @@ class RemoteSystem(Document):
             raise ValueError
         return h(self)
 
+    def get_extractors(self):
+        extractors = []
+        for k in self._meta.fields:
+            if k.startwith("enable_") and getattr(self, k):
+                extractors += [k[7:]]
+        return extractors
+
     def extract(self, extractors=None):
-        self.get_handler().extract()
+        extractors = extractors or self.get_extractors()
+        self.get_handler().extract(extractors)
 
     def load(self, extractors=None):
-        self.get_handler().load()
+        extractors = extractors or self.get_extractors()
+        self.get_handler().load(extractors)
