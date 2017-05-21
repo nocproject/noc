@@ -92,7 +92,7 @@ class RemoteSystem(Document):
         """
         Return BaseTTSystem instance
         """
-        h = get_handler(self.handler)
+        h = get_handler(str(self.handler))
         if not h:
             raise ValueError
         return h(self)
