@@ -63,5 +63,6 @@
     dest: "{{consul_configd_path}}/telegraf.json"
   notify: reload consul
   when: "'Linux' in ansible_system and telegraf_prometheus_enabled"
+  ignore_errors: yes # race condition
   tags:
     - consul
