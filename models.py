@@ -95,6 +95,7 @@ _MODELS = {
     "main.RefBook": "noc.main.models.RefBook",
     "main.RefBookData": "noc.main.models.RefBookData",
     "main.RefBookField": "noc.main.models.RefBookField",
+    "main.RemoteSystem": "noc.main.models.remotesystem.RemoteSystem",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
     "main.Schedule": "noc.main.models.Schedule",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
@@ -212,6 +213,7 @@ _MODELS = {
     "fm.Outage": "noc.fm.models.outage.Outage",
     "fm.Reboot": "noc.fm.models.reboot.Reboot",
     "fm.SyntaxAlias": "noc.fm.models.syntaxalias.SyntaxAlias",
+    "fm.TTSystem": "noc.fm.models.ttsystem.TTSystem",
     # pm models
     "pm.GrafanaDashboard": "noc.pm.models.grafanadashboard.GrafanaDashboard",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",
