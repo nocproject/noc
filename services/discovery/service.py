@@ -1,19 +1,18 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Discovery
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Discovery
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 # Python modules
-import threading
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 import tornado.httpclient
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
 
@@ -57,9 +56,9 @@ class DiscoveryService(Service):
             reset_running=True,
             max_threads=self.config.max_threads,
             ioloop=self.ioloop,
-            filter=ifilter
+            filter=ifilter,
+            service=self
         )
-        self.scheduler.service = self
         self.scheduler.run()
 
     def get_mon_data(self):

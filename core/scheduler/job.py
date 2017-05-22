@@ -1,22 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Scheduler Job Class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Scheduler Job Class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import time
 import datetime
-## Third-party modules
+# Third-party modules
 import tornado.gen
-import bson
-## NOC modules
+# NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 from noc.lib.debug import error_report
-from noc.lib.nosql import get_db
 from noc.lib.dateutils import total_seconds
 
 logger = logging.getLogger(__name__)
@@ -115,8 +113,9 @@ class Job(object):
     def run(self):
         self.start_time = time.time()
         self.logger.info(
-            "[%s] Starting (Lag %.2fms)",
+            "[%s] Starting at %s (Lag %.2fms)",
             self.name,
+            self.scheduler.scheduler_id,
             total_seconds(
                 datetime.datetime.now() - self.attrs[self.ATTR_TS]
             ) * 1000.0
