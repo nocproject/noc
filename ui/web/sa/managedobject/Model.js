@@ -285,6 +285,10 @@ Ext.define("NOC.sa.managedobject.Model", {
             persist: false
         },
         {
+            name: "tt_queue",
+            type: "string"
+        },
+        {
             name: "tt_system_id",
             type: "string"
         },

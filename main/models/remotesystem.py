@@ -57,7 +57,6 @@ class RemoteSystem(Document):
     enable_subscriber = BooleanField()
     enable_terminationgroup = BooleanField()
     enable_ttsystem = BooleanField()
-    enable_ttmap = BooleanField()
     # Usage statistics
     last_extract = DateTimeField()
     last_successful_extract = DateTimeField()

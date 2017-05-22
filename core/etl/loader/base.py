@@ -111,7 +111,7 @@ class BaseLoader(object):
                 if f.unique]
             self.integrity_exception = mongoengine.errors.NotUniqueError
         else:
-            ## Third-party modules
+            # Third-party modules
             import django.db.utils
             if any(f for f in self.model._meta.fields if f.name == "tags"):
                 self.tags += ["src:%s" % self.system]
@@ -442,6 +442,9 @@ class BaseLoader(object):
         """
         r = dict((k, self.clean_map[k](v))
                  for k, v in zip(self.fields, row))
+        # Fill integration fields
+        r["remote_system"] = self.system.remote_system
+        r["remote_id"] = self.clean_str(row[0])
         return r
 
     def clean_str(self, value):

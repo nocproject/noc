@@ -300,6 +300,8 @@ class ManagedObject(Model):
     # TT system for this object
     tt_system = DocumentReferenceField(TTSystem,
                                        null=True, blank=True)
+    # TT system queue for this object
+    tt_queue = CharField(max_length=64, null=True, blank=True)
     # Object id in tt system
     tt_system_id = CharField(max_length=64, null=True, blank=True)
     #
@@ -1056,6 +1058,8 @@ class ManagedObject(Model):
         Check alarm can be escalated
         :return: 
         """
+        if not self.tt_system or not self.tt_system_id:
+            return False
         if self.escalation_policy == "E":
             return True
         elif self.escalation_policy == "P":

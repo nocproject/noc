@@ -790,6 +790,12 @@ Ext.define("NOC.sa.managedobject.Application", {
                             allowBlank: true
                         },
                         {
+                            name: "tt_queue",
+                            xtype: "textfield",
+                            fieldLabel: __("TT Queue"),
+                            allowBlank: true
+                        },
+                        {
                             name: "tt_system_id",
                             xtype: "textfield",
                             fieldLabel: __("TT System ID"),
