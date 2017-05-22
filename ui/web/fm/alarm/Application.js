@@ -674,7 +674,7 @@ Ext.define('NOC.fm.alarm.Application', {
         //
         me.startPolling();
         //
-        switch(me.getCmd) {
+        switch(me.getCmd()) {
             case 'history':
                 me.showAlarm(me.noc.cmd.args[0]);
                 break;
