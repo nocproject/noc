@@ -84,7 +84,7 @@ class BaseLoader(object):
                 logger, "%s][%s" % (self.system, self.name)
         )
         self.import_dir = os.path.join(self.PREFIX,
-                                       self.system, self.name)
+                                       self.system.name, self.name)
         self.archive_dir = os.path.join(self.import_dir, "archive")
         self.mappings_path = os.path.join(
             self.import_dir,
