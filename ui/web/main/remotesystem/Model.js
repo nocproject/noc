@@ -80,10 +80,6 @@ Ext.define("NOC.main.remotesystem.Model", {
         {
             name: "enable_ttsystem",
             type: "boolean"
-        },
-        {
-            name: "enable_ttmap",
-            type: "boolean"
         }
     ]
 });
