@@ -11,6 +11,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
     requires: [
         "NOC.sa.serviceprofile.Model",
         "NOC.main.ref.glyph.LookupField",
+        "NOC.main.remotesystem.LookupField",
         "NOC.inv.interfaceprofile.LookupField"
     ],
     model: "NOC.sa.serviceprofile.Model",
