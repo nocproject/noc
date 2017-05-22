@@ -398,7 +398,7 @@ class Ping(object):
             elif attempt > 0:
                 metrics["ping_check_recover"] += 1
             logger.debug("[%s] Result: success, rtt=%s, attempt=%d", address, rtt, attempt)
-            raise tornado.gen.Return(rtt)
+            raise tornado.gen.Return((rtt, attempt - 1))
         else:
             logger.debug("[%s] Result: failed", address)
-            raise tornado.gen.Return(None)
+            raise tornado.gen.Return((None, attempt))

@@ -102,6 +102,7 @@ class ObjectMap(Document):
                     "id": mo.id,
                     "interval": mo.object_profile.ping_interval,
                     "report_rtt": mo.object_profile.report_ping_rtt,
+                    "report_attempts": mo.object_profile.report_ping_attempts,
                     "status": None,
                     "name": mo.name
                 }

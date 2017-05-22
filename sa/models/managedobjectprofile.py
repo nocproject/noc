@@ -76,6 +76,10 @@ class ManagedObjectProfile(models.Model):
         _("Report RTT"),
         default=False
     )
+    report_ping_attempts = models.BooleanField(
+        _("Report Attempts"),
+        default=False
+    )
     # Additional alarm weight
     weight = models.IntegerField(
         "Alarm weight",

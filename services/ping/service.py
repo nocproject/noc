@@ -209,7 +209,7 @@ class PingService(Service):
             if not eval(ps.time_cond, {"T": dt}):
                 self.perf_metrics["ping_check_skips"] += 1
                 return
-        rtt = yield self.ping.ping_check_rtt(
+        rtt, attempts = yield self.ping.ping_check_rtt(
             address,
             count=self.config.max_packets,
             timeout=self.config.timeout
@@ -271,6 +271,12 @@ class PingService(Service):
             self.register_metrics([
                 "Ping\\ |\\ RTT,object=%s value=%s %s" % (
                     q(ps.name), rtt, int(time.time())
+                )
+            ])
+        if ps.report_attempts:
+            self.register_metrics([
+                "Ping\\ |\\ Attempts,object=%s value=%s %s" % (
+                    q(ps.name), attempts, int(time.time())
                 )
             ])
 

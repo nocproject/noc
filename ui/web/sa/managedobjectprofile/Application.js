@@ -269,13 +269,19 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     renderer: NOC.render.Duration
                                                 }
                                             ]
-                                        },
+                                        }
                                     ]
                                 },
                                 {
                                     name: "report_ping_rtt",
                                     xtype: "checkboxfield",
                                     boxLabel: __("Report ping RTT"),
+                                    allowBlank: false
+                                },
+                                {
+                                    name: "report_ping_attempts",
+                                    xtype: "checkboxfield",
+                                    boxLabel: __("Report ping attempts"),
                                     allowBlank: false
                                 }
                             ]

@@ -81,6 +81,11 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: true
         },
         {
+            name: "report_ping_attempts",
+            type: "boolean",
+            defaultValue: true
+        },
+        {
             name: "weight",
             type: "int",
             defaultValue: 0
