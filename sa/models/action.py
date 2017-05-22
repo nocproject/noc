@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Action
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Action
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import re
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, UUIDField, IntField,
                                 BooleanField, ListField,
                                 EmbeddedDocumentField)
+import six
 import jinja2
-## NOC modules
+# NOC modules
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 from noc.core.ip import IP
@@ -158,7 +160,7 @@ class Action(Document):
                 # Integer type
                 try:
                     v = int(v)
-                except ValueError, why:
+                except ValueError:
                     raise ValueError(
                         "Invalid integer in parameter '%s': '%s'" % (
                             p.name, v)
@@ -167,7 +169,7 @@ class Action(Document):
                 # Float type
                 try:
                     v = float(v)
-                except ValueError, why:
+                except ValueError:
                     raise ValueError(
                         "Invalid float in parameter '%s': '%s'" % (
                             p.name, v)
@@ -176,7 +178,7 @@ class Action(Document):
                 # Interface
                 try:
                     v = obj.profile.convert_interface_name(v)
-                except Exception, why:
+                except Exception:
                     raise ValueError(
                         "Invalid interface name in parameter '%s': '%s'" % (
                             p.name, v)
@@ -185,21 +187,21 @@ class Action(Document):
                 # IP address
                 try:
                     v = IP.prefix(v)
-                except ValueError, why:
+                except ValueError:
                     raise ValueError(
                         "Invalid ip in parameter '%s': '%s'" % (p.name, v)
                     )
             elif p.type == "vrf":
                 if isinstance(v, VRF):
                     pass
-                elif isinstance(v, (int, long)):
+                elif isinstance(v, six.integer_types):
                     try:
                         v = VRF.objects.get(id=v)
                     except VRF.DoesNotExist:
                         raise ValueError(
                             "Unknown VRF in parameter '%s': '%s'" % (p.name, v)
                         )
-                elif isinstance(v, basestring):
+                elif isinstance(v, six.string_types):
                     try:
                         v = VRF.objects.get(name=v)
                     except VRF.DoesNotExist:
@@ -214,6 +216,6 @@ class Action(Document):
         return args
 
 
-##
-from actioncommands import ActionCommands
+#
+from .actioncommands import ActionCommands
 from noc.ip.models.vrf import VRF

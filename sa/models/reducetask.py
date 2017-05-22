@@ -1,27 +1,28 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ReduceTask model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ReduceTask model
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import marshal
 import base64
 import datetime
 import random
 import time
-import types
 from collections import defaultdict
 import itertools
-## Django modules
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-## NOC modules
+import six
+# NOC modules
 from noc.main.models import PyRule
-from managedobject import ManagedObject
-from managedobjectselector import ManagedObjectSelector
+from .managedobject import ManagedObject
+from .managedobjectselector import ManagedObjectSelector
 from noc.core.model.fields import PickledField
 
 
@@ -45,9 +46,9 @@ class ReduceTask(models.Model):
             return u"%d" % self.id
         else:
             return u"New: %s" % id(self)
-    ##
-    ##
-    ##
+    #
+    #
+    #
     def save(self, **kwargs):
         if callable(self.script):
             # Make bootstrap from callable
@@ -55,7 +56,7 @@ class ReduceTask(models.Model):
             "@pyrule\n"\
             "def rule(*args,**kwargs): pass\n"\
             "rule.func_code=marshal.loads(base64.decodestring('%s'))\n" % (
-                    base64.encodestring(marshal.dumps(self.script.func_code)).replace("\n", "\\n"))
+                    base64.encodestring(marshal.dumps(self.script.__code__)).replace("\n", "\\n"))
         elif self.script.startswith("pyrule:"):
             # Reference to existing pyrule
             r = PyRule.objects.get(name=self.script[7:], interface="IReduceTask")
@@ -71,9 +72,9 @@ class ReduceTask(models.Model):
         # Save
         super(ReduceTask, self).save(**kwargs)
 
-    ##
-    ## Check all map tasks are completed
-    ##
+    #
+    # Check all map tasks are completed
+    #
     @property
     def complete(self):
         return self.stop_time <= datetime.datetime.now()\
@@ -124,10 +125,10 @@ class ReduceTask(models.Model):
             return t
 
         # Normalize map scripts to a list
-        if type(map_script) in (types.ListType, types.TupleType):
+        if type(map_script) in (list, tuple):
             # list of map scripts
             map_script_list = map_script
-            if type(map_script_params) in (types.ListType, types.TupleType):
+            if type(map_script_params) in (list, tuple):
                 if len(map_script_params) != len(map_script):
                     raise Exception("Mismatched parameter list size")
                 map_script_params_list = map_script_params
@@ -148,13 +149,13 @@ class ReduceTask(models.Model):
                 raise Exception("Invalid map script: '%s'" % ms)
             msp += [(ms, p)]
         # Convert object_selector to a list of objects
-        if type(object_selector) in (types.ListType, types.TupleType):
+        if type(object_selector) in (list, tuple):
             objects = object_selector
         elif isinstance(object_selector, ManagedObjectSelector):
             objects = object_selector.managed_objects
         elif isinstance(object_selector, ManagedObject):
             objects = [object_selector]
-        elif isinstance(object_selector, basestring):
+        elif isinstance(object_selector, six.basestring):
             objects = [ManagedObject.objects.get(name=object_selector)]
         elif type(object_selector) in (int, long):
             objects = [ManagedObject.objects.get(id=object_selector)]
@@ -162,7 +163,7 @@ class ReduceTask(models.Model):
             objects = list(object_selector)
         # Resolve strings to managed objects, if returned by selector
         objects = [ManagedObject.objects.get(name=x)
-                   if isinstance(x, basestring) else x for x in objects]
+                   if isinstance(x, six.basestring) else x for x in objects]
         # Auto-detect reduce task timeout, if not set
         if not timeout:
             timeout = 0
@@ -266,15 +267,15 @@ class ReduceTask(models.Model):
                 m.save()
         return r_task
 
-    ##
-    ## Perform reduce script and execute result
-    ##
+    #
+    # Perform reduce script and execute result
+    #
     def reduce(self):
         return PyRule.compile_text(self.script)(self, **self.script_params)
 
-    ##
-    ## Get task result
-    ##
+    #
+    # Get task result
+    #
     def get_result(self, block=True):
         while True:
             if self.complete:
@@ -327,5 +328,5 @@ def reduce_object_script(task):
 def reduce_dumb(task):
     pass
 
-## Avoid circular references
-from maptask import MapTask
+# Avoid circular references
+from .maptask import MapTask

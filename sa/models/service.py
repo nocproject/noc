@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import datetime
 import logging
 # Third-party modules
@@ -14,7 +15,7 @@ from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField,
                                 ReferenceField, ListField, LongField)
 # NOC modules
-from serviceprofile import ServiceProfile
+from .serviceprofile import ServiceProfile
 from noc.crm.models.subscriber import Subscriber
 from noc.main.models.remotesystem import RemoteSystem
 from noc.lib.nosql import ForeignKeyField

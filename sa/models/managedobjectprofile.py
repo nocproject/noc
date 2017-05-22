@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 from threading import Lock
 # Third-party modules
@@ -16,7 +17,7 @@ from django.template import Template, Context
 import cachetools
 # NOC modules
 from noc.main.models.style import Style
-from authprofile import AuthProfile
+from .authprofile import AuthProfile
 from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
 from noc.core.model.fields import (TagsField, PickledField,
@@ -26,7 +27,7 @@ from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
-from objectmap import ObjectMap
+from .objectmap import ObjectMap
 
 id_lock = Lock()
 

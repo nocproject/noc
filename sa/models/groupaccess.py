@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## GroupAccess model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# GroupAccess model
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Django modules
+# Python modules
+from __future__ import absolute_import
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-from django.db.models import Q
 from django.contrib.auth.models import Group
-## NOC modules
-from managedobjectselector import ManagedObjectSelector
-from administrativedomain import AdministrativeDomain
+# NOC modules
+from .managedobjectselector import ManagedObjectSelector
+from .administrativedomain import AdministrativeDomain
 
 
 class GroupAccess(models.Model):

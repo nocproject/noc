@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 from threading import RLock
 # Third-party modules
@@ -72,7 +73,7 @@ class ServiceProfile(Document):
 
 
 def refresh_interface_profiles(sp_id, ip_id):
-    from service import Service
+    from .service import Service
     from noc.inv.models.interface import Interface
     svc = [
         x["_id"]

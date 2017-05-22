@@ -2,21 +2,22 @@
 ##----------------------------------------------------------------------
 ## ServiceSumamry Profile
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import absolute_import
 from collections import defaultdict
 import logging
 ## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import IntField, ObjectIdField, \
-    EmbeddedDocumentField, ListField
+from mongoengine.fields import (IntField, ObjectIdField,
+                                EmbeddedDocumentField, ListField)
 ## NOC modules
 from noc.crm.models.subscriber import Subscriber
 from noc.core.defer import call_later
-from serviceprofile import ServiceProfile
+from .serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 

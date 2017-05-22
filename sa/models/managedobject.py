@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import difflib
 from collections import namedtuple
 import logging
@@ -23,13 +24,13 @@ from django.contrib.auth.models import User, Group
 import cachetools
 import six
 # NOC modules
-from administrativedomain import AdministrativeDomain
-from authprofile import AuthProfile
-from managedobjectprofile import ManagedObjectProfile
-from objectstatus import ObjectStatus
-from objectmap import ObjectMap
-from objectdata import ObjectData
-from terminationgroup import TerminationGroup
+from .administrativedomain import AdministrativeDomain
+from .authprofile import AuthProfile
+from .managedobjectprofile import ManagedObjectProfile
+from .objectstatus import ObjectStatus
+from .objectmap import ObjectMap
+from .objectdata import ObjectData
+from .terminationgroup import TerminationGroup
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
 from noc.main.models import PyRule
@@ -756,9 +757,10 @@ class ManagedObject(Model):
         selectors = SelectorCache.get_object_selectors(self)
         # Find notification groups
         groups = set()
-        for o in ObjectNotification.objects.filter(**{
-            event_id: True,
-            "selector__in": selectors}):
+        for o in ObjectNotification.objects.filter(
+                event_id=True,
+                selector__in=selectors
+        ):
             groups.add(o.notification_group)
         if not groups:
             return  # Nothing to notify
@@ -1163,9 +1165,9 @@ class ActionsProxy(object):
         return cw
 
 # Avoid circular references
-from useraccess import UserAccess
-from groupaccess import GroupAccess
-from objectnotification import ObjectNotification
-from action import Action
-from selectorcache import SelectorCache
-from objectcapabilities import ObjectCapabilities
+from .useraccess import UserAccess
+from .groupaccess import GroupAccess
+from .objectnotification import ObjectNotification
+from .action import Action
+from .selectorcache import SelectorCache
+from .objectcapabilities import ObjectCapabilities

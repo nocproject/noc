@@ -7,6 +7,7 @@
 ##----------------------------------------------------------------------
 
 ## Python modules
+from __future__ import absolute_import
 import operator
 from threading import Lock
 ## Third-party modules
@@ -18,9 +19,9 @@ from psycopg2.extensions import adapt
 ## Third-party modules
 import six
 ## NOC modules
-from administrativedomain import AdministrativeDomain
-from managedobjectprofile import ManagedObjectProfile
-from terminationgroup import TerminationGroup
+from .administrativedomain import AdministrativeDomain
+from .managedobjectprofile import ManagedObjectProfile
+from .terminationgroup import TerminationGroup
 from noc.main.models.pool import Pool
 from noc.main.models.prefixtable import PrefixTable
 from noc.core.profile.loader import loader as profile_loader
@@ -134,7 +135,7 @@ class ManagedObjectSelector(models.Model):
         Returns Q object which can be applied to
         ManagedObject.objects.filter
         """
-        from managedobject import ManagedObjectAttribute
+        from .managedobject import ManagedObjectAttribute
 
         # Exclude NOC internal objects
         q = ~Q(profile_name__startswith="NOC.")
@@ -292,7 +293,7 @@ class ManagedObjectSelector(models.Model):
     ##
     @property
     def managed_objects(self):
-        from managedobject import ManagedObject
+        from .managedobject import ManagedObject
         return ManagedObject.objects.filter(self.Q)
 
     def match(self, managed_object):
@@ -353,7 +354,7 @@ class ManagedObjectSelector(models.Model):
         :param s:
         :return:
         """
-        from managedobject import ManagedObject
+        from .managedobject import ManagedObject
 
         if type(s) in (int, long, str, unicode):
             s = [s]
@@ -361,7 +362,7 @@ class ManagedObjectSelector(models.Model):
             raise ValueError("list required")
         objects = set()
         for so in s:
-            if not isinstance(so, basestring):
+            if not isinstance(so, six.string_types):
                 so = str(so)
             if so.startswith("@"):
                 # Selector expression: @<selector name>
@@ -397,5 +398,5 @@ class ManagedObjectSelectorByAttribute(models.Model):
         return u"%s: %s = %s" % (
             self.selector.name, self.key_re, self.value_re)
 
-
-from selectorcache import SelectorCache
+# Avoid circular references
+from .selectorcache import SelectorCache
