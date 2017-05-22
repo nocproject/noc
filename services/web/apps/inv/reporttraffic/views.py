@@ -64,15 +64,17 @@ class ReportForm(forms.Form):
         label=_("Load interface in %"),
         required=False
     )
-
+    filter_default = forms.BooleanField(
+        label=_("Enable Default interface profile"),
+        required=False
+    )
 
 class ReportTraffic(SimpleReport):
     title = _("Load Interfaces")
     form = ReportForm
 
-    def get_data(self, request, from_date=None, to_date=None, object_profile=None, percent=None, zero=None,
-                 interface_profile=None,
-                 managed_object=None, **kwargs):
+    def get_data(self, request, from_date=None, to_date=None, object_profile=None, percent=None, filter_default=None, zero=None,
+                 interface_profile=None, managed_object=None, **kwargs):
         now = datetime.datetime.now()
         b = datetime.datetime.strptime(from_date, "%d.%m.%Y")
         td = b.strftime("%Y-%m-%d")
@@ -101,7 +103,7 @@ class ReportTraffic(SimpleReport):
         if managed_object:
             mos = ManagedObject.objects.filter(is_managed=True, id=managed_object.id)
         for res in InterfaceProfile.objects.filter():
-            if res.name == "default":
+            if res.name == "default" and not filter_default:
                 continue
             for o in mos:
                 ifaces = Interface.objects.filter(managed_object=o, type="physical", profile=res)
