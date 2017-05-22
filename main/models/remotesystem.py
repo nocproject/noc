@@ -135,3 +135,13 @@ class RemoteSystem(Document):
         else:
             self.last_successful_load = self.last_load
         self.save()
+
+    def check(self, extractors=None):
+        extractors = extractors or self.get_extractors()
+        try:
+            self.get_handler().check(extractors)
+        except Exception as e:
+            error_report()
+
+    def get_loader_chain(self):
+        return self.get_handler().get_loader_chain()
