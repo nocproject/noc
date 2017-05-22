@@ -1,27 +1,29 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ManagedObjectProfile
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ManagedObjectProfile
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 from threading import Lock
-## Django modules
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.template import Template, Context
 import cachetools
-## NOC modules
+# NOC modules
 from noc.main.models.style import Style
 from authprofile import AuthProfile
 from noc.lib.validators import is_fqdn
 from noc.lib.stencil import stencil_registry
-from noc.core.model.fields import TagsField, PickledField
+from noc.core.model.fields import (TagsField, PickledField,
+                                   DocumentReferenceField)
 from noc.core.model.decorator import on_save, on_init, on_delete_check
 from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
 from objectmap import ObjectMap
@@ -35,7 +37,8 @@ id_lock = Lock()
     ("sa.ManagedObject", "object_profile"),
     ("sa.ManagedObjectProfile", "cpe_profile"),
     ("sa.ManagedObjectSelector", "filter_object_profile"),
-    ("inv.FirmwarePolicy", "object_profile")
+    ("inv.FirmwarePolicy", "object_profile"),
+    ("main.RemoteSystem", "remote_system")
 ])
 class ManagedObjectProfile(models.Model):
 
@@ -55,17 +58,17 @@ class ManagedObjectProfile(models.Model):
     # Stencils
     shape = models.CharField(_("Shape"), blank=True, null=True,
         choices=stencil_registry.choices, max_length=128)
-    ## Name restrictions
+    # Name restrictions
     # Regular expression to check name format
     name_template = models.CharField(_("Name template"), max_length=256,
         blank=True, null=True)
-    ## IPAM Synchronization
-    ## During ManagedObject save
+    # IPAM Synchronization
+    # During ManagedObject save
     sync_ipam = models.BooleanField(_("Sync. IPAM"), default=False)
     fqdn_template = models.TextField(_("FQDN template"),
         null=True, blank=True)
-    #@todo: Name validation function
-    ## FM settings
+    # @todo: Name validation function
+    # FM settings
     enable_ping = models.BooleanField(
         _("Enable ping check"), default=True)
     ping_interval = models.IntegerField(_("Ping interval"), default=60)
@@ -204,6 +207,24 @@ class ManagedObjectProfile(models.Model):
         max_length=255,
         null=True, blank=True
     )
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = DocumentReferenceField(RemoteSystem,
+                                           null=True, blank=True)
+    # Object id in remote system
+    remote_id = models.CharField(max_length=64, null=True, blank=True)
+    # Object id in BI
+    bi_id = models.IntegerField(null=True, blank=True)
+    # Object alarms can be escalated
+    escalation_policy = models.CharField(
+        "Escalation Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="E"
+    )
     #
     metrics = PickledField()
     #
@@ -262,6 +283,13 @@ class ManagedObjectProfile(models.Model):
         ):
             for pool in self.iter_pools():
                 ObjectMap.invalidate(pool)
+
+    def can_escalate(self):
+        """
+        Check alarms on objects within profile can be escalated
+        :return: 
+        """
+        return self.escalation_policy == "E"
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):

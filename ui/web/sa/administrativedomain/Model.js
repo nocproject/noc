@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.administrativedomain Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.administrativedomain.Model");
@@ -46,6 +46,27 @@ Ext.define("NOC.sa.administrativedomain.Model", {
             name: "object_count",
             type: "int",
             persist: false
+        },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "bi_id",
+            type: "string"
+        },
+        {
+            name: "tags",
+            type: "auto"
         }
     ]
 });

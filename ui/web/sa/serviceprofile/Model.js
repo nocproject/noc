@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.serviceprofile Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.serviceprofile.Model");
@@ -51,6 +51,27 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             name: "interface_profile__label",
             type: "string",
             persist: false
+        },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "bi_id",
+            type: "string"
+        },
+        {
+            name: "tags",
+            type: "auto"
         }
     ]
 });

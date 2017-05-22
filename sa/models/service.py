@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import logging
-from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DateTimeField,
-                                ReferenceField, ListField)
-## NOC modules
+                                ReferenceField, ListField, LongField)
+# NOC modules
 from serviceprofile import ServiceProfile
 from noc.crm.models.subscriber import Subscriber
+from noc.main.models.remotesystem import RemoteSystem
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.core.model.decorator import on_save, on_delete
@@ -78,6 +78,13 @@ class Service(Document):
     cpe_mac = StringField()
     cpe_model = StringField()
     cpe_group = StringField()
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = ReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
+    # Object id in BI
+    bi_id = LongField()
     #
     tags = ListField(StringField())
 

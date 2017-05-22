@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AdministrativeDomain
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# AdministrativeDomain
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from threading import RLock
 import operator
-## Third-party modules
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 import cachetools
-## NOC modules
+# NOC modules
 from noc.main.models.pool import Pool
+from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.core.model.decorator import on_delete_check
 
@@ -29,7 +30,8 @@ id_lock = RLock()
     ("sa.ManagedObject", "administrative_domain"),
     ("sa.ManagedObjectSelector", "filter_administrative_domain"),
     ("sa.UserAccess", "administrative_domain"),
-    ("sa.AdministrativeDomain", "parent")
+    ("sa.AdministrativeDomain", "parent"),
+    ("main.RemoteSystem", "remote_system")
 ])
 class AdministrativeDomain(models.Model):
     """
@@ -51,6 +53,15 @@ class AdministrativeDomain(models.Model):
         Pool,
         null=True, blank=True
     )
+    # Integration with external NRI systems
+    # Reference to remote system object has been imported from
+    remote_system = DocumentReferenceField(RemoteSystem,
+                                           null=True, blank=True)
+    # Object id in remote system
+    remote_id = models.CharField(max_length=64, null=True, blank=True)
+    # Object id in BI
+    bi_id = models.IntegerField(null=True, blank=True)
+
     tags = TagsField("Tags", null=True, blank=True)
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)

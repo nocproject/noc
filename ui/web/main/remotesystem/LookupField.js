@@ -8,5 +8,6 @@ console.debug("Defining NOC.main.remotesystem.LookupField");
 
 Ext.define("NOC.main.remotesystem.LookupField", {
     extend: "NOC.core.LookupField",
-    alias: "widget.main.remotesystem.LookupField"
+    alias: "widget.main.remotesystem.LookupField",
+    uiStyle: "medium"
 });

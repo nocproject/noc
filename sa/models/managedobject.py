@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ManagedObject
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ManagedObject
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import difflib
 from collections import namedtuple
 import logging
@@ -15,14 +15,14 @@ import re
 import itertools
 import operator
 from threading import Lock
-## Third-party modules
+# Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
                               DateTimeField, SET_NULL)
 from django.contrib.auth.models import User, Group
 import cachetools
 import six
-## NOC modules
+# NOC modules
 from administrativedomain import AdministrativeDomain
 from authprofile import AuthProfile
 from managedobjectprofile import ManagedObjectProfile
@@ -34,7 +34,9 @@ from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
 from noc.main.models import PyRule
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.networksegment import NetworkSegment
+from noc.fm.models.ttsystem import TTSystem
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.model.fields import INETField, TagsField, DocumentReferenceField, CachedForeignKey
 from noc.lib.db import SQL
@@ -84,7 +86,9 @@ logger = logging.getLogger(__name__)
     ("fm.FailedEvent", "managed_object"),
     ("fm.NewEvent", "managed_object"),
     ("inv.Interface", "managed_object"),
-    ("inv.SubInterface", "managed_object")
+    ("inv.SubInterface", "managed_object"),
+    ("main.RemoteSystem", "remote_system"),
+    ("fm.TTSystem", "tt_system")
     # ("maintainance.Maintainance", "escalate_managed_object"),
 ])
 class ManagedObject(Model):
@@ -274,6 +278,30 @@ class ManagedObject(Model):
     x = FloatField(null=True, blank=True)
     y = FloatField(null=True, blank=True)
     default_zoom = IntegerField(null=True, blank=True)
+    # Integration with external NRI and TT systems
+    # Reference to remote system object has been imported from
+    remote_system = DocumentReferenceField(RemoteSystem,
+                                           null=True, blank=True)
+    # Object id in remote system
+    remote_id = CharField(max_length=64, null=True, blank=True)
+    # Object id in BI
+    bi_id = IntegerField(null=True, blank=True)
+    # Object alarms can be escalated
+    escalation_policy = CharField(
+        "Escalation Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
+    # TT system for this object
+    tt_system = DocumentReferenceField(TTSystem,
+                                       null=True, blank=True)
+    # Object id in tt system
+    tt_system_id = CharField(max_length=64, null=True, blank=True)
     #
     tags = TagsField("Tags", null=True, blank=True)
 
@@ -582,27 +610,34 @@ class ManagedObject(Model):
         }
         return r
 
-    ##
-    ## Returns True if Managed Object presents in more than one networks
-    ## @todo: Rewrite
-    ##
     @property
     def is_router(self):
+        """
+        Returns True if Managed Object presents in more than one networks
+        :return: 
+        """
+        # @todo: Rewrite
         return self.address_set.count() > 1
 
-    ##
-    ## Return attribute as string
-    ##
     def get_attr(self, name, default=None):
+        """
+        Return attribute as string
+        :param name: 
+        :param default: 
+        :return: 
+        """
         try:
             return self.managedobjectattribute_set.get(key=name).value
         except ManagedObjectAttribute.DoesNotExist:
             return default
 
-    ##
-    ## Return attribute as bool
-    ##
     def get_attr_bool(self, name, default=False):
+        """
+        Return attribute as bool
+        :param name: 
+        :param default: 
+        :return: 
+        """
         v = self.get_attr(name)
         if v is None:
             return default
@@ -611,10 +646,13 @@ class ManagedObject(Model):
         else:
             return False
 
-    ##
-    ## Return attribute as integer
-    ##
     def get_attr_int(self, name, default=0):
+        """
+        Return attribute as integer
+        :param name: 
+        :param default: 
+        :return: 
+        """
         v = self.get_attr(name)
         if v is None:
             return default
@@ -623,10 +661,13 @@ class ManagedObject(Model):
         except:
             return default
 
-    ##
-    ## Set attribute
-    ##
     def set_attr(self, name, value):
+        """
+        Set attribute
+        :param name: 
+        :param value: 
+        :return: 
+        """
         value = unicode(value)
         try:
             v = self.managedobjectattribute_set.get(key=name)
@@ -1010,6 +1051,18 @@ class ManagedObject(Model):
     def open_session(self, idle_timeout=None):
         return SessionContext(self, idle_timeout)
 
+    def can_escalate(self):
+        """
+        Check alarm can be escalated
+        :return: 
+        """
+        if self.escalation_policy == "E":
+            return True
+        elif self.escalation_policy == "P":
+            return self.object_profile.can_escalate()
+        else:
+            return False
+
 
 @on_save
 class ManagedObjectAttribute(Model):
@@ -1035,7 +1088,7 @@ class ManagedObjectAttribute(Model):
         cache.delete("cred-%s" % self.managed_object.id)
 
 
-## object.scripts. ...
+# object.scripts. ...
 class ScriptsProxy(object):
     class CallWrapper(object):
         def __init__(self, obj, name):
@@ -1105,7 +1158,7 @@ class ActionsProxy(object):
         self._cache[name] = cw
         return cw
 
-## Avoid circular references
+# Avoid circular references
 from useraccess import UserAccess
 from groupaccess import GroupAccess
 from objectnotification import ObjectNotification

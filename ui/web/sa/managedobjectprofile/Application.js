@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobjectprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobjectprofile.Application");
@@ -15,7 +15,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.style.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "Ext.ux.form.MultiIntervalField",
-        "NOC.pm.metrictype.LookupField"
+        "NOC.pm.metrictype.LookupField",
+        "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -821,6 +822,48 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         }
                                     ]
 
+                                }
+                            ]
+                        },
+                        {
+                            title: __("Integration"),
+                            items: [
+                                {
+                                    name: "remote_system",
+                                    xtype: "main.remotesystem.LookupField",
+                                    fieldLabel: __("Remote System"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "remote_id",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Remote ID"),
+                                    allowBlank: true,
+                                    uiStyle: "medium"
+                                },
+                                {
+                                    name: "bi_id",
+                                    xtype: "textfield",
+                                    fieldLabel: __("BI ID"),
+                                    allowBlank: true,
+                                    uiStyle: "medium"
+                                }
+                            ]
+                        },
+                        {
+                            title: __("Escalation"),
+                            items: [
+                                {
+                                    name: "escalation_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Escalation Policy"),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    value: "E"
                                 }
                             ]
                         }
