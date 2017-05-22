@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Call Job Class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Call Job Class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
-from job import Job
+# NOC modules
+from __future__ import absolute_import
+from .job import Job
 from noc.core.handler import get_handler
 
 

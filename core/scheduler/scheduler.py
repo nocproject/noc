@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 import datetime
 import random
@@ -18,7 +19,7 @@ import tornado.gen
 import tornado.ioloop
 from concurrent.futures import Future
 # NOC modules
-from job import Job
+from .job import Job
 from noc.lib.nosql import get_db
 from noc.core.handler import get_handler
 from noc.core.threadpool import ThreadPoolExecutor
