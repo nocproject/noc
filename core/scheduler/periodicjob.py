@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Periodic Job Class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Periodic Job Class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import time
 import datetime
-## NOC modules
-from job import Job
+# NOC modules
+from .job import Job
 
 
 class PeriodicJob(Job):

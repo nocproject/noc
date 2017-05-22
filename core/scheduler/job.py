@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 import time
 import datetime
@@ -246,7 +247,7 @@ class Job(object):
         :param keep_ts: Do not touch timestamp of existing jobs,
             set timestamp only for created jobs
         """
-        from scheduler import Scheduler
+        from .scheduler import Scheduler
         scheduler = Scheduler(
             name=scheduler,
             pool=pool
@@ -262,7 +263,7 @@ class Job(object):
 
     @classmethod
     def remove(cls, scheduler, name=None, key=None, pool=None):
-        from scheduler import Scheduler
+        from .scheduler import Scheduler
         scheduler = Scheduler(
             name=scheduler,
             pool=pool
@@ -271,7 +272,7 @@ class Job(object):
 
     @classmethod
     def get_job_data(cls, scheduler, jcls, key=None, pool=None):
-        from scheduler import Scheduler
+        from .scheduler import Scheduler
         scheduler = Scheduler(
             name=scheduler,
             pool=pool

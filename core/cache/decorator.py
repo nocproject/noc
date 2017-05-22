@@ -7,7 +7,8 @@
 ##----------------------------------------------------------------------
 
 ## NOC modules
-from base import cache as x_cache
+from __future__ import absolute_import
+from .base import cache as x_cache
 from noc.core.perf import metrics
 
 

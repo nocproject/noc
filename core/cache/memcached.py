@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Memcached backend
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Memcached backend
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import logging
-## Third-party modules
+# Third-party modules
 import pylibmc
 import pylibmc.pools
-## NOC modules
-from base import BaseCache
+# NOC modules
+from .base import BaseCache
 from noc.core.config.base import config
 
 logger = logging.getLogger(__name__)
 ignorable_memcache_errors = (pylibmc.ConnectionError, pylibmc.ServerDown)
+
 
 class MemcachedCache(BaseCache):
     """
@@ -113,12 +115,6 @@ class MemcachedCache(BaseCache):
                 )
             except ignorable_memcache_errors:
                 pass
-
-    def __getitem__(self, item):
-        self.get(item)
-
-    def __contains__(self, item):
-        return self.has_key(item)
 
     def incr(self, key, delta=1, version=None):
         k = self.make_key(key, version)
