@@ -6,6 +6,13 @@
     - config
     - always
 
+- name: Display ansible_connection type
+  debug:
+    var: ansible_connection
+    verbosity: 8
+  tags:
+    - always
+
 - name: Set tower_ip
   set_fact:
     tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0]}}"
