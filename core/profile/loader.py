@@ -56,8 +56,8 @@ class ProfileLoader(object):
                         profile.initialize()
                     else:
                         logger.error("Profile not found: %s", name)
-                except Exception, why:
-                    logger.error("Failed to load profile %s: %s", name, why)
+                except Exception as e:
+                    logger.error("Failed to load profile %s: %s", name, e)
                     profile = None
                 self.profiles[name] = profile
             return profile
