@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Scheduler Job Class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Scheduler Job Class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import datetime
 import random
 import threading
 import time
-## Third-party modules
+# Third-party modules
 import pymongo.errors
 import tornado.gen
 import tornado.ioloop
 from concurrent.futures import Future
-## NOC modules
+# NOC modules
 from job import Job
 from noc.lib.nosql import get_db
 from noc.core.handler import get_handler
@@ -37,7 +37,7 @@ class Scheduler(object):
     def __init__(self, name, pool=None, reset_running=False,
                  max_threads=5, ioloop=None, check_time=1000,
                  submit_threshold=None, max_chunk=None,
-                 filter=None):
+                 filter=None, service=None):
         """
         Create scheduler
         :param name: Unique scheduler name
@@ -93,6 +93,13 @@ class Scheduler(object):
         self.cache = None
         self.cache_lock = threading.Lock()
         self.cache_set_ops = {}
+        self.service = service
+        if self.service:
+            self.scheduler_id = "%s[%s:%s]" % (
+                self.service.service_id,
+                self.service.address, self.service.port)
+        else:
+            self.scheduler_id = "standalone scheduler"
 
     def get_cache(self):
         with self.cache_lock:
@@ -442,6 +449,7 @@ class Scheduler(object):
         :param duration: Set last run duration (in seconds)
         :param context_version: Job context format vresion
         :param context: Stored job context
+        :param context_key: Cache key for context
         """
         # Build increase/set operations
         now = datetime.datetime.now()
