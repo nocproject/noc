@@ -35,7 +35,7 @@ class BaseExtractor(object):
         self.system = system
         self.config = system.config
         self.logger = PrefixLoggerAdapter(
-            logger, "%s][%s" % (system, self.name)
+            logger, "%s][%s" % (system.name, self.name)
         )
         self.import_dir = os.path.join(self.PREFIX, system.name, self.name)
 
