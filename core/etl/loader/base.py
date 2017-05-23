@@ -81,7 +81,7 @@ class BaseLoader(object):
         self.chain = chain
         self.system = chain.system
         self.logger = PrefixLoggerAdapter(
-                logger, "%s][%s" % (self.system, self.name)
+                logger, "%s][%s" % (self.system.name, self.name)
         )
         self.import_dir = os.path.join(self.PREFIX,
                                        self.system.name, self.name)
@@ -104,17 +104,17 @@ class BaseLoader(object):
         if self.is_document:
             import mongoengine.errors
             if "tags" in self.model._fields:
-                self.tags += ["src:%s" % self.system]
+                self.tags += ["src:%s" % self.system.name]
             unique_fields = [
                 f.name
                 for f in self.model._fields.itervalues()
                 if f.unique]
             self.integrity_exception = mongoengine.errors.NotUniqueError
         else:
-            # Third-party modules
+            ## Third-party modules
             import django.db.utils
             if any(f for f in self.model._meta.fields if f.name == "tags"):
-                self.tags += ["src:%s" % self.system]
+                self.tags += ["src:%s" % self.system.name]
             unique_fields = [
                 f.name for f in self.model._meta.fields
                 if f.unique and
@@ -659,7 +659,7 @@ class BaseLoader(object):
         def dump(cmd, row):
             print("%s %s" % (cmd, ",".join(row)))
 
-        print("--- %s.%s" % (self.chain.system, self.name))
+        print("--- %s.%s" % (self.chain.system.name, self.name))
         ns = self.get_new_state()
         if not ns:
             return
