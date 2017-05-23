@@ -178,15 +178,29 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                             )
                             # Append affected objects
                             for ao in alarm.iter_affected():
-                                log(
-                                    "Appending object %s to group tt %s",
-                                    ao.name,
-                                    gtt
-                                )
-                                tts.add_to_group_tt(
-                                    gtt,
-                                    ao.tt_system_id
-                                )
+                                if ao.can_escalate():
+                                    if ao.tt_system == mo.tt_system:
+                                        log(
+                                            "Appending object %s to group tt %s",
+                                            ao.name,
+                                            gtt
+                                        )
+                                        tts.add_to_group_tt(
+                                            gtt,
+                                            ao.tt_system_id
+                                        )
+                                    else:
+                                        log(
+                                            "Cannot append object %s to group tt %s: Belongs to other TT system",
+                                            ao.name,
+                                            gtt
+                                        )
+                                else:
+                                    log(
+                                        "Cannot append object %s to group tt %s: Escalations are disabled",
+                                        ao.name,
+                                        gtt
+                                    )
                         metrics["escalation_tt_create"] += 1
                     except tts.TTError as e:
                         log("Failed to create TT: %s", e)
