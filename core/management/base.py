@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CLI Command
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# CLI Command
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import print_function
 import sys
 import argparse
-## NOC modules
+# NOC modules
 from noc.core.debug import error_report
 
 
@@ -24,6 +25,9 @@ class BaseCommand(object):
         self.verbose_level = 0
         self.stdout = stdout
         self.stderr = stderr
+
+    def print(self, *args):
+        print(*args, file=self.stdout)
 
     def run(self):
         """
