@@ -81,7 +81,7 @@ class BaseLoader(object):
         self.chain = chain
         self.system = chain.system
         self.logger = PrefixLoggerAdapter(
-                logger, "%s][%s" % (self.system, self.name)
+                logger, "%s][%s" % (self.system.name, self.name)
         )
         self.import_dir = os.path.join(self.PREFIX,
                                        self.system.name, self.name)
