@@ -23,6 +23,7 @@ class BaseRemoteSystem(object):
         "terminationgroup",
         "managedobjectprofile",
         "administrativedomain",
+        "authprofile",
         "ttsystem",
         "managedobject",
         "link",
