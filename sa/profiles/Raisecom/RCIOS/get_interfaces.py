@@ -73,8 +73,9 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["ipv4_addresses"] = ip_list
                 iface["subinterfaces"][0]["enabled_afi"] += ["IPv4"]
             if match.group("ipv6_addr"):
-                ip = IPv6(match.group("ipv6_addr"))
+                ip = match.group("ipv6_addr")
                 netmask = match.group("ipv6_mask")
+                ip = IPv6(ip, netmask=match.group("ipv6_mask")).prefix
                 ip_list = [ip]
                 iface["subinterfaces"][0]["ipv6_addresses"] = ip_list
                 iface["subinterfaces"][0]["enabled_afi"] += ["IPv6"]
