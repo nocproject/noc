@@ -18,9 +18,10 @@ from mongoengine.fields import (StringField, ListField,
 import cachetools
 # NOC modules
 from noc.core.handler import get_handler
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 id_lock = Lock()
+
 
 class EnvItem(EmbeddedDocument):
     """

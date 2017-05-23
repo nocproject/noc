@@ -67,7 +67,7 @@ class BaseRemoteSystem(object):
         chain = self.get_loader_chain()
         # Add & Modify
         for l in chain:
-            if loaders and l not in loaders:
+            if loaders and l.name not in loaders:
                 l.load_mappings()
                 continue
             l.load()
