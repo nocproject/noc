@@ -14,4 +14,5 @@ import re
 
 class Profile(BaseProfile):
     name = "Telindus.SHDSL"
+    username_submit = "\r"
     password_submit = "\r"
