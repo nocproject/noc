@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Raisecom.RCIOS.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Raisecom.RCIOS.get_interfaces
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 from collections import defaultdict
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.lib.text import ranges_to_list
@@ -55,16 +55,18 @@ class Script(BaseScript):
                 "type": self.profile.get_interface_type(ifname),
                 "oper_status": match.group("oper") == "up",
                 "admin_status": match.group("admin") == "up",
-                "mac": match.group("mac"),
                 "subinterfaces": [{
                     "name": ifname,
                     "oper_status": match.group("oper") == "up",
                     "admin_status": match.group("admin") == "up",
-                    "mac": match.group("mac"),
-                    "mtu": match.group("mtu"),
                     "enabled_afi": []
                 }]
             }
+            if match.group("mac"):
+                iface["mac"] = match.group("mac")
+                iface["subinterfaces"][0]["mac"] = match.group("mac")
+            if match.group("mtu"):
+                iface["subinterfaces"][0]["mtu"] = int(match.group("mtu"))
             if match.group("ip_addr"):
                 ip = match.group("ip_addr")
                 netmask = str(IPv4.netmask_to_len(match.group("ip_mask")))
