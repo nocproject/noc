@@ -61,7 +61,7 @@ class RemoteSystem(Document):
     last_extract = DateTimeField()
     last_successful_extract = DateTimeField()
     extract_error = StringField()
-    last_load = StringField()
+    last_load = DateTimeField()
     last_successful_load = DateTimeField()
     load_error = StringField()
 
