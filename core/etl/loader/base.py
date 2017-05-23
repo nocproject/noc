@@ -363,7 +363,10 @@ class BaseLoader(object):
         self.logger.debug("Change: %s", ";".join(n))
         self.c_change += 1
         v = self.clean(n)
-        vv = {}
+        vv = {
+            "remote_system": v["remote_system"],
+            "remote_id": v["remote_id"]
+        }
         for fn, (ov, nv) in zip(
                 self.fields[1:],
                 itertools.izip_longest(o[1:], n[1:])
