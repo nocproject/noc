@@ -100,21 +100,17 @@ class BaseLoader(object):
                               for n in
                               self.fields)  # field name -> clean function
         self.pending_deletes = []  # (id, string)
-        self.tags = []
         if self.is_document:
             import mongoengine.errors
-            if "tags" in self.model._fields:
-                self.tags += ["src:%s" % self.system.name]
             unique_fields = [
                 f.name
                 for f in self.model._fields.itervalues()
                 if f.unique]
             self.integrity_exception = mongoengine.errors.NotUniqueError
         else:
-            ## Third-party modules
+            # Third-party modules
             import django.db.utils
-            if any(f for f in self.model._meta.fields if f.name == "tags"):
-                self.tags += ["src:%s" % self.system.name]
+
             unique_fields = [
                 f.name for f in self.model._meta.fields
                 if f.unique and
@@ -305,9 +301,6 @@ class BaseLoader(object):
         data structures
         """
         o = self.model(**v)
-        if self.tags:
-            t = o.tags or []
-            o.tags = t + self.tags
         try:
             o.save()
         except self.integrity_exception:
