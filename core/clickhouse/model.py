@@ -118,7 +118,7 @@ class Model(six.with_metaclass(ModelBase)):
         :return:
         """
         mname = name.split("-")[0]
-        m = __import__("noc.core.bi.models.%s" % mname, {}, {}, "*")
+        m = __import__("noc.bi.models.%s" % mname, {}, {}, "*")
         for a in dir(m):
             o = getattr(m, a)
             if not hasattr(o, "_meta"):

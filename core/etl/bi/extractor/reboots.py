@@ -12,7 +12,7 @@ import os
 from base import BaseExtractor
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject
-from noc.core.bi.models.reboots import Reboots
+from noc.bi.models.reboots import Reboots
 from noc.core.etl.bi.stream import Stream
 
 
