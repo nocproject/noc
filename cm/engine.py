@@ -19,7 +19,7 @@ from pymongo.errors import BulkWriteError
 ## NOC modules
 from noc.cm.facts.error import Error
 from noc.cm.facts.role import Role
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 from noc.cm.models.validationpolicysettings import ValidationPolicySettings
 from noc.inv.models.interface import Interface as InvInterface
 from noc.inv.models.subinterface import SubInterface as InvSubInterface

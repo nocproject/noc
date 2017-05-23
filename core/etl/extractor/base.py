@@ -13,7 +13,7 @@ import os
 import csv
 import time
 # NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 
 logger = logging.getLogger(__name__)
 

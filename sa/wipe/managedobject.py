@@ -9,7 +9,7 @@
 ## Python modules
 import logging
 ## NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.inv.models.forwardinginstance import ForwardingInstance
 from noc.inv.models.interface import Interface

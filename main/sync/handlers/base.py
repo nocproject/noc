@@ -9,7 +9,7 @@
 ## Python modules
 import subprocess
 ## NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 
 
 class SyncHandler(object):
