@@ -455,7 +455,13 @@ config:
       type: int
       label: Max cache memory
       default: 1048576000
-      description: <strong> <a href=https://docs.influxdata.com/influxdb target=_blank> https://docs.influxdata.com/influxdb </a> </strong>
+      description: <strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>
+
+    snapshot_memory_size:
+      type: int
+      label: Mem size for snapshot
+      default: 26214400
+      description: <strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>
 
   postgres:
     postgres_version:
