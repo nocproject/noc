@@ -66,8 +66,8 @@ class ManagedObjectLoader(BaseLoader):
         """
         v = super(ManagedObjectLoader, self).clean(row)
         v["pool"] = self.pools[v["pool"]]
-        v["tags"] = [x.strip() for x in v["tags"].split(",")
-                     if x.strip()]
+        v["tags"] = [x.strip().strip('"') for x in v["tags"].split(",")
+                     if x.strip()] if v["tags"] else []
         return v
 
     def purge(self):
