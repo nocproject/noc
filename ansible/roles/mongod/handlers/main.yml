@@ -18,7 +18,7 @@
 
 - name: reload systemd
   systemd:
-    name: noc
+    name: "{{ mongod_system_service }}"
     daemon_reload: yes
 
 - name: reload consul

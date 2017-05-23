@@ -42,6 +42,8 @@
   template:
     src: etc/tmpfiles.d/mongo.conf.j2
     dest: /etc/tmpfiles.d/mongo.conf
+  tags:
+    - config
 
 - include: "arbiter.yml"
   when: "has_svc_mongo_arbiter | default(False)"
