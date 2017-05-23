@@ -9,7 +9,7 @@
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.service.client import open_sync_rpc, RPCError
-from noc.lib.mib import mib
+from noc.core.mib import mib
 
 
 class SuggestSNMPCheck(DiscoveryCheck):

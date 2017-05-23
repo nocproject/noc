@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## MIB lookup utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# MIB lookup utilities
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import logging
+# Third-party modules
+import six
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +21,7 @@ class MIBRegistry(object):
         self.loaded_mibs = set()
 
     def __getitem__(self, item):
-        if isinstance(item, basestring):
+        if isinstance(item, six.string_types):
             if ":" not in item:
                 return item  # No conversion needed
             if "." in item:

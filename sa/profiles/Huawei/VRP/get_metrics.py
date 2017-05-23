@@ -10,7 +10,7 @@
 
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 from noc.sa.profiles.Generic.get_metrics import OIDRule
-from noc.lib.mib import mib
+from noc.core.mib import mib
 from noc.core.script.metrics import percent
 
 

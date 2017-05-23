@@ -17,7 +17,7 @@ import ujson
 ## NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmetrics import IGetMetrics
-from noc.lib.mib import mib
+from noc.core.mib import mib
 from noc.core.handler import get_handler
 
 NS = 1000000000.0

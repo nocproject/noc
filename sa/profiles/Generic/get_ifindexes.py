@@ -10,7 +10,7 @@
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetifindexes import IGetIfindexes
 from noc.sa.interfaces.base import InterfaceTypeError
-from noc.lib.mib import mib
+from noc.core.mib import mib
 
 
 class Script(BaseScript):

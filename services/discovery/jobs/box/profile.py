@@ -15,7 +15,7 @@ import operator
 ## NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.profilecheckrule import ProfileCheckRule
-from noc.lib.mib import mib
+from noc.core.mib import mib
 from noc.core.service.client import open_sync_rpc, RPCError
 
 rules_lock = threading.Lock()

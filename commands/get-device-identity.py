@@ -12,7 +12,7 @@ import argparse
 ## NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
-from noc.lib.mib import mib
+from noc.core.mib import mib
 
 
 class Command(BaseCommand):
