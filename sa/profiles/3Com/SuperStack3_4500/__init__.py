@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: 3Com
-## OS:     SuperStack3_4500
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Vendor: 3Com
+# OS:     SuperStack3_4500
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
-#from noc.sa.models import ManagedObject
 
 class Profile(BaseProfile):
     name = "3com.SuperStack3_4500"
