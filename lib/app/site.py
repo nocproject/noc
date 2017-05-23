@@ -26,7 +26,7 @@ import six
 import ujson
 ## NOC modules
 from noc.settings import config
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 logger = logging.getLogger(__name__)
 

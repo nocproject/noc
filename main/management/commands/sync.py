@@ -14,7 +14,7 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.main.models.synccache import SyncCache
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 
 class Command(BaseCommand):

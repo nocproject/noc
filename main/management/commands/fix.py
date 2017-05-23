@@ -12,7 +12,7 @@ import uuid
 ## Django modules
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.core.collection.base import Collection
 
 

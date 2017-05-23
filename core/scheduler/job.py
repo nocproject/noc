@@ -15,7 +15,7 @@ import datetime
 import tornado.gen
 # NOC modules
 from noc.lib.log import PrefixLoggerAdapter
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.lib.dateutils import total_seconds
 
 logger = logging.getLogger(__name__)

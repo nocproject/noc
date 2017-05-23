@@ -10,7 +10,7 @@
 import re
 import logging
 ## Python modules
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 
 class Trigger(object):

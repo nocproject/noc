@@ -19,7 +19,7 @@ import cachetools
 ## NOC modules
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.main.models import User
 
 user_lock = Lock()

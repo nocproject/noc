@@ -10,7 +10,7 @@
 import sys
 import argparse
 ## NOC modules
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 
 class CommandError(Exception):

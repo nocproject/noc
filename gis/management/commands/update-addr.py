@@ -15,7 +15,7 @@ from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 ## NOC modules
 from noc.gis.parsers.address.base import AddressParser
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 
 class Command(BaseCommand):

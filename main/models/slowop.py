@@ -16,7 +16,7 @@ import time
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, FloatField, StringField
 ## NOC modules
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 logger = logging.getLogger(__name__)
 

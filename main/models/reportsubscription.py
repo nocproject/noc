@@ -19,7 +19,7 @@ from noc.main.models import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.lib.nosql import ForeignKeyField
 from noc.lib.app.site import site
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.scheduler.job import Job
 from noc.core.service.pub import pub

@@ -23,7 +23,7 @@ from noc.lib.log import PrefixLoggerAdapter
 from noc.cm.models.validationpolicysettings import ValidationPolicySettings
 from noc.inv.models.interface import Interface as InvInterface
 from noc.inv.models.subinterface import SubInterface as InvSubInterface
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.core.handler import get_handler
 from noc.cm.models.objectfact import ObjectFact
 from noc.lib.clipsenv import CLIPSEnv

@@ -18,7 +18,7 @@ from noc.dns.models.dnszonerecord import DNSZoneRecord
 from noc.dns.models.dnszoneprofile import DNSZoneProfile
 from noc.ip.models.vrf import VRF
 from noc.ip.models.address import Address
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.lib.validators import is_int
 
 

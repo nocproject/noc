@@ -37,7 +37,7 @@ import noc.inv.models.interface
 from noc.core.profile.loader import loader as profile_loader
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.version import get_version
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.lib.escape import fm_unescape
 from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
                                     IPParameter, IPv4PrefixParameter,

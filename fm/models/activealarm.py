@@ -23,7 +23,7 @@ from noc.sa.models.managedobject import ManagedObject
 from alarmseverity import AlarmSeverity
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.defer import call_later
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 
 class ActiveAlarm(nosql.Document):

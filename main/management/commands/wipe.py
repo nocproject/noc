@@ -39,7 +39,7 @@ class Command(BaseCommand):
                 raise CommandError("Object '%s' is not found" % o_id)
             objects += [o]
         # Wipe objects
-        from noc.lib.debug import error_report
+        from noc.core.debug import error_report
         for o in objects:
             with self.log("Wiping '%s':" % unicode(o), True):
                 try:

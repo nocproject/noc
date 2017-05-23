@@ -33,7 +33,7 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.lib.version import get_version
-from noc.lib.debug import format_frames, get_traceback_frames, error_report
+from noc.core.debug import format_frames, get_traceback_frames, error_report
 import utils
 from noc.lib.dateutils import total_seconds
 
