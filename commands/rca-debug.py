@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ./noc rca-debug
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ./noc rca-debug
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import print_function
 import datetime
 from collections import namedtuple
 import operator
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.archivedalarm import ArchivedAlarm
@@ -24,6 +25,7 @@ Record = namedtuple("Record", [
     "managed_object", "address", "platform",
     "uplink1", "uplink2"
 ])
+
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -90,22 +92,22 @@ class Command(BaseCommand):
             )]
         MASK = "%19s | %24s | %24s | %16s | %15s | %20s | %16s | %16s"
         print(MASK % ("ts", "alarm", "root", "object", "address",
-                      "platform", "uplink1", "uplink2"))
+                      "platform", "uplink1", "uplink2"), file=self.stdout)
         for x in sorted(r, key=operator.attrgetter("timestamp")):
-            print(MASK % x)
+            print(MASK % x, file=self.stdout)
         if trace:
-            print("Time range: %s -- %s" % (t0, t1))
-            print("Topology RCA Window: %s" % ("%ss" % config.topology_rca_window if config.topology_rca_window else "Disabled"))
+            print("Time range: %s -- %s" % (t0, t1), file=self.stdout)
+            print("Topology RCA Window: %s" % ("%ss" % config.topology_rca_window if config.topology_rca_window else "Disabled"), file=self.stdout)
             amap = dict((a.id, a) for a in alarms.values())
             for x in sorted(r, key=operator.attrgetter("timestamp")):
                 if not x.alarm_id:
                     continue
-                print("@@@ %s %s %s" % (x.timestamp, x.alarm_id, x.managed_object))
+                print("@@@ %s %s %s" % (x.timestamp, x.alarm_id, x.managed_object), file=self.stdout)
                 self.topology_rca(amap[x.alarm_id], alarms)
             # Dump
             for a in amap:
                 if hasattr(amap[a], "_trace_root"):
-                    print("%s -> %s" % (a, amap[a]._trace_root))
+                    print("%s -> %s" % (a, amap[a]._trace_root), file=self.stdout)
 
     def topology_rca(self, alarm, alarms, seen=None, ts=None):
         def can_correlate(a1, a2):
@@ -116,12 +118,12 @@ class Command(BaseCommand):
 
         ts = ts or alarm.timestamp
         seen = seen or set()
-        print(">>> topology_rca(%s, %s)" % (alarm.id, "{%s}" % ", ".join(str(x) for x in seen)))
+        print(">>> topology_rca(%s, %s)" % (alarm.id, "{%s}" % ", ".join(str(x) for x in seen)), file=self.stdout)
         if hasattr(alarm, "_trace_root"):
-            print("<<< already correlated")
+            print("<<< already correlated", file=self.stdout)
             return
         if alarm.id in seen:
-            print("<<< already seen")
+            print("<<< already seen", file=self.stdout)
             return  # Already correlated
         seen.add(alarm.id)
         o_id = alarm.managed_object.id
@@ -135,7 +137,7 @@ class Command(BaseCommand):
         for du in ObjectData.get_neighbors(o_id):
             neighbors.add(du)
         if not neighbors:
-            print("<<< no neighbors")
+            print("<<< no neighbors", file=self.stdout)
             return
         # Get neighboring alarms
         na = {}
@@ -143,18 +145,8 @@ class Command(BaseCommand):
             a = alarms.get(n)
             if a and a.timestamp <= ts:
                 na[n] = a
-        print("    Neighbor alarms: %s" % ", ".join("%s%s (%s)" % ("U:" if x in uplinks else "", na[x], ManagedObject.get_by_id(x).name) for x in na))
-        print("    Uplinks: %s" % ", ".join(ManagedObject.get_by_id(u).name for u in uplinks))
-        # Correlate with uplinks
-        # if uplinks and len([na[o] for o in uplinks if o in na]) == len(uplinks):
-        #     # All uplinks are faulty
-        #     # Correlate with the first one (shortest path)
-        #     print("+++ SET ROOT %s -> %s" % (alarm.id, na[uplinks[0]]))
-        #     alarm._trace_root = na[uplinks[0]].id
-        # # Correlate neighbors
-        # for d in na:
-        #     print("    Correlate downlink %s" % na[d])
-        #     self.topology_rca(na[d], alarms, seen, ts)
+        print("    Neighbor alarms: %s" % ", ".join("%s%s (%s)" % ("U:" if x in uplinks else "", na[x], ManagedObject.get_by_id(x).name) for x in na), file=self.stdout)
+        print("    Uplinks: %s" % ", ".join(ManagedObject.get_by_id(u).name for u in uplinks), file=self.stdout)
         if uplinks and len([na[o] for o in uplinks if o in na]) == len(uplinks):
             # All uplinks are faulty
             # uplinks are ordered according to path length
@@ -162,14 +154,13 @@ class Command(BaseCommand):
             for u in uplinks:
                 a = na[u]
                 if can_correlate(alarm, a):
-                    print("+++ SET ROOT %s -> %s" % (alarm.id, a.id))
+                    print("+++ SET ROOT %s -> %s" % (alarm.id, a.id), file=self.stdout)
                     alarm._trace_root = a.id
                     break
         # Correlate neighbors' alarms
         for d in na:
             self.topology_rca(na[d], alarms, seen, ts)
-        print("<<< done")
-
+        print("<<< done", file=self.stdout)
 
 if __name__ == "__main__":
     Command().run()
