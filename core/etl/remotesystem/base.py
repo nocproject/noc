@@ -2,12 +2,13 @@
 # ----------------------------------------------------------------------
 # Base Remote System
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016, The NOC Project
+# Copyright (C) 2007-2017, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
+# NOC modules
 from noc.lib.log import PrefixLoggerAdapter
 
 logger = logging.getLogger(__name__)
@@ -28,8 +29,7 @@ class BaseRemoteSystem(object):
         "link",
         "subscriber",
         "serviceprofile",
-        "service",
-        "ttmap"
+        "service"
     ]
 
     def __init__(self, remote_system):
