@@ -757,10 +757,10 @@ class ManagedObject(Model):
         selectors = SelectorCache.get_object_selectors(self)
         # Find notification groups
         groups = set()
-        for o in ObjectNotification.objects.filter(
-                event_id=True,
-                selector__in=selectors
-        ):
+        for o in ObjectNotification.objects.filter(**{
+                event_id: True,
+                "selector__in": selectors
+        }):
             groups.add(o.notification_group)
         if not groups:
             return  # Nothing to notify
