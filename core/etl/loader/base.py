@@ -20,7 +20,7 @@ import itertools
 # Third party modules
 import six
 # NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 from noc.lib.fileutils import safe_rewrite
 
 logger = logging.getLogger(__name__)

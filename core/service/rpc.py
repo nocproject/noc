@@ -19,7 +19,7 @@ import tornado.httpclient
 import ujson
 from six.moves import queue
 ## NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 from client import (RPCError, RPCNoService, RPCHTTPError,
                     RETRY_SOCKET_ERRORS, RPCException, RPCRemoteError)
 import httpclient  # Setup global httpclient

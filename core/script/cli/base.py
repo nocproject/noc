@@ -16,7 +16,7 @@ import tornado.gen
 import tornado.ioloop
 import tornado.iostream
 ## NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 from noc.lib.text import replace_re_group
 
 

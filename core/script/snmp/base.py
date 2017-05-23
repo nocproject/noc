@@ -14,7 +14,7 @@ from noc.core.ioloop.snmp import (snmp_get, snmp_count, snmp_getnext,
                                   snmp_set)
 from noc.core.snmp.error import SNMPError, TIMED_OUT
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 
 
 class SNMP(object):

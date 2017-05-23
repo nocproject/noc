@@ -12,7 +12,7 @@ import cStringIO
 import pycurl
 import ujson
 ## NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 
 
 class HTTP(object):

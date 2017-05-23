@@ -14,7 +14,7 @@ import datetime
 # Third-party modules
 import tornado.gen
 # NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 from noc.core.debug import error_report
 from noc.lib.dateutils import total_seconds
 

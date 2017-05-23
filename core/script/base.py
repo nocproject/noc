@@ -17,7 +17,7 @@ from threading import Lock
 from snmp.base import SNMP
 from snmp.beef import BeefSNMP
 from http.base import HTTP
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
 from context import (ConfigurationContextManager, CacheContextManager,
                      IgnoredExceptionsContextManager)
