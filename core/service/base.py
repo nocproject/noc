@@ -30,7 +30,7 @@ import ujson
 import threading
 ## NOC modules
 import noc.core.service.httpclient  # Use curl
-from noc.lib.debug import excepthook, error_report
+from noc.core.debug import excepthook, error_report
 from .config import Config
 from .api import APIRequestHandler
 from .doc import DocRequestHandler

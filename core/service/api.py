@@ -13,7 +13,7 @@ import tornado.web
 import tornado.gen
 import ujson
 ## NOC modules
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 
 Redirect = namedtuple("Redirect", ["location", "method", "params"])
