@@ -11,6 +11,8 @@
   stat:
     path: /tmp/{{ consul_template_archive_file }}
   register: consul_template_archive_stat
+  tags:
+    - requirements
 
 - name: download consul-template binary
   get_url:
