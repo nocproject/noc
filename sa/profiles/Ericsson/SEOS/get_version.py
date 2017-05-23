@@ -24,7 +24,7 @@ class Script(BaseScript):
                         re.MULTILINE)
 
     def execute(self):
-        ver = self.cli_clean("show version", cached=True)
+        ver = self.cli("show version", cached=True)
         for match in self.rx_ver.finditer(ver):
             version = match.group("version")
             sw_backup = match.group("sw_backup")

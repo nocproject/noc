@@ -29,7 +29,7 @@ class Script(BaseScript):
 
     def execute(self):
         objects = []
-        v = self.cli_clean("show hardware")
+        v = self.cli("show hardware")
         media = self.cli("show port trans")
         for l in v.splitlines():
             if "backplane" in l:

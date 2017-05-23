@@ -21,7 +21,7 @@ class Script(BaseScript):
 
     def execute(self, interface=None):
         r = []
-        for match in self.rx_line.finditer(self.cli_clean("show arp")):
+        for match in self.rx_line.finditer(self.cli("show arp")):
             iface = match.group("interface")
             if (interface is not None) and (interface != iface):
                 continue
