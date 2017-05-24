@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 __author__ = 'FeNikS'
-##----------------------------------------------------------------------
-## Tangram.GT21.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Tangram.GT21.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 

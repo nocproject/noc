@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Extreme.XOS.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Extreme.XOS.get_lldp_neighbors
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.validators import is_int, is_ipv4
-##
-## @todo: SNMP Support
-##
+#
+# @todo: SNMP Support
+#
 
 
 class Script(BaseScript):

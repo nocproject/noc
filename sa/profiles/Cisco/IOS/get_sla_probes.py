@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Cisco.IOS.get_sla_probes
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Cisco.IOS.get_sla_probes
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 from itertools import izip
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 

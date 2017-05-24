@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Vitesse (Vitesse Semiconductor)
-## OS:     VSC
-## URL: http://www.microsemi.com/products/ethernet-solutions/ethernet-switches
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Vitesse (Vitesse Semiconductor)
+# OS:     VSC
+# URL: http://www.microsemi.com/products/ethernet-solutions/ethernet-switches
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 

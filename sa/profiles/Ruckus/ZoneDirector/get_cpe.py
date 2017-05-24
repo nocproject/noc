@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*- 
-##----------------------------------------------------------------------
-## Ruckus.ZoneDirector.get_cpe
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Ruckus.ZoneDirector.get_cpe
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.sa.interfaces.base import MACAddressParameter

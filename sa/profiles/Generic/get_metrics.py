@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Generic.get_metrics
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Generic.get_metrics
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
 import os
 from threading import Lock
 import re
-## Third-party modules
+# Third-party modules
 import six
 import ujson
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmetrics import IGetMetrics
 from noc.core.mib import mib

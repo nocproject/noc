@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Zyxel.ZyNOS.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Zyxel.ZyNOS.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-##
-## SNMP OIDs to get FW version for some platforms
-##
+#
+# SNMP OIDs to get FW version for some platforms
+#
 FW_OIDS = {
     "GS-3012": 10,
     "GS-3012F": 11,

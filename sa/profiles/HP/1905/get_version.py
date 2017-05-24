@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## HP.1905.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# HP.1905.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-## NOC modules
+# Python modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 

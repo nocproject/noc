@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: HP, 3Com
-## OS:     1910, BaseLine
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: HP, 3Com
+# OS:     1910, BaseLine
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 #from noc.sa.models import ManagedObject
 

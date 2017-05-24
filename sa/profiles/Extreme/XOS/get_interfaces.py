@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Extreme.XOS.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Extreme.XOS.get_interfaces
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Python modules
 import re
@@ -13,9 +13,9 @@ from collections import defaultdict
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
-##
-## @todo: IPv6 Support, only SNMP version, vrf support
-##
+#
+# @todo: IPv6 Support, only SNMP version, vrf support
+#
 
 
 class Script(BaseScript):

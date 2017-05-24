@@ -1,17 +1,17 @@
 __author__ = 'FeNikS'
 # -*- coding: utf-8 -*-
 
-##----------------------------------------------------------------------
-## Harmonic.bNSG9000.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Harmonic.bNSG9000.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-## Python modules
+# Python modules
 import re
 
 rx_version = re.compile(r" SwVersion=\"(?P<ver>.*?)\"", re.DOTALL|re.MULTILINE)

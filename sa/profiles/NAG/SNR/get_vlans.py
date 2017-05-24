@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## NAG.SNR.get_vlans
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# NAG.SNR.get_vlans
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-## NOC modules
+# Python modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 

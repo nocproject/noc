@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Force10
-## OS:     FTOS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Force10
+# OS:     FTOS
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -71,9 +71,9 @@ class Profile(BaseProfile):
         return 0
 
 
-##
-## Platform matching helpers
-##
+#
+# Platform matching helpers
+#
 def SSeries(v):
     """S-series matching heler"""
     return v["platform"].startswith("S")

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Juniper.JUNOSe.get_metrics
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Juniper.JUNOSe.get_metrics
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 from noc.sa.profiles.Generic.get_metrics import Script as GetMetricsScript
 from noc.sa.profiles.Generic.get_metrics import OIDRule

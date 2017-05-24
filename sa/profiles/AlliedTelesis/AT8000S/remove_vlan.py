@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlliedTelesis.AT8000S.remove_vlan
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## coded by azhur
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlliedTelesis.AT8000S.remove_vlan
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# coded by azhur
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iremovevlan import IRemoveVlan
 

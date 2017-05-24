@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Arista.EOS.get_chassis_id
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Arista.EOS.get_chassis_id
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## python modules
+# python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 

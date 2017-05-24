@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Dell.Powerconnect55xx.get_vlans
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Dell.Powerconnect55xx.get_vlans
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Python modules
+# Python modules
 import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans

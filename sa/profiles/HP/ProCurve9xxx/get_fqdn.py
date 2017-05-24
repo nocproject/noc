@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## HP.ProCurve9xxx.get_fqdn
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# HP.ProCurve9xxx.get_fqdn
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
@@ -12,10 +12,10 @@ from noc.sa.interfaces.igetfqdn import IGetFQDN
 import re
 
 
-##
-## Get switch FQDN
-## @todo: find more clean way
-##
+#
+# Get switch FQDN
+# @todo: find more clean way
+#
 class Script(BaseScript):
     name = "HP.ProCurve9xxx.get_fqdn"
     interface = IGetFQDN
