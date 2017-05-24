@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## mailsender service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# mailsender service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import smtplib
 import socket
@@ -15,9 +15,9 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.header import Header
-## Third-party modules
+# Third-party modules
 import pytz
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 
 

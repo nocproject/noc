@@ -1,16 +1,16 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Scheduler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Scheduler
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
 

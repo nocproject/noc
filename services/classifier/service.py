@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Classifier service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Classifier service
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
 import datetime
 import sys
@@ -15,12 +15,12 @@ import os
 from collections import defaultdict
 import operator
 import re
-## Third-party modules
+# Third-party modules
 from cachetools import TTLCache, cachedmethod
 import tornado.gen
 import tornado.ioloop
 import bson
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
@@ -51,12 +51,12 @@ from rule import Rule
 from noc.core.handler import get_handler
 from noc.core.cache.base import cache
 
-##
-## Exceptions
-##
-##
-## Patterns
-##
+#
+# Exceptions
+#
+#
+# Patterns
+#
 rx_oid = re.compile(r"^(\d+\.){6,}$")
 
 CR_FAILED = 0
@@ -475,7 +475,7 @@ class ClassifierService(Service):
     def to_suppress(self, event, event_class, vars):
         """
         Check wrether event must be suppressed
-        
+
         :returns: (bool, rule name, event)
         """
         ts = event.timestamp

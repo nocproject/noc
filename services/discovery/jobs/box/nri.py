@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## NRI check
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# NRI check
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## Third-party modules
+# Third-party modules
 import six
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
 from noc.inv.models.extnrilink import ExtNRILink

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## PAM Authentication backend
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# PAM Authentication backend
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import pam
-## NOC modules
+# NOC modules
 from base import BaseAuthBackend
 
 

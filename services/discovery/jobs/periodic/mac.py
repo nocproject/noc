@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## MAC Check
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# MAC Check
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.vc.models.vcdomain import VCDomain
 from noc.inv.models.macdb import MACDB

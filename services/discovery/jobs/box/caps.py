@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Caps check
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Caps check
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import ujson
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 
 

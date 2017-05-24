@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Syslog server
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Syslog server
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import time
-## NOC modules
+# NOC modules
 from noc.core.ioloop.udpserver import UDPServer
 
 logger = logging.getLogger(__name__)

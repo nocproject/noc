@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Suggest SNMP check check
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Suggest SNMP check check
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.service.client import open_sync_rpc, RPCError
 

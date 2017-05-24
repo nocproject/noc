@@ -1,19 +1,19 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## pmwriter service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# pmwriter service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 import tornado.httpclient
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 import noc.core.service.httpclient
 

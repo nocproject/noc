@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Periodic Discovery Job
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Periodic Discovery Job
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import random
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
 from uptime import UptimeCheck
 from interfacestatus import InterfaceStatusCheck

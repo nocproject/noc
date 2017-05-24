@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BI service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# BI service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.service.ui import UIService
 from api.bi import BIAPI
 from noc.core.service.authapi import AuthAPIRequestHandler

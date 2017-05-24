@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Authentication Backends
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Authentication Backends
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 from threading import Lock
 import operator
 import inspect
-## Third-party modules
+# Third-party modules
 import cachetools
 
 id_lock = Lock()

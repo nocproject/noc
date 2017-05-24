@@ -1,22 +1,22 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## noc-correlator daemon
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017, The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# noc-correlator daemon
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017, The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sys
 import datetime
 import re
 from collections import defaultdict
 from threading import Lock
-## Third-party modules
+# Third-party modules
 import tornado.gen
 from mongoengine.queryset import Q
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
 from rule import Rule

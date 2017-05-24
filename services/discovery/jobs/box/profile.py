@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Profile check
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Profile check
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 import threading
 import time
 import cachetools
 import operator
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.profilecheckrule import ProfileCheckRule
 from noc.core.mib import mib

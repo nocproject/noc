@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Ping service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Ping service
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import functools
 import time
 import datetime
@@ -18,7 +18,7 @@ import os
 import tornado.ioloop
 import tornado.gen
 import tornado.httpclient
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping

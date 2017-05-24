@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SAE API
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# SAE API
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import tornado.gen
-## NOC modules
+# NOC modules
 from noc.core.service.api import API, APIError, api
 from noc.core.script.loader import loader
 from noc.sa.models.managedobject import ManagedObject

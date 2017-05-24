@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Metric collector
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Metric collector
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from threading import RLock
 import datetime
 from collections import defaultdict
 import operator
-## Third-party modules
+# Third-party modules
 import cachetools
 from pymongo import ReadPreference
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.interface import Interface

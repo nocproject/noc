@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Syslog Collector service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Syslog Collector service
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 from optparse import make_option
 import socket
@@ -15,7 +15,7 @@ from collections import defaultdict
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from syslogserver import SyslogServer
 

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Wait TT
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016, The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Wait TT
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016, The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import datetime
-## NOC modules
+# NOC modules
 from noc.fm.models.utils import get_alarm
 from escalation import tt_system_cache
 from noc.core.defer import call_later

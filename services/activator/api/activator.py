@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Activator API
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Activator API
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python module
+# Python module
 import socket
-## Third-party modules
+# Third-party modules
 import tornado.gen
 import tornado.httpclient
-## NOC modules
+# NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
 from noc.core.script.base import BaseScript

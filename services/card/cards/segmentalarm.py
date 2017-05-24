@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Segment Alarm card handler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Segment Alarm card handler
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 from collections import defaultdict
-## NOC modules
+# NOC modules
 from base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import SummaryItem

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CDP check
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# CDP check
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.lib.validators import is_ipv4
 

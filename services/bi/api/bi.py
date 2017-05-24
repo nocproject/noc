@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BI API
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# BI API
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import zlib
-## Third-party modules
+# Third-party modules
 import ujson
 from mongoengine.queryset import Q
-## NOC modules
+# NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
 from noc.bi.models.reboots import Reboots

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## LLDP check
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# LLDP check
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.lib.validators import is_ipv4, is_int
 from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError

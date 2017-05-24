@@ -1,21 +1,21 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Basic MO discovery job
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Basic MO discovery job
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
 import cStringIO
 import contextlib
 import time
 import zlib
-## Third-party modules
+# Third-party modules
 import bson
-## NOC modules
+# NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.subinterface import SubInterface

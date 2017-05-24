@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## mailsender service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# mailsender service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import re
 import datetime
 import socket
@@ -15,7 +15,7 @@ import json
 import urllib
 import urllib2
 import time
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.core.perf import metrics
 
@@ -99,11 +99,11 @@ class TgSenderService(Service):
             except urllib2.URLError, e:
                 self.logger.info("URLError: %s\n" % e.args)
                 metrics["telegram_failed_urlerror"] += 1
-                return False      
+                return False
             except urllib2.HTTPException, e:
                 self.logger.info("HTTPException: %s\n" % e.err)
                 metrics["telegram_failed_urlerror"] += 1
-                return False                         
+                return False
             except Exception, e:
                 self.logger.info("Generic Exception: %s\n" % e.exc)
                 metrics["telegram_proxy_failed_exceprion"] += 1

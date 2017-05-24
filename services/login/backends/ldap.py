@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## LDAP Authentication backend
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# LDAP Authentication backend
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import ldap3
-## NOC modules
+# NOC modules
 from base import BaseAuthBackend
 from noc.main.models.authldapdomain import AuthLDAPDomain
 

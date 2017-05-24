@@ -1,15 +1,15 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Box Discovery Job
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Box Discovery Job
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import random
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
 from suggestsnmp import SuggestSNMPCheck
 from profile import ProfileCheck

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alarm heatmap
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Alarm heatmap
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 import cachetools
 import geojson
-## NOC modules
+# NOC modules
 from base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem

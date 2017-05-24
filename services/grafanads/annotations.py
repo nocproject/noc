@@ -1,21 +1,21 @@
 #!./bin/python
-##----------------------------------------------------------------------
-## annotations handler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# annotations handler
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 from time import mktime
-## Third-party modules
+# Third-party modules
 import tornado.web
 import tornado.gen
 import ujson
 import dateutil.parser
 from dateutil import tz
-## NOC modules
+# NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm

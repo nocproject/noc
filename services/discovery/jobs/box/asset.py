@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Asset check
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Asset check
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
 import hashlib
 import base64
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object

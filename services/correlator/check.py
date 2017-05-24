@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Various checks
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016, The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Various checks
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016, The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## NOC modules
+# NOC modules
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.core.perf import metrics

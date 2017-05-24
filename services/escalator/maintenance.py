@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Maintenance
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016, The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Maintenance
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016, The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## NOC modules
+# NOC modules
 from noc.maintainance.models.maintainance import Maintainance
 from noc.fm.models.ttsystem import TTSystem
 from noc.core.perf import metrics
