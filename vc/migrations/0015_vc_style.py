@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-## Third-party modules
+# Third-party modules
 from south.db import db
-## NOC modules
+# NOC modules
 from django.db import models
 
 

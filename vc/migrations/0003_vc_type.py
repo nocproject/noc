@@ -12,7 +12,7 @@ vc_checks={
 }
 
 class Migration:
-    
+
     def forwards(self):
         # Save old VCs
         vc_data=db.execute("SELECT vc_domain_id,type,l1,l2,description FROM vc_vc ORDER by id")
@@ -28,11 +28,11 @@ class Migration:
             ('label2_min', models.IntegerField("Label2 min",null=True,blank=True)),
             ('label2_max', models.IntegerField("Label2 max",null=True,blank=True))
         ))
-        
+
         # Mock Models
         VCDomain = db.mock_model(model_name='VCDomain', db_table='vc_vcdomain', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         VCType = db.mock_model(model_name='VCType', db_table='vc_vctype', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Model 'VC'
         db.create_table('vc_vc', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -43,7 +43,7 @@ class Migration:
             ('description', models.CharField("Description",max_length=256))
         ))
         db.create_index('vc_vc', ['vc_domain_id','type_id','l1','l2'], unique=True, db_tablespace='')
-        
+
         db.send_create_signal('vc', ['VCType','VC'])
         # Fill in VC types
         vc_map={} # letter -> id
@@ -59,8 +59,8 @@ class Migration:
         for vc_domain_id,type,l1,l2,description in vc_data:
             db.execute("INSERT INTO vc_vc(vc_domain_id,type_id,l1,l2,description) VALUES(%s,%s,%s,%s,%s)",
                 [vc_domain_id,vc_map[type],l1,l2,description])
-    
+
     def backwards(self):
         db.delete_table('vc_vc')
         db.delete_table('vc_vctype')
-        
+

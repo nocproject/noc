@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## VCDomain model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# VCDomain model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.db import models
-## NOC modules
+# NOC modules
 from vctype import VCType
 from vcfilter import VCFilter
 from noc.main.models.style import Style
@@ -97,6 +97,6 @@ class VCDomain(models.Model):
         return VCDomain.objects.get(name="default")
 
 
-## Avoid circular references
+# Avoid circular references
 from vc import VC
 from noc.sa.models.selectorcache import SelectorCache
