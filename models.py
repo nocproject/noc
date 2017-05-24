@@ -1,12 +1,12 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## NOC models lazy loading and utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# NOC models lazy loading and utilities
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 
 
@@ -67,7 +67,7 @@ def iter_model_id():
         yield m
 
 
-## Model cache: model_id -> class
+# Model cache: model_id -> class
 _MCACHE = {}
 
 _MODELS = {

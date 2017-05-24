@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-##----------------------------------------------------------------------
-## Distutils setup.py
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Distutils setup.py
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 from __future__ import with_statement
 from distutils.core import setup
@@ -13,9 +13,9 @@ from distutils.command.install import INSTALL_SCHEMES
 import subprocess
 import os
 
-##
-## Prefix to where noc to be installed
-##
+#
+# Prefix to where noc to be installed
+#
 PREFIX = "/opt/noc"
 
 
@@ -95,15 +95,15 @@ class noc_sdist(distutils.command.sdist.sdist):
     def get_file_list(self):
         self.filelist.files = get_manifest()
 
-##
-## Monkeypatch distutils to install noc to the desired location
-##
+#
+# Monkeypatch distutils to install noc to the desired location
+#
 for scheme in INSTALL_SCHEMES.values():
     scheme["purelib"] = PREFIX
     scheme["data"] = PREFIX
-##
-## Pass control to the setuptools
-##
+#
+# Pass control to the setuptools
+#
 setup(name="noc",
       version=get_version(),
       description="Network Operation Center's OSS",
