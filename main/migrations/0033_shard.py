@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -17,7 +17,7 @@ class Migration:
             ("description", models.TextField(_("Description"), null=True, blank=True)),
         ))
         db.send_create_signal("main", ["Shard"])
-    
+
     def backwards(self):
         db.delete_table("main_shard")
-    
+

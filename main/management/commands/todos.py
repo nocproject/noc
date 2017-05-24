@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## manage.py todos
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# manage.py todos
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
-## Third-party modules
+# Third-party modules
 from django.core.management.base import BaseCommand
-## NOC modules
+# NOC modules
 from noc.settings import INSTALLED_APPS
 from noc.lib.fileutils import read_file
 
@@ -34,7 +34,7 @@ class Command(BaseCommand):
             print "%d todos found"%n
         else:
             print "No todos found"
-    
+
     ##
     ## Display todos
     ##
@@ -50,4 +50,4 @@ class Command(BaseCommand):
                 print "%50s:%5d: %s"%(path,nl,todo)
                 n+=1
         return n
-        
+

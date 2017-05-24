@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Periodic Task base class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Periodic Task base class
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Python modules
+# Python modules
 import os
 import datetime
 import logging
-## NOC modules
+# NOC modules
 from noc.lib.registry import Registry
 
 
@@ -30,7 +30,7 @@ class TaskBase(type):
         m = type.__new__(cls, name, bases, attrs)
         periodic_registry.register(m.name, m)
         return m
-    
+
 
 class Task(object):
     """Task handler"""
@@ -43,13 +43,13 @@ class Task(object):
     # If set to None, task has no configurable timeout,
     # Otherwise it can be configured
     default_timeout = None
-    
+
     def __init__(self, timeout=None):
         if self.default_timeout:
             self.timeout = timeout if timeout else self.default_timeout
         else:
             self.timeout = None
-    
+
     def execute(self):
         return True
 

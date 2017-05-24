@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Unittests for access system
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Unittests for access system
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from unittest import TestCase
 from noc.main.models import *
-##
-##
-##
+#
+#
+#
 class AccessTestCase(TestCase):
     permissions=set(["mod1:app1:p1","mod1:app1:p2","mod1:app2:p1"])
     def setUp(self):
@@ -22,7 +22,7 @@ class AccessTestCase(TestCase):
         Group(name="group2").save()
         for p in self.permissions:
             Permission(name=p).save()
-    
+
     def tearDown(self):
         for p in self.permissions:
             Permission.objects.get(name=p).delete()
@@ -33,7 +33,7 @@ class AccessTestCase(TestCase):
         User.objects.get(username="user3").delete()
         Group.objects.get(name="group1").delete()
         Group.objects.get(name="group2").delete()
-    
+
     def test_permissions(self):
         superuser=User.objects.get(username="superuser")
         user1=User.objects.get(username="user1")
@@ -60,7 +60,7 @@ class AccessTestCase(TestCase):
         self.assertEquals(Permission.get_user_permissions(user1),set([]))
         Permission.set_group_permissions(group1,set())
         self.assertEquals(Permission.get_group_permissions(group1),set([]))
-    
+
     def testUnicode(self):
         for p in self.permissions:
             self.assertEquals(unicode(Permission.objects.get(name=p)),p)

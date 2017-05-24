@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SimpleReport implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# SimpleReport implementation
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import cStringIO
 import csv
 import decimal
 import types
 import pprint
-## Django modules
+# Django modules
 from django.utils.dateformat import DateFormat
-## NOC modules
+# NOC modules
 from reportapplication import *
 from noc.core.translation import ugettext as _
 from noc import settings
@@ -174,10 +174,10 @@ class TextSection(ReportSection):
         return "\n".join(s)
 
 
-##
-## Precomputed size multipliers
-## List of (limit, divider, suffix)
-##
+#
+# Precomputed size multipliers
+# List of (limit, divider, suffix)
+#
 SIZE_DATA = []
 l = decimal.Decimal(1024)
 for suffix in ["KB", "MB", "GB", "TB", "PB"]:
@@ -431,10 +431,10 @@ class SectionRow(object):
                 self.data[column] = [d]
 
 
-##
-## Section containing table
-##
-##
+#
+# Section containing table
+#
+#
 class TableSection(ReportSection):
     tag = "table"
 
@@ -585,9 +585,9 @@ class TableSection(ReportSection):
         return f.getvalue()
 
 
-##
-##
-##
+#
+#
+#
 class MatrixSection(ReportSection):
     ##
     ## Data is a list of (row,column,data)

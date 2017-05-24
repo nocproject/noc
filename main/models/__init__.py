@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Database models for main module
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Database models for main module
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python Modules
+# Python Modules
 import datetime
 
 from django.contrib.auth.models import User, Group
@@ -18,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from noc import settings
 from noc.lib.periodic import periodic_registry
 
-## Register periodics
+# Register periodics
 periodic_registry.register_all()
 from audittrail import AuditTrail
 AuditTrail.install()
@@ -155,9 +155,9 @@ from favorites import Favorites
 from tag import Tag
 from sync import Sync
 
-##
-## Install triggers
-##
+#
+# Install triggers
+#
 if settings.IS_WEB and not settings.IS_TEST:
     DBTrigger.refresh_cache()  # Load existing triggers
     # Trigger cache syncronization
@@ -169,9 +169,9 @@ if settings.IS_WEB and not settings.IS_TEST:
     pre_delete.connect(DBTrigger.pre_delete_dispatch)
     post_delete.connect(DBTrigger.post_delete_dispatch)
 
-##
-## Monkeypatch to change User.username.max_length
-##
+#
+# Monkeypatch to change User.username.max_length
+#
 User._meta.get_field("username").max_length = User._meta.get_field("email").max_length
 User._meta.get_field("username").validators = [MaxLengthValidator(User._meta.get_field("username").max_length)]
 User._meta.ordering = ["username"]

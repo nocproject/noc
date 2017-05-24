@@ -1,21 +1,21 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## NotificationGroup model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# NotificationGroup model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import logging
 import operator
 from threading import RLock
-## Django modules
+# Django modules
 from django.db import models
 from django.contrib.auth.models import User
 import cachetools
-## NOC modules
+# NOC modules
 from noc.settings import LANGUAGE_CODE
 from noc.lib.timepattern import TimePatternList
 from timepattern import TimePattern

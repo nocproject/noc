@@ -1,32 +1,32 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Rebuild online documentation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Rebuild online documentation
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import glob
 import subprocess
 import csv
 import cStringIO
 import sys
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
-## NOC modules
+# NOC modules
 from noc.lib.fileutils import rewrite_when_differ
 
 INIT = "__init__.py"
 
 
-##
-## Command handler
-##
+#
+# Command handler
+#
 class Command(BaseCommand):
     help = "Synchronize online documentation"
-    
+
     ##
     ## Rebuild supported equipment database.
     ## Returns true if database was updated
@@ -50,7 +50,7 @@ class Command(BaseCommand):
                         writer.writerow(r)
         db_path = "local/supported.csv"
         return rewrite_when_differ(db_path, out.getvalue())
-    
+
     ##
     ## Returns a list of distribution files
     ##
@@ -67,7 +67,7 @@ class Command(BaseCommand):
         else:
             raise CommandError("Cannot find manifest")
         return mf
-    
+
     ##
     ## Update "code's" index files
     ##
@@ -87,10 +87,10 @@ class Command(BaseCommand):
             if len(p) > 1 and p[0] == ("scripts", "share"):
                 return True
             return False
-        
+
         def header(h, level=0):
             return h + "\n" + ["=", "-", "~"][level] * len(h) + "\n"
-        
+
         def path_to_mod(f):
             " Convert file path to module name"
             if f.endswith(INIT):
@@ -98,13 +98,13 @@ class Command(BaseCommand):
             else:
                 f = f[:-3]
             return "noc." + f.replace(os.sep, ".")
-        
+
         def path_to_doc(f):
             " Convert path fo RST file name"
             if f == INIT:
                 return "index.rst"
             return path_to_mod(f) + ".rst"
-        
+
         def package_doc(f):
             " Generate package doc"
             m = path_to_mod(f)
@@ -117,14 +117,14 @@ class Command(BaseCommand):
                 for t in sp:
                     r += "    %s\n" % path_to_mod(t)
             return r
-        
+
         def module_doc(f):
             "Generate module doc"
             m = path_to_mod(f)
             r = header(":mod:`%s` Module" % m)
             r += ".. automodule:: %s\n    :members:\n\n" % m
             return r
-        
+
         def package_files(f):
             " Return a list of package files"
             def is_child(ff):
@@ -134,11 +134,11 @@ class Command(BaseCommand):
                 if len(pp) != lp + 1:
                     return False
                 return pp[:-1] == p
-            
+
             p = f.split(os.sep)[:-1]
             lp = len(p)
             return sorted([ff for ff in dist if ff != f and is_child(ff)])
-        
+
         def create_doc(f):
             if f.endswith(INIT):
                 d = package_doc(f)
@@ -146,12 +146,12 @@ class Command(BaseCommand):
                 d = module_doc(f)
             p = path_to_doc(f)
             rewrite_when_differ(os.path.join(root, p), d)
-        
+
         dist = sorted([f for f in self.get_manifest()
                        if f.endswith(".py") and not to_ignore(f)])
         for f in dist:
             create_doc(f)
-    
+
     ##
     ##
     ##

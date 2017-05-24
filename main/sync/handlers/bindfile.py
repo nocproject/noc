@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BINDFileHandler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# BINDFileHandler
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import operator
-## NOC modules
+# NOC modules
 from dns import DNSZoneSyncHandler
 from noc.sa.interfaces.base import StringParameter
 from noc.main.sync.kvstore import KeyValueStore

@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Create application skeleton
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Create application skeleton
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import datetime
 from optparse import make_option
 import re
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
 from django.template import Template, Context
 from django.db.models.fields import NOT_PROVIDED
 from django.db.models import Model
-## NOC modules
+# NOC modules
 from noc.settings import INSTALLED_APPS
 from noc.lib.nosql import Document
 

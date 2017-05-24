@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## lib/fsm tests
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# lib/fsm tests
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 from unittest import TestCase
 from noc.lib.fsm import *
 from noc.lib.fileutils import temporary_file
-##
-##
-##
+#
+#
+#
 class FSMTestCase(TestCase):
     class SimpleFSM(FSM):
         FSM_NAME="Simple FSM"
@@ -54,7 +54,7 @@ class FSMTestCase(TestCase):
         @check_state("S3")
         def check_state_s3(self):
             pass
-            
+
     def test_simple_fsm(self):
         fsm=self.SimpleFSM()
         # Check FSM in the starting state
@@ -77,7 +77,7 @@ class FSMTestCase(TestCase):
         # Try to generate Graphviz dot
         with temporary_file() as p:
             self.SimpleFSM.write_dot(p)
-    
+
     class SimpleStreamFSM(StreamFSM):
         FSM_NAME="Simple Stream FSM"
         DEFAULT_STATE="START"
@@ -122,4 +122,4 @@ class FSMTestCase(TestCase):
             ]:
             fsm.feed(data)
             self.assertEquals(fsm.get_state(),state)
-        
+

@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ExtApplication implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ExtApplication implementation
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
-## Django modules
+# Django modules
 from django.http import HttpResponse
 import ujson
-## NOC modules
+# NOC modules
 from application import Application, view
 from access import HasPerm, PermitLogged
 from noc.main.models.favorites import Favorites

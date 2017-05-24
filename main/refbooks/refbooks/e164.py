@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## E.164 Country Codes
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# E.164 Country Codes
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from noc.main.refbooks.refbooks import RefBook,Field
 
-##
-## IEEE OUI Refbook
-##
+#
+# IEEE OUI Refbook
+#
 class E164(RefBook):
     name="E.164 Country Prefixes"
     description="E.164 Country Prefixes"

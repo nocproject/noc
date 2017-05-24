@@ -3,13 +3,13 @@ from south.db import db
 from django.db import models
 
 class Migration:
-    
+
     def forwards(self):
-        
-        
+
+
         # Mock Models
         User = db.mock_model(model_name='User', db_table='auth_user', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Model 'AuditTrail'
         db.create_table('main_audittrail', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -21,9 +21,9 @@ class Migration:
             ('subject', models.CharField("Subject",max_length=256)),
             ('body', models.TextField("Body"))
         ))
-        
+
         db.send_create_signal('main', ['AuditTrail'])
-    
+
     def backwards(self):
         db.delete_table('main_audittrail')
-        
+

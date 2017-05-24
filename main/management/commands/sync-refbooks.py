@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Load and syncronize built-in refbooks
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Load and syncronize built-in refbooks
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from django.core.management.base import BaseCommand
 from noc.main.refbooks.refbooks import RefBook
 from noc.main.models.refbook import RefBook as RB
 import os
-##
-## Command handler
-##
+#
+# Command handler
+#
 class Command(BaseCommand):
     help="Synchronize built-in Reference Books"
     def handle(self, *args, **options):

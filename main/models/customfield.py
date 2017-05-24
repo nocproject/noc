@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CustomField model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# CustomField model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## Django modules
+# Django modules
 from django.db import models, connection
 from django.db.models import signals as django_signals
-## Third-party modules
+# Third-party modules
 from mongoengine.base.common import _document_registry
 from mongoengine import fields
 import mongoengine.signals
-## NOC modules
+# NOC modules
 from customfieldenumgroup import CustomFieldEnumGroup
 from noc.lib.validators import is_int
 

@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ExtDocApplication implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ExtDocApplication implementation
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import uuid
-## Django modules
+# Django modules
 from django.http import HttpResponse
-## Third-party modules
+# Third-party modules
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, ReferenceField,
                                 BinaryField)
 from mongoengine.errors import ValidationError
-## NOC modules
+# NOC modules
 from extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
                            PlainReferenceField, Q)

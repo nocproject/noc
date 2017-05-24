@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Binary data to string encoder/decoder
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Binary data to string encoder/decoder
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 import re
-##
-## Patterns
-##
+#
+# Patterns
+#
 rx_unqoute=re.compile(r"\\x([0-9a-f][0-9a-f])",re.MULTILINE|re.DOTALL)
-## Map to convert two-char hex to integer
+# Map to convert two-char hex to integer
 hex_map=dict([("%02x"%i,chr(i)) for i in range(256)])
-##
-## Quote binary data to ASCII-string
-##
+#
+# Quote binary data to ASCII-string
+#
 def bin_quote(s):
     """
     >>> bin_quote(None)
@@ -38,10 +38,10 @@ def bin_quote(s):
         if isinstance(s, unicode):
            s = s.encode("utf-8")
         return "".join([qc(c) for c in s])
-    
-##
-## Decode ASCII-encoded string back to binary
-##
+
+#
+# Decode ASCII-encoded string back to binary
+#
 def bin_unquote(s):
     """
     >>> [i for i in range(256) if bin_unquote(bin_quote(chr(i)))!=chr(i)]

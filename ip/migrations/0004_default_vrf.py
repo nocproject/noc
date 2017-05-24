@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -27,6 +27,6 @@ class Migration:
             db.execute("INSERT INTO ip_ipv4block(prefix,description,vrf_id,asn_id,modified_by_id,last_modified) VALUES(%s,%s,%s,%s,%s,%s)",
                 ["0.0.0.0/0","Root",vrf_id,asn_id,user_id,"now"]
             )
-            
+
     def backwards(self):
         "Write your backwards migration here"

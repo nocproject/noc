@@ -1,14 +1,14 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Favorites model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Favorites model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.contrib.contenttypes.models import ContentType
-## NOC modules
+# NOC modules
 from noc.lib.nosql import Document, IntField, StringField, ListField
 from noc.lib.db import QTags
 

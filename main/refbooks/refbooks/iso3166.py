@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ISO 3166 Country Codes
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ISO 3166 Country Codes
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from noc.main.refbooks.refbooks import RefBook,Field
 
-##
-## IEEE OUI Refbook
-##
+#
+# IEEE OUI Refbook
+#
 class ISO3166(RefBook):
     name="ISO 3166 Country Codes"
     description="ISO 3166 Country Codes"

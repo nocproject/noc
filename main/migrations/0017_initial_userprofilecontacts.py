@@ -5,7 +5,7 @@ from django.db import models
 from django.db import models
 
 class Migration:
-    
+
     def forwards(self):
         # Create Any time pattern if not exists
         if db.execute("SELECT COUNT(*) FROM main_timepattern WHERE name=%s",["Any"])[0][0]==0:
@@ -23,6 +23,6 @@ class Migration:
                     [profile_id,"mail",time_pattern_id,email])[0][0]==0:
                 db.execute("INSERT INTO main_userprofilecontact(user_profile_id,time_pattern_id,notification_method,params) VALUES(%s,%s,%s,%s)",
                     [profile_id,time_pattern_id,"mail",email])
-    
+
     def backwards(self):
         "Write your backwards migration here"

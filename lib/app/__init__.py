@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Application classes
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Application classes
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from site import *
 from access import *
 from application import *
@@ -13,13 +13,13 @@ from extapplication import *
 from extmodelapplication import *
 from extdocapplication import *
 from noc.settings import config, IS_WEB
-##
-## Setup Context Processor.
-## Used via TEMPLATE_CONTEXT_PROCESSORS variable in settings.py
-## Adds "setup" variable to context.
-## "setup" is a hash of
-##      "installation_name"
-##
+#
+# Setup Context Processor.
+# Used via TEMPLATE_CONTEXT_PROCESSORS variable in settings.py
+# Adds "setup" variable to context.
+# "setup" is a hash of
+#      "installation_name"
+#
 def setup_processor(request):
     favicon_url=config.get("customization", "favicon_url")
     if favicon_url.endswith(".png"):
@@ -28,7 +28,7 @@ def setup_processor(request):
         favicon_mime="image/jpeg"
     else:
         favicon_mime=None
-    
+
     return {
         "setup" : {
             "installation_name" : config.get("customization", "installation_name"),

@@ -1,29 +1,29 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## MongoDB wrappers
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# MongoDB wrappers
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import sys
 import time
-## Third-party modules
+# Third-party modules
 from django.db.models import Model
 from mongoengine.base import *
 from mongoengine import *
 import mongoengine
 import six
 import bson
-## NOC modules
+# NOC modules
 from noc.core.config.base import config
 from noc.models import get_model
 
 logger = logging.getLogger(__name__)
 
-## Connect to the database
+# Connect to the database
 RETRIES = 20
 TIMEOUT = 3
 
@@ -44,7 +44,7 @@ for i in range(RETRIES):
             logger.error("Cannot connect %d times. Exiting", RETRIES)
             sys.exit(1)
 
-## Shortcut to ObjectId
+# Shortcut to ObjectId
 try:
     import pymongo.objectid
     ObjectId = pymongo.objectid.ObjectId

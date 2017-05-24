@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Migrate audit trail
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Migrate audit trail
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import re
 import datetime
-## Third-party modules
+# Third-party modules
 from south.db import db
-## Third-party modules
+# Third-party modules
 import pymongo
-## NOC modules
+# NOC modules
 from noc.lib.nosql import get_db
 
 logger = logging.getLogger("south")

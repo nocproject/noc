@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Application class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Application class
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import os
 import datetime
 import functools
 import types
-## Django modules
+# Django modules
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect,\
                         HttpResponseForbidden, HttpResponseNotFound
@@ -28,7 +28,7 @@ from django.utils.timezone import get_current_timezone
 from django.views.static import serve as serve_static
 from django.http import Http404
 import ujson
-## NOC modules
+# NOC modules
 from access import HasPerm, Permit, Deny
 from site import site
 from noc.lib.forms import NOCForm
@@ -111,7 +111,7 @@ class ApplicationBase(type):
 class Application(object):
     """
     Basic application class.
-    
+
     Application combined by set of methods, decorated with @view.
     Each method accepts requests and returns reply
     """

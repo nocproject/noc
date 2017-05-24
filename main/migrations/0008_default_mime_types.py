@@ -75,10 +75,10 @@ MIME_TYPES=[
 ]
 
 class Migration:
-    
+
     def forwards(self):
         for ext,mime_type in MIME_TYPES:
             db.execute("INSERT INTO main_mimetype(extension,mime_type) VALUES(%s,%s)",[ext,mime_type])
-    
+
     def backwards(self):
         "Write your backwards migration here"

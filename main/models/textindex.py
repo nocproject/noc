@@ -1,18 +1,18 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Full-text search index
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Full-text search index
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import datetime
 import re
-## Django modules
+# Django modules
 from django.db.models import signals as django_signals
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField, DateTimeField
 from models import get_object, get_model_id

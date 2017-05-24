@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Built-in refbooks
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Built-in refbooks
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.main.models.refbook import RefBook as RB
 from noc.main.models.refbookfield import RefBookField
 from noc.main.models.language import Language
-##
+#
 lang_cache={}
 def get_language(name):
     global lang_cache
@@ -18,9 +18,9 @@ def get_language(name):
         l=Language.objects.get(name=name)
         lang_cache[name]=l
     return lang_cache[name]
-##
-## RefBook descruiption base
-##
+#
+# RefBook descruiption base
+#
 class RefBook(object):
     name=None
     language="English"
@@ -80,9 +80,9 @@ class RefBook(object):
                 field.search_method=f.search_method
                 field.save()
 
-##
-## RefBook fields
-##
+#
+# RefBook fields
+#
 class Field(object):
     def __init__(self,name,description=None,is_required=True,search_method=None):
         self.name=name

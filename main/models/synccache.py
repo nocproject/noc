@@ -1,24 +1,24 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SyncCache model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# SyncCache model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import random
 import logging
 import uuid
-## Django modules
+# Django modules
 from django.db.models import get_model
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField,
                                 DateTimeField, DictField)
 from mongoengine.base import _document_registry
-## NOC Modules
+# NOC Modules
 from noc import settings
 
 logger = logging.getLogger(__name__)

@@ -36,7 +36,7 @@ class Migration:
         VC=db.mock_model(model_name='VC',db_table='vc_vc',db_tablespace='',pk_field_name='id',pk_field_type=models.AutoField)
         ManagedObject=db.mock_model(model_name='ManagedObject',db_table='sa_managedobject',db_tablespace='',pk_field_name='id',pk_field_type=models.AutoField)
         Prefix=db.mock_model(model_name='Prefix',db_table='ip_prefix',db_tablespace='',pk_field_name='id',pk_field_type=models.AutoField)
-        
+
         db.create_table('ip_prefix', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ("parent", models.ForeignKey(Prefix,related_name="children_set",verbose_name="Parent",null=True,blank=True)),
@@ -102,7 +102,7 @@ class Migration:
             ("allocated_till", models.DateField("Allocated till",null=True,blank=True)),
         ))
         db.create_index('ip_addressrange', ['vrf_id','afi','from_address','to_address'], unique=True, db_tablespace='')
-        
+
         # PrefixBookmark
         db.create_table('ip_prefixbookmark',(
             ('id',     models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -110,7 +110,7 @@ class Migration:
             ("prefix", models.ForeignKey(Prefix,verbose_name="Prefix"))
         ))
         db.create_index('ip_prefixbookmark', ['user_id','prefix_id'], unique=True, db_tablespace='')
-        
+
         db.send_create_signal('ip', ["Prefix","Address","PrefixBookmark"])
 
     def backwards(self):
