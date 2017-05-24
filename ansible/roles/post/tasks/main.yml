@@ -10,14 +10,6 @@
     - config
     - noc_config
 
-- name: restart telegraf
-  service:
-    name: telegraf
-    state: restarted
-    enabled: yes
-  changed_when: False
-  when: "'FreeBSD' not in ansible_distribution"
-
 - name: check if noc running
   shell: "{{ noc_root }}/noc ctl status"
   changed_when: false
