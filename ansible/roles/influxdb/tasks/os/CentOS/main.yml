@@ -2,8 +2,10 @@
 - name: Install CentOS packages
   yum:
     name: influxdb
-    state: present
+    state: latest
     update_cache: yes
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements
