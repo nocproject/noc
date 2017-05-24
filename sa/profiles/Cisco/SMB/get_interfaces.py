@@ -30,6 +30,7 @@ class Script(BaseScript):
            "Po": "aggregated",  # Port-channel/Portgroup
            "Tu": "tunnel",      # Tunnel
            "Vl": "SVI",         # Vlan
+           "oo": "management",  # oob
            }
 
     def execute(self):
