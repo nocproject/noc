@@ -502,10 +502,13 @@ class Scheduler(object):
         with self.cache_lock:
             cache_set_ops = self.cache_set_ops
             self.cache_set_ops = {}
+        if not cache_set_ops:
+            return
+        cache = self.get_cache()
         for version in cache_set_ops:
             metrics["%s_cache_set_requests" % self.name] += 1
             try:
-                self.cache.set_many(
+                cache.set_many(
                     cache_set_ops[version],
                     version=version,
                     ttl=self.CACHE_DEFAULT_TTL)
