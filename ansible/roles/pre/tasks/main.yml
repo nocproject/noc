@@ -20,6 +20,9 @@
   tags:
     - always
 
+- name: resolv consul_env
+  set_fact:
+    consul_env: "{{consul_env}}"
 
 - name: "Load variables from consul"
   include_vars: "consul.yml"
@@ -36,6 +39,10 @@
   when: not consul_env
   tags:
     - always
+
+- name: resolv web_ui_language
+  set_fact:
+    web_ui_language: "{{web_ui_language}}"
 
 - name: set proxy
   set_fact:
