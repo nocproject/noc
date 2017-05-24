@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Building object
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Building object
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, BooleanField,
                                 ListField, EmbeddedDocumentField,
                                 DictField, DateTimeField)
 from mongoengine import signals
-## NOC modules
+# NOC modules
 from noc.lib.nosql import PlainReferenceField
 from entrance import Entrance
 from division import Division
@@ -36,9 +36,9 @@ class Building(Document):
             ("D", "DEMOLISHED")
         ],
         default="R")
-    ## Total homes
+    # Total homes
     homes = IntField()
-    ## Maximal amount of floors
+    # Maximal amount of floors
     floors = IntField()
     #
     entrances = ListField(EmbeddedDocumentField(Entrance))
@@ -91,8 +91,8 @@ class Building(Document):
             e_home += homes_per_entrance
         self.save()
 
-## Setup signals
+# Setup signals
 signals.pre_save.connect(Building.update_floors, sender=Building)
 
-## Avoid circular references
+# Avoid circular references
 from address import Address

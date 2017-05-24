@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlarmDiagnosticConfig model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlarmDiagnosticConfig model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 from threading import Lock
 from collections import defaultdict
 import logging
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField, ReferenceField, IntField
 import cachetools
-## NOC modules
+# NOC modules
 from alarmclass import AlarmClass
 from alarmdiagnostic import AlarmDiagnostic
 from utils import get_alarm
@@ -241,4 +241,4 @@ def on_clear(alarm, cfg, *args, **kwargs):
         logger.info("[%s] Alarm is not found, skipping", alarm)
     AlarmDiagnosticConfig.get_diag(a, cfg, "C")
 
-##
+#

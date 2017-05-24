@@ -14,7 +14,7 @@ class Migration:
         db.add_column("fm_eventclass","rule",models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True))
         db.add_column("fm_eventpostprocessingrule","rule",models.ForeignKey(PyRule,verbose_name="pyRule",null=True,blank=True))
         db.delete_column("fm_eventclass","trigger")
-    
+
     def backwards(self):
         db.delete_column("fm_eventclass","rule_id")
         db.delete_column("fm_eventpostprocessingrule","rule_id")

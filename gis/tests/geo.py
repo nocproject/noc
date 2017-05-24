@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Geography/Geometry conversion functions
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Geography/Geometry conversion functions
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.lib.test import NOCTestCase
 from noc.gis.geo import *
 

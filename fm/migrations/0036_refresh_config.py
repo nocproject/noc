@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 import datetime
@@ -20,6 +20,6 @@ class Migration:
         db.execute("""INSERT INTO fm_eventtrigger(name, is_enabled, event_class_re, pyrule_id)
                    VALUES(%s, %s, %s, %s)
                    """, ["Refresh Config", True, r"Config \| Config Changed", r_id])
-    
+
     def backwards(self):
         pass

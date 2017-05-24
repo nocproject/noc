@@ -4,10 +4,10 @@ from django.db import models
 
 
 class Migration:
-    
+
     def forwards(self):
         db.delete_table('fm_eventcorrelationrule')
-        
+
         # Model 'EventCorrelationRule'
         db.create_table('fm_eventcorrelationrule', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -19,11 +19,11 @@ class Migration:
             ('same_object', models.BooleanField("Same Object",default=True)),
             ('window', models.IntegerField("Window (sec)",default=0))
         ))
-        
+
         # Mock Models
         EventCorrelationRule = db.mock_model(model_name='EventCorrelationRule', db_table='fm_eventcorrelationrule', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         EventClass = db.mock_model(model_name='EventClass', db_table='fm_eventclass', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Model 'EventCorrelationMatchedClass'
         db.create_table('fm_eventcorrelationmatchedclass', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -34,7 +34,7 @@ class Migration:
 
         # Mock Models
         EventCorrelationRule = db.mock_model(model_name='EventCorrelationRule', db_table='fm_eventcorrelationrule', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Model 'EventCorrelationMatchedVar'
         db.create_table('fm_eventcorrelationmatchedvar', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -42,10 +42,10 @@ class Migration:
             ('var', models.CharField("Variable Name",max_length=256))
         ))
         db.create_index('fm_eventcorrelationmatchedvar', ['rule_id','var'], unique=True, db_tablespace='')
-        
-        
+
+
         db.send_create_signal('fm', ['EventCorrelationRule','EventCorrelationMatchedClass','EventCorrelationMatchedVar'])
-    
+
     def backwards(self):
         db.delete_table('fm_eventcorrelationmatchedvar')
         db.delete_table('fm_eventcorrelationmatchedclass')

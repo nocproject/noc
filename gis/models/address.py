@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Address object
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Address object
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, IntField, DictField, BooleanField
 from mongoengine.signals import post_save
-## NOC modules
+# NOC modules
 from street import Street
 from building import Building
 from noc.lib.nosql import PlainReferenceField
@@ -160,8 +160,8 @@ class Address(Document):
 
     # @todo: cmp_addr
 
-##
+#
 RU_SHORT_AFTER = set([u"б-р", u"проезд", u"пер", u"ш"])
 
-## Signals
+# Signals
 post_save.connect(Address.update_primary, sender=Address)

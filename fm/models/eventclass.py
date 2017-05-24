@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## EventClass model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# EventClass model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 import os
 from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
 import cachetools
-## NOC modules
+# NOC modules
 from noc.lib import nosql
 from alarmclass import AlarmClass
 from noc.lib.escape import json_escape as q

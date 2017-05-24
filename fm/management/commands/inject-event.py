@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Inject event from JSON files
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Inject event from JSON files
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Python modules
+# Python modules
 from __future__ import with_statement
 import sys
 import datetime
 from optparse import OptionParser, make_option
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import simplejson
-## NOC modules
+# NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.newevent import NewEvent
 
@@ -25,7 +25,7 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option("-s", "--syslog", dest="syslog"),
     )
-    
+
     def _usage(self):
         print "./noc inject-event <object name> [<file1> [ .. <fileN>]]"
         sys.exit(0)
@@ -74,7 +74,7 @@ class Command(BaseCommand):
             )
             ne.save()
             print ne.id
-    
+
     def syslog_message(self, obj, msg):
         raw_vars = {
             "source": "syslog",

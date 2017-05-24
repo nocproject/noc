@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlarmSeverity model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlarmSeverity model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from threading import Lock
 import operator
 from itertools import izip
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, UUIDField)
 import cachetools
-## NOC modules
+# NOC modules
 from noc.main.models.style import Style
 from noc.lib.nosql import ForeignKeyField
 from noc.lib.text import quote_safe_path

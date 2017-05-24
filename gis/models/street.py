@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Street object
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Street object
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, BooleanField, DateTimeField)
 from noc.lib.nosql import PlainReferenceField
-## NOC modules
+# NOC modules
 from division import Division
 
 

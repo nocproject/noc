@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ActiveAlarm model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ActiveAlarm model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## Django modules
+# Django modules
 from django.template import Template as DjangoTemplate
 from django.template import Context
-## NOC modules
+# NOC modules
 import noc.lib.nosql as nosql
 from alarmlog import AlarmLog
 from alarmclass import AlarmClass
@@ -545,7 +545,7 @@ class ActiveAlarm(nosql.Document):
             if a.escalation_tt:
                 yield a
 
-## Avoid circular references
+# Avoid circular references
 from archivedalarm import ArchivedAlarm
 from utils import get_alarm
 from alarmdiagnosticconfig import AlarmDiagnosticConfig

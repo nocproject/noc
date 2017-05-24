@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlarmClass model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlarmClass model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import hashlib
 import os
 from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 from mongoengine import fields
 import cachetools
-## NOC modules
+# NOC modules
 import noc.lib.nosql as nosql
 from alarmseverity import AlarmSeverity
 from alarmclassvar import AlarmClassVar
@@ -326,5 +326,5 @@ class AlarmClass(nosql.Document):
             else:
                 return self.control_timeN or None
 
-## Avoid circular references
+# Avoid circular references
 from alarmclassconfig import AlarmClassConfig

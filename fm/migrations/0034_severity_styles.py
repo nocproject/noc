@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## Third-party modules
+# Third-party modules
 from south.db import db
-## Python modules
+# Python modules
 
 
 class Migration:    
@@ -23,6 +23,6 @@ class Migration:
         ]:
             if db.execute("SELECT COUNT(*) FROM main_style WHERE name = %s", [name])[0][0] == 0:
                 db.execute("INSERT INTO main_style(name, font_color, background_color, description) VALUES (%s, %s, %s, %s)", [name, font, background, description])
-    
+
     def backwards(self):
         db.execute("DELETE FROM main_style WHERE name LIKE 'FM %%'")

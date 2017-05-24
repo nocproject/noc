@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Audit handlers
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Audit handlers
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## NOC modules
+# NOC modules
 from noc.sa.models.interactionlog import InteractionLog
 from noc.settings import config
 
@@ -37,7 +37,7 @@ def get_seconds(section, option):
         raise "Invalid expiration option in %s:%s" % (section, option)
     return v * m
 
-## Expiration settings
+# Expiration settings
 TTL_COMMAND = get_seconds("audit", "command_ttl")
 TTL_LOGIN = get_seconds("audit", "login_ttl")
 TTL_REBOOT = get_seconds("audit", "reboot_ttl")

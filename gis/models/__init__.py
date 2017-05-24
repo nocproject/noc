@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## GIS module database models
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# GIS module database models
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import inspect
-## NOC modules
+# NOC modules
 from noc.lib import nosql
 
 from layer import Layer
@@ -70,7 +70,7 @@ class _Layer(nosql.Document):
     name = nosql.StringField(unique=True)
     is_builtin = nosql.BooleanField(default=True)
     is_active = nosql.BooleanField(default=True)
-    #srs = nosql.ForeignKeyField(SRS)
+    # srs = nosql.ForeignKeyField(SRS)
     styles = nosql.ListField(nosql.StringField())
     datasource = nosql.DictField()
 

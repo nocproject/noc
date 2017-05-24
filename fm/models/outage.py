@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Outage report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Outage report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import IntField, DateTimeField
 

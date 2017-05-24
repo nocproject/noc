@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ArchivedAlarm model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ArchivedAlarm model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## Django modules
+# Django modules
 from django.template import Template, Context
-## NOC modules
+# NOC modules
 import noc.lib.nosql as nosql
 from noc.sa.models.managedobject import ManagedObject
 from alarmclass import AlarmClass
@@ -204,6 +204,6 @@ class ArchivedAlarm(nosql.Document):
                 yield a.managed_object
 
 
-## Avoid circular references
+# Avoid circular references
 from activealarm import ActiveAlarm
 

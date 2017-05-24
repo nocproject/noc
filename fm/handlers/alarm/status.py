@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Managed object status checks
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Managed object status checks
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## NOC modules
+# NOC modules
 from noc.core.perf import metrics
 from noc.core.defer import call_later
 from noc.fm.models.utils import get_alarm
 
-## Delay to close out-of-ordered event
+# Delay to close out-of-ordered event
 OO_CLOSE_DELAY = 20
 
 logger = logging.getLogger(__name__)

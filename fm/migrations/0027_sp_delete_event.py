@@ -4,7 +4,7 @@ from south.db import db
 
 
 class Migration:
-    
+
     def forwards(self):
         db.execute(SQL_PROC)
 
@@ -22,13 +22,13 @@ DECLARE
 BEGIN
     DELETE FROM fm_eventrepeat
     WHERE event_id=p_event_id;
-    
+
     DELETE FROM fm_eventdata
     WHERE event_id=p_event_id;
-    
+
     DELETE FROM fm_eventlog
     WHERE event_id=p_event_id;
-    
+
     DELETE FROM fm_event
     WHERE id=p_event_id;
 END;

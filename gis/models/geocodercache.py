@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Geoconding cache
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Geoconding cache
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 
-## Python modules
+# Python modules
 import re
 import hashlib
 import base64
 import datetime
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, FloatField, ListField,
                                 DateTimeField)
-## NOC modules
+# NOC modules
 from noc.core.geocoding.base import GeoCoderError, GeoCoderResult
 from noc.core.config.base import config
 from noc.core.handler import get_handler

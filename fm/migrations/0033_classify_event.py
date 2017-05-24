@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
 
 
 class Migration:
-    
+
     CREATE_CLASSIFY_EVENT="""
     CREATE OR REPLACE
     FUNCTION classify_event(INTEGER, INTEGER, INTEGER, INTEGER, CHAR, VARCHAR, TEXT, TEXT[][])
@@ -48,12 +48,12 @@ class Migration:
     END
     $$ LANGUAGE plpgsql;
     """
-    
+
     DROP_CLASSIFY_EVENT="DROP FUNCTION classify_event(INTEGER, INTEGER, INTEGER, INTEGER, CHAR, VARCHAR, TEXT, TEXT[][])"
-    
+
     def forwards(self):
         db.execute(self.CREATE_CLASSIFY_EVENT)
-    
+
     def backwards(self):
         db.execute(self.DROP_CLASSIFY_EVENT)
-    
+

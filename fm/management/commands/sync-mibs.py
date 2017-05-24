@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Upload bundled MIBs
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Upload bundled MIBs
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 from optparse import make_option
 import gzip
 import re
 import datetime
 import time
-## Third-party modules
+# Third-party modules
 from django.core.management.base import BaseCommand, CommandError
 import ujson
-## NOC modules
+# NOC modules
 from noc.fm.models.mib import MIB
 
 

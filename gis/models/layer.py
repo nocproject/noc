@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Map Layer
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Map Layer
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 from threading import RLock
 import operator
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, IntField,
                                 BooleanField)
 import cachetools
-## NOC modules
+# NOC modules
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
 

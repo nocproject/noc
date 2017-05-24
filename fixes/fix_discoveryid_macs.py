@@ -4,9 +4,9 @@
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.core.mac import MAC
 
