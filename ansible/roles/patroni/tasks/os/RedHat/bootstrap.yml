@@ -30,3 +30,8 @@
     login_user: "superuser"
     state: "present"
   when: "has_svc_postgres_master | default(False)"
+
+- name: Create bootstrapped marker
+  file:
+    dest: "{{patroni_bootstrap_file}}"
+    state: touch
