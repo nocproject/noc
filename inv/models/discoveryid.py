@@ -75,6 +75,8 @@ class DiscoveryID(Document):
                     last_mac=r["last_chassis_mac"]
                 ) for r in chassis_mac
             ]
+        else:
+            chassis_mac = []
         o = cls.objects.filter(object=object.id).first()
         if o:
             old_macs = set(m.first_mac for m in o.chassis_mac)
