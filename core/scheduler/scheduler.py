@@ -199,7 +199,7 @@ class Scheduler(object):
             n = self.run_pending()
         except Exception as e:
             self.logger.error("Failed to schedule next tasks: %s", e)
-        self.apply_bulk_ops()
+        self.apply_ops()
         return n
 
     def apply_ops(self):
