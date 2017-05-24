@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Unittests for access system
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Unittests for access system
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from unittest import TestCase
 from noc.dns.models import *
 from noc.ip.models import VRF, Address
-##
-##
-##
+#
+#
+#
 class AccessTestCase(TestCase):
     ADDRESSES = [("h1.example.com", "10.0.0.3"),
                  ("h2.example.com", "10.0.0.4"),
@@ -91,7 +91,7 @@ class AccessTestCase(TestCase):
         # Add addressess
         for h, a in self.ADDRESSES:
             Address(vrf=vrf, address=a, fqdn=h).save()
-    
+
     ##
     ## Cleanup
     ##
@@ -129,7 +129,7 @@ class AccessTestCase(TestCase):
         if not self.has_ipv6:
             vrf.afi_ipv6 = False
             vrf.save()
-    
+
     ##
     ## Test __unicode__ methods
     ##
@@ -137,7 +137,7 @@ class AccessTestCase(TestCase):
         for c in [DNSServer, DNSZoneProfile, DNSZone, DNSZoneRecord]:
             for o in c.objects.all():
                 unicode(o)
-    
+
     ##
     ## Test .get_absolute_url methods
     ##
@@ -148,7 +148,7 @@ class AccessTestCase(TestCase):
                     url = o.get_absolute_url()
                     self.assertTrue(str(o.id) in url,
                         "%s not in %s" % (o.id, url))
-    
+
     ##
     ## Test DNSServer.expand_vars()
     ##
@@ -158,14 +158,14 @@ class AccessTestCase(TestCase):
             "TEST: 10.0.0.1 - ns1.example.com")
         self.assertEqual(self.ns2.expand_vars(s),
             "TEST: 10.0.0.2 - ns2.example.com")
-    
+
     ##
     ## Test DNSServer.generator_class
     ##
     def test_dnsserver_generator_class(self):
         self.assertEqual(self.ns1.generator_class.name, "BINDv9")
         self.assertEqual(self.ns2.generator_class.name, "BINDv9")
-    
+
     ##
     ## Test DNSZoneProfile.authoritative_servers
     ##
@@ -179,7 +179,7 @@ class AccessTestCase(TestCase):
         # Check profile 3
         self.assertTrue(self.ns1 in self.profile3.authoritative_servers)
         self.assertFalse(self.ns2 in self.profile3.authoritative_servers)
-    
+
     ##
     ## Test DNSZone managers
     ##
@@ -192,7 +192,7 @@ class AccessTestCase(TestCase):
         for z in [self.zr41, self.zr42, self.zr61, self.zr62]:
             self.assertTrue(z in rz)
             self.assertFalse(z in fz)
-    
+
     ##
     ## Test DNSZone.type
     ##
@@ -203,7 +203,7 @@ class AccessTestCase(TestCase):
             self.assertEqual(r4z.type, "R4")
         for r6z in [self.zr61, self.zr62]:
             self.assertEqual(r6z.type, "R6")
-    
+
     ##
     ## Test DNSZone.reverse_prefix
     ##
@@ -212,7 +212,7 @@ class AccessTestCase(TestCase):
         self.assertEqual(self.zr42.reverse_prefix, "10.0.1.0/24")
         self.assertEqual(self.zr61.reverse_prefix, "2001:db8::/32")
         self.assertEqual(self.zr62.reverse_prefix, "2001:db9:1000::/36")
-    
+
     ##
     ## DNSZone.next_serial
     ##
@@ -224,7 +224,7 @@ class AccessTestCase(TestCase):
             z.save()
             s = z.next_serial
             self.assertEqual(s % 100, 1)
-    
+
     ##
     ##
     ##
@@ -254,7 +254,7 @@ class AccessTestCase(TestCase):
                 "%s not in %s" % (r, zr41_records))
         zr42_records = self.zr42.records
         zr61_records = self.zr61.records
-    
+
     ##
     ##
     ##
@@ -263,4 +263,4 @@ class AccessTestCase(TestCase):
             rpsl = z.rpsl
             if z.type == "F":
                 self.assertEqual(rpsl, "")
-    
+

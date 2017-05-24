@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## dns.update_domain_expiration task
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# dns.update_domain_expiration task
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 import noc.lib.periodic
@@ -13,7 +13,7 @@ import datetime,re,logging
 class Task(noc.lib.periodic.Task):
     name="dns.update_domain_expiration"
     description=""
-    
+
     def execute(self):
         from noc.dns.models import DNSZone
         from noc.peer.whois import whois

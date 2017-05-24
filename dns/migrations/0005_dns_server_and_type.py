@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
 from django.db import models
 
 class Migration:
-    
+
     def forwards(self):
         # Model 'DNSServer'
         db.create_table('dns_dnsserver', (
@@ -30,10 +30,10 @@ class Migration:
             ('dnszoneprofile', models.ForeignKey(DNSZoneProfile, null=False)),
             ('dnsserver', models.ForeignKey(DNSServer, null=False))
         ))
-        
+
         db.send_create_signal('dns', ['DNSServer'])
-    
+
     def backwards(self):
         db.delete_table("dns_dnszoneprofile_ns_servers")
         db.delete_table('dns_dnsserver')
-        
+

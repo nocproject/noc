@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## DNSZoneProfile model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# DNSZoneProfile model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-## NOC modules
+# NOC modules
 from dnsserver import DNSServer
 from noc.main.models import NotificationGroup
 
@@ -65,9 +65,9 @@ class DNSZoneProfile(models.Model):
         """
         return list(self.masters.all()) + list(self.slaves.all())
 
-##
-## Signal handlers
-##
+#
+# Signal handlers
+#
 @receiver(post_save, sender=DNSZoneProfile)
 def on_save(sender, instance, created, **kwargs):
     for z in instance.dnszone_set.filter(is_auto_generated=True):
