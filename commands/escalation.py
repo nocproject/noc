@@ -21,6 +21,7 @@ from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
+from noc.core.defer import call_later
 
 
 class Command(BaseCommand):
@@ -45,6 +46,13 @@ class Command(BaseCommand):
             "run_alarms",
             nargs=argparse.REMAINDER,
             help="Run alarm escalations"
+        )
+        #
+        close_parser = subparsers.add_parser("close")
+        close_parser.add_argument(
+            "close_alarms",
+            nargs=argparse.REMAINDER,
+            help="Close escalated TT"
         )
 
     def handle(self, cmd, *args, **options):
@@ -77,6 +85,33 @@ class Command(BaseCommand):
             elif alarm:
                 self.print(
                     "ERROR: Alarm %s is cleared. Skipping" % alarm
+                )
+            else:
+                self.print(
+                    "ERROR: Alarm %s is not found. Skipping" % alarm
+                )
+
+    def handle_close(self, close_alarms=None, *args, **kwargs):
+        close_alarms = close_alarms or []
+        for a_id in close_alarms:
+            alarm = get_alarm(a_id)
+            if alarm and alarm.status == "A" and alarm.escalation_tt:
+                self.print(
+                    "Sending TT close for alarm %s to escalator" % alarm.id
+                )
+                call_later(
+                    "noc.services.escalator.escalation.notify_close",
+                    scheduler="escalator",
+                    alarm_id=alarm.id,
+                    tt_id=alarm.escalation_tt,
+                    subject="Closed",
+                    body="Closed",
+                    notification_group_id=None,
+                    close_tt=False
+                )
+            elif alarm:
+                self.print(
+                    "ERROR: Alarm %s is not escalated. Skipping" % alarm
                 )
             else:
                 self.print(
