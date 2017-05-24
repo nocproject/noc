@@ -1,21 +1,21 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SLA Profile models
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# SLA Profile models
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from threading import RLock
 import operator
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField, BooleanField, FloatField, ReferenceField, ListField,
     EmbeddedDocumentField)
 import cachetools
-## NOC modules
+# NOC modules
 from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
 from noc.lib.nosql import ForeignKeyField

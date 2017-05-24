@@ -1,16 +1,16 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SLA Probe
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# SLA Probe
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField,
                                 ListField, EmbeddedDocumentField)
-## NOC modules
+# NOC modules
 from slaprofile import SLAProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField

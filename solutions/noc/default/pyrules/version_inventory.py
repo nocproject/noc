@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## version_inventory reduce task
-##----------------------------------------------------------------------
-## INTERFACE: IReduceTask
-##----------------------------------------------------------------------
-## DESCRIPTION:
-## Check version inventory completion status,
-## update Managed Object's attributes and notify
-## about changes
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# version_inventory reduce task
+# ---------------------------------------------------------------------
+# INTERFACE: IReduceTask
+# ---------------------------------------------------------------------
+# DESCRIPTION:
+# Check version inventory completion status,
+# update Managed Object's attributes and notify
+# about changes
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 
 def version_inventory(task):
     from noc.main.models import SystemNotification
-    
+
     changes = []
     for mt in task.maptask_set.filter(status="C"):
         mo = mt.managed_object
@@ -44,4 +44,3 @@ def version_inventory(task):
     if changes:
         SystemNotification.notify(name="sa.version_inventory",
             subject="Version inventory changes", body="\n".join(changes))
-

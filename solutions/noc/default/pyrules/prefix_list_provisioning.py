@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## INTERFACE: IReduceTask
-##----------------------------------------------------------------------
-## DESCRIPTION:
-## Collect and notify prefix-list provisioning status
-##----------------------------------------------------------------------
-## PrefixListProvisioningReport
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# INTERFACE: IReduceTask
+# ---------------------------------------------------------------------
+# DESCRIPTION:
+# Collect and notify prefix-list provisioning status
+# ---------------------------------------------------------------------
+# PrefixListProvisioningReport
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## NOC modules
+# NOC modules
 from noc.peer.models.prefixlistcache import PrefixListCache
 
 
