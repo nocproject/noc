@@ -2,11 +2,16 @@
 # ---------------------------------------------------------------------
 # Macros Framework
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+import re
+import types
+# NOC modules
 from noc.lib.registry import Registry
-import types,re
+
 #
 # Macro Registry
 #

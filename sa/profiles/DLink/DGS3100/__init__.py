@@ -72,7 +72,7 @@ class Profile(BaseProfile):
         """
         rx_group = re.compile(r"(?P<prefix>[ch\d\:]+)\((?P<range>[\d\-,]+)\)")
         rx_range = re.compile(r"(?P<interface>[\d]+)(?P<comma>[-,])?")
-        list_in  = str
+        list_in = str
         list_out = list_in
         for match in rx_group.finditer(list_in):
             group = match.group()
