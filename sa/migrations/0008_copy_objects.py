@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
-## Django modules
+# Django modules
 from django.db import models
-## Third-party modules
+# Third-party modules
 from south.db import db
 
 
@@ -35,7 +35,7 @@ class Migration:
         #
         ManagedObject = db.mock_model(model_name='ManagedObject', db_table='sa_managedobject', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         db.add_column("cm_config","managed_object",models.ForeignKey(ManagedObject,null=True))
-        
+
         # Move objects
         for id,repo_path,activator_id,profile_name,scheme,address,port,user,password,super_password,remote_path,location_id,trap_source_ip,trap_community\
             in db.execute("SELECT id,repo_path,activator_id,profile_name,scheme,address,port,\"user\",password,super_password,remote_path,location_id,trap_source_ip,trap_community FROM cm_config"):
@@ -50,11 +50,11 @@ class Migration:
         for category_id,location_id,user_id in db.execute("SELECT category_id,location_id,user_id FROM cm_objectaccess"):
             db.execute("INSERT INTO sa_useraccess(user_id,administrative_domain_id,group_id) VALUES(%s,%s,%s)",[user_id,qget(location2domain,location_id),qget(category2group,category_id)])
         db.execute("ALTER TABLE cm_config ALTER managed_object_id SET NOT NULL")
-        
+
         # Migrate ObjectNotify
         ObjectGroup = db.mock_model(model_name='ObjectGroup', db_table='sa_objectgroup', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         AdministrativeDomain = db.mock_model(model_name='AdministrativeDomain', db_table='sa_administrativedomain', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         db.add_column("cm_objectnotify","administrative_domain",models.ForeignKey(AdministrativeDomain,verbose_name="Administrative Domain",blank=True,null=True))
         db.add_column("cm_objectnotify","group",models.ForeignKey(ObjectGroup,verbose_name="Group",blank=True,null=True))
         for id,category_id,location_id in db.execute("SELECT id,category_id,location_id FROM cm_objectnotify"):

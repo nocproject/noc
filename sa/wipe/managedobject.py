@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Wipe managed object
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Wipe managed object
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## NOC modules
+# NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.sa.models.managedobject import ManagedObject, ManagedObjectAttribute
 from noc.inv.models.forwardinginstance import ForwardingInstance
@@ -126,4 +126,3 @@ def wipe(o):
     log.debug("Finally wiping object")
     o.delete()
     log.debug("Done")
-

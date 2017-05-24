@@ -1,17 +1,17 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CustomerPortal Paste CLI tool
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# CustomerPortal Paste CLI tool
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 from optparse import OptionParser
 import sys
-## NOC modules
+# NOC modules
 from noc.support.cp import CPClient
 
 

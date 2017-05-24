@@ -1,11 +1,11 @@
 #!./bin/python
-##----------------------------------------------------------------------
-## Convert DBF to csv
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Convert DBF to csv
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import csv
-## Third-party modules
+# Third-party modules
 import dbf
 
 
@@ -20,4 +20,3 @@ def dbf2csv(dpath, ofile, codepage="cp866"):
 if __name__ == "__main__":
     import sys
     dbf2csv(sys.argv[1], sys.stdout)
-

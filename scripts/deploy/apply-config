@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Generate etc/supervisord.conf
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Generate etc/supervisord.conf
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sys
 import glob
 import ConfigParser
@@ -15,7 +15,7 @@ import cStringIO
 import sys
 import os
 import subprocess
-## Third party modules
+# Third party modules
 import yaml
 
 

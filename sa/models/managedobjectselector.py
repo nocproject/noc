@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ManagedObjectSelector
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ManagedObjectSelector
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from __future__ import absolute_import
 import operator
 from threading import Lock
-## Third-party modules
+# Third-party modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models import Q
 import cachetools
 from psycopg2.extensions import adapt
-## Third-party modules
+# Third-party modules
 import six
-## NOC modules
+# NOC modules
 from .administrativedomain import AdministrativeDomain
 from .managedobjectprofile import ManagedObjectProfile
 from .terminationgroup import TerminationGroup

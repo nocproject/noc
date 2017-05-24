@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from south.db import db
 
 
 class Migration:
-    
+
     def forwards(self):
         if db.execute("SELECT COUNT(*) FROM sa_managedobject WHERE name=%s",["ROOT"])[0][0]==0:
             administrative_domain_id=db.execute("SELECT id FROM sa_administrativedomain ORDER BY id")[0][0]
@@ -18,6 +18,6 @@ class Migration:
                         address,is_configuration_managed)
                         VALUES(%s,%s,%s,%s,%s,%s,%s,%s)""",["ROOT",True,administrative_domain_id,activator_id,"NOC",1,"0.0.0.0",False]
             )
-    
+
     def backwards(self):
         """Write your backwards migration here"""

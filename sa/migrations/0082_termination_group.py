@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.db import models
-## Third-party modules
+# Third-party modules
 from south.db import db
 
 
 class Migration:
-    
+
     def forwards(self):
-        
+
         # Model "TerminationGroup"
         db.create_table("sa_terminationgroup", (
             ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
@@ -59,7 +59,7 @@ class Migration:
                 related_name="selector_service_terminator_set"
             )
         )
-    
+
     def backwards(self):
         db.delete_column("sa_managedobjectselector", "filter_termination_group_id")
         db.delete_column("sa_managedobjectselector", "filter_service_terminator_id")
