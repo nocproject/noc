@@ -1,23 +1,23 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Discovery id
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Discovery id
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 from threading import Lock
-## Third-party modules
+# Third-party modules
 from mongoengine.queryset import DoesNotExist
 import cachetools
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ListField, LongField,
                                 EmbeddedDocumentField)
 from pymongo import ReadPreference
-## NOC modules
+# NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface

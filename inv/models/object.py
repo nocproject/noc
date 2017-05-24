@@ -1,23 +1,23 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ObjectModel model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# ObjectModel model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import operator
 from threading import RLock
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ObjectIdField,
                                 ListField, PointField, ReferenceField)
 from mongoengine import signals
 import cachetools
 import six
-## NOC modules
+# NOC modules
 from connectiontype import ConnectionType
 from objectmodel import ObjectModel
 from modelinterface import ModelInterface
@@ -634,5 +634,5 @@ signals.pre_delete.connect(Object.delete_disconnect, sender=Object)
 signals.post_save.connect(Object.change_container, sender=Object)
 signals.pre_init.connect(Object._pre_init, sender=Object)
 
-## Avoid circular references
+# Avoid circular references
 from objectconnection import ObjectConnection, ObjectConnectionItem

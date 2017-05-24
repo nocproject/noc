@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Migrate segment settings
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Migrate segment settings
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import logging
-## Third-party applications
+# Third-party applications
 from south.db import db
 from bson import ObjectId
-## NOC modules
+# NOC modules
 from noc.lib.nosql import get_db
 
 logger = logging.getLogger(__name__)

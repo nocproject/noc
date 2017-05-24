@@ -1,18 +1,18 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ObjectConnection model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# ObjectConnection model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DictField,
                                 ListField, EmbeddedDocumentField,
                                 LineStringField, ReferenceField)
 import geojson
-## NOC modules
+# NOC modules
 from noc.inv.models.object import Object
 from noc.lib.nosql import PlainReferenceField
 from noc.gis.models.layer import Layer

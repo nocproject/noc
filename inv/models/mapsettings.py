@@ -1,15 +1,15 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Map Settings
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Map Settings
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import logging
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField,
                                 ListField, FloatField,

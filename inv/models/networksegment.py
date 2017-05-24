@@ -1,22 +1,22 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Network Segment
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Network Segment
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 import cachetools
 from threading import RLock
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ReferenceField,
                                 ListField, BooleanField, IntField,
                                 EmbeddedDocumentField)
 from django.db.models.aggregates import Count
-## NOC modules
+# NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem

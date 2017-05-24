@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Inventory module datasources
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Inventory module datasources
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.lib.datasource import DataSource
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface

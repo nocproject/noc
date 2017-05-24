@@ -1,21 +1,21 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Interface Profile models
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Interface Profile models
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField,
                                 ReferenceField, FloatField, ListField,
                                 EmbeddedDocumentField, IntField)
 import cachetools
-## NOC modules
+# NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup

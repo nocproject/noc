@@ -1,21 +1,21 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ModelInterface model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# ModelInterface model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 from threading import RLock
 import operator
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, UUIDField)
 import cachetools
-## NOC modules
+# NOC modules
 from error import ModelDataError
 from noc.lib.utils import deep_copy
 from noc.lib.escape import json_escape as q
