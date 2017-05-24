@@ -11,7 +11,7 @@ http {
 {% if noc_config["services"].get("web", []) %}
 upstream noc-web {
 {% for n in noc_config["services"].get("web", []) %}
-    server {{ n }} weight={{web_weight}} max_conns=1;
+    server {{ n }} weight={{web_weight}};
 {% endfor %}
 }
 {% endif %}
@@ -27,7 +27,7 @@ upstream login {
 {% if noc_config["services"].get("card", []) %}
 upstream card {
 {% for n in noc_config["services"].get("card", []) %}
-    server {{ n }} weight={{card_weight}} max_conns=1;
+    server {{ n }} weight={{card_weight}};
 {% endfor %}
 }
 {% endif %}
