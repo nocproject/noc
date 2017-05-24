@@ -10,6 +10,7 @@
 from __future__ import print_function
 import argparse
 import operator
+import time
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.fm.models.alarmescalation import AlarmEscalation
@@ -33,8 +34,14 @@ class Command(BaseCommand):
             help="Checks alarms escalation"
         )
         #
-        apply_parser = subparsers.add_parser("run")
-        apply_parser.add_argument(
+        run_parser = subparsers.add_parser("run")
+        run_parser.add_argument(
+            "--limit",
+            type=int,
+            default=0,
+            help="Limit escalations (per minute)"
+        )
+        run_parser.add_argument(
             "run_alarms",
             nargs=argparse.REMAINDER,
             help="Run alarm escalations"
@@ -54,12 +61,19 @@ class Command(BaseCommand):
                     "ERROR: Alarm %s is not found. Skipping" % alarm
                 )
 
-    def handle_run(self, run_alarms=None, *args, **kwargs):
+    def handle_run(self, run_alarms=None, limit=0, *args, **kwargs):
         run_alarms = run_alarms or []
+        if limit:
+            delay = 60.0 / limit
         for a_id in run_alarms:
             alarm = get_alarm(a_id)
             if alarm and alarm.status == "A":
+                self.print(
+                    "Sending alarm %s to escalator" % alarm.id
+                )
                 self.run_alarm(alarm)
+                if limit:
+                    time.sleep(delay)
             elif alarm:
                 self.print(
                     "ERROR: Alarm %s is cleared. Skipping" % alarm
