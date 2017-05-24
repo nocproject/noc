@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Calculators framework
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Calculators framework
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 
 # from noc.lib.render import render
@@ -21,9 +21,9 @@ class CalculatorRegistry(Registry):
 calculator_registry = CalculatorRegistry()
 
 
-##
-## Calculator metaclass
-##
+#
+# Calculator metaclass
+#
 class CalculatorBase(type):
     def __new__(cls, name, bases, attrs):
         m = type.__new__(cls, name, bases, attrs)
@@ -31,9 +31,9 @@ class CalculatorBase(type):
         return m
 
 
-##
-##
-##
+#
+#
+#
 class Calculator(object):
     __metaclass__ = CalculatorBase
     name = None
@@ -57,8 +57,8 @@ class Calculator(object):
                                title=self.title, result=result,
                                description=self.description)
 
-    ##
-    ## Returns a list of pairs or None
-    ##
+    #
+    # Returns a list of pairs or None
+    #
     def calculate(**kwargs):
         return None

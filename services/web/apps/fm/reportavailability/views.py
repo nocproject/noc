@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## fm.reportavailability
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# fm.reportavailability
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 from collections import defaultdict, Counter
-## Django modules
+# Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
-## NOC modules
+# NOC modules
 from noc.fm.models.outage import Outage
 from noc.fm.models.reboot import Reboot
 from noc.sa.models.managedobject import ManagedObject

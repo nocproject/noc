@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Latest Change Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Latest Change Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from noc.lib.app.simplereport import SimpleReport,TableColumn
 from noc.cm.models import Object
 from django import forms
 import datetime
 from noc.core.translation import ugettext as _
-##
-## Report Form
-##
+#
+# Report Form
+#
 class ReportForm(forms.Form):
     repo=forms.ChoiceField(label=_("Type"),choices=[("prefix-list","prefix-list")])
     days=forms.IntegerField(label=_("In Days"),min_value=1)
-##
-##
-##
+#
+#
+#
 class ReportreportLatestChanges(SimpleReport):
     title=_("Latest Changes")
     form=ReportForm

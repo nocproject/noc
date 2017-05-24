@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ManagedObject's dynamic dashboard
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ManagedObject's dynamic dashboard
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 import os
-## NOC modules
+# NOC modules
 from noc.lib.text import split_alnum
 from noc.sa.models.managedobject import ManagedObject
 from base import BaseDashboard

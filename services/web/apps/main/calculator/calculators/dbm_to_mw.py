@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## dBm to mW conversion
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# dBm to mW conversion
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from noc.services.web.apps.main.calculator.calculators import Calculator as CalculatorBase
 from django import forms
 from noc.lib.convert import dbm2mw, mw2dbm
@@ -19,7 +19,7 @@ class Calculator(CalculatorBase):
     name = "dbm2mw"
     title = "dBm to mW"
     form_class = CalculatorForm
-        
+
     def calculate(self, value, measure):
         if measure == "dbm":
             r = [("dBm", value), ("mW", dbm2mw(value))]

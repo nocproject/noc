@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-##----------------------------------------------------------------------
-## fm.reporttraffic
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# fm.reporttraffic
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 
-## Python modules
+# Python modules
 import datetime
-## Django modules
+# Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
-## NOC modules
+# NOC modules
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## main.desktop application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# main.desktop application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 import datetime
 import os
-## Django modules
+# Django modules
 from django.http import HttpResponse
 from django.contrib.auth.models import Group
-## NOC modules
+# NOC modules
 from noc.settings import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.app.modelapplication import ModelApplication
@@ -121,9 +121,9 @@ class DesktopApplication(ExtApplication):
             setup=setup
         )
 
-    ##
-    ## Exposed Public API
-    ##
+    #
+    # Exposed Public API
+    #
     @view(method=["GET"], url="^version/$", access=True, api=True)
     def api_version(self, request):
         """

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## User Manager
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# User Manager
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.shortcuts import get_object_or_404
-## NOC modules
+# NOC modules
 from noc.lib.app.modelapplication import ModelApplication, view
 from noc.main.models.permission import Permission
 from widgets import AccessWidget
@@ -46,7 +46,7 @@ class UserChangeForm(forms.ModelForm):
     def save(self, commit=True):
         model = super(UserChangeForm, self).save(commit)
         model.is_staff = True
-        #if not model.id:
+        # if not model.id:
         model.save()
         Permission.set_user_permissions(model, self.new_perms)
         return model
@@ -100,7 +100,7 @@ class UserApplication(ModelApplication):
     def has_delete_permission(self, request, obj=None):
         """Disable 'Delete' button"""
         return False
-    
+
     @view(url=r"^add/legacy/$", url_name="admin:auth_user_add",
         access="add")
     def view_legacy_add(self, request, form_url="", extra_context=None):

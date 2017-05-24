@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Tools
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Tools
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Python Modules
 import csv
@@ -20,9 +20,9 @@ from noc.lib.forms import *
 from noc.settings import config
 from noc.core.translation import ugettext as _
 
-##
-## IP Block tooks
-##
+#
+# IP Block tooks
+#
 class ToolsAppplication(Application):
     title = _("Tools")
     ##

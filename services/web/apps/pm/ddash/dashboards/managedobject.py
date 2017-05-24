@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ManagedObject's dynamic dashboard
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ManagedObject's dynamic dashboard
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 import string
-## NOC modules
+# NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from base import BaseDashboard
 from noc.inv.models.interface import Interface

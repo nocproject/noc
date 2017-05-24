@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## inv.map application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# inv.map application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
 import urllib
 import json
 import datetime
 import threading
-## Third-party modules
+# Third-party modules
 import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import six
-## NOC modules
+# NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.interface import Interface

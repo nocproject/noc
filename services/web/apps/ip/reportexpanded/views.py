@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Expanded Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Expanded Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django Modules
+# Django Modules
 from django.utils.translation import ugettext_lazy as _
 from django import forms
-## NOC Modules
+# NOC Modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.ip.models import VRF, Prefix
 from noc.main.models import CustomField

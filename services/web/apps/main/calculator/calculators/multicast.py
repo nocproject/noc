@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Multicast IP to MAC converter
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Multicast IP to MAC converter
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Django modules
 from django import forms
@@ -17,23 +17,23 @@ class CalculatorForm(forms.Form):
     """Calculator form"""
     ip = forms.CharField(required=False)
     mac = forms.CharField(required=False)
-    
+
     def clean_ip(self):
         v = self.cleaned_data["ip"]
         if v:
             return IPv4Parameter().form_clean(v)
-    
+
     def clean_mac(self):
         v = self.cleaned_data["mac"]
         if v:
             return MACAddressParameter().form_clean(v)
-    
+
 
 class Calculator(CalculatorBase):
     name = "multicast"
     title = "Multicast IP to MAC"
     form_class = CalculatorForm
-        
+
     def calculate(self, ip=None, mac=None):
         def mac_ips(mac):
             def g(mac):
@@ -47,7 +47,7 @@ class Calculator(CalculatorBase):
                 else:
                     r += [("MAC IPs", m)]
             return r
-        
+
         r = []
         if ip:
             p = [int(x) for x in ip.split(".")]

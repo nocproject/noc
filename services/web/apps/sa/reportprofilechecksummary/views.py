@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-##----------------------------------------------------------------------
-## sa.reportprofilechecksummary
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# sa.reportprofilechecksummary
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 
 from noc.lib.app.simplereport import SimpleReport, SectionRow, PredefinedReport

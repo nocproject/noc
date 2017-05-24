@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-##----------------------------------------------------------------------
-## ip.reportfilter
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ip.reportfilter
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 
 from django import forms
-## NOC modules
+# NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.managedobject import ManagedObject

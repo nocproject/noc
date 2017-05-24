@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Missed Reverse Zones Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Missed Reverse Zones Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC Modules
+# NOC Modules
 from noc.lib.app.simplereport import SimpleReport,TableColumn
 from noc.ip.models import VRF
 from noc.core.translation import ugettext as _
-##
-##
-##
+#
+#
+#
 class Reportreportmissedreverse(SimpleReport):
     title = _("Missed Reverse Zones")
     def get_data(self,**kwargs):

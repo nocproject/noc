@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-##----------------------------------------------------------------------
-## inv.reportdiscovery
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# inv.reportdiscovery
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
-## Python modules
+# Python modules
 import operator
 import re
 from collections import defaultdict
 from django import forms
-## NOC modules
+# NOC modules
 from noc.core.cache.base import cache
 from noc.lib.app.simplereport import SimpleReport
 from noc.lib.nosql import get_db

@@ -1,19 +1,19 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Web service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Web service
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import tornado.web
 import tornado.httpserver
 import tornado.gen
 import tornado.wsgi
 import django.core.handlers.wsgi
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.main.models.customfield import CustomField
 from noc.core.perf import metrics

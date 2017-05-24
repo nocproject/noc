@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## DB Summary Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# DB Summary Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from noc.lib.app.simplereport import SimpleReport,TableColumn
 from noc.core.translation import ugettext as _
-##
-##
-##
+#
+#
+#
 class ReportreportDBSummary(SimpleReport):
     title = _("Database Summary")
     def get_data(self,**kwargs):

@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## fm.reportobjectdetail application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# fm.reportobjectdetail application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import csv
 import tempfile
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from django.db import connection
 from django.http import HttpResponse
 from pymongo import ReadPreference
 import xlsxwriter
 import itertools
 import bson
-## NOC modules
+# NOC modules
 from noc.lib.nosql import get_db
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.main.models.pool import Pool
