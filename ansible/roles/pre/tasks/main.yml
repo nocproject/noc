@@ -23,6 +23,9 @@
 - name: resolv consul_env
   set_fact:
     consul_env: "{{consul_env}}"
+  tags:
+    - config
+    - always
 
 - name: "Load variables from consul"
   include_vars: "consul.yml"
@@ -43,6 +46,9 @@
 - name: resolv web_ui_language
   set_fact:
     web_ui_language: "{{web_ui_language}}"
+  tags:
+    - config
+    - always
 
 - name: set proxy
   set_fact:
@@ -57,6 +63,9 @@
     postgres_master: "{{keepalived_patroni_virtual_ip}}"
     postgres_listen: "{{haproxy_patroni_listen}}"
   when: groups['svc-haproxy'] | count > 1
+  tags:
+    - config
+    - always
 
 
 - name: Display all variables/facts known for a host
@@ -126,7 +135,8 @@
   tags:
     - config
 
-- debug:
+- name: mention hosts file location
+  debug:
     msg: "Please setup cluster wide /etc/hosts via {{tower_path}}/var/tower/data/{{noc_env}}/hosts on Tower server"
   run_once: true
 
