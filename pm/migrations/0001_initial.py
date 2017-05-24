@@ -41,7 +41,7 @@ class Migration:
         ))
         #
         db.execute(SP_CREATE)
-    
+
     def backwards(self):
         db.execute(SP_DROP)
         # Deleting ManyToMany field
@@ -70,7 +70,7 @@ BEGIN
         INTO ts_id
         FROM pm_timeseries
         WHERE name=p_ts_name;
-    
+
         IF FOUND THEN
             EXIT;
         ELSE
@@ -78,7 +78,7 @@ BEGIN
             VALUES(p_ts_name);
         END IF;
     END LOOP;
-    
+
     INSERT INTO pm_timeseriesdata(time_series_id,timestamp,value)
     VALUES(ts_id,p_timestamp,p_value);
 END;

@@ -6,9 +6,9 @@ from noc.peer.models import *
 from noc.core.model.fields import *
 
 class Migration:
-    
+
     def forwards(self):
-        
+
         # Adding model 'PrefixListCache'
         PeeringPoint=db.mock_model(model_name="PeeringPoint",db_table="peer_peeringpoint")
         db.create_table('peer_prefixlistcache', (
@@ -21,9 +21,8 @@ class Migration:
             ('pushed', models.DateTimeField("Pushed", null=True, blank=True)),
         ))
         db.send_create_signal('peer', ['PrefixListCache'])
-        
-    
-    
+
+
     def backwards(self):
         # Deleting model 'PrefixListCache'
         db.delete_table('peer_prefixlistcache')
