@@ -53,7 +53,8 @@
   hosts: all
   become: yes
   any_errors_fatal: false
-  serial: 30%
+  serial: 50%
+  strategy: free
   gather_facts: True
   vars_files:
     - "vars/main.yml"
