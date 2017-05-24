@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.TIMOS.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Alcatel.TIMOS.get_lldp_neighbors
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 __author__ = 'shirokih'
-"""
-"""
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
@@ -24,7 +22,7 @@ class Script(BaseScript):
         if caps.lower() == '(not specified)':
             return fixedcaps
         for c in caps.split():
-            if c.lower() == '(not': 
+            if c.lower() == '(not':
                 continue
             fixedcaps |= {
                 "other": 1, "repeater": 2, "bridge": 4,
@@ -35,7 +33,7 @@ class Script(BaseScript):
         return fixedcaps
 
     def fixport(self, port, port_type):
-        #fix alcatel encode port like hex string
+        # fix alcatel encode port like hex string
         remote_port = "u"
         if port_type == '5' and "\n " in port:
             remote_port = port.replace("\n                        ", "")

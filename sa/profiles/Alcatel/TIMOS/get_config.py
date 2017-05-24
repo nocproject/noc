@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.TIMOS.get_config
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
-## NOC modules
+# ----------------------------------------------------------------------
+# Alcatel.TIMOS.get_config
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
 
@@ -40,4 +39,3 @@ class Script(BaseScript):
         configs.append(conf)
 
         return configs
-

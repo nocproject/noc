@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.AOS.get_inventory
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Alcatel.AOS.get_inventory
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
@@ -26,7 +26,7 @@ class Script(BaseScript):
                                                     
     def execute(self):
         objects = []
-        #Chassis info
+        # Chassis info
         p = self.scripts.get_version()
         objects += [{
             "type": "CHASSIS",
@@ -38,7 +38,7 @@ class Script(BaseScript):
             "revision": p["attributes"].get("HW version"),
             "builtin": False
         }]
-        #Transiver Detected
+        # Transiver Detected
         iface = self.cli("show ni")
         for match in self.rx_ni.finditer(iface):
             number = match.group("int_number")
