@@ -10,6 +10,7 @@
 """
 from noc.core.profile.base import BaseProfile
 
+
 class Profile(BaseProfile):
     name = "Cisco.1900"
 

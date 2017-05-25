@@ -8,6 +8,7 @@
 # ---------------------------------------------------------------------
 from noc.core.profile.base import BaseProfile
 
+
 class Profile(BaseProfile):
     name = "Telindus.SHDSL"
     username_submit = "\r"

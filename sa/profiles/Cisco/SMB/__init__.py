@@ -42,6 +42,7 @@ class Profile(BaseProfile):
         script.cli("terminal no datadump")
         script.cli("terminal prompt")
 
+
 def SGSeries(v):
     """
     SGxxx series selector

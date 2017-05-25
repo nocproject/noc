@@ -34,6 +34,7 @@ from notificationgroup import (
     NotificationGroup, NotificationGroupUser, NotificationGroupOther,
     )
 
+
 class SystemNotification(models.Model):
     """
     System Notifications
@@ -68,7 +69,6 @@ class SystemNotification(models.Model):
 from userprofile import UserProfile, UserProfileManager
 from userprofilecontact import UserProfileContact
 from dbtrigger import DBTrigger, model_choices
-
 
 
 class Schedule(models.Model):

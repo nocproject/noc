@@ -64,7 +64,6 @@ class Profile(BaseProfile):
     def root_interface(self, name):
         return name
 
-
     def open_brackets(self, str):
         """
         Open brackets in expression
@@ -88,6 +87,7 @@ class Profile(BaseProfile):
                     convert_group += comma
             list_out = list_out.replace(group, convert_group)
         return list_out
+
 
 # DGS-3100-series
 def DGS3100(v):

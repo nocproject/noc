@@ -10,9 +10,10 @@
 """
 from noc.core.profile.base import BaseProfile
 
+
 class Profile(BaseProfile):
-    name="Juniper.ScreenOS"
-    pattern_prompt=r"^\s*\S*-> "
-    pattern_more=r"^--- more ---"
-    command_more=" "
+    name = "Juniper.ScreenOS"
+    pattern_prompt = r"^\s*\S*-> "
+    pattern_more = r"^--- more ---"
+    command_more = " "
     # command_disable_pager="set console page 0"

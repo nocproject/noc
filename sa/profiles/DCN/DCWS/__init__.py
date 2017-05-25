@@ -12,6 +12,7 @@
 from noc.core.profile.base import BaseProfile
 import re
 
+
 class Profile(BaseProfile):
     name = "DCN.DCWS"
     pattern_more = [

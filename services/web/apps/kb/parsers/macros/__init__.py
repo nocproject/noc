@@ -16,20 +16,22 @@ from noc.lib.registry import Registry
 # Macro Registry
 #
 class MacroRegistry(Registry):
-    name="MacroRegistry"
-    subdir="parsers/macros"
-    classname="Macro"
-    apps=["noc.kb"]
-    exclude_daemons=["noc-sae", "debug-script",
+    name= " MacroRegistry"
+    subdir = "parsers/macros"
+    classname = "Macro"
+    apps = ["noc.kb"]
+    exclude_daemons = ["noc-sae", "debug-script",
                      "noc-correlator", "noc-classifier"]
 macro_registry=MacroRegistry()
 
 #
 # Metaclass for Macroses
 #
+
+
 class MacroBase(type):
     def __new__(cls,name,bases,attrs):
-        m=type.__new__(cls,name,bases,attrs)
+        m = type.__new__(cls,name,bases,attrs)
         macro_registry.register(m.name,m)
         return m
 #
@@ -39,20 +41,24 @@ rx_args=re.compile(r"\s*(?P<attr>\S+)\s*=\s*(?P<quote>['\"])(?P<value>.*?)(?P=qu
 #
 # Macro Base
 #
+
+
 class Macro(object):
-    __metaclass__=MacroBase
-    name=None
+    __metaclass__ = MacroBase
+    name = None
     #
     # Converts a string of html-like attributes to hash
     #
+
     @classmethod
     def parse_args(cls,args):
-        if type(args)==types.DictType:
+        if type(args) == types.DictType:
             return args
         return dict([(m[0],m[2]) for m in rx_args.findall(args)])
     #
     # Decodes args and calls handle method
     #
+
     @classmethod
     def expand(cls,args,text):
         return cls.handle(cls.parse_args(args),text)
@@ -61,6 +67,7 @@ class Macro(object):
     # Accepts a hash of args and text and returns formatted HTML
     # to be included in output
     #
+
     @classmethod
     def handle(cls,args,text):
         raise NotImplementedError

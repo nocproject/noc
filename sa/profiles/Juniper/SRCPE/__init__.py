@@ -10,9 +10,10 @@
 """
 from noc.core.profile.base import BaseProfile
 
+
 class Profile(BaseProfile):
-    name="Juniper.SRCPE"
-    pattern_prompt="^\S*>"
-    pattern_more=r"^ -- MORE -- "
-    command_more=" "
-    rogue_chars=[]
+    name = "Juniper.SRCPE"
+    pattern_prompt = "^\S*>"
+    pattern_more = r"^ -- MORE -- "
+    command_more = " "
+    rogue_chars = []
