@@ -17,9 +17,9 @@ class AccessTestCase(TestCase):
                  ("h3.example.com", "10.0.1.3"),
                  ("h4.example.com", "2001:db8::1"),
                  ("h5.example.com", "2001:db8::2")]
-    ##
-    ## Create default data set
-    ##
+    #
+    # Create default data set
+    #
     def setUp(self):
         # NS1
         self.ns1 = DNSServer(name="ns1.example.com", ip="10.0.0.1")
@@ -92,9 +92,9 @@ class AccessTestCase(TestCase):
         for h, a in self.ADDRESSES:
             Address(vrf=vrf, address=a, fqdn=h).save()
 
-    ##
-    ## Cleanup
-    ##
+    #
+    # Cleanup
+    #
     def tearDown(self):
         self.z11.delete()
         del self.z11
@@ -130,17 +130,17 @@ class AccessTestCase(TestCase):
             vrf.afi_ipv6 = False
             vrf.save()
 
-    ##
-    ## Test __unicode__ methods
-    ##
+    #
+    # Test __unicode__ methods
+    #
     def test_unicode(self):
         for c in [DNSServer, DNSZoneProfile, DNSZone, DNSZoneRecord]:
             for o in c.objects.all():
                 unicode(o)
 
-    ##
-    ## Test .get_absolute_url methods
-    ##
+    #
+    # Test .get_absolute_url methods
+    #
     def test_absolute_url(self):
         for c in [DNSServer, DNSZoneProfile, DNSZone]:
             if hasattr(c, "get_absolute_url"):
@@ -149,9 +149,9 @@ class AccessTestCase(TestCase):
                     self.assertTrue(str(o.id) in url,
                         "%s not in %s" % (o.id, url))
 
-    ##
-    ## Test DNSServer.expand_vars()
-    ##
+    #
+    # Test DNSServer.expand_vars()
+    #
     def test_dnsserver_expand_vars(self):
         s = "TEST: %(ip)s - %(ns)s"
         self.assertEqual(self.ns1.expand_vars(s),
@@ -159,16 +159,16 @@ class AccessTestCase(TestCase):
         self.assertEqual(self.ns2.expand_vars(s),
             "TEST: 10.0.0.2 - ns2.example.com")
 
-    ##
-    ## Test DNSServer.generator_class
-    ##
+    #
+    # Test DNSServer.generator_class
+    #
     def test_dnsserver_generator_class(self):
         self.assertEqual(self.ns1.generator_class.name, "BINDv9")
         self.assertEqual(self.ns2.generator_class.name, "BINDv9")
 
-    ##
-    ## Test DNSZoneProfile.authoritative_servers
-    ##
+    #
+    # Test DNSZoneProfile.authoritative_servers
+    #
     def test_profile_authoritative_servers(self):
         # Check profile 1
         self.assertTrue(self.ns1 in self.profile1.authoritative_servers)
@@ -180,9 +180,9 @@ class AccessTestCase(TestCase):
         self.assertTrue(self.ns1 in self.profile3.authoritative_servers)
         self.assertFalse(self.ns2 in self.profile3.authoritative_servers)
 
-    ##
-    ## Test DNSZone managers
-    ##
+    #
+    # Test DNSZone managers
+    #
     def test_zone_managers(self):
         fz = list(DNSZone.forward_zones.all())
         rz = list(DNSZone.reverse_zones.all())
@@ -193,9 +193,9 @@ class AccessTestCase(TestCase):
             self.assertTrue(z in rz)
             self.assertFalse(z in fz)
 
-    ##
-    ## Test DNSZone.type
-    ##
+    #
+    # Test DNSZone.type
+    #
     def test_zone_type(self):
         for fz in [self.z11, self.z12, self.z21, self.z31]:
             self.assertEqual(fz.type, "F")
@@ -204,18 +204,18 @@ class AccessTestCase(TestCase):
         for r6z in [self.zr61, self.zr62]:
             self.assertEqual(r6z.type, "R6")
 
-    ##
-    ## Test DNSZone.reverse_prefix
-    ##
+    #
+    # Test DNSZone.reverse_prefix
+    #
     def test_zone_reverse_prefix(self):
         self.assertEqual(self.zr41.reverse_prefix, "10.0.0.0/24")
         self.assertEqual(self.zr42.reverse_prefix, "10.0.1.0/24")
         self.assertEqual(self.zr61.reverse_prefix, "2001:db8::/32")
         self.assertEqual(self.zr62.reverse_prefix, "2001:db9:1000::/36")
 
-    ##
-    ## DNSZone.next_serial
-    ##
+    #
+    # DNSZone.next_serial
+    #
     def test_zone_next_serial(self):
         for z in DNSZone.objects.all():
             s = z.next_serial
@@ -225,9 +225,9 @@ class AccessTestCase(TestCase):
             s = z.next_serial
             self.assertEqual(s % 100, 1)
 
-    ##
-    ##
-    ##
+    #
+    #
+    #
     def test_zone_records(self):
         z11_records = self.z11.records
         for r in [("ns1", "A", "10.0.0.1"),
@@ -255,12 +255,11 @@ class AccessTestCase(TestCase):
         zr42_records = self.zr42.records
         zr61_records = self.zr61.records
 
-    ##
-    ##
-    ##
+    #
+    #
+    #
     def test_zone_rpsl(self):
         for z in DNSZone.objects.all():
             rpsl = z.rpsl
             if z.type == "F":
                 self.assertEqual(rpsl, "")
-

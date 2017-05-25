@@ -40,7 +40,7 @@ class RefBook(object):
     def sync(cls):
         """
         Syncronization
-        :return: 
+        :return:
         """
         try:
             rb = RB.objects.get(name=cls.name)

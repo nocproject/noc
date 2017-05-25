@@ -22,9 +22,9 @@ def setup_processor(request):
     Adds "setup" variable to context.
     "setup" is a hash of
         "installation_name"
-    
-    :param request: 
-    :return: 
+
+    :param request:
+    :return:
     """
     favicon_url = config.get("customization", "favicon_url")
     if favicon_url.endswith(".png"):

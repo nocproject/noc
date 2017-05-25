@@ -35,10 +35,10 @@ class Downloader(object):
     __metaclass__ = DownloaderBase
     # Profile name
     name = None
-    ##
-    ## Abstract metrod returning a list of records
-    ## Each record is a hash with field name -> value mapping
-    ##
+    #
+    # Abstract metrod returning a list of records
+    # Each record is a hash with field name -> value mapping
+    #
     @classmethod
     def download(cls, ref_book):
         return []
