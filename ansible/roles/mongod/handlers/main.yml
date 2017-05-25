@@ -17,11 +17,13 @@
     state: restarted
 
 - name: reload systemd
+  become: yes
   systemd:
     name: "{{ mongod_system_service }}"
     daemon_reload: yes
 
 - name: reload consul
+  become: yes
   service:
     name: consul
     state: reloaded

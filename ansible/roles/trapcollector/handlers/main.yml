@@ -1,5 +1,6 @@
 ---
 - name: reload telegraf
+  become: yes
   service:
     name: telegraf
     state: restarted

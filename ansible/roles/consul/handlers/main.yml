@@ -2,16 +2,19 @@
 # File: main.yml - Handlers for Consul
 
 - name: restart consul
+  become: yes
   service:
     name: consul
     state: restarted
 
 - name: reload consul
+  become: yes
   service:
     name: consul
     state: reloaded
 
 - name: start consul
+  become: yes
   service:
     name: consul
     enabled: yes
@@ -24,6 +27,7 @@
     state: restarted
 
 - name: reload systemd
+  become: yes
   systemd:
     name: consul
     daemon_reload: yes
