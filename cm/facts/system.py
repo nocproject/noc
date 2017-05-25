@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Common system settings
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Common system settings
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from base import BaseFact
 
 
@@ -38,11 +38,11 @@ class System(BaseFact):
     @property
     def hostname(self):
         return self._hostname
-    
+
     @hostname.setter
     def hostname(self, value):
         self._hostname = value or None
-        
+
     @property
     def domain_name(self):
         return self._domain_name
@@ -54,7 +54,7 @@ class System(BaseFact):
     @property
     def profile(self):
         return self._profile
-    
+
     @profile.setter
     def profile(self, value):
         self._profile = value or None
@@ -62,7 +62,7 @@ class System(BaseFact):
     @property
     def vendor(self):
         return self._vendor
-    
+
     @vendor.setter
     def vendor(self, value):
         self._vendor = value or None
@@ -70,7 +70,7 @@ class System(BaseFact):
     @property
     def platform(self):
         return self._platform
-    
+
     @platform.setter
     def platform(self, value):
         self._platform = value or None
@@ -78,7 +78,7 @@ class System(BaseFact):
     @property
     def version(self):
         return self._version
-    
+
     @version.setter
     def version(self, value):
         self._version = value or None
@@ -86,7 +86,7 @@ class System(BaseFact):
     @property
     def timezone(self):
         return self._timezone
-    
+
     @timezone.setter
     def timezone(self, value):
         self._timezone = value or None

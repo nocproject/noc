@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Validation engine
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Validation engine
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 from collections import defaultdict
 import datetime
 import uuid
 import re
 import threading
-## Third-party modules
+# Third-party modules
 import clips
 from pymongo.errors import BulkWriteError
-## NOC modules
+# NOC modules
 from noc.cm.facts.error import Error
 from noc.cm.facts.role import Role
 from noc.core.log import PrefixLoggerAdapter

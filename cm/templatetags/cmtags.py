@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Template tags
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Template tags
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from django.template.defaulttags import URLNode,register
-##
-## Act as django's standard {%url%} node.
-## Add <module>:<app>: to view name when missed
-##
+#
+# Act as django's standard {%url%} node.
+# Add <module>:<app>: to view name when missed
+#
 class CMURLNode(URLNode):
     def render(self,context):
         if ":" not in self.view_name:

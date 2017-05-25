@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## StaticRoute fact
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# StaticRoute fact
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from base import BaseFact
 
 
@@ -38,7 +38,7 @@ class StaticRoute(BaseFact):
     @property
     def prefix(self):
         return self._prefix
-    
+
     @prefix.setter
     def prefix(self, value):
         self._prefix = value or None
@@ -50,7 +50,7 @@ class StaticRoute(BaseFact):
     @property
     def afi(self):
         return self._afi
-    
+
     @afi.setter
     def afi(self, value):
         if value is None and self.prefix:
@@ -60,7 +60,7 @@ class StaticRoute(BaseFact):
     @property
     def vrf(self):
         return self._vrf
-    
+
     @vrf.setter
     def vrf(self, value):
         self._vrf = value or None
@@ -68,7 +68,7 @@ class StaticRoute(BaseFact):
     @property
     def interface(self):
         return self._interface
-    
+
     @interface.setter
     def interface(self, value):
         self._interface = value or None
@@ -76,7 +76,7 @@ class StaticRoute(BaseFact):
     @property
     def next_hop(self):
         return self._next_hop
-    
+
     @next_hop.setter
     def next_hop(self, value):
         self._next_hop = value or None
@@ -84,7 +84,7 @@ class StaticRoute(BaseFact):
     @property
     def description(self):
         return self._description
-    
+
     @description.setter
     def description(self, value):
         self._description = value or None
@@ -92,7 +92,7 @@ class StaticRoute(BaseFact):
     @property
     def tag(self):
         return self._tag
-    
+
     @tag.setter
     def tag(self, value):
         self._tag = int(value) if value is not None else None
@@ -100,7 +100,7 @@ class StaticRoute(BaseFact):
     @property
     def distance(self):
         return self._distance
-    
+
     @distance.setter
     def distance(self, value):
         self._distance = int(value) if value is not None else None
@@ -108,7 +108,7 @@ class StaticRoute(BaseFact):
     @property
     def discard(self):
         return self._discard
-    
+
     @discard.setter
     def discard(self, value):
         self._discard = bool(value) if value is not None else None

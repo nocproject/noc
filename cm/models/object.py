@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Configuration Management Object
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Configuration Management Object
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import datetime
-## Django modules
+# Django modules
 from django.db import models
 from django.db.models import Q
-## NOC modules
+# NOC modules
 from noc.settings import config
 from noc.lib.fileutils import rewrite_when_differ, read_file, is_differ, in_dir
 from noc.cm.vcs import vcs_registry
@@ -245,6 +245,6 @@ class Object(models.Model):
         return False
 
 
-## Avoid circular references
+# Avoid circular references
 from prefixlist import PrefixList
 from rpsl import RPSL
