@@ -28,7 +28,7 @@ class Profile(BaseProfile):
     pattern_syntax_error = r"Invalid parameter|Incorrect command"
     command_more = " "
     config_volatile = ["^%.*?$"]
-    command_disable_pager="length 0"
+    command_disable_pager = "length 0"
     command_super = "enable"
     command_enter_config = "configure terminal"
     command_leave_config = "exit"

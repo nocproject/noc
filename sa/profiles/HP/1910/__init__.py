@@ -11,6 +11,7 @@
 from noc.core.profile.base import BaseProfile
 # from noc.sa.models import ManagedObject
 
+
 class Profile(BaseProfile):
     name = "HP.1910"
     pattern_password = r"^(Password:|Please input password:)"
@@ -18,7 +19,7 @@ class Profile(BaseProfile):
         (r"^\s+---- More ----$", " "),
         (r"The current configuration will be written to the device. Are you sure? [Y/N]:", "Y"),
         (r"(To leave the existing filename unchanged, press the enter key):", "\n"),
-        (r"flash:/startup.cfg exists, overwrite? [Y/N]:", "Y"),
+        (r"flash:/startup.cfg exists, overwrite? [Y/N]:", "Y")
         ]
     pattern_prompt = r"^[<\[]\S+[>\]]"
     pattern_syntax_error = r"^\s+% (Unrecognized|Incomplete) command found at '\^' position.$"

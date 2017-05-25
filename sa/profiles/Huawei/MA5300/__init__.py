@@ -12,6 +12,7 @@ import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
+
 class Profile(BaseProfile):
     name = "Huawei.MA5300"
     pattern_more = [

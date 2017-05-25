@@ -8,15 +8,15 @@
 from unittest import TestCase
 from noc.dns.models import *
 from noc.ip.models import VRF, Address
-#
-#
-#
+
+
 class AccessTestCase(TestCase):
     ADDRESSES = [("h1.example.com", "10.0.0.3"),
                  ("h2.example.com", "10.0.0.4"),
                  ("h3.example.com", "10.0.1.3"),
                  ("h4.example.com", "2001:db8::1"),
                  ("h5.example.com", "2001:db8::2")]
+
     #
     # Create default data set
     #

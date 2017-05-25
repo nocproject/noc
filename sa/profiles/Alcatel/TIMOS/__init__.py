@@ -19,13 +19,10 @@ class Profile(BaseProfile):
     pattern_more = r"^Press any key to continue.*$"
     pattern_syntax_error = r"Error: Bad command\.|Error: Invalid parameter\."
     command_disable_pager = "environment no more"
-    command_exit="logout"
+    command_exit = "logout"
     config_volatile = [r"^# Finished.*$", r"^# Generated.*$"]
     command_more = " "
-    rogue_chars = [
-        re.compile(r"\r\s+\r"),
-        "\r"
-    ]
+    rogue_chars = [re.compile(r"\r\s+\r"), "\r"]
 
     def convert_interface_name(self, s):
         if "," in s:

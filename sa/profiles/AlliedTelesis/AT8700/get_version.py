@@ -37,5 +37,5 @@ class Script(BaseScript):
         return {
             "vendor": "Allied Telesis",
             "platform": platform,
-            "version": version,
+            "version": version
         }

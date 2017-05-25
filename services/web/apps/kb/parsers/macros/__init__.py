@@ -16,13 +16,13 @@ from noc.lib.registry import Registry
 # Macro Registry
 #
 class MacroRegistry(Registry):
-    name= " MacroRegistry"
+    name = " MacroRegistry"
     subdir = "parsers/macros"
     classname = "Macro"
     apps = ["noc.kb"]
     exclude_daemons = ["noc-sae", "debug-script",
                      "noc-correlator", "noc-classifier"]
-macro_registry=MacroRegistry()
+macro_registry = MacroRegistry()
 
 #
 # Metaclass for Macroses
@@ -37,7 +37,7 @@ class MacroBase(type):
 #
 # Args regular expression
 #
-rx_args=re.compile(r"\s*(?P<attr>\S+)\s*=\s*(?P<quote>['\"])(?P<value>.*?)(?P=quote)")
+rx_args = re.compile(r"\s*(?P<attr>\S+)\s*=\s*(?P<quote>['\"])(?P<value>.*?)(?P=quote)")
 #
 # Macro Base
 #

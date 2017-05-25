@@ -17,12 +17,11 @@ import re
 class Profile(BaseProfile):
     name = "Nateks.FlexGainACE24"
     pattern_more = [
-       (r"^Login Successful------", "\n\r"),
+       (r"^Login Successful------", "\n\r")
     ]
     pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command."
     pattern_username = "[Ll]ogin:"
     pattern_password = "[Pp]assword:"
-     
 
     pattern_prompt = r"(^\$\s+|^>\s)"
 #    pattern_unpriveleged_prompt = r"$\s"

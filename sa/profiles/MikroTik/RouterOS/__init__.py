@@ -48,7 +48,6 @@ class Profile(BaseProfile):
         # MikroTik Remove duplicates prompt
         script.cli("\n")
 
-
     def cli_detail(self, script, cmd, cached=False):
         """
         Parse RouterOS .... print detail output
@@ -67,7 +66,6 @@ class Profile(BaseProfile):
 
     def parse_detail(self, s):
         """
-
         :param s:
         :return:
         """
