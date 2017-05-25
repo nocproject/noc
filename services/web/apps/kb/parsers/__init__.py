@@ -74,12 +74,16 @@ class Parser(object):
             if text == link:
                 text = link[7:]
             link = link[7:]
-            return u"<a href='/kb/view/%d/attachment/%s/'>%s</a>" % (kb_entry.id, link, text)
+            return u"<a href='/kb/view/%d/attachment/%s/'>%s</a>" % (
+                kb_entry.id, link, text
+            )
         elif link.startswith("attachment:"):
             if text == link:
                 text = link[11:]
             link = link[11:]
-            return u"<a href='/kb/%d/attachment/%s/'>%s</a>" % (kb_entry.id, link, text)
+            return u"<a href='/kb/%d/attachment/%s/'>%s</a>" % (
+                kb_entry.id, link, text
+            )
         else:
             try:
                 le = kb_entry.__class__.objects.get(subject=link)
