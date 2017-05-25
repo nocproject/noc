@@ -131,8 +131,8 @@ class BIAPI(API):
         :return:
         """
         user = self.handler.current_user
-        # @todo: Filter by groups
-        aq = Q(owner=user.id) | Q(access__user=user.id)
+        groups = user.groups.values_list("id", flat=True)
+        aq = Q(owner=user.id) | Q(access__user=user.id) | Q(access__group__in=groups)
         return [{
                     "id": str(d.id),
                     "title": str(d.title),
