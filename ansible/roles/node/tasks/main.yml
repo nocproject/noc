@@ -17,7 +17,7 @@
     comment: "NOC user"
     state: present
 
-- name: Include hg instal method
+- name: Include {{install_method}} install method
   include: "{{install_method}}.yml"
 
 - name: Initialize virtualenv
