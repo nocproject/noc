@@ -9,7 +9,7 @@
 # Python modules
 from __future__ import absolute_import
 import operator
-from threading import RLock
+from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField, IntField,
@@ -21,7 +21,7 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.core.model.decorator import on_save
 from noc.core.defer import call_later
 
-id_lock = RLock()
+id_lock = Lock()
 
 
 @on_save

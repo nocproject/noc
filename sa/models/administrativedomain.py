@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import RLock
+from threading import Lock
 import operator
 # Third-party modules
 from django.utils.translation import ugettext_lazy as _
@@ -20,7 +20,7 @@ from noc.core.model.fields import TagsField, DocumentReferenceField
 from noc.core.model.decorator import on_delete_check
 
 
-id_lock = RLock()
+id_lock = Lock()
 
 
 @on_delete_check(check=[

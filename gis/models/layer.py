@@ -2,13 +2,13 @@
 # ---------------------------------------------------------------------
 # Map Layer
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
-from threading import RLock
+from threading import Lock
 import operator
 # Third-party modules
 from mongoengine.document import Document
@@ -19,7 +19,7 @@ import cachetools
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
 
-id_lock = RLock()
+id_lock = Lock()
 
 
 class Layer(Document):

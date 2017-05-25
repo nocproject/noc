@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # NotificationGroup model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 import datetime
 import logging
 import operator
-from threading import RLock
+from threading import Lock
 # Django modules
 from django.db import models
 from django.contrib.auth.models import User
@@ -22,7 +22,7 @@ from timepattern import TimePattern
 from noc.core.service.pub import pub
 from noc.core.model.decorator import on_delete_check
 
-id_lock = RLock()
+id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 

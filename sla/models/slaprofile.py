@@ -2,12 +2,12 @@
 # ---------------------------------------------------------------------
 # SLA Profile models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from threading import RLock
+from threading import Lock
 import operator
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -20,7 +20,7 @@ from noc.main.models.style import Style
 from noc.pm.models.metrictype import MetricType
 from noc.lib.nosql import ForeignKeyField
 
-id_lock = RLock()
+id_lock = Lock()
 
 
 class SLAProfileMetrics(EmbeddedDocument):

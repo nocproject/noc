@@ -2,14 +2,14 @@
 # ---------------------------------------------------------------------
 # Capability model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import os
 import operator
-from threading import RLock
+from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, UUIDField, ObjectIdField)
@@ -19,7 +19,7 @@ from noc.main.models.doccategory import category
 from noc.lib.prettyjson import to_json
 from noc.lib.text import quote_safe_path
 
-id_lock = RLock()
+id_lock = Lock()
 
 
 @category
