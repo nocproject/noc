@@ -19,8 +19,4 @@
   template:
      src: etc/systemd/nsqd.service
      dest: /etc/systemd/system/nsqd.service
-  register: nsqd_service
-
-- name: reload systemd
-  shell: systemctl daemon-reload
-  when: nsqd_service.changed
+  notify: reload systemd

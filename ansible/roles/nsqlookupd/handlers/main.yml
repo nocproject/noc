@@ -16,3 +16,8 @@
   service:
     name: consul
     state: reloaded
+
+- name: reload systemd
+  systemd:
+    name: nsqlookupd
+    daemon_reload: yes
