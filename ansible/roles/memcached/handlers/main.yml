@@ -3,7 +3,7 @@
   become: yes
   service:
     name: telegraf
-    state: restarted
+    state: reloaded
 
 - name: reload memcached
   become: yes
