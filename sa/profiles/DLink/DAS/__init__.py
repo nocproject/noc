@@ -16,7 +16,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "DLink.DAS"
     pattern_syntax_error = r"(Error: Invalid command)"
-    pattern_prompt = r"(?P<hostname>\S+)#"
+    pattern_prompt = r"(?P<hostname>\S*)[#$]"
     command_exit = "logout"
     config_volatile = ["^%.*?$"]
     telnet_naws = "\x00\x7f\x00\x7f"
