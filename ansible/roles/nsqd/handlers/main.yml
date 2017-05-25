@@ -6,6 +6,7 @@
     state: restarted
 
 - name: reload consul
+  become: yes
   service:
     name: consul
     state: reloaded

@@ -12,11 +12,13 @@
     state: reloaded
 
 - name: reload systemd
+  become: yes
   systemd:
     name: pgbouncer
     daemon_reload: yes
 
 - name: reload consul
+  become: yes
   service:
     name: consul
     state: reloaded
