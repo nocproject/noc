@@ -51,8 +51,6 @@
       owner: "{{noc_user}}"
     - name: var/cp/crashinfo/new
       owner: "{{noc_user}}"
-    - name: local
-      owner: "{{noc_user}}"
     - name: var/run
       owner: "{{noc_user}}"
     - name: var/sock
