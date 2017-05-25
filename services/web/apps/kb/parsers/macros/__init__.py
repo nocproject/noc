@@ -12,6 +12,7 @@ import types
 # NOC modules
 from noc.lib.registry import Registry
 
+
 #
 # Macro Registry
 #
