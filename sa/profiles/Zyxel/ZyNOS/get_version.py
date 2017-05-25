@@ -26,6 +26,7 @@ FW_OIDS = {
     "GS-4012F": 20,
     "ES-4124": 24,
     "XGS-4728F": 46,
+    "MES-3528": 51,
     "GS2200-24": 55
 }
 
@@ -59,6 +60,8 @@ class Script(BaseScript):
                                             % oid)
                     fwver = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.4.0"
                                             % oid)
+                    fwser = self.snmp.get("1.3.6.1.4.1.890.1.5.8.%d.1.10.0"
+                                            % oid)
                 else:
                     self.logger.error("Cannot find base OID for model '%s'"
                                 % platform)
@@ -67,6 +70,7 @@ class Script(BaseScript):
                     "vendor": "Zyxel",
                     "platform": platform,
                     "version": "%s.%s(%s.%s)" % (fwmaj, fwmin, fwmod, fwver),
+                    "attributes": {"Serial Number": fwser},
                 }
             except self.snmp.TimeOutError:
                 pass
