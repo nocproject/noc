@@ -44,4 +44,3 @@ class Profile(BaseProfile):
             """Leave switch context"""
             if exc_type is None:
                 self.script.cli("exit\r")
-

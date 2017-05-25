@@ -29,7 +29,7 @@ class Profile(BaseProfile):
     default_parser = "noc.cm.parsers.MikroTik.RouterOS.base.RouterOSParser"
     rogue_chars = ["\r", "\x00"]
 
-    #telnet_naws = "\x00\xfa\x00\xfa"
+    # telnet_naws = "\x00\xfa\x00\xfa"
 
     def setup_script(self, script):
         """
@@ -45,7 +45,7 @@ class Profile(BaseProfile):
         self.add_script_method(script, "cli_detail", self.cli_detail)
 
     def setup_session(self, script):
-        #MikroTik Remove duplicates prompt
+        # MikroTik Remove duplicates prompt
         script.cli("\n")
 
 

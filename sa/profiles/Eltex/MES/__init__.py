@@ -34,7 +34,7 @@ class Profile(BaseProfile):
                "at": "physical",    # ATM
                "bv": "aggregated",  # BVI
                "bu": "aggregated",  # Bundle
-               #"C": "physical",     # @todo: fix
+               # "C": "physical",     # @todo: fix
                "ca": "physical",    # Cable
                "cd": "physical",    # CDMA Ix
                "ce": "physical",    # Cellular
@@ -43,11 +43,11 @@ class Profile(BaseProfile):
                "gi": "physical",    # GigabitEthernet
                "gr": "physical",    # Group-Async
                "lo": "loopback",    # Loopback
-               #"M": "management",   # @todo: fix
+               # "M": "management",   # @todo: fix
                "mf": "aggregated",  # Multilink Frame Relay
                "mu": "aggregated",  # Multilink-group interface
                "po": "aggregated",  # Port-channel/Portgroup
-               #"R": "aggregated",   # @todo: fix
+               # "R": "aggregated",   # @todo: fix
                "sr": "physical",    # Spatial Reuse Protocol
                "se": "physical",    # Serial
                "te": "physical",    # TenGigabitEthernet
@@ -58,4 +58,4 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
-        return cls.INTERFACE_TYPES.get((name[:2]).lower())                                    
+        return cls.INTERFACE_TYPES.get((name[:2]).lower())

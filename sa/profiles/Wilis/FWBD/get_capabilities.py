@@ -14,6 +14,6 @@ class Script(BaseScript):
     name = "Wilis.FWBD.get_capabilities"
     cache = True
 
-    #def execute_platform(self, caps):
-        #if self.match_version(platform__regex="^WILI*"):
-            #caps["CPE | AP"] = True
+    # def execute_platform(self, caps):
+        # if self.match_version(platform__regex="^WILI*"):
+            # caps["CPE | AP"] = True

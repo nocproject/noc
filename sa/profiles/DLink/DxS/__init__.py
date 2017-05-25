@@ -28,11 +28,11 @@ class Profile(BaseProfile):
     config_volatile = ["^%.*?$"]
     telnet_naws = "\x00\x7f\x00\x7f"
     default_parser = "noc.cm.parsers.DLink.DxS.base.BaseDLinkParser"
-    ##
-    ## Version comparison
-    ## Version format:
-    ## <major>.<minor><sep><patch>
-    ##
+    #
+    # Version comparison
+    # Version format:
+    # <major>.<minor><sep><patch>
+    #
     rx_ver = re.compile(r"\d+")
 
     def cmp_version(self, x, y):
@@ -103,7 +103,7 @@ class Profile(BaseProfile):
         r"^(Clipaging|CLI Paging)\s+:\s*Disabled\s*$", re.MULTILINE)
 
     def setup_session(self, script):
-        #Remove duplicates prompt in DLink DGS-3120-24SC ver. 4.04.R004
+        # Remove duplicates prompt in DLink DGS-3120-24SC ver. 4.04.R004
         script.cli("")
         # Cache "show switch" command and fetch CLI Paging from it
         s_switch = script.scripts.get_switch()

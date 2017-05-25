@@ -22,7 +22,7 @@ class Script(BaseScript):
         # Try SNMP first
         if self.has_snmp():
             try:
-                base = self.snmp.get("1.3.6.1.2.1.2.2.1.6.1", cached=True)                
+                base = self.snmp.get("1.3.6.1.2.1.2.2.1.6.1", cached=True)
                 return [{
                         "first_chassis_mac": base,
                         "last_chassis_mac": base
@@ -31,4 +31,4 @@ class Script(BaseScript):
                 pass
 
         # Fallback to CLI
-        raise Exception("Not implemented")    
+        raise Exception("Not implemented")

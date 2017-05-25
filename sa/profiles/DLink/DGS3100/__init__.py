@@ -28,11 +28,11 @@ class Profile(BaseProfile):
     command_exit = "logout"
     command_save_config = "save"
     config_volatile = ["^%.*?$"]
-    ##
-    ## Version comparison
-    ## Version format:
-    ## <major>.<minor><sep><patch>
-    ##
+    #
+    # Version comparison
+    # Version format:
+    # <major>.<minor><sep><patch>
+    #
     rx_ver = re.compile(r"\d+")
 
     def cmp_version(self, x, y):
@@ -76,7 +76,7 @@ class Profile(BaseProfile):
         list_out = list_in
         for match in rx_group.finditer(list_in):
             group = match.group()
-            #group = prefix + "(" + range + ")"
+            # group = prefix + "(" + range + ")"
             prefix = match.group("prefix")
             range = match.group("range")
             convert_group = ""

@@ -7,9 +7,9 @@
 #  See LICENSE for details
 # ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 

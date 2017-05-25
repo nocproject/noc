@@ -29,9 +29,9 @@ class Profile(BaseProfile):
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_save_config = "save"
-    #command_disable_pager = "length 0"
-#    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)(\(config\))*[*\)>#]$"
-#pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"          (?:\(config[^\)]*\)
+#   command_disable_pager = "length 0"
+#   pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)(\(config\))*[*\)>#]$"
+#   pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"          (?:\(config[^\)]*\)
 #   pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)(\(config\))*[*\)>#]$"
     pattern_prompt = r"(?P<hostname>\S+)(?:\(.*)?#"
     pattern_unpriveleged_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*>$"
