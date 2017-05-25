@@ -53,12 +53,12 @@ class Parser(object):
     def check(cls, text):
         """Check syntax"""
         cls.to_html(text)
-    ##
-    ## Convert extracted link to URL
-    ## Following link types are supported:
-    ##   KB<n> - Link to Knowledge Base article <n>
-    ##   TT<n> - Link to Trouble Ticket <n>
-    ##   attach:<name> - Link to attachment <name>
+    #
+    # Convert extracted link to URL
+    # Following link types are supported:
+    #   KB<n> - Link to Knowledge Base article <n>
+    #   TT<n> - Link to Trouble Ticket <n>
+    #   attach:<name> - Link to attachment <name>
 
     @classmethod
     def convert_link(cls, kb_entry, link, text=None):
