@@ -1,15 +1,5 @@
 # Post-deployment tasks
 ---
-- name: Build supervisor config
-  command: "{{ noc_root }}/scripts/deploy/apply-config {{ inventory_hostname }}"
-  register: result
-  changed_when: "'CHANGED' in result.stdout"
-  args:
-    chdir: "{{ noc_root }}"
-  tags:
-    - config
-    - noc_config
-
 - name: check if noc running
   shell: "{{ noc_root }}/noc ctl status"
   changed_when: false
