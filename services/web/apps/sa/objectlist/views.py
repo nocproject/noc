@@ -59,6 +59,7 @@ class ObjectListApplication(ExtApplication):
             "profile_name": o.profile_name,
             # "platform": o.platform,
             "platform": o.ex_platform,
+            "version": o.ex_version,
             "row_class": o.object_profile.style.css_class_name if o.object_profile.style else ""
             # "row_class": ""
         }
