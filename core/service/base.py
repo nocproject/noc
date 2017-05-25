@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Base service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Base service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
 import os
 import sys
@@ -17,7 +17,8 @@ import random
 import argparse
 import functools
 import socket
-## Third-party modules
+from collections import defaultdict
+# Third-party modules
 import tornado.ioloop
 import tornado.gen
 import tornado.web
@@ -28,7 +29,7 @@ import setproctitle
 import nsq
 import ujson
 import threading
-## NOC modules
+# NOC modules
 import noc.core.service.httpclient  # Use curl
 from noc.core.debug import excepthook, error_report
 from .config import Config
@@ -100,6 +101,7 @@ class Service(object):
     }
 
     NSQ_PUB_RETRY_DELAY = 0.1
+    CH_CHUNK_SIZE = 4000
 
     class RegistrationError(Exception):
         pass
@@ -120,8 +122,10 @@ class Service(object):
         self.nsq_readers = {}  # handler -> Reader
         self.nsq_writer = None
         self._metrics = []
+        self._ch_metrics = defaultdict(list)
         self.metrics_lock = threading.Lock()
         self.metrics_callback = None
+        self.ch_metrics_callback = None
         self.dcs = None
         # Effective address and port
         self.server = None
@@ -725,6 +729,21 @@ class Service(object):
                 self.metrics_callback.start()
             self._metrics += [str(x) for x in metrics]
 
+    def register_ch_metrics(self, fields, metrics):
+        """
+        Register metrics to send (Clickhouse version)
+        :param fields: String containing "<table>.<field1>...<fieldN>"
+        :param metrics: list of tab-separated strings with values
+        :return: 
+        """
+        with self.metrics_lock:
+            if not self.ch_metrics_callback:
+                self.ch_metrics_callback = tornado.ioloop.PeriodicCallback(
+                    self.send_ch_metrics, 250, self.ioloop
+                )
+                self.ch_metrics_callback.start()
+                self._ch_metrics[fields] += metrics
+
     @tornado.gen.coroutine
     def send_metrics(self):
         if not self._metrics:
@@ -733,6 +752,21 @@ class Service(object):
         with self.metrics_lock:
             w.pub("metrics", "\n".join(self._metrics))
             self._metrics = []
+
+    @tornado.gen.coroutine
+    def send_ch_metrics(self):
+        if not self._ch_metrics:
+            return
+        w = self.get_nsq_writer()
+        with self.metrics_lock:
+            data = self._ch_metrics
+            self._ch_metrics = defaultdict(list)
+        for fields in metrics:
+            to_send = data[fields]
+            while to_send:
+                chunk, to_send = to_send[:self.CH_CHUNK_SIZE], to_send[self.CH_CHUNK_SIZE:]
+                w.pub("chwriter", "%s\n%s\n" % (
+                    fields, "\n".join(chunk)))
 
     def log_request(self, handler):
         """
