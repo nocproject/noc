@@ -54,3 +54,5 @@ patroni_replicator_password: "{{noc_pg_password}}"
 patroni_enabled: "{{groups['svc-patroni'] | count > 1}}"
 
 web_ui_language: "{% if noc_config['config'].get('web-global-%s' % groups['svc-web'][0], {}).get('language', 'en-us') == 'en' %}en-us{%else%}{{noc_config['config'].get('web-global-%s' % groups['svc-web'][0], {}).get('language')}}{%endif%}"
+
+install_method: hg
