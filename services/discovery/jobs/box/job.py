@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Box Discovery Job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ from nri import NRICheck
 from sla import SLACheck
 from cpe import CPECheck
 from hk import HouseKeepingCheck
+from noc.services.discovery.jobs.periodic.mac import MACCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
@@ -86,6 +87,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             NRICheck(self).run()
         if self.object.object_profile.enable_box_discovery_cpe:
             CPECheck(self).run()
+        if self.object.object_profile.enable_box_discovery_mac:
+            MACCheck(self).run()
         # Topology discovery
         # Most preferable methods first
         for check in self.TOPOLOGY_METHODS:

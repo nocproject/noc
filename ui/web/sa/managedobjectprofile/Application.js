@@ -477,6 +477,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_box_discovery_vlan",
                                             xtype: "checkboxfield",
                                             boxLabel: __("VLAN")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_mac",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("MAC")
                                         }
                                     ]
                                 },
