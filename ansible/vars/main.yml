@@ -26,6 +26,9 @@ tower_version: "{{lookup('env','TOWER_VERSION')}}"
 tower_minimum_version: "0.1a66"
 http_proxy:  "" # just default. please set actual variable via tower on DC tab
 
+noc_prefix: /opt
+noc_root: "{{noc_prefix}}/noc"
+
 grafana_group: grafana
 grafana_home: /usr/share/grafana
 grafana_system_service: grafana-server

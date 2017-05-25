@@ -32,3 +32,6 @@ consul_template_bin_path: "/usr/local/bin"
 consul_template_group: wheel
 
 pip_cflags: "-I/usr/local/include -L/usr/local/lib"
+
+noc_prefix: /usr/local
+noc_root: "{{noc_prefix}}/noc"
