@@ -1,0 +1,33 @@
+- name: check if "{{noc_root}}" is symlink
+  stat:
+    path: "{{noc_root}}"
+  register: noc_dir
+
+- name: rename current "{{noc_root}}" to "{{noc_root}}_old"
+  command: mv "{{noc_root}}" "{{noc_root}}_old"
+  args:
+    creates: "{{noc_root}}_old"
+  when: noc_dir.stat.exists and noc_dir.stat.isdir and noc_dir.stat is defined
+
+- name: Initialize the deploy root and gather facts
+  deploy_helper:
+    path: /opt
+    current_path: "{{noc_root}}"
+    releases_path: /var/noc/releases
+    shared_path: "{{noc_root}}/var"
+
+- name: download bitbucket archive
+  get_url:
+    url: https://bitbucket.org/nocproject/noc/get/feature/microservices.tar.bz2
+    dest: "{{tower_path}}/var/tower/data/{{noc_env}}/microservices.tar.bz2"
+    validate_certs: no
+  environment:
+    http_proxy: "{{http_proxy}}"
+    https_proxy: "{{http_proxy}}"
+  delegate_to: 127.0.0.1
+
+- name: unanchive noc
+  unarchive:
+    src: "{{tower_path}}/var/tower/data/{{noc_env}}/microservices.tar.bz2"
+    dest: "{{ deploy_helper.new_release_path }}"
+    extra_opts: ['--strip-components=1']
