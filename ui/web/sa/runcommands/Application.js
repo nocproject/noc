@@ -86,6 +86,11 @@ Ext.define('NOC.sa.runcommands.Application', {
                 text: __('Platform'),
                 dataIndex: 'platform',
                 flex: 1
+            },
+            {
+                text: __('Version'),
+                dataIndex: 'version',
+                flex: 1
             }
         ];
         me.selectedStore = me.viewModel.get('selectedStore');
