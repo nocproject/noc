@@ -23,7 +23,8 @@ class Script(BaseScript):
         r"^Product Name:+(?P<platform>\S+)+Serial Number:+(?P<serial>\S+)$",
         re.MULTILINE)
     rx_version = re.compile(
-        r"^Software Version:+(?P<version>\S+)+Hardware Version:+(?P<hardware>\S+)$",
+        r"^Software Version:+(?P<version>\S+)+Hardware Version:+"
+        r"(?P<hardware>\S+)$",
         re.MULTILINE)
 
     def execute(self):
@@ -37,6 +38,6 @@ class Script(BaseScript):
                 "version": version.group("version"),
                 "attributes": {
                             "HW version": version.group("hardware"),
-                            "Serial Number": platform.group("serial"),
+                            "Serial Number": platform.group("serial")
                             }
                 }

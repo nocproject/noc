@@ -19,7 +19,9 @@ class Script(BaseScript):
     cache = True
 
     rx_platform = re.compile(
-        r"^Software \[(==|\S+ ==) Ver\(+(?P<version>\S+)\s+\S+\s+\S+\)\s+PId\(+\S+\)\s+Drv\(+\S+\)\s+Hw\(+(?P<platform>\S+)+\) (== |== (?P<hardware>\S+))+\]$",
+        r"^Software \[(==|\S+ ==) Ver\(+(?P<version>\S+)\s+\S+\s+\S+\)\s+"
+        r"PId\(+\S+\)\s+Drv\(+\S+\)\s+Hw\(+(?P<platform>\S+)+\) "
+        r"(== |== (?P<hardware>\S+))+\]$",
         re.MULTILINE)
 
     platforms_cli = {
@@ -27,7 +29,7 @@ class Script(BaseScript):
         "DSA": "DVG-2102S",
         "PNP1632-32": "DVG-4032S",
         "SA7S4": "DVG-5004S",
-        "TSO": "DVG-7111S",
+        "TSO": "DVG-7111S"
         }
 
     platforms_snmp = {
@@ -35,7 +37,7 @@ class Script(BaseScript):
         "?.?.?": "DVG-2102S",
         "?.?.?": "DVG-4032S",
         "1.2.1": "DVG-5004S",
-        "?.?.?": "DVG-7111S",
+        "?.?.?": "DVG-7111S"
         }
 
     def execute(self):
@@ -64,7 +66,7 @@ class Script(BaseScript):
         r = {
             "vendor": "DLink",
             "platform": platform,
-            "version": match.group("version"),
+            "version": match.group("version")
             }
         if match.group("hardware"):
             r["attributes"]["HW version"] = match.group("hardware")
