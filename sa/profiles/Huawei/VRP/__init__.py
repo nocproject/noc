@@ -23,8 +23,18 @@ class Profile(BaseProfile):
         (r"^Delete flash:", "y\n\r"),
         (r"^Squeeze flash:", "y\n\r")
     ]
-    pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:]+)(?:-[a-zA-Z0-9/]+)*[>#\]\)]"
-    pattern_syntax_error = r"(ERROR: |% Wrong parameter found at|% Unrecognized command found at|Error:Too many parameters found|% Too many parameters found at|% Ambiguous command found at|Error: Unrecognized command found at|Error:\s*Wrong parameter found at|Error:Incomplete command found at)"
+    pattern_prompt = \
+        r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:]+)" \
+        r"(?:-[a-zA-Z0-9/]+)*[>#\]\)]"
+    pattern_syntax_error = \
+        r"(ERROR: |% Wrong parameter found at|" \
+        r"% Unrecognized command found at|" \
+        r"Error:Too many parameters found|" \
+        r"% Too many parameters found at|" \
+        r"% Ambiguous command found at|" \
+        r"Error: Unrecognized command found at|" \
+        r"Error:\s*Wrong parameter found at|" \
+        r"Error:Incomplete command found at)"
 
     command_more = " "
     config_volatile = ["^%.*?$"]
@@ -40,7 +50,8 @@ class Profile(BaseProfile):
         p = "ip ip-prefix %s permit %%s" % name
         if not strict:
             p += " le 32"
-        return "undo ip ip-prefix %s\n" % name + "\n".join([p % x.replace("/", " ") for x in pl])
+        return "undo ip ip-prefix %s\n" % name + "\n".join(
+            [p % x.replace("/", " ") for x in pl])
 
     rx_interface_name = re.compile(
         r"^(?P<type>XGE|Ten-GigabitEthernet|GE|Eth|MEth)"
@@ -101,8 +112,10 @@ class Profile(BaseProfile):
         :type block: str
         :return:
         """
-        k_v_splitter = re.compile(r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
-        part_splitter = re.compile(r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
+        k_v_splitter = re.compile(
+            r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
+        part_splitter = re.compile(
+            r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
         r = {}
         is_table = False
         is_part = False

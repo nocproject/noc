@@ -19,7 +19,7 @@ class Profile(BaseProfile):
         (r"--- More:", " "),
         (r"---- More \(Press CTRL\+C break\) ---", " "),
         (r"Note: Terminal", "\n"),
-        (r"Warning: Battery is low power!","\n"),
+        (r"Warning: Battery is low power!", "\n"),
         (r"\{\s<cr>.*\s\}:$", "\n\n"),
         (r"^Are you sure?\[Y/N\]", "y\n")
     ]
@@ -30,12 +30,10 @@ class Profile(BaseProfile):
     command_enter_config = "configure terminal"
     command_leave_config = "end"
     command_save_config = "save"
-#   command_disable_pager = "length 0"
-#   pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)(\(config\))*[*\)>#]$"
-#   pattern_prompt = r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*[>#\]]"          (?:\(config[^\)]*\)
-#   pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)(\(config\))*[*\)>#]$"
     pattern_prompt = r"(?P<hostname>\S+)(?:\(.*)?#"
-    pattern_unpriveleged_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*>$"
-    pattern_syntax_error = r"(% Unknown command, the error locates at \'^\'|  Logged Fail!)"
+    pattern_unpriveleged_prompt = \
+        r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*>$"
+    pattern_syntax_error = \
+        r"(% Unknown command, the error locates at \'^\'|  Logged Fail!)"
 
 #  Logged Fail!

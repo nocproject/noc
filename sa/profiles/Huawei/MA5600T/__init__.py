@@ -25,7 +25,8 @@ class Profile(BaseProfile):
         (r"\{ \<cr\>\|ont\<K\> \}\:", "\n")
     ]
     pattern_unpriveleged_prompt = r"^(?P<hostname>(?!>)\S+?)>"
-    pattern_prompt = r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
+    pattern_prompt = \
+        r"^(?P<hostname>(?!>)\S+?)(?:-\d+)?(?:\(config\S*[^\)]*\))?#"
     pattern_syntax_error = r"(% Unknown command|  Incorrect command:)"
     command_more = " "
     config_volatile = ["^%.*?$"]
@@ -41,7 +42,7 @@ class Profile(BaseProfile):
     rx_ports = re.compile(
         "^\s*\d+\s+(?P<type>ADSL|VDSL|GPON|10GE|GE|FE)\s+.+?"
         "(?P<state>[Oo]nline|[Oo]ffline|Activating|Activated)",
-         re.MULTILINE)
+        re.MULTILINE)
 
     def get_slots_n(self, script):
         i = -1

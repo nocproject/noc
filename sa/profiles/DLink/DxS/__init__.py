@@ -36,8 +36,10 @@ class Profile(BaseProfile):
     rx_ver = re.compile(r"\d+")
 
     def cmp_version(self, x, y):
-        return cmp([int(z) for z in self.rx_ver.findall(x)],
-            [int(z) for z in self.rx_ver.findall(y)])
+        return cmp(
+            [int(z) for z in self.rx_ver.findall(x)],
+            [int(z) for z in self.rx_ver.findall(y)]
+        )
 
     """
     IF-MIB:IfDescr
@@ -88,7 +90,9 @@ class Profile(BaseProfile):
         match = self.rx_interface_name.match(s)
         if match:
             if match.group("re_slot") and match.group("re_slot") > "1" or \
-                match.group("re_platform") and any(match.group("re_platform").startswith(p) for p in platforms_with_stacked_ports):
+                match.group("re_platform") and \
+                any(match.group("re_platform").startswith(p)
+                    for p in platforms_with_stacked_ports):
                 return "%s:%s" % (match.group("re_slot"), match.group("re_port"))
             elif match.group("re_port"):
                 return "%s" % match.group("re_port")
@@ -158,7 +162,7 @@ class Profile(BaseProfile):
             media_type = match.group("media_type")
             descr = match.group("desc")
             if descr:
-                descr = descr.decode("ascii","ignore")
+                descr = descr.decode("ascii", "ignore")
                 descr = descr.strip()
             else:
                 descr = ''
@@ -184,13 +188,13 @@ class Profile(BaseProfile):
             return None
 
     def get_ports(self, script, interface=None):
-        if ((script.match_version(DES3200, version__gte="1.70.B007") \
-            and script.match_version(DES3200, version__lte="3.00.B000"))
-            or script.match_version(DES3200, version__gte="4.38.B000") \
-            or script.match_version(DES3028, version__gte="2.90.B10") \
-            or script.match_version(DGS3120, version__gte="3.00.B022") \
-            or script.match_version(DGS3620, version__gte="2.50.017")) \
-            and not script.match_version(DES3200, platform="DES-3200-28F"):
+        if ((script.match_version(DES3200, version__gte="1.70.B007")
+          and script.match_version(DES3200, version__lte="3.00.B000")) \
+          or script.match_version(DES3200, version__gte="4.38.B000") \
+          or script.match_version(DES3028, version__gte="2.90.B10") \
+          or script.match_version(DGS3120, version__gte="3.00.B022") \
+          or script.match_version(DGS3620, version__gte="2.50.017")) \
+          and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []
             if interface is not None:
                 c = script.cli(("show ports %s description" % interface))
@@ -238,7 +242,7 @@ class Profile(BaseProfile):
         ports = []
         for i in objects:
             if prev_port and (prev_port == i['port']):
-                if i['status'] == True:
+                if i['status'] is True:
                     k = 0
                     for j in ports:
                         if j['port'] == i['port']:
@@ -276,12 +280,10 @@ class Profile(BaseProfile):
             member_ports = []
             if match.group("member_ports"):
                 member_ports = \
-                script.expand_interface_range(
-                match.group("member_ports"))
+                  script.expand_interface_range(match.group("member_ports"))
             if match.group("untagged_ports"):
                 untagged_ports = \
-                script.expand_interface_range(
-                match.group("untagged_ports"))
+                  script.expand_interface_range(match.group("untagged_ports"))
             for port in member_ports:
                 if port not in untagged_ports:
                     tagged_ports += [port]
