@@ -30,7 +30,7 @@ class Command(BaseCommand):
             "profile", "version", "caps", "interface",
             "id", "config", "asset", "vlan", "nri",
             "oam", "lldp", "cdp", "huawei_ndp", "stp", "sla", "cpe",
-            "lacp", "hk"
+            "lacp", "hk", "mac"
         ],
         "periodic": [
             "uptime", "interfacestatus",
