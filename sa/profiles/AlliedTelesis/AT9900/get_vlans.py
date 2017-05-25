@@ -15,7 +15,8 @@ import re
 class Script(BaseScript):
     name = "AlliedTelesis.AT9900.get_vlans"
     interface = IGetVlans
-    rx_vlan = re.compile(r"Name \.+ (?P<vlanname>\S+)\n Identifier \.+ (?P<vlanid>\d+)\n")
+    rx_vlan = re.compile(
+        r"Name \.+ (?P<vlanname>\S+)\n Identifier \.+ (?P<vlanid>\d+)\n")
 
     def execute(self):
         r = []

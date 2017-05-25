@@ -16,7 +16,8 @@ import re
 class Script(BaseScript):
     name = "AlliedTelesis.AT8500.ping"
     interface = IPing
-    rx_result = re.compile(r"^Reply from [\d\.]+ time=(?P<resp>\d+)ms$",
+    rx_result = re.compile(
+        r"^Reply from [\d\.]+ time=(?P<resp>\d+)ms$",
         re.MULTILINE | re.DOTALL)
 
     def execute(self, address, size=None, count=None, timeout=None):

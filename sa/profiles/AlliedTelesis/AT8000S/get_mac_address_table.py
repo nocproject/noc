@@ -16,7 +16,9 @@ import re
 class Script(BaseScript):
     name = "AlliedTelesis.AT8000S.get_mac_address_table"
     interface = IGetMACAddressTable
-    rx_line = re.compile(r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>[:0-9a-fA-F]+)\s+(?P<interfaces>(?:\d/)?[ge]\d+)\s+(?P<type>\w+)$")
+    rx_line = re.compile(
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>[:0-9a-fA-F]+)\s+"
+        r"(?P<interfaces>(?:\d/)?[ge]\d+)\s+(?P<type>\w+)$")
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show bridge address-table"

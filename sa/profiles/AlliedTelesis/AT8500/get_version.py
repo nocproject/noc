@@ -18,7 +18,9 @@ class Script(BaseScript):
     name = "AlliedTelesis.AT8500.get_version"
     cache = True
     interface = IGetVersion
-    rx_ver = re.compile(r"^Model Name \.+ (?P<platform>AT[/\w-]+).+^Application \.+ ATS62 v(?P<version>[\d.]+)", re.MULTILINE | re.DOTALL)
+    rx_ver = re.compile(
+        r"^Model Name \.+ (?P<platform>AT[/\w-]+).+^Application \.+ "
+        r"ATS62 v(?P<version>[\d.]+)", re.MULTILINE | re.DOTALL)
 
     def execute(self):
         if self.has_snmp():

@@ -14,7 +14,9 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "AlliedTelesis.AT8500"
-    pattern_more = "^--More-- <Space> = next page, <CR> = one line, C = continuous, Q = quit"
+    pattern_more = \
+        "^--More-- <Space> = next page, <CR> = one line, C = continuous, " \
+        "Q = quit"
     command_more = "c"
     command_submit = "\r"
     command_save_config = "save configuration"

@@ -16,7 +16,10 @@ import re
 class Script(BaseScript):
     name = "AlliedTelesis.AT8000S.ping"
     interface = IPing
-    rx_result = re.compile(r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) packets received, \d+% packet loss\nround-trip \(ms\) min/avg/max = (?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?", re.MULTILINE | re.DOTALL)
+    rx_result = re.compile(
+        r"^(?P<count>\d+) packets transmitted, (?P<success>\d+) packets "
+        r"received, \d+% packet loss\nround-trip \(ms\) min/avg/max = "
+        r"(?P<min>\d+)/(?P<avg>\d+)/(?P<max>\d+)?", re.MULTILINE)
 
     def execute(self, address, size=None, count=None, timeout=None):
         cmd = "ping %s" % address

@@ -17,6 +17,6 @@ class Script(BaseScript):
     interface = IGetConfig
 
     def execute(self):
-        #self.cli("terminal datadump")
+        # self.cli("terminal datadump")
         config = self.cli("show config dynamic")
         return self.cleaned_config(config)

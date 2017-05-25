@@ -16,7 +16,9 @@ import re
 class Script(BaseScript):
     name = "AlliedTelesis.AT8000S.get_arp"
     interface = IGetARP
-    rx_line = re.compile(r"^vlan \d+\s+(?P<interface>(?:\d/)?[ge]\d+)\s+(?P<ip>\S+)\s+(?P<mac>[\d:a-f]+)\s+")
+    rx_line = re.compile(
+        r"^vlan \d+\s+(?P<interface>(?:\d/)?[ge]\d+)\s+(?P<ip>\S+)\s+"
+        r"(?P<mac>[\d:a-f]+)\s+")
 
     def execute(self):
         s = self.cli("show arp")

@@ -16,7 +16,9 @@ from noc.sa.interfaces.iping import IPing
 class Script(BaseScript):
     name = "AlliedTelesis.AT9900.ping"
     interface = IPing
-    rx_result = re.compile("Echo reply (?P<count>\d+) from [\d\.]+ time delay (?P<resp>\d+.\d+) ms", re.MULTILINE | re.DOTALL)
+    rx_result = re.compile(
+        r"Echo reply (?P<count>\d+) from [\d\.]+ time delay "
+        r"(?P<resp>\d+.\d+) ms", re.MULTILINE | re.DOTALL)
 
     def execute(self, address, size=None, count=None, timeout=None):
         cmd = "ping %s" % address
