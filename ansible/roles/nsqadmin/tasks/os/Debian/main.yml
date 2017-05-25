@@ -3,9 +3,5 @@
   template:
      src: etc/systemd/nsqadmin.service
      dest: /etc/systemd/system/nsqadmin.service
-  register: nsqadmin_service
-
-- name: reload systemd
-  shell: systemctl daemon-reload
-  when: nsqadmin_service.changed
+  notify: reload systemd
 

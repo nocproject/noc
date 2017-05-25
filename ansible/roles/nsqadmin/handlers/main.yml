@@ -4,3 +4,8 @@
   service:
     name: nsqadmin
     state: restarted
+
+- name: reload systemd
+  systemd:
+    name: nsqd
+    daemon_reload: yes

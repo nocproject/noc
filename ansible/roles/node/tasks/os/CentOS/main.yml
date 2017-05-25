@@ -69,15 +69,13 @@
   tags:
     - requirements
 
+- include: "firewall.yml"
+  tags:
+    - firewall
+
 - name: Install supervisord init script
   template:
     src: "os/CentOS/etc/systemd/system/noc.service.j2"
     dest: "/etc/systemd/system//{{ noc_system_service }}.service"
     mode: "a+r"
-
-- include: "firewall.yml"
-  tags:
-    - firewall
-
-- name: Reload systemd daemon
-  command: /usr/bin/systemctl daemon-reload
+  notify: reload systemd
