@@ -27,4 +27,3 @@ class Profile(BaseProfile):
     command_exit = "exit"
     command_save_config = "write\n"
     pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?(?:\(_config[^\)]*\))?#"
-

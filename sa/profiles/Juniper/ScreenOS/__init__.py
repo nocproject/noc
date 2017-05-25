@@ -15,4 +15,4 @@ class Profile(BaseProfile):
     pattern_prompt=r"^\s*\S*-> "
     pattern_more=r"^--- more ---"
     command_more=" "
-    #command_disable_pager="set console page 0"
+    # command_disable_pager="set console page 0"

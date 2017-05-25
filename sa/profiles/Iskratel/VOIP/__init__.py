@@ -18,7 +18,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Iskratel.VOIP"
     # Iskratel do not have "enable_super" command
-    #pattern_unpriveleged_prompt = r"^\S+?>"
+    # pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_prompt = r"^=>"
     pattern_more = r"^Press any key to continue or Esc to stop scrolling."
     pattern_syntax_error = r"Syntax error|Command line error|Illegal command name"

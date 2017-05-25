@@ -21,4 +21,3 @@ class Profile(BaseProfile):
     command_more = "\n"
     command_submit = "\n"
     command_exit = "exit"
-

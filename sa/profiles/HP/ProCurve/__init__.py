@@ -27,11 +27,11 @@ class Profile(BaseProfile):
     command_save_config = "write memory\n"
     command_exit = "exit"
 
-    ##
-    ## Compare versions
-    ##
-    ## Version format is <letter>.<major>.<minor>
-    ##
+    #
+    # Compare versions
+    #
+    # Version format is <letter>.<major>.<minor>
+    #
     @classmethod
     def cmp_version(cls, v1, v2):
         l1, mj1, mn1 = v1.split(".")

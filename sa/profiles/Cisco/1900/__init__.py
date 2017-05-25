@@ -11,12 +11,13 @@
 from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
-    name="Cisco.1900"
+    name = "Cisco.1900"
 
-    pattern_more=[  ("\[K\] Command Line", "K"),
-                    ("--More--$", " ")
-                    ]
+    pattern_more = [
+        ("\[K\] Command Line", "K"),
+        ("--More--$", " ")
+    ]
 
-    pattern_unpriveleged_prompt=r"^\S+?>"
-    command_super="enable"
+    pattern_unpriveleged_prompt = r"^\S+?>"
+    command_super = "enable"
     convert_mac = BaseProfile.convert_mac_to_cisco

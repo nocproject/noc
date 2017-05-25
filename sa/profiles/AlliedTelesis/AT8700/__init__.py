@@ -22,4 +22,4 @@ class Profile(BaseProfile):
     # pattern_prompt = r"^(?P<hostname>[\S\s]+)>"
     pattern_prompt = r"^(Manager)\s*(?P<hostname>\S+)>"
     command_exit = "logout"
-
+
