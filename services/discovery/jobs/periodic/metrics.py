@@ -265,7 +265,7 @@ class MetricsCheck(DiscoveryCheck):
         # Send metrics
         if batch:
             self.logger.info("Spooling %d metrics", len(batch))
-            self.job.scheduler.service.register_metrics(batch)
+            self.service.register_metrics(batch)
         else:
             self.logger.info("No metrics to spool")
             return

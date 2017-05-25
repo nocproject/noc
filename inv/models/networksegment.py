@@ -9,7 +9,7 @@
 # Python modules
 import operator
 import cachetools
-from threading import RLock
+from threading import Lock
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, DictField, ReferenceField,
@@ -22,10 +22,12 @@ from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.model.decorator import on_delete_check
 from noc.core.defer import call_later
+from noc.core.bi.decorator import bi_sync
 
-id_lock = RLock()
+id_lock = Lock()
 
 
+@bi_sync
 @on_delete_check(check=[
     ("sa.ManagedObject", "segment"),
     ("inv.NetworkSegment", "parent")

@@ -60,6 +60,7 @@ from noc.core.defer import call_later
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext
+from noc.core.bi.decorator import bi_sync
 
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
@@ -75,6 +76,7 @@ logger = logging.getLogger(__name__)
 
 
 @full_text_search
+@bi_sync
 @on_init
 @on_save
 @on_delete

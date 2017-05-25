@@ -20,6 +20,7 @@ from noc.lib.nosql import ForeignKeyField
 from noc.main.models.style import Style
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.pm.models.metrictype import MetricType
+from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 
 id_lock = Lock()
@@ -34,6 +35,7 @@ class InterfaceProfileMetrics(EmbeddedDocument):
     high_error = FloatField(required=False)
 
 
+@bi_sync
 @on_delete_check(check=[
     ("inv.Interface", "profile"),
     ("inv.InterfaceClassificationRule", "profile"),
