@@ -125,8 +125,8 @@ class ReportOutagesApplication(SimpleReport):
                 m.address,
                 m.profile_name,
                 m.platform,
-                m.is_managed,
-                m.get_status(),
+                _("Yes") if m.is_managed else _("No"),
+                _("Yes") if m.get_status() else _("No"),
                 downtime,
                 avail,
                 len(outages[o])
@@ -136,8 +136,8 @@ class ReportOutagesApplication(SimpleReport):
             title=self.title,
             columns=[
                 _("Managed Object"), _("Address"), _("Profile"), _("Platform"),
-                TableColumn(_("Managed"), format="bool"),
-                TableColumn(_("Status"), format="bool"),
+                TableColumn(_("Managed"), align="right"),
+                TableColumn(_("Status"), align="right"),
                 TableColumn(_("Downtime"), align="right"),
                 TableColumn(_("Availability"), align="right", format="percent"),
                 TableColumn(_("Downs"), align="right", format="integer")
