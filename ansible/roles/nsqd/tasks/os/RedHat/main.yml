@@ -14,7 +14,6 @@
     dest: "{{ noc_root }}"
     extra_opts: ['--strip-components=1']
     creates: "{{ noc_root }}/bin/nsqd"
-    remote_src: yes
 
 - name: install nsqd.service file
   template:
