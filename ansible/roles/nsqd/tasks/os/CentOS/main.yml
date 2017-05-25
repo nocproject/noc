@@ -1,19 +1,19 @@
 ---
 - name: download nsq daemon
   get_url:
-    url: https://s3.amazonaws.com/bitly-downloads/nsq/nsq-{{nsq_version}}.linux-amd64.go1.6.2.tar.gz
-    dest: /tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz
+    url: "{{nsq_url}}"
+    dest: "{{nsq_temp_file}}"
     validate_certs: no
+  delegate_to: 127.0.0.1
   environment:
     https_proxy: "{{http_proxy}}"
 
 - name: unanchive nsqd
   unarchive:
-    src: "/tmp/nsq-{{nsq_version}}.{{ansible_system.lower()}}-amd64.go1.6.2.tar.gz"
+    src: "{{nsq_temp_file}}"
     dest: "{{ noc_root }}"
     extra_opts: ['--strip-components=1']
     creates: "{{ noc_root }}/bin/nsqd"
-    remote_src: yes
 
 - name: install nsqd.service file
   template:

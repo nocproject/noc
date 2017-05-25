@@ -67,6 +67,11 @@
     - config
     - always
 
+- name: create tower dist dir
+  file:
+    path: "{{tower_dist_dir}}"
+    state: directory
+  delegate_to: 127.0.0.1
 
 - name: Display all variables/facts known for a host
   debug:
