@@ -26,8 +26,8 @@ class MACCheck(DiscoveryCheck):
 
     def handler(self):
         now = time.localtime()
-        date = now.stftime("%Y-%m-%d", now)
-        ts = now.stftime("%Y-%m-%d %H:%M:%S")
+        date = time.strftime("%Y-%m-%d", now)
+        ts = time.strftime("%Y-%m-%d %H:%M:%S", now)
         mo_id = self.object.get_bi_id()
         seg_id = self.object.segment.get_bi_id()
         unknown_interfaces = set()
