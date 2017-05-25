@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CH database schema migration tool
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# CH database schema migration tool
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.clickhouse.connect import connection
 from noc.core.clickhouse.model import Model
 
 
 class Command(BaseCommand):
-    def handle(self, cmd, *args, **options):
+    def handle(self, *args, **options):
         self.connect()
         self.ensure_db()
         self.ensure_bi_models()
@@ -39,7 +39,7 @@ class Command(BaseCommand):
         self.stdout.write("Ensuring BI models:\n")
         models = set()
         # Get models
-        for f in os.listdir("core/bi/models"):
+        for f in os.listdir("bi/models"):
             if f.startswith("_") or not f.endswith(".py"):
                 continue
             mn = f[:-3]
