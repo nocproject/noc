@@ -51,7 +51,7 @@ class MODashboard(BaseDashboard):
         for profile in profiles:
             ifaces = [i for i in all_ifaces if i.profile == profile]
             ports = []
-            for iface in sorted(ifaces, key=split_alnum):
+            for iface in sorted(ifaces, key=lambda el: split_alnum(el.name)):
                 if iface.description:
                     iface.description = iface.description.replace('\"', '')
                 if iface.type == u"aggregated" and iface.lag_members:
