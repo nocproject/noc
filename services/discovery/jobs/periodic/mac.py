@@ -29,8 +29,8 @@ class MACCheck(DiscoveryCheck):
         now = time.localtime()
         date = time.strftime("%Y-%m-%d", now)
         ts = time.strftime("%Y-%m-%d %H:%M:%S", now)
-        mo_id = self.object.get_bi_id()
-        seg_id = self.object.segment.get_bi_id()
+        mo_id = str(self.object.get_bi_id())
+        seg_id = str(self.object.segment.get_bi_id())
         unknown_interfaces = set()
         disabled_by_profile = set()
         total_macs = 0
@@ -57,12 +57,12 @@ class MACCheck(DiscoveryCheck):
                 date,  # date
                 ts,  # ts
                 mo_id,  # managed_object
-                int(MAC(v["mac"])),  # mac
+                str(int(MAC(v["mac"]))),  # mac
                 ifname,  # interface
-                ifprofile.get_bi_id(),  # interface_profile
+                str(ifprofile.get_bi_id()),  # interface_profile
                 seg_id,  # segment
-                v.get("vlan_id", 0),  # vlan
-                iface.profile.is_uni  # is_uni
+                str(v.get("vlan_id", 0)),  # vlan
+                "1" if iface.profile.is_uni else "0"  # is_uni
             ))]
             processed_macs += 1
         if unknown_interfaces:
