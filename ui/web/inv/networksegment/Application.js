@@ -12,6 +12,7 @@ Ext.define("NOC.inv.networksegment.Application", {
         "NOC.inv.networksegment.Model",
         "NOC.inv.networksegment.TreeCombo",
         "NOC.sa.managedobjectselector.LookupField",
+        "NOC.main.remotesystem.LookupField",
         "Ext.ux.form.DictField"
     ],
     model: "NOC.inv.networksegment.Model",
@@ -141,6 +142,37 @@ Ext.define("NOC.inv.networksegment.Application", {
                     xtype: "numberfield",
                     fieldLabel: __("Max Links"),
                     allowBlank: true
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Integration"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "remote_system",
+                            xtype: "main.remotesystem.LookupField",
+                            fieldLabel: __("Remote System"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "remote_id",
+                            xtype: "textfield",
+                            fieldLabel: __("Remote ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "bi_id",
+                            xtype: "textfield",
+                            fieldLabel: __("BI ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        }
+                    ]
                 },
                 {
                     name: "tags",
