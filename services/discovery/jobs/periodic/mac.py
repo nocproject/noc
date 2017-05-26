@@ -62,11 +62,13 @@ class MACCheck(DiscoveryCheck):
             ))]
             processed_macs += 1
         if unknown_interfaces:
-            self.logger.info("Ignoring unknown interfaces: %s",
-                             ", ".join(unknown_interfaces))
+            self.logger.info(
+                "Ignoring unknown interfaces: %s",
+                ", ".join(unknown_interfaces))
         if disabled_by_profile:
-            self.logger.info("MAC collection disabled on interfaces:",
-                             ", ".join(disabled_by_profile))
+            self.logger.info(
+                "MAC collection disabled on interfaces: %s",
+                ", ".join(disabled_by_profile))
         metrics["discovery_mac_total_macs"] += total_macs
         metrics["discovery_mac_processed_macs"] += processed_macs
         metrics["discovery_mac_ignored_macs"] += total_macs - processed_macs
