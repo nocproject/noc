@@ -10,6 +10,7 @@
 from __future__ import print_function
 import argparse
 import time
+import defaultdict
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
@@ -113,6 +114,11 @@ class Command(BaseCommand):
         if scheduler.service.metrics:
             for m in scheduler.service.metrics:
                 self.print("Collected metric: %s" % m)
+        if scheduler.service.ch_metrics:
+            self.print("Collected CH data:")
+            for f in scheduler.service.ch_metrics:
+                self.print("Fields: %s", f)
+                self.print("\n".join(scheduler.service.ch_metrics[f]))
         if job.context_version and job.context:
             self.print("Saving job context to %s" % ctx_key)
             scheduler.cache_set(
@@ -127,9 +133,13 @@ class Command(BaseCommand):
 class ServiceStub(object):
     def __init__(self):
         self.metrics = []
+        self.ch_metrics = defaultdict(list)
 
     def register_metrics(self, batch):
         self.metrics += batch
+
+    def register_ch_metrics(self, fields, data):
+        self.ch_metrics[fields] += data
 
 if __name__ == "__main__":
     Command().run()
