@@ -16,7 +16,14 @@
 - name: Set tower_ip
   set_fact:
     tower_ip: "{{hostvars[inventory_hostname]['ansible_env']['SSH_CLIENT'].split(' ')[0]}}"
-  when: "'smart' or 'ssh' in ansible_connection"
+  when: "('smart' or 'ssh') in ansible_connection"
+  tags:
+    - always
+
+- name: Set tower_ip
+  set_fact:
+    tower_ip: "{{ansible_default_ipv4.address}}"
+  when: "('smart' or 'ssh') not in ansible_connection"
   tags:
     - always
 
