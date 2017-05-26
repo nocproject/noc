@@ -6,8 +6,6 @@
     dest: "{{ consul_temp_file_checksum }}"
     validate_certs: no
   delegate_to: 127.0.0.1
-  environment:
-    https_proxy: "{{http_proxy}}"
   run_once: yes
   tags:
     - requirements
@@ -31,8 +29,6 @@
     timeout: 42
     validate_certs: no
   delegate_to: 127.0.0.1
-  environment:
-    https_proxy: "{{http_proxy}}"
   run_once: yes
   tags:
     - requirements
