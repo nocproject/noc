@@ -5,6 +5,7 @@
     dest: "{{nsq_temp_file}}"
     validate_certs: no
   delegate_to: 127.0.0.1
+  run_once: true
   environment:
     https_proxy: "{{http_proxy}}"
 
