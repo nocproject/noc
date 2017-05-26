@@ -20,7 +20,9 @@ class Profile(BaseProfile):
         (r"^Overwrite file \[startup-config\]", "y")
     ]
     pattern_unpriveleged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% Invalid input detected at|% Ambiguous command:|% Incomplete command.|% Unrecodnezed command"
+    pattern_syntax_error = \
+        r"% Invalid input detected at|% Ambiguous command:|" \
+        r"% Incomplete command.|% Unrecodnezed command"
     pattern_operation_error = r"^%\s*bad"
     command_disable_pager = "terminal datadump"
     command_super = "enable"
@@ -28,7 +30,9 @@ class Profile(BaseProfile):
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "copy running-config startup-config"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = \
+        r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?" \
+        r"(?:\(config[^\)]*\))?#"
     pattern_username = "User Name:"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_colon

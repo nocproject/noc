@@ -27,7 +27,9 @@ class Profile(BaseProfile):
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = \
+        r"^(?P<hostname>[a-zA-Z0-9/.]\S{0,35})(?:[-_\d\w]+)?" \
+        r"(?:\(config[^\)]*\))?#"
     can_strip_hostname_to = 20
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco

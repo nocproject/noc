@@ -20,13 +20,15 @@ class Profile(BaseProfile):
         (r"\?\s*\[confirm\]", "\n")
     ]
     pattern_unpriveleged_prompt = r"^\S+?>"
-    pattern_syntax_error = r"% invalid input |% Ambiguous command:|% Incomplete command."
+    pattern_syntax_error = \
+        r"% invalid input |% Ambiguous command:|% Incomplete command."
 #    command_disable_pager = "terminal length 0"
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "copy running-config startup-config\n"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S*?)(?:-\d+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = \
+        r"^(?P<hostname>[a-zA-Z0-9]\S*?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     requires_netmask_conversion = True
     convert_mac = BaseProfile.convert_mac_to_cisco
 

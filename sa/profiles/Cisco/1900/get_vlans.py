@@ -26,8 +26,7 @@ class Script(BaseScript):
             if match:
                 name = match.group("name")
                 vlan_id = int(match.group("vlan_id"))
-                if vlan_id >= 1000 and vlan_id <= 1005 \
-                and name in [
+                if vlan_id >= 1000 and vlan_id <= 1005 and name in [
                     "fddi-default", "token-ring-defau", "fddinet-default",
                     "trnet-default"
                 ]:
