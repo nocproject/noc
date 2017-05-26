@@ -57,7 +57,7 @@ class ORACLEExtractor(SQLExtractor):
                     sid=self.config.get("ORACLE_SID")
                 )
             user = self.config.get("ORACLE_USER")
-            password = self.config.get("ORACLE_PASSWORD"),
+            password = self.config.get("ORACLE_PASSWORD")
             if user and password:
                 self.connect = cx_Oracle.connect(
                     user=user,
