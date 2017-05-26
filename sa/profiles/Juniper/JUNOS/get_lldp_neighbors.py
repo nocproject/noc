@@ -14,6 +14,7 @@ from noc.sa.interfaces.base import (IntParameter,
                                     MACAddressParameter,
                                     InterfaceTypeError)
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.lib.validators import is_int, is_ipv4, is_ipv6
 
 
 class Script(BaseScript):
@@ -156,8 +157,7 @@ class Script(BaseScript):
                             remote_port = match.get("p_id")
                         n["remote_chassis_id"] = match.get("id")
                         n["remote_port"] = str(remote_port)
-            if is_ipv4(n["remote_chassis_id"]) \
-              or is_ipv6(n["remote_chassis_id"]):
+            if is_ipv4(n["remote_chassis_id"]) or is_ipv6(n["remote_chassis_id"]):
                 n["remote_chassis_id_subtype"] = 5
             i["neighbors"] += [n]
             r += [i]
