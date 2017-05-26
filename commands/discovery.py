@@ -10,7 +10,7 @@
 from __future__ import print_function
 import argparse
 import time
-import defaultdict
+from collections import defaultdict
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
