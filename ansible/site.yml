@@ -141,7 +141,6 @@
 - name: Install and configure nsq
   hosts: all
   become: yes
-  strategy: free
   any_errors_fatal: true
   tags:
     - nsq
