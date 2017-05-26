@@ -66,7 +66,7 @@ class AlarmsExtractor(BaseExtractor):
             reboots = dict((d["_id"], d["reboots"]) for d in r["result"])
         #
         for d in ArchivedAlarm._get_collection().find({
-            "timestamp": {
+            "clear_timestamp": {
                 "$gt": self.start,
                 "$lte": self.stop
             }
