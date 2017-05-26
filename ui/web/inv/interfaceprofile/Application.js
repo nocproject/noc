@@ -13,7 +13,8 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.main.style.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "Ext.ux.form.MultiIntervalField",
-        "NOC.pm.metrictype.LookupField"
+        "NOC.pm.metrictype.LookupField",
+        "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.inv.interfaceprofile.Model",
     search: true,
@@ -176,6 +177,37 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         xtype: "checkbox",
                         boxLabel: __("User Interface"),
                         allowBlank: true
+                    },
+                    {
+                        xtype: "fieldset",
+                        layout: "hbox",
+                        title: __("Integration"),
+                        defaults: {
+                            padding: 4,
+                            labelAlign: "right"
+                        },
+                        items: [
+                            {
+                                name: "remote_system",
+                                xtype: "main.remotesystem.LookupField",
+                                fieldLabel: __("Remote System"),
+                                allowBlank: true
+                            },
+                            {
+                                name: "remote_id",
+                                xtype: "textfield",
+                                fieldLabel: __("Remote ID"),
+                                allowBlank: true,
+                                uiStyle: "medium"
+                            },
+                            {
+                                name: "bi_id",
+                                xtype: "textfield",
+                                fieldLabel: __("BI ID"),
+                                allowBlank: true,
+                                uiStyle: "medium"
+                            }
+                        ]
                     },
                     {
                         name: "metrics",

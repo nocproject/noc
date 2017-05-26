@@ -73,6 +73,23 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             type: "bool",
             defaultValue: false
         },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "bi_id",
+            type: "string"
+        },
         // CSS
         {
             name: "row_class",
