@@ -8,7 +8,6 @@
 
 # Python modules
 import re
-import types
 import datetime
 # Third-party modules
 import six
@@ -132,7 +131,7 @@ class REParameter(StringParameter):
     def clean(self, value):
         try:
             re.compile(value)
-        except Exception, why:
+        except re.error:
             self.raise_error(value)
         return value
 
@@ -150,7 +149,7 @@ class PyExpParameter(StringParameter):
     def clean(self, value):
         try:
             compile(value, "<string>", "eval")
-        except SyntaxError, why:
+        except SyntaxError:
             self.raise_error(value)
         return value
 
@@ -181,11 +180,11 @@ class BooleanParameter(Parameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value) == types.BooleanType:
+        if isinstance(value, bool):
             return value
-        if type(value) in (types.IntType, types.LongType):
+        if isinstance(value, six.integer_types):
             return value != 0
-        if type(value) in (types.StringType, types.UnicodeType):
+        if isinstance(value, six.string_types):
             return value.lower() in ("true", "t", "yes", "y")
         self.raise_error(value)
 
@@ -242,8 +241,8 @@ class IntParameter(Parameter):
             i = int(value)
         except (ValueError, TypeError):
             self.raise_error(value)
-        if ((self.min_value is not None and i < self.min_value)
-                or (self.max_value is not None and i > self.max_value)):
+        if ((self.min_value is not None and i < self.min_value) or
+                (self.max_value is not None and i > self.max_value)):
             self.raise_error(value)
         return i
 
@@ -286,10 +285,10 @@ class FloatParameter(Parameter):
             return self.default
         try:
             i = float(value)
-        except:
+        except ValueError:
             self.raise_error(value)
-        if ((self.min_value is not None and i < self.min_value)
-                or (self.max_value is not None and i > self.max_value)):
+        if ((self.min_value is not None and i < self.min_value) or
+                (self.max_value is not None and i > self.max_value)):
             self.raise_error(value)
         return i
 
@@ -343,8 +342,8 @@ class InstanceOfParameter(Parameter):
         return isinstance(value, self.cls)
 
     def is_valid_classname(self, value):
-        return (hasattr(value, "__class__")
-                and value.__class__.__name__ == self.cls)
+        return (hasattr(value, "__class__") and
+                value.__class__.__name__ == self.cls)
 
     def clean(self, value):
         if value is None:
@@ -514,7 +513,7 @@ class DictParameter(Parameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value) != types.DictType:
+        if isinstance(value, dict):
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -525,12 +524,14 @@ class DictParameter(Parameter):
                 if attr.default is not None:
                     out_value[a_name] = attr.default
                 else:
-                    self.raise_error(value,
-                                     "Attribute '%s' is required in %s" % (a_name, value))
+                    self.raise_error(
+                        value,
+                        "Attribute '%s' is required in %s" % (
+                            a_name, value))
             if a_name in in_value:
                 try:
                     out_value[a_name] = attr.clean(in_value[a_name])
-                except InterfaceTypeError, why:
+                except InterfaceTypeError as e:
                     if not in_value[a_name] and not attr.required:
                         if attr.default:
                             out_value[a_name] = attr.default
@@ -539,7 +540,7 @@ class DictParameter(Parameter):
                     else:
                         self.raise_error(
                             value,
-                            "Invalid value for '%s': %s" % (a_name, why))
+                            "Invalid value for '%s': %s" % (a_name, e))
                 del in_value[a_name]
         # Copy left items
         if not self.truncate:
@@ -550,7 +551,7 @@ class DictParameter(Parameter):
     def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value) != types.DictType:
+        if isinstance(value, dict):
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -572,7 +573,7 @@ class DictParameter(Parameter):
     def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        if type(value) != types.DictType:
+        if isinstance(value, dict):
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -585,8 +586,10 @@ class DictParameter(Parameter):
                 try:
                     out_value[a_name] = attr.script_clean_result(profile,
                                                              in_value[a_name])
-                except InterfaceTypeError, why:
-                    self.raise_error(value, "Invalid value for '%s': %s" % (a_name, str(why)))
+                except InterfaceTypeError as e:
+                    self.raise_error(
+                        value,
+                        "Invalid value for '%s': %s" % (a_name, str(e)))
                 del in_value[a_name]
         for k, v in in_value.items():
             out_value[k] = v
@@ -1032,7 +1035,7 @@ class RDParameter(Parameter):
                 if r > 65535:  # 4-byte ASN
                     self.raise_error(value)
             else:
-                if r > 0xFFFFFFFFL:  # 2-byte ASN
+                if r > 0xFFFFFFFF:  # 2-byte ASN
                     self.raise_error(value)
         return "%s:%s" % (l, r)
 
