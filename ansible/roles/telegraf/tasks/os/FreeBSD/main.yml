@@ -8,10 +8,16 @@
     - /usr/local/etc/telegraf
     - /usr/local/etc/telegraf/telegraf.d
 
+- name: Setting telegraf config
+  lineinfile: dest=/etc/rc.conf regexp=^telegraf_conf= line="telegraf_conf=\"/usr/local/etc/telegraf/telegraf.conf\""
+  tags:
+    - config
+
 - name: Setting telegraf flags
   lineinfile: dest=/etc/rc.conf regexp=^telegraf_flags= line="telegraf_flags=\"-config-directory /usr/local/etc/telegraf/telegraf.d\""
   tags:
     - config
+
 
 - name: Create newsyslog rules
   template: src="os/FreeBSD/telegraf.conf" dest="/usr/local/etc/newsyslog.conf.d/telegraf.conf"
