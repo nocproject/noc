@@ -16,7 +16,9 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Juniper.JUNOS"
     pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
-    pattern_prompt = r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
+    pattern_prompt = \
+        r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?" \
+        r"\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
     pattern_more = [
         (r"^---\(more.*?\)---", " "),
         (r"\? \[yes,no\] .*?", "y\n")
@@ -37,7 +39,9 @@ class Profile(BaseProfile):
         def c(v):
             v = v.upper()
             l, r = v.split("R")
-            return [int(x) for x in l.split(".")] + [int(x) for x in r.split(".")]
+            return [int(x) for x in l.split(".")] + [
+                int(x) for x in r.split(".")
+            ]
 
         return cmp(c(x), c(y))
 

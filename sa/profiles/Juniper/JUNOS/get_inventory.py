@@ -89,7 +89,8 @@ class Script(BaseScript):
         v = self.cli("show chassis hardware")
         objects = []
         chassis_sn = set()
-        for name, revision, part_no, serial, description in self.parse_hardware(v):
+        for name, revision, part_no, serial, description in \
+          self.parse_hardware(v):
             builtin = False
             # Detect type
             t, number = self.get_type(name)
@@ -125,7 +126,8 @@ class Script(BaseScript):
             elif serial == "BUILTIN" or serial in chassis_sn:
                 builtin = True
                 part_no = []
-            if t == "CHASSIS" and number is None and self.chassis_no is not None:
+            if t == "CHASSIS" and number is None \
+              and self.chassis_no is not None:
                 number = self.chassis_no
             # Submit object
             objects += [{

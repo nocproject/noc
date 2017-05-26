@@ -211,7 +211,8 @@ class Script(BaseScript):
                     # Set vlan_ids
                     if vlan_ids and (
                         "IPv4" in si["enabled_afi"] or
-                        "IPv6" in si["enabled_afi"]):
+                        "IPv6" in si["enabled_afi"]
+                    ):
                         si["vlan_ids"] = vlan_ids
                 if self.rx_flags_unnumbered.search(s):
                     match = self.rx_iface_unnumbered.search(s)
@@ -252,8 +253,10 @@ class Script(BaseScript):
             subs = i["subinterfaces"]
             for vrf in set(imap.get(si["name"], "default") for si in subs):
                 c = i.copy()
-                c["subinterfaces"] = [si for si in subs
-                                      if imap.get(si["name"], "default") == vrf]
+                c["subinterfaces"] = [
+                    si for si in subs
+                    if imap.get(si["name"], "default") == vrf
+                ]
                 vrfs[vrf]["interfaces"] += [c]
         return vrfs.values()
 

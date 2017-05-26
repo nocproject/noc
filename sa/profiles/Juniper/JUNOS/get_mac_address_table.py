@@ -11,7 +11,9 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
 
-rx_line = re.compile(r"(?P<vlan_name>[^ ]+)\s+(?P<mac>[^ ]+)\s+(?P<type>Learn|Static)\s+[^ ]+\s+(?P<interfaces>.*)$", re.IGNORECASE)
+rx_line = re.compile(
+    r"(?P<vlan_name>[^ ]+)\s+(?P<mac>[^ ]+)\s+(?P<type>Learn|Static)\s+"
+    r"[^ ]+\s+(?P<interfaces>.*)$", re.IGNORECASE)
 
 
 class Script(BaseScript):

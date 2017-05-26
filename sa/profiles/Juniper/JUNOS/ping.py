@@ -26,7 +26,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+      df=None, vrf=None):
         cmd = "ping no-resolve"
         if count:
             cmd += " count %d" % int(count)

@@ -12,12 +12,14 @@ import re
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP
 
+
 class Script(BaseScript):
     name = "Juniper.JUNOS.get_arp"
     interface = IGetARP
 
     rx_line = re.compile(
-        r"^(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2})\s+"
+        r"^(?P<mac>[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:[0-9a-f]{2}:"
+        r"[0-9a-f]{2}:[0-9a-f]{2})\s+"
         r"(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
         r"(?P<interface>\S+)"
     )

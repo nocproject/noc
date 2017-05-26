@@ -28,8 +28,10 @@ class Script(BaseScript):
     def execute(self):
         v = self.cli("show chassis mac-addresses")
         macs = []
-        for f, t in [(mac, MAC(mac).shift(int(count) - 1))
-                for _, mac, count in self.rx_range.findall(v)]:
+        for f, t in [
+            (mac, MAC(mac).shift(int(count) - 1))
+            for _, mac, count in self.rx_range.findall(v)
+        ]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:
