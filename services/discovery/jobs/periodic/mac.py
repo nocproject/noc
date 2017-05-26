@@ -9,6 +9,7 @@
 # Python modules
 import time
 # NOC modules
+from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.perf import metrics
 from noc.core.mac import MAC
@@ -46,7 +47,10 @@ class MACCheck(DiscoveryCheck):
             if not iface:
                 unknown_interfaces.add(ifname)
                 continue  # Interface not found
-            if not iface.profile or not iface.profile.mac_discovery:
+            ifprofile = iface.profile
+            if not ifprofile:
+                ifprofile = InterfaceProfile.get_default_profile()
+            if not ifprofile.mac_discovery:
                 disabled_by_profile.add(ifname)
                 continue  # MAC discovery disabled on interface
             data += ["\t".join((
@@ -55,7 +59,7 @@ class MACCheck(DiscoveryCheck):
                 mo_id,  # managed_object
                 int(MAC(v["mac"])),  # mac
                 ifname,  # interface
-                iface.profile.get_bi_id(),  # interface_profile
+                ifprofile.get_bi_id(),  # interface_profile
                 seg_id,  # segment
                 v.get("vlan_id", 0),  # vlan
                 iface.profile.is_uni  # is_uni
