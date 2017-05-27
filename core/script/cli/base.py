@@ -300,7 +300,6 @@ class CLI(object):
         seen = set()
         buffer = ""
         repeats = 0
-        repeats_n = 0
         r_key = None
         stop_sent = False
         done = False
@@ -323,17 +322,8 @@ class CLI(object):
             while buffer:
                 pr = parser(buffer)
                 if not pr:
-                    self.logger.debug("No new objects")
-                    repeats_n += 1
-                    if repeats_n >= 6 and cmd_stop and not stop_sent:
-                        # Stop loop
-                        # After 5 repeats for None
-                        self.logger.debug("Stopping stream. Sending %r" % cmd_stop)
-                        self.send(cmd_stop)
-                        stop_sent = True
                     break  # No new objects
                 key, obj, buffer = pr
-                repeats_n = 0
                 if key not in seen:
                     seen.add(key)
                     objects += [obj]
