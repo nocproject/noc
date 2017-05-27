@@ -189,7 +189,6 @@
     regexp: "127.0.0.1 consul"
     create: no
   become: false
-  with_items: "{% if 'nodes' in groups %}{{groups['nodes']}}{%endif%}"
   delegate_to: 127.0.0.1
   when: "'nodes' in groups"
   register: hostsc
