@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service stub for scripts and commands
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service stub for scripts and commands
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import threading
-## Third-party modules
+from collections import defaultdict
+# Third-party modules
 import tornado.ioloop
-## NOC modules
+# NOC modules
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from .rpc import RPCProxy
 from .config import Config
@@ -27,6 +28,7 @@ class ServiceStub(object):
         self.perf_metrics = metrics
         self.is_ready = threading.Event()
         self.config = None
+        self.ch_metrics = defaultdict(list)
 
     def start(self):
         t = threading.Thread(target=self._start)
@@ -61,3 +63,6 @@ class ServiceStub(object):
         """
         for t in self.config.rpc_retry_timeout.split(","):
             yield float(t)
+
+    def register_ch_metrics(self, fields, data):
+        self.ch_metrics[fields] += data
