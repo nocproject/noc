@@ -17,7 +17,7 @@
   yum:
     name: "{{ item }}"
     state: latest
-    update_cache: yes
+    update_cache: no
   with_items:
    - telegraf
   environment:
