@@ -168,8 +168,10 @@ class ThreadPoolExecutor(object):
         :return: 
         """
         with self.mutex:
-            return ((self._qsize() < len(self.waiters))
-                    or (self.max_workers > len(self.threads)))
+            return not self.to_shutdown and (
+                (self._qsize() < len(self.waiters))
+                or (self.max_workers > len(self.threads))
+            )
 
     def get_free_workers(self):
         """
@@ -177,6 +179,8 @@ class ThreadPoolExecutor(object):
         :return: 
         """
         with self.mutex:
+            if self.to_shutdown:
+                return 0
             return max(
                 self.max_workers - len(self.threads) - self._qsize() + len(self.waiters),
                 0
