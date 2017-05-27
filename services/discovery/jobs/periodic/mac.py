@@ -42,7 +42,7 @@ class MACCheck(DiscoveryCheck):
             total_macs += 1
             if v["type"] != "D" or not v["interfaces"]:
                 continue
-            ifname = v["interfaces"][0]
+            ifname = str(v["interfaces"][0])
             iface = self.get_interface_by_name(ifname)
             if not iface:
                 unknown_interfaces.add(ifname)

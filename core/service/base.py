@@ -761,7 +761,7 @@ class Service(object):
         with self.metrics_lock:
             data = self._ch_metrics
             self._ch_metrics = defaultdict(list)
-        for fields in metrics:
+        for fields in data:
             to_send = data[fields]
             while to_send:
                 chunk, to_send = to_send[:self.CH_CHUNK_SIZE], to_send[self.CH_CHUNK_SIZE:]
