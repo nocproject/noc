@@ -478,13 +478,21 @@ class Service(object):
             raise tornado.gen.Return()
         self.is_active = False
         self.logger.info("Deactivating")
-        for x in self.executors:
-            yield self.executors[x].shutdown()
-        yield self.on_deactivate()
+        # Shutdown API
+        self.logger.info("Shopping API")
+        self.server.stop()
         # Release registration
         if self.dcs:
+            self.logger.info("Deregistration")
             yield self.dcs.deregister()
             self.dcs = None
+        # Shutdown executors
+        if self.executors:
+            self.logger.info("Shutting down executors")
+            for x in self.executors:
+                yield self.executors[x].shutdown()
+        # Custom deactivation
+        yield self.on_deactivate()
         # Finally stop ioloop
         self.logger.info("Stopping IOLoop")
         self.ioloop.stop()
