@@ -513,7 +513,7 @@ class DictParameter(Parameter):
     def clean(self, value):
         if value is None and self.default is not None:
             return self.default
-        if isinstance(value, dict):
+        if not isinstance(value, dict):
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -551,7 +551,7 @@ class DictParameter(Parameter):
     def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        if isinstance(value, dict):
+        if not isinstance(value, dict):
             self.raise_error(value)
         if not self.attrs:
             return value
@@ -573,7 +573,7 @@ class DictParameter(Parameter):
     def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
             return self.default
-        if isinstance(value, dict):
+        if not isinstance(value, dict):
             self.raise_error(value)
         if not self.attrs:
             return value
