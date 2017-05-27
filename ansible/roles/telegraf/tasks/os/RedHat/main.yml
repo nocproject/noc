@@ -16,7 +16,7 @@
 - name: Install Telegraf packages
   yum:
     name: "{{ item }}"
-    state: latest
+    state: present
     update_cache: no
   with_items:
    - "telegraf-{{telegraf_version}}"
