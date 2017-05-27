@@ -85,8 +85,8 @@ class Command(BaseCommand):
             self.run_job(job, mo, checks)
 
     def run_job(self, job, mo, checks):
-        scheduler = Scheduler("discovery", pool=mo.pool.name)
-        scheduler.service = ServiceStub()
+        scheduler = Scheduler("discovery", pool=mo.pool.name,
+                              service=ServiceStub())
         jcls = self.jcls[job]
         # Try to dereference job
         job_args = scheduler.get_collection().find_one({
