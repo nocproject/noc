@@ -274,7 +274,7 @@ class ReportTraffic(SimpleReport):
                             r22 = 0
 
                         if zero:
-                            columns = [_("Managed Object"), _("Address"),
+                            columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
                                        TableColumn(_("Errors IN"), align="right"),
                                        TableColumn(_("Errors OUT"), align="right"),
                                        TableColumn(_("Discards IN"), align="right"),
@@ -294,7 +294,7 @@ class ReportTraffic(SimpleReport):
                                     interval
                                 )]
                         else:
-                            columns = [_("Managed Object"), _("Address"),
+                            columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
                                        TableColumn(_("Errors IN"), align="right"),
                                        TableColumn(_("Errors OUT"), align="right"),
                                        TableColumn(_("Discards IN"), align="right"),
