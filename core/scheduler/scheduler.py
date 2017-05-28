@@ -224,7 +224,7 @@ class Scheduler(object):
                 if n:
                     dt = min(dt, self.check_time / n)
                 yield tornado.gen.sleep(dt / 1000.0)
-        yield self.executor.submit(self.apply_ops)
+        self.apply_ops()
 
     def iter_pending_jobs(self, limit):
         """
