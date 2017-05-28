@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import print_function
 import os
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -18,7 +19,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.connect()
         self.ensure_db()
-        self.ensure_bi_models()
+        changed = self.ensure_bi_models()
+        if changed:
+            self.print("CHANGED")
+        else:
+            self.print("OK")
 
     def connect(self):
         """
@@ -32,11 +37,11 @@ class Command(BaseCommand):
         Ensure clickhouse database is exists
         :return: 
         """
-        self.stdout.write("Ensuring database\n")
+        self.print("Ensuring database")
         self.connect.ensure_db()
 
     def ensure_bi_models(self):
-        self.stdout.write("Ensuring BI models:\n")
+        self.print("Ensuring BI models:")
         models = set()
         # Get models
         for f in os.listdir("bi/models"):
@@ -47,9 +52,11 @@ class Command(BaseCommand):
             if model:
                 models.add(model)
         # Ensure fields
+        changed = False
         for model in models:
-            self.stdout.write("  * %s\n" % model._meta.db_table)
-            model.ensure_table()
+            self.print("  * %s" % model._meta.db_table)
+            changed |= model.ensure_table()
+        return changed
 
 if __name__ == "__main__":
     Command().run()
