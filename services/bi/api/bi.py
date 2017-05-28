@@ -18,7 +18,7 @@ from noc.core.clickhouse.model import Model
 from noc.main.models import User, Group
 from noc.bi.models.reboots import Reboots
 from noc.bi.models.alarms import Alarms
-from noc.bi.models.dashboard import Dashboard
+from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
 from noc.core.translation import ugettext as _
 
 
@@ -126,7 +126,6 @@ class BIAPI(API):
         * owner
         * created
         * changed
-        @todo: Access control
         :param q:
         :return:
         """
@@ -143,7 +142,7 @@ class BIAPI(API):
             "changed": d.changed.isoformat()
         } for d in Dashboard.objects.filter(aq).exclude("config")]
 
-    def _get_dashboard(self, id, access_level=0):
+    def _get_dashboard(self, id, access_level=DAL_RO):
         """
         Returns dashboard or None
         :param id:
@@ -351,3 +350,51 @@ class BIAPI(API):
             "id": g.id,
             "name": g.name
         } for g in qs]
+
+    @executor("query")
+    @api
+    def get_dashboard_access(self, id):
+        d = self._get_dashboard(id)
+        if not d:
+            return None
+        r = []
+        for ar in d.access:
+            i = {"level": ar.level}
+            if ar.user:
+                i["user"] = {
+                    "id": ar.user.id,
+                    "name": "%s %s" % (u.last_name, u.first_name)
+                }
+            if ar.group:
+                i["user"] = {
+                    "id": ar.group.id,
+                    "name": ar.group.name
+                }
+            r += [i]
+        return r
+
+    @executor("query")
+    @api
+    def set_dashboard_access(self, id, items):
+        """
+
+        :param id:
+        :param items:
+        :return:
+        """
+        d = self._get_dashboard(id)
+        if not d:
+            return False
+        if d.get_user_access(self.handler.current_user) < DAL_ADMIN:
+            return False
+        access = []
+        for i in items:
+            da = DashboardAccess(level=i["level"])
+            if i.get("user"):
+                da.user = User.objects.get(id=i["user"]["id"])
+            if i.get("group"):
+                da.group = Group.objects.get(id=i["group"]["id"])
+            access += [da]
+        d.access = access
+        d.save()
+        return True
