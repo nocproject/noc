@@ -485,7 +485,6 @@ class Service(object):
         if self.dcs:
             self.logger.info("Deregistration")
             yield self.dcs.deregister()
-            self.dcs = None
         # Shutdown executors
         if self.executors:
             self.logger.info("Shutting down executors")
@@ -494,6 +493,7 @@ class Service(object):
         # Custom deactivation
         yield self.on_deactivate()
         # Finally stop ioloop
+        self.dcs = None
         self.logger.info("Stopping IOLoop")
         self.ioloop.stop()
         m = {}
