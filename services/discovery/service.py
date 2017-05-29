@@ -26,7 +26,6 @@ class DiscoveryService(Service):
 
     def __init__(self):
         super(DiscoveryService, self).__init__()
-        self.scheduler = None
         self.send_callback = None
 
     @tornado.gen.coroutine
@@ -66,11 +65,6 @@ class DiscoveryService(Service):
         if self.scheduler:
             self.scheduler.apply_metrics(r)
         return r
-
-    @tornado.gen.coroutine
-    def on_deactivate(self):
-        if self.scheduler:
-            yield self.scheduler.shutdown()
 
 if __name__ == "__main__":
     DiscoveryService().start()

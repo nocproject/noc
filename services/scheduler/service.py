@@ -20,10 +20,6 @@ class SchedulerService(Service):
     leader_group_name = "scheduler"
     leader_lock_name = "scheduler"
 
-    def __init__(self):
-        super(SchedulerService, self).__init__()
-        self.scheduler = None
-
     @tornado.gen.coroutine
     def on_activate(self):
         self.scheduler = Scheduler(

@@ -19,10 +19,6 @@ class EscalatorService(Service):
     name = "escalator"
     leader_lock_name = "escalator"
 
-    def __init__(self):
-        super(EscalatorService, self).__init__()
-        self.scheduler = None
-
     @tornado.gen.coroutine
     def on_activate(self):
         self.scheduler = Scheduler(

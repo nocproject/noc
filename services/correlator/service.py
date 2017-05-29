@@ -75,10 +75,6 @@ class CorrelatorService(Service):
         )
         self.scheduler.run()
 
-    @tornado.gen.coroutine
-    def on_deactivate(self):
-        pass
-
     def load_config(self):
         """
         Load rules from database just after loading config
