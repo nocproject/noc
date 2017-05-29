@@ -298,9 +298,13 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
     logger.error(r)
     metrics["errors"] += 1
     if SENTRY_URL:
-        raven_client.captureException(
-            fingerprint=[fp]
-        )
+        try:
+            raven_client.captureException(
+                fingerprint=[fp]
+            )
+        except Exception as e:
+            logger.error("Failed to sent problem report to Sentry: %s",
+                         e)
     if ENABLE_CP:
         fp = error_fingerprint()
         path = os.path.join(CP_NEW, fp + ".json")
