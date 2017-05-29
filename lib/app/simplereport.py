@@ -10,8 +10,8 @@
 import cStringIO
 import csv
 import decimal
-import types
 import pprint
+from functools import reduce
 # Django modules
 from django.utils.dateformat import DateFormat
 # NOC modules
@@ -97,10 +97,11 @@ class Report(ReportNode):
     def append_section(self, s):
         self.sections += [s]
 
-    ##
-    ## Return XML code for report
-    ##
     def to_xml(self):
+        """
+        Return XML code for report
+        :return:
+        """
         s = [self.format_opening_xml_tag(name=self.name)]
         s += [self.indent("<sections>")]
         s += [self.indent(x.to_xml(), 2) for x in self.sections]
@@ -108,16 +109,18 @@ class Report(ReportNode):
         s += [self.format_closing_xml_tag()]
         return "\n".join(s)
 
-    ##
-    ## Return HTML code for report
-    ##
     def to_html(self):
+        """
+        Return HTML code for report
+        :return:
+        """
         return "\n".join([s.to_html() for s in self.sections])
 
-    ##
-    ## Return CSV for report
-    ##
     def to_csv(self):
+        """
+        Return CSV for report
+        :return:
+        """
         return "\n".join([x for x in [s.to_csv() for s in self.sections] if x])
 
 
@@ -219,30 +222,36 @@ class TableColumn(ReportNode):
         self.total_data = []
         self.subtotal_data = []
 
-    ##
-    ## Check column has total
-    ##
     @property
     def has_total(self):
+        """
+        Check column has total
+        :return:
+        """
         return self.total
 
-    ##
-    ## Reset sub-totals
-    ##
     def start_section(self):
+        """
+        Reset sub-totals
+        :return:
+        """
         self.subtotal_data = []
 
-    ##
-    ## Contribute data to totals
-    ##
     def contribute_data(self, s):
+        """
+        Contribute data to totals
+        :param s:
+        :return:
+        """
         if self.total:
             self.total_data += [s]
 
-    ##
-    ## Return formatted cell
-    ##
     def format_data(self, s):
+        """
+        Return formatted cell
+        :param s:
+        :return:
+        """
         if s is None or s == "":
             return ""
         elif not self.format:
@@ -250,18 +259,23 @@ class TableColumn(ReportNode):
         else:
             return self.format(s)
 
-    ##
-    ## Return XML representation of column
-    ##
     def to_xml(self):
-        return self.format_opening_xml_tag(name=self.name,
-                                           align=self.align) + self.quote(
-            self.title) + self.format_closing_xml_tag()
+        """
+        Return XML representation of column
+        :return:
+        """
+        return (
+            self.format_opening_xml_tag(
+                name=self.name, align=self.align) +
+            self.quote(self.title) +
+            self.format_closing_xml_tag()
+        )
 
-    ##
-    ## Return quoted HTML TD attributes
-    ##
     def html_td_attrs(self):
+        """
+        Return quoted HTML TD attributes
+        :return:
+        """
         attrs = {}
         if self.align:
             if self.align & self.H_ALIGN_MASK == self.ALIGN_LEFT:
@@ -273,19 +287,22 @@ class TableColumn(ReportNode):
         return " " + " ".join(
             ["%s='%s'" % (k, self.quote(v)) for k, v in attrs.items()])
 
-    ##
-    ## Render single cell
-    ##
     def format_html(self, s):
+        """
+        Render single cell
+        :param s:
+        :return:
+        """
         d = self.format_data(s)
         if type(d) != SafeString:
             d = self.quote(d)
         return "<td%s>%s</td>" % (self.html_td_attrs(), d)
 
-    ##
-    ## Render totals
-    ##
     def format_html_total(self):
+        """
+        Render totals
+        :return:
+        """
         if self.total:
             total = self.format_data(self.total(self.total_data))
         elif self.total_label:
@@ -294,10 +311,12 @@ class TableColumn(ReportNode):
             total = ""
         return "<td%s><b>%s</b></td>" % (self.html_td_attrs(), total)
 
-    ##
-    ## Render subtotals
-    ##
     def format_html_subtotal(self, d):
+        """
+        Render subtotals
+        :param d:
+        :return:
+        """
         if self.total:
             total = self.format_data(self.total(d))
         elif self.total_label:
@@ -306,28 +325,36 @@ class TableColumn(ReportNode):
             total = ""
         return "<td%s><b>%s</b></td>" % (self.html_td_attrs(), total)
 
-    ##
-    ## Display date according to settings
-    ##
     def f_date(self, f):
+        """
+        Display date according to settings
+        :param f:
+        :return:
+        """
         return DateFormat(f).format(settings.DATE_FORMAT)
 
-    ##
-    ## Display time according to settings
-    ##
     def f_time(self, f):
+        """
+        Display time according to settings
+        :param f:
+        :return:
+        """
         return DateFormat(f).format(settings.TIME_FORMAT)
 
-    ##
-    ## Display date and time according to settings
-    ##
     def f_datetime(self, f):
+        """
+        Display date and time according to settings
+        :param f:
+        :return:
+        """
         return DateFormat(f).format(settings.DATETIME_FORMAT)
 
-    ##
-    ## Display pretty size
-    ##
     def f_size(self, f):
+        """
+        Display pretty size
+        :param f:
+        :return:
+        """
         f = decimal.Decimal(f)
         for limit, divider, suffix in SIZE_DATA:
             if f < limit:
@@ -335,13 +362,15 @@ class TableColumn(ReportNode):
         limit, divider, suffix = SIZE_DATA[-1]
         return ("%8.2%s" % (f / divider, suffix)).strip()
 
-    ##
-    ## Display pretty numeric
-    ##
     def f_numeric(self, f):
+        """
+        Display pretty numeric
+        :param f:
+        :return:
+        """
         if not f:
             return "0"
-        if type(f) == types.FloatType:
+        if isinstance(f, float):
             f = str(f)
         try:
             f = decimal.Decimal(f)
@@ -463,10 +492,11 @@ class TableSection(ReportSection):
         s += [self.format_closing_xml_tag()]
         return "\n".join(s)
 
-    ##
-    ## Return HTML representation of table
-    ##
     def to_html(self):
+        """
+        Return HTML representation of table
+        :return:
+        """
         def render_subtotals():
             if not current_section.data:
                 return []
@@ -531,7 +561,7 @@ class TableSection(ReportSection):
                 s += ["</tr>"]
                 # Render las subtotal
             if (current_section and self.has_total and
-                current_section.subtotal):
+                    current_section.subtotal):
                 # Display totals from previous sections
                 s += render_subtotals()
             # Render totals
@@ -557,10 +587,11 @@ class TableSection(ReportSection):
         s += ["</script>"]
         return "\n".join(s)
 
-    ##
-    ## Return CSV representation of table
-    ##
     def to_csv(self):
+        """
+        Return CSV representation of table
+        :return:
+        """
         f = cStringIO.StringIO()
         writer = csv.writer(f)
         if self.enumerate:
@@ -585,16 +616,13 @@ class TableSection(ReportSection):
         return f.getvalue()
 
 
-#
-#
-#
 class MatrixSection(ReportSection):
-    ##
-    ## Data is a list of (row,column,data)
-    ##
-    def __init__(self, name, data=[], enumerate=False):
+    """
+    Data is a list of (row, column, data)
+    """
+    def __init__(self, name, data=None, enumerate=False):
         super(ReportSection, self).__init__(name=name)
-        self.data = data
+        self.data = data or []
         self.enumerate = enumerate
 
     def to_html(self):

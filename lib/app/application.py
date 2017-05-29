@@ -11,11 +11,10 @@ import logging
 import os
 import datetime
 import functools
-import types
 # Django modules
 from django.template import RequestContext
-from django.http import HttpResponse, HttpResponseRedirect,\
-                        HttpResponseForbidden, HttpResponseNotFound
+from django.http import (HttpResponse, HttpResponseRedirect,
+                         HttpResponseForbidden, HttpResponseNotFound)
 from django.shortcuts import render_to_response
 from django.db import connection
 from django.shortcuts import get_object_or_404
@@ -28,6 +27,7 @@ from django.utils.timezone import get_current_timezone
 from django.views.static import serve as serve_static
 from django.http import Http404
 import ujson
+import six
 # NOC modules
 from access import HasPerm, Permit, Deny
 from site import site
@@ -54,9 +54,9 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None,
         f.url = url
         f.url_name = url_name
         # Process access
-        if type(access) == bool:
+        if isinstance(access, bool):
             f.access = Permit() if access else Deny()
-        elif isinstance(access, basestring):
+        elif isinstance(access, six.string_types):
             f.access = HasPerm(access)
         else:
             f.access = access
@@ -163,9 +163,10 @@ class Application(object):
         f.im_self = func.im_self
         f.__name__ = func.__name__
         # Add to class
-        cls.add_to_class(name,
-            view(url=url, access=access, url_name=url_name, menu=menu,
-                method=method, validate=validate, api=api)(f))
+        cls.add_to_class(
+            name, view(url=url, access=access, url_name=url_name,
+                       menu=menu, method=method, validate=validate,
+                       api=api)(f))
         site.add_contributor(cls, func.im_self)
 
     @property
@@ -231,7 +232,7 @@ class Application(object):
         """
         Return path to named template
         """
-        if isinstance(template, basestring):
+        if isinstance(template, six.string_types):
             template = [template]
         r = []
         for t in template:
@@ -390,9 +391,6 @@ class Application(object):
         """
         return escape(s)
 
-    ##
-    ## Logging
-    ##
     def debug(self, message):
         self.logger.debug(message)
 
@@ -459,7 +457,7 @@ class Application(object):
             if "access" in c:
                 if isinstance(c["access"], HasPerm):
                     p.add(c["access"].get_permission(self))
-                elif isinstance(c["access"], basestring):
+                elif isinstance(c["access"], six.string_types):
                     p.add("%s:%s" % (prefix, c["access"]))
         # extra_permissions
         if callable(self.extra_permissions):
@@ -595,7 +593,7 @@ class Application(object):
         access = mc["access"]
         if type(access) == bool:
             access = Permit() if access else Deny()
-        elif isinstance(access, basestring):
+        elif isinstance(access, six.string_types):
             access = HasPerm(access)
         else:
             access = access
@@ -653,7 +651,6 @@ class Application(object):
           access=True, api=True)
     def api_get_mrt_result(self, request, name, task):
         from noc.sa.models.reducetask import ReduceTask
-        from noc.sa.models.managedobjectselector import ManagedObjectSelector
 
         # Check MRT configured
         if name not in self.mrt_config:
