@@ -397,8 +397,8 @@ class Service(object):
     def update_service_address(self):
         """
         Update service address and port from tornado TCPServer
-        :param server: 
-        :return: 
+        :param server:
+        :return:
         """
         for f in self.server._sockets:
             sock = self.server._sockets[f]
@@ -748,7 +748,7 @@ class Service(object):
         Register metrics to send (Clickhouse version)
         :param fields: String containing "<table>.<field1>...<fieldN>"
         :param metrics: list of tab-separated strings with values
-        :return: 
+        :return:
         """
         with self.metrics_lock:
             if not self.ch_metrics_callback:
@@ -821,7 +821,7 @@ class Service(object):
         Return backend weight for weighted load balancers
         (i.e. traefik).
         Return None for default weight
-        :return: 
+        :return:
         """
         return None
 
@@ -830,6 +830,6 @@ class Service(object):
         Return backend connection limit for load balancers
         (i.e. traefik)
         Return None for no limits
-        :return: 
+        :return:
         """
         return None

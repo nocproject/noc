@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## RPC Wrapper
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service loader
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
+from __future__ import absolute_import
 _service = None
 
 
@@ -19,7 +20,7 @@ def get_service():
     global _service
 
     if not _service:
-        from stub import ServiceStub
+        from .stub import ServiceStub
         _service = ServiceStub()
         _service.start()
         _service.is_ready.wait()

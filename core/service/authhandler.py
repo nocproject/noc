@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Authenticated Request Handler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Authenticated Request Handler
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 from threading import Lock
-## Third-party modules
+# Third-party modules
 import cachetools
 import tornado.web
-## NOC modules
+# NOC modules
 from noc.main.models import User
 
 user_lock = Lock()

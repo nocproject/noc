@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service control api
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service control api
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import cStringIO
 import logging
-## NOC modules
-from api import API, api
+# NOC modules
+from .api import API, api
 
 
 class CtlAPI(API):
@@ -84,7 +85,7 @@ class CtlAPI(API):
     def inc_verbosity(self):
         """
         Increase logging verbosity
-        :return: 
+        :return:
         """
         current_level = logging.root.getEffectiveLevel()
         new_level = max(logging.DEBUG, current_level - 10)
@@ -96,7 +97,7 @@ class CtlAPI(API):
     def dec_verbosity(self):
         """
         Decrease logging verbosity
-        :return: 
+        :return:
         """
         current_level = logging.root.getEffectiveLevel()
         new_level = min(logging.CRITICAL, current_level + 10)
