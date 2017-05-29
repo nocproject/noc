@@ -21,8 +21,9 @@ class MacroRegistry(Registry):
     subdir = "parsers/macros"
     classname = "Macro"
     apps = ["noc.kb"]
-    exclude_daemons = ["noc-sae", "debug-script",
-                     "noc-correlator", "noc-classifier"]
+    exclude_daemons = [
+        "noc-sae", "debug-script", "noc-correlator", "noc-classifier"
+    ]
 macro_registry = MacroRegistry()
 
 
@@ -31,7 +32,7 @@ macro_registry = MacroRegistry()
 #
 class MacroBase(type):
     def __new__(cls, name, bases, attrs):
-        m = type.__new__(cls,name, bases,attrs)
+        m = type.__new__(cls, name, bases, attrs)
         macro_registry.register(m.name, m)
         return m
 #
@@ -52,7 +53,7 @@ class Macro(object):
     # Converts a string of html-like attributes to hash
     #
     @classmethod
-    def parse_args(cls,args):
+    def parse_args(cls, args):
         if type(args) == types.DictType:
             return args
         return dict([(m[0], m[2]) for m in rx_args.findall(args)])
