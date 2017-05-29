@@ -17,7 +17,7 @@ class Profile(BaseProfile):
         (r"^More: <space>,  Quit: q, One line: <return>$", " "),
         (r"^More\? Enter - next line; Space - next page; Q - quit; R - show the rest.", "r"),
         (r"\[Yes/press any key for no\]", "Y")
-        ]
+    ]
     pattern_unpriveleged_prompt = r"^\S+> "
     pattern_syntax_error = r"^% (Unrecognized command|Incomplete command|Wrong number of parameters or invalid range, size or characters entered)$"
     command_disable_pager = "terminal datadump"
