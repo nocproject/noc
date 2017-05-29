@@ -36,7 +36,7 @@ class Script(BaseScript):
         v = self.cli("show version", cached=True)
         try:
             vmatch = self.re_search(self.rx_ver, v)
-        except
+        except:
             vmatch = self.re_search(self.rx_ver2, v)
             return {
                 "vendor": "Cisco",
