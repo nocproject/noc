@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import os
 import threading
 import thread
 import logging
@@ -21,7 +22,10 @@ from tornado.gen import with_timeout
 logger = logging.getLogger(__name__)
 
 DEFAULT_IDLE_TIMEOUT = 30
-DEFAULT_SHUTDOWN_TIMEOUT = 60
+DEFAULT_SHUTDOWN_TIMEOUT = int(os.environ.get(
+    "NOC_SHUTDOWN_TIMEOUT",
+    60
+))
 
 
 class ThreadPoolExecutor(object):
