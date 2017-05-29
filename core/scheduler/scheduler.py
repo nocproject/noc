@@ -363,9 +363,11 @@ class Scheduler(object):
                 self.logger.error(
                     "Cannot apply bulk operations: %s [%s]",
                     e.details, e.code)
+                metrics["%s_bulk_failed" % self.name] += 1
                 return
             except Exception as e:
                 self.logger.error("Cannot apply bulk operations: %s", e)
+                metrics["%s_bulk_failed" % self.name] += 1
                 return
             finally:
                 self.reset_bulk_ops()
