@@ -30,6 +30,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 ["object_name", __("Object Name"), true],
                 ["object_address", __("IP"), true],
                 ["object_platform", __("Platform"), true],
+                ["object_version", __("Version"), true],
                 ["alarm_class", __("Alarm Class"), true],
                 ["objects", __("Affected Objects"), true],
                 ["subscribers", __("Affected Subscriber"), true],

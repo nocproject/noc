@@ -25,6 +25,7 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.objectpath import ObjectPath
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
 
 
 class ReportAlarmDetailApplication(ExtApplication):
@@ -87,6 +88,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             "object_name",
             "object_address",
             "object_platform",
+            "object_version",
             "alarm_class",
             "objects",
             "subscribers",
@@ -103,6 +105,7 @@ class ReportAlarmDetailApplication(ExtApplication):
          "OBJECT_NAME",
          "OBJECT_ADDRESS",
          "OBJECT_PLATFORM",
+         "OBJECT_VERSION",
          "ALARM_CLASS",
          "OBJECTS",
          "SUBSCRIBERS",
@@ -137,6 +140,7 @@ class ReportAlarmDetailApplication(ExtApplication):
                 q["adm_path"] = {"$in": [int(administrative_domain)]}
             except bson.errors.InvalidId:
                 pass
+        attr = ReportObjectAttributes([])
         if source in ["archive", "both"]:
             # Archived Alarms
             for a in ArchivedAlarm._get_collection().find(q).sort(
@@ -175,7 +179,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     mo.name,
                     mo.address,
-                    mo.platform,
+                    attr[mo][2] if attr else "",
+                    attr[mo][1] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     total_objects,
                     total_subscribers,
@@ -221,7 +226,8 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     mo.name,
                     mo.address,
-                    mo.platform,
+                    attr[mo][2] if attr else "",
+                    attr[mo][1] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     total_objects,
                     total_subscribers,
