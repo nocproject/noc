@@ -133,6 +133,8 @@ class Service(object):
         self.port = None
         self.is_active = False
         self.close_callbacks = []
+        # Can be initialized in subclasses
+        self.scheduler = None
 
     def create_parser(self):
         """
@@ -485,6 +487,14 @@ class Service(object):
         if self.dcs:
             self.logger.info("Deregistration")
             yield self.dcs.deregister()
+        # Shutdown schedulers
+        if self.scheduler:
+            try:
+                self.logger.info("Shutting down scheduler")
+                yield self.scheduler.shutdown()
+            except tornado.gen.TimeoutError:
+                self.logger.info(
+                    "Timed out when shutting down scheduler")
         # Shutdown executors
         if self.executors:
             self.logger.info("Shutting down executors")
