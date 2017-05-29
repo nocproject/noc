@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Distributed coordinated storage
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Distributed coordinated storage
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import uuid
 import random
 import time
-## Third-party modules
+# Third-party modules
 from six.moves.urllib.parse import unquote
 import tornado.gen
 import tornado.ioloop
@@ -18,90 +19,11 @@ import tornado.httpclient
 import consul.base
 import consul.tornado
 import ujson
-## NOC modules
-from base import DCSBase, ResolverBase
+# NOC modules
+from .base import DCSBase, ResolverBase
 from noc.core.perf import metrics
-
-ConsulRepeatableErrors = consul.base.Timeout
-
-CONSUL_CONNECT_TIMEOUT = 5
-CONSUL_REQUEST_TIMEOUT = 3600
-CONSUL_NEAR_RETRY_TIMEOUT = 1
-
-
-class ConsulHTTPClient(consul.tornado.HTTPClient):
-    """
-    Gentler version of tornado http client
-    """
-    @tornado.gen.coroutine
-    def _request(self, callback, request):
-        client = tornado.httpclient.AsyncHTTPClient(
-            force_instance=True,
-            max_clients=1
-        )
-        try:
-            response = yield client.fetch(request)
-        except tornado.httpclient.HTTPError as e:
-            if e.code == 599:
-                raise consul.base.Timeout
-            response = e.response
-        finally:
-            client.close()
-            # Resolve CurlHTTPClient circular dependencies
-            client._force_timeout_callback = None
-            client._multi = None
-        raise tornado.gen.Return(callback(self.response(response)))
-
-    def get(self, callback, path, params=None):
-        uri = self.uri(path, params)
-        request = tornado.httpclient.HTTPRequest(
-            uri,
-            method="GET",
-            validate_cert=self.verify,
-            connect_timeout=CONSUL_CONNECT_TIMEOUT,
-            request_timeout=CONSUL_REQUEST_TIMEOUT
-        )
-        return self._request(callback, request)
-
-    def put(self, callback, path, params=None, data=""):
-        uri = self.uri(path, params)
-        request = tornado.httpclient.HTTPRequest(
-            uri,
-            method="PUT",
-            body="" if data is None else data,
-            validate_cert=self.verify,
-            connect_timeout=CONSUL_CONNECT_TIMEOUT,
-            request_timeout=CONSUL_REQUEST_TIMEOUT
-        )
-        return self._request(callback, request)
-
-    def delete(self, callback, path, params=None):
-        uri = self.uri(path, params)
-        request = tornado.httpclient.HTTPRequest(
-            uri,
-            method="DELETE",
-            validate_cert=self.verify,
-            connect_timeout=CONSUL_CONNECT_TIMEOUT,
-            request_timeout=CONSUL_REQUEST_TIMEOUT
-        )
-        return self._request(callback, request)
-
-    def post(self, callback, path, params=None, data=''):
-        uri = self.uri(path, params)
-        request = tornado.httpclient.HTTPRequest(
-            uri,
-            method='POST',
-            body=data,
-            validate_cert=self.verify,
-            connect_timeout=CONSUL_CONNECT_TIMEOUT,
-            request_timeout=CONSUL_REQUEST_TIMEOUT
-        )
-        return self._request(callback, request)
-
-
-class ConsulClient(consul.base.Consul):
-    def connect(self, host, port, scheme, verify=True):
-        return ConsulHTTPClient(host, port, scheme, verify=verify)
+from noc.core.consul import (ConsulClient, ConsulRepeatableErrors,
+                             CONSUL_NEAR_RETRY_TIMEOUT)
 
 
 class ConsulResolver(ResolverBase):
@@ -134,7 +56,7 @@ class ConsulResolver(ResolverBase):
 class ConsulDCS(DCSBase):
     """
     Consul-based DCS
-    
+
     URL format:
     consul://<address>[:<port>]/<kv root>?token=<token>&check_interval=<...>&check_timeout=<...>&release_after=<...>
     """
@@ -207,7 +129,7 @@ class ConsulDCS(DCSBase):
     def create_session(self):
         """
         Create consul session
-        :return: 
+        :return:
         """
         self.logger.info("Creating session")
         # @todo: Add http healthcheck
@@ -387,7 +309,7 @@ class ConsulDCS(DCSBase):
         Acquire shard slot
         :param name: <service name>-<pool>
         :param limit: Configured limit
-        :return: (slot number, number of instances) 
+        :return: (slot number, number of instances)
         """
         if not self.session:
             yield self.create_session()
