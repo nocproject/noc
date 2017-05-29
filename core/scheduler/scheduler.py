@@ -192,7 +192,7 @@ class Scheduler(object):
     def scheduler_tick(self):
         """
         Process single scheduler tick
-        :return: 
+        :return:
         """
         n = 0
         try:
@@ -525,8 +525,8 @@ class Scheduler(object):
     def apply_metrics(self, d):
         """
         Append scheduler metrics to dictionary d
-        :param d: 
-        :return: 
+        :param d:
+        :return:
         """
         if self.executor:
             self.executor.apply_metrics(d)

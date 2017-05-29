@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service config implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service config implementation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## Third-party modules
+# Third-party modules
 import yaml
-## NOC modules
+# NOC modules
 from noc.lib.version import get_brand
 
 

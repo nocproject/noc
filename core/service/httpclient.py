@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Global HTTP Client setup
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Global HTTP Client setup
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
-import os
+# Python modules
 import logging
-## Third-party modules
+# Third-party modules
 import tornado.httpclient
 
 logger = logging.getLogger(__name__)

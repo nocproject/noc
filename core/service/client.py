@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Synchronous RPC Client
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Synchronous RPC Client
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import errno
-## Third-party modules
+# Third-party modules
 import pycurl
-## NOC modules
+# NOC modules
 from .loader import get_service
 
 

@@ -1,28 +1,29 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## RPC Wrapper
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# RPC Wrapper
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import itertools
 import logging
 import socket
 import time
 import random
-## Third-party modules
+# Third-party modules
 import tornado.concurrent
 import tornado.gen
 import tornado.httpclient
 import ujson
 from six.moves import queue
-## NOC modules
+# NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from client import (RPCError, RPCNoService, RPCHTTPError,
+from .client import (RPCError, RPCNoService, RPCHTTPError,
                     RETRY_SOCKET_ERRORS, RPCException, RPCRemoteError)
-import httpclient  # Setup global httpclient
+from . import httpclient  # Setup global httpclient
 from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
@@ -143,7 +144,7 @@ class RPCProxy(object):
             method, args, kwargs
         )
         metrics["rpc_call_%s_%s" % (self._service_name, method)] += 1
-        tid = self._tid.next()
+        tid = next(self._tid)
         msg = {
             "method": method,
             "params": list(args)

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service API handler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service API handler
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import namedtuple
-## Third-party modules
+# Third-party modules
 import tornado.web
 import tornado.gen
 import ujson
-## NOC modules
+# NOC modules
 from noc.core.debug import error_report
 
 
@@ -35,8 +35,8 @@ class APIRequestHandler(tornado.web.RequestHandler):
         # Parse JSON
         try:
             req = ujson.loads(self.request.body)
-        except ValueError, why:
-            self.api_error(why)
+        except ValueError as e:
+            self.api_error(e)
             raise tornado.gen.Return()
         # Parse request
         id = req.get("id")
@@ -56,19 +56,6 @@ class APIRequestHandler(tornado.web.RequestHandler):
                 id=id
             )
             raise tornado.gen.Return()
-        # lock = getattr(h, "lock", None)
-        # if lock:
-        #     # Locked call
-        #     try:
-        #         lock_name = lock % self.service.config
-        #         with self.service.lock(lock_name):
-        #             result = h(*params)
-        #     except Exception, why:
-        #         return self.api_error(
-        #             "Failed: %s" % why,
-        #             id=id
-        #         )
-        # else:
         calling_service = self.request.headers.get(
             self.CALLING_SERVICE_HEADER,
             "unknown"
@@ -103,15 +90,15 @@ class APIRequestHandler(tornado.web.RequestHandler):
                     "error": None,
                     "result": result
                 }))
-        except APIError, why:
+        except APIError as e:
             self.api_error(
-                "Failed: %s" % why,
+                "Failed: %s" % e,
                 id=id
             )
-        except Exception, why:
+        except Exception as e:
             error_report()
             self.api_error(
-                "Failed: %s" % why,
+                "Failed: %s" % e,
                 id=id
             )
 
@@ -156,7 +143,8 @@ class API(object):
         ]
 
     def redirect(self, location, method, params):
-        raise tornado.gen.Return(Redirect(location=location, method=method, params=params))
+        raise tornado.gen.Return(Redirect(location=location,
+                                          method=method, params=params))
 
 
 def api(method):
