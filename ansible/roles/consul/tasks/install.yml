@@ -17,6 +17,7 @@
   shell: "grep {{ consul_pkg }} {{ consul_temp_file_checksum }}"
   register: consul_sha256
   delegate_to: 127.0.0.1
+  become: no
   run_once: yes
   changed_when: false
   tags:
