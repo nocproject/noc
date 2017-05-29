@@ -12,6 +12,7 @@ import thread
 import logging
 import itertools
 import time
+import datetime
 from collections import deque
 # Third-party modules
 from concurrent.futures import Future
@@ -128,8 +129,11 @@ class ThreadPoolExecutor(object):
             self.done_event.wait(timeout=self.shutdown_timeout)
             return self.done_future
         else:
-            return with_timeout(timeout=self.shutdown_timeout,
-                                future=self.done_future)
+            return with_timeout(
+                timeout=datetime.timedelta(
+                    seconds=self.shutdown_timeout),
+                future=self.done_future
+            )
 
     def worker(self):
         t = threading.current_thread()
