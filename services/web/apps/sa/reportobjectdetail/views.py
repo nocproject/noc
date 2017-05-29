@@ -38,6 +38,33 @@ from noc.inv.models.object import Object
 # @todo ReportDiscovery Problem
 
 
+class ReportObjectDetailLinks(object):
+    """Report for MO links detail"""
+    def __init__(self, mo_ids):
+        self.mo_ids = mo_ids
+        self.out = self.load(mo_ids)
+
+    @staticmethod
+    def load(mo_ids):
+        match = {"int.managed_object": {"$in": mo_ids}}
+        group = {"_id": "$int.managed_object",
+                 "links": {"$push": {"link": "$_id",
+                                     "iface_n": "$int.name",
+                                     "iface_id": "$int._id",
+                                     "mo": "$int.managed_object"}}}
+        value = get_db()["noc.links"].aggregate([
+            {"$unwind": "$interfaces"},
+            {"$lookup": {"from": "noc.interfaces", "localField": "interfaces", "foreignField": "_id", "as": "int"}},
+            {"$match": match},
+            {"$group": group}
+        ], read_preference=ReadPreference.SECONDARY_PREFERRED)
+
+        return dict((v["_id"][0], v["links"]) for v in value["result"] if v["_id"])
+
+    def __getitem__(self, item):
+        return self.out.get(item, [])
+
+
 class ReportDiscoveryResult(object):
     """Report for Discovery Result"""
     def __init__(self, mo_ids):
@@ -151,10 +178,11 @@ class ReportObjectIfacesTypeStat(object):
 
 class ReportObjectIfacesStatusStat(object):
     """Report for interfaces speed and status count"""
-    def __init__(self, mo_ids, columns=list("-")):
+    def __init__(self, mo_ids, columns=list("-"), oper=True):
         self.mo_ids = mo_ids
         # self.columns = ["1G_UP", "1G_DOWN"]
         self.columns = columns
+        self.oper = oper
         self.out = self.load()
 
     def load(self):
@@ -168,14 +196,18 @@ class ReportObjectIfacesStatusStat(object):
         { "_id" : { "oper_status" : false, "in_speed" : 100000, "managed_object" : 6757 }, "count_in_speed" : 1 }
         :return:
         """
+        group = {"in_speed": "$in_speed",
+                 "managed_object": "$managed_object"}
+        if self.oper:
+            group["oper_status"] = "$oper_status"
+
         match = {"type": "physical"}
         if self.mo_ids:
             match = {"type": "physical",
                      "managed_object": {"$in": self.mo_ids}}
         value = get_db()["noc.interfaces"].aggregate([
             {"$match": match},
-            {"$group": {"_id": {"oper_status": "$oper_status", "in_speed": "$in_speed",
-                                "managed_object": "$managed_object"},
+            {"$group": {"_id": group,
                         "count": {"$sum": 1}}}
         ], read_preference=ReadPreference.SECONDARY_PREFERRED)
         def_l = [""] * len(self.columns)
@@ -185,7 +217,7 @@ class ReportObjectIfacesStatusStat(object):
                 True: "Up",
                 False: "Down",
                 None: "-"
-            }[v["_id"].get("oper_status", None)]
+            }[v["_id"].get("oper_status", None)] if self.oper else ""
 
             if v["_id"].get("in_speed", None):
                 c += "/" + self.humanize_speed(v["_id"]["in_speed"])
@@ -220,7 +252,7 @@ class ReportObjectIfacesStatusStat(object):
 class ReportObjectAttributes(object):
     def __init__(self, mo_ids):
         self.mo_ids = mo_ids
-        self.attr_list = ["vendor", "version", "platform", "Serial Number"]
+        self.attr_list = ["vendor", "version", "platform", "Serial Number", "HW version"]
         self.out = self.load(self.attr_list)
 
     @staticmethod
@@ -247,8 +279,8 @@ class ReportObjectAttributes(object):
         query2 = " ".join([value_select % tuple([al, al.replace(" ", "_"), al.replace(" ", "_")]) for al in attr_list])
         query = query1 + query2
         cursor.execute(query)
-        mo_attrs.update(dict([(c[0], c[1:5]) for c in cursor]))
-        print mo_attrs
+        mo_attrs.update(dict([(c[0], c[1:6]) for c in cursor]))
+        # print mo_attrs
 
         return mo_attrs
 
@@ -282,6 +314,9 @@ class ReportObjects(object):
     def __getitem__(self, item):
         # @todo Create dynamic column
         return self.element[item]
+
+    def get_all(self):
+        return {e: self.element for e in self}
 
 
 class ReportObjectsHostname(object):
