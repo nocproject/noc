@@ -337,7 +337,7 @@ class BIAPI(API):
             "username": u.username,
             "full_name": "%s %s" % (u.last_name, u.first_name)
         } for u in qs),
-            key=lambda u: u["name"])
+            key=lambda u: u["username"])
 
     @executor("query")
     @api
@@ -363,10 +363,10 @@ class BIAPI(API):
             if ar.user:
                 i["user"] = {
                     "id": ar.user.id,
-                    "name": "%s %s" % (u.last_name, u.first_name)
+                    "name": "%s %s" % (ar.user.last_name, ar.user.first_name)
                 }
             if ar.group:
-                i["user"] = {
+                i["group"] = {
                     "id": ar.group.id,
                     "name": ar.group.name
                 }
