@@ -46,7 +46,7 @@ class Rule(nosql.EmbeddedDocument):
             self.maxscale_zoom == other.maxscale_zoom and
             self.rule_filter == other.rule_filter and
             self.symbolizers == other.symbolizers
-            )
+        )
 
 
 class Style(nosql.Document):
@@ -168,8 +168,10 @@ class Overlay(nosql.Document):
             m = __import__("noc.gis.overlays.%s" % self.overlay, {}, {}, "*")
             for n in dir(m):
                 o = getattr(m, n)
-                if (inspect.isclass(o) and o != OverlayHandler and
-                    issubclass(o, OverlayHandler)):
+                if (
+                    inspect.isclass(o) and o != OverlayHandler and
+                    issubclass(o, OverlayHandler)
+                ):
                     self._overlay_cache[self.overlay] = o
                     break
         h = self._overlay_cache[self.overlay]
