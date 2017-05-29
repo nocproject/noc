@@ -117,7 +117,7 @@ class ThreadPoolExecutor(object):
     def shutdown(self, sync=False):
         logging.info("Shutdown")
         with self.mutex:
-            self.done_future = with_timeout(timeout=self.shutdown_timeout)
+            self.done_future = Future()
             if not sync:
                 self.done_event = threading.Event()
             self.to_shutdown = True
@@ -126,7 +126,10 @@ class ThreadPoolExecutor(object):
         logging.info("Waiting for workers")
         if sync:
             self.done_event.wait(timeout=self.shutdown_timeout)
-        return self.done_future
+            return self.done_future
+        else:
+            return with_timeout(timeout=self.shutdown_timeout,
+                                future=self.done_future)
 
     def worker(self):
         t = threading.current_thread()
@@ -166,32 +169,33 @@ class ThreadPoolExecutor(object):
         """
         Returns true when it possible to submit job
         without overflowing thread limits
-        :return: 
+        :return:
         """
         with self.mutex:
             return not self.to_shutdown and (
-                (self._qsize() < len(self.waiters))
-                or (self.max_workers > len(self.threads))
+                (self._qsize() < len(self.waiters)) or
+                (self.max_workers > len(self.threads))
             )
 
     def get_free_workers(self):
         """
         Returns amount of available workers for non-blocking submit
-        :return: 
+        :return:
         """
         with self.mutex:
             if self.to_shutdown:
                 return 0
             return max(
-                self.max_workers - len(self.threads) - self._qsize() + len(self.waiters),
+                (self.max_workers - len(self.threads) -
+                 self._qsize() + len(self.waiters)),
                 0
             )
 
     def apply_metrics(self, d):
         """
         Append threadpool metrics to dictionary d
-        :param d: 
-        :return: 
+        :param d:
+        :return:
         """
         with self.mutex:
             workers = len(self.threads)
