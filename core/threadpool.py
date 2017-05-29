@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ThreadPool class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ThreadPool class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import threading
 import thread
 import logging
 import itertools
 import time
 from collections import deque
-## Third-party modules
+# Third-party modules
 from concurrent.futures import Future
+from tornado.gen import with_timeout
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class ThreadPoolExecutor(object):
         with self.mutex:
             if not len(self.waiters) and len(self.threads) < self.max_workers:
                 # Start new thread
-                name = "worker-%s" % self.worker_id.next()
+                name = "worker-%s" % next(self.worker_id)
                 t = threading.Thread(target=self.worker, name=name)
                 t.setDaemon(True)
                 self.threads.add(t)
@@ -116,7 +117,7 @@ class ThreadPoolExecutor(object):
     def shutdown(self, sync=False):
         logging.info("Shutdown")
         with self.mutex:
-            self.done_future = Future()
+            self.done_future = with_timeout(timeout=self.shutdown_timeout)
             if not sync:
                 self.done_event = threading.Event()
             self.to_shutdown = True

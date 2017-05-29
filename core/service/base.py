@@ -489,7 +489,13 @@ class Service(object):
         if self.executors:
             self.logger.info("Shutting down executors")
             for x in self.executors:
-                yield self.executors[x].shutdown()
+                try:
+                    self.logger.info("Shutting down %s", x)
+                    yield self.executors[x].shutdown()
+                except tornado.gen.TimeoutError:
+                    self.logger.info(
+                        "Timed out when shutting down %s", x
+                    )
         # Custom deactivation
         yield self.on_deactivate()
         # Finally stop ioloop
