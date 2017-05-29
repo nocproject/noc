@@ -22,7 +22,8 @@ class Profile(BaseProfile):
         (r"flash:/startup.cfg exists, overwrite? [Y/N]:", "Y")
         ]
     pattern_prompt = r"^[<\[]\S+[>\]]"
-    pattern_syntax_error = r"^\s+% (Unrecognized|Incomplete) command found at '\^' position.$"
+    pattern_syntax_error = \
+        r"^\s+% (Unrecognized|Incomplete) command found at '\^' position.$"
     command_save_config = "save"
     command_enter_config = "system-view"
     command_leave_config = "return"
@@ -31,7 +32,7 @@ class Profile(BaseProfile):
 
     def setup_session(self, script):
         # Yuo may change password instead 512900
-#        script.cli("_cmdline-mode on\nY\n512900\nsystem-view\n")
+        # script.cli("_cmdline-mode on\nY\n512900\nsystem-view\n")
         script.cli("_cmdline-mode on\nY\n512900")
         """
         obj = ManagedObject.objects.get()
