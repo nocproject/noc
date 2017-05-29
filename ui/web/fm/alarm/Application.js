@@ -154,6 +154,7 @@ Ext.define('NOC.fm.alarm.Application', {
             tooltip: __('From'),
             format: 'd.m.Y',
             width: 95,
+            startDay: 1,
             listeners: {
                 scope: me,
                 change: me.onChangeFilter
@@ -164,6 +165,7 @@ Ext.define('NOC.fm.alarm.Application', {
             tooltip: __('To'),
             format: 'd.m.Y',
             width: 95,
+            startDay: 1,
             listeners: {
                 scope: me,
                 change: me.onChangeFilter
