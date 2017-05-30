@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## InfluxDB client
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# InfluxDB client
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import urllib
 import cStringIO
-## Third-party modules
+# Third-party modules
 import ujson
 import pycurl
-## NOC modules
-from noc.core.config.base import config
+import six
+# NOC modules
+from noc.config import config
 
 
 class InfluxDBClient(object):
@@ -26,16 +27,13 @@ class InfluxDBClient(object):
         :param query: String or list of queries
         """
         buff = cStringIO.StringIO()
-        if not isinstance(query, basestring):
+        if not isinstance(query, six.string_types):
             query = ";".join(query)
         if isinstance(query, unicode):
             query = query.encode("utf-8")
-        svc = config.get_service("influxdb", limit=1)
-        if not svc:
-            raise ValueError("No service configured")
         url = "http://%s/query?db=%s&q=%s" % (
-            svc[0],
-            config.influx_db,
+            str(config.influxdb.addresses[0]),
+            config.influxdb.db,
             urllib.quote(query)
         )
         c = pycurl.Curl()

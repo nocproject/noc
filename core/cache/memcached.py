@@ -14,10 +14,13 @@ import pylibmc
 import pylibmc.pools
 # NOC modules
 from .base import BaseCache
-from noc.core.config.base import config
+from noc.config import config
 
 logger = logging.getLogger(__name__)
-ignorable_memcache_errors = (pylibmc.ConnectionError, pylibmc.ServerDown)
+ignorable_memcache_errors = (
+    pylibmc.ConnectionError,
+    pylibmc.ServerDown
+)
 
 
 class MemcachedCache(BaseCache):
@@ -27,7 +30,7 @@ class MemcachedCache(BaseCache):
     def __init__(self):
         super(BaseCache, self).__init__()
         self.tpl_client = pylibmc.Client(
-            config.memcached_hosts,
+            config.memcached.addresses.as_list(),
             binary=True,
             behaviors={
                 "tcp_nodelay": True
@@ -36,7 +39,7 @@ class MemcachedCache(BaseCache):
         logger.debug(
             "Starting memcached pool: hosts=%s, pool size=%d",
             ", ".join(config.memcached_hosts),
-            config.memcached_pool_size
+            config.memcached.pool_size
         )
         self.pool = pylibmc.pools.ClientPool()
         self.pool.fill(self.tpl_client, config.memcached_pool_size)
@@ -68,7 +71,7 @@ class MemcachedCache(BaseCache):
         :return:
         """
         k = self.make_key(key, version)
-        ttl = ttl or config.memcached_default_ttl
+        ttl = ttl or config.memcached.default_ttl
         with self.pool.reserve(block=True) as c:
             try:
                 c.set(k, value, ttl)
@@ -89,7 +92,7 @@ class MemcachedCache(BaseCache):
             try:
                 r = c.get_multi(k)
             except ignorable_memcache_errors:
-                pass
+                r = None
         if r:
             m = dict(zip(k, keys))
             return dict((m[k], r[k]) for k in r)
@@ -97,11 +100,12 @@ class MemcachedCache(BaseCache):
             return None
 
     def set_many(self, data, ttl=None, version=None):
-        ttl = ttl or config.memcached_default_ttl
+        ttl = ttl or config.memcached.default_ttl
         with self.pool.reserve(block=True) as c:
             try:
                 c.set_multi(
-                    dict((self.make_key(k, version), data[k]) for k in data),
+                    dict((self.make_key(k, version), data[k])
+                         for k in data),
                     ttl
                 )
             except ignorable_memcache_errors:
