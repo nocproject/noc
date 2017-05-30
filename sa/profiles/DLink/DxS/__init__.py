@@ -443,17 +443,19 @@ def DGS3620(v):
 
 
 def DxS_L2(v):
-    if v["platform"].startswith("DES-1100") \
-      or v["platform"].startswith("DES-12") \
-      or v["platform"].startswith("DES-30") \
-      or v["platform"].startswith("DES-32") \
-      or v["platform"].startswith("DES-35") \
-      or v["platform"].startswith("DES-3810") \
-      or v["platform"].startswith("DGS-1100") \
-      or v["platform"].startswith("DGS-12") \
-      or v["platform"].startswith("DGS-15") \
-      or v["platform"].startswith("DGS-30") \
-      or v["platform"].startswith("DGS-32"):
+    if (
+        v["platform"].startswith("DES-1100") or
+        v["platform"].startswith("DES-12") or
+        v["platform"].startswith("DES-30") or
+        v["platform"].startswith("DES-32") or
+        v["platform"].startswith("DES-35") or
+        v["platform"].startswith("DES-3810") or
+        v["platform"].startswith("DGS-1100") or
+        v["platform"].startswith("DGS-12") or
+        v["platform"].startswith("DGS-15") or
+        v["platform"].startswith("DGS-30") or
+        v["platform"].startswith("DGS-32")
+    ):
         return True
     else:
         return False

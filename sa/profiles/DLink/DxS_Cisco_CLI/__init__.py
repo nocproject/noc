@@ -9,7 +9,6 @@
 """
 """
 from noc.core.profile.base import BaseProfile
-from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
