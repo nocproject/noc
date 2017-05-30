@@ -384,7 +384,7 @@ class Service(object):
         else:
             addr, port = "auto", 0
         if addr == "auto":
-            addr = os.environ.get("HOSTNAME", "auto")
+            addr = os.environ.get("HOSTNAME", socket.gethostname())
             self.logger.info("Autodetecting address: auto -> %s", addr)
         addr = socket.gethostbyname(addr)
         port = int(port) + self.config.instance

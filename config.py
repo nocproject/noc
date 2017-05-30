@@ -62,7 +62,7 @@ class Config(BaseConfig):
     mirror_path = StringParameter(default="/opt/noc/var/config_mirror")
 
     instance = IntParameter(default=0)
-    listen = StringParameter(default="0.0.0.0:1200")
+    listen = StringParameter(default="auto:0")
 
     class traceback(ConfigSection):
         reverse = BooleanParameter(default=True)
