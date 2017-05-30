@@ -13,7 +13,6 @@ import sys
 import logging
 import signal
 import uuid
-import random
 import argparse
 import functools
 import socket
@@ -31,8 +30,8 @@ import ujson
 import threading
 # NOC modules
 import noc.core.service.httpclient  # Use curl
+from noc.config import config
 from noc.core.debug import excepthook, error_report
-from .config import Config
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
@@ -239,7 +238,7 @@ class Service(object):
         Create new or setup existing logger
         """
         if not loglevel:
-            loglevel = self.config.loglevel
+            loglevel = config.loglevel
         logger = logging.getLogger()
         if len(logger.handlers):
             # Logger is already initialized
@@ -262,7 +261,7 @@ class Service(object):
     def setup_translation(self):
         from noc.core.translation import set_translation, ugettext
 
-        set_translation(self.name, self.config.language)
+        set_translation(self.name, config.language)
         if self.use_jinja:
             from jinja2.defaults import DEFAULT_NAMESPACE
             if "_" not in DEFAULT_NAMESPACE:
@@ -314,9 +313,6 @@ class Service(object):
         # Bootstrap logging with --loglevel
         self.setup_logging(cmd_options["loglevel"])
         self.log_separator()
-        # Read
-        self.config = Config(self, **cmd_options)
-        self.load_config()
         # Setup title
         self.set_proc_title()
         # Setup signal handlers
@@ -326,7 +322,7 @@ class Service(object):
         if self.pooled:
             self.logger.warn(
                 "Running service %s (pool: %s)",
-                self.name, self.config.pool
+                self.name, config.pool
             )
         else:
             self.logger.warn(
@@ -362,8 +358,6 @@ class Service(object):
         """
         Reload config
         """
-        self.config.load(self.config.config)
-        self.setup_logging()
         if self.use_translation:
             self.setup_translation()
 
@@ -385,8 +379,8 @@ class Service(object):
         """
         if self.address and self.port:
             return self.address, self.port
-        if self.config.listen:
-            addr, port = self.config.listen.split(":")
+        if config.listen:
+            addr, port = config.listen.split(":")
         else:
             addr, port = "auto", 0
         if addr == "auto":
@@ -604,19 +598,6 @@ class Service(object):
                 self.executors[x].apply_metrics(r)
         apply_metrics(r)
         return r
-
-    def resolve_service(self, service, n=None):
-        """
-        Resolve service
-        Returns n randomly selected choices
-        @todo: Datacenter affinity
-        """
-        n = n or self.config.rpc_choose_services
-        candidates = self.config.get_service(service)
-        if not candidates:
-            return []
-        else:
-            return random.sample(candidates, min(n, len(candidates)))
 
     def iter_rpc_retry_timeout(self):
         """

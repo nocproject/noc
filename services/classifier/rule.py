@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import re
 import logging
 import new
@@ -14,7 +15,7 @@ import new
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.lib.datasource import datasource_registry
-from exception import InvalidPatternException
+from .exception import InvalidPatternException
 from noc.lib.escape import fm_unescape
 
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
@@ -99,7 +100,7 @@ class Rule(object):
             else:
                 try:
                     rx_key = re.compile(self.unhex_re(x.key_re), re.MULTILINE | re.DOTALL)
-                except Exception, why:
+                except Exception as why:
                     raise InvalidPatternException("Error in '%s': %s" % (x.key_re, why))
             # Process value pattern
             if self.is_exact(x.value_re):
@@ -107,7 +108,7 @@ class Rule(object):
             else:
                 try:
                     rx_value = re.compile(self.unhex_re(x.value_re), re.MULTILINE | re.DOTALL)
-                except Exception, why:
+                except Exception as why:
                     raise InvalidPatternException("Error in '%s': %s" % (x.value_re, why))
             # Save patterns
             if x_key:
@@ -245,8 +246,8 @@ class Rule(object):
         cc += ["rule.match = new.instancemethod(match, rule, rule.__class__)"]
         self.code = "\n".join(cc)
         code = compile(self.code, "<string>", "exec")
-        exec code in {"rule": self, "new": new,
-                      "logging": logging, "fm_unescape": fm_unescape}
+        exec(code, {"rule": self, "new": new,
+                      "logging": logging, "fm_unescape": fm_unescape})
 
     def clone(self, rules):
         """

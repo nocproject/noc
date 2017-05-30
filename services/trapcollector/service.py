@@ -3,19 +3,18 @@
 # ---------------------------------------------------------------------
 # Syslog Collector service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from optparse import make_option
 import socket
 from collections import defaultdict
-import time
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from trapserver import TrapServer
 
@@ -42,13 +41,10 @@ class TrapCollectorService(Service):
     def on_activate(self):
         # Register RPC aliases
         self.omap = self.open_rpc("omap")
-        self.fmwriter = self.open_rpc("fmwriter", pool=self.config.pool)
-        # Set event listeners
-        # self.subscribe("objmapchange.%(pool)s",
-        #                self.on_object_map_change)
+        self.fmwriter = self.open_rpc("fmwriter", pool=config.pool)
         # Listen sockets
         server = TrapServer(service=self)
-        for l in [self.config.listen_traps]:
+        for l in config.trapcollector.listen.split(","):
             if ":" in l:
                 addr, port = l.split(":")
             else:
@@ -128,9 +124,7 @@ class TrapCollectorService(Service):
         Periodic task to request object mappings
         """
         self.logger.debug("Requesting object mappings")
-        sm = yield self.omap.get_trap_mappings(
-            self.config.pool
-        )
+        sm = yield self.omap.get_trap_mappings(config.pool)
         if sm != self.source_map:
             self.logger.debug("Setting object mappings to: %s", sm)
             self.source_map = sm
@@ -149,22 +143,6 @@ class TrapCollectorService(Service):
             ", ".join("%s: %s" % (s, self.invalid_sources[s])
                       for s in self.invalid_sources)
         )
-        # Generate invalid event source events
-        # t = int(time.time())
-        # for s in self.invalid_sources:
-        #     self.messages += [{
-        #         "ts": t,
-        #         "object": 0,  # @todo: Pass proper id
-        #         "data": {
-        #             "source": "system",
-        #             "component": "noc-activator",
-        #             "activator": self.config.pool,
-        #             "collector": self.config.pool,
-        #             "type": "Invalid Event Source",
-        #             "ip": s,
-        #             "count": self.invalid_sources[s]
-        #         }
-        #     }]
         self.invalid_sources = defaultdict(int)
 
     def on_object_map_change(self, topic):

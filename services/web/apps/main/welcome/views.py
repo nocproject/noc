@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.welcome application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import os
 # Third-party modules
 from jinja2 import Template
 # NOC modules
+from noc.config import config
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.core.translation import ugettext as _
 
@@ -27,7 +28,9 @@ class WelcomeApplication(ExtApplication):
 
     @view(url="^welcome/$", access=True, api=True)
     def api_welcome(self, request):
-        setup = {"installation_name": self.config.get("customization", "installation_name")}
+        setup = {
+            "installation_name": config.customization.installation_name
+        }
         for p in self.WELCOME_PATH:
             if not os.path.exists(p):
                 continue

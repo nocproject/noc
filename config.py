@@ -15,7 +15,7 @@ from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (StringParameter, MapParameter,
                                     IntParameter, BooleanParameter,
                                     HandlerParameter, SecondsParameter,
-                                    FloatParameter, ListParameter,
+                                    FloatParameter,
                                     ServiceParameter)
 
 
@@ -66,6 +66,9 @@ class Config(BaseConfig):
 
     class traceback(ConfigSection):
         reverse = BooleanParameter(default=True)
+
+    class develop(ConfigSection):
+        install_collection = BooleanParameter(default=False)
 
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)
@@ -155,15 +158,17 @@ class Config(BaseConfig):
         db_ttl = SecondsParameter(default="5y")
 
     class login(ConfigSection):
-        methods = StringParameter(
-            default="local"
-        )
+        methods = StringParameter(default="local")
         session_ttl = SecondsParameter(default="7d")
         restrict_to_group = StringParameter(default="")
         single_session_group = StringParameter(default="")
         mutual_exclusive_group = StringParameter(default="")
 
     class ping(ConfigSection):
+        max_packets = IntParameter(default=3)
+        timeout = IntParameter(default=2)
+        throttle_threshold = FloatParameter()
+        restore_threshold = FloatParameter()
         tos = IntParameter(
             min=0, max=255,
             default=0
@@ -182,15 +187,22 @@ class Config(BaseConfig):
         expired_refresh_chunk = IntParameter(default=100)
 
     class pmwriter(ConfigSection):
-        batch_size = IntParameter(default=1000)
-        metrics_buffer = IntParameter(default=4000)
+        batch_size = IntParameter(default=2500)
+        metrics_buffer = IntParameter(default=50000)
         read_from = StringParameter(default="pmwriter")
         write_to = StringParameter(default="influxdb")
+
+    class chwriter(ConfigSection):
+        batch_size = IntParameter(default=50000)
+        records_buffer = IntParameter(default=1000000)
+        batch_delay_ms = IntParameter(default=1000)
+        channel_expire_interval = IntParameter(default=300)
 
     class web(ConfigSection):
         api_row_limit = IntParameter(default=0)
         language = StringParameter(default="en")
         install_collection = BooleanParameter(default=False)
+        max_threads = IntParameter(default=10)
 
     class cache(ConfigSection):
         vcinterfacescount = SecondsParameter(default="1h")
@@ -209,7 +221,7 @@ class Config(BaseConfig):
         db_threads = IntParameter(default=20)
 
     class classifier(ConfigSection):
-        lookup = HandlerParameter(
+        lookup_handler = HandlerParameter(
             default="noc.services.classifier.rulelookup.RuleLookup")
         default_interface_profile = StringParameter(default="default")
 
@@ -226,8 +238,20 @@ class Config(BaseConfig):
     class trapcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:162")
 
+    class escalator(ConfigSection):
+        max_threads = IntParameter(default=10)
+
     class sentry(ConfigSection):
         url = StringParameter(default="")
+
+    class mailsender(ConfigSection):
+        smtp_server = StringParameter()
+        smtp_port = IntParameter(default=25)
+        use_tls = BooleanParameter(default=False)
+        helo_hostname = StringParameter(default="noc")
+        from_address = StringParameter(default="noc@example.com")
+        smtp_user = StringParameter()
+        smtp_password = StringParameter()
 
     def __init__(self):
         self.setup_logging()

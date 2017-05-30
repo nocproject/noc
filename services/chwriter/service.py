@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # chwriter service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ import tornado.ioloop
 import tornado.gen
 import tornado.httpclient
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from channel import Channel
 
@@ -41,7 +42,8 @@ class CHWriterService(Service):
         )
         report_callback.start()
         check_callback = tornado.ioloop.PeriodicCallback(
-            self.check_channels, self.config.batch_delay_ms, self.ioloop
+            self.check_channels, config.chwriter.batch_delay_ms,
+            self.ioloop
         )
         check_callback.start()
         self.subscribe(
@@ -67,7 +69,7 @@ class CHWriterService(Service):
         ...
         <v1>\t...\t<vN>\n
         """
-        if self.perf_metrics["records_buffered"].value > self.config.records_buffer:
+        if self.perf_metrics["records_buffered"].value > config.chwriter.records_buffer:
             self.perf_metrics["deferred_messages"] += 1
             return False
         fields, data = metrics.split("\n", 1)
@@ -116,8 +118,9 @@ class CHWriterService(Service):
             written = False
             try:
                 response = yield client.fetch(
-                    "http://%s:%s/?database=%s&query=%s" % (
-                        self.HOST, self.PORT, self.DB,
+                    "http://%s/?database=%s&query=%s" % (
+                        str(config.clickhouse.addresses[0]),
+                        config.clickhouse.db,
                         channel.get_encoded_insert_sql()),
                     method="POST",
                     body=data

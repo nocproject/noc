@@ -13,6 +13,7 @@ import tornado.ioloop
 import tornado.gen
 import tornado.httpclient
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
 
@@ -51,9 +52,9 @@ class DiscoveryService(Service):
             ifilter = None
         self.scheduler = Scheduler(
             "discovery",
-            pool=self.config.pool,
+            pool=config.pool,
             reset_running=True,
-            max_threads=self.config.max_threads,
+            max_threads=config.discovery.max_threads,
             ioloop=self.ioloop,
             filter=ifilter,
             service=self

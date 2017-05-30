@@ -14,6 +14,7 @@ import tornado.gen
 import tornado.wsgi
 import django.core.handlers.wsgi
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from noc.main.models.customfield import CustomField
 from noc.core.perf import metrics
@@ -46,10 +47,10 @@ class WebService(Service):
         CustomField.install_fields()
 
     def get_backend_weight(self):
-        return self.config.max_threads
+        return config.web.max_threads
 
     def get_backend_limit(self):
-        return self.config.max_threads
+        return config.web.max_threads
 
 
 class NOCWSGIHandler(tornado.web.RequestHandler):

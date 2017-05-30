@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # pmwriter service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ import tornado.ioloop
 import tornado.gen
 import tornado.httpclient
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 import noc.core.service.httpclient
 
@@ -58,7 +59,7 @@ class PMWriterService(Service):
         Returns influx service, channel name
         """
         # Influx affinity
-        node_addr = self.config.listen.split(":")[0]
+        node_addr = config.pmwriter.listen.host
         influx = None
         channel = "pmwriter-%s" % node_addr
         for s in self.config.get_service("influxdb"):
@@ -79,7 +80,7 @@ class PMWriterService(Service):
         data = metrics.splitlines()
         ld = len(data)
         self.perf_metrics["metrics_received"] += ld
-        if l < self.config.metrics_buffer:
+        if l < config.pmwriter.metrics_buffer:
             if self.overrun_start:
                 dt = time.time() - self.overrun_start
                 self.logger.info(
@@ -104,8 +105,8 @@ class PMWriterService(Service):
     def write_metrics(self):
         self.logger.info(
             "Starting message sender. Batch size %d. Metrics buffer %d",
-            self.config.batch_size,
-            self.config.metrics_buffer
+            config.pmwriter.batch_size,
+            config.pmwriter.metrics_buffer
         )
         bs = self.config.batch_size
         while True:
@@ -132,7 +133,7 @@ class PMWriterService(Service):
                         # Configurable database name
                         "http://%s/write?db=%s&precision=s" % (
                             self.influx,
-                            self.config.influx_db
+                            config.influx.db
                         ),
                         method="POST",
                         body=body

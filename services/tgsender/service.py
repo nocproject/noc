@@ -54,7 +54,11 @@ class TgSenderService(Service):
         API = 'https://api.telegram.org/bot'
         URL = API + TOKEN
         proxy_addres = self.config.proxy_addres
-        sendMessage = {'chat_id': address, 'text': '*'+self.escape_markdown(subject)+'*\n'+self.escape_markdown(body),'parse_mode': 'Markdown'}
+        sendMessage = {
+            'chat_id': address,
+            'text': '*' + self.escape_markdown(subject) + '*\n' + self.escape_markdown(body),
+            'parse_mode': 'Markdown'
+        }
         time.sleep(RETRY_TIME)
         if self.config.use_proxy:
             try:
@@ -68,19 +72,19 @@ class TgSenderService(Service):
                 self.logger.info("Proxy Send: %s\n" % check)
                 metrics["telegram_proxy_sended_ok"] += 1
                 return True
-            except urllib2.HTTPError, e:
+            except urllib2.HTTPError as e:
                 self.logger.info("Proxy HTTPError: %s\n" % e.code)
                 metrics["telegram_proxy_failed_httperror"] += 1
                 return False
-            except urllib2.URLError, e:
+            except urllib2.URLError as e:
                 self.logger.info("Proxy URLError: %s\n" % e.args)
                 metrics["telegram_proxy_failed_urlerror"] += 1
                 return False
-            except urllib2.HTTPException, e:
+            except urllib2.HTTPException as e:
                 self.logger.info("Proxy HTTPException: %s\n" % e.err)
                 metrics["telegram_proxy_failed_urlerror"] += 1
                 return False
-            except Exception, e:
+            except Exception as e:
                 self.logger.info("Proxy Generic Exception: %s\n" % e.exp)
                 metrics["telegram_proxy_failed_exceprion"] += 1
                 return False
@@ -92,19 +96,19 @@ class TgSenderService(Service):
                 self.logger.info("Send: %s\n" % check)
                 metrics["telegram_sended_ok"] += 1
                 return True
-            except urllib2.HTTPError, e:
+            except urllib2.HTTPError as e:
                 self.logger.info("HTTPError: %s\n" % e.code)
                 metrics["telegram_failed_httperror"] += 1
                 return False
-            except urllib2.URLError, e:
+            except urllib2.URLError as e:
                 self.logger.info("URLError: %s\n" % e.args)
                 metrics["telegram_failed_urlerror"] += 1
                 return False
-            except urllib2.HTTPException, e:
+            except urllib2.HTTPException as e:
                 self.logger.info("HTTPException: %s\n" % e.err)
                 metrics["telegram_failed_urlerror"] += 1
                 return False
-            except Exception, e:
+            except Exception as e:
                 self.logger.info("Generic Exception: %s\n" % e.exc)
                 metrics["telegram_proxy_failed_exceprion"] += 1
                 return False

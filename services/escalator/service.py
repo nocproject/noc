@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # Escalator
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@
 import tornado.ioloop
 import tornado.gen
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
 
@@ -24,7 +25,7 @@ class EscalatorService(Service):
         self.scheduler = Scheduler(
             "escalator",
             reset_running=True,
-            max_threads=self.config.max_threads,
+            max_threads=config.escalator.max_threads,
             ioloop=self.ioloop
         )
         self.scheduler.run()

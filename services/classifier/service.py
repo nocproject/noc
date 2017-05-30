@@ -3,14 +3,14 @@
 # ---------------------------------------------------------------------
 # Classifier service
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import time
 import datetime
-import sys
 import os
 from collections import defaultdict
 import operator
@@ -21,6 +21,7 @@ import tornado.gen
 import tornado.ioloop
 import bson
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from noc.fm.models.newevent import NewEvent
 from noc.fm.models.failedevent import FailedEvent
@@ -44,10 +45,10 @@ from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
                                     IPv6PrefixParameter, PrefixParameter,
                                     MACAddressParameter, InterfaceTypeError)
 from noc.lib.nosql import ObjectId
-from trigger import Trigger
-from exception import InvalidPatternException, EventProcessingFailed
-from cloningrule import CloningRule
-from rule import Rule
+from .trigger import Trigger
+from .exception import InvalidPatternException, EventProcessingFailed
+from .cloningrule import CloningRule
+from .rule import Rule
 from noc.core.handler import get_handler
 from noc.core.cache.base import cache
 
@@ -116,8 +117,8 @@ class ClassifierService(Service):
         Load rules from database after loading config
         """
         self.logger.info("Using rule lookup solution: %s",
-                         self.config.lookup_solution)
-        self.lookup_cls = get_handler(self.config.lookup_solution)
+                         config.classifier.lookup_handler)
+        self.lookup_cls = get_handler(config.classifier.lookup_handler)
         self.load_enumerations()
         self.load_rules()
         self.load_triggers()
@@ -151,7 +152,7 @@ class ClassifierService(Service):
         for cr in CloneClassificationRule.objects.all():
             try:
                 cloning_rules += [CloningRule(cr)]
-            except InvalidPatternException, why:
+            except InvalidPatternException as why:
                 self.logger.error("Failed to load cloning rule '%s': Invalid pattern: %s", cr.name, why)
                 continue
         self.logger.info("%d cloning rules found", len(cloning_rules))
@@ -159,7 +160,7 @@ class ClassifierService(Service):
         for r in EventClassificationRule.objects.order_by("preference"):
             try:
                 rule = Rule(self, r)
-            except InvalidPatternException, why:
+            except InvalidPatternException as why:
                 self.logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, why)
                 continue
             # Apply cloning rules
@@ -169,7 +170,7 @@ class ClassifierService(Service):
                     try:
                         rs += [Rule(self, r, cr)]
                         cn += 1
-                    except InvalidPatternException, why:
+                    except InvalidPatternException as why:
                         self.logger.error("Failed to clone rule '%s': Invalid patterns: %s", r.name, why)
                         continue
             for rule in rs:
@@ -192,7 +193,7 @@ class ClassifierService(Service):
             for c in self.rules[p]:
                 self.rules[p][c] = self.lookup_cls(self.rules[p][c])
         self.logger.info("%d rules are loaded in the %d profiles",
-            n, len(self.rules))
+                         n, len(self.rules))
 
     def load_triggers(self):
         self.logger.info("Loading triggers")
@@ -272,7 +273,8 @@ class ClassifierService(Service):
             for r in c.repeat_suppression:
                 to_skip = False
                 for s in suppression:
-                    if (s["condition"] == r.condition and
+                    if (
+                        s["condition"] == r.condition and
                         s["window"] == r.window and
                         s["suppress"] == r.suppress and
                         s["match_condition"] == r.match_condition and
@@ -293,17 +295,17 @@ class ClassifierService(Service):
                     "event_class": [r.event_class.id]
                 }]
             # Compile suppression rules
-            self.suppression[c.id] = [(compile_rule(s),
-                                       "%s::%s" % (c.name, s["name"]),
-                                       s["suppress"])
+            self.suppression[c.id] = [
+                (compile_rule(s), "%s::%s" % (c.name, s["name"]),
+                 s["suppress"])
                 for s in suppression]
         self.logger.info("Suppression rules are loaded")
 
     def load_link_action(self):
         self.default_link_action = None
-        if self.config.default_interface_profile:
+        if config.classifier.default_interface_profile:
             p = InterfaceProfile.objects.filter(
-                name=self.config.default_interface_profile).first()
+                name=config.classifier.default_interface_profile).first()
             if p:
                 self.logger.info("Setting default link event action to %s", p.link_events)
                 self.default_link_action = p.link_events
@@ -358,9 +360,6 @@ class ClassifierService(Service):
             self.logger.error("Failed to load handler '%s'. Ignoring", h)
             return None
 
-    ##
-    ## Variable decoders
-    ##
     def decode_str(self, event, value):
         return value
 
@@ -442,8 +441,10 @@ class ClassifierService(Service):
                 # Try to match rule
                 v = r.match(event, vars)
                 if v is not None:
-                    self.logger.debug("[%s] Matching class for event %s found: %s (Rule: %s)",
-                        event.managed_object.name, event.id, r.event_class_name, r.name)
+                    self.logger.debug(
+                        "[%s] Matching class for event %s found: %s (Rule: %s)",
+                        event.managed_object.name, event.id, r.event_class_name, r.name
+                    )
                     return r, v
         if self.default_rule:
             return self.default_rule, {}
@@ -467,7 +468,7 @@ class ClassifierService(Service):
             if decoder:
                 try:
                     v = decoder(event, v)
-                except InterfaceTypeError, why:
+                except InterfaceTypeError:
                     raise EventProcessingFailed("Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v)))
             r[ecv.name] = v
         return r
@@ -561,7 +562,7 @@ class ClassifierService(Service):
             msg = event.raw_vars.get("message", "")
             cb = self.get_msg_codebook(msg)
             o_id = event.managed_object.id
-            if not o_id in self.unclassified_codebook:
+            if o_id not in self.unclassified_codebook:
                 self.unclassified_codebook[o_id] = []
             cbs = [cb] + self.unclassified_codebook[o_id]
             cbs = cbs[:self.unclassified_codebook_depth]
@@ -825,6 +826,7 @@ class ClassifierService(Service):
         Check codebooks for match
         """
         return cb1 == cb2
+
 
 if __name__ == "__main__":
     ClassifierService().start()

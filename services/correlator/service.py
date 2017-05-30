@@ -60,19 +60,19 @@ class CorrelatorService(Service):
     def on_activate(self):
         self.scheduler = Scheduler(
             self.name,
-            pool=self.config.pool,
+            pool=config.pool,
             reset_running=True,
-            max_threads=self.config.max_threads,
+            max_threads=config.correlator.max_threads,
             ioloop=self.ioloop,
             submit_threshold=100,
             max_chunk=100
         )
         self.scheduler.correlator = self
         self.subscribe(
-            "correlator.dispose.%s" % self.config.pool,
+            "correlator.dispose.%s" % config.pool,
             "dispose",
             self.on_dispose_event,
-            max_in_flight=self.config.max_threads
+            max_in_flight=config.max_threads
         )
         self.scheduler.run()
 
