@@ -93,13 +93,13 @@ class Script(BaseScript):
             stp = self.rx_stp.findall(c)
 
         i = []
-        c = self.cli("show interfaces description detailed")
+        c = self.cli("show interfaces description")
         i = self.rx_sh_int_des.findall(c)
         if not i:
             i = self.rx_sh_int_des2.findall(c)
 
         interfaces = []
-        mac = []
+        mac = None
         ifindex = []
         mtu = []
         for res in i:
@@ -128,26 +128,29 @@ class Script(BaseScript):
                     a_stat = True
                     description = res[1].strip()
 
-            iface = {
-                "type": self.profile.get_interface_type(name),
-                "name": self.profile.convert_interface_name(name),
-                "mac": mac,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "description": description.strip(),
-                "snmp_ifindex": ifindex,
-                "enabled_protocols": [],
-                "subinterfaces": [{
+            sub = {
                     "name": self.profile.convert_interface_name(name),
-                    "mac": mac,
                     "mtu": mtu,
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "description": description.strip(),
                     "snmp_ifindex": ifindex,
                     "enabled_afi": []
-                }]
+                }
+            if mac:
+                sub["mac"] = mac
+            iface = {
+                "type": self.profile.get_interface_type(name),
+                "name": self.profile.convert_interface_name(name),
+                "admin_status": a_stat,
+                "oper_status": o_stat,
+                "description": description.strip(),
+                "snmp_ifindex": ifindex,
+                "enabled_protocols": [],
+                "subinterfaces": [sub]
             }
+            if mac:
+                iface["mac"] = mac
 
             # LLDP protocol
             if name in lldp:

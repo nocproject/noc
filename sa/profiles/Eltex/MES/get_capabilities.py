@@ -9,6 +9,7 @@
 # Python modules
 import re
 # NOC modules
+from noc.lib.text import parse_table
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error
 
@@ -45,3 +46,18 @@ class Script(BaseScript):
         cmd = self.cli("show gvrp configuration", ignore_errors = True)
         return self.rx_gvrp_en.search(cmd) is not None
         # Get GVRP interfaces
+
+    @false_on_cli_error
+    def has_stack(self):
+        """
+        Check stack members
+        :return:
+        """
+        r = self.cli("show version")
+        return [e[0] for e in parse_table(r)]
+
+    def execute_platform(self, caps):
+        s = self.has_stack()
+        if s:
+            caps["Stack | Members"] = len(s) if len(s) != 1 else 0
+            caps["Stack | Member Ids"] = " | ".join(s)
