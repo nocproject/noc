@@ -93,7 +93,9 @@ class Profile(BaseProfile):
                 match.group("re_platform") and \
                 any(match.group("re_platform").startswith(p)
                     for p in platforms_with_stacked_ports):
-                return "%s:%s" % (match.group("re_slot"), match.group("re_port"))
+                return "%s:%s" % (
+                    match.group("re_slot"), match.group("re_port")
+                )
             elif match.group("re_port"):
                 return "%s" % match.group("re_port")
         elif s.startswith("Slot0/"):
@@ -130,7 +132,9 @@ class Profile(BaseProfile):
                     self.cluster_member = p[8:].strip()
         # Switch to cluster member, if necessary
         if self.cluster_member:
-            script.logger.debug("Switching to SIM member %s" % script.cluster_member)
+            script.logger.debug(
+                "Switching to SIM member %s" % script.cluster_member
+            )
             script.cli("reconfig member_id %s" % script.cluster_member)
 
     def shutdown_session(self, script):
@@ -188,13 +192,15 @@ class Profile(BaseProfile):
             return None
 
     def get_ports(self, script, interface=None):
-        if ((script.match_version(DES3200, version__gte="1.70.B007")
-          and script.match_version(DES3200, version__lte="3.00.B000")) \
-          or script.match_version(DES3200, version__gte="4.38.B000") \
-          or script.match_version(DES3028, version__gte="2.90.B10") \
-          or script.match_version(DGS3120, version__gte="3.00.B022") \
-          or script.match_version(DGS3620, version__gte="2.50.017")) \
-          and not script.match_version(DES3200, platform="DES-3200-28F"):
+        if (
+            (
+                script.match_version(DES3200, version__gte="1.70.B007") and
+                script.match_version(DES3200, version__lte="3.00.B000")
+            ) or script.match_version(DES3200, version__gte="4.38.B000") or
+            script.match_version(DES3028, version__gte="2.90.B10") or
+            script.match_version(DGS3120, version__gte="3.00.B022") or
+            script.match_version(DGS3620, version__gte="2.50.017")
+        ) and not script.match_version(DES3200, platform="DES-3200-28F"):
             objects = []
             if interface is not None:
                 c = script.cli(("show ports %s description" % interface))
@@ -306,9 +312,13 @@ class Profile(BaseProfile):
                 match = self.rx_vlan.search(l)
                 if match:
                     tagged_ports = \
-                        script.expand_interface_range(match.group("tagged_ports"))
+                        script.expand_interface_range(
+                            match.group("tagged_ports")
+                        )
                     untagged_ports = \
-                        script.expand_interface_range(match.group("untagged_ports"))
+                        script.expand_interface_range(
+                            match.group("untagged_ports")
+                        )
                     vlans += [{
                         "vlan_id": int(match.group("vlan_id")),
                         "vlan_name": match.group("vlan_name").strip(),
@@ -429,16 +439,16 @@ def DGS3620(v):
 
 def DxS_L2(v):
     if v["platform"].startswith("DES-1100") \
-        or v["platform"].startswith("DES-12") \
-        or v["platform"].startswith("DES-30") \
-        or v["platform"].startswith("DES-32") \
-        or v["platform"].startswith("DES-35") \
-        or v["platform"].startswith("DES-3810") \
-        or v["platform"].startswith("DGS-1100") \
-        or v["platform"].startswith("DGS-12") \
-        or v["platform"].startswith("DGS-15") \
-        or v["platform"].startswith("DGS-30") \
-        or v["platform"].startswith("DGS-32"):
+      or v["platform"].startswith("DES-12") \
+      or v["platform"].startswith("DES-30") \
+      or v["platform"].startswith("DES-32") \
+      or v["platform"].startswith("DES-35") \
+      or v["platform"].startswith("DES-3810") \
+      or v["platform"].startswith("DGS-1100") \
+      or v["platform"].startswith("DGS-12") \
+      or v["platform"].startswith("DGS-15") \
+      or v["platform"].startswith("DGS-30") \
+      or v["platform"].startswith("DGS-32"):
         return True
     else:
         return False

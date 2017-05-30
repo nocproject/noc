@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"\[Yes/press any key for no\]", "Y")
     ]
-    pattern_unpriveleged_prompt = r"^\S+>"
+    # pattern_unpriveleged_prompt = r"^\S+>"
     pattern_syntax_error = \
         r"^(Command not found. Use '?' to view available commands|" + \
         "Incomplete command\s+|Invalid argument\s+)"
@@ -26,7 +26,7 @@ class Profile(BaseProfile):
     command_enter_config = "configure"
     command_leave_config = "exit"
     command_save_config = "save"
-    pattern_prompt = r"^\S+#"
+    pattern_prompt = r"^\S+[#>]"
 
     class switch(object):
         """Switch context manager to use with "with" statement"""

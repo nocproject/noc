@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"--More-- ", " "),
         (r"\[Yes/press any key for no\]", "Y")
-        ]
+    ]
     pattern_prompt = r"^\S+>"
     pattern_syntax_error = r"Command not found"
 #    command_disable_pager = "terminal datadump"

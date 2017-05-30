@@ -31,8 +31,8 @@ from pyrule import PyRule, NoPyRuleException
 from timepattern import TimePattern
 from timepatternterm import TimePatternTerm
 from notificationgroup import (
-    NotificationGroup, NotificationGroupUser, NotificationGroupOther,
-    )
+    NotificationGroup, NotificationGroupUser, NotificationGroupOther
+)
 
 
 class SystemNotification(models.Model):
