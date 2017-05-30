@@ -19,11 +19,11 @@ class Script(BaseScript):
     name = "Tangram.GT21.get_version"
     cache = True
     interface = IGetVersion
-    
+
     def execute(self):
         platform = "GT21"
         version = "Unknown"
-        
+
         return {
             "vendor": "Tangram",
             "platform": platform,
