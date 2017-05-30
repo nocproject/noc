@@ -21,6 +21,7 @@ class Profile(BaseProfile):
         r"(Available commands|Next possible completions|Ambiguous token):"
     command_super = "enable admin"
     pattern_prompt = r"(?P<hostname>\S+)(?<!:(3|6))(?<!:operator)(?<!:user)#"
+    password_submit = "\r\n"
     command_more = "a"
     command_exit = "logout"
     command_save_config = "save"
