@@ -23,7 +23,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.core.config.base import config
+from noc.config import config
 
 
 logger = logging.getLogger(__name__)
@@ -104,15 +104,15 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                 "$gte": ets
             }
         }).count()
-        if ae >= config.tt_escalation_limit:
+        if ae >= config.escalation.global_limit:
             logger.error(
                 "Escalation limit exceeded (%s/%s). Skipping",
-                ae, config.tt_escalation_limit
+                ae, config.escalation.global_limit
             )
             metrics["escalation_throttled"] += 1
             alarm.set_escalation_error(
                 "Escalation limit exceeded (%s/%s). Skipping" % (
-                    ae, config.tt_escalation_limit))
+                    ae, config.escalation.global_limit))
             return
         # Check whether consequences has escalations
         cons_escalated = sorted(alarm.iter_escalated(),
@@ -124,8 +124,14 @@ def escalate(alarm_id, escalation_id, escalation_delay,
         if segment.is_redundant:
             uplinks = alarm.managed_object.data.uplinks
             lost_redundancy = len(uplinks) > 1
-            affected_subscribers = summary_to_list(segment.total_subscribers, SubscriberProfile)
-            affected_services = summary_to_list(segment.total_services, ServiceProfile)
+            affected_subscribers = summary_to_list(
+                segment.total_subscribers,
+                SubscriberProfile
+            )
+            affected_services = summary_to_list(
+                segment.total_services,
+                ServiceProfile
+            )
         else:
             lost_redundancy = False
             affected_subscribers = []

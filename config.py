@@ -15,7 +15,8 @@ from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (StringParameter, MapParameter,
                                     IntParameter, BooleanParameter,
                                     HandlerParameter, SecondsParameter,
-                                    FloatParameter, ListParameter)
+                                    FloatParameter, ListParameter,
+                                    ServiceParameter)
 
 
 class Config(BaseConfig):
@@ -63,66 +64,48 @@ class Config(BaseConfig):
     instance = IntParameter(default=0)
     listen = StringParameter(default="0.0.0.0:1200")
 
+    class traceback(ConfigSection):
+        reverse = BooleanParameter(default=True)
+
     class mongo(ConfigSection):
-        host = StringParameter(default="mongo-master")
-        port = IntParameter(
-            min=1, max=65535,
-            default=27017
-        )
+        addresses = ServiceParameter(service="mongo", wait=True)
         db = StringParameter(default="noc")
         user = StringParameter()
         password = StringParameter()
         rs = StringParameter()
 
     class pg(ConfigSection):
-        db_engine = StringParameter(
-            default="django.db.backends.postgresql_psycopg2"
-        )
-        host = StringParameter(default="postgres.service.dc1.consul")
-        port = IntParameter(
-            min=1, max=65535,
-            default=5432
+        addresses = ServiceParameter(
+            service=["pgbouncer", "postgres"],
+            wait=True
         )
         db = StringParameter(default="noc")
         user = StringParameter()
         password = StringParameter()
-        db_options = {}
 
     class clickhouse(ConfigSection):
-        host = StringParameter(default="clickhouse-master")
-        port = IntParameter(
-            min=1, max=65535,
-            default=8123
-        )
+        addresses = ServiceParameter(service="clickhouse", wait=True)
         db = StringParameter(default="noc")
         user = StringParameter()
         password = StringParameter()
 
     class influxdb(ConfigSection):
-        host = ListParameter(default="influxdb")
-        port = IntParameter(
-            min=1, max=65535,
-            default=8086
-        )
+        addresses = ServiceParameter(service="influxdb", wait=True)
         db = StringParameter(default="noc")
         user = StringParameter()
         password = StringParameter()
 
     class nsqlookupd(ConfigSection):
-        host = StringParameter(default="nsqlookupd")
-        port = IntParameter(
-            min=1, max=65535,
-            default=4161
-        )
-        hosts = ListParameter(default=":".join([host.value, str(port.value)]))
+        addresses = ServiceParameter(service="nsqlookupd", wait=True)
 
     class nsqd(ConfigSection):
-        host = StringParameter(default="nsqd")
-        port = IntParameter(
-            min=1, max=65535,
-            default=4151
-        )
-        hosts = ListParameter(default=":".join([host.value, str(port.value)]))
+        addresses = ServiceParameter(service="nsqd",
+                                     wait=True, near=True)
+
+    class memcached(ConfigSection):
+        addresses = ServiceParameter(service="memcached", wait=True)
+        pool_size = IntParameter(default=8)
+        default_ttl = IntParameter(default=86400)
 
     class cm(ConfigSection):
         vcs_path = StringParameter(default="/usr/local/bin/hg")
@@ -155,6 +138,15 @@ class Config(BaseConfig):
         enable_google_sat = BooleanParameter(default=False)
         enable_google_roadmap = BooleanParameter(default=False)
 
+    class geocoding(ConfigSection):
+        order = StringParameter(default="yandex,google")
+        yandex_key = StringParameter(default="")
+        google_key = StringParameter(default="")
+        google_language = StringParameter(default="en")
+
+    class escalation(ConfigSection):
+        global_limit = IntParameter(default=50)
+
     class audit(ConfigSection):
         command_ttl = SecondsParameter(default="1m")
         login_ttl = SecondsParameter(default="1m")
@@ -176,8 +168,6 @@ class Config(BaseConfig):
             min=0, max=255,
             default=0
         )
-        global_n_instances = IntParameter(default=1)
-        global_offset = IntParameter(default=1)
 
     class activator(ConfigSection):
         tos = IntParameter(
@@ -214,28 +204,21 @@ class Config(BaseConfig):
 
     class scheduler(ConfigSection):
         max_threads = IntParameter(default=20)
-        global_n_instances = IntParameter(default=1)
-        global_offset = IntParameter(default=1)
 
     class sae(ConfigSection):
         db_threads = IntParameter(default=20)
-        global_n_instances = IntParameter(default=1)
-        global_offset = IntParameter(default=1)
 
     class classifier(ConfigSection):
         lookup = HandlerParameter(
             default="noc.services.classifier.rulelookup.RuleLookup")
         default_interface_profile = StringParameter(default="default")
-        global_n_instances = IntParameter(default=1)
-        global_offset = IntParameter(default=1)
 
     class discovery(ConfigSection):
         max_threads = IntParameter(default=20)
-        global_n_instances = IntParameter(default=1)
-        global_offset = IntParameter(default=1)
 
     class correlator(ConfigSection):
         max_threads = IntParameter(default=20)
+        topology_rca_window = IntParameter(default=0)
 
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
@@ -243,16 +226,11 @@ class Config(BaseConfig):
     class trapcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:162")
 
+    class sentry(ConfigSection):
+        url = StringParameter(default="")
+
     def __init__(self):
         self.setup_logging()
-
-    def use_pg_pool(self):
-        self.pg.db_engine = "dbpool.db.backends.postgresql_psycopg2"
-
-    #        self.pg.db_options.update({
-    #            "MAX_CONNS": 1,
-    #            "MIN_CONNS": 1
-    #        })
 
     @property
     def pg_connection_args(self):
@@ -261,8 +239,8 @@ class Config(BaseConfig):
         suitable to pass to psycopg2.connect
         """
         return {
-            "host": self.pg.host,
-            "port": self.pg.port,
+            "host": self.pg.addresses[0].host,
+            "port": self.pg.addresses[0].port,
             "database": self.pg.db,
             "user": self.pg.user,
             "password": self.pg.password

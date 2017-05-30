@@ -1,29 +1,28 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Google geocoder
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Google geocoder
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import urllib
-## Third-party modules
+# Third-party modules
 import ujson
-## NOC modules
-from base import (BaseGeocoder, GeoCoderError, GeoCoderResult)
-from noc.core.config.base import config
+# NOC modules
+from .base import (BaseGeocoder, GeoCoderError, GeoCoderResult)
+from noc.config import config
 
 
 class GoogleGeocoder(BaseGeocoder):
     name = "google"
 
-    def __init__(self, key=config.geocoding_google_key,
-                 language=config.geocoding_google_language,
-                 *args, **kwargs):
+    def __init__(self, key=None, language=None, *args, **kwargs):
         super(GoogleGeocoder, self).__init__(*args, **kwargs)
-        self.key = key
-        self.language = language
+        self.key = key or config.geocoding.google_key
+        self.language = language or config.geocoding.google_language
 
     def forward(self, query, bounds=None, region=None):
         query = query.lower().strip()

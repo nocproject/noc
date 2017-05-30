@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Various debugging and error logging utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Various debugging and error logging utilities
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sys
 import re
 import logging
@@ -17,10 +17,10 @@ import hashlib
 import pprint
 import traceback
 import uuid
-## Third-party modules
+# Third-party modules
 import ujson
-## NOC modules
-from noc.settings import TRACEBACK_REVERSE, SENTRY_URL
+# NOC modules
+from noc.config import config
 from noc.lib.version import get_branch, get_tip
 from noc.lib.fileutils import safe_rewrite
 from noc.core.perf import metrics
@@ -53,12 +53,12 @@ if not os.path.isdir(CP_NEW):
 
 SERVICE_NAME = os.path.relpath(sys.argv[0] or sys.executable)
 
-## Sentry error reporting
-if SENTRY_URL:
+# Sentry error reporting
+if config.sentry.url:
     from raven import Client as RavenClient
 
     raven_client = RavenClient(
-        SENTRY_URL,
+        config.sentry.url,
         processors=(
             'raven.processors.SanitizePasswordsProcessor',
         ),
@@ -187,7 +187,7 @@ def get_execution_frames(frame):
     return frames
 
 
-def format_frames(frames, reverse=TRACEBACK_REVERSE):
+def format_frames(frames, reverse=config.traceback.reverse):
     def format_source(lineno, lines):
         r = []
         for l in lines:
@@ -297,7 +297,7 @@ def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
     r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)
     metrics["errors"] += 1
-    if SENTRY_URL:
+    if config.sentry.url:
         try:
             raven_client.captureException(
                 fingerprint=[fp]

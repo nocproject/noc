@@ -131,3 +131,43 @@ class ListParameter(BaseParameter):
         self.list = lists or []
         super(ListParameter, self).__init__(default=default, help=help)
         # @todo add clean method
+
+
+class ServiceItem(object):
+    __slots__ = ["host", "port"]
+
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+
+    def __str__(self):
+        return "%s:%s" % (self.host, self.port)
+
+
+class ServiceParameter(BaseParameter):
+    """
+    Resolve external service location to a list of ServiceItem.
+    Service resolved at startup,
+    though in future implementation it can be changed during runtime
+
+    Resolves to empty list when service is not available
+    :param service: Service name
+    :param near: Resolve to nearest service
+    :param wait: Block and wait until at least one instance of
+       service will be available
+    """
+    def __init__(self, service, near=False, wait=True, help=None):
+        self.service = service
+        self.near = False
+        super(ServiceParameter, self).__init__(default=None, help=help)
+        self.value = []
+
+    def resolve(self):
+        raise NotImplementedError()
+
+    def as_list(self):
+        """
+
+        :return: List of <host>:<port>
+        """
+        return [str(i) for i in self.value]

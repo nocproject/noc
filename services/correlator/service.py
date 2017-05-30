@@ -8,20 +8,21 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import sys
 import datetime
 import re
 from collections import defaultdict
 from threading import Lock
 # Third-party modules
-import tornado.gen
 from mongoengine.queryset import Q
 # NOC modules
+from noc.config import config
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
-from rule import Rule
-from rcacondition import RCACondition
-from trigger import Trigger
+from .rule import Rule
+from .rcacondition import RCACondition
+from .trigger import Trigger
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activealarm import ActiveAlarm
@@ -34,7 +35,7 @@ from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.lib.version import get_version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
-import utils
+from . import utils
 from noc.lib.dateutils import total_seconds
 
 
@@ -179,7 +180,7 @@ class CorrelatorService(Service):
             if root:
                 # Root cause found
                 self.logger.info("%s is root cause for %s (Rule: %s)",
-                    root.id, a.id, rc.name)
+                                 root.id, a.id, rc.name)
                 self.perf_metrics["alarm_correlated_rule"] += 1
                 a.set_root(root)
                 return True
@@ -533,8 +534,8 @@ class CorrelatorService(Service):
     def topology_rca(self, alarm, seen=None):
         def can_correlate(a1, a2):
             return (
-                not self.config.topology_rca_window or
-                total_seconds(a1.timestamp - a2.timestamp) <= self.config.topology_rca_window
+                not config.correlator.topology_rca_window or
+                total_seconds(a1.timestamp - a2.timestamp) <= config.correlator.topology_rca_window
             )
 
         self.logger.debug("[%s] Topology RCA", alarm.id)
