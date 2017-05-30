@@ -43,19 +43,6 @@
   tags:
     - config
 
-- name: Install packages
-  pip:
-    chdir: "{{noc_root}}"
-    requirements: "requirements/web.txt"
-    virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
-  when: "has_svc_web | default(False) "
-  environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
-    CFLAGS: "{{ pip_cflags | default('') }}"
-
-
 - name: Install assets
   command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
   args:
