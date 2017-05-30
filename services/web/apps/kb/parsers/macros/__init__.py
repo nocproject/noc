@@ -24,6 +24,8 @@ class MacroRegistry(Registry):
     exclude_daemons = [
         "noc-sae", "debug-script", "noc-correlator", "noc-classifier"
     ]
+
+
 macro_registry = MacroRegistry()
 
 
@@ -35,16 +37,18 @@ class MacroBase(type):
         m = type.__new__(cls, name, bases, attrs)
         macro_registry.register(m.name, m)
         return m
+
+
 #
 # Args regular expression
 #
 rx_args = re.compile(
     r"\s*(?P<attr>\S+)\s*=\s*(?P<quote>['\"])(?P<value>.*?)(?P=quote)")
+
+
 #
 # Macro Base
 #
-
-
 class Macro(object):
     __metaclass__ = MacroBase
     name = None
@@ -54,7 +58,7 @@ class Macro(object):
     #
     @classmethod
     def parse_args(cls, args):
-        if type(args) == types.DictType:
+        if isinstance(args, types.DictType):
             return args
         return dict([(m[0], m[2]) for m in rx_args.findall(args)])
 
