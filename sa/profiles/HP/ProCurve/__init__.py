@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_more = [
         ("Press any key to continue", "\n"),
         ("-- MORE --, next page: Space, next line: Enter, quit: Control-C", " ")
-        ]
+    ]
     pattern_syntax_error = r"Invalid input: "
     command_disable_pager = "terminal length 1000"
     command_super = "enable"

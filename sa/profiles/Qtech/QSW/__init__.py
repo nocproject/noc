@@ -28,7 +28,7 @@ class Profile(BaseProfile):
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
         (r"^Begin to receive file, please wait", " "),
         (r"#####", " ")
-        ]
+    ]
     pattern_unpriveleged_prompt = r"^\S+>"
     pattern_syntax_error = \
         r"% (Unrecognized command, and error|Invalid input) detected at " \
