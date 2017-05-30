@@ -286,11 +286,13 @@ class Profile(BaseProfile):
             untagged_ports = []
             member_ports = []
             if match.group("member_ports"):
-                member_ports = \
-                  script.expand_interface_range(match.group("member_ports"))
+                member_ports = script.expand_interface_range(
+                    match.group("member_ports")
+                )
             if match.group("untagged_ports"):
-                untagged_ports = \
-                  script.expand_interface_range(match.group("untagged_ports"))
+                untagged_ports = script.expand_interface_range(
+                    match.group("untagged_ports")
+                )
             for port in member_ports:
                 if port not in untagged_ports:
                     tagged_ports += [port]
@@ -424,9 +426,11 @@ def DGS3600(v):
     :param v:
     :return:
     """
-    return ("DGS-3610" not in v["platform"] and
-            "DGS-3620" not in v["platform"] and
-            v["platform"].startswith("DGS-36"))
+    return (
+        "DGS-3610" not in v["platform"] and
+        "DGS-3620" not in v["platform"] and
+        v["platform"].startswith("DGS-36")
+    )
 
 
 def DGS3620(v):

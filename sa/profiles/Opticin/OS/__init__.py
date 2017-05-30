@@ -7,8 +7,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -16,7 +14,9 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Opticin.OS"
     pattern_unpriveleged_prompt = r"^(?P<hostname>[^\n]+)h>"
-    pattern_syntax_error = r"% Unknown command|% Invalid input detected at|% Incomplete command|% Ambiguous command"
+    pattern_syntax_error = \
+        r"% Unknown command|% Invalid input detected at|" \
+        r"% Incomplete command|% Ambiguous command"
     command_super = "enable"
     pattern_prompt = r"^(?P<hostname>[^\n]+)\\enable>"
     pattern_more = [

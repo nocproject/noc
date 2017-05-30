@@ -10,13 +10,12 @@
 '''
 
 from noc.core.profile.base import BaseProfile
-import re
 
 
 class Profile(BaseProfile):
     name = "Ruckus.ZoneDirector"
     pattern_more = [
-        (r"^Login as:$", "\n"),
+        (r"^Login as:$", "\n")
     ]
     pattern_username = "^[Pp]lease [Ll]ogin:"
     pattern_password = "^[Pp]assword:"

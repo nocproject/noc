@@ -25,8 +25,10 @@ class Profile(BaseProfile):
     rx_ver = re.compile(r"\d+")
 
     def cmp_version(self, x, y):
-        return cmp([int(z) for z in self.rx_ver.findall(x)],
-            [int(z) for z in self.rx_ver.findall(y)])
+        return cmp(
+            [int(z) for z in self.rx_ver.findall(x)],
+            [int(z) for z in self.rx_ver.findall(y)]
+        )
 
     def convert_interface_name(self, s):
         if s.startswith("Alcatel ") or s.startswith("Alcatel-Lucent "):

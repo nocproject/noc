@@ -39,7 +39,7 @@ class Profile(BaseProfile):
                     h = clean(header[0])
                     d = "\n".join([clean(x) for x in data])
                     yield h, d
-                    hader = []
+                    header = []
                     data = []
             elif s.startswith("----------"):
                 if not in_header:
