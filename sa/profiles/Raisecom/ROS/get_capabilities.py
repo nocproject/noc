@@ -25,3 +25,11 @@ class Script(BaseScript):
         """
         cmd = self.cli("show lldp local config")
         return self.rx_lldp.search(cmd) is not None
+
+    @false_on_cli_error
+    def has_stp(self):
+        """
+        Check box has lldp enabled
+        """
+        cmd = self.cli("show spanning-tree")
+        return "Disable" not in cmd
