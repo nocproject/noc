@@ -57,7 +57,8 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
     PROTOCOLS = {
         "consul": "noc.core.config.proto.consul_proto.ConsulProtocol",
         "env": "noc.core.config.proto.env_proto.EnvProtocol",
-        "yaml": "noc.core.config.proto.yaml_proto.YAMLProtocol"
+        "yaml": "noc.core.config.proto.yaml_proto.YAMLProtocol",
+        "legacy": "noc.core.config.proto.legacy_proto.LegacyProtocol"
     }
 
     _rx_env_sh = re.compile(r"\${([^:}]+)(:-[^}]+)?}")
