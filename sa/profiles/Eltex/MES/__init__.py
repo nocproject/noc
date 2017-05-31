@@ -20,7 +20,10 @@ class Profile(BaseProfile):
         (r"q or <ctrl>+z", " ")
     ]
     pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)>\s*"
-    pattern_syntax_error = r"^% (Unrecognized command|Incomplete command|Wrong number of parameters or invalid range, size or characters entered)$"
+    pattern_syntax_error = \
+        r"^% (Unrecognized command|Incomplete command|" \
+        r"Wrong number of parameters or invalid range, size or " \
+        r"characters entered)$"
     command_disable_pager = "terminal datadump"
     command_super = "enable"
     command_enter_config = "configure"

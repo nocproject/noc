@@ -18,10 +18,12 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
-    rx_mac = re.compile(r"^\s*\S+\s+MAC\s+(?P<mac>\S+)$",
-                        re.MULTILINE | re.IGNORECASE)
-    rx_mac_old = re.compile(r"^\d+\s+(?P<mac>\S+)\s+\S+\s+\S+\s+CPU$",
-                            re.MULTILINE | re.IGNORECASE)
+    rx_mac = re.compile(
+        r"^\s*\S+\s+MAC\s+(?P<mac>\S+)$",
+        re.MULTILINE | re.IGNORECASE)
+    rx_mac_old = re.compile(
+        r"^\d+\s+(?P<mac>\S+)\s+\S+\s+\S+\s+CPU$",
+        re.MULTILINE | re.IGNORECASE)
 
     def execute(self):
         r = []

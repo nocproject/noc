@@ -61,13 +61,14 @@ class Profile(BaseProfile):
         re.MULTILINE)
 
     # Version start  ROS_4.15.1200_20161130(Compiled Nov 30 2016, 10:51:45)
-    rx_ver_2016 = re.compile(r"Product name: (?P<platform>\S+)\s*\n"
-                             r"(ROS|QOS)\s+Version(:|)\s*(?P<version>\S+)(\.|)\s*\(Compiled.+\)\s*\n"
-                             r"Bootstrap\s*Version(:|)\s*(?P<bootstrap>\S+)\s*\n"
-                             r"Hardware\s*\S*\s*Version(\sRev\.|:)\s*(?P<hw_rev>\S+)\s*\n\n"
-                             r"System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
-                             r"Serial number\s*:\s*(?P<serial>\S+)\s*",
-                             re.MULTILINE | re.IGNORECASE)
+    rx_ver_2016 = re.compile(
+        r"Product name: (?P<platform>\S+)\s*\n"
+        r"(ROS|QOS)\s+Version(:|)\s*(?P<version>\S+)(\.|)\s*\(Compiled.+\)\s*\n"
+        r"Bootstrap\s*Version(:|)\s*(?P<bootstrap>\S+)\s*\n"
+        r"Hardware\s*\S*\s*Version(\sRev\.|:)\s*(?P<hw_rev>\S+)\s*\n\n"
+        r"System MacAddress is\s*:\s*(?P<mac>\S+)\s*\n"
+        r"Serial number\s*:\s*(?P<serial>\S+)\s*",
+        re.MULTILINE | re.IGNORECASE)
 
     def get_version(self, script):
         c = script.cli("show version", cached=True)

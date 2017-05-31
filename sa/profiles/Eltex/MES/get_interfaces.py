@@ -39,7 +39,8 @@ class Script(BaseScript):
     rx_ifname = re.compile(
         r"^(?P<ifname>\S+)\s+\S+\s+(?:Enabled|Disabled).+$", re.MULTILINE)
     rx_sh_int = re.compile(
-        r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n"
+        r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+"
+        r"\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n"
         r"^\s+Interface index is (?P<ifindex>\d+)\s*\n"
         r"^\s+Hardware is\s+.+?, MAC address is (?P<mac>\S+)\s*\n"
         r"(^\s+Description:(?P<descr>.*?)\n)?"
@@ -54,15 +55,22 @@ class Script(BaseScript):
     rx_sh_int_des2 = re.compile(
         r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
-    rx_lldp = re.compile(r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
+    rx_lldp = re.compile(
+        r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
 
-    rx_gvrp_en = re.compile(r"GVRP Feature is currently Enabled on the device?")
-    rx_gvrp = re.compile(r"^(?P<ifname>\S+)\s+(?:Enabled\s+)Normal\s+", re.MULTILINE)
+    rx_gvrp_en = re.compile(
+        r"GVRP Feature is currently Enabled on the device?")
+    rx_gvrp = re.compile(
+        r"^(?P<ifname>\S+)\s+(?:Enabled\s+)Normal\s+", re.MULTILINE)
 
     rx_stp_en = re.compile(r"Spanning tree enabled mode?")
-    rx_stp = re.compile(r"(?P<ifname>\S+)\s+(?:enabled)\s+\S+\s+\d+\s+\S+\s+\S+\s+(?:Yes|No)", re.MULTILINE)
+    rx_stp = re.compile(
+        r"(?P<ifname>\S+)\s+(?:enabled)\s+\S+\s+\d+\s+\S+\s+\S+\s+(?:Yes|No)",
+        re.MULTILINE)
 
-    rx_vlan = re.compile(r"(?P<vlan>\S+)\s+(?P<vdesc>\S+)\s+(?P<vtype>Tagged|Untagged)\s+", re.MULTILINE)
+    rx_vlan = re.compile(
+        r"(?P<vlan>\S+)\s+(?P<vdesc>\S+)\s+(?P<vtype>Tagged|Untagged)\s+",
+        re.MULTILINE)
 
     def execute(self):
 
@@ -104,8 +112,10 @@ class Script(BaseScript):
         mtu = []
         for res in i:
             name = res[0].strip()
-            if self.match_version(version__regex="[12]\.[15]\.4[4-9]") \
-            or self.match_version(version__regex="4\.0\.[4-5]"):
+            if (
+                self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
+                self.match_version(version__regex="4\.0\.[4-5]")
+            ):
                 v = self.cli("show interface %s" % name)
                 for match in self.rx_sh_int.finditer(v):
                     ifname = match.group("interface")
