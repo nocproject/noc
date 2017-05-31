@@ -92,7 +92,9 @@ class MODashboard(BaseDashboard):
             "firmare_version": self.object.version.version or None,
             "segment": self.object.segment.id,
             "vendor": self.object.vendor or "Unknown version",
-            "pool": self.object.pool.name
+            "pool": self.object.pool.name,
+            "ping_interval": self.object.object_profile.ping_interval,
+            "discovery_interval": self.object.object_profile.periodic_discovery_interval
         }
         self.logger.info("Context with data: %s" % context)
         PM_TEMPLATE_PATH = "templates/ddash/"
