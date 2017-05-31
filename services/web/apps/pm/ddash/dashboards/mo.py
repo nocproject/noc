@@ -58,10 +58,11 @@ class MODashboard(BaseDashboard):
                     lags += [{
                         "name": iface.name,
                         "ports": [i.name for i in iface.lag_members],
-                        "descr": iface.description or "No description"
+                        "descr": iface.description or "No description",
+                        "status": ["status : ".join([i.name, i.status]) for i in iface.lag_members]
                     }]
                     continue
-                ports += [{"name": iface.name, "descr": iface.description}]
+                ports += [{"name": iface.name, "descr": iface.description, "status": iface.status}]
             if not ports:
                 continue
             port_types += [{"type": profile.id, "name": profile.name,

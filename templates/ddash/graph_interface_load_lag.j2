@@ -1,6 +1,6 @@
 {% macro interface(interface, lindex) -%}
 {
-  "title": "{{interface.name}}",
+  "title": "{{interface.name}} : Members {{ interface.status | join(", ") }}",
   "aliasColors": {},
   "bars": false,
   "internal_comment":"graph_interface_load_lag.j2",
