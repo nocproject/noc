@@ -67,9 +67,6 @@ class Config(BaseConfig):
     class traceback(ConfigSection):
         reverse = BooleanParameter(default=True)
 
-    class develop(ConfigSection):
-        install_collection = BooleanParameter(default=False)
-
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)
         db = StringParameter(default="noc")
