@@ -32,11 +32,18 @@ class Script(BaseScript):
                 continue
             num = int(port.splitlines()[0].strip(":"))
             d = dict([e.split(":") for e in port.splitlines() if e])
+            # 1300Mb/sec-1310nm-LC-20.0km(0.009mm)
+            description = "-".join([d["Transceiver Type"].strip(),
+                                    d["Wavelength(nm)"].strip() + "nm",
+                                    d["Connector Type"].strip(),
+                                    d["Transfer Distance(meter)"].strip() + "m"
+                                    ])
             r += [{
                 "type": "XCVR",
                 "numper": num,
                 "vendor": d["Vendor Name"].strip(),
                 "part_no": d["Vendor Part Number"].strip(),
-                "serial": d["Vendor Serial Number"].strip()
+                "serial": d["Vendor Serial Number"].strip(),
+                "description": description
             }]
         return r
