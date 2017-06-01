@@ -53,8 +53,6 @@
       owner: "{{noc_user}}"
     - name: var/run
       owner: "{{noc_user}}"
-    - name: var/sock
-      owner: "{{noc_user}}"
     - name: var/etc/noc
       owner: root
     - name: lib/python2.7/site-packages/__pycache__

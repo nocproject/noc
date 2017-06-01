@@ -137,3 +137,5 @@ sentry_url: "{{sentry_scheme}}://{{sentry_public_key}}:{{sentry_secret_key}}@{{s
 consul_config_path: "{{etc_prefix}}/consul"
 consul_configd_path: "{{etc_prefix}}/consul.d"
 consul_scripts_path: "{{consul_configd_path}}/scripts"
+
+supervisor_sock_path: /var/run/supervisor.sock
