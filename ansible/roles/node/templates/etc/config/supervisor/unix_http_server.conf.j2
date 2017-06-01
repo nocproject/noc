@@ -1,6 +1,6 @@
 [unix_http_server]
 # the path to the socket file
-file = {{ noc_root }}/var/sock/supervisor.sock
+file = {{ supervisor_sock_path}}
 username = {{ noc_user }}
 password = {{supervisorctl_key}}
 chown = {{ noc_user }}

@@ -1,4 +1,4 @@
 [supervisorctl]
-serverurl = unix://{{ noc_root }}/var/sock/supervisor.sock
+serverurl = unix://{{ supervisor_sock_path}}
 username = {{ noc_user }}
 password = {{supervisorctl_key}}
