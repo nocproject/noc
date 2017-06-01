@@ -181,12 +181,13 @@ class Script(BaseScript):
                 iface["aggregated_interface"] = ai
                 if is_lacp:
                     iface["enabled_protocols"] += ["LACP"]
-            cmd = self.cli("show interfaces switchport %s" % name)
             iface["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
             # Vlans
+            cmd = self.cli("show interfaces switchport %s" % name)
+            rcmd = cmd.split("\n\n")
             tvlan = []
             utvlan = None
-            for vlan in parse_table(cmd):
+            for vlan in parse_table(rcmd[0]):
                 vlan_id = vlan[0]
                 rule = vlan[2]
                 if rule == "Tagged":
