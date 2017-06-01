@@ -87,7 +87,6 @@
   become: yes
   any_errors_fatal: false
   gather_facts: True
-  strategy: free
   tags:
     - node
     - noc
