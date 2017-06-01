@@ -9,12 +9,8 @@
 
 - name: Setup supervisor config
   template:
-    src: "{{ item }}"
-    dest: "{{ noc_root }}/{{ item[:-3] }}"
-  with_items:
-    - etc/config/supervisor/supervisord.conf.j2
-    - etc/config/supervisor/supervisorctl.conf.j2
-    - etc/config/supervisor/unix_http_server.conf.j2
+    src: "etc/supervisord.conf.j2"
+    dest: "{{ noc_root }}/etc/supervisord.conf"
   register: noc_cfg2
   tags:
     - config

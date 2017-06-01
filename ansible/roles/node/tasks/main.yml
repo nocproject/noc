@@ -28,42 +28,42 @@
 
 - name: Create required directories
   file:
-    path: "{{noc_root}}/{{item.name}}"
+    path: "{{item.name}}"
     state: "directory"
     owner: "{{item.owner}}"
     mode: 0755
   with_items:
-    - name: etc/config/
+    - name: "{{noc_root}}/etc/config/"
       owner: root
-    - name: etc/config/supervisor
+    - name: "{{noc_root}}/etc/config/supervisor"
       owner: root
-    - name: var
+    - name: "{{noc_root}}/var"
       owner: "{{noc_user}}"
-    - name: var/etc
+    - name: "{{noc_root}}/var/etc"
       owner: root
-    - name: var/db
+    - name: "{{noc_root}}/var/etc/noc"
       owner: root
-    - name: var/log
-      owner: "{{noc_user}}"
-    - name: var/cp
-      owner: "{{noc_user}}"
-    - name: var/cp/crashinfo
-      owner: "{{noc_user}}"
-    - name: var/cp/crashinfo/new
-      owner: "{{noc_user}}"
-    - name: var/run
-      owner: "{{noc_user}}"
-    - name: var/etc/noc
+    - name: "{{noc_root}}/var/db"
       owner: root
-    - name: lib/python2.7/site-packages/__pycache__
+    - name: "{{noc_logs}}"
+      owner: "{{noc_user}}"
+    - name: "{{noc_root}}/var/cp"
+      owner: "{{noc_user}}"
+    - name: "{{noc_root}}/var/cp/crashinfo"
+      owner: "{{noc_user}}"
+    - name: "{{noc_root}}/var/cp/crashinfo/new"
+      owner: "{{noc_user}}"
+    - name: "{{noc_root}}/var/run"
+      owner: "{{noc_user}}"
+    - name: "{{noc_root}}/lib/python2.7/site-packages/__pycache__"
       owner: "{{ noc_user }}"
-    - name: var/reports
+    - name: "{{noc_root}}/var/reports"
       owner: "{{noc_user}}"
-    - name: var/bi
+    - name: "{{bi_export_dir}}"
       owner: "{{noc_user}}"
-    - name: var/bi-dict
+    - name: "{{bi_export_dict_dir}}"
       owner: "{{noc_user}}"
-    - name: var/bi-dict-data
+    - name: "{{bi_export_dict_data_dir}}"
       owner: "{{noc_user}}"
 
 - name: Include post install
