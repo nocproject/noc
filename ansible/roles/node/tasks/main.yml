@@ -33,10 +33,6 @@
     owner: "{{item.owner}}"
     mode: 0755
   with_items:
-    - name: "{{noc_root}}/etc/config/"
-      owner: root
-    - name: "{{noc_root}}/etc/config/supervisor"
-      owner: root
     - name: "{{noc_root}}/var"
       owner: "{{noc_user}}"
     - name: "{{noc_root}}/var/etc"
