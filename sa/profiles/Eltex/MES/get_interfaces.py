@@ -101,7 +101,10 @@ class Script(BaseScript):
             stp = self.rx_stp.findall(c)
 
         i = []
-        c = self.cli("show interfaces description")
+        if self.match_version(version__regex="3\.15\.14\.[4-9]"): #For stacking eltex after 3.5.14.4fw , otherwise an error occurs
+            c = self.cli("show interfaces description")
+        else:
+            c = self.cli("show interfaces description detail")
         i = self.rx_sh_int_des.findall(c)
         if not i:
             i = self.rx_sh_int_des2.findall(c)
