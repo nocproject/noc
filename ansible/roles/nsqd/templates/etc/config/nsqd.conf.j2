@@ -30,7 +30,7 @@ nsqlookupd_tcp_addresses = [
 
 
 ## path to store disk-backed messages
-data_path = "{{noc_root}}/var/db/nsq"
+data_path = "{{nsqd_db_dir}}"
 
 ## number of messages to keep in memory (per topic/channel)
 mem_queue_size = {{nsq_max_messages_in_memory}}

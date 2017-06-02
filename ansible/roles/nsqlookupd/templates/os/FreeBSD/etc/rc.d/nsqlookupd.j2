@@ -8,7 +8,7 @@
 # Add the following lines to /etc/rc.conf.local or /etc/rc.conf to
 # enable nsqlookupd:
 #
-# nsqlookupd_enable (bool): Set to NO by default. 
+# nsqlookupd_enable (bool): Set to NO by default.
 #                     Set it to YES to enable nsqd
 #
 
@@ -20,7 +20,7 @@ rcvar=nsqlookupd_enable
 load_rc_config $name
 
 : ${nsqlookupd_enable="NO"}
-: ${nsqlookupd_config="{{ noc_root }}/var/etc/nsq/${name}.conf"}
+: ${nsqlookupd_config="{{nsqd_config_dir}}/${name}.conf"}
 
 command="{{ noc_root }}/bin/${name}"
 required_files="${nsqlookupd_config}"

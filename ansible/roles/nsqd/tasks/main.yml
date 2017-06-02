@@ -19,9 +19,8 @@
     group: nsq
     owner: nsq
   with_items:
-    - "{{noc_root}}/var/db/nsq"
-    - "{{noc_root}}/var/etc/nsq"
-    - "{{noc_root}}/var/log/nsq"
+    - "{{nsqd_db_dir}}"
+    - "{{nsqd_config_dir}}"
 
 - name: check if nsq already exists
   stat:
@@ -50,7 +49,7 @@
 - name: install nsqd config
   template:
     src: etc/config/nsqd.conf.j2
-    dest: "{{noc_root}}/var/etc/nsq/nsqd.conf"
+    dest: "{{nsqd_config_dir}}/nsqd.conf"
   notify: restart nsqd
   tags:
     - config
