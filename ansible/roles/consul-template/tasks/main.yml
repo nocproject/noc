@@ -79,7 +79,8 @@
   tags:
     - config
 
-- service:
+- name: start consul-template service
+  service:
     name: consul-template
     state: started
     enabled: yes
