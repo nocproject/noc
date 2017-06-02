@@ -55,7 +55,6 @@ of the kv store you'd like to use.
 ######################################################################
 
 import os
-import sys
 from urlparse import urlparse
 from ansible.errors import AnsibleError
 from ansible.plugins.lookup import LookupBase

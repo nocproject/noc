@@ -129,14 +129,11 @@ be used to access the machine.
 
 '''
 
+import ConfigParser
+import argparse
 import os
 import re
-import argparse
 import sys
-from time import time
-import sys
-import ConfigParser
-import urllib, urllib2, base64
 
 
 def get_log_filename():

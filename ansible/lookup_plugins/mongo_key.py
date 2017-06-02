@@ -3,8 +3,8 @@
 
 # Python modules
 import os
+
 # Ansible modules
-from ansible import utils, errors
 from ansible.plugins.lookup import LookupBase
 
 
