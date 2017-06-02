@@ -10,7 +10,6 @@ from ansible.plugins.lookup import LookupBase
 
 class LookupModule(LookupBase):
     def run(self, terms, inject=None, **kwargs):
-        ret = []
 
         # this can happen if the variable contains a string, strictly not desired for lookup
         # plugins, but users may try it, so make it work.
