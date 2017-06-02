@@ -14,7 +14,7 @@
 - name: install nsqlookupd config
   template:
     src: config/nsqlookupd.conf.j2
-    dest: "{{noc_root}}/var/etc/nsq/nsqlookupd.conf"
+    dest: "{{{nsqd_config_dir}}/nsqlookupd.conf"
   notify: restart nsqlookupd
   tags:
     - config
