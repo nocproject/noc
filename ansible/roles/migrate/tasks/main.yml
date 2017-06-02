@@ -6,6 +6,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  become: yes
   register: migrate_out
   changed_when: "'Nothing to migrate' not in migrate_out.stdout"
 
@@ -14,6 +15,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  become: yes
   register: result
   changed_when: "'CHANGED' in result.stdout"
 
@@ -51,6 +53,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  become: yes
   when: coll_exists.stat.exists
   tags:
     - coll_sync
@@ -60,6 +63,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  become: yes
   tags:
     - perms
 
@@ -68,6 +72,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  become: yes
   register: mibs_out
   changed_when: mibs_out.stdout | length > 5
 
