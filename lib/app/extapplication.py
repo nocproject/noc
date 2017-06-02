@@ -21,7 +21,7 @@ from noc.main.models.slowop import SlowOp
 class ExtApplication(Application):
     menu = None
     icon = "icon_application_form"
-    ## HTTP Result Codes
+    # HTTP Result Codes
     OK = 200
     CREATED = 201
     DELETED = 204
@@ -34,7 +34,7 @@ class ExtApplication(Application):
     INTERNAL_ERROR = 500
     NOT_IMPLEMENTED = 501
     THROTTLED = 503
-    ## Recognized GET parameters
+    # Recognized GET parameters
     ignored_params = ["_dc"]
     page_param = "__page"
     start_param = "__start"
@@ -69,12 +69,12 @@ class ExtApplication(Application):
     def response(self, content="", status=200):
         if not isinstance(content, basestring):
             return HttpResponse(ujson.dumps(content),
-                mimetype="text/json; charset=utf-8",
-                status=status)
+                                mimetype="text/json; charset=utf-8",
+                                status=status)
         else:
             return HttpResponse(content,
-                mimetype="text/plain; charset=utf-8",
-                status=status)
+                                mimetype="text/plain; charset=utf-8",
+                                status=status)
 
     def fav_convert(self, item):
         """
@@ -109,8 +109,11 @@ class ExtApplication(Application):
         """
         # Todo: Fix
         if request.method == "POST":
-            q = dict((str(k), v[0] if len(v) == 1 else v)
-                     for k, v in request.POST.lists())
+            if request.META.get("CONTENT_TYPE") == 'application/json':
+                q = ujson.decode(request.body)
+            else:
+                q = dict((str(k), v[0] if len(v) == 1 else v)
+                         for k, v in request.POST.lists())
         else:
             q = dict((str(k), v[0] if len(v) == 1 else v)
                      for k, v in request.GET.lists())
@@ -192,8 +195,8 @@ class ExtApplication(Application):
         return self.response(out, status=self.OK)
 
     @view(url="^favorites/app/(?P<action>set|reset)/$",
-        method=["POST"],
-        access=PermitLogged(), api=True)
+          method=["POST"],
+          access=PermitLogged(), api=True)
     def api_favorites_app(self, request, action):
         """
         Set/reset favorite app status
@@ -207,12 +210,12 @@ class ExtApplication(Application):
                 fv.save()
         elif v:
             Favorites(user=request.user, app=self.app_id,
-                favorite_app=v).save()
+                      favorite_app=v).save()
         return True
 
     @view(url="^favorites/item/(?P<item>[0-9a-f]+)/(?P<action>set|reset)/$",
-        method=["POST"],
-        access=PermitLogged(), api=True)
+          method=["POST"],
+          access=PermitLogged(), api=True)
     def api_favorites_items(self, request, item, action):
         """
         Set/reset favorite items
