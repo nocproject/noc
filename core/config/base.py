@@ -43,7 +43,7 @@ class BaseConfig(object):
         "geocoding_google_key": 0,
         "geocoding_google_language": "en",
         # Alarm escalations
-        "tt_escalation_limit": 50,
+        "tt_escalation_limit": 100,
         # Memcached settings
         "memcached_pool_size": 8,
         "memcached_default_ttl": 86400
