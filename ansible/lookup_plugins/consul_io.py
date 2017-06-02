@@ -134,6 +134,7 @@ import argparse
 import os
 import re
 import sys
+from six import iteritems
 
 
 def get_log_filename():
@@ -206,8 +207,6 @@ try:
 except ImportError as e:
     sys.exit("""failed=True msg='python-consul required for this module.
 See http://python-consul.readthedocs.org/en/latest/#installation'""")
-
-from six import iteritems
 
 
 class ConsulInventory(object):
@@ -447,7 +446,7 @@ class ConsulInventory(object):
 
         new_dict = {}
         for k, v in d.items():
-            if v != None:
+            if v is not None:
                 new_dict[self.to_safe(str(k))] = self.to_safe(str(v))
         return new_dict
 
@@ -490,8 +489,7 @@ class ConsulConfig(dict):
 
     def read_cli_args(self):
         ''' Command line argument processing '''
-        parser = argparse.ArgumentParser(description=
-                                         'Produce an Ansible Inventory file based nodes in a Consul cluster')
+        parser = argparse.ArgumentParser(description='Produce an Ansible Inventory file based nodes in a Consul cluster')
 
         parser.add_argument('--list', action='store_true',
                             help='Get all inventory variables from all nodes in the consul cluster')
