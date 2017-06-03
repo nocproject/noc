@@ -52,6 +52,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL)
     rx_sh_int_des = rx_in =re.compile(r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
                     re.MULTILINE)
+    rx_sh_int_des2 = re.compile(r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
     rx_lldp = re.compile(
         r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
@@ -119,6 +120,8 @@ class Script(BaseScript):
         i = []
         c = self.cli("show interfaces description").split("\n\n")
         i = self.rx_sh_int_des.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
+        if not i:
+            i = rx_sh_int_des2.findall("".join(["%s\n\n%s" % (a[0], a[1])]))
 
         interfaces = []
         mac = None
