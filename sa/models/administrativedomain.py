@@ -30,8 +30,7 @@ id_lock = Lock()
     ("sa.ManagedObject", "administrative_domain"),
     ("sa.ManagedObjectSelector", "filter_administrative_domain"),
     ("sa.UserAccess", "administrative_domain"),
-    ("sa.AdministrativeDomain", "parent"),
-    ("main.RemoteSystem", "remote_system")
+    ("sa.AdministrativeDomain", "parent")
 ])
 class AdministrativeDomain(models.Model):
     """

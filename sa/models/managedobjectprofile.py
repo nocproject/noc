@@ -38,8 +38,7 @@ id_lock = Lock()
     ("sa.ManagedObject", "object_profile"),
     ("sa.ManagedObjectProfile", "cpe_profile"),
     ("sa.ManagedObjectSelector", "filter_object_profile"),
-    ("inv.FirmwarePolicy", "object_profile"),
-    ("main.RemoteSystem", "remote_system")
+    ("inv.FirmwarePolicy", "object_profile")
 ])
 class ManagedObjectProfile(models.Model):
 

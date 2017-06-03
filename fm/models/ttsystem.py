@@ -14,11 +14,15 @@ from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
 import cachetools
 # NOC modules
+from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
 
 id_lock = Lock()
 
 
+@on_delete_check(check=[
+    ("sa.ManagedObject", "tt_system"),
+])
 class TTSystem(Document):
     meta = {
         "collection": "noc.ttsystem",

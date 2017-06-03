@@ -17,6 +17,7 @@ from mongoengine.fields import (StringField, ListField,
                                 DateTimeField)
 import cachetools
 # NOC modules
+from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
 from noc.core.debug import error_report
 
@@ -34,6 +35,16 @@ class EnvItem(EmbeddedDocument):
         return self.key
 
 
+@on_delete_check(check=[
+    ("sa.ManagedObject", "remote_system"),
+    ("sa.AdministrativeDomain", "remote_system"),
+    ("sa.ManagedObjectProfile", "remote_system"),
+    ("sa.AuthProfile", "remote_system"),
+    ("sa.ServiceProfile", "remote_system"),
+    ("sa.TerminationGroup", "remote_system"),
+    ("sa.Service", "remote_system"),
+    ("inv.NetworkSegment", "remote_system"),
+])
 class RemoteSystem(Document):
     meta = {
         "collection": "noc.remotesystem",
