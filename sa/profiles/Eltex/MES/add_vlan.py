@@ -67,7 +67,7 @@ class Script(BaseScript):
                 self.cli("exit")
             if tagged_ports:
                 self.cli("interface range %s" % tagged)
-## 802.1q
+# 802.1q
 #                self.cli("switchport general allowed vlan add %d tagged"
 #                    % vlan_id)
 # trunk

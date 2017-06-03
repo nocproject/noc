@@ -7,8 +7,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-import re
 # NOC modules
 from noc.core.profile.base import BaseProfile
 
@@ -32,7 +30,7 @@ class Profile(BaseProfile):
     command_save_config = "save"
     pattern_prompt = r"(?P<hostname>\S+)(?:\(.*)?#"
     pattern_unpriveleged_prompt = \
-        r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*>$"
+        r"^(?P<hostname>[a-zA-Z0-9-_\.\/]+)(?:-[a-zA-Z0-9/]+)*>$"
     pattern_syntax_error = \
         r"(% Unknown command, the error locates at \'^\'|  Logged Fail!)"
 

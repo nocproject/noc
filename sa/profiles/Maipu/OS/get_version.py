@@ -33,9 +33,7 @@ class Script(BaseScript):
     def execute(self):
         v = ""
         v = self.cli("show version", cached=True)
-        rx = self.find_re([
-            self.rx_ver
-        ], v)
+        rx = self.find_re([self.rx_ver], v)
 
         match = self.re_search(self.rx_ver, v)
 
@@ -48,6 +46,6 @@ class Script(BaseScript):
                 "HW version": match.group("hwversion"),
                 "Serial Number" : match.group("serial"),
                 "cpldversion": match.group("cpldversion")
-                 }
             }
+        }
 

@@ -18,9 +18,11 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    rx_ver = re.compile(r"Software version\s*(?P<version>\S+)\n(\n|)"
-                        r"Hardware revision:\s(?P<revision>\S+)\s+(?P<platform>\S+)\s(?P<description>.+)",
-                        re.IGNORECASE | re.MULTILINE)
+    rx_ver = re.compile(
+        r"Software version\s*(?P<version>\S+)\n(\n|)"
+        r"Hardware revision:\s(?P<revision>\S+)\s+(?P<platform>\S+)\s"
+        r"(?P<description>.+)",
+        re.IGNORECASE | re.MULTILINE)
 
     def execute(self):
         r = {}

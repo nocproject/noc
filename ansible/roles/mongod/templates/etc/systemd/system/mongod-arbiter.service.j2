@@ -14,7 +14,7 @@ LimitNPROC=64000
 User={{ mongo_user }}
 Group={{ mongo_user }}
 PIDFile={{ mongo_arbiter_pid }}
-Environment="OPTIONS= -f {{ noc_root }}/var/etc/mongo/mongod-arbiter.conf"
+Environment="OPTIONS= -f {{ mongo_dir }}/mongod-arbiter.conf"
 ExecStart=/usr/bin/mongod $OPTIONS run
 
 [Install]

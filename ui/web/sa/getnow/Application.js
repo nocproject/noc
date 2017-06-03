@@ -39,6 +39,9 @@ Ext.define('NOC.sa.getnow.Application', {
             previewName: '{0} config',
             restUrl: '/sa/managedobject/{0}/repo/cfg/',
             historyHashPrefix: 'config',
+            listeners: {
+                destroy: 'onStopPolling'
+            },
             tbar: [
                 {
                     text: __('Get config NOW'),

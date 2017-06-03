@@ -33,15 +33,15 @@ class Profile(BaseProfile):
         return self.convert_interface_name_cisco(interface)
 
     INTERFACE_TYPES = {
-            "L": "loopback",
-            "I": "loopback",
-            "E": "physical",
-            "G": "physical",
-            "T": "physical",
-            "M": "management",
-            "R": "aggregated",
-            "P": "aggregated",
-            "V": "SVI"
+        "L": "loopback",
+        "I": "loopback",
+        "E": "physical",
+        "G": "physical",
+        "T": "physical",
+        "M": "management",
+        "R": "aggregated",
+        "P": "aggregated",
+        "V": "SVI"
     }
 
     @classmethod

@@ -89,9 +89,7 @@ logger = logging.getLogger(__name__)
     ("fm.FailedEvent", "managed_object"),
     ("fm.NewEvent", "managed_object"),
     ("inv.Interface", "managed_object"),
-    ("inv.SubInterface", "managed_object"),
-    ("main.RemoteSystem", "remote_system"),
-    ("fm.TTSystem", "tt_system")
+    ("inv.SubInterface", "managed_object")
     # ("maintainance.Maintainance", "escalate_managed_object"),
 ])
 class ManagedObject(Model):

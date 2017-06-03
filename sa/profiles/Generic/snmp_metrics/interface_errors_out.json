@@ -1,5 +1,5 @@
 {
-  "$metric": "Interface | Discards | Out",
+  "$metric": "Interface | Errors | Out",
   "$type": "ifindex",
   "oid": "IF-MIB::ifOutErrors.{{ ifIndex }}",
   "type": "counter"

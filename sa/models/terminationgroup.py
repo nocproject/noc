@@ -19,8 +19,7 @@ from noc.core.model.decorator import on_delete_check
     ("sa.ManagedObject", "termination_group"),
     ("sa.ManagedObject", "service_terminator"),
     ("sa.ManagedObjectSelector", "filter_termination_group"),
-    ("sa.ManagedObjectSelector", "filter_service_terminator"),
-    ("main.RemoteSystem", "remote_system")
+    ("sa.ManagedObjectSelector", "filter_service_terminator")
 ])
 class TerminationGroup(models.Model):
     """

@@ -11,9 +11,8 @@
 from noc.core.profile.base import BaseProfile
 
 
-class Profile(noc.sa.profiles.Profile):
+class Profile(BaseProfile):
     name = "Ericsson.SEOS"
-    supported_schemes = [TELNET, SSH]
     pattern_more = "^---(more)---"
     pattern_unpriveleged_prompt = r"^\S+?>"
     pattern_syntax_error = r"% Invalid input at"

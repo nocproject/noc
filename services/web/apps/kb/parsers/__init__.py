@@ -21,6 +21,8 @@ class ParserRegistry(Registry):
     apps = ["noc.kb"]
     exclude_daemons = ["noc-sae", "debug-script",
                        "noc-classifier", "noc-correlator"]
+
+
 parser_registry = ParserRegistry()
 
 

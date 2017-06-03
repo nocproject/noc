@@ -18,7 +18,7 @@ class Profile(BaseProfile):
         (r"The current configuration will be written to the device. Are you sure? [Y/N]:", "Y"),
         (r"(To leave the existing filename unchanged, press the enter key):", "\n"),
         (r"flash:/startup.cfg exists, overwrite? [Y/N]:", "Y")
-        ]
+    ]
     pattern_prompt = r"^[<\[]\S+[>\]]"
     pattern_syntax_error = r"^\s+% (Unrecognized|Incomplete) command found at '\^' position.$"
     command_save_config = "save"

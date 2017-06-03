@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "Eltex.MES.get_spanning_tree"
     interface = IGetSpanningTree
 
-    TIMEOUT = 240
+    TIMEOUT = 300
 
     rx_ins = re.compile(
         r"^(?P<instance>\d+)\s+Vlans Mapped:\s+(?P<vlans>\S+)$",

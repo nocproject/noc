@@ -190,6 +190,8 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
     //
     preview: function(record) {
         var me = this;
+
+        me.logPanel.items.first().update('');
         me.currentRecord = record;
         me.setTitle(record.get("name") + " discovery");
         Ext.Ajax.request({

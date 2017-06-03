@@ -8,7 +8,6 @@
 # ---------------------------------------------------------------------
 """
 """
-import copy
 from noc.core.profile.base import BaseProfile
 import re
 

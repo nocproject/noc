@@ -1,5 +1,5 @@
-CONFIGFILE="{{ noc_root }}/var/etc/mongo/mongod.conf"
+CONFIGFILE="{{ mongo_conf }}"
 OPTIONS=" -f $CONFIGFILE"
 PIDFILEPATH={{ mongo_pid }}
-chown {{ mongo_user }} {{ noc_root }}/var/etc/mongo/mongo.key
-chmod 0400 {{ noc_root }}/var/etc/mongo/mongo.key
+chown {{ mongo_user }} {{ mongo_dir }}/mongo.key
+chmod 0400 {{ mongo_dir }}/mongo.key

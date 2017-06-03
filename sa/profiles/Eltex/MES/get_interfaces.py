@@ -12,6 +12,7 @@ from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.text import parse_table
 
 
@@ -39,7 +40,8 @@ class Script(BaseScript):
     rx_ifname = re.compile(
         r"^(?P<ifname>\S+)\s+\S+\s+(?:Enabled|Disabled).+$", re.MULTILINE)
     rx_sh_int = re.compile(
-        r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n"
+        r"^(?P<interface>.+?)\sis\s(?P<oper_status>up|down)\s+"
+        r"\((?P<admin_status>connected|not connected|admin.shutdown)\)\s*\n"
         r"^\s+Interface index is (?P<ifindex>\d+)\s*\n"
         r"^\s+Hardware is\s+.+?, MAC address is (?P<mac>\S+)\s*\n"
         r"(^\s+Description:(?P<descr>.*?)\n)?"
@@ -48,24 +50,46 @@ class Script(BaseScript):
         r"(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?"
         r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
         re.MULTILINE | re.DOTALL)
-    rx_sh_int_des = re.compile(
-        r"^(?P<ifname>\S+)\s+\S+\s+(?:General|Access|Trunk|Customer|Promiscuous|Host)\s+\S+\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s*\n(?:^\s+Description:(?P<descr>.*?)\n)?",
-        re.MULTILINE)
-    rx_sh_int_des2 = re.compile(
-        r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
+    rx_sh_int_des = rx_in =re.compile(r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
+                    re.MULTILINE)
+    rx_sh_int_des2 = re.compile(r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
-    rx_lldp = re.compile(r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
+    rx_lldp = re.compile(
+        r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
 
-    rx_gvrp_en = re.compile(r"GVRP Feature is currently Enabled on the device?")
-    rx_gvrp = re.compile(r"^(?P<ifname>\S+)\s+(?:Enabled\s+)Normal\s+", re.MULTILINE)
+    rx_gvrp_en = re.compile(
+        r"GVRP Feature is currently Enabled on the device?")
+    rx_gvrp = re.compile(
+        r"^(?P<ifname>\S+)\s+(?:Enabled\s+)Normal\s+", re.MULTILINE)
 
     rx_stp_en = re.compile(r"Spanning tree enabled mode?")
-    rx_stp = re.compile(r"(?P<ifname>\S+)\s+(?:enabled)\s+\S+\s+\d+\s+\S+\s+\S+\s+(?:Yes|No)", re.MULTILINE)
+    rx_stp = re.compile(
+        r"(?P<ifname>\S+)\s+(?:enabled)\s+\S+\s+\d+\s+\S+\s+\S+\s+(?:Yes|No)",
+        re.MULTILINE)
 
-    rx_vlan = re.compile(r"(?P<vlan>\S+)\s+(?P<vdesc>\S+)\s+(?P<vtype>Tagged|Untagged)\s+", re.MULTILINE)
+    rx_vlan = re.compile(
+        r"(?P<vlan>\S+)\s+(?P<vdesc>\S+)\s+(?P<vtype>Tagged|Untagged)\s+",
+        re.MULTILINE)
 
     def execute(self):
-
+        d = {}
+        if self.has_snmp():
+            try:
+                for s in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2"):
+                    n = s[1]
+                    sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1:]
+                    if int(sifindex) < 3000:
+                        sm = str(self.snmp.get("1.3.6.1.2.1.2.2.1.6.%s" % sifindex))
+                        smac = MACAddressParameter().clean(sm)
+                        sname = self.profile.convert_interface_name(n)
+                    else:
+                        continue
+                    d[sname] = {
+                        "sifindex": sifindex,
+                        "smac": smac
+                    }
+            except self.snmp.TimeOutError:
+                pass
         # Get portchannels
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
@@ -92,20 +116,23 @@ class Script(BaseScript):
         if self.rx_stp_en.search(c):
             stp = self.rx_stp.findall(c)
 
+        # Get ifname and description
         i = []
-        c = self.cli("show interfaces description detailed")
-        i = self.rx_sh_int_des.findall(c)
+        c = self.cli("show interfaces description").split("\n\n")
+        i = self.rx_sh_int_des.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
         if not i:
-            i = self.rx_sh_int_des2.findall(c)
+            i = self.rx_sh_int_des2.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
 
         interfaces = []
-        mac = []
+        mac = None
         ifindex = []
         mtu = []
         for res in i:
             name = res[0].strip()
-            if self.match_version(version__regex="[12]\.[15]\.4[4-9]") \
-            or self.match_version(version__regex="4\.0\.[4-5]"):
+            if (
+                self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
+                self.match_version(version__regex="4\.0\.[4-5]")
+            ):
                 v = self.cli("show interface %s" % name)
                 for match in self.rx_sh_int.finditer(v):
                     ifname = match.group("interface")
@@ -119,6 +146,9 @@ class Script(BaseScript):
                     o_stat = match.group("oper_status").lower() == "up"
 
             else:
+                if self.profile.convert_interface_name(name) in d:
+                    ifindex = d[self.profile.convert_interface_name(name)]["sifindex"]
+                    mac = d[self.profile.convert_interface_name(name)]["smac"]
                 if len(res) == 4:
                     o_stat = res[1].strip().lower() == "up"
                     a_stat = res[2].strip().lower() == "up"
@@ -128,26 +158,29 @@ class Script(BaseScript):
                     a_stat = True
                     description = res[1].strip()
 
-            iface = {
-                "type": self.profile.get_interface_type(name),
-                "name": self.profile.convert_interface_name(name),
-                "mac": mac,
-                "admin_status": a_stat,
-                "oper_status": o_stat,
-                "description": description.strip(),
-                "snmp_ifindex": ifindex,
-                "enabled_protocols": [],
-                "subinterfaces": [{
+            sub = {
                     "name": self.profile.convert_interface_name(name),
-                    "mac": mac,
                     "mtu": mtu,
                     "admin_status": a_stat,
                     "oper_status": o_stat,
                     "description": description.strip(),
                     "snmp_ifindex": ifindex,
                     "enabled_afi": []
-                }]
+                }
+            if mac:
+                sub["mac"] = mac
+            iface = {
+                "type": self.profile.get_interface_type(name),
+                "name": self.profile.convert_interface_name(name),
+                "admin_status": a_stat,
+                "oper_status": o_stat,
+                "description": description.strip(),
+                "snmp_ifindex": ifindex,
+                "enabled_protocols": [],
+                "subinterfaces": [sub]
             }
+            if mac:
+                iface["mac"] = mac
 
             # LLDP protocol
             if name in lldp:
@@ -165,12 +198,13 @@ class Script(BaseScript):
                 iface["aggregated_interface"] = ai
                 if is_lacp:
                     iface["enabled_protocols"] += ["LACP"]
-            cmd = self.cli("show interfaces switchport %s" % name)
             iface["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
             # Vlans
+            cmd = self.cli("show interfaces switchport %s" % name)
+            rcmd = cmd.split("\n\n")
             tvlan = []
             utvlan = None
-            for vlan in parse_table(cmd):
+            for vlan in parse_table(rcmd[0]):
                 vlan_id = vlan[0]
                 rule = vlan[2]
                 if rule == "Tagged":

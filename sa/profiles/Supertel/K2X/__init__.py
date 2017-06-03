@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"^More: <space>,  Quit: q, One line: <return>$", " "),
         (r"\[Yes/press any key for no\]", "Y")
-        ]
+    ]
     pattern_unpriveleged_prompt = r"^\S+> "
     pattern_syntax_error = r"^%\s+(Unrecognized command|Incomplete command|\
 missing mandatory parameter|bad parameter value|\

@@ -10,7 +10,6 @@
 '''
 
 from noc.core.profile.base import BaseProfile
-import re
 
 
 class Profile(BaseProfile):
@@ -22,4 +21,6 @@ class Profile(BaseProfile):
     command_leave_config = "end"
     command_exit = "exit"
     command_save_config = "save start\n"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?(?:\(config[^\)]*\)|\(system\))?#\s"
+    pattern_prompt = \
+        r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[-_\d\w]+)?" \
+        r"(?:\(config[^\)]*\)|\(system\))?#\s"

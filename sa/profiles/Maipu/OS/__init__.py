@@ -8,7 +8,6 @@
 # ---------------------------------------------------------------------
 
 from noc.core.profile.base import BaseProfile
-import re
 
 
 class Profile(BaseProfile):
@@ -24,6 +23,9 @@ class Profile(BaseProfile):
     command_leave_config = "end"
     command_save_config = "save"
 
-    pattern_syntax_error = r"% Unrecognized command, and error detected at \'^\' marker."
-    pattern_unpriveleged_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*>$"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)(\(config\))*[*\)>#]$"
+    pattern_syntax_error = \
+        r"% Unrecognized command, and error detected at \'^\' marker."
+    pattern_unpriveleged_prompt = \
+        r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*>$"
+    pattern_prompt = \
+        r"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)(\(config\))*[*\)>#]$"

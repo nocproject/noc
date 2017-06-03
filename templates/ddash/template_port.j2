@@ -32,7 +32,7 @@
     {%for port in port_type.ports -%}
     {{ comma() }}{
       "selected": false,
-      "text": "{% if port.descr %}{{port.name}} ({{port.descr}}){%else%}{{port.name}}{%endif%}",
+      "text": "{%- if port.descr -%}{{port.name}} status : {{ port.status }} ({{port.descr}}){%else%}{{port.name}} status : {{ port.status }}{%- endif -%}",
       "value": "{{port.name}}"
     }
     {%- endfor %}

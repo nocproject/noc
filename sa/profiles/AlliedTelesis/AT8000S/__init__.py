@@ -19,7 +19,7 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"^More: <space>,  Quit: q, One line: <return>", " "),
         (r"^.*?\[Yes/press any key for no\]\.*", "Y"),
-        ]
+    ]
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "end"

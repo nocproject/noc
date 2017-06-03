@@ -57,15 +57,15 @@ class Profile(BaseProfile):
                 rf += ["    route-filter %s upto /%d" % (prefix, max_len)]
         r = [
             "term pass {",
-            "    from {",
-            ]
+            "    from {"
+        ]
         r += rf
         r += [
             "    }",
             "    then next policy;",
             "}",
             "term reject {",
-            "    then reject;"
+            "    then reject;",
             "}"
         ]
         return "\n".join(r)

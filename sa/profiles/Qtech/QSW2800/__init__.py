@@ -114,3 +114,18 @@ class Profile(BaseProfile):
             # r[part_name] = dict(k_v_list)
             # r[part_name]["table"] = row
         return r
+
+    @staticmethod
+    def convert_sfp(sfp_type, distance, bit_rate, wavelength):
+        print sfp_type, distance, bit_rate, wavelength
+        if " m" in distance:
+            # convert to km
+            distance = str(int(distance.split(" ")[0])/1000)
+        if " nm" in wavelength:
+            wavelength = wavelength.split(" ")[0]
+        if sfp_type and sfp_type != "unknown":
+            return ""
+        elif sfp_type == "unknown":
+            return "-".join(["QSC", "SFP" + distance + "GE", wavelength])
+        else:
+            return ""

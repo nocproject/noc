@@ -17,7 +17,7 @@ TasksAccounting=false
 User={{ mongo_user }}
 Group={{ mongo_user }}
 PIDFile={{ mongo_pid }}
-Environment="OPTIONS= -f {{ noc_root }}/var/etc/mongo/mongod.conf"
+Environment="OPTIONS= -f {{ mongo_conf }}"
 PermissionsStartOnly=true
 ExecStartPre=/bin/touch {{ mongo_pid }}
 ExecStartPre=/bin/chown {{ mongo_user }}:{{ mongo_user }} {{ mongo_pid }}

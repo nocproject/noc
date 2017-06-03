@@ -19,7 +19,7 @@ import subprocess
 import yaml
 
 
-SUPERVISORD_CFG = "etc/supervisord.conf"
+SUPERVISORD_CFG = "etc/noc_services.conf"
 NOC_CFG = "etc/noc.yml"
 
 ENV_MAP = {
@@ -46,13 +46,8 @@ def build(node):
         jcfg = yaml.load(f)
     config = ConfigParser.RawConfigParser()
     # Read configs
-    for ge in [
-        "etc/defaults/supervisor/*.conf",
-        "etc/defaults/services/*.conf",
-        "etc/config/supervisor/*.conf",
-    ]:
-        for path in glob.glob(ge):
-            config.read(path)
+    for path in glob.glob("etc/services/*.conf"):
+        config.read(path)
     # Node environment
     ne = {
         "NOC_ENV": jcfg["nodes"][node]["environment"],
@@ -68,15 +63,6 @@ def build(node):
     # Build config
     out = ConfigParser.ConfigParser()
     for s in config.sections():
-        if s != "supervisord" and not s.startswith("program:"):
-            # Copy section
-            out.add_section(s)
-            for o in config.options(s):
-                v = config.get(s, o)
-                for e in ne:
-                    v = v.replace("%%(ENV_%s)s" % e, ne[e])
-                out.set(s, o, v)
-            continue
         se = ne.copy()
         # Read environment setting
         if config.has_option(s, "environment"):
@@ -130,21 +116,6 @@ def build(node):
                 out.set(sn, "environment", format_env(pe))
                 out.set(sn, "autostart", "true")
                 out.set(sn, "numprocs", numprocs)
-        elif s == "supervisord":
-            out.add_section(s)
-            # Copy config
-            for o in config.options(s):
-                v = config.get(s, o)
-                # Apply environment variables
-                if jcfg["config"]["noc"].get("alerta_url"):
-                    url = jcfg["config"]["noc"]["alerta_url"] + "/api/"
-                    se["ALERTA_ENDPOINT"] = url
-                    se["ALERTA_API_KEY"] = jcfg["config"]["noc"]["alerta_token"]
-                for e in se:
-                    v = v.replace("%%(ENV_%s)s" % e, se[e])
-                #
-                out.set(s, o, v)
-            out.set(s, "environment", format_env(se))
     # Convert to .ini format
     buffer = cStringIO.StringIO()
     out.write(buffer)
@@ -163,16 +134,5 @@ def build(node):
             f.write(cfg)
         print "CHANGED"
 
-
-def apply():
-    """
-    Apply changes and update config
-    """
-    subprocess.check_call(["./bin/supervisorctl", "reread"])
-    subprocess.check_call(["./bin/supervisorctl", "update"])
-
-
 if __name__ == "__main__":
     build(sys.argv[1])
-    if "--apply" in sys.argv:
-        apply()

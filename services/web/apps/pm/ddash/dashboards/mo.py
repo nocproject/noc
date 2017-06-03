@@ -58,10 +58,11 @@ class MODashboard(BaseDashboard):
                     lags += [{
                         "name": iface.name,
                         "ports": [i.name for i in iface.lag_members],
-                        "descr": iface.description or "No description"
+                        "descr": iface.description or "No description",
+                        "status": ["status : ".join([i.name, i.status]) for i in iface.lag_members]
                     }]
                     continue
-                ports += [{"name": iface.name, "descr": iface.description}]
+                ports += [{"name": iface.name, "descr": iface.description, "status": iface.status}]
             if not ports:
                 continue
             port_types += [{"type": profile.id, "name": profile.name,
@@ -92,7 +93,9 @@ class MODashboard(BaseDashboard):
             "firmare_version": self.object.version.version or None,
             "segment": self.object.segment.id,
             "vendor": self.object.vendor or "Unknown version",
-            "pool": self.object.pool.name
+            "pool": self.object.pool.name,
+            "ping_interval": self.object.object_profile.ping_interval,
+            "discovery_interval": self.object.object_profile.periodic_discovery_interval
         }
         self.logger.info("Context with data: %s" % context)
         PM_TEMPLATE_PATH = "templates/ddash/"

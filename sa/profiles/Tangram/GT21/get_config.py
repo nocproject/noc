@@ -7,16 +7,18 @@ from xml.dom.minidom import parseString
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetconfig import IGetConfig
 
-re_html = re.compile(r"""<html>.+</html>""",
-                     re.VERBOSE | re.MULTILINE | re.DOTALL)
-re_xml = re.compile(r"""<?xml.+><settings.+></settings>""",
-                    re.VERBOSE | re.MULTILINE | re.DOTALL)
+re_html = re.compile(
+    r"""<html>.+</html>""",
+    re.VERBOSE | re.MULTILINE | re.DOTALL)
+re_xml = re.compile(
+    r"""<?xml.+><settings.+></settings>""",
+    re.VERBOSE | re.MULTILINE | re.DOTALL)
 
 class Script(BaseScript):
     name = "Tangram.GT21.get_config"
     interface = IGetConfig
 
-    def execute(self):        
+    def execute(self):
         config = self.http.get("/um/backup.binc")
         match_xml = re.search(re_xml, config)
         if match_xml:
@@ -27,4 +29,4 @@ class Script(BaseScript):
             parsing = parseString(config)
             return parsing.toprettyxml()
 
-        return self.cleaned_config(config)     
+        return self.cleaned_config(config)

@@ -26,47 +26,8 @@
 - name: Include requirements install
   include: "requirements.yml"
 
-- name: Create required directories
-  file:
-    path: "{{noc_root}}/{{item.name}}"
-    state: "directory"
-    owner: "{{item.owner}}"
-    mode: 0755
-  with_items:
-    - name: etc/config/
-      owner: root
-    - name: etc/config/supervisor
-      owner: root
-    - name: var
-      owner: "{{noc_user}}"
-    - name: var/etc
-      owner: root
-    - name: var/db
-      owner: root
-    - name: var/log
-      owner: "{{noc_user}}"
-    - name: var/cp
-      owner: "{{noc_user}}"
-    - name: var/cp/crashinfo
-      owner: "{{noc_user}}"
-    - name: var/cp/crashinfo/new
-      owner: "{{noc_user}}"
-    - name: var/run
-      owner: "{{noc_user}}"
-    - name: var/sock
-      owner: "{{noc_user}}"
-    - name: var/etc/noc
-      owner: root
-    - name: lib/python2.7/site-packages/__pycache__
-      owner: "{{ noc_user }}"
-    - name: var/reports
-      owner: "{{noc_user}}"
-    - name: var/bi
-      owner: "{{noc_user}}"
-    - name: var/bi-dict
-      owner: "{{noc_user}}"
-    - name: var/bi-dict-data
-      owner: "{{noc_user}}"
+- name: Create dirs
+  include: "dirs.yml"
 
 - name: Include post install
   include: "post_install.yml"

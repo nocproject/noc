@@ -11,11 +11,9 @@ build/
 noc.egg-info/
 bin/*
 custom/
-sbin/
 etc/noc.yml
+etc/noc_services.conf
 etc/noc-*.conf
-etc/support.conf
-etc/upgrade.conf
 etc/beef.conf
 etc/noc.conf
 etc/config/**.conf
@@ -32,9 +30,7 @@ static/doc/*
 contrib/lib/*
 contrib/bin/*
 contrib/share/*
-MANIFEST
 .*
-atlassian-ide-plugin.xml
 ext_*
 etc/requirements/local.txt
 static/pkg/

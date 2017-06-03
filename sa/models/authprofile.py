@@ -25,8 +25,7 @@ id_lock = Lock()
 @on_save
 @on_delete_check(check=[
     ("sa.ManagedObject", "auth_profile"),
-    ("sa.ManagedObjectProfile", "cpe_auth_profile"),
-    ("main.RemoteSystem", "remote_system")
+    ("sa.ManagedObjectProfile", "cpe_auth_profile")
 ])
 class AuthProfile(models.Model):
     class Meta:

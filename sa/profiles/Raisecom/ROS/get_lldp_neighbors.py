@@ -23,8 +23,22 @@ class Script(BaseScript):
         r"^\s*Port\s+port(?P<port>\d+)\s*has\s+1\s*remotes:\n\n"
         r"^\s*Remote\s*1\s*\n"
         r"^\s*\-+\n"
-        r"(^\s*ChassisIdSubtype\s*:\s+(?P<ch_type>\S+)\s*\n)?"
-        r"(^\s*ChassisId\s*:\s+(?P<ch_id>\S+)\s*\n)?"
+        r"^\s*ChassisIdSubtype:\s+(?P<ch_type>\S+)\s*\n"
+        r"^\s*ChassisId:\s+(?P<ch_id>\S+)\s*\n"
+        r"^\s*PortIdSubtype:\s+(?P<port_id_subtype>\S+)\s*\n"
+        r"^\s*PortId:\s+(?P<port_id>.+)\s*\n"
+        r"^\s*PortDesc:\s+(?P<port_descr>.+)\s*\n"
+        r"^\s*SysName:\s+(?P<sys_name>.+)\s*\n"
+        r"^\s*SysDesc:\s+(?P<sys_descr>[\S\s?]+?)\n"
+        r"^\s*SysCapSupported:\s+(?P<sys_caps_supported>\S+)\s*\n"
+        r"^\s*SysCapEnabled:\s+(?P<sys_caps_enabled>\S+)\s*\n",
+        re.MULTILINE | re.IGNORECASE)
+
+    rx_lldp_womac = re.compile(
+        r"^\s*Port\s+port(?P<port>\d+)\s*has\s+1\s*remotes:\n\n"
+        r"^\s*Remote\s*1\s*\n"
+        r"^\s*\-+\n"
+        r"^\s*ChassisIdSubtype\s*:\s+(?P<ch_type>\S+)\s*\n"
         r"^\s*PortIdSubtype\s*:\s+(?P<port_id_subtype>\S+)\s*\n"
         r"^\s*PortId\s*:\s+(?P<port_id>.+)\s*\n"
         r"^\s*PortDesc\s*:\s+(?P<port_descr>.+)\s*\n"
@@ -32,7 +46,8 @@ class Script(BaseScript):
         r"^\s*SysDesc\s*:\s+(?P<sys_descr>[\S\s?]+?)\n"
         r"^\s*SysCapSupported\s*:\s+(?P<sys_caps_supported>\S+)\s*\n"
         r"^\s*SysCapEnabled\s*:\s+(?P<sys_caps_enabled>\S+)\s*\n",
-        re.MULTILINE | re.IGNORECASE | re.DOTALL)
+        re.MULTILINE | re.IGNORECASE)
+
     rx_lldp_rem = re.compile(
         r"^port(?P<port>\d+)\s+(?P<ch_id>\S+)", re.MULTILINE)
 
@@ -56,7 +71,14 @@ class Script(BaseScript):
                 "remote_chassis_id_subtype": chassis_id_subtype
             }]
         v = self.cli("show lldp remote detail")
-        for match in self.rx_lldp.finditer(v):
+        # If detail command not contain ch id
+        ext_ch_id = False
+        lldp_iter = list(self.rx_lldp.finditer(v))
+        if not lldp_iter:
+            ext_ch_id = True
+            lldp_iter = list(self.rx_lldp_womac.finditer(v))
+            self.logger.debug("Not Find MAC in re")
+        for match in lldp_iter:
             i = {"local_interface": match.group("port"), "neighbors": []}
             cap = 0
             for c in match.group("sys_caps_enabled").strip().split(","):
@@ -72,7 +94,7 @@ class Script(BaseScript):
                         "macAddress": 4,
                         "networkAddress": 5
                     }[match.group("ch_type")],
-                "remote_chassis_id": match.group("ch_id"),
+                "remote_chassis_id": match.group("ch_id") if not ext_ch_id else None,
                 "remote_port_subtype": {
                         "ifAlias": 1,
                         "macAddress": 3,

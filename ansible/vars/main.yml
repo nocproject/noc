@@ -28,9 +28,6 @@ tower_version: "{{lookup('env','TOWER_VERSION')}}"
 tower_minimum_version: "0.1a66"
 http_proxy:  "" # just default. please set actual variable via tower on DC tab
 
-noc_prefix: /opt
-noc_root: "{{noc_prefix}}/noc"
-
 grafana_group: grafana
 grafana_home: /usr/share/grafana
 grafana_system_service: grafana-server
@@ -94,40 +91,6 @@ memcahed_conf: /etc/memcached.conf
 alerta_blackout_duration: 300
 
 
-vg_name: vg00
-vg_device: /dev/sdb
-
-vg_fast_name: vg_fast
-vg_fast_device: /dev/sdb
-
-wal_lv_size: 256M
-wal_mount_point: /wal
-wal_fs: xfs
-
-influx_data_lv_size: 2G
-influx_data_mount_point: /data/influx
-influx_data_fs: xfs
-
-mongo_index_lv_size: 1G
-mongo_index_mount_point: /data/mongo_index
-mongo_index_fs: xfs
-
-mongo_data_lv_size: 4G
-mongo_data_mount_point: /data/mongo
-mongo_data_fs: xfs
-
-postgres_data_lv_size: 4G
-postgres_data_mount_point: /data/postgres
-postgres_data_fs: xfs
-
-nsq_cache_lv_size: 10G
-nsq_cache_mount_point: /opt/noc/var/db/nsq
-nsq_cache_fs: xfs
-
-opt_lv_size: 5G
-opt_mount_point: /opt/noc
-opt_fs: xfs
-
 sentry_scheme: "{{ lookup('env','SENTRY_SCHEME') | default('https', True)}}"
 sentry_host: "{{ lookup('env','SENTRY_HOST') | default('localhost', True)}}"
 sentry_public_key: "{{ lookup('env','SENTRY_PUBLIC_KEY') }}"
@@ -140,3 +103,24 @@ sentry_url: "{{sentry_scheme}}://{{sentry_public_key}}:{{sentry_secret_key}}@{{s
 consul_config_path: "{{etc_prefix}}/consul"
 consul_configd_path: "{{etc_prefix}}/consul.d"
 consul_scripts_path: "{{consul_configd_path}}/scripts"
+
+supervisor_sock_path: /var/run/supervisor_noc.sock
+
+bi_export_dir: "{{noc_root}}/var/bi"
+bi_export_dict_dir: "{{noc_root}}/var/bi-dict"
+bi_export_dict_data_dir: "{{noc_root}}/var/bi-dict-data"
+
+noc_logs: /var/log/noc
+noc_var_lib: /var/lib/noc
+noc_etc: "{{noc_root}}/etc"
+noc_reports_dir: "{{noc_var_lib}}/reports"
+noc_crashinfo_dir: "{{noc_root}}/var/cp/crashinfo/new"
+
+nsqd_db_dir: "/var/spool/nsqd"
+nsqd_config_dir: "{{etc_prefix}}/nsq"
+
+
+noc_services_file: "{{noc_etc}}/noc_services.conf"
+
+mongo_dir: "{{etc_prefix}}/mongod"
+mongo_conf: "{{ etc_prefix }}/mongod.conf"

@@ -16,7 +16,7 @@ TasksAccounting=false
 User={{ mongo_user }}
 Group={{ mongo_user }}
 PIDFile={{ mongo_pid }}
-Environment="OPTIONS= -f {{ noc_root }}/var/etc/mongo/mongod.conf"
+Environment="OPTIONS= -f {{ mongo_conf }}"
 ExecStartPre=/usr/bin/mkdir -p /var/run/mongodb
 ExecStartPre=/usr/bin/chown {{ mongo_user }}:{{ mongo_user }} /var/run/mongodb
 ExecStartPre=/usr/bin/chmod 0755 /var/run/mongodb
