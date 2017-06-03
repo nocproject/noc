@@ -1,6 +1,6 @@
 ---
 - name: Setting Grafana conf file
-  lineinfile: dest=/etc/rc.conf regexp=^grafana_conf= line=grafana_conf=\"{{ noc_root }}/var/etc/grafana/grafana.ini\"
+  lineinfile: dest=/etc/rc.conf regexp=^grafana_conf= line=grafana_conf=\"{{ etc_prefix }}/grafana/grafana.ini\"
 
 - name: Install Grafana
   pkgng: name="grafana4" state=present
