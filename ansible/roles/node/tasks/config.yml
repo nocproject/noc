@@ -86,6 +86,59 @@
     - config
     - noc_config
 
+- name: install services templates
+  template:
+    src: "etc/services/{{item}}"
+    dest: "{{noc_etc}}/services/{{item}}"
+    owner: "{{noc_user}}"
+    mode: "0644"
+  with_items:
+    - activator.conf
+    - bi.conf
+    - card.conf
+    - chwriter.conf
+    - classifier.conf
+    - correlator.conf
+    - discovery.conf
+    - escalator.conf
+    - grafanads.conf
+    - login.conf
+    - mailsender.conf
+    - mrt.conf
+    - notebook.conf
+    - notifier.conf
+    - omap.conf
+    - ping.conf
+    - pmwriter.conf
+    - sae.conf
+    - scheduler.conf
+    - sync.conf
+    - syslogcollector.conf
+    - tgsender.conf
+    - trapcollector.conf
+    - web.conf
+  tags:
+    - config
+    - noc_config
+- name: install various configs
+  copy:
+    src: "etc/{{item.file}}"
+    dest: "{{item.dest}}"
+    owner: "{{noc_user}}"
+    mode: "0644"
+  with_items:
+    - file: fias.defaults
+      dest: "{{noc_etc}}/address/fias.defaults"
+    - file: babel.cfg
+      dest: "{{noc_etc}}/babel.cfg"
+    - file: beef.defaults
+      dest: "{{noc_etc}}/beef.defaults"
+    - file: noc.defaults
+      dest: "{{noc_etc}}/noc.defaults"
+  tags:
+    - config
+    - noc_config
+
 - name: Build supervisor config
   command: "{{ noc_root }}/scripts/deploy/apply-config {{ inventory_hostname }}"
   register: result
