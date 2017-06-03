@@ -1,25 +1,10 @@
 ---
 - include: "os/{{ ansible_distribution }}/main.yml"
 
-- name: Create Grafana directories
-  file:
-    path: "{{ noc_root }}/{{ item.path }}"
-    state: directory
-    owner: "{{ item.owner }}"
-  with_items:
-    - path: var/etc/grafana
-      owner: root
-    - path: var/db/grafana
-      owner: "{{ grafana_user }}"
-    - path: var/db/grafana_plugins
-      owner: "{{ grafana_user }}"
-    - path: var/db/grafana_dashboards
-      owner: "{{ grafana_user }}"
-
 - name: Create Grafana config
   template:
     src: grafana.ini
-    dest: "{{ noc_root }}/var/etc/grafana/grafana.ini"
+    dest: "{{ etc_prefix }}/grafana/grafana.ini"
   notify: restart grafana
   tags:
     - config
@@ -36,7 +21,7 @@
     dest: "{{ grafana_home }}/public/dashboards/noc.js"
 
 - name: Install Grafana simple datasource plugin
-  shell: "grafana-cli --pluginsDir {{ noc_root }}/var/db/grafana_plugins plugins install grafana-simple-json-datasource"
+  shell: "grafana-cli plugins install grafana-simple-json-datasource"
   args:
     creates: "{{ noc_root }}/var/db/grafana_plugins/grafana-simple-json-datasource/src/datasource.js"
   notify: restart grafana

@@ -26,22 +26,6 @@
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
 
-- name: Set up Grafana service
-  lineinfile:
-    dest: /etc/sysconfig/grafana-server
-    regexp: "^{{ item.key }}"
-    line: "{{ item.key }}={{ item.value }}"
-  with_items:
-    - key: DATA_DIR
-      value: "{{ noc_root }}/var/db/grafana"
-    - key: CONF_DIR
-      value: "{{ noc_root }}/var/etc/grafana"
-    - key: CONF_FILE
-      value: "{{ noc_root }}/var/etc/grafana/grafana.ini"
-    - key: PLUGINS_DIR
-      value: "{{ noc_root }}/var/db/grafana_plugins"
-  notify: restart grafana
-
 - name: Provide better renderjs
   template:
     src: "render.js"
