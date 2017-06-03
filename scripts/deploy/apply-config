@@ -46,7 +46,7 @@ def build(node):
         jcfg = yaml.load(f)
     config = ConfigParser.RawConfigParser()
     # Read configs
-    for path in glob.glob("etc/defaults/services/*.conf"):
+    for path in glob.glob("etc/services/*.conf"):
         config.read(path)
     # Node environment
     ne = {
@@ -116,17 +116,6 @@ def build(node):
                 out.set(sn, "environment", format_env(pe))
                 out.set(sn, "autostart", "true")
                 out.set(sn, "numprocs", numprocs)
-        elif s == "supervisord":
-            out.add_section(s)
-            # Copy config
-            for o in config.options(s):
-                v = config.get(s, o)
-                # Apply environment variables
-                for e in se:
-                    v = v.replace("%%(ENV_%s)s" % e, se[e])
-                #
-                out.set(s, o, v)
-            out.set(s, "environment", format_env(se))
     # Convert to .ini format
     buffer = cStringIO.StringIO()
     out.write(buffer)

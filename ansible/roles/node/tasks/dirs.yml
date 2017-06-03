@@ -12,10 +12,23 @@
     owner: "{{noc_user}}"
     mode: 0755
   with_items:
+    - "{{noc_etc}}"
     - "{{noc_root}}/var"
     - "{{noc_logs}}"
     - "{{noc_var_lib}}"
     - "{{noc_reports_dir}}"
+
+- name: Create etc directories
+  file:
+    path: "{{item}}"
+    state: "directory"
+    owner: "{{noc_user}}"
+    mode: 0755
+  with_items:
+    - "{{noc_etc}}"
+    - "{{noc_etc}}/services/"
+    - "{{noc_etc}}/address/"
+    - "{{noc_etc}}/ssh/"
 
 - name: Create required directories
   file:
