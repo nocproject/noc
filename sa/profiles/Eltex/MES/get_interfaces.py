@@ -49,11 +49,8 @@ class Script(BaseScript):
         r"(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?"
         r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
         re.MULTILINE | re.DOTALL)
-    rx_sh_int_des = re.compile(
-        r"^(?P<ifname>\S+)\s+\S+\s+(?:General|Access|Trunk|Customer|Promiscuous|Host)\s+\S+\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s*\n(?:^\s+Description:(?P<descr>.*?)\n)?",
-        re.MULTILINE)
-    rx_sh_int_des2 = re.compile(
-        r"^(?P<ifname>\S+\d+)(?P<descr>.*?)\n", re.MULTILINE)
+    rx_sh_int_des = rx_in =re.compile(r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s+(?:(?P<descr>\S+\s+)\n)?",
+                    re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
     rx_lldp = re.compile(
         r"^(?P<ifname>\S+)\s+(?:Rx and Tx|Rx|Tx)\s+", re.MULTILINE)
@@ -100,17 +97,10 @@ class Script(BaseScript):
         if self.rx_stp_en.search(c):
             stp = self.rx_stp.findall(c)
 
+        # Get ifname and description
         i = []
-        if {
-            self.match_version(version__regex="3\.5\.14\.[4-9]") or
-            self.match_version(version__regex="3\.5\.14$")
-            }: #For stacking eltex after 3.5.14.4fw , otherwise an error occurs
-            c = self.cli("show interfaces description")
-        else:
-            c = self.cli("show interfaces description detail")
-        i = self.rx_sh_int_des.findall(c)
-        if not i:
-            i = self.rx_sh_int_des2.findall(c)
+        c = self.cli("show interfaces description").split("\n\n")
+        i = self.rx_sh_int_des.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
 
         interfaces = []
         mac = None
