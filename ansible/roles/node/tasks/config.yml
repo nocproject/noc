@@ -1,7 +1,7 @@
 - name: Generate NOC config
   template:
     src: "etc/noc.yml.j2"
-    dest: "{{ noc_root }}/etc/noc.yml"
+    dest: "{{ noc_etc }}/noc.yml"
   register: noc_cfg1
   tags:
     - config
@@ -10,7 +10,7 @@
 - name: Setup supervisor config
   template:
     src: "etc/supervisord.conf.j2"
-    dest: "{{ noc_root }}/etc/supervisord.conf"
+    dest: "{{ noc_etc }}/supervisord.conf"
   register: noc_cfg2
   tags:
     - config
@@ -18,7 +18,7 @@
 
 - name: Set up noc.conf 1/2
   ini_file:
-    dest: "{{noc_root}}/etc/noc.conf"
+    dest: "{{noc_etc}}/noc.conf"
     section: "{{item.section}}"
     option: "{{item.option}}"
     value: "{{item.value}}"
@@ -67,7 +67,7 @@
 
 - name: Set up noc.conf for sentry 2/2
   ini_file:
-    dest: "{{noc_root}}/etc/noc.conf"
+    dest: "{{noc_etc}}/noc.conf"
     section: "{{item.section}}"
     option: "{{item.option}}"
     value: "{{item.value}}"
