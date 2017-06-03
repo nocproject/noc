@@ -12,6 +12,7 @@ from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.sa.interfaces.base import MACAddressParameter
 from noc.lib.text import parse_table
 
 
@@ -49,7 +50,7 @@ class Script(BaseScript):
         r"(^\s+No. of members in this port-channel: \d+ \(active \d+\)\s*\n)?"
         r"((?P<members>.+?))?(^\s+Active bandwith is \d+Mbps\s*\n)?",
         re.MULTILINE | re.DOTALL)
-    rx_sh_int_des = rx_in =re.compile(r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s+(?:(?P<descr>\S+\s+)\n)?",
+    rx_sh_int_des = rx_in =re.compile(r"^(?P<ifname>\S+)\s+(?P<oper_status>Up|Down)\s+(?P<admin_status>Up|Down|Not Present)\s(?:(?P<descr>.*?)\n)?",
                     re.MULTILINE)
     rx_lldp_en = re.compile(r"LLDP state: Enabled?")
     rx_lldp = re.compile(
@@ -70,7 +71,24 @@ class Script(BaseScript):
         re.MULTILINE)
 
     def execute(self):
-
+        d = {}
+        if self.has_snmp():
+            try:
+                for s in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2"):
+                    n = s[1]
+                    sifindex = s[0][len("1.3.6.1.2.1.2.2.1.2") + 1:]
+                    if int(sifindex) < 3000:
+                        sm = str(self.snmp.get("1.3.6.1.2.1.2.2.1.6.%s" % sifindex))
+                        smac = MACAddressParameter().clean(sm)
+                        sname = self.profile.convert_interface_name(n)
+                    else:
+                        continue
+                    d[sname] = {
+                        "sifindex": sifindex,
+                        "smac": smac
+                    }
+            except self.snmp.TimeOutError:
+                pass
         # Get portchannels
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
@@ -125,6 +143,9 @@ class Script(BaseScript):
                     o_stat = match.group("oper_status").lower() == "up"
 
             else:
+                if self.profile.convert_interface_name(name) in d:
+                    ifindex = d[self.profile.convert_interface_name(name)]["sifindex"]
+                    mac = d[self.profile.convert_interface_name(name)]["smac"]
                 if len(res) == 4:
                     o_stat = res[1].strip().lower() == "up"
                     a_stat = res[2].strip().lower() == "up"
