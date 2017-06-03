@@ -28,7 +28,8 @@ class Script(BaseScript):
         }]
         v = self.cli("show interface port transceiver information")
         for port in v.split("Port "):
-            if not port:
+            if not port or "Wait" in port:
+                # Wait message after commands
                 continue
             num = int(port.splitlines()[0].strip(":"))
             d = dict([e.split(":") for e in port.splitlines() if e])
