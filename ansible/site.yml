@@ -69,7 +69,6 @@
   become: yes
   any_errors_fatal: false
   serial: 50%
-  strategy: free
   gather_facts: True
   vars_files:
     - "vars/main.yml"
@@ -88,7 +87,6 @@
   become: yes
   any_errors_fatal: false
   gather_facts: True
-  strategy: free
   tags:
     - node
     - noc

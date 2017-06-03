@@ -3,4 +3,6 @@
   template:
      src: "etc/systemd/system/nsqlookupd.service"
      dest: "/etc/systemd/system/nsqlookupd.service"
-  notify: reload systemd
+  notify:
+    - reload systemd
+    - restart nsqlookupd

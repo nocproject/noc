@@ -134,6 +134,9 @@ class ServiceStub(object):
     def __init__(self):
         self.metrics = []
         self.ch_metrics = defaultdict(list)
+        self.service_id = "stub"
+        self.address = "127.0.0.1"
+        self.port = 0
 
     def register_metrics(self, batch):
         self.metrics += batch

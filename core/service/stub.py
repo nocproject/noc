@@ -28,6 +28,7 @@ class ServiceStub(object):
         self.perf_metrics = metrics
         self.is_ready = threading.Event()
         self.config = None
+        self.metrics = []
         self.ch_metrics = defaultdict(list)
 
     def start(self):
@@ -63,6 +64,9 @@ class ServiceStub(object):
         """
         for t in self.config.rpc_retry_timeout.split(","):
             yield float(t)
+
+    def register_metrics(self, batch):
+        self.metrics += batch
 
     def register_ch_metrics(self, fields, data):
         self.ch_metrics[fields] += data

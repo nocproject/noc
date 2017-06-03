@@ -21,4 +21,6 @@
   template:
      src: "etc/systemd/nsqd.service"
      dest: "/etc/systemd/system/nsqd.service"
-  notify: reload systemd
+  notify:
+    - reload systemd
+    - restart nsqd

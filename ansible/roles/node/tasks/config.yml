@@ -1,7 +1,7 @@
 - name: Generate NOC config
   template:
     src: "etc/noc.yml.j2"
-    dest: "{{ noc_root }}/etc/noc.yml"
+    dest: "{{ noc_etc }}/noc.yml"
   register: noc_cfg1
   tags:
     - config
@@ -9,12 +9,8 @@
 
 - name: Setup supervisor config
   template:
-    src: "{{ item }}"
-    dest: "{{ noc_root }}/{{ item[:-3] }}"
-  with_items:
-    - etc/config/supervisor/supervisord.conf.j2
-    - etc/config/supervisor/supervisorctl.conf.j2
-    - etc/config/supervisor/unix_http_server.conf.j2
+    src: "etc/supervisord.conf.j2"
+    dest: "{{ noc_etc }}/supervisord.conf"
   register: noc_cfg2
   tags:
     - config
@@ -22,7 +18,7 @@
 
 - name: Set up noc.conf 1/2
   ini_file:
-    dest: "{{noc_root}}/etc/noc.conf"
+    dest: "{{noc_etc}}/noc.conf"
     section: "{{item.section}}"
     option: "{{item.option}}"
     value: "{{item.value}}"
@@ -71,7 +67,7 @@
 
 - name: Set up noc.conf for sentry 2/2
   ini_file:
-    dest: "{{noc_root}}/etc/noc.conf"
+    dest: "{{noc_etc}}/noc.conf"
     section: "{{item.section}}"
     option: "{{item.option}}"
     value: "{{item.value}}"
@@ -86,6 +82,59 @@
       value: "{{sentry_js_token}}"
   when: "sentry_secret_key is defined and sentry_secret_key
       and sentry_js_token is defined and sentry_js_token"
+  tags:
+    - config
+    - noc_config
+
+- name: install services templates
+  template:
+    src: "etc/services/{{item}}"
+    dest: "{{noc_etc}}/services/{{item}}"
+    owner: "{{noc_user}}"
+    mode: "0644"
+  with_items:
+    - activator.conf
+    - bi.conf
+    - card.conf
+    - chwriter.conf
+    - classifier.conf
+    - correlator.conf
+    - discovery.conf
+    - escalator.conf
+    - grafanads.conf
+    - login.conf
+    - mailsender.conf
+    - mrt.conf
+    - notebook.conf
+    - notifier.conf
+    - omap.conf
+    - ping.conf
+    - pmwriter.conf
+    - sae.conf
+    - scheduler.conf
+    - sync.conf
+    - syslogcollector.conf
+    - tgsender.conf
+    - trapcollector.conf
+    - web.conf
+  tags:
+    - config
+    - noc_config
+- name: install various configs
+  copy:
+    src: "etc/{{item.file}}"
+    dest: "{{item.dest}}"
+    owner: "{{noc_user}}"
+    mode: "0644"
+  with_items:
+    - file: fias.defaults
+      dest: "{{noc_etc}}/address/fias.defaults"
+    - file: babel.cfg
+      dest: "{{noc_etc}}/babel.cfg"
+    - file: beef.defaults
+      dest: "{{noc_etc}}/beef.defaults"
+    - file: noc.defaults
+      dest: "{{noc_etc}}/noc.defaults"
   tags:
     - config
     - noc_config
