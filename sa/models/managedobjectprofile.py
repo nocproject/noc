@@ -28,7 +28,14 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
 from .objectmap import ObjectMap
+from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter, IntParameter)
 
+m_valid = DictListParameter(attrs={"metric_type": ObjectIdParameter(required=True),
+                                   "is_active": BooleanParameter(required=True),
+                                   "low_error": IntParameter(required=False),
+                                   "high_error": IntParameter(required=False),
+                                   "low_warn": IntParameter(required=False),
+                                   "high_warn": IntParameter(required=False)})
 id_lock = Lock()
 
 
@@ -57,16 +64,16 @@ class ManagedObjectProfile(models.Model):
         Style, verbose_name=_("Style"), blank=True, null=True)
     # Stencils
     shape = models.CharField(_("Shape"), blank=True, null=True,
-        choices=stencil_registry.choices, max_length=128)
+                             choices=stencil_registry.choices, max_length=128)
     # Name restrictions
     # Regular expression to check name format
     name_template = models.CharField(_("Name template"), max_length=256,
-        blank=True, null=True)
+                                     blank=True, null=True)
     # IPAM Synchronization
     # During ManagedObject save
     sync_ipam = models.BooleanField(_("Sync. IPAM"), default=False)
     fqdn_template = models.TextField(_("FQDN template"),
-        null=True, blank=True)
+                                     null=True, blank=True)
     # @todo: Name validation function
     # FM settings
     enable_ping = models.BooleanField(
@@ -283,7 +290,8 @@ class ManagedObjectProfile(models.Model):
         if (
             self.initial_data["report_ping_rtt"] != self.report_ping_rtt or
             self.initial_data["enable_ping"] != self.enable_ping or
-            self.initial_data["ping_interval"] != self.ping_interval
+            self.initial_data["ping_interval"] != self.ping_interval or
+            self.initial_data["report_ping_attempts"] != self.ping_interval
         ):
             for pool in self.iter_pools():
                 ObjectMap.invalidate(pool)
@@ -294,6 +302,14 @@ class ManagedObjectProfile(models.Model):
         :return: 
         """
         return self.escalation_policy == "E"
+
+    def save(self, force_insert=False, force_update=False, using=None):
+        # Validate MeticType for object profile
+        try:
+            m_valid.clean(self.metrics)
+        except ValueError as e:
+            raise ValueError(e)
+        super(ManagedObjectProfile, self).save(force_insert, force_update)
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
