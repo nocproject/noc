@@ -138,7 +138,7 @@ consul_config_path: "{{etc_prefix}}/consul"
 consul_configd_path: "{{etc_prefix}}/consul.d"
 consul_scripts_path: "{{consul_configd_path}}/scripts"
 
-supervisor_sock_path: /var/run/supervisor.sock
+supervisor_sock_path: /var/run/supervisor_noc.sock
 
 bi_export_dir: "{{noc_root}}/var/bi"
 bi_export_dict_dir: "{{noc_root}}/var/bi-dict"
