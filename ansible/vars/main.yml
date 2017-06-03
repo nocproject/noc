@@ -155,3 +155,6 @@ nsqd_config_dir: "{{etc_prefix}}/nsq"
 
 
 noc_services_file: "{{noc_etc}}/noc_services.conf"
+
+mongo_dir: "{{etc_prefix}}/mongod"
+mongo_conf: "{{ etc_prefix }}/mongod.conf"

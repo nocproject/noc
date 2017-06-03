@@ -5,28 +5,20 @@
     state: "directory"
     mode: 0755
   with_items:
-    - "{{ noc_root }}/var/etc/mongo"
+    - "{{ mongo_dir }}"
 
 - name: Setting mongod config
   template:
     src: mongod.conf.j2
-    dest: "{{ noc_root }}/var/etc/mongo/mongod.conf"
+    dest: "{{ mongo_conf }}"
   notify: restart mongod
   tags:
     - config
 
-- name: symlink for config if version is not 3.2
-  file:
-    src: "{{ noc_root }}/var/etc/mongo/mongod.conf"
-    dest: "{{ etc_prefix }}/mongod.conf"
-    state: link
-    force: yes
-  when: mongo_version != 3.2
-
 - name: Setting mongod-arbiter config
   template:
     src: mongod-arbiter.conf.j2
-    dest: "{{ noc_root }}/var/etc/mongo/mongod-arbiter.conf"
+    dest: "{{ mongo_dir }}/mongod-arbiter.conf"
   notify: restart mongod-arbiter
   when: "has_svc_mongod_arbiter | default(False)"
   tags:
@@ -35,13 +27,13 @@
 - name: Generating mongo key file
   template:
     src: "mongo.key.j2"
-    dest: "{{ noc_root }}/var/etc/mongo/mongo.key"
+    dest: "{{ mongo_dir }}/mongo.key"
 
 - include: "os/{{ ansible_distribution }}/main.yml"
 
 - name: Setting mongo.key permissions
   file:
-    path: "{{ noc_root }}/var/etc/mongo/mongo.key"
+    path: "{{ mongo_dir }}/mongo.key"
     owner: "{{ mongo_user }}"
     mode: 0400
 
@@ -79,7 +71,7 @@
 - name: Install shell.js
   template:
     src: shell.js.j2
-    dest: "{{ noc_root }}/var/etc/mongo/shell.js"
+    dest: "{{ mongo_dir }}/shell.js"
   tags:
     - config
 
