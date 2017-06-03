@@ -121,7 +121,7 @@ class Script(BaseScript):
         c = self.cli("show interfaces description").split("\n\n")
         i = self.rx_sh_int_des.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
         if not i:
-            i = rx_sh_int_des2.findall("".join(["%s\n\n%s" % (a[0], a[1])]))
+            i = self.rx_sh_int_des2.findall("".join(["%s\n\n%s" % (c[0], c[1])]))
 
         interfaces = []
         mac = None
