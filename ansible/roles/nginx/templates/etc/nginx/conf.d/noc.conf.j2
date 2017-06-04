@@ -135,9 +135,14 @@ server {
 
     location /ng_stats {
         stub_status;
-{% for ip in ansible_all_ipv4_addresses %}
+{% for host in groups["svc-nginx"] %}
+    {% for ip in hostvars[host].ansible_all_ipv4_addresses %}
         allow {{ ip }};
+    {% endfor %}
 {% endfor %}
+{% if keepalived_nginx_virtual_ip %}
+        allow {{ keepalived_nginx_virtual_ip }};
+{% endif %}
         deny all;
         access_log off;
     }
