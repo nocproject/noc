@@ -25,6 +25,7 @@
     name: nginx
     state: latest
     disable_gpg_check: yes
+    update_cache: no
   environment:
     http_proxy: "{{http_proxy}}"
 
