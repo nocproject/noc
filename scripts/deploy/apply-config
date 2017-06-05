@@ -23,8 +23,7 @@ SUPERVISORD_CFG = "etc/noc_services.conf"
 NOC_CFG = "etc/noc.yml"
 
 ENV_MAP = {
-    "loglevel": "NOC_LOGLEVEL",
-    "listen": "NOC_LISTEN"
+    "loglevel": "NOC_LOGLEVEL"
 }
 
 JEMALLOC_LOCATION = [
@@ -62,17 +61,8 @@ def build(node):
             ne['LD_PRELOAD'] = path
     # Build config
     out = ConfigParser.ConfigParser()
-    for s in config.sections():
+    for s in sorted(config.sections()):
         se = ne.copy()
-        # Read environment setting
-        if config.has_option(s, "environment"):
-            for ec in config.get(s, "environment").split(","):
-                k, v = [z.strip() for z in ec.split("=", 1)]
-                if v.startswith("\"") and v.endswith("\""):
-                    v = v[1:-1]
-                for e in ne:
-                    v = v.replace("%%(ENV_%s)s" % e, ne[e])
-                se[k] = v
         # Process program secrion
         if s.startswith("program:"):
             s = s[8:]  # Strip "program:"
@@ -105,17 +95,13 @@ def build(node):
                 # Copy config
                 for o in config.options(pn):
                     v = config.get(pn, o)
-                    # Apply environment variables
-                    for e in pe:
-                        v = v.replace("%%(ENV_%s)s" % e, pe[e])
-                    #
                     out.set(sn, o, v)
                 numprocs = jcfg["config"][j].get("n_instances", "1")
-                if numprocs != "1":
-                    pe["NOC_NUMPROCS"] = numprocs
                 out.set(sn, "environment", format_env(pe))
                 out.set(sn, "autostart", "true")
                 out.set(sn, "numprocs", numprocs)
+
+
     # Convert to .ini format
     buffer = cStringIO.StringIO()
     out.write(buffer)
