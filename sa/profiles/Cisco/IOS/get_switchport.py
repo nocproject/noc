@@ -20,14 +20,14 @@ class Script(BaseScript):
     interface = IGetSwitchport
 
     rx_cont = re.compile(r",\s*$\s+", re.MULTILINE)
-    rx_line = re.compile(r"\n+Name:\s+", re.MULTILINE)
+    rx_line = re.compile(r"\n+\s*Name:\s+", re.MULTILINE)
     rx_body = re.compile(r"^(?P<interface>\S+).+"
-                         "^Administrative Mode: (?P<amode>.+).+"
-                         "^Operational Mode: (?P<omode>.+).+"
-                         "^Administrative Trunking Encapsulation:.+"
-                         "^Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
-                         "^Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
-                         "^Trunking VLANs Enabled: (?P<vlans>.+?)$",
+                         "^\s*Administrative Mode: (?P<amode>.+).+"
+                         "^\s*Operational Mode: (?P<omode>.+).+"
+                         "^\s*Administrative Trunking Encapsulation:.+"
+                         "^\s*Access Mode VLAN: (?P<avlan>\d+) \(.+\).+"
+                         "^\s*Trunking Native Mode VLAN: (?P<nvlan>\d+) \(.+\).+"
+                         "^\s*Trunking VLANs Enabled: (?P<vlans>.+?)$",
                          #"Pruning VLANs Enabled:",
                          re.MULTILINE | re.DOTALL)
 

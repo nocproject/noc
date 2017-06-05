@@ -17,7 +17,7 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "Cisco.IOS"
     pattern_more = [
-        (r"^ --More--", "\n"),
+        (r"^ --More--", "\r\n"),
         (r"(?:\?|interfaces)\s*\[confirm\]", "\n")
     ]
     pattern_unpriveleged_prompt = r"^\S+?>"
