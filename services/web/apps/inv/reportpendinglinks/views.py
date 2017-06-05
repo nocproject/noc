@@ -139,7 +139,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                     match = rn.findall(problems[mo_id][iface]["remote_id"])
                     if match:
                         not_found[match[0]] += 1
-                elif problems[mo_id][iface]["problem"] == "Not found local iface on remote":
+                elif problems[mo_id][iface]["problem"] == "Not found iface on remote":
                     local_on_remote[(mo.name, mo.address)] += 1
 
         data += [SectionRow(name="Summary information on u_object")]
