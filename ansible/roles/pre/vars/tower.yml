@@ -24,8 +24,8 @@ influx_max_cache_memory: "{{noc_config['config'].get('influxdb-global-%s' % ansi
 influx_cache_snapshot_memory_size: "{{noc_config['config'].get('influxdb-global-%s' % ansible_hostname, {}).get('snapshot_memory_size', 26214400)}}"
 
 keepalived_password: "{{noc_config['config'].get('keepalived-global-%s' % ansible_hostname, {}).get('password', 'noc')}}"
-keepalived_nginx_virtual_ip: "{{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('nginx_virtual_ip', '')}}"
-keepalived_patroni_virtual_ip: "{{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('patroni_virtual_ip', '')}}"
+keepalived_nginx_virtual_ip: "{% if groups['svc-keepalived'] | count > 0 %}{{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('nginx_virtual_ip', '')}}{%endif%}"
+keepalived_patroni_virtual_ip: "{% if groups['svc-keepalived'] | count > 0 %}{{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('patroni_virtual_ip', '')}}{%endif%}"
 
 memcache_address: "{{ noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('listen', '127.0.0.1:11211')}}"
 memcached_max_clients: "{{noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('max_clients', '1024')| int | abs }}"
