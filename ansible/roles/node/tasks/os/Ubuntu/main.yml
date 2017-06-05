@@ -12,6 +12,7 @@
     - python-dev
     - python-virtualenv
     - mercurial
+    - libjemalloc1
     - quilt
     - gcc
     - libpq-dev
