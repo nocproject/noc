@@ -45,11 +45,16 @@ class Profile(BaseProfile):
         re.MULTILINE)
 
     def get_slots_n(self, script):
+        """
+        If slots 7 - MA5603, 14 - MA5600
+        :param script:
+        :return:
+        """
         i = -1
         v = script.cli("display board 0", cached=True)
         for match in self.rx_slots.finditer(v):
             i += 1
-        return i
+        return i + 1
 
     def get_ports_n(self, script, slot_no):
         i = -1
