@@ -9,6 +9,7 @@
   file: path={{item}} state=directory owner={{grafana_user}} mode=0755
   with_items:
     - /var/log/grafana
+    - "{{ etc_prefix }}/grafana"
   notify: restart grafana
 
 - name: Create newsyslog rules
