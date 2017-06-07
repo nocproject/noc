@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -23,7 +23,7 @@ class Script(BaseScript):
     rx_port = re.compile(
         r"^Port ID : (?P<port>\S+)\s*\n"
         r"^-+\s*\n"
-        r"^Remote Entities Count : \d+\s*\n"
+        r"^Remote Entities Count : [1-9]+\s*\n"
         r"(?P<entities>.+?)\n\n", re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_entity = re.compile(
         r"^Entity \d+\s*\n"
