@@ -18,7 +18,7 @@ class Profile(BaseProfile):
         (r"---- More \(Press CTRL\+C break\) ---", " "),
         (r"Note: Terminal", "\n"),
         (r"Warning: Battery is low power!", "\n"),
-        (r"\{\s<cr>.*\s\}:$", "\n\n"),
+        (r"\{\s<cr>.*\s\}:", "\n"),
         (r"^Are you sure?\[Y/N\]", "y\n")
     ]
     pattern_username = r"^Username:"
