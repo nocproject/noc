@@ -31,6 +31,8 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             v = self.cli("ip arp list")
         for match in self.rx_arp1.finditer(v):
+            if match.group("interface") == "-":
+                continue
             r += [match.groupdict()]
         if not r:
             for match in self.rx_arp2.finditer(v):
