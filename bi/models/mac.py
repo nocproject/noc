@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+from collections import defaultdict
 # NOC modules
 from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.fields import (
