@@ -14,7 +14,7 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Eltex.DSLAM"
-    pattern_username = r"(?<!Last )login: "
+    pattern_username = r"(?<!Last )[Ll]ogin: "
     pattern_more = [
         (r"--More-- ", " "),
         (r"\[Yes/press any key for no\]", "Y")

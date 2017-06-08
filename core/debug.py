@@ -35,22 +35,6 @@ ENABLE_CP = True
 CP_NEW = "var/cp/crashinfo/new"
 CP_SET_UID = None
 
-if os.getuid() == 0:
-    CP_SET_UID = os.stat("var/log")[stat.ST_UID]
-
-if not os.path.isdir(CP_NEW):
-    try:
-        os.makedirs(CP_NEW, 0700)
-    except OSError as e:
-        logger.error("Cannot initialize CP reporting: %s", e)
-        ENABLE_CP = False
-    if CP_SET_UID:
-        try:
-            os.chown(CP_NEW, CP_SET_UID, -1)
-        except OSError as e:
-            logger.error("Cannot initialize CP reporting: %s", e)
-            ENABLE_CP = False
-
 SERVICE_NAME = os.path.relpath(sys.argv[0] or sys.executable)
 
 # Sentry error reporting

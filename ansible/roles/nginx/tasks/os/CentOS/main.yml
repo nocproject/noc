@@ -29,7 +29,7 @@
   yum:
     name: nginx
     state: latest
-    update_cache: yes
+    update_cache: no
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"

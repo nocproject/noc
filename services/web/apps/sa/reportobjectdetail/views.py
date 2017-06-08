@@ -16,23 +16,18 @@ from django.db import connection
 from django.http import HttpResponse
 from pymongo import ReadPreference
 import xlsxwriter
-import itertools
 import bson
 # NOC modules
 from noc.lib.nosql import get_db
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobject import ManagedObjectAttribute
 from noc.sa.models.administrativedomain import AdministrativeDomain
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
-from noc.sa.interfaces.base import StringParameter, IntParameter, BooleanParameter
-from noc.sa.models.objectpath import ObjectPath
+from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.inv.models.networksegment import NetworkSegment
-from noc.inv.models.object import Object
 
 # @todo ThreadingCount
 # @todo ReportDiscovery Problem
@@ -269,7 +264,7 @@ class ReportObjectAttributes(object):
         base_select = "select %s "
         base_select += "from (select distinct managed_object_id from sa_managedobjectattribute) as saa "
 
-        value_select = "INNER JOIN (select managed_object_id,value from sa_managedobjectattribute where key='%s') "
+        value_select = "LEFT JOIN (select managed_object_id,value from sa_managedobjectattribute where key='%s') "
         value_select += "as %s on %s.managed_object_id=saa.managed_object_id"
 
         s = ["saa.managed_object_id"]
@@ -285,7 +280,7 @@ class ReportObjectAttributes(object):
         return mo_attrs
 
     def __getitem__(self, item):
-        return self.out.get(item, ["", "", ""])
+        return self.out.get(item, ["", "", "", "", ""])
 
 
 class ReportObjects(object):

@@ -26,6 +26,8 @@ class Script(BaseScript):
         r"^----- ---- -----------------\n"
         r"(?P<macs>(^\s*\d+\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s*\n)+)",
         re.MULTILINE)
+    rx_port2 = re.compile(
+        r"^(?P<interface>(?:up|slot)\d+)\s+(?P<mac>\S+)", re.MULTILINE)
     rx_mac = re.compile(
         r"^\s*\d+\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s*",
         re.MULTILINE)
@@ -55,10 +57,19 @@ class Script(BaseScript):
             for match in self.rx_port.finditer(macs):
                 port = self.profile.convert_interface_name(match.group("interface"))
                 for match1 in self.rx_mac.finditer(match.group("macs")):
-                    r.append({
+                    r += [{
                         "vlan_id": match1.group("vlan_id"),
                         "mac": match1.group("mac"),
                         "interfaces": [port],
                         "type": "D"
-                    })
+                    }]
+            if not r:
+                macs = self.cli("statistics mac show")
+                for match in self.rx_port2.finditer(macs):
+                    r += [{
+                        "vlan_id": 1,
+                        "mac": match.group("mac"),
+                        "interfaces": [match.group("interface")],
+                        "type": "D"
+                    }]
         return r

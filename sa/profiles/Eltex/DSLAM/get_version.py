@@ -36,5 +36,5 @@ class Script(BaseScript):
             return {
                 "vendor": "Eltex",
                 "platform": "DSLAM",
-                "version": "UNKNOWN"
+                "version": "mxa24"
             }

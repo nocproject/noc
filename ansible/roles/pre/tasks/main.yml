@@ -57,6 +57,14 @@
     - config
     - always
 
+- name: resolv virtual vars
+  set_fact:
+    keepalived_nginx_virtual_ip: "{{keepalived_nginx_virtual_ip}}"
+    keepalived_patroni_virtual_ip: "{{keepalived_patroni_virtual_ip}}"
+  tags:
+    - config
+    - always
+
 - name: set proxy
   set_fact:
     http_proxy: "{{ proxy }}"

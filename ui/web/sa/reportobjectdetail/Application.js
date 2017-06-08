@@ -78,11 +78,11 @@ Ext.define("NOC.sa.reportobjectdetail.Application", {
             items: [
                 {
                     text: __("CSV"),
-                    pressed: true,
                     width: 70
                 },
                 {
                     text: __("Excel"),
+                    pressed: true,
                     width: 70
                 }
             ],

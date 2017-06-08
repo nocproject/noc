@@ -12,7 +12,7 @@ if NOC_ROOT.endswith(os.sep):
     NOC_ROOT = NOC_ROOT[:-len(os.sep)]
 
 # Go to the root directory
-os.chdir("/opt/noc")
+os.chdir("{{ noc_root }}")
 
 # Set up django environment
 os.environ['DJANGO_SETTINGS_MODULE'] = 'noc.settings'

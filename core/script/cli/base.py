@@ -427,10 +427,18 @@ class CLI(object):
             self.profile.command_super +
             (self.profile.command_submit or "\n")
         )
+        """
+        Do not remove `pager` section
+        It fixes this situation on Huawei MA5300:
+        xxx>enable
+        { <cr>|level-value<U><1,15> }:
+        xxx#
+        """
         self.expect({
             "username": self.on_super_username,
             "password": self.on_super_password,
-            "prompt": self.on_prompt
+            "prompt": self.on_prompt,
+            "pager": self.send_pager_reply
         }, self.profile.cli_timeout_super)
 
     def on_failure(self, data, match):

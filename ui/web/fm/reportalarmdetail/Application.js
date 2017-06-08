@@ -29,6 +29,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 ["duration_sec", __("Duration"), true],
                 ["object_name", __("Object Name"), true],
                 ["object_address", __("IP"), true],
+                ["object_profile", __("IP"), true],
                 ["object_platform", __("Platform"), true],
                 ["object_version", __("Version"), true],
                 ["alarm_class", __("Alarm Class"), true],
@@ -36,6 +37,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 ["subscribers", __("Affected Subscriber"), true],
                 ["tt", __("TT"), true],
                 ["escalation_ts", __("Escalation Time"), true],
+                ["container_address", __("Container Address"), true],
                 ["container_0", __("Container (Level 1)"), true],
                 ["container_1", __("Container (Level 2)"), true],
                 ["container_2", __("Container (Level 3)"), true],
@@ -89,11 +91,11 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             items: [
                 {
                     text: __("CSV"),
-                    pressed: true,
                     width: 70
                 },
                 {
                     text: __("Excel"),
+                    pressed: true,
                     width: 70
                 }
             ],

@@ -14,7 +14,7 @@ from collections import defaultdict
 from django import forms
 # NOC modules
 from noc.core.cache.base import cache
-from noc.lib.app.simplereport import SimpleReport
+from noc.lib.app.simplereport import SimpleReport, SectionRow
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference
 from noc.sa.models.managedobject import ManagedObject
@@ -102,11 +102,16 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
 
     def get_data(self, request, pool, obj_profile=None, **kwargs):
 
+        rn = re.compile("'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
+                        re.IGNORECASE)
         problem = {"Not found iface on remote": "->",
                    "Not found local iface on remote": "<-",
                    "Remote object is not found": "X"}
         data = []
-
+        # MAC, hostname, count
+        not_found = defaultdict(int)
+        # Name, IP, count
+        local_on_remote = defaultdict(int)
         # Get all managed objects
         mos = ManagedObject.objects.filter(is_managed=True, pool=pool)
 
@@ -130,6 +135,21 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                     problem[problems[mo_id][iface]["problem"]],
                     problems[mo_id][iface]["remote_id"]
                 )]
+                if problems[mo_id][iface]["problem"] == "Remote object is not found":
+                    match = rn.findall(problems[mo_id][iface]["remote_id"])
+                    if match:
+                        not_found[match[0]] += 1
+                elif problems[mo_id][iface]["problem"] == "Not found iface on remote":
+                    local_on_remote[(mo.name, mo.address)] += 1
+
+        data += [SectionRow(name="Summary information on u_object")]
+        for c in not_found:
+            if not_found[c] > 4:
+                data += [c]
+        data += [SectionRow(name="Summary information on agg")]
+        for c in local_on_remote:
+            if local_on_remote[c] > 4:
+                data += [c]
 
         return self.from_dataset(
             title=self.title,

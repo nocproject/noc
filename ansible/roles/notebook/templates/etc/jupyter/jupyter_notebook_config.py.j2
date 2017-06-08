@@ -138,7 +138,7 @@ c.NotebookApp.base_url = u'/notebook/'
 c.NotebookApp.tornado_settings = {'static_url_prefix': u'/notebook/static/'}
 
 # The directory to use for notebooks and kernels.
-c.NotebookApp.notebook_dir = u'{{ noc_root }}/var/notebooks'
+c.NotebookApp.notebook_dir = u'{{ noc_var }}/notebooks'
 
 # The kernel manager class to use.
 # c.NotebookApp.kernel_manager_class = <class 'notebook.services.kernels.kernelmanager.MappingKernelManager'>

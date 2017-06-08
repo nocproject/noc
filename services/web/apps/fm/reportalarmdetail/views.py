@@ -22,10 +22,12 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.objectpath import ObjectPath
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
+from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
 
 
 class ReportAlarmDetailApplication(ExtApplication):
@@ -87,13 +89,15 @@ class ReportAlarmDetailApplication(ExtApplication):
             "duration_sec",
             "object_name",
             "object_address",
+            "object_profile",
             "object_platform",
             "object_version",
             "alarm_class",
             "objects",
             "subscribers",
             "tt",
-            "escalation_ts"
+            "escalation_ts",
+            "container_address"
         ] + ["container_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + ["segment_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         header_row = [
@@ -104,13 +108,15 @@ class ReportAlarmDetailApplication(ExtApplication):
          "DURATION_SEC",
          "OBJECT_NAME",
          "OBJECT_ADDRESS",
+         "OBJECT_PROFILE",
          "OBJECT_PLATFORM",
          "OBJECT_VERSION",
          "ALARM_CLASS",
          "OBJECTS",
          "SUBSCRIBERS",
          "TT",
-         "ESCALATION_TS"
+         "ESCALATION_TS",
+         "CONTAINER_ADDRESS"
         ] + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + ["SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         if columns:
@@ -135,9 +141,15 @@ class ReportAlarmDetailApplication(ExtApplication):
                 q["segment_path"] = bson.ObjectId(segment)
             except bson.errors.InvalidId:
                 pass
+        container_lookup = None
+        # Working if Administrative domain set
         if administrative_domain:
             try:
                 q["adm_path"] = {"$in": [int(administrative_domain)]}
+                ads = AdministrativeDomain.get_nested_ids(int(administrative_domain))
+                mos = ManagedObject.objects.filter(administrative_domain__in=ads)
+                mos_id = list(mos.values_list("id", flat=True))
+                container_lookup = ReportContainer(mos_id)
             except bson.errors.InvalidId:
                 pass
         attr = ReportObjectAttributes([])
@@ -179,13 +191,15 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     mo.name,
                     mo.address,
+                    mo.profile_name,
                     attr[mo.id][2] if attr else "",
                     attr[mo.id][1] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     total_objects,
                     total_subscribers,
                     a.get("escalation_tt"),
-                    a.get("escalation_ts")
+                    a.get("escalation_ts"),
+                    container_lookup[mo.id].get("text", "") if container_lookup else ""
                 ], container_path, segment_path), cmap)]
         # Active Alarms
         if source in ["active", "both"]:
@@ -226,13 +240,15 @@ class ReportAlarmDetailApplication(ExtApplication):
                     str(duration),
                     mo.name,
                     mo.address,
+                    mo.profile_name,
                     attr[mo.id][2] if attr else "",
                     attr[mo.id][1] if attr else "",
                     AlarmClass.get_by_id(a["alarm_class"]).name,
                     total_objects,
                     total_subscribers,
                     a.get("escalation_tt"),
-                    a.get("escalation_ts")
+                    a.get("escalation_ts"),
+                    container_lookup[mo.id].get("text", ""),
                 ], container_path, segment_path), cmap)]
 
         if format == "csv":

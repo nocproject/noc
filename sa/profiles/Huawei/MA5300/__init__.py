@@ -18,7 +18,7 @@ class Profile(BaseProfile):
         (r"---- More \(Press CTRL\+C break\) ---", " "),
         (r"Note: Terminal", "\n"),
         (r"Warning: Battery is low power!", "\n"),
-        (r"\{\s<cr>.*\s\}:$", "\n\n"),
+        (r"\{\s<cr>.*\s\}:", "\n"),
         (r"^Are you sure?\[Y/N\]", "y\n")
     ]
     pattern_username = r"^Username:"
@@ -30,7 +30,7 @@ class Profile(BaseProfile):
     command_save_config = "save"
     pattern_prompt = r"(?P<hostname>\S+)(?:\(.*)?#"
     pattern_unpriveleged_prompt = \
-        r"^(?P<hostname>[a-zA-Z0-9-_\.\/]+)(?:-[a-zA-Z0-9/]+)*>$"
+        r"^(?P<hostname>[a-zA-Z0-9-_\.\/()]+)(?:-[a-zA-Z0-9/]+)*>$"
     pattern_syntax_error = \
         r"(% Unknown command, the error locates at \'^\'|  Logged Fail!)"
 

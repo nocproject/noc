@@ -86,7 +86,7 @@ class Script(BaseScript):
         elif int_type in ["xDSLchan", "DOCSISup", "DOCSISdown"]:
             index += intNum << 5
         else:
-            index += intNum << 5
+            index += intNum << 6
 
         return index
 
@@ -100,7 +100,6 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
-        vlans = []
         stp_ports = self.get_stp()
         display_pvc = False
         display_service_port = False
@@ -164,9 +163,12 @@ class Script(BaseScript):
                 if display_pvc:
                     v = self.cli("display pvc 0/%d\n" % i)
                     rx_adsl = self.rx_pvc
-                if display_service_port:
+                elif display_service_port:
                     v = self.cli("display service-port board 0/%d\n" % i)
                     rx_adsl = self.rx_sp
+                else:
+                    v = ""
+                    rx_adsl = ""
                 for match in rx_adsl.finditer(v):
                     port = int(match.group("port"))
                     ifname = "0/%d/%d" % (i, port)
