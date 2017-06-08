@@ -1,0 +1,14 @@
+{
+    "name": "Alcatel | 7324 | 7324RU sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "5dab22a4-5121-4cb8-8142-d05d7a2d2fc4",
+    "description": null,
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.890.1.5.13.2.4.2",
+    "action": "match",
+    "profile": "Alcatel.7324RU"
+}
+
