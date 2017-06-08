@@ -65,3 +65,22 @@ class MAC(Model):
     )
     vlan = UInt16Field(description=_("VLAN"))
     is_uni = UInt8Field(description=_("Is UNI"))
+
+    def get_neighbors_by_mac(self, macs):
+        neighbors = defaultdict(dict)
+        fields = [{"expr": "max(ts)", "alias": "timestamp", "order": 0},
+                  {"expr": "mac", "alias": "mac", "group": 1},
+                  {"expr": "vlan", "alias": "vlan", "group": 2},
+                  {"expr": "managed_object", "alias": "managed_object", "group": 3},
+                  {"expr": "interface", "alias": "interface", "group": 4}
+                  ]
+
+        res = self.query(
+            {"fields": fields, "filter": {"$in": [{"$field": 'mac'}, macs]}})
+
+        for r in res["result"]:
+            val = dict(zip(res["fields"], r))
+            agg = int(val["managed_object"])
+            neighbors[agg][val["interface"]] = [int(val["mac"])]
+
+        return neighbors
