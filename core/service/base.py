@@ -379,15 +379,17 @@ class Service(object):
         """
         if self.address and self.port:
             return self.address, self.port
-        if config.listen:
-            addr, port = config.listen.split(":")
+        if self.config.listen:
+            addr, port = self.config.listen.split(":")
+            port_tracker = self.config.instance
         else:
             addr, port = "auto", 0
+            port_tracker = 0
         if addr == "auto":
             addr = os.environ.get("HOSTNAME", socket.gethostname())
             self.logger.info("Autodetecting address: auto -> %s", addr)
         addr = socket.gethostbyname(addr)
-        port = int(port) + self.config.instance
+        port = int(port) + port_tracker
         return addr, port
 
     def update_service_address(self):
@@ -509,6 +511,7 @@ class Service(object):
         m = {}
         apply_metrics(m)
         self.logger.info("Post-mortem metrics: %s", m)
+        self.die()
 
     def get_register_tags(self):
         tags = []

@@ -179,6 +179,8 @@ _MODELS = {
     "sa.MapTask": "noc.sa.models.maptask.MapTask",
     "sa.ObjectNotification": "noc.sa.models.objectnotification.ObjectNotification",
     "sa.ReduceTask": "noc.sa.models.reducetask.ReduceTask",
+    "sa.Service": "noc.sa.models.service.Service",
+    "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
     "sa.TerminationGroup": "noc.sa.models.terminationgroup.TerminationGroup",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
     "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
