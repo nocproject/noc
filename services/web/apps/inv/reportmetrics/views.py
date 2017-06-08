@@ -121,7 +121,7 @@ class ReportTraffic(SimpleReport):
                         client = InfluxDBClient()
                         query1 = [
                             "SELECT percentile(\"value\", 98) FROM \"Interface | Load | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name.replace("\ ", "\\\\\ "), td, fd)]
+                                o.name.replace("\ ", "\\\ "), j.name, td, fd)]
                         result1 = client.query(query1)
                         r = list(result1)
                         if len(r) > 0:
@@ -131,7 +131,7 @@ class ReportTraffic(SimpleReport):
                             r1 = 0
                         query2 = [
                             "SELECT percentile(\"value\", 98) FROM \"Interface | Load | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name.replace("\ ", "\\\\\ "), td, fd)]
+                                o.name.replace("\ ", "\\\ "), j.name, td, fd)]
                         result2 = client.query(query2)
                         r = list(result2)
                         if len(r) > 0:
