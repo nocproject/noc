@@ -1,0 +1,34 @@
+upstream noc-web {
+   {{range service "web"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/web/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
+   {{else}}server 127.0.0.1:65535; # force a 502{{end}}
+}
+
+upstream login {
+   {{range service "login"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/login/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
+   {{else}}server 127.0.0.1:65535; # force a 502{{end}}
+}
+
+upstream card {
+   {{range service "card"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/card/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
+   {{else}}server 127.0.0.1:65535; # force a 502{{end}}
+}
+
+upstream mrt {
+   {{range service "mrt"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/mrt/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
+   {{else}}server 127.0.0.1:65535; # force a 502{{end}}
+}
+
+upstream bi {
+   {{range service "bi"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/bi/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
+   {{else}}server 127.0.0.1:65535; # force a 502{{end}}
+}
+
+upstream grafana {
+   {{range service "grafana"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/grafana/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
+   {{else}}server 127.0.0.1:65535; # force a 502{{end}}
+}
+
+upstream grafanads {
+   {{range service "grafanads"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/grafanads/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
+   {{else}}server 127.0.0.1:65535; # force a 502{{end}}
+}
