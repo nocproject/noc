@@ -30,3 +30,11 @@
     https_proxy: "{{http_proxy}}"
   tags:
     - requirements
+
+- name: copy Grafana consul templates
+  template:
+    src: grafana.json.j2
+    dest: "{{consul_configd_path}}/grafana.json"
+  notify: reload consul
+  tags:
+    - consul
