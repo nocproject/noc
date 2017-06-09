@@ -44,6 +44,8 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
         except tornado.httpclient.HTTPError as e:
             if e.code == 599:
                 raise consul.base.Timeout
+            if e.code == 500:
+                raise consul.base.Timeout
             response = e.response
         finally:
             client.close()
@@ -134,7 +136,7 @@ class ConsulResolver(ResolverBase):
 class ConsulDCS(DCSBase):
     """
     Consul-based DCS
-    
+
     URL format:
     consul://<address>[:<port>]/<kv root>?token=<token>&check_interval=<...>&check_timeout=<...>&release_after=<...>
     """
@@ -207,7 +209,7 @@ class ConsulDCS(DCSBase):
     def create_session(self):
         """
         Create consul session
-        :return: 
+        :return:
         """
         self.logger.info("Creating session")
         # @todo: Add http healthcheck
@@ -387,7 +389,7 @@ class ConsulDCS(DCSBase):
         Acquire shard slot
         :param name: <service name>-<pool>
         :param limit: Configured limit
-        :return: (slot number, number of instances) 
+        :return: (slot number, number of instances)
         """
         if not self.session:
             yield self.create_session()
