@@ -4,3 +4,8 @@
   service:
     name: consul-template
     state: restarted
+
+- name: reload systemd
+  systemd:
+    name: consul-template
+    daemon_reload: yes

@@ -6,7 +6,7 @@ After=basic.target network.target
 [Service]
 User=root
 Group=root
-ExecStart={{ consul_template_bin_path }}/consul-template -config {{ consul_template_templates_dir }}
+ExecStart={{ consul_template_bin_path }}/consul-template -config {{consul_template_config_dir}}/{{ consul_template_config_file }} -config {{ consul_template_templates_dir }}
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure
