@@ -5,7 +5,7 @@
 - name: Install nginx monitoring
   template:
     src: "etc/telegraf/telegraf.d/nginx.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/nginx.conf"
+    dest: "{{ telegraf_confd_path }}/nginx.conf"
   notify: reload telegraf
   tags:
     - config

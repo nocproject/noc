@@ -69,6 +69,7 @@ nginx_system_service: nginx
 nginx_user: nginx
 noc_service_pidfile: /var/run/noc.pid
 noc_system_service: noc
+telegraf_confd_path: "{{etc_prefix}}/telegraf/telegraf.d"
 
 #Memtune
 kernel_shmall: "{{ ansible_memtotal_mb * 128 }}"
