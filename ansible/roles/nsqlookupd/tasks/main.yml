@@ -5,7 +5,7 @@
 - name: Install nsqlookupd monitoring
   template:
     src: "etc/telegraf/telegraf.d/nsqlookupd.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/nsqlookupd.conf"
+    dest: "{{ telegraf_confd_path }}/nsqlookupd.conf"
   notify: reload telegraf
   tags:
     - config

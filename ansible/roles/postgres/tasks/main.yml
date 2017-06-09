@@ -98,7 +98,7 @@
 - name: Install postgres monitoring
   template:
     src: "etc/telegraf/telegraf.d/postgres.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/postgres.conf"
+    dest: "{{ telegraf_confd_path }}/postgres.conf"
   notify: reload telegraf
   tags:
     - config
