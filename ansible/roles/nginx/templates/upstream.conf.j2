@@ -53,7 +53,7 @@ upstream bi {
 {% if noc_config["services"].get("notebook", []) %}
 upstream notebook {
 {% for n in noc_config["services"].get("notebook", []) %}
-    server {{ n }};
+    server {{ n[:-6] }}:{{ notebook_port }};
 {% endfor %}
 }
 {% endif %}
