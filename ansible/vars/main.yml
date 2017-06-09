@@ -16,7 +16,7 @@ consul_env: '{{ True if (consul_url and consul_token) else False}}'
 consul_user: consul
 consul_home: /home/{{consul_user}}
 
-consul_template_version: "0.18.2"
+consul_template_version: "0.18.5"
 consul_template_config_dir: "{{etc_prefix}}/consul-template/config"
 consul_template_templates_dir: "{{consul_template_config_dir}}/templates"
 
