@@ -52,3 +52,11 @@
     - profile_default/startup/00-logging.py.j2
   tags:
     - config
+
+- name: copy notebook consul templates
+  template:
+    src: notebook.json.j2
+    dest: "{{consul_configd_path}}/notebook.json"
+  notify: reload consul
+  tags:
+    - consul

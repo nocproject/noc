@@ -89,6 +89,8 @@ memcahed_user: memcache
 memcahed_log_file: /var/log/memcached.log
 memcahed_conf: /etc/memcached.conf
 
+notebook_port: 4007
+
 # Alerta http://docs.alerta.io/en/latest/api/reference.html
 # seconds
 alerta_blackout_duration: 300
