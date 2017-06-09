@@ -32,3 +32,8 @@ upstream grafanads {
    {{range service "grafanads"}}server {{.Address}}:{{.Port}} weight={{keyOrDefault (printf "noc/nginx/%s/grafanads/weight" .Node) "1"}} max_fails=3 fail_timeout=10;
    {{else}}server 127.0.0.1:65535; # force a 502{{end}}
 }
+
+upstream notebook {
+   {{range service "notebook"}}server {{.Address}}:{{.Port}}  max_fails=3 fail_timeout=10;
+   {{else}}server 127.0.0.1:65535; # force a 502{{end}}
+}
