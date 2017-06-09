@@ -357,6 +357,7 @@ class Service(object):
         for cb, args, kwargs in self.close_callbacks:
             cb(*args, **kwargs)
         self.logger.warn("Service %s has been terminated", self.name)
+        self.die("")
 
     def load_config(self):
         """
