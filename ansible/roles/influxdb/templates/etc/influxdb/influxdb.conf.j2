@@ -64,7 +64,7 @@ reporting-disabled = true
 
 [http]
   enabled = true
-  bind-address = ":8086"
+  bind-address = ":{{ influxdb_port }}"
   auth-enabled = false
   log-enabled = false
   write-tracing = false

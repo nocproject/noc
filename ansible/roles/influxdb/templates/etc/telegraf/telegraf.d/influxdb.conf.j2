@@ -5,7 +5,7 @@
 
   ## Multiple URLs from which to read InfluxDB-formatted JSON
   urls = [
-    "http://{{influx_addr}}/debug/vars"
+    "http://{{influx_host}}:{{ influxdb_port }}/debug/vars"
   ]
 
 

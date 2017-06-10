@@ -7,7 +7,7 @@
   {% if noc_metrics_collector and noc_metrics_collector != '' %}
   urls = ["http://{{ noc_metrics_collector }}"] # required
   {% elif "influxdb" in noc_config.services %}
-  urls = ["{{influx_host}}"] # required
+  urls = ["http://{{influx_host}}:{{influxdb_port}}"] # required
   {% else %}
   urls = []
   {% endif %}
