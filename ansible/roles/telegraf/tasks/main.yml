@@ -24,7 +24,7 @@
 - name: render telegraf config prom config
   template:
     src: "telegraf/prom.conf.j2"
-    dest: "{{{ telegraf_confd_path }}/prom.conf"
+    dest: "{{ telegraf_confd_path }}/prom.conf"
   when: telegraf_prometheus_enabled
   tags:
     - config
