@@ -20,14 +20,21 @@ class Script(BaseScript):
         Check box has STP enabled
         """
         # Spanning Tree Enabled/Disabled : Enabled
-        r = self.cli("show spanning-tree brief | include Enabled/Disabled")
-        r = r.strip()
-        return ":" in r and r.rsplit(":", 1)[-1].strip().lower() == "enabled"
+        try:
+            r = self.cli("show spanning-tree brief | include Enabled/Disabled")
+            r = r.strip()
+            return ":" in r and r.rsplit(":", 1)[-1].strip().lower() == "enabled"
+        except self.CLISyntaxError:
+            r = self.cli("show spanning-tree brief")
+            return "Enabled/Disabled : Enabled" in r
 
     @false_on_cli_error
     def has_lldp(self):
         """
         Check box has lldp enabled
         """
-        r = self.cli("show lldp config | include LLDP Enable")
+        try:
+            r = self.cli("show lldp config | include LLDP Enable")
+        except self.CLISyntaxError:
+            r = self.cli("show lldp config")
         return "Yes" in r
