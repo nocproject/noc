@@ -1,3 +1,9 @@
 - name: restart influxdb
   debug:
     msg: "Influxdb configuration changed. it is recommended to restart it"
+
+- name: reload consul
+  become: yes
+  service:
+    name: consul
+    state: reloaded

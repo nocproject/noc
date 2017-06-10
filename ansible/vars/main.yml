@@ -86,6 +86,9 @@ postgres_listen: 5432
 patroni_listen: 8008
 haproxy_patroni_listen: 5000
 
+grafana_http_port: 8002
+influxdb_port: 8086
+
 apt_cache_valid_time: 86400
 pycurl_ssl_library: openssl
 

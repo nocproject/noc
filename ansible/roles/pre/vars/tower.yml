@@ -15,11 +15,9 @@ consul_raw_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"
 consul_acl_master_token: "{{noc_config['config'].get('consul-global-%s' % ansible_hostname, {}).get('token', '')}}"
 consul_acl_replication_token: "{{noc_config['config'].get('consul-global-%s' % ansible_hostname, {}).get('replication_token', '')}}"
 
-grafana_http_port: "{{ noc_config.services.grafana.0.split(':')[1] }}"
 grafana_pg_password: "{{noc_config['config'].get('grafana-global-%s' % ansible_hostname, {}).get('password', 'grafana')}}"
 
-influx_addr: "{{ noc_config['config'].get('influxdb-global-%s' % ansible_hostname, {}).get('listen', '127.0.0.1:8086')}}"
-influx_host: "http://{{ noc_config.services.influxdb.0 }}"
+influx_host: "{% for n in groups['svc-influxdb'] %}{{ hostvars[n].ansible_host }}{% endfor %}"
 influx_max_cache_memory: "{{noc_config['config'].get('influxdb-global-%s' % ansible_hostname, {}).get('max_cache_memory', 1048576000)}}"
 influx_cache_snapshot_memory_size: "{{noc_config['config'].get('influxdb-global-%s' % ansible_hostname, {}).get('snapshot_memory_size', 26214400)}}"
 
