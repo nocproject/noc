@@ -22,6 +22,9 @@ nginx_log_dir: /var/log/nginx
 nginx_path: /usr/local/sbin/nginx
 nginx_ssl_cert_path: /usr/local/etc/nginx/ssl/noc.crt
 nginx_ssl_key_path: /usr/local/etc/nginx/ssl/noc.key
+nginx_reload_command: "service nginx reload"
+telegraf_reload_command: "service telegraf reload"
+
 nginx_user: www
 postgres_path: /usr/local/bin/postgres
 postgres_user: pgsql

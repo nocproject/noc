@@ -62,6 +62,8 @@
     src: "{{ consul_template_config_file_template }}"
     dest: "{{consul_template_config_dir}}/{{ consul_template_config_file }}"
     mode: 0755
+  notify:
+    - reload consul-template
   tags:
     - config
 
@@ -85,6 +87,9 @@
   when: "'FreeBSD' in ansible_system"
   tags:
     - config
+
+- name: include services
+  include: "services.yml"
 
 - name: start consul-template service
   service:
