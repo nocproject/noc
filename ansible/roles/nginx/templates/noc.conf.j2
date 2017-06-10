@@ -120,7 +120,7 @@ server {
         access_log off;
     }
 
-{% if noc_config["services"].get("login", []) %}
+{% if 'svc-login' in groups and groups['svc-login'] | length > 0 %}
     # Login service api
     location /api/auth/ {
         internal;
@@ -153,7 +153,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("card", []) %}
+{% if 'svc-card' in groups and groups['svc-card'] | length > 0 %}
     # Card service api
     location /api/card/ {
         proxy_pass http://card;
@@ -174,7 +174,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("mrt", []) %}
+{% if 'svc-mrt' in groups and groups['svc-mrt'] | length > 0 %}
     # mrt service api
     location /api/mrt/ {
         proxy_pass http://mrt;
@@ -196,7 +196,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("bi", []) %}
+{% if 'svc-bi' in groups and groups['svc-bi'] | length > 0 %}
 
     # bi service api
     location /api/bi/ {
@@ -217,7 +217,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("grafanads", []) %}
+{% if 'svc-grafanads' in groups and groups['svc-grafanads'] | length > 0 %}
 
     # grafanads service api
     location /api/grafanads/ {
@@ -262,7 +262,7 @@ server {
         access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
-{% if noc_config["services"].get("bi", []) %}
+{% if 'svc-bi' in groups and groups['svc-bi'] | length > 0 %}
     location /ui/bi/editor/ {
         alias {{ noc_root }}/ui/bi/;
         try_files $uri /index.html =404;
@@ -272,7 +272,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("notebook", []) %}
+{% if 'svc-notebook' in groups and groups['svc-notebook'] | length > 0 %}
     location ~* ^/notebook/(api/kernels/[^/]+/(channels|iopub|shell|stdin)|terminals/websocket)/? {
         proxy_pass http://notebook;
         gzip on;
@@ -303,7 +303,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("grafana", []) %}
+{% if 'svc-grafana' in groups and groups['svc-grafana'] | length > 0 %}
     location /ui/grafana {
         proxy_pass http://grafana;
         auth_request /api/auth/auth/;
