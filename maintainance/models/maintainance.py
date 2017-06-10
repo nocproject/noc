@@ -188,3 +188,22 @@ class Maintainance(Document):
                     continue
             affected.update([x["object"] for x in d["affected_objects"]])
         return list(affected)
+
+    @classmethod
+    def get_object_maintenance(cls, mo):
+        """
+        Returns a list of active maintenance for object
+        :param mo: Managed Object instance
+        :return: List of Maintainance instances or empty list
+        """
+        r = []
+        now = datetime.datetime.now()
+        for m in Maintainance.objects.filter(
+                start__lte=now,
+                is_completed=False,
+                affected_objects__object=mo.id
+        ).exclude("affected_objects").order_by("start"):
+            if m.time_pattern and not m.time_pattern.match(now):
+                continue
+            r += [m]
+        return r

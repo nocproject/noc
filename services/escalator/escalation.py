@@ -23,6 +23,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.maintainance.models.maintainance import Maintainance
 from noc.core.config.base import config
 
 
@@ -93,6 +94,8 @@ def escalate(alarm_id, escalation_id, escalation_delay,
             log("No escalation template, skipping")
             continue
         # Check global limits
+        # @todo: Move into escalator service
+        # @todo: Process per-ttsystem limits
         ets = datetime.datetime.now() - datetime.timedelta(seconds=60)
         ae = ActiveAlarm._get_collection().find({
             "escalation_ts": {
@@ -153,7 +156,13 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                 )
             else:
                 pre_reason = escalation.get_pre_reason(mo.tt_system)
-                if pre_reason is not None:
+                active_maintenance = Maintainance.get_object_maintenance(mo)
+                if active_maintenance:
+                    for m in active_maintenance:
+                        log("Object is under maintenance: %s (%s-%s)",
+                            m.subject, m.start, m.stop)
+                    metrics["escalation_stop_on_maintenance"] += 1
+                elif pre_reason is not None:
                     subject = a.template.render_subject(**ctx)
                     body = a.template.render_body(**ctx)
                     logger.debug("[%s] Escalation message:\nSubject: %s\n%s",
