@@ -4,6 +4,7 @@ Wants=basic.target
 After=basic.target network.target
 
 [Service]
+Environment=HOSTNAME={{ ansible_nodename }}
 User=root
 Group=root
 ExecStart={{ consul_template_bin_path }}/consul-template -dry -config {{consul_template_config_dir}}
