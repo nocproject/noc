@@ -225,7 +225,7 @@ class ManagedObjectProfile(models.Model):
     # Object id in remote system
     remote_id = models.CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = models.IntegerField(null=True, blank=True)
+    bi_id = models.DecimalField(max_digits=20, decimal_places=0, null=True, blank=True)
     # Object alarms can be escalated
     escalation_policy = models.CharField(
         "Escalation Policy",

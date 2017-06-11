@@ -19,7 +19,7 @@ from threading import Lock
 # Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
-                              DateTimeField, SET_NULL)
+                              DateTimeField, SET_NULL, DecimalField)
 from django.contrib.auth.models import User, Group
 import cachetools
 import six
@@ -286,7 +286,7 @@ class ManagedObject(Model):
     # Object id in remote system
     remote_id = CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = IntegerField(null=True, blank=True)
+    bi_id = DecimalField(max_digits=20, decimal_places=0, null=True, blank=True)
     # Object alarms can be escalated
     escalation_policy = CharField(
         "Escalation Policy",
