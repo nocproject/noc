@@ -8,6 +8,9 @@ grafana_system_service: grafana
 influx_path: /usr/local/bin/influx
 influxdb_conf: /usr/local/etc/influxd.conf
 influxdb_db_path: /var/db/influxdb
+nfluxdb_db_path_meta: "{{ influxdb_db_path }}/meta"
+influxdb_db_path_data: "{{ influxdb_db_path }}/data"
+influxdb_db_path_wal: "{{ influxdb_db_path }}/wal"
 influxdb_group: influxd
 influxdb_system_service: influxd
 influxdb_user: influxd
@@ -15,8 +18,8 @@ influxdb_user: influxd
 mongo_arbiter_pid: " "
 mongo_db_path: /var/db/mongodb/
 mongo_log_path: /var/db/mongodb/mongod.log
-mongo_path: /usr/local/bin/mongo
 mongo_pid: /var/db/mongodb/mongod.lock
+mongo_path: /usr/local/bin/mongo
 mongod_path: /usr/local/bin/mongod
 
 nginx_conf_path: /usr/local/etc/nginx/nginx.conf
@@ -30,17 +33,17 @@ nginx_user: www
 
 telegraf_reload_command: "service telegraf reload"
 
+postgres_bin_dir: /usr/local/bin
 postgres_path: /usr/local/bin/postgres
 postgres_user: pgsql
-postgres_bin_dir: /usr/local/bin
 postgres_data_dir: /usr/local/pgsql/data
 postgresql_conf_path: /usr/local/pgsql/data/postgresql.conf
 postgresql_hba_path: /usr/local/pgsql/data/pg_hba.conf
 
 tower_path: /usr/local/tower
 
-consul_bin_path: "/usr/local/bin"
-consul_template_bin_path: "/usr/local/bin"
+consul_bin_path: /usr/local/bin
+consul_template_bin_path: /usr/local/bin
 consul_template_group: wheel
 
 pip_cflags: "-I/usr/local/include -L/usr/local/lib"
