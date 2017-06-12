@@ -471,7 +471,7 @@ class ConsulDCS(DCSBase):
                     value=ujson.dumps({
                         "Limit": total_slots,
                         "Holders": holders
-                    }),
+                    }, indent=2),
                     cas=cas
                 )
             except ConsulRepeatableErrors as e:
