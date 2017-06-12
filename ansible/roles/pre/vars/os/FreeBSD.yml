@@ -8,7 +8,7 @@ grafana_system_service: grafana
 influx_path: /usr/local/bin/influx
 influxdb_conf: /usr/local/etc/influxd.conf
 influxdb_db_path: /var/db/influxdb
-nfluxdb_db_path_meta: "{{ influxdb_db_path }}/meta"
+influxdb_db_path_meta: "{{ influxdb_db_path }}/meta"
 influxdb_db_path_data: "{{ influxdb_db_path }}/data"
 influxdb_db_path_wal: "{{ influxdb_db_path }}/wal"
 influxdb_group: influxd
