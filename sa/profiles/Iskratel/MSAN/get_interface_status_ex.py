@@ -14,7 +14,7 @@ from noc.core.mib import mib
 
 
 class Script(BaseScript):
-    name = "Iskratel.MSAN..get_interface_status_ex"
+    name = "Iskratel.MSAN.get_interface_status_ex"
     interface = IGetInterfaceStatusEx
     requires = []
 
