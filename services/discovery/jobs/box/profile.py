@@ -69,6 +69,8 @@ class ProfileCheck(DiscoveryCheck):
         self.logger.info("Cannot find profile in \"Profile Check Rules\"")
         if "suggest_snmp" not in self.job.problems and snmp_result:
             self.set_problem("Not find profile for OID: %s or HTTP string: %s" % (snmp_result, http_result))
+        else:
+            self.set_problem("Cannot find profile in \"Profile Check Rules\"")
         self.logger.debug("Result %s" % self.job.problems)
         return None
 
