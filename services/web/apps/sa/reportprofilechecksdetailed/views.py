@@ -78,7 +78,7 @@ class ReportFilterApplication(SimpleReport):
         is_managed_alive_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                                m["object"] for m in is_alive_id]
         is_managed_ng_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
-                            m_id for m_id in is_alive_id_ng]
+                            m["object"] for m in is_alive_id_ng]
         bad_snmp_cred = get_db()["noc.joblog"].find({"problems.suggest_snmp": "Failed to guess SNMP community",
                                                      "_id": {"$in": is_managed_alive_in}},
                                                     read_preference=ReadPreference.SECONDARY_PREFERRED)
