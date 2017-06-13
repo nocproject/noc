@@ -190,7 +190,7 @@ class DiscoveryID(Document):
         # Other interface macs
         i_macs = set()
         for i in Interface.objects.filter(
-                managed_object=object.id, mac__exists=False):
+                managed_object=object.id, mac__exists=True):
             if i.mac:
                 if not any(1 for f, t in c_macs if f <= i.mac <= t):
                     # Not in range
