@@ -770,7 +770,7 @@ class Service(object):
                     self.send_ch_metrics, 250, self.ioloop
                 )
                 self.ch_metrics_callback.start()
-                self._ch_metrics[fields] += metrics
+            self._ch_metrics[fields] += metrics
 
     @tornado.gen.coroutine
     def send_metrics(self):
