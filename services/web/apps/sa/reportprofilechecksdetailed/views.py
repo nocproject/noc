@@ -61,14 +61,16 @@ class ReportFilterApplication(SimpleReport):
         is_managed_undef = is_managed.filter(profile_name="Generic.Host")
         is_managed_undef_in = list(is_managed_undef.values_list("id", flat=True))
         is_managed_not_generic_in = list(is_managed_not_generic.values_list("id", flat=True))
-        is_managed_c = is_managed.count()
-        is_managed_not_generic_c = len(is_managed_not_generic_in)
 
         # is_alive = [s.id for s in is_managed if s.get_status()]
         is_alive_id = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_undef_in},
                                                                 "status": True},
                                                                {"_id": 1, "object": 1},
                                                                read_preference=ReadPreference.SECONDARY_PREFERRED)
+        is_alive_id_ng = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_not_generic_in},
+                                                                   "status": True},
+                                                                  {"_id": 1, "object": 1},
+                                                                  read_preference=ReadPreference.SECONDARY_PREFERRED)
         is_not_alived_c = get_db()["noc.cache.object_status"].find({"object": {"$in": is_managed_undef_in},
                                                                     "status": False},
                                                                    {"_id": 1, "object": 1},
@@ -76,7 +78,7 @@ class ReportFilterApplication(SimpleReport):
         is_managed_alive_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                                m["object"] for m in is_alive_id]
         is_managed_ng_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
-                            m_id for m_id in is_managed_not_generic_in]
+                            m_id for m_id in is_alive_id_ng]
         bad_snmp_cred = get_db()["noc.joblog"].find({"problems.suggest_snmp": "Failed to guess SNMP community",
                                                      "_id": {"$in": is_managed_alive_in}},
                                                     read_preference=ReadPreference.SECONDARY_PREFERRED)

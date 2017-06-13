@@ -28,9 +28,9 @@ class ReportFilterApplication(SimpleReport):
 
     def get_data(self, request, **kwargs):
         data = []
-        summary = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        summary = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         s1 = ["1.1", "1.2", "1.2.1", "1.2.1.1", "1.2.2", "1.2.2.1", "1.2.2.2",
-              "1.2.2.2.1", "1.2.2.2.2", "1.2.2.2.2.1", "1.2.2.2.2.2", "1.2.2.2.2.3", "1.2.2.2.2.4"]
+              "1.2.2.2.1", "1.2.2.2.2", "1.2.2.2.2.1", "1.2.2.2.2.2"]
 
         for p in Pool.objects.order_by("name"):
             if p.name == "P0001":
@@ -151,9 +151,9 @@ class ReportFilterApplication(SimpleReport):
                 {"name": _("Is Managed, object type undefined for various reasons"), "value":
                     is_alive_id.count() - bad_snmp_cred},
                 {"name": _("Is Managed, object type Profile is not know"), "value": profile_not_found},
-                {"name": _("Is Managed, object type Profile is not know that no SNMP"), "value": len(var2)},
-                {"name": _("Is Managed, but Box discovery is disabled"), "value": len(var1)},
-                {"name": _("Is Managed, objects not processed yet"), "value": not_procc_yet},
+                # {"name": _("Is Managed, object type Profile is not know that no SNMP"), "value": len(var2)},
+                # {"name": _("Is Managed, but Box discovery is disabled"), "value": len(var1)},
+                {"name": _("Is Managed, objects not processed yet"), "value": not_procc_yet}
             ]
 
             summary = [sum(e) for e in zip(summary, [i["value"] for i in calc])]
