@@ -470,7 +470,7 @@ class ConsulDCS(DCSBase):
                     key=manifest_path,
                     value=ujson.dumps({
                         "Limit": total_slots,
-                        "Holders": sorted(holders)
+                        "Holders": holders
                     }, indent=2),
                     cas=cas
                 )
