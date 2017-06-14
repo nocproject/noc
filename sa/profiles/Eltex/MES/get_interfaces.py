@@ -133,7 +133,7 @@ class Script(BaseScript):
             name = res[0].strip()
             if (
                 self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
-                self.match_version(version__regex="4\.0\.[4-5]")
+                self.match_version(version__regex="4\.0\.[4-7]")
             ):
                 v = self.cli("show interface %s" % name)
                 for match in self.rx_sh_int.finditer(v):
