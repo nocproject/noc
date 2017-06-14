@@ -81,6 +81,8 @@ class Script(BaseScript):
                     if int(sifindex) < 3000:
                         sm = str(self.snmp.get("1.3.6.1.2.1.2.2.1.6.%s" % sifindex))
                         smac = MACAddressParameter().clean(sm)
+                        if n.startswith("oob"):
+                            continue
                         sname = self.profile.convert_interface_name(n)
                     else:
                         continue
