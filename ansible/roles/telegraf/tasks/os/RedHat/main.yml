@@ -19,7 +19,7 @@
     state: present
     update_cache: no
   with_items:
-   - "telegraf-{{telegraf_version}}"
+   - "telegraf"
   environment:
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"

@@ -7,7 +7,6 @@ postgresql_version: "{{ lookup('env','POSTGRES_VERSION') | default(9.4, True)}}"
 mongo_version: "{{ lookup('env','MONGO_VERSION') | default(3.2, True)}}"
 grafana_version: "4.3.1"
 nsq_version: "0.3.8"
-telegraf_version: "1.2.1-1"
 
 consul_version: "0.8.1"
 consul_url: "{{ lookup('env','CONSUL_URL')}}"
