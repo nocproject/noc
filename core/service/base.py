@@ -212,6 +212,12 @@ class Service(object):
             default=DEFAULT_DCS,
             help="Distributed Coordinated Storage URL"
         )
+        parser.add_argument(
+            "--listen",
+            action="store",
+            dest="listen",
+            help="Listen on that address and port"
+        )
         if self.pooled:
             parser.add_argument(
                 "--pool",
@@ -311,6 +317,7 @@ class Service(object):
         options = parser.parse_args(sys.argv[1:])
         cmd_options = vars(options)
         args = cmd_options.pop("args", ())
+        self.listen = cmd_options["listen"]
         # Bootstrap logging with --loglevel
         self.setup_logging(cmd_options["loglevel"])
         self.log_separator()
@@ -386,9 +393,12 @@ class Service(object):
         """
         if self.address and self.port:
             return self.address, self.port
-        if self.config.listen:
+        if self.config.listen and not self.listen:
             addr, port = self.config.listen.split(":")
             port_tracker = self.config.instance
+        elif self.listen:
+            addr, port = self.listen.split(":")
+            port_tracker = 0
         else:
             addr, port = "auto", 0
             port_tracker = 0
