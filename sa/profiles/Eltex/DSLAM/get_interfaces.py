@@ -34,35 +34,34 @@ class Script(BaseScript):
         for i in self.profile.iter_items(cmd):
             for ii in i.items():
                 ifname = ii[0]
-                if ifname == "Port" or ifname == "STATE":
-                    continue
-                if ifname == "cpu":
-                    iface = {
-                        "name": ifname,
-                        "type": "SVI",
-                        "subinterfaces": [{
+                if ifname.startswith("p") or ifname.startswith("dsl") or ifname.startswith("sfp") or ifname.startswith("cpu"):
+                    if ifname == "cpu":
+                        iface = {
                             "name": ifname,
-                            "enabled_afi": ["IPv4"]
-                        }]
-                    }
-                    match = self.rx_ip.search(self.cli("system show net settings"))
-                    ip_address = match.group("ip_address")
-                    ip_subnet = match.group("ip_subnet")
-                    ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
-                    iface['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
-                    iface['subinterfaces'][0]["vlan_ids"] = [match.group("vlan_id")]
-                    iface['mac'] = match.group("mac")
-                    iface['subinterfaces'][0]["mac"] = match.group("mac")
-                else:
-                    iface = {
-                        "name": ifname,
-                        "type": "physical",
-                        "subinterfaces": [{
+                            "type": "SVI",
+                            "subinterfaces": [{
+                                "name": ifname,
+                                "enabled_afi": ["IPv4"]
+                            }]
+                        }
+                        match = self.rx_ip.search(self.cli("system show net settings"))
+                        ip_address = match.group("ip_address")
+                        ip_subnet = match.group("ip_subnet")
+                        ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
+                        iface['subinterfaces'][0]["ipv4_addresses"] = [ip_address]
+                        iface['subinterfaces'][0]["vlan_ids"] = [match.group("vlan_id")]
+                        iface['mac'] = match.group("mac")
+                        iface['subinterfaces'][0]["mac"] = match.group("mac")
+                    else:
+                        iface = {
                             "name": ifname,
-                            "enabled_afi": ["BRIDGE"]
-                        }]
-                    }
-                interfaces += [iface]
+                            "type": "physical",
+                            "subinterfaces": [{
+                                "name": ifname,
+                                "enabled_afi": ["BRIDGE"]
+                            }]
+                        }
+                    interfaces += [iface]
         cmd = self.cli("adsl show port oper status")
         for match in self.rx_adsl_port.finditer(cmd):
             ifname = match.group("port")
