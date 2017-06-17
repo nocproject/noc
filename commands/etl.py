@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Extract/Transfer/Load commands
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Extract/Transfer/Load commands
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import argparse
-## Third-party modules
+# Third-party modules
 import yaml
-## NOC modules
+import ujson
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.handler import get_handler
 from noc.main.models.remotesystem import RemoteSystem
@@ -20,6 +21,7 @@ class Command(BaseCommand):
     CONF = "etc/etl.yml"
 
     SUMMARY_MASK = "%20s | %8s | %8s | %8s\n"
+    CONTROL_MESSAGE = """Summary of %s changes: %d, overload control number: %d\n"""
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -56,6 +58,18 @@ class Command(BaseCommand):
             action="store_true",
             default=False,
             help="Show only summary"
+        )
+        diff_parser.add_argument(
+            "--control-default",
+            action="store",
+            type=int,
+            default=0,
+            help="Default control number in summary object"
+        )
+        diff_parser.add_argument(
+            "--control-dict",
+            type=str,
+            help="Dictionary of control numbers in summary object"
         )
         diff_parser.add_argument(
             "diffs",
@@ -109,16 +123,34 @@ class Command(BaseCommand):
         if summary:
             self.stdout.write(self.SUMMARY_MASK % (
                 "Loader", "New", "Updated", "Deleted"))
+        control_dict = {}
+        if options["control_dict"]:
+            try:
+                control_dict = ujson.loads(options["control_dict"])
+            except ValueError as e:
+                self.die("Failed to parse JSON: %s in %s" % (e, options["control_dict"]))
+            except TypeError as e:
+                self.die("Failed to parse JSON: %s in %s" % (e, options["control_dict"]))
         chain = remote_system.get_loader_chain()
         for l in chain:
             if diffs and l.name not in diffs:
                 continue
             if summary:
                 i, u, d = l.check_diff_summary()
+                control_num = control_dict.get(l.name, options["control_default"])
                 self.stdout.write(self.SUMMARY_MASK % (
                     l.name, i, u, d))
+                if control_num:
+                    if sum([i, u, d]) >= control_num:
+                        self.stdout.write(self.CONTROL_MESSAGE % (l.name, sum([i, u, d]), control_num))
+                        self.stderr.write(self.CONTROL_MESSAGE % (l.name, sum([i, u, d]), control_num))
+                        n_errors = 1
+                        break
             else:
                 l.check_diff()
+        else:
+            n_errors = 0
+        return 1 if n_errors else 0
 
 if __name__ == "__main__":
     Command().run()
