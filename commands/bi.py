@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BI extract/load commands
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# BI extract/load commands
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import datetime
 import gzip
-## Third-party modules
+# Third-party modules
 import nsq
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
@@ -36,6 +36,22 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
+        # Args
+        parser.add_argument(
+            "--data-prefix",
+            default=self.DATA_PREFIX,
+            help="Show only summary"
+        )
+        parser.add_argument(
+            "--dict-xml-prefix",
+            default=self.DICT_XML_PREFIX,
+            help="Show only summary"
+        )
+        parser.add_argument(
+            "--dict-data-prefix",
+            default=self.DICT_DATA_PREFIX,
+            help="Show only summary"
+        )
         # extract command
         extract_parser = subparsers.add_parser("extract")
         # clean command
@@ -43,7 +59,10 @@ class Command(BaseCommand):
         # load command
         load_parser = subparsers.add_parser("load")
 
-    def handle(self, cmd, *args, **options):
+    def handle(self, cmd, data_prefix, dict_xml_prefix, dict_data_prefix, *args, **options):
+        self.DATA_PREFIX = data_prefix
+        self.DICT_XML_PREFIX = dict_xml_prefix
+        self.DICT_DATA_PREFIX = dict_data_prefix
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def get_last_extract(self, name):
