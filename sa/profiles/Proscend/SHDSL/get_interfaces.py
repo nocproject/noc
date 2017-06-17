@@ -31,6 +31,7 @@ class Script(BaseScript):
 
     def execute(self):
         interfaces = []
+        mac = []
         # Try SNMP first
         if self.has_snmp():
             try:
@@ -59,13 +60,13 @@ class Script(BaseScript):
                     #print repr("%s\n" % admin_status)
                     interfaces += [{
                             "type": iftype,
-                            "name": name.replace("softwareLoopback", "lo"),
+                            "name": name,
                             "mac": mac,
                             "admin_status": a_stat,
                             "oper_status": o_stat,
                             "ifindex": i,
                             "subinterfaces": [{
-                                "name": name.replace("softwareLoopback", "lo"),
+                                "name": name,
                                 "admin_status": a_stat,
                                 "oper_status": o_stat,
                                 "mac": mac,
