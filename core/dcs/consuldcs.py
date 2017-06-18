@@ -212,15 +212,14 @@ class ConsulDCS(DCSBase):
         :return:
         """
         self.logger.info("Creating session")
-        # @todo: Add http healthcheck
-        checks = ["serfHealth"]
+        checks = ["serfHealth", "service:%s" % self.svc_id]
         while True:
             try:
                 self.session = yield self.consul.session.create(
                     name=self.name,
                     checks=checks,
                     behavior="delete",
-                    lock_delay=1,
+                    lock_delay=self.DEFAULT_CONSUL_LOCK_DELAY,
                     ttl=self.DEFAULT_CONSUL_SESSION_TTL
                 )
                 break
