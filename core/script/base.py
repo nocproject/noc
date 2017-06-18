@@ -1,30 +1,32 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SA Script base
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SA Script base
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import re
 import logging
 import time
 import itertools
 import operator
 from threading import Lock
-## NOC modules
-from snmp.base import SNMP
-from snmp.beef import BeefSNMP
-from http.base import HTTP
+# NOC modules
+from .snmp.base import SNMP
+from .snmp.beef import BeefSNMP
+from .http.base import HTTP
 from noc.core.log import PrefixLoggerAdapter
 from noc.lib.validators import is_int
-from context import (ConfigurationContextManager, CacheContextManager,
-                     IgnoredExceptionsContextManager)
+from .context import (ConfigurationContextManager, CacheContextManager,
+                      IgnoredExceptionsContextManager)
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.handler import get_handler
 from noc.core.mac import MAC
-from beef import Beef
+from .beef import Beef
+from functools import reduce
 
 
 class BaseScript(object):
@@ -308,7 +310,7 @@ class BaseScript(object):
                 f._match = lambda self, v, old_filter=old_filter, new_filter=new_filter: new_filter(self, v) or old_filter(self, v)
             else:
                 f._match = new_filter
-            f._seq = cls._x_seq.next()
+            f._seq = next(cls._x_seq)
             return f
 
         # Compile check function
@@ -806,7 +808,7 @@ class BaseScript(object):
         g = iter(g)
         if offset:
             for _ in range(offset):
-                g.next()
+                next(g)
         return itertools.izip(g, g)
 
     def to_reuse_cli_session(self):
@@ -844,7 +846,7 @@ class ScriptsHub(object):
         if item.startswith("_"):
             return self.__dict__[item]
         else:
-            from loader import loader as script_loader
+            from .loader import loader as script_loader
 
             sc = script_loader.get_script(
                 "%s.%s" % (self._script.profile.name, item)
@@ -858,7 +860,7 @@ class ScriptsHub(object):
         """
         Check object has script name
         """
-        from loader import loader as script_loader
+        from .loader import loader as script_loader
         if "." not in item:
             # Normalize to full name
             item = "%s.%s" % (self._script.profile.name, item)
