@@ -84,6 +84,24 @@ Ext.define("NOC.phone.phonerange.Model", {
             name: "row_class",
             type: "string",
             persist: false
+        },
+        {
+            name: "administrative_domain",
+            type: "string"
+        },
+        {
+            name: "administrative_domain__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "termination_group",
+            type: "string"
+        },
+        {
+            name: "termination_group__label",
+            type: "string",
+            persist: false
         }
     ]
 });

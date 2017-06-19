@@ -16,7 +16,9 @@ Ext.define("NOC.phone.phonenumber.Application", {
         "NOC.phone.phonerange.LookupField",
         "NOC.project.project.LookupField",
         "NOC.phone.phonenumber.LookupField",
-        "NOC.phone.phonelinktype.LookupField"
+        "NOC.phone.phonelinktype.LookupField",
+        "NOC.sa.administrativedomain.LookupField",
+        "NOC.sa.terminationgroup.LookupField"
     ],
     model: "NOC.phone.phonenumber.Model",
     rowClassField: "row_class",
@@ -85,6 +87,23 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     dataIndex: "category",
                     width: 150,
                     renderer: NOC.render.Lookup("category")
+                },
+                {
+                    text: __("Administrative Domain"),
+                    dataIndex: "administrative_domain",
+                    width: 100,
+                    renderer: NOC.render.Lookup("administrative_domain")
+                },
+                {
+                    text: __("Termination Group"),
+                    dataIndex: "termination_group",
+                    width: 100,
+                    renderer: NOC.render.Lookup("termination_group")
+                },
+                {
+                    text: __("Description"),
+                    dataIndex: "description",
+                    flex: 1
                 }
             ],
 
@@ -147,6 +166,18 @@ Ext.define("NOC.phone.phonenumber.Application", {
                     name: "project",
                     xtype: "project.project.LookupField",
                     fieldLabel: __("Project"),
+                    allowBlank: true
+                },
+                {
+                    name: "administrative_domain",
+                    xtype: "sa.administrativedomain.LookupField",
+                    fieldLabel: __("Adm. Domain"),
+                    allowBlank: true
+                },
+                {
+                    name: "termination_group",
+                    xtype: "sa.terminationgroup.LookupField",
+                    fieldLabel: __("Termination Group"),
                     allowBlank: true
                 },
                 {
