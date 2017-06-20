@@ -23,6 +23,8 @@ from noc.lib.nosql import get_db
 from noc.sa.models.useraccess import UserAccess
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.core.translation import ugettext as _
+from noc.sa.models.managedobjectselector import ManagedObjectSelector
+from noc.sa.models.administrativedomain import AdministrativeDomain
 
 
 class ReportForm(forms.Form):
@@ -51,9 +53,19 @@ class ReportForm(forms.Form):
     #    required=False,
     #    queryset=ManagedObject.objects.filter()
     # )
+    selectors = forms.ModelChoiceField(
+        label=_("Selectors"),
+        required=False,
+        queryset=ManagedObjectSelector.objects.order_by("name")
+    )
+    administrative_domain = forms.ModelChoiceField(
+        label=_("Administrative Domain"),
+        required=False,
+        queryset=AdministrativeDomain.objects.order_by("name")
+    )
     object_profile = forms.ModelChoiceField(
         label=_("Object Profile"),
-        required=True,
+        required=False,
         queryset=ManagedObjectProfile.objects.exclude(name__startswith="tg.").order_by("name")
     )
     interface_profile = forms.ModelChoiceField(
@@ -79,30 +91,36 @@ class ReportTraffic(SimpleReport):
     form = ReportForm
 
     def get_data(self, request, reporttype, from_date=None, to_date=None, object_profile=None, percent=None, filter_default=None, zero=None,
-                 interface_profile=None, managed_object=None, **kwargs):
-        now = datetime.datetime.now()
-        b = datetime.datetime.strptime(from_date, "%d.%m.%Y")
-        td = b.strftime("%Y-%m-%d")
-        if to_date:
-            t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y")
-        else:
-            t1 = now
-        fd = t1.strftime("%Y-%m-%d")
+                 interface_profile=None, managed_object=None, selectors=None, administrative_domain=None, **kwargs):
+        now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        f_d = datetime.datetime.strptime(from_date, "%d.%m.%Y")
+        fd = f_d.strftime("%Y-%m-%dT%H:%M:%SZ")
+        t_d = datetime.datetime.strptime(to_date, "%d.%m.%Y")
+        td = t_d.strftime("%Y-%m-%dT23:59:59Z")
+        if td.split("T")[0] == now.split("T")[0]:
+            td = now
         # Interval days
-        a = td.split('-')
-        b = fd.split('-')
+        fd1 = td.split('T')
+        td1 = fd.split('T')
+        a = fd1[0].split('-')
+        b = td1[0].split('-')
         aa = datetime.date(int(a[0]), int(a[1]), int(a[2]))
         bb = datetime.date(int(b[0]), int(b[1]), int(b[2]))
-        cc = bb - aa
+        cc = aa - bb
         dd = str(cc)
         interval = (dd.split()[0])
         # Load managed objects
         f = []
         in_p = []
         out_p = []
+        columns = []
         if not request.user.is_superuser:
             mos = mos.filter(
                 administrative_domain__in=UserAccess.get_domains(request.user))
+        if selectors:
+            mos = selectors.managed_objects
+        if administrative_domain:
+            mos = ManagedObject.objects.filter(is_managed=True, administrative_domain=administrative_domain)
         if object_profile:
             mos = ManagedObject.objects.filter(is_managed=True, object_profile=object_profile)
         if managed_object:
@@ -121,7 +139,7 @@ class ReportTraffic(SimpleReport):
                         client = InfluxDBClient()
                         query1 = [
                             "SELECT percentile(\"value\", 98) FROM \"Interface | Load | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name.replace("\ ", "\\\ "), j.name, td, fd)]
+                                o.name, j.name, fd, td)]
                         result1 = client.query(query1)
                         r = list(result1)
                         if len(r) > 0:
@@ -131,7 +149,7 @@ class ReportTraffic(SimpleReport):
                             r1 = 0
                         query2 = [
                             "SELECT percentile(\"value\", 98) FROM \"Interface | Load | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name.replace("\ ", "\\\ "), j.name, td, fd)]
+                                o.name, j.name, fd, td)]
                         result2 = client.query(query2)
                         r = list(result2)
                         if len(r) > 0:
@@ -232,7 +250,7 @@ class ReportTraffic(SimpleReport):
                         client = InfluxDBClient()
                         query1 = [
                             "SELECT percentile(\"value\", 98) FROM \"Interface | Errors | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name, td, fd)]
+                                o.name, j.name, fd, td)]
                         result1 = client.query(query1)
                         r = list(result1)
                         if len(r) > 0:
@@ -242,7 +260,7 @@ class ReportTraffic(SimpleReport):
                             r1 = 0
                         query2 = [
                             "SELECT percentile(\"value\", 98) FROM \"Interface | Errors | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name, td, fd)]
+                                o.name, j.name, fd, td)]
                         result2 = client.query(query2)
                         r = list(result2)
                         if len(r) > 0:
@@ -253,7 +271,7 @@ class ReportTraffic(SimpleReport):
 
                         query11 = [
                             "SELECT percentile(\"value\", 98) FROM \"Interface | Discards | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name, td, fd)]
+                                o.name, j.name, fd, td)]
                         result11 = client.query(query11)
                         r = list(result11)
                         if len(r) > 0:
@@ -264,7 +282,7 @@ class ReportTraffic(SimpleReport):
 
                         query22 = [
                             "SELECT percentile(\"value\", 98) FROM \"Interface | Discards | Out\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                                o.name, j.name, td, fd)]
+                                o.name, j.name, fd, td)]
                         result22 = client.query(query22)
                         r = list(result22)
                         if len(r) > 0:
@@ -320,7 +338,7 @@ class ReportTraffic(SimpleReport):
                     client = InfluxDBClient()
                     query1 = [
                         "SELECT percentile(\"value\", 98) FROM \"CPU | Usage\" WHERE \"object\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                            o.name, td, fd)]
+                            o.name, fd, td)]
                     result1 = client.query(query1)
                     r = list(result1)
                     if len(r) > 0:
@@ -330,7 +348,7 @@ class ReportTraffic(SimpleReport):
                         r1 = 0
                     query2 = [
                         "SELECT percentile(\"value\", 98) FROM \"Memory | Usage\" WHERE \"object\" = '%s' AND time >= '%s' AND time <= '%s';" % (
-                            o.name, td, fd)]
+                            o.name, fd, td)]
                     result2 = client.query(query2)
                     r = list(result2)
                     if len(r) > 0:
