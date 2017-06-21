@@ -24,7 +24,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
     required_capabilities = ["Network | LLDP"]
 
     CHASSIS_SUBTYPE_MAC = 4
-    CHASSIS_SUBTYPE_NETWORK_ADDRESS = 4
+    CHASSIS_SUBTYPE_NETWORK_ADDRESS = 5
     CHASSIS_SUBTYPE_LOCAL = 7
 
     PORT_SUBTYPE_ALIAS = 1
