@@ -183,7 +183,8 @@ class RPCProxy(object):
                     self._logger.error("RPC call failed: %s",
                                        result["error"])
                     raise RPCRemoteError(
-                        "RPC call failed: %s" % result["error"]
+                        "RPC call failed: %s" % result["error"],
+                        remote_code=result.get("code", None)
                     )
                 else:
                     raise tornado.gen.Return(result["result"])
