@@ -14,6 +14,9 @@ import time
 import itertools
 import operator
 from threading import Lock
+from functools import reduce
+# Third-party modules
+import six
 # NOC modules
 from .snmp.base import SNMP
 from .snmp.beef import BeefSNMP
@@ -26,7 +29,8 @@ from noc.core.profile.loader import loader as profile_loader
 from noc.core.handler import get_handler
 from noc.core.mac import MAC
 from .beef import Beef
-from functools import reduce
+from .error import (ScriptError, CLISyntaxError, CLIOperationError,
+                    NotSupportedError, UnexpectedResultError)
 
 
 class BaseScript(object):
@@ -78,25 +82,12 @@ class BaseScript(object):
     # * False - close CLI session
     keep_cli_session = True
 
-    # Common errors
-    class ScriptError(Exception):
-        """Script error"""
-
-    # LoginError = LoginError
-    class CLISyntaxError(ScriptError):
-        """Syntax error"""
-
-    class CLIOperationError(ScriptError):
-        """Operational CLI error"""
-    # CLITransportError = CLITransportError
-    # CLIDisconnectedError = CLIDisconnectedError
-    # TimeOutError = TimeOutError
-
-    class NotSupportedError(ScriptError):
-        """Feature is not supported"""
-
-    class UnexpectedResultError(ScriptError):
-        """Unexpected result"""
+    # Error classes shortcuts
+    ScriptError = ScriptError
+    CLISyntaxError = CLISyntaxError
+    CLIOperationError = CLIOperationError
+    NotSupportedError = NotSupportedError
+    UnexpectedResultError = UnexpectedResultError
 
     hexbin = {
         "0": "0000", "1": "0001", "2": "0010", "3": "0011",
@@ -528,11 +519,11 @@ class BaseScript(object):
         Returns match object.
         rx can be string or compiled regular expression
         """
-        if isinstance(rx, basestring):
+        if isinstance(rx, six.string_types):
             rx = re.compile(rx, flags)
         match = rx.search(s)
         if match is None:
-            raise self.UnexpectedResultError()
+            raise UnexpectedResultError()
         return match
 
     def re_match(self, rx, s, flags=0):
@@ -542,11 +533,11 @@ class BaseScript(object):
         Returns match object.
         rx can be string or compiled regular expression
         """
-        if isinstance(rx, basestring):
+        if isinstance(rx, six.string_types):
             rx = re.compile(rx, flags)
         match = rx.match(s)
         if match is None:
-            raise self.UnexpectedResultError()
+            raise UnexpectedResultError()
         return match
 
     _match_lines_cache = {}
@@ -581,7 +572,7 @@ class BaseScript(object):
         for r in iter:
             if r.search(s):
                 return r
-        raise self.UnexpectedResultError()
+        raise UnexpectedResultError()
 
     def hex_to_bin(self, s):
         """
@@ -657,7 +648,7 @@ class BaseScript(object):
         stream = self.get_cli_stream()
         r = stream.execute(cmd + command_submit, obj_parser=obj_parser,
                            cmd_next=cmd_next, cmd_stop=cmd_stop)
-        if isinstance(r, basestring):
+        if isinstance(r, six.string_types):
             if self.beef:
                 self.beef.set_cli(cmd, r)
             # Check for syntax errors
@@ -665,7 +656,7 @@ class BaseScript(object):
                 # Check for syntax error
                 if (self.profile.rx_pattern_syntax_error and
                         self.profile.rx_pattern_syntax_error.search(r)):
-                    raise self.CLISyntaxError(r)
+                    raise CLISyntaxError(r)
                 # Then check for operation error
                 if (self.profile.rx_pattern_operation_error and
                         self.profile.rx_pattern_operation_error.search(r)):
@@ -718,7 +709,7 @@ class BaseScript(object):
             if self.to_disable_pager:
                 self.logger.debug("Disable paging")
                 self.to_disable_pager = False
-                if isinstance(self.profile.command_disable_pager, basestring):
+                if isinstance(self.profile.command_disable_pager, six.string_types):
                     self.cli(
                         self.profile.command_disable_pager,
                         ignore_errors=True
@@ -727,7 +718,7 @@ class BaseScript(object):
                     for cmd in self.profile.command_disable_pager:
                         self.cli(cmd, ignore_errors=True)
                 else:
-                    raise self.UnexpectedResultError
+                    raise UnexpectedResultError
         return self.cli_stream
 
     def close_cli_stream(self):
