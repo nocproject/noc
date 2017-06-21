@@ -1,0 +1,707 @@
+//---------------------------------------------------------------------
+// NOC dynamic dashboard
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2017 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+
+'use strict';
+
+// accessible variables in this scope
+var window, document, ARGS, $, jQuery, moment, kbn;
+
+// Setup some variables
+var dashboard;
+
+// All url parameters are available via the ARGS object
+var ARGS;
+
+// Intialize a skeleton with nothing but a rows array and service object
+dashboard = {
+    rows: [],
+};
+
+// Set a title
+dashboard.title = 'For Metrics Report';
+
+// Set default time
+// time can be overriden in the url using from/to parameters, but this is
+// handled automatically in grafana core during dashboard initialization
+
+
+var rows = 1;
+var title = 'Report';
+var obj = null;
+var iface = null;
+var f_d = 'now-24h';
+var t_d = 'now';
+
+if (!_.isUndefined(ARGS.rows)) {
+    rows = parseInt(ARGS.rows, 1);
+}
+
+if (!_.isUndefined(ARGS.title)) {
+    title = ARGS.title;
+}
+
+if (!_.isUndefined(ARGS.obj)) {
+    obj = ARGS.obj;
+}
+
+if (!_.isUndefined(ARGS.iface)) {
+    iface = ARGS.iface;
+}
+
+if (!_.isUndefined(ARGS.f_d)) {
+    f_d = ARGS.f_d;
+}
+
+if (!_.isUndefined(ARGS.t_d)) {
+    t_d = ARGS.t_d;
+}
+
+for (var i = 'interface'; i == title; i++) {
+
+    dashboard.templating = {
+        enable: true,
+        list: [
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + obj + "",
+                    "value": "" + obj + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "object",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + iface + "",
+                    "value": "" + iface + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "" + title + "",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            }
+        ]
+    },
+
+        dashboard.rows.push({
+                title: 'Chart',
+                height: '300px',
+                panels: [
+                    {
+                        title: "" + title + "",
+                        type: 'graph',
+                        aliasColors: {},
+                        bars: false,
+                        dashLength: 10,
+                        dashes: false,
+                        fill: 1,
+                        hideTimeOverride: false,
+                        id: 1,
+                        legend: {
+                            alignAsTable: true,
+                            avg: true,
+                            current: true,
+                            hideEmpty: false,
+                            hideZero: false,
+                            max: true,
+                            min: true,
+                            rightSide: false,
+                            show: true,
+                            total: false,
+                            values: true
+                        },
+                        lines: true,
+                        linewidth: 2,
+                        links: [],
+                        nullPointMode: null,
+                        percentage: false,
+                        pointradius: 5,
+                        points: false,
+                        renderer: "flot",
+                        repeat: null,
+                        seriesOverrides: [],
+                        spaceLength: 10,
+                        span: 12,
+                        stack: false,
+                        steppedLine: false,
+                        targets: [
+                            {
+                                "alias": "In",
+                                "dsType": "influxdb",
+                                "groupBy": [],
+                                "measurement": "Interface | Load | In",
+                                "orderByTime": "ASC",
+                                "policy": "default",
+                                "refId": "A",
+                                "resultFormat": "time_series",
+                                "select": [
+                                    [
+                                        {
+                                            "params": [
+                                                "value"
+                                            ],
+                                            "type": "field"
+                                        }
+                                    ]
+                                ],
+                                "tags": [
+                                    {
+                                        "key": "object",
+                                        "operator": "=~",
+                                        "value": "/^$object$/"
+                                    },
+                                    {
+                                        "condition": "AND",
+                                        "key": "interface",
+                                        "operator": "=~",
+                                        "value": "/^$interface$/"
+                                    }
+                                ]
+                            },
+                            {
+                                "alias": "Out",
+                                "dsType": "influxdb",
+                                "groupBy": [],
+                                "measurement": "Interface | Load | Out",
+                                "orderByTime": "ASC",
+                                "policy": "default",
+                                "refId": "B",
+                                "resultFormat": "time_series",
+                                "select": [
+                                    [
+                                        {
+                                            "params": [
+                                                "value"
+                                            ],
+                                            "type": "field"
+                                        }
+                                    ]
+                                ],
+                                "tags": [
+                                    {
+                                        "key": "object",
+                                        "operator": "=~",
+                                        "value": "/^$object$/"
+                                    },
+                                    {
+                                        "condition": "AND",
+                                        "key": "interface",
+                                        "operator": "=~",
+                                        "value": "/^$interface$/"
+                                    }
+                                ]
+
+
+                            }
+                        ],
+                        "yaxes": [
+                            {
+                                "format": "bps",
+                                "label": "bits/sec",
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": true
+                            },
+                            {
+                                "format": "decbytes",
+                                "label": null,
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": false
+                            }
+                        ],
+
+                        seriesOverrides: [
+                            {
+                                alias: "In",
+                                transform: "negative-Y",
+                                fill: 1,
+                                linewidth: 2
+                            }
+                        ],
+                        tooltip: {
+                            shared: true
+                        }
+                    }
+                ]
+            }
+        )
+    dashboard.time = {
+        from: "" + f_d + "",
+        to: "" + t_d + ""
+    };
+    ;
+}
+
+for (var i = 'cpu'; i == title; i++) {
+
+    dashboard.templating = {
+        enable: true,
+        list: [
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + obj + "",
+                    "value": "" + obj + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "object",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+
+        ]
+    },
+
+        dashboard.rows.push({
+                title: 'Chart',
+                height: '300px',
+                panels: [
+                    {
+                        title: "" + title + "",
+                        type: 'graph',
+                        aliasColors: {},
+                        bars: false,
+                        dashLength: 10,
+                        dashes: false,
+                        fill: 1,
+                        hideTimeOverride: false,
+                        id: 1,
+                        legend: {
+                            alignAsTable: true,
+                            avg: true,
+                            current: true,
+                            hideEmpty: false,
+                            hideZero: false,
+                            max: true,
+                            min: true,
+                            rightSide: false,
+                            show: true,
+                            total: false,
+                            values: true
+                        },
+                        lines: true,
+                        linewidth: 2,
+                        links: [],
+                        nullPointMode: null,
+                        percentage: false,
+                        pointradius: 5,
+                        points: false,
+                        renderer: "flot",
+                        repeat: null,
+                        seriesOverrides: [],
+                        spaceLength: 10,
+                        span: 12,
+                        stack: false,
+                        steppedLine: false,
+                        targets: [
+                            {
+                                "alias": "CPU | Usage",
+                                "dsType": "influxdb",
+                                "groupBy": [],
+                                "measurement": "CPU | Usage",
+                                "orderByTime": "ASC",
+                                "policy": "default",
+                                "refId": "A",
+                                "resultFormat": "time_series",
+                                "select": [
+                                    [
+                                        {
+                                            "params": [
+                                                "value"
+                                            ],
+                                            "type": "field"
+                                        }
+                                    ]
+                                ],
+                                "tags": [
+                                    {
+                                        "key": "object",
+                                        "operator": "=~",
+                                        "value": "/^$object$/"
+                                    }
+                                ]
+                            },
+                            {
+                                "alias": "Memory | Usage",
+                                "dsType": "influxdb",
+                                "groupBy": [],
+                                "measurement": "Memory | Usage",
+                                "orderByTime": "ASC",
+                                "policy": "default",
+                                "refId": "B",
+                                "resultFormat": "time_series",
+                                "select": [
+                                    [
+                                        {
+                                            "params": [
+                                                "value"
+                                            ],
+                                            "type": "field"
+                                        }
+                                    ]
+                                ],
+                                "tags": [
+                                    {
+                                        "key": "object",
+                                        "operator": "=~",
+                                        "value": "/^$object$/"
+                                    }
+                                ]
+
+
+                            }
+                        ],
+                        "yaxes": [
+                            {
+                                "format": "percent",
+                                "label": "percent",
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": true
+                            },
+                            {
+                                "format": "decbytes",
+                                "label": null,
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": false
+                            }
+                        ],
+
+                        seriesOverrides: [
+                            {
+                                alias: "In",
+                                transform: "negative-Y",
+                                fill: 1,
+                                linewidth: 2
+                            }
+                        ],
+                        tooltip: {
+                            shared: true
+                        }
+                    }
+                ]
+            }
+        )
+    dashboard.time = {
+        from: "" + f_d + "",
+        to: "" + t_d + ""
+    };
+    ;
+}
+
+for (var i = 'error'; i == title; i++) {
+
+    dashboard.templating = {
+        enable: true,
+        list: [
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + obj + "",
+                    "value": "" + obj + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "object",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            },
+            {
+                "allValue": null,
+                "current": {
+                    "text": "" + iface + "",
+                    "value": "" + iface + ""
+                },
+                "hide": 0,
+                "includeAll": false,
+                "label": null,
+                "multi": false,
+                "name": "" + title + "",
+                "options": [
+                    {
+                        "selected": false,
+                        "text": "null",
+                        "value": "null"
+                    }
+                ],
+                "query": "null",
+                "type": "custom"
+            }
+        ]
+    },
+
+        dashboard.rows.push({
+                title: 'Chart',
+                height: '300px',
+                panels: [
+                    {
+                        title: "" + title + "",
+                        type: 'graph',
+                        aliasColors: {},
+                        bars: false,
+                        dashLength: 10,
+                        dashes: false,
+                        fill: 1,
+                        hideTimeOverride: false,
+                        id: 1,
+                        legend: {
+                            alignAsTable: true,
+                            avg: true,
+                            current: true,
+                            hideEmpty: false,
+                            hideZero: false,
+                            max: true,
+                            min: true,
+                            rightSide: false,
+                            show: true,
+                            total: false,
+                            values: true
+                        },
+                        lines: true,
+                        linewidth: 2,
+                        links: [],
+                        nullPointMode: null,
+                        percentage: false,
+                        pointradius: 5,
+                        points: false,
+                        renderer: "flot",
+                        repeat: null,
+                        seriesOverrides: [],
+                        spaceLength: 10,
+                        span: 12,
+                        stack: false,
+                        steppedLine: false,
+                        targets: [
+                            {
+                                "alias": "Errors In",
+                                "dsType": "influxdb",
+                                "groupBy": [],
+                                "measurement": "Interface | Errors | In",
+                                "orderByTime": "ASC",
+                                "policy": "default",
+                                "refId": "A",
+                                "resultFormat": "time_series",
+                                "select": [
+                                    [
+                                        {
+                                            "params": [
+                                                "value"
+                                            ],
+                                            "type": "field"
+                                        }
+                                    ]
+                                ],
+                                "tags": [
+                                    {
+                                        "key": "object",
+                                        "operator": "=~",
+                                        "value": "/^$object$/"
+                                    },
+                                    {
+                                        "condition": "AND",
+                                        "key": "interface",
+                                        "operator": "=~",
+                                        "value": "/^$interface$/"
+                                    }
+                                ]
+                            },
+                            {
+                                "alias": "Errors Out",
+                                "dsType": "influxdb",
+                                "groupBy": [],
+                                "measurement": "Interface | Errors | Out",
+                                "orderByTime": "ASC",
+                                "policy": "default",
+                                "refId": "B",
+                                "resultFormat": "time_series",
+                                "select": [
+                                    [
+                                        {
+                                            "params": [
+                                                "value"
+                                            ],
+                                            "type": "field"
+                                        }
+                                    ]
+                                ],
+                                "tags": [
+                                    {
+                                        "key": "object",
+                                        "operator": "=~",
+                                        "value": "/^$object$/"
+                                    },
+                                    {
+                                        "condition": "AND",
+                                        "key": "interface",
+                                        "operator": "=~",
+                                        "value": "/^$interface$/"
+                                    }
+                                ]
+
+
+                            },
+                            {
+                                "alias": "Discards In",
+                                "dsType": "influxdb",
+                                "groupBy": [],
+                                "measurement": "Interface | Discards | In",
+                                "orderByTime": "ASC",
+                                "policy": "default",
+                                "refId": "B",
+                                "resultFormat": "time_series",
+                                "select": [
+                                    [
+                                        {
+                                            "params": [
+                                                "value"
+                                            ],
+                                            "type": "field"
+                                        }
+                                    ]
+                                ],
+                                "tags": [
+                                    {
+                                        "key": "object",
+                                        "operator": "=~",
+                                        "value": "/^$object$/"
+                                    },
+                                    {
+                                        "condition": "AND",
+                                        "key": "interface",
+                                        "operator": "=~",
+                                        "value": "/^$interface$/"
+                                    }
+                                ]
+
+
+                            },
+                            {
+                                "alias": "Discards Out",
+                                "dsType": "influxdb",
+                                "groupBy": [],
+                                "measurement": "Interface | Discards | Out",
+                                "orderByTime": "ASC",
+                                "policy": "default",
+                                "refId": "B",
+                                "resultFormat": "time_series",
+                                "select": [
+                                    [
+                                        {
+                                            "params": [
+                                                "value"
+                                            ],
+                                            "type": "field"
+                                        }
+                                    ]
+                                ],
+                                "tags": [
+                                    {
+                                        "key": "object",
+                                        "operator": "=~",
+                                        "value": "/^$object$/"
+                                    },
+                                    {
+                                        "condition": "AND",
+                                        "key": "interface",
+                                        "operator": "=~",
+                                        "value": "/^$interface$/"
+                                    }
+                                ]
+
+
+                            }
+                        ],
+                        "yaxes": [
+                            {
+                                "format": "short",
+                                "label": "short",
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": true
+                            },
+                            {
+                                "format": "decbytes",
+                                "label": null,
+                                "logBase": 1,
+                                "max": null,
+                                "min": null,
+                                "show": false
+                            }
+                        ],
+
+                        seriesOverrides: [
+                            {
+                                alias: "In",
+                                transform: "negative-Y",
+                                fill: 1,
+                                linewidth: 2
+                            }
+                        ],
+                        tooltip: {
+                            shared: true
+                        }
+                    }
+                ]
+            }
+        )
+    dashboard.time = {
+        from: "" + f_d + "",
+        to: "" + t_d + ""
+    };
+    ;
+}
+
+return dashboard;
