@@ -17,8 +17,13 @@
 
 - name: Set up dynamic dashboards
   template:
-    src: noc.js.j2
-    dest: "{{ grafana_home }}/public/dashboards/noc.js"
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+  with_items:
+    - src: noc.js.j2
+      dest: "{{ grafana_home }}/public/dashboards/noc.js"
+    - src: report.js.j2
+      dest: "{{ grafana_home }}/public/dashboards/report.js"
 
 - name: Install Grafana simple datasource plugin
   shell: "grafana-cli plugins install grafana-simple-json-datasource"
