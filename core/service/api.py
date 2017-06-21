@@ -93,7 +93,8 @@ class APIRequestHandler(tornado.web.RequestHandler):
         except APIError as e:
             self.api_error(
                 "Failed: %s" % e,
-                id=id
+                id=id,
+                code=e.code
             )
         except Exception as e:
             error_report()
@@ -102,13 +103,15 @@ class APIRequestHandler(tornado.web.RequestHandler):
                 id=id
             )
 
-    def api_error(self, msg, id=None):
+    def api_error(self, msg, id=None, code=None):
         if id is not None:
             rsp = {
                 "error": str(msg)
             }
             if id:
                 rsp["id"] = id
+            if code:
+                rsp["code"] = code
             self.write(ujson.dumps(rsp))
 
 
@@ -182,4 +185,7 @@ class lock(object):
 
 
 class APIError(Exception):
-    pass
+    def __init__(self, msg, code=None):
+        super(APIError, self).__init__(msg)
+        self.code = code
+
