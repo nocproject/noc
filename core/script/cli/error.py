@@ -6,22 +6,33 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
+from noc.core.error import (
+    NOCError, ERR_CLI_UNKNOWN, ERR_CLI_AUTH_FAILED,
+    ERR_CLI_NO_SUPER_COMMAND, ERR_CLI_LOW_PRIVILEGES,
+    ERR_CLI_SSH_PROTOCOL_ERROR)
 
-class CLIError(Exception):
-    msg = "Unspecified CLI error"
+
+class CLIError(NOCError):
+    default_code = ERR_CLI_UNKNOWN
+    default_msg = "Unspecified CLI error"
 
 
 class CLIAuthFailed(CLIError):
-    msg = "Authentication failed"
+    default_code = ERR_CLI_AUTH_FAILED
+    default_msg = "Authentication failed"
 
 
 class CLINoSuperCommand(CLIError):
-    msg = "No super command defined"
+    default_code = ERR_CLI_NO_SUPER_COMMAND
+    default_msg = "No super command defined"
 
 
 class CLILowPrivileges(CLIError):
-    msg = "No super privileges"
+    default_code = ERR_CLI_LOW_PRIVILEGES
+    default_msg = "No super privileges"
 
 
 class CLISSHProtocolError(CLIError):
-    msg = "SSH Protocol error"
+    default_code = ERR_CLI_SSH_PROTOCOL_ERROR
+    default_msg = "SSH Protocol error"

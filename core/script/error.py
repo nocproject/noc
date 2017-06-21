@@ -6,22 +6,33 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# NOC modules
+from noc.core.error import (
+    NOCError, ERR_SCRIPT_UNKNOWN, ERR_SCRIPT_SYNTAX,
+    ERR_SCRIPT_OPERATION, ERR_SCRIPT_NOT_SUPPORTED,
+    ERR_SCRIPT_UNEXPECTED_RESULT)
 
-class ScriptError(Exception):
-    msg = "Script error"
+
+class ScriptError(NOCError):
+    default_msg = "Script error"
+    default_code = ERR_SCRIPT_UNKNOWN
 
 
 class CLISyntaxError(ScriptError):
-    msg = "Syntax error"
+    default_msg = "Syntax error"
+    default_code = ERR_SCRIPT_SYNTAX
 
 
 class CLIOperationError(ScriptError):
-    msg = "Operational CLI error"
+    default_msg = "Operational CLI error"
+    default_code = ERR_SCRIPT_OPERATION
 
 
 class NotSupportedError(ScriptError):
-    msg = "Feature is not supported"
+    default_msg = "Feature is not supported"
+    default_code = ERR_SCRIPT_NOT_SUPPORTED
 
 
 class UnexpectedResultError(ScriptError):
-    msg = "Unexpected result"
+    default_msg = "Unexpected result"
+    default_code = ERR_SCRIPT_UNEXPECTED_RESULT
