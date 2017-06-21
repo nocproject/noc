@@ -13,6 +13,7 @@ import tornado.web
 import tornado.gen
 import ujson
 # NOC modules
+from noc.core.error import NOCError
 from noc.core.debug import error_report
 
 
@@ -90,7 +91,7 @@ class APIRequestHandler(tornado.web.RequestHandler):
                     "error": None,
                     "result": result
                 }))
-        except APIError as e:
+        except NOCError as e:
             self.api_error(
                 "Failed: %s" % e,
                 id=id,
@@ -184,8 +185,5 @@ class lock(object):
         return method
 
 
-class APIError(Exception):
-    def __init__(self, msg, code=None):
-        super(APIError, self).__init__(msg)
-        self.code = code
-
+class APIError(NOCError):
+    pass
