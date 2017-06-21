@@ -9,13 +9,14 @@
 
 # Python modules
 from collections import defaultdict
-import cStringIO
 import contextlib
 import time
 import zlib
 import datetime
 # Third-party modules
 import bson
+import six
+from six.moves import StringIO
 # NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.sa.models.managedobject import ManagedObject
@@ -26,7 +27,7 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.lib.nosql import get_db
-from noc.core.service.rpc import RPCError
+from noc.core.service.error import RPCError, RPCRemoteError
 from noc.core.service.loader import get_service
 
 
@@ -37,7 +38,7 @@ class MODiscoveryJob(PeriodicJob):
 
     def __init__(self, *args, **kwargs):
         super(MODiscoveryJob, self).__init__(*args, **kwargs)
-        self.out_buffer = cStringIO.StringIO()
+        self.out_buffer = StringIO()
         self.logger = PrefixLoggerAdapter(
             self.logger,
             "",
@@ -93,6 +94,96 @@ class MODiscoveryJob(PeriodicJob):
 
     def allow_sessions(self):
         return bool(self.get_caps().get("Management | Allow Sessions"))
+
+    def update_umbrella(self, umbrella_cls, details):
+        """
+        Update umbrella alarm status for managed object
+
+        :param umbrella_cls: Umbrella alarm class (AlarmClass instance)
+        :param details: List of dicts, containing
+            * alarm_class - Detail alarm class
+            * path - Additional path
+            * severity - Alarm severity
+            * vars - dict of alarm vars
+        :return:
+        """
+        from noc.fm.models.activealarm import ActiveAlarm
+
+        now = datetime.datetime.now()
+        umbrella = ActiveAlarm.objects.filter(
+            alarm_class=umbrella_cls.id,
+            managed_object=self.object.id
+        ).first()
+        u_sev = sum(d.get("severity", 0) for d in details)
+        if not umbrella and not details:
+            # No money, no honey
+            return
+        elif not umbrella and details:
+            # Open new umbrella
+            umbrella = ActiveAlarm(
+                timestamp=now,
+                managed_object=self.object.id,
+                alarm_class=umbrella_cls.id,
+                severity=u_sev
+            )
+            umbrella.save()
+            self.logger.info("Opening umbrella alarm %s (%s)",
+                             umbrella.id, umbrella_cls.name)
+        elif umbrella and not details:
+            # Close existing umbrella
+            self.logger.info("Clearing umbrella alarm %s (%s)",
+                             umbrella.id, umbrella_cls.name)
+            umbrella.clear_alarm("Closing umbrella")
+        elif umbrella and details and u_sev != umbrella.severity:
+            self.logger.info(
+                "Change umbrella alarm %s severity %s -> %s (%s)",
+                umbrella.id, umbrella.severity, u_sev,
+                umbrella_cls.name
+            )
+            umbrella.change_severity(severity=u_sev)
+        # Get existing details for umbrella
+        active_details = {}  # path -> alarm
+        if umbrella:
+            for da in ActiveAlarm.objects.filter(root=umbrella.id):
+                d_path = da.vars.get("path", "")
+                active_details[d_path] = da
+        # Synchronize details
+        seen = set()
+        for d in details:
+            d_path = d.get("path", "")
+            d_sev = d.get("severity", 0)
+            seen.add(d_path)
+            if d_path in active_details and active_details[d_path].severity != d_sev:
+                # Change severity
+                self.logger.info(
+                    "Change detail alarm %s severity %s -> %s",
+                    active_details[d_path].id,
+                    active_details[d_path].severity,
+                    d_sev
+                )
+                active_details[d_path].change_severity(severity=d_sev)
+            elif d_path not in active_details:
+                # Create alarm
+                self.logger.info("Create detail alarm to path %s",
+                                 d_path)
+                v = d.get("vars", {})
+                v["path"] = d_path
+                da = ActiveAlarm(
+                    timestamp=now,
+                    managed_object=self.object.id,
+                    alarm_class=d["alarm_class"],
+                    severity=d_sev,
+                    vars=v,
+                    root=umbrella.id
+                )
+                da.save()
+                self.logger.info("Opening detail alarm %s %s (%s)",
+                                 da.id, d_path, da.alarm_class.name)
+        # Close details when necessary
+        for d in set(active_details) - seen:
+            self.logger.info("Clearing detail alarm %s",
+                             active_details[d].id)
+            active_details[d].clear_alarm("Closing")
 
 
 class DiscoveryCheck(object):
@@ -177,11 +268,17 @@ class DiscoveryCheck(object):
             # Run check
             try:
                 self.handler()
+            except RPCRemoteError as e:
+                self.logger.error(
+                    "RPC Remote error (%s): %s",
+                    e.remote_code, e)
+                self.set_problem("RPC Remote error: %s (%s)" % (
+                    e, e.remote_code))
             except RPCError as e:
                 self.set_problem("RPC Error: %s" % e)
                 self.logger.error("Terminated due RPC error: %s", e)
-            except Exception:
-                self.set_problem("Unhandled exception")
+            except Exception as e:
+                self.set_problem("Unhandled exception: %s" % e)
                 error_report(logger=self.logger)
 
     def handler(self):
@@ -203,7 +300,7 @@ class DiscoveryCheck(object):
         """
         changes = []
         ignore_empty = ignore_empty or []
-        for k, v in values.items():
+        for k, v in six.iteritems(values):
             vv = getattr(obj, k)
             if v != vv:
                 if type(v) != int or not hasattr(vv, "id") or v != vv.id:
@@ -336,96 +433,6 @@ class DiscoveryCheck(object):
 
     def set_problem(self, problem):
         self.job.set_problem(self.name, problem)
-
-    def update_umbrella(self, umbrella_cls, details):
-        """
-        Update umbrella alarm status for managed object
-
-        :param umbrella_cls: Umbrella alarm class (AlarmClass instance)
-        :param details: List of dicts, containing
-            * alarm_class - Detail alarm class
-            * path - Additional path
-            * severity - Alarm severity
-            * vars - dict of alarm vars
-        :return:
-        """
-        from noc.fm.models.activealarm import ActiveAlarm
-
-        now = datetime.datetime.now()
-        umbrella = ActiveAlarm.objects.filter(
-            alarm_class=umbrella_cls.id,
-            managed_object=self.object.id
-        ).first()
-        u_sev = sum(d.get("severity", 0) for d in details)
-        if not umbrella and not details:
-            # No money, no honey
-            return
-        elif not umbrella and details:
-            # Open new umbrella
-            umbrella = ActiveAlarm(
-                timestamp=now,
-                managed_object=self.object.id,
-                alarm_class=umbrella_cls.id,
-                severity=u_sev
-            )
-            umbrella.save()
-            self.logger.info("Opening umbrella alarm %s (%s)",
-                             umbrella.id, umbrella_cls.name)
-        elif umbrella and not details:
-            # Close existing umbrella
-            self.logger.info("Clearing umbrella alarm %s (%s)",
-                             umbrella.id, umbrella_cls.name)
-            umbrella.clear_alarm("Closing umbrella")
-        elif umbrella and details and u_sev != umbrella.severity:
-            self.logger.info(
-                "Change umbrella alarm %s severity %s -> %s (%s)",
-                umbrella.id, umbrella.severity, u_sev,
-                umbrella_cls.name
-            )
-            umbrella.change_severity(severity=u_sev)
-        # Get existing details for umbrella
-        active_details = {}  # path -> alarm
-        if umbrella:
-            for da in ActiveAlarm.objects.filter(root=umbrella.id):
-                d_path = da.vars.get("path", "")
-                active_details[d_path] = da
-        # Synchronize details
-        seen = set()
-        for d in details:
-            d_path = d.get("path", "")
-            d_sev = d.get("severity", 0)
-            seen.add(d_path)
-            if d_path in active_details and active_details[d_path].severity != d_sev:
-                # Change severity
-                self.logger.info(
-                    "Change detail alarm %s severity %s -> %s",
-                    active_details[d_path].id,
-                    active_details[d_path].severity,
-                    d_sev
-                )
-                active_details[d_path].change_severity(severity=d_sev)
-            elif d_path not in active_details:
-                # Create alarm
-                self.logger.info("Create detail alarm to path %s",
-                                 d_path)
-                v = d.get("vars", {})
-                v["path"] = d_path
-                da = ActiveAlarm(
-                    timestamp=now,
-                    managed_object=self.object.id,
-                    alarm_class=d["alarm_class"],
-                    severity=d_sev,
-                    vars=v,
-                    root=umbrella.id
-                )
-                da.save()
-                self.logger.info("Opening detail alarm %s %s (%s)",
-                                 da.id, d_path, da.alarm_class.name)
-        # Close details when necessary
-        for d in set(active_details) - seen:
-            self.logger.info("Clearing detail alarm %s",
-                             active_details[d].id)
-            active_details[d].clear_alarm("Closing")
 
 
 class TopologyDiscoveryCheck(DiscoveryCheck):
