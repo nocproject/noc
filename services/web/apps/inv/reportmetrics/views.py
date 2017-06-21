@@ -10,9 +10,11 @@
 
 ## Python modules
 import datetime
+import time
 ## Django modules
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
+from django.utils.safestring import mark_safe, SafeString
 ## NOC modules
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
@@ -90,15 +92,20 @@ class ReportTraffic(SimpleReport):
     title = _("Load Metrics")
     form = ReportForm
 
+
     def get_data(self, request, reporttype, from_date=None, to_date=None, object_profile=None, percent=None, filter_default=None, zero=None,
                  interface_profile=None, managed_object=None, selectors=None, administrative_domain=None, **kwargs):
-        now = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+        now = datetime.datetime.now()
+        nnow = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         f_d = datetime.datetime.strptime(from_date, "%d.%m.%Y")
+        gfd = time.mktime(f_d.timetuple()) * 1000
         fd = f_d.strftime("%Y-%m-%dT%H:%M:%SZ")
-        t_d = datetime.datetime.strptime(to_date, "%d.%m.%Y")
-        td = t_d.strftime("%Y-%m-%dT23:59:59Z")
-        if td.split("T")[0] == now.split("T")[0]:
-            td = now
+        to_date = to_date + ".23:59:59"
+        t_d = datetime.datetime.strptime(to_date, "%d.%m.%Y.%H:%M:%S")
+        td = t_d.strftime("%Y-%m-%dT%H:%M:%SZ")
+        gtd = time.mktime(t_d.timetuple()) * 1000
+        if td.split("T")[0] == nnow.split("T")[0]:
+            td = nnow
         # Interval days
         fd1 = td.split('T')
         td1 = fd.split('T')
@@ -157,7 +164,7 @@ class ReportTraffic(SimpleReport):
                             r2 = r["percentile"]
                         else:
                             r2 = 0
-
+                        url = "/ui/grafana/dashboard/script/report.js?title=interface&obj=" + o.name.replace("#","%23") + "&iface=" + j.name + "&from=" + str(int(gfd)) + "&to=" + str(int(gtd))
                         if j.in_speed and r1 > 0:
                             in_p = (r1 / 1000.0) / (j.in_speed / 100.0)
                             in_p = round(in_p, 2)
@@ -170,6 +177,7 @@ class ReportTraffic(SimpleReport):
                                        TableColumn(_("IN %"), align="right"),
                                        TableColumn(_("OUT bps"), align="right"),
                                        TableColumn(_("OUT %"), align="right"),
+                                       TableColumn(_("Graphic"), format="url"),
                                        TableColumn(_("Interval days"), align="right")
                                        ]
                             if r1 != 0 and r2 != 0:
@@ -182,12 +190,14 @@ class ReportTraffic(SimpleReport):
                                     in_p,
                                     int(r2),
                                     out_p,
+                                    url,
                                     interval
                                 )]
                         elif zero:
                             columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
                                        TableColumn(_("IN bps"), align="right"),
                                        TableColumn(_("OUT bps"), align="right"),
+                                       TableColumn(_("Graphic"), format="url"),
                                        TableColumn(_("Interval days"), align="right")
                                        ]
                             if r1 != 0 and r2 != 0:
@@ -198,6 +208,7 @@ class ReportTraffic(SimpleReport):
                                     j.description,
                                     int(r1),
                                     int(r2),
+                                    url,
                                     interval
                                 )]
                         elif percent:
@@ -206,6 +217,7 @@ class ReportTraffic(SimpleReport):
                                        TableColumn(_("IN %"), align="right"),
                                        TableColumn(_("OUT bps"), align="right"),
                                        TableColumn(_("OUT %"), align="right"),
+                                       TableColumn(_("Graphic"), format="url"),
                                        TableColumn(_("Interval days"), align="right")
                                        ]
                             f += [(
@@ -217,6 +229,7 @@ class ReportTraffic(SimpleReport):
                                 in_p,
                                 int(r2),
                                 out_p,
+                                url,
                                 interval
                             )]
 
@@ -224,6 +237,7 @@ class ReportTraffic(SimpleReport):
                             columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
                                        TableColumn(_("IN bps"), align="right"),
                                        TableColumn(_("OUT bps"), align="right"),
+                                       TableColumn(_("Graphic"), format="url"),
                                        TableColumn(_("Interval days"), align="right")
                                        ]
                             f += [(
@@ -233,6 +247,7 @@ class ReportTraffic(SimpleReport):
                                 j.description,
                                 int(r1),
                                 int(r2),
+                                url,
                                 interval
                             )]
 
@@ -290,13 +305,14 @@ class ReportTraffic(SimpleReport):
                             r22 = r["percentile"]
                         else:
                             r22 = 0
-
+                        url = "/ui/grafana/dashboard/script/report.js?title=error&obj=" + o.name.replace("#","%23") + "&iface=" + j.name + "&from=" + str(int(gfd)) + "&to=" + str(int(gtd))
                         if zero:
                             columns = [_("Managed Object"), _("Address"), _("Int Name"), _("Int Descr"),
                                        TableColumn(_("Errors IN"), align="right"),
                                        TableColumn(_("Errors OUT"), align="right"),
                                        TableColumn(_("Discards IN"), align="right"),
                                        TableColumn(_("Discards OUT"), align="right"),
+                                       TableColumn(_("Graphic"), format="url"),
                                        TableColumn(_("Interval days"), align="right")
                                        ]
                             if r1 != 0 and r2 != 0:
@@ -309,6 +325,7 @@ class ReportTraffic(SimpleReport):
                                     int(r2),
                                     int(r11),
                                     int(r22),
+                                    url,
                                     interval
                                 )]
                         else:
@@ -317,6 +334,7 @@ class ReportTraffic(SimpleReport):
                                        TableColumn(_("Errors OUT"), align="right"),
                                        TableColumn(_("Discards IN"), align="right"),
                                        TableColumn(_("Discards OUT"), align="right"),
+                                       TableColumn(_("Graphic"), format="url"),
                                        TableColumn(_("Interval days"), align="right")
                                        ]
                             f += [(
@@ -328,6 +346,7 @@ class ReportTraffic(SimpleReport):
                                 int(r2),
                                 int(r11),
                                 int(r22),
+                                url,
                                 interval
                             )]
 
@@ -356,10 +375,12 @@ class ReportTraffic(SimpleReport):
                         r2 = r["percentile"]
                     else:
                         r2 = 0
+                    url = "/ui/grafana/dashboard/script/report.js?title=cpu&obj=" + o.name.replace("#","%23") + "&from=" + str(int(gfd)) + "&to=" + str(int(gtd))
                     if zero:
                         columns = [_("Managed Object"), _("Address"),
                                    TableColumn(_("CPU | Usage %"), align="right"),
                                    TableColumn(_("Memory | Usage %"), align="right"),
+                                   TableColumn(_("Graphic"), format="url"),
                                    TableColumn(_("Interval days"), align="right")
                                    ]
                         if r1 != 0 and r2 != 0:
@@ -368,12 +389,14 @@ class ReportTraffic(SimpleReport):
                                 o.address,
                                 int(r1),
                                 int(r2),
+                                url,
                                 interval
                             )]
                     else:
                         columns = [_("Managed Object"), _("Address"),
                                    TableColumn(_("CPU | Usage %"), align="right"),
                                    TableColumn(_("Memory | Usage %"), align="right"),
+                                   TableColumn(_("Graphic"), format="url"),
                                    TableColumn(_("Interval days"), align="right")
                                    ]
                         f += [(
@@ -381,6 +404,7 @@ class ReportTraffic(SimpleReport):
                             o.address,
                             int(r1),
                             int(r2),
+                            url,
                             interval
                         )]
         return self.from_dataset(
