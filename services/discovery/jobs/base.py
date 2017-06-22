@@ -224,7 +224,7 @@ class MODiscoveryJob(PeriodicJob):
 
         self.logger.info("Updating alarm statuses")
         umbrella_cls = AlarmClass.get_by_name(self.umbrella_cls)
-        if umbrella_cls:
+        if not umbrella_cls:
             self.logger.info("No umbrella alarm class. Alarm statuses not updated")
             return
         details = []

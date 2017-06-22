@@ -69,7 +69,7 @@ class ProfileCheck(DiscoveryCheck):
         self.logger.info("Cannot find profile in \"Profile Check Rules\"")
         if snmp_result:
             self.logger.info("SNMP Result: %s", snmp_result)
-        if self.http_result:
+        if http_result:
             self.logger.info("HTTP Result: %s", http_result)
         self.set_problem(
             alarm_class="Discovery | Guess | Profile",
