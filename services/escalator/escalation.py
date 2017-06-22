@@ -269,6 +269,19 @@ def escalate(alarm_id, escalation_id, escalation_delay,
         if a.stop_processing:
             logger.debug("Stopping processing")
             break
+    nalarm = get_alarm(alarm_id)
+    if nalarm and nalarm.status == "C" and nalarm.escalation_tt:
+        log("Alarm has been closed during escalation. Try to deescalate")
+        metrics["escalation_closed_while_escalated"] += 1
+        if not nalarm.escalation_close_ts and not nalarm.escalation_close_error:
+            notify_close(
+                alarm_id=alarm_id,
+                tt_id=nalarm.escalation_tt,
+                subject="Closing",
+                body="Closing",
+                notification_group_id=alarm.clear_notification_group.id if alarm.clear_notification_group else None,
+                close_tt=alarm.close_tt
+            )
     logger.info("[%s] Escalations loop end", alarm_id)
 
 
@@ -279,6 +292,11 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
         logger.info("[%s] %s", alarm_id, msg)
 
     if tt_id:
+        alarm = get_alarm(alarm_id)
+        if alarm and (alarm.escalation_close_ts or alarm.escalation_close_error):
+            log("Alarm is already deescalated")
+            metrics["escalation_already_deescalated"] += 1
+            return
         c_tt_name, c_tt_id = tt_id.split(":")
         cts = tt_system_id_cache[c_tt_name]
         if cts:
@@ -294,10 +312,16 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                         login="correlator"
                     )
                     metrics["escalation_tt_close"] += 1
+                    if alarm:
+                        alarm.close_escalation()
                 except tts.TTError as e:
                     log("Failed to close tt %s: %s",
                         tt_id, e)
                     metrics["escalation_tt_close_fail"] += 1
+                    if alarm:
+                        alarm.set_escalation_close_error(
+                            "[%s] %s" % (alarm.managed_object.tt_system.name, e)
+                        )
             else:
                 # Append comment to tt
                 try:
