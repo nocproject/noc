@@ -556,6 +556,7 @@ for (var i = 'ping'; i == title; i++) {
 
                             }
                         ],
+                        "y-axis": true,
                         "yaxes": [
                             {
                                 "format": "s",
@@ -566,12 +567,12 @@ for (var i = 'ping'; i == title; i++) {
                                 "show": true
                             },
                             {
-                                "format": "decbytes",
-                                "label": null,
-                                "logBase": 1,
-                                "max": null,
-                                "min": null,
-                                "show": false
+                              "format": "short",
+                              "label": null,
+                              "logBase": 1,
+                              "max": "5",
+                              "min": null,
+                              "show": true
                             }
                         ],
 
@@ -579,6 +580,7 @@ for (var i = 'ping'; i == title; i++) {
                             {
                                 alias: "Ping | Attempts",
                                 color: "#BF1B00",
+                                yaxis: 2,
                                 fill: 1,
                                 linewidth: 2
                             }
