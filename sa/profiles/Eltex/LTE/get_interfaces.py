@@ -116,6 +116,6 @@ class Script(BaseScript):
                 }]
             }
             if match.group("vlan_id") != "none":
-                iface["subinterfaces"][0]["vlan_ids"] = [match.group("vlan_id")]
+                iface["subinterfaces"][0]["vlan_id"] = [match.group("vlan_id")]
             interfaces += [iface]
         return [{"interfaces": interfaces}]
