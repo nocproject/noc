@@ -29,12 +29,18 @@ from noc.inv.models.interface import Interface
 from noc.lib.nosql import get_db
 from noc.core.service.error import RPCError, RPCRemoteError
 from noc.core.service.loader import get_service
+from noc.core.error import (
+    ERR_CLI_AUTH_FAILED, ERR_CLI_NO_SUPER_COMMAND,
+    ERR_CLI_LOW_PRIVILEGES, ERR_CLI_SSH_PROTOCOL_ERROR
+)
 
 
 class MODiscoveryJob(PeriodicJob):
     model = ManagedObject
     use_get_by_id = True
     use_offset = True
+    # Name of umbrella class to cover discovery problems
+    umbrella_cls = None
 
     def __init__(self, *args, **kwargs):
         super(MODiscoveryJob, self).__init__(*args, **kwargs)
@@ -45,8 +51,9 @@ class MODiscoveryJob(PeriodicJob):
             target=self.out_buffer
         )
         self.check_timings = []
-        self.problems = {}  # check -> problem
+        self.problems = []
         self.caps = None
+        self.has_fatal_error = False
 
     def schedule_next(self, status):
         if self.check_timings:
@@ -54,17 +61,25 @@ class MODiscoveryJob(PeriodicJob):
                 "%s = %.2fms" % (n, t * 1000) for n, t in self.check_timings
             ))
         super(MODiscoveryJob, self).schedule_next(status)
+        # Update alarm statuses
+        self.update_alarms()
         # Write job log
         key = "discovery-%s-%s" % (
             self.attrs[self.ATTR_CLASS],
             self.attrs[self.ATTR_KEY]
         )
+        problems = {}
+        for p in self.problems:
+            if p["check"] in problems:
+                problems[p["check"]] += "; %s" % p["message"]
+            else:
+                problems[p["check"]] = p["message"]
         get_db()["noc.joblog"].update({
             "_id": key
         }, {
             "$set": {
                 "log": bson.Binary(zlib.compress(self.out_buffer.getvalue())),
-                "problems": self.problems
+                "problems": problems
             }
         }, upsert=True)
 
@@ -77,8 +92,27 @@ class MODiscoveryJob(PeriodicJob):
         yield
         self.check_timings += [(name, time.time() - t)]
 
-    def set_problem(self, name, problem):
-        self.problems[name] = problem
+    def set_problem(self, check=None, alarm_class=None, path=None,
+                    message=None, fatal=False):
+        """
+        Set discovery problem
+        :param check: Check name
+        :param alarm_class: Alarm class instance or name
+        :param path: Additional path
+        :param message: Text message
+        :param fatal: True if problem is fatal and all following checks
+            must be disabled
+        :return:
+        """
+        self.problems += [{
+            "check": check,
+            "alarm_class": alarm_class,
+            "path": path or "",
+            "message": message,
+            "fatal": fatal
+        }]
+        if fatal:
+            self.has_fatal_error = True
 
     def get_caps(self):
         """
@@ -185,6 +219,35 @@ class MODiscoveryJob(PeriodicJob):
                              active_details[d].id)
             active_details[d].clear_alarm("Closing")
 
+    def update_alarms(self):
+        from noc.fm.models.alarmclass import AlarmClass
+
+        self.logger.info("Updating alarm statuses")
+        umbrella_cls = AlarmClass.get_by_name(self.umbrella_cls)
+        if umbrella_cls:
+            self.logger.info("No umbrella alarm class. Alarm statuses not updated")
+            return
+        details = []
+        for p in self.problems:
+            if not p["alarm_class"]:
+                continue
+            ac = AlarmClass.get_by_name(p["alarm_class"])
+            if not ac:
+                self.logger.info("Unknown alarm class %s. Skipping",
+                                 p["alarm_class"])
+                continue
+            details += [{
+                "alarm_class": ac,
+                "path": p["path"],
+                # @todo: Configurable via object profile
+                "severity": 10 if p["fatal"] else 1,
+                "vars": {
+                    "path": p["path"],
+                    "message": p["message"]
+                }
+            }]
+        self.update_umbrella(umbrella_cls, details)
+
 
 class DiscoveryCheck(object):
     name = None
@@ -194,6 +257,20 @@ class DiscoveryCheck(object):
     # If not none, check object has all required capablities
     # from list
     required_capabilities = None
+    #
+    fatal_errors = set([
+        ERR_CLI_AUTH_FAILED,
+        ERR_CLI_NO_SUPER_COMMAND,
+        ERR_CLI_LOW_PRIVILEGES,
+        ERR_CLI_SSH_PROTOCOL_ERROR
+    ])
+    # Error -> Alarm class mappings
+    error_map = {
+        ERR_CLI_AUTH_FAILED: "Discovery | Error | Auth Failed",
+        ERR_CLI_NO_SUPER_COMMAND: "Discovery | Error | No Super",
+        ERR_CLI_LOW_PRIVILEGES: "Discovery | Error | Low Privileges",
+        ERR_CLI_SSH_PROTOCOL_ERROR: "Discovery | Error | SSH Protocol"
+    }
 
     def __init__(self, job):
         self.service = get_service()
@@ -211,6 +288,9 @@ class DiscoveryCheck(object):
     def is_enabled(self):
         checks = self.job.attrs.get("_checks", set())
         return not checks or self.name in checks
+
+    def has_fatal_error(self):
+        return self.job.has_fatal_error
 
     def has_required_script(self):
         return (not self.required_script or
@@ -256,6 +336,9 @@ class DiscoveryCheck(object):
         if not self.is_enabled():
             self.logger.info("Check is disabled. Skipping")
             return
+        if self.has_fatal_error():
+            self.logger.info("Check is disabled due to previous fatal error. Skipping")
+            return
         with self.job.check_timer(self.name):
             # Check required scripts
             if not self.has_required_script():
@@ -272,13 +355,23 @@ class DiscoveryCheck(object):
                 self.logger.error(
                     "RPC Remote error (%s): %s",
                     e.remote_code, e)
-                self.set_problem("RPC Remote error: %s (%s)" % (
-                    e, e.remote_code))
+                self.set_problem(
+                    alarm_class=self.error_map.get(e.remote_code),
+                    message="Remote error code %s" % e.remote_code,
+                    fatal=e.remote_code in self.fatal_errors
+                )
             except RPCError as e:
-                self.set_problem("RPC Error: %s" % e)
+                self.set_problem(
+                    alarm_class=self.error_map.get(e.default_code),
+                    message="RPC Error: %s" % e,
+                    fatal=e.default_code in self.fatal_errors
+                )
                 self.logger.error("Terminated due RPC error: %s", e)
             except Exception as e:
-                self.set_problem("Unhandled exception: %s" % e)
+                self.set_problem(
+                    alarm_class="Discovery | Error | Unhandled Exception",
+                    message="Unhandled exception: %s" % e
+                )
                 error_report(logger=self.logger)
 
     def handler(self):
@@ -431,8 +524,24 @@ class DiscoveryCheck(object):
                 except ValueError as e:
                     self.logger.info("Failed to unlink: %s", e)
 
-    def set_problem(self, problem):
-        self.job.set_problem(self.name, problem)
+    def set_problem(self, alarm_class=None, path=None,
+                    message=None, fatal=False):
+        """
+        Set discovery problem
+        :param alarm_class: Alarm class instance or name
+        :param path: Additional path
+        :param message: Text message
+        :param fatal: True if problem is fatal and all following checks
+            must be disabled
+        :return:
+        """
+        self.job.set_problem(
+            check=self.name,
+            alarm_class=alarm_class,
+            path=path,
+            message=message,
+            fatal=fatal
+        )
 
 
 class TopologyDiscoveryCheck(DiscoveryCheck):
@@ -566,7 +675,11 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     remote_object, ri
                 )
         if problems:
-            self.set_problem(problems)
+            for i in problems:
+                self.set_problem(
+                    path=i,
+                    message=problems[i]
+                )
 
     def iter_neighbors(self, mo):
         """

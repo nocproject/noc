@@ -36,6 +36,7 @@ from noc.services.discovery.jobs.periodic.mac import MACCheck
 
 class BoxDiscoveryJob(MODiscoveryJob):
     name = "box"
+    umbrella_cls = "Discovery | Job | Box"
 
     TOPOLOGY_METHODS = [
         OAMCheck,

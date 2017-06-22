@@ -18,6 +18,8 @@ from metrics import MetricsCheck
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
     name = "periodic"
+    umbrella_cls = "Discovery | Job | Periodic"
+
     # Store context
     context_version = 1
 

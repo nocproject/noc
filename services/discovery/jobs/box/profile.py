@@ -67,8 +67,15 @@ class ProfileCheck(DiscoveryCheck):
                         # @todo: process MAYBE rule
                         return profile
         self.logger.info("Cannot find profile in \"Profile Check Rules\"")
-        if "suggest_snmp" not in self.job.problems and snmp_result:
-            self.set_problem("Not find profile for OID: %s or HTTP string: %s" % (snmp_result, http_result))
+        if snmp_result:
+            self.logger.info("SNMP Result: %s", snmp_result)
+        if self.http_result:
+            self.logger.info("HTTP Result: %s", http_result)
+        self.set_problem(
+            alarm_class="Discovery | Guess | Profile",
+            message="Cannot detect profile",
+            fatal=True
+        )
         self.logger.debug("Result %s" % self.job.problems)
         return None
 

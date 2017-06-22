@@ -35,7 +35,11 @@ class SuggestSNMPCheck(DiscoveryCheck):
                     self.object._suggest_snmp = (ro, rw)
                     return
         self.logger.info("Failed to guess SNMP community")
-        self.set_problem("Failed to guess SNMP community")
+        self.set_problem(
+            alarm_class="Discovery | Guess | SNMP Community",
+            message="Failed to guess SNMP community",
+            fatal=True
+        )
 
     def check_oid(self, oid, community):
         """
