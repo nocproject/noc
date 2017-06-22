@@ -33,7 +33,8 @@ class ReportForm(forms.Form):
     reporttype = forms.ChoiceField(choices=[
        ("load_interfaces",  _("Load Interfaces")),
        ("load_cpu",  _("Load CPU/Memory")),
-       ("errors",  _("Errors on the Interface"))
+       ("errors",  _("Errors on the Interface")),
+       ("ping", _("Ping RTT and Ping Attempts"))
     ], label=_("Report Type"))
     from_date = forms.CharField(
         widget=AdminDateWidget,
@@ -65,11 +66,11 @@ class ReportForm(forms.Form):
         required=False,
         queryset=AdministrativeDomain.objects.order_by("name")
     )
-    object_profile = forms.ModelChoiceField(
-        label=_("Object Profile"),
-        required=False,
-        queryset=ManagedObjectProfile.objects.exclude(name__startswith="tg.").order_by("name")
-    )
+    #object_profile = forms.ModelChoiceField(
+    #    label=_("Object Profile"),
+    #    required=False,
+    #    queryset=ManagedObjectProfile.objects.exclude(name__startswith="tg.").order_by("name")
+    #)
     interface_profile = forms.ModelChoiceField(
         label=_("Interface Profile (For Load Interfaces Report Type)"),
         required=False,
@@ -260,8 +261,6 @@ class ReportTraffic(SimpleReport):
                     if interface_profile:
                         ifaces = Interface.objects.filter(managed_object=o, type="physical", profile=interface_profile)
                     for j in ifaces:
-                        # print o.name, "," , o.platform  , ",", o.address, ",", j.name, ",", j.in_speed, ",", j.out_speed,",",j.description
-                        # quit()
                         client = InfluxDBClient()
                         query1 = [
                             "SELECT percentile(\"value\", 98) FROM \"Interface | Errors | In\" WHERE \"object\" = '%s' AND \"interface\" = '%s' AND time >= '%s' AND time <= '%s';" % (
@@ -352,8 +351,6 @@ class ReportTraffic(SimpleReport):
 
         if "load_cpu" in reporttype:
                 for o in mos:
-                    # print o.name, "," , o.platform  , ",", o.address, ",", j.name, ",", j.in_speed, ",", j.out_speed,",",j.description
-                    # quit()
                     client = InfluxDBClient()
                     query1 = [
                         "SELECT percentile(\"value\", 98) FROM \"CPU | Usage\" WHERE \"object\" = '%s' AND time >= '%s' AND time <= '%s';" % (
@@ -407,6 +404,65 @@ class ReportTraffic(SimpleReport):
                             url,
                             interval
                         )]
+
+        if "ping" in reporttype:
+                for o in mos:
+                    client = InfluxDBClient()
+                    query1 = [
+                        "SELECT percentile(\"value\", 98) FROM \"Ping | RTT\" WHERE \"object\" = '%s' AND time >= '%s' AND time <= '%s';" % (
+                            o.name, fd, td)]
+                    result1 = client.query(query1)
+                    r = list(result1)
+                    if len(r) > 0:
+                        r = r[0]
+                        rr1 = r["percentile"] * 1000
+                        r1 = round(rr1, 2)
+                    else:
+                        r1 = 0
+                    query2 = [
+                        "SELECT percentile(\"value\", 98) FROM \"Ping | Attempts\" WHERE \"object\" = '%s' AND time >= '%s' AND time <= '%s';" % (
+                            o.name, fd, td)]
+                    result2 = client.query(query2)
+                    r = list(result2)
+                    if len(r) > 0:
+                        r = r[0]
+                        rr2 = r["percentile"] * 1000
+                        r2 = round(rr2, 2)
+                    else:
+                        r2 = 0
+                    url = "/ui/grafana/dashboard/script/report.js?title=ping&obj=" + o.name.replace("#","%23") + "&from=" + str(int(gfd)) + "&to=" + str(int(gtd))
+                    if zero:
+                        columns = [_("Managed Object"), _("Address"),
+                                   TableColumn(_("Ping | RTT (ms)"), align="right"),
+                                   TableColumn(_("Ping | Attempts"), align="right"),
+                                   TableColumn(_("Graphic"), format="url"),
+                                   TableColumn(_("Interval days"), align="right")
+                                   ]
+                        if r1 != 0 and r2 != 0:
+                            f += [(
+                                o.name,
+                                o.address,
+                                r1,
+                                r2,
+                                url,
+                                interval
+                            )]
+                    else:
+                        columns = [_("Managed Object"), _("Address"),
+                                   TableColumn(_("Ping | RTT (ms)"), align="right"),
+                                   TableColumn(_("Ping | Attempts"), align="right"),
+                                   TableColumn(_("Graphic"), format="url"),
+                                   TableColumn(_("Interval days"), align="right")
+                                   ]
+                        f += [(
+                            o.name,
+                            o.address,
+                            r1,
+                            r2,
+                            url,
+                            interval
+                        )]
+
         return self.from_dataset(
             title=self.title,
             columns=columns,
