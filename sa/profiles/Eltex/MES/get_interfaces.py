@@ -234,8 +234,9 @@ class Script(BaseScript):
             else:
                 ip_interfaces = "ipv4_addresses"
                 enabled_afi += ["IPv4"]
-            vlan = ifname.split(' ')[1]
-            ifname = ifname.strip(' ')
+            if ifname.startswith("vlan"):
+                vlan = ifname.split(' ')[1]
+            ifname = ifname.strip()
             if match.group("admin_status"):
                 a_stat = match.group("admin_status").lower() == "up"
             else:
@@ -244,10 +245,6 @@ class Script(BaseScript):
                 o_stat = match.group("oper_status").lower() == "up"
             else:
                 o_stat = True
-            rx_vlan_name = re.compile(
-                r"^\s*" + vlan + "\s+(?P<name>.+?)\s+\S+\s+\S+\s+\S+\s*$",
-                re.MULTILINE)
-
             iface = {
                 "name": self.profile.convert_interface_name(ifname),
                 "type": typ,
