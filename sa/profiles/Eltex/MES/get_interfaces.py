@@ -217,6 +217,25 @@ class Script(BaseScript):
             if utvlan:
                 iface["subinterfaces"][0]["untagged_vlan"] = utvlan
 
+            cmd = self.cli("show ip interface %s" % name)
+            for match in self.rx_sh_ip_int.finditer(cmd):
+                if not match:
+                    continue
+                ip = match.group("ip")
+                netmask = match.group("mask")
+                ip = ip + '/' + netmask
+                ip_list = [ip]
+                enabled_afi = []
+                if ":" in ip:
+                    ip_interfaces = "ipv6_addresses"
+                    enabled_afi += ["IPv6"]
+                else:
+                    ip_interfaces = "ipv4_addresses"
+                    enabled_afi += ["IPv4"]
+                iface["subinterfaces"][0]["enabled_afi"] = enabled_afi
+                iface["subinterfaces"][0][ip_interfaces] = ip_list
+
+
             interfaces += [iface]
 
         ip_iface = self.cli("show ip interface")
@@ -236,7 +255,9 @@ class Script(BaseScript):
                 enabled_afi += ["IPv4"]
             if ifname.startswith("vlan"):
                 vlan = ifname.split(' ')[1]
-            ifname = ifname.strip()
+                ifname = ifname.strip()
+            else:
+                continue
             if match.group("admin_status"):
                 a_stat = match.group("admin_status").lower() == "up"
             else:
