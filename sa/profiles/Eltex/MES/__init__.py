@@ -54,6 +54,7 @@ class Profile(BaseProfile):
         "sr": "physical",    # Spatial Reuse Protocol
         "se": "physical",    # Serial
         "te": "physical",    # TenGigabitEthernet
+        "fo": "physical",    # FortyGigabitEthernet
         "tu": "tunnel",      # Tunnel
         "vl": "SVI",         # VLAN, found on C3500XL
         "xt": "SVI"          # Extended Tag ATM
