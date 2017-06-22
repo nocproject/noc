@@ -1,0 +1,24 @@
+{
+    "name": "Discovery | Guess | SNMP Community",
+    "$collection": "fm.alarmclasses",
+    "uuid": "4163e9b6-b433-42f3-81d5-43c4902fded2",
+    "desciption": "No suitable SNMP community in suggests profile",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "path",
+            "description": "Path to alarms"
+        },
+        {
+            "name": "message",
+            "description": "Error detail message "
+        }
+    ],
+    "subject_template": "SNMP Community",
+    "body_template": "No having SNMP community for managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}) in suggest profile {{alarm.managed_object.auth_profile.name}}",
+    "symptoms": "No response SNMP request for community in suggest auth profile.",
+    "probable_causes": "Nothing appropriate SNMP community in suggest profile or no SNMP activate on devices",
+    "recommended_actions": "Check device SNMP configuration and check Suggest authentication profile settings"
+}

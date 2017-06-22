@@ -1,0 +1,24 @@
+{
+    "name": "Discovery | Error | Unhandled Exception",
+    "$collection": "fm.alarmclasses",
+    "uuid": "27382a68-c43d-4460-ac83-e44c83640e14",
+    "desciption": "Unhandled Exception in CLI session processed on device",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "path",
+            "description": "Path to alarms"
+        },
+        {
+            "name": "message",
+            "description": "Error detail message"
+        }
+    ],
+    "subject_template": "Unhandled Exception",
+    "body_template": "Exception when executing script CLI session on managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",
+    "symptoms": "Exception when worked device on CLI",
+    "probable_causes": "Unsupported protocol operations when worked with devices or other problem",
+    "recommended_actions": "Use script debug tools viewing execute script on device and check traceback on activator host"
+}
