@@ -1,0 +1,24 @@
+{
+    "name": "Discovery | Error | SSH Protocol",
+    "$collection": "fm.alarmclasses",
+    "uuid": "9395beeb-de4f-47be-9cd3-448f08192f42",
+    "desciption": "SSH protocol error in libssh library",
+    "is_unique": true,
+    "user_clearable": true,
+    "default_severity__name": "WARNING",
+    "vars": [
+        {
+            "name": "path",
+            "description": "Path to alarms"
+        },
+        {
+            "name": "message",
+            "description": "Error detail message"
+        }
+    ],
+    "subject_template": "SSH Protocol",
+    "body_template": "Error when executing SSH session on managed object {{alarm.managed_object.name}} (IP: {{alarm.managed_object.address}}). All SA tasks to this object are temporary suspended",
+    "symptoms": "SSH Error when setup session with managed object",
+    "probable_causes": "Unsupported protocol operations when worked with device",
+    "recommended_actions": "Check setup session processed with managed object"
+}
