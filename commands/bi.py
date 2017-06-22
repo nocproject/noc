@@ -34,6 +34,9 @@ class Command(BaseCommand):
         AlarmsExtractor
     ]
 
+    # Extract by 1-day chunks
+    EXTRACT_WINDOW = 86400
+
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
         # Args
@@ -88,15 +91,22 @@ class Command(BaseCommand):
     def handle_extract(self, *args, **options):
         t0 = datetime.datetime.fromtimestamp(0)
         now = datetime.datetime.now()
+        window = datetime.timedelta(seconds=self.EXTRACT_WINDOW)
         for ecls in self.EXTRACTORS:
             start = self.get_last_extract(ecls.name) or t0
             stop = now - datetime.timedelta(seconds=ecls.extract_delay)
-            e = ecls(start=start, stop=stop, prefix=self.DATA_PREFIX)
-            self.stdout.write("Extracting %s (%s - %s)\n" % (
-                e.name, start, stop
-            ))
-            e.extract()
-            self.set_last_extract(ecls.name, e.last_ts or stop)
+            while start < stop:
+                end = min(
+                    start + window,
+                    stop
+                )
+                e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
+                self.stdout.write("Extracting %s (%s - %s)\n" % (
+                    e.name, start, end
+                ))
+                e.extract()
+                self.set_last_extract(ecls.name, e.last_ts or end)
+                start += window
         # Extract dictionaries
         for dcls in Dictionary.iter_cls():
             # Temporary data
