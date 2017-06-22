@@ -47,7 +47,6 @@ class Script(BaseScript):
             cmd = self.cli("show interfaces mac-address")
             for match in self.rx_mac1.finditer(cmd):
                 macs[match.group("port")] = match.group("mac")
-            cmd = self.cli("show interfaces vlans")
             for l in self.cli("show interfaces vlans").split("\n\n"):
                 match = self.rx_vlan.search(l)
                 if match:
