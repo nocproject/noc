@@ -298,6 +298,27 @@ class ManagedObject(Model):
         ],
         default="P"
     )
+    # Raise alarms on discovery problems
+    box_discovery_alarm_policy = CharField(
+        "Box Discovery Alarm Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
+    periodic_discovery_alarm_policy = CharField(
+        "Box Discovery Alarm Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
     # TT system for this object
     tt_system = DocumentReferenceField(TTSystem,
                                        null=True, blank=True)
@@ -1066,6 +1087,22 @@ class ManagedObject(Model):
             return True
         elif self.escalation_policy == "P":
             return self.object_profile.can_escalate()
+        else:
+            return False
+
+    def can_create_box_alarms(self):
+        if self.box_discovery_alarm_policy == "E":
+            return True
+        elif self.box_discovery_alarm_policy == "P":
+            return self.object_profile.can_create_box_alarms()
+        else:
+            return False
+
+    def can_create_periodic_alarms(self):
+        if self.periodic_discovery_alarm_policy == "E":
+            return True
+        elif self.periodic_discovery_alarm_policy == "P":
+            return self.object_profile.can_create_periodic_alarms()
         else:
             return False
 

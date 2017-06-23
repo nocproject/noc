@@ -130,3 +130,12 @@ class BoxDiscoveryJob(MODiscoveryJob):
         except ValueError:
             return False
         return i1 <= i2
+
+    def can_update_alarms(self):
+        return self.object.can_create_box_alarms()
+
+    def get_fatal_alarm_weight(self):
+        return self.object.object_profile.box_discovery_fatal_alarm_weight
+
+    def get_alarm_weight(self):
+        return self.object.object_profile.box_discovery_alarm_weight

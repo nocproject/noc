@@ -220,14 +220,19 @@ class MODiscoveryJob(PeriodicJob):
             active_details[d].clear_alarm("Closing")
 
     def update_alarms(self):
+        from noc.fm.models.alarmseverity import AlarmSeverity
         from noc.fm.models.alarmclass import AlarmClass
 
+        if not self.can_update_alarms():
+            return
         self.logger.info("Updating alarm statuses")
         umbrella_cls = AlarmClass.get_by_name(self.umbrella_cls)
         if not umbrella_cls:
             self.logger.info("No umbrella alarm class. Alarm statuses not updated")
             return
         details = []
+        fatal_weight = self.get_fatal_alarm_weight()
+        weight = self.get_alarm_weight()
         for p in self.problems:
             if not p["alarm_class"]:
                 continue
@@ -239,14 +244,23 @@ class MODiscoveryJob(PeriodicJob):
             details += [{
                 "alarm_class": ac,
                 "path": p["path"],
-                # @todo: Configurable via object profile
-                "severity": 10 if p["fatal"] else 1,
+                "severity": AlarmSeverity.severity_for_weight(
+                    fatal_weight if p["fatal"] else weight),
                 "vars": {
                     "path": p["path"],
                     "message": p["message"]
                 }
             }]
         self.update_umbrella(umbrella_cls, details)
+
+    def can_update_alarms(self):
+        return False
+
+    def get_fatal_alarm_weight(self):
+        return 1
+
+    def get_alarm_weight(self):
+        return 1
 
 
 class DiscoveryCheck(object):

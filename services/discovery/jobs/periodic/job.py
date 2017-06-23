@@ -65,3 +65,13 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
 
     def get_failed_interval(self):
         return self.object.object_profile.periodic_discovery_interval
+
+    def can_update_alarms(self):
+        return self.object.can_create_periodic_alarms()
+
+
+    def get_fatal_alarm_weight(self):
+        return self.object.object_profile.periodic_discovery_fatal_alarm_weight
+
+    def get_alarm_weight(self):
+        return self.object.object_profile.periodic_discovery_alarm_weight

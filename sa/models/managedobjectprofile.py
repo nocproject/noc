@@ -237,6 +237,42 @@ class ManagedObjectProfile(models.Model):
         default="E"
     )
     #
+    # Raise alarms on discovery problems
+    box_discovery_alarm_policy = models.CharField(
+        "Box Discovery Alarm Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="E"
+    )
+    periodic_discovery_alarm_policy = models.CharField(
+        "Periodic Discovery Alarm Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable")
+        ],
+        default="E"
+    )
+    box_discovery_fatal_alarm_weight = models.IntegerField(
+        "Box Fatal Alarm Weight",
+        default=10
+    )
+    box_discovery_alarm_weight = models.IntegerField(
+        "Box Alarm Weight",
+        default=1
+    )
+    periodic_discovery_fatal_alarm_weight = models.IntegerField(
+        "Box Fatal Alarm Weight",
+        default=10
+    )
+    periodic_discovery_alarm_weight = models.IntegerField(
+        "Periodic Alarm Weight",
+        default=1
+    )
+    #
     metrics = PickledField()
     #
     tags = TagsField("Tags", null=True, blank=True)
@@ -302,6 +338,12 @@ class ManagedObjectProfile(models.Model):
         :return: 
         """
         return self.escalation_policy == "E"
+
+    def can_create_box_alarms(self):
+        return self.box_discovery_alarm_policy == "E"
+
+    def can_create_periodic_alarms(self):
+        return self.peridic_discovery_alarm_policy == "E"
 
     def save(self, force_insert=False, force_update=False, using=None):
         # Validate MeticType for object profile
