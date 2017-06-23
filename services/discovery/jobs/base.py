@@ -632,8 +632,23 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     remote_object.name, self.required_script
                 )
                 continue
+            try:
+                remote_neighbors = list(
+                    self.iter_neighbors(remote_object)
+                )
+            except Exception as e:
+                self.logger.error(
+                    "Cannot get neighbors from candidate %s: %s",
+                    remote_object.name,
+                    e
+                )
+                self.set_problem(
+                    message="Cannot get neighbors from candidate %s: %s" % (
+                        remote_object.name, e)
+                )
+                continue
             confirmed = set()
-            for li, ro_id, ri in self.iter_neighbors(remote_object):
+            for li, ro_id, ri in remote_neighbors:
                 ro = self.get_neighbor(ro_id)
                 if not ro or ro.id != self.object.id:
                     self.logger.debug("Candidates check %s %s %s %s" % (li, ro_id, ro, ri))
