@@ -8,6 +8,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import functools
 import time
 import datetime
@@ -22,7 +23,7 @@ import tornado.httpclient
 from noc.core.service.base import Service
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
-from probesetting import ProbeSetting
+from .probesetting import ProbeSetting
 
 
 class PingService(Service):
@@ -281,6 +282,7 @@ class PingService(Service):
                     q(ps.name), attempts, int(time.time())
                 )
             ])
+
 
 if __name__ == "__main__":
     PingService().start()
