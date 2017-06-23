@@ -79,6 +79,20 @@ class ManagedObjectProfile(models.Model):
     enable_ping = models.BooleanField(
         _("Enable ping check"), default=True)
     ping_interval = models.IntegerField(_("Ping interval"), default=60)
+    ping_policy = models.CharField(
+        _("Ping check policy"),
+        choices=[
+            ("f", "First Success"),
+            ("a", "All Successes")
+        ],
+        default="f"
+    )
+    ping_size = models.IntegerField(_("Ping packet size"), default=64)
+    ping_count = models.IntegerField(_("Ping packets count"), default=3)
+    ping_timeout_ms = models.IntegerField(
+        _("Ping timeout (ms)"),
+        default=1000
+    )
     report_ping_rtt = models.BooleanField(
         _("Report RTT"),
         default=False
@@ -327,6 +341,10 @@ class ManagedObjectProfile(models.Model):
             self.initial_data["report_ping_rtt"] != self.report_ping_rtt or
             self.initial_data["enable_ping"] != self.enable_ping or
             self.initial_data["ping_interval"] != self.ping_interval or
+            self.inittial_data["ping_policy"] != self.ping_policy or
+            self.inittial_data["ping_size"] != self.ping_size or
+            self.inittial_data["ping_count"] != self.ping_count or
+            self.inittial_data["ping_timeout_ms"] != self.ping_timeout_ms or
             self.initial_data["report_ping_attempts"] != self.ping_interval
         ):
             for pool in self.iter_pools():
