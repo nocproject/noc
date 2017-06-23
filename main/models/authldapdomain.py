@@ -94,12 +94,14 @@ class AuthLDAPDomain(Document):
         return self.name
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"),
+                             lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return AuthLDAPDomain.objects.filter(id=id).first()
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"),
+                             lock=lambda _: id_lock)
     def get_by_name(cls, name):
         return AuthLDAPDomain.objects.filter(name=name).first()
 
