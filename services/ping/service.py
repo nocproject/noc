@@ -210,9 +210,11 @@ class PingService(Service):
                 self.perf_metrics["ping_check_skips"] += 1
                 return
         rtt, attempts = yield self.ping.ping_check_rtt(
-            address,
-            count=self.config.max_packets,
-            timeout=self.config.timeout
+            ps.address,
+            policy=ps.policy,
+            size=ps.size,
+            count=ps.count,
+            timeout=ps.timeout
         )
         s = rtt is not None
         if s:
