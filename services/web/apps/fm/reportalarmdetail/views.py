@@ -28,6 +28,8 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.object import Object
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportObjectAttributes
 from noc.services.web.apps.sa.reportobjectdetail.views import ReportContainer
+from noc.sa.models.useraccess import UserAccess
+from noc.core.translation import ugettext as _
 
 
 class ReportAlarmDetailApplication(ExtApplication):
@@ -102,21 +104,21 @@ class ReportAlarmDetailApplication(ExtApplication):
 
         header_row = [
          "ID",
-         "ROOT_ID",
-         "FROM_TS",
-         "TO_TS",
-         "DURATION_SEC",
-         "OBJECT_NAME",
-         "OBJECT_ADDRESS",
-         "OBJECT_PROFILE",
-         "OBJECT_PLATFORM",
-         "OBJECT_VERSION",
-         "ALARM_CLASS",
-         "OBJECTS",
-         "SUBSCRIBERS",
-         "TT",
-         "ESCALATION_TS",
-         "CONTAINER_ADDRESS"
+         _("ROOT_ID"),
+         _("FROM_TS"),
+         _("TO_TS"),
+         _("DURATION_SEC"),
+         _("OBJECT_NAME"),
+         _("OBJECT_ADDRESS"),
+         _("OBJECT_PROFILE"),
+         _("OBJECT_PLATFORM"),
+         _("OBJECT_VERSION"),
+         _("ALARM_CLASS"),
+         _("OBJECTS"),
+         _("SUBSCRIBERS"),
+         _("TT"),
+         _("ESCALATION_TS"),
+         _("CONTAINER_ADDRESS")
         ] + ["CONTAINER_%d" % i for i in range(self.CONTAINER_PATH_DEPTH)] + ["SEGMENT_%d" % i for i in range(self.SEGMENT_PATH_DEPTH)]
 
         if columns:
@@ -136,22 +138,40 @@ class ReportAlarmDetailApplication(ExtApplication):
                 "$lt": datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
             }
         }
+
+        mos = ManagedObject.objects.filter(is_managed=True)
+
         if segment:
             try:
                 q["segment_path"] = bson.ObjectId(segment)
             except bson.errors.InvalidId:
                 pass
-        container_lookup = None
+
+        if administrative_domain:
+            administrative_domain = [int(administrative_domain)]
+            ads = AdministrativeDomain.get_nested_ids(administrative_domain[0])
+            mos = mos.filter(administrative_domain__in=ads)
+
+        if not request.user.is_superuser:
+            user_ads = UserAccess.get_domains(request.user)
+            mos = mos.filter(
+                administrative_domain__in=user_ads)
+            if administrative_domain:
+                if administrative_domain[0] not in user_ads:
+                    administrative_domain = user_ads
+            else:
+                administrative_domain = user_ads
+
         # Working if Administrative domain set
         if administrative_domain:
             try:
-                q["adm_path"] = {"$in": [int(administrative_domain)]}
-                ads = AdministrativeDomain.get_nested_ids(int(administrative_domain))
-                mos = ManagedObject.objects.filter(administrative_domain__in=ads)
-                mos_id = list(mos.values_list("id", flat=True))
-                container_lookup = ReportContainer(mos_id)
+                q["adm_path"] = {"$in": administrative_domain}
+                # @todo More 2 level hierarhy
             except bson.errors.InvalidId:
                 pass
+
+        mos_id = list(mos.values_list("id", flat=True))
+        container_lookup = ReportContainer(mos_id)
         attr = ReportObjectAttributes([])
         if source in ["archive", "both"]:
             # Archived Alarms
