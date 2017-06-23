@@ -286,7 +286,7 @@ class ManagedObject(Model):
     # Object id in remote system
     remote_id = CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = IntegerField(null=True, blank=True)
+    bi_id = BigIntegerField(null=True, blank=True)
     # Object alarms can be escalated
     escalation_policy = CharField(
         "Escalation Policy",

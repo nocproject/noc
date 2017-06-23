@@ -61,7 +61,7 @@ class AuthProfile(models.Model):
     # Object id in remote system
     remote_id = models.CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = models.IntegerField(null=True, blank=True)
+    bi_id = models.BigIntegerField(null=True, blank=True)
 
     tags = TagsField("Tags", null=True, blank=True)
 
