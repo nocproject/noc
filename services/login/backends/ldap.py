@@ -29,6 +29,9 @@ class LdapBackend(BaseAuthBackend):
         # Get servers
         server_pool = self.get_server_pool(ldap_domain)
         if not server_pool:
+            self.logger.error(
+                "No active servers configured for domain '%s'", domain
+            )
             raise self.LoginError(
                 "No active servers configured for domain '%s'" % domain
             )
@@ -79,16 +82,34 @@ class LdapBackend(BaseAuthBackend):
             user_info["is_active"] = False
         u = self.ensure_user(user.lower(), **user_info)
         # Apply groups
+        ug = []
         for g in ldap_domain.groups:
             if not g.is_active:
+                self.logger.debug(
+                    "%s: Group %s is not active",
+                    u.username, g.group.name
+                )
                 continue
             if g.group_dn.lower() in user_groups:
+                self.logger.debug(
+                    "%s: Ensure group %s",
+                    u.username, g.group.name
+                )
                 self.ensure_group(u, g.group)
+                ug += [g.group.name]
             else:
+                self.logger.debug(
+                    "%s: Deny group %s",
+                    u.username, g.group.name
+                )
                 self.deny_group(u, g.group)
         # Final check
         if not user_info["is_active"]:
             raise self.LoginError("Access denied")
+        self.logger.info(
+            "Authenticated as %s. Groups: %s",
+            u.username, ", ".join(ug)
+        )
         return u.username
 
     @classmethod
