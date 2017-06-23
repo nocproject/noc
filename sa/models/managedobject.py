@@ -19,7 +19,7 @@ from threading import Lock
 # Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
-                              DateTimeField, SET_NULL)
+                              DateTimeField, BigIntegerField, SET_NULL)
 from django.contrib.auth.models import User, Group
 import cachetools
 import six
