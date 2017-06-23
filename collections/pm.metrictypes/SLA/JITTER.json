@@ -1,0 +1,9 @@
+{
+  "name": "SLA | JITTER",
+  "$collection": "pm.metrictypes",
+  "uuid": "642eead5-2529-4320-b870-ba6a991a8c29",
+  "description": "Measured deviation of round trip time in seconds",
+  "scope": "p",
+  "measure": "s",
+  "vector_tag": ""
+}

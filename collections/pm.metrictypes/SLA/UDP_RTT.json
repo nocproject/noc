@@ -1,0 +1,9 @@
+{
+  "name": "SLA | UDP RTT",
+  "$collection": "pm.metrictypes",
+  "uuid": "af4676d1-0aaa-4766-8d36-0a955b2c7938",
+  "description": "Measured round trip time for UDP packets in seconds",
+  "scope": "p",
+  "measure": "s",
+  "vector_tag": ""
+}
