@@ -42,6 +42,8 @@ class Script(BaseScript):
         c = self.cli("SELGRP \"Edit Configuration\"")
         c = self.cli("GET ip/router/qualityMonitor/destinations[]")
         for match in self.rx_probe.finditer(c):
+            if not match.group("type") in ["icmp", "udpEcho"]:
+                continue
             test = {
                 "name": match.group("name"),
                 "type": self.TEST_TYPES[match.group("type")],
