@@ -273,6 +273,92 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     ]
                                 },
                                 {
+                                    xtype: "fieldset",
+                                    title: __("Ping series settings"),
+                                    layout: "vbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "ping_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Ping Policy"),
+                                            allowBlank: true,
+                                            uiStyle: "medium",
+                                            store: [
+                                                ["f", __("First Success")],
+                                                ["a", __("All Success")]
+                                            ],
+                                            value: "f"
+                                        },
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "ping_size",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Packet size, bytes"),
+                                                    labelWidth: 105,
+                                                    uiStyle: "small",
+                                                    defautlValue: 64,
+                                                    minValue: 64
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "ping_count",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Packets count"),
+                                                    labelWidth: 105,
+                                                    defautlValue: 3,
+                                                    uiStyle: "small"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "ping_timeout_ms",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Timeout, msec"),
+                                                    defaultValue: 1000,
+                                                    labelWidth: 105,
+                                                    uiStyle: "small",
+                                                    listeners: {
+                                                        scope: me,
+                                                        change: function(_item, newValue, oldValue, eOpts) {
+                                                            me.form.findField("ping_tm_calculated").setValue(newValue/1000);
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    name: 'ping_tm_calculated',
+                                                    xtype: 'displayfield',
+                                                    renderer: NOC.render.Duration
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
                                     name: "report_ping_rtt",
                                     xtype: "checkboxfield",
                                     boxLabel: __("Report ping RTT"),

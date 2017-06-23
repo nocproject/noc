@@ -158,6 +158,10 @@ Ext.apply(NOC.render, {
         if(isNaN(val)) {
             return "";
         }
+        if (val < 1) {
+            // Msec
+            return "" + val*1000 + "ms";
+        }
         if(val < 60) {
             // XXs
             return "" + val + "s";
