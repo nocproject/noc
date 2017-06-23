@@ -58,11 +58,11 @@ class ReportForm(forms.Form):
     # )
     selectors = forms.ModelChoiceField(
         label=_("Selectors"),
-        required=False,
+        required=True,
         queryset=ManagedObjectSelector.objects.order_by("name")
     )
     administrative_domain = forms.ModelChoiceField(
-        label=_("Administrative Domain"),
+        label=_("Administrative Domain (or)"),
         required=False,
         queryset=AdministrativeDomain.objects.order_by("name")
     )
