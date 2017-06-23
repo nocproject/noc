@@ -99,6 +99,7 @@ class Script(BaseScript):
                         "ifAlias": 1,
                         "macAddress": 3,
                         "ifName": 5,
+                        "portComponent": 5,
                         "local": 7
                     }[match.group("port_id_subtype")],
                 "remote_port": match.group("port_id"),
