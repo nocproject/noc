@@ -81,6 +81,7 @@ class ManagedObjectProfile(models.Model):
     ping_interval = models.IntegerField(_("Ping interval"), default=60)
     ping_policy = models.CharField(
         _("Ping check policy"),
+        max_length=1,
         choices=[
             ("f", "First Success"),
             ("a", "All Successes")

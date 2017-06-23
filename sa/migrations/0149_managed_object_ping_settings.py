@@ -10,6 +10,7 @@ class Migration:
             "ping_policy",
             models.CharField(
                 "Ping check policy",
+                max_length=1,
                 choices=[
                     ("f", "First Success"),
                     ("a", "All Successes")
