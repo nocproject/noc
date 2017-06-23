@@ -1,0 +1,22 @@
+{
+    "name": "APC | AOS | Environment | UPS | Input Power OK #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "cc3cda18-e57c-4c74-9e35-384b822bd49f",
+    "description": "UPS: An input voltage or frequency problem no longer prevents switching to bypass mode. 0x0210",
+    "event_class__name": "Environment | UPS | Input Power OK",
+    "preference": 1000,
+    "patterns": [
+        {
+            "key_re": "^profile$",
+            "value_re": "^APC\\.AOS$"
+        },
+        {
+            "key_re": "^source$",
+            "value_re": "^syslog$"
+        },
+        {
+            "key_re": "^message$",
+            "value_re": "UPS: An input voltage or frequency problem no longer prevents switching to bypass mode. 0x0210$"
+        }
+    ]
+}
