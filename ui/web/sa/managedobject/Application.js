@@ -804,6 +804,43 @@ Ext.define("NOC.sa.managedobject.Application", {
                     ]
                 },
                 {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Discovery Alarm"),
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "box_discovery_alarm_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Box Alarm"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            store: [
+                                ["P", __("Profile")],
+                                ["E", __("Enable")],
+                                ["D", __("Disable")]
+                            ],
+                            value: "P"
+                        },
+                        {
+                            name: "periodic_discovery_alarm_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Periodic Alarm"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            store: [
+                                ["P", __("Profile")],
+                                ["E", __("Enable")],
+                                ["D", __("Disable")]
+                            ],
+                            value: "P"
+                        }
+                    ]
+                },
+                {
                     name: "tags",
                     xtype: "tagsfield",
                     fieldLabel: __("Tags"),

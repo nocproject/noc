@@ -356,7 +356,34 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "escalation_policy",
             type: "string"
-        }
+        },
+
+        {
+            name: "box_discovery_alarm_policy",
+            type: "string"
+        },
+        {
+            name: "box_discovery_fatal_alarm_weight",
+            type: "int"
+        },
+        {
+            name: "box_discovery_alarm_weight",
+            type: "int"
+        },
+
+        {
+            name: "periodic_discovery_alarm_policy",
+            type: "string"
+        },
+        {
+            name: "periodic_discovery_fatal_alarm_weight",
+            type: "int"
+        },
+        {
+            name: "periodic_discovery_alarm_weight",
+            type: "int"
+        },
+
     ]
 })
 ;

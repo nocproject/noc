@@ -689,7 +689,52 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             allowBlank: true
                                         }
                                     ]
-                                }
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    layout: "hbox",
+                                    title: __("Discovery Alarm"),
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "box_discovery_alarm_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Box Alarm"),
+                                            allowBlank: true,
+                                            labelWidth: 60,
+                                            labelAlign: "left",
+                                            uiStyle: "medium",
+                                            store: [
+                                                ["E", __("Enable")],
+                                                ["D", __("Disable")]
+                                            ],
+                                            value: "D"
+                                        },
+                                        {
+                                            name: "box_discovery_fatal_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Fatal Alarm Weight"),
+                                            labelWidth: 115,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        },
+                                        {
+                                            name: "box_discovery_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Alarm Weight"),
+                                            labelWidth: 80,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        }
+                                    ]
+                                },
                             ]
                         },
                         {
@@ -769,7 +814,52 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("Metrics")
                                         }
                                     ]
-                                }
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    layout: "hbox",
+                                    title: __("Discovery Alarm"),
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "periodic_discovery_alarm_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Periodic Alarm"),
+                                            allowBlank: true,
+                                            labelWidth: 80,
+                                            labelAlign: "left",
+                                            uiStyle: "medium",
+                                            store: [
+                                                ["E", __("Enable")],
+                                                ["D", __("Disable")]
+                                            ],
+                                            value: "D"
+                                        },
+                                        {
+                                            name: "periodic_discovery_fatal_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Fatal Alarm Weight"),
+                                            labelWidth: 115,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        },
+                                        {
+                                            name: "periodic_discovery_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Alarm Weight"),
+                                            labelWidth: 80,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        }
+                                    ]
+                                },
                             ]
                         },
                         {
@@ -877,7 +967,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     value: "E"
                                 }
                             ]
-                        }
+                        },
                     ]
                 }
             ],
