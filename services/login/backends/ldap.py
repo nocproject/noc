@@ -26,6 +26,14 @@ class LdapBackend(BaseAuthBackend):
             raise self.LoginError(
                 "Invalid LDAP domain '%s'" % domain
             )
+        if not ldap_domain.is_active:
+            self.logger.error(
+                "LDAP Auth domain '%s' is disabled",
+                domain
+            )
+            raise self.LoginError(
+                "LDAP Auth domain '%s' is disabled" % domain
+            )
         # Get servers
         server_pool = self.get_server_pool(ldap_domain)
         if not server_pool:
