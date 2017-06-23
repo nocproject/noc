@@ -343,7 +343,7 @@ class ManagedObjectProfile(models.Model):
         return self.box_discovery_alarm_policy == "E"
 
     def can_create_periodic_alarms(self):
-        return self.peridic_discovery_alarm_policy == "E"
+        return self.periodic_discovery_alarm_policy == "E"
 
     def save(self, force_insert=False, force_update=False, using=None):
         # Validate MeticType for object profile
