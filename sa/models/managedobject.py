@@ -62,6 +62,8 @@ from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
 
+# Increase whenever new field added
+MANAGEDOBJECT_CACHE_VERSION = 2
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
@@ -358,7 +360,8 @@ class ManagedObject(Model):
     @classmethod
     @cachedmethod(operator.attrgetter("_id_cache"),
                   key="managedobject-id-%s",
-                  lock=lambda _: id_lock)
+                  lock=lambda _: id_lock,
+                  version=MANAGEDOBJECT_CACHE_VERSION)
     def get_by_id(cls, id):
         mo = ManagedObject.objects.filter(id=id)[:1]
         if mo:
