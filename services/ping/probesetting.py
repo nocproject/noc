@@ -46,9 +46,9 @@ class ProbeSetting(object):
         self.interval = interval
         self.status = status
         self.policy = POLICY_MAP.get(policy, 0)
-        self.size = min(size, 64)
-        self.count = min(count, 1)
-        self.timeout = min(timeout, 1)
+        self.size = max(size, 64)
+        self.count = max(count, 1)
+        self.timeout = max(timeout, 1)
         self.sent_status = None
         self.report_rtt = report_rtt
         self.report_attempts = report_attempts
@@ -62,9 +62,9 @@ class ProbeSetting(object):
                *args, **kwargs):
         self.interval = interval
         self.policy = POLICY_MAP.get(policy, 0)
-        self.size = min(size, 64)
-        self.count = min(count, 1)
-        self.timeout = min(timeout, 1)
+        self.size = max(size, 64)
+        self.count = max(count, 1)
+        self.timeout = max(timeout, 1)
         self.report_rtt = report_rtt
         self.report_attempts = report_attempts
         self.time_expr = time_expr
@@ -73,6 +73,10 @@ class ProbeSetting(object):
     def is_differ(self, data):
         return (
             self.interval != data["interval"] or
+            self.policy != data["policy"] or
+            self.size != data["size"] or
+            self.count != data["count"] or
+            self.timeout != data["timeout"] or
             self.report_rtt != data.get("report_rtt") or
             self.report_attempts != data.get("report_attempts") or
             self.time_expr != data.get("time_expr")
