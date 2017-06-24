@@ -212,7 +212,7 @@ class ConsulDCS(DCSBase):
         :return:
         """
         self.logger.info("Creating session")
-        checks = ["serfHealth", "service:%s" % self.svc_id]
+        checks = ["serfHealth"]
         while True:
             try:
                 self.session = yield self.consul.session.create(
