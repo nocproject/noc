@@ -25,9 +25,13 @@ from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.maintainance.models.maintainance import Maintainance
 from noc.core.config.base import config
+from noc.core.tt.error import TTError, TemporaryTTError
+from noc.core.scheduler.job import Job
 
 
 logger = logging.getLogger(__name__)
+
+RETRY_TIMEOUT = 60
 
 
 def escalate(alarm_id, escalation_id, escalation_delay,
@@ -170,15 +174,20 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                     log("Creating TT in system %s", mo.tt_system.name)
                     tts = mo.tt_system.get_system()
                     try:
-                        tt_id = tts.create_tt(
-                            queue=mo.tt_queue,
-                            obj=mo.tt_system_id,
-                            reason=pre_reason,
-                            subject=subject,
-                            body=body,
-                            login="correlator",
-                            timestamp=alarm.timestamp
-                        )
+                        try:
+                            tt_id = tts.create_tt(
+                                queue=mo.tt_queue,
+                                obj=mo.tt_system_id,
+                                reason=pre_reason,
+                                subject=subject,
+                                body=body,
+                                login="correlator",
+                                timestamp=alarm.timestamp
+                            )
+                        except TemporaryTTError as e:
+                            metrics["escalation_tt_retry"] += 1
+                            log("Temporary error detected. Retry after %ss", RETRY_TIMEOUT)
+                            Job.retry_after(RETRY_TIMEOUT, str(e))
                         ctx["tt"] = "%s:%s" % (mo.tt_system.name, tt_id)
                         alarm.escalate(ctx["tt"], close_tt=a.close_tt)
                         if tts.promote_group_tt:
@@ -214,7 +223,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                                         gtt
                                     )
                         metrics["escalation_tt_create"] += 1
-                    except tts.TTError as e:
+                    except TTError as e:
                         log("Failed to create TT: %s", e)
                         metrics["escalation_tt_fail"] += 1
                         alarm.log_message(
@@ -244,7 +253,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                         except NotImplementedError:
                             log("Cannot add comment to %s: Feature not implemented", ca.escalation_tt)
                             metrics["escalation_tt_comment_fail"] += 1
-                        except tts.TTError as e:
+                        except TTError as e:
                             log("Failed to add comment to %s: %s",
                                 ca.escalation_tt, e)
                             metrics["escalation_tt_comment_fail"] += 1
@@ -314,7 +323,11 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                     metrics["escalation_tt_close"] += 1
                     if alarm:
                         alarm.close_escalation()
-                except tts.TTError as e:
+                except TemporaryTTError as e:
+                    log("Temporary error detected while closing tt %s: %s", tt_id, e)
+                    metrics["escalation_tt_close_retry"] += 1
+                    Job.retry_after(RETRY_TIMEOUT, str(e))
+                except TTError as e:
                     log("Failed to close tt %s: %s",
                         tt_id, e)
                     metrics["escalation_tt_close_fail"] += 1
@@ -333,7 +346,7 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                         login="correlator"
                     )
                     metrics["escalation_tt_comment"] += 1
-                except tts.TTError as e:
+                except TTError as e:
                     log("Failed to add comment to %s: %s",
                         tt_id, e)
                     metrics["escalation_tt_comment_fail"] += 1
