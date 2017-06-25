@@ -236,8 +236,7 @@ class NRICheck(DiscoveryCheck):
         ]
         smap = dict((s["nri_port"], s["_id"]) for s in slist)
         prof_map = dict(
-            (s["_id"], ServiceProfile.get_by_id(s["profile"]))
-             for s in slist
+            (s["_id"], ServiceProfile.get_by_id(s["profile"])) for s in slist
         )
         nmap = {}
         n = 0

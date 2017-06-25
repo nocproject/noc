@@ -2,12 +2,10 @@
 # ---------------------------------------------------------------------
 # Interface check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Third-party modules
-import cachetools
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.forwardinginstance import ForwardingInstance
@@ -44,7 +42,7 @@ class InterfaceCheck(DiscoveryCheck):
             # Move LAG members to the end
             # for effective caching
             in_lag = lambda x: ("aggregated_interface" in x and
-                               bool(x["aggregated_interface"]))
+                                bool(x["aggregated_interface"]))
             ifaces = sorted(fi["interfaces"], key=in_lag)
             icache = {}
             for i in ifaces:
@@ -164,7 +162,7 @@ class InterfaceCheck(DiscoveryCheck):
                 "ifindex": ifindex
             }, ignore_empty=["ifindex"])
             self.log_changes("Interface '%s' has been changed" % name,
-                changes)
+                             changes)
         else:
             # Create interface
             self.logger.info("Creating interface '%s'", name)
@@ -251,7 +249,8 @@ class InterfaceCheck(DiscoveryCheck):
         for i in db_fi - set(fi):
             self.logger.info("Removing forwarding instance %s", i)
             for dfi in ForwardingInstance.objects.filter(
-                managed_object=self.object.id, name=i):
+                managed_object=self.object.id, name=i
+            ):
                 dfi.delete()
 
     def cleanup_interfaces(self, interfaces):

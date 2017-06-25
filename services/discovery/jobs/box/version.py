@@ -43,4 +43,3 @@ class VersionCheck(DiscoveryCheck):
             )
             if self.object.object_profile.clear_links_on_platform_change:
                 self.clear_links()
-
