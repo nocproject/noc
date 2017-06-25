@@ -223,7 +223,11 @@ class MODiscoveryJob(PeriodicJob):
         from noc.fm.models.alarmseverity import AlarmSeverity
         from noc.fm.models.alarmclass import AlarmClass
 
-        if not self.can_update_alarms():
+        prev_status = self.context.get("umbrella_settings", False)
+        current_status = self.can_update_alarms()
+        self.context["umbrella_settings"] = current_status
+
+        if not prev_status and not current_status:
             return
         self.logger.info("Updating alarm statuses")
         umbrella_cls = AlarmClass.get_by_name(self.umbrella_cls)
@@ -231,26 +235,30 @@ class MODiscoveryJob(PeriodicJob):
             self.logger.info("No umbrella alarm class. Alarm statuses not updated")
             return
         details = []
-        fatal_weight = self.get_fatal_alarm_weight()
-        weight = self.get_alarm_weight()
-        for p in self.problems:
-            if not p["alarm_class"]:
-                continue
-            ac = AlarmClass.get_by_name(p["alarm_class"])
-            if not ac:
-                self.logger.info("Unknown alarm class %s. Skipping",
-                                 p["alarm_class"])
-                continue
-            details += [{
-                "alarm_class": ac,
-                "path": p["path"],
-                "severity": AlarmSeverity.severity_for_weight(
-                    fatal_weight if p["fatal"] else weight),
-                "vars": {
+        if current_status:
+            fatal_weight = self.get_fatal_alarm_weight()
+            weight = self.get_alarm_weight()
+            for p in self.problems:
+                if not p["alarm_class"]:
+                    continue
+                ac = AlarmClass.get_by_name(p["alarm_class"])
+                if not ac:
+                    self.logger.info("Unknown alarm class %s. Skipping",
+                                     p["alarm_class"])
+                    continue
+                details += [{
+                    "alarm_class": ac,
                     "path": p["path"],
-                    "message": p["message"]
-                }
-            }]
+                    "severity": AlarmSeverity.severity_for_weight(
+                        fatal_weight if p["fatal"] else weight),
+                    "vars": {
+                        "path": p["path"],
+                        "message": p["message"]
+                    }
+                }]
+        else:
+            # Clean up all open alarms as they has been disabled
+            details = []
         self.update_umbrella(umbrella_cls, details)
 
     def can_update_alarms(self):
