@@ -27,9 +27,9 @@ class SuggestCLICheck(DiscoveryCheck):
         for user, password, super_password in self.object.auth_profile.iter_cli():
             if self.check_login(user, password, super_password):
                 if self.object._suggest_snmp:
-                    ro, rw = self.object._suggest_snmp
+                    ro, rw, version = self.object._suggest_snmp
                 else:
-                    ro, rw = None, None
+                    ro, rw, version = None, None, None
                 self.set_credentials(
                     user=user,
                     password=password,

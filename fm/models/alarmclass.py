@@ -225,9 +225,9 @@ class AlarmClass(nosql.Document):
         # Text
         r += ["    \"subject_template\": \"%s\"," % q(c.subject_template)]
         r += ["    \"body_template\": \"%s\"," % q(c.body_template)]
-        r += ["    \"symptoms\": \"%s\"," % q(c.symptoms)]
-        r += ["    \"probable_causes\": \"%s\"," % q(c.probable_causes)]
-        r += ["    \"recommended_actions\": \"%s\"," % q(c.recommended_actions)]
+        r += ["    \"symptoms\": \"%s\"," % q(c.symptoms if c.symptoms else "")]
+        r += ["    \"probable_causes\": \"%s\"," % q(c.probable_causes if c.probable_causes else "")]
+        r += ["    \"recommended_actions\": \"%s\"," % q(c.recommended_actions if c.recommended_actions else "")]
         # Root cause
         if self.root_cause:
             rc = []

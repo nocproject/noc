@@ -2,13 +2,14 @@
 # ---------------------------------------------------------------------
 # Profile check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2017 The NOC Project
+# Copyright (C) 2007-2016 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
 import threading
+import time
 import cachetools
 import operator
 # NOC modules
@@ -16,6 +17,7 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.sa.models.profilecheckrule import ProfileCheckRule
 from noc.core.mib import mib
 from noc.core.service.client import open_sync_rpc, RPCError
+from noc.core.error import NOCError
 
 rules_lock = threading.Lock()
 
@@ -27,6 +29,7 @@ class ProfileCheck(DiscoveryCheck):
     name = "profile"
 
     _rules_cache = cachetools.TTLCache(10, ttl=60)
+    snmp_version_def = None
 
     def handler(self):
         self.logger.info("Checking profile accordance")
@@ -48,32 +51,37 @@ class ProfileCheck(DiscoveryCheck):
         Returns profile for object, or None when not known
         """
         self.result_cache = {}  # (method, param) -> result
-        snmp_result = None
-        http_result = None
+        snmp_result = ""
+        http_result = ""
+        message = "Cannot detect profile"
+        fatal = False
         for ruleset in self.get_rules():
             for (method, param), actions in ruleset:
-                result = self.do_check(method, param)
-                if not result:
-                    continue
-                if "snmp" in method:
-                    snmp_result = result
-                if "http" in method:
-                    http_result = result
-                for match_method, value, action, profile, rname in actions:
-                    if self.is_match(result, match_method, value):
-                        self.logger.info("Matched profile: %s (%s)",
-                                         profile, rname)
-                        # @todo: process MAYBE rule
-                        return profile
-        self.logger.info("Cannot find profile in \"Profile Check Rules\"")
-        if snmp_result:
-            self.logger.info("SNMP Result: %s", snmp_result)
-        if http_result:
-            self.logger.info("HTTP Result: %s", http_result)
+                try:
+                    result = self.do_check(method, param)
+                    if not result:
+                        continue
+                    if "snmp" in method:
+                        snmp_result = result
+                    if "http" in method:
+                        http_result = result
+                    for match_method, value, action, profile, rname in actions:
+                        if self.is_match(result, match_method, value):
+                            self.logger.info("Matched profile: %s (%s)",
+                                             profile, rname)
+                            # @todo: process MAYBE rule
+                            return profile
+                except NOCError as e:
+                    self.logger.error(e.message)
+                    return None
+        self.logger.info(message)
+        if snmp_result or http_result:
+            self.logger.info("SNMP Result: %s, HTTP Result: %s", snmp_result, http_result)
+            message = "Cannot find profile in \"Profile Check Rules\", OID: %s" % snmp_result
         self.set_problem(
             alarm_class="Discovery | Guess | Profile",
-            message="Cannot detect profile",
-            fatal=True
+            message=message,
+            fatal=fatal
         )
         self.logger.debug("Result %s" % self.job.problems)
         return None
@@ -138,23 +146,32 @@ class ProfileCheck(DiscoveryCheck):
             # Use guessed community
             # as defined one may be invalid
             snmp_ro = self.object._suggest_snmp[0]
+            if not self.snmp_version_def:
+                self.snmp_version_def = self.object._suggest_snmp[2]
         else:
+            # @todo caps for version
             snmp_ro = self.object.credentials.snmp_ro
+            if not self.snmp_version_def:
+                self.snmp_version_def = "snmp_v2c_get"
+                caps = self.object.get_caps()
+                if caps.get("SNMP | v2c") is False:
+                    self.snmp_version_def = "snmp_v1_get"
         if not snmp_ro:
             self.logger.error("No SNMP credentials. Ignoring")
-            return None
+            raise NOCError(msg="No SNMP credentials")
         try:
             param = mib[param]
         except KeyError:
             self.logger.error("Cannot resolve OID '%s'. Ignoring",
                               param)
             return None
+        self.logger.info("Use %s for request", self.snmp_version_def)
         try:
             return open_sync_rpc(
                 "activator",
                 pool=self.object.pool.name,
                 calling_service="discovery"
-            ).snmp_v2c_get(
+            ).__getattr__(self.snmp_version_def)(
                 self.object.address,
                 snmp_ro,
                 param
