@@ -38,6 +38,9 @@ class BoxDiscoveryJob(MODiscoveryJob):
     name = "box"
     umbrella_cls = "Discovery | Job | Box"
 
+    # Store context
+    context_version = 1
+
     TOPOLOGY_METHODS = [
         OAMCheck,
         LACPCheck,

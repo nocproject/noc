@@ -168,14 +168,20 @@ class Job(object):
             self.schedule_next(status)
         else:
             # Retry
+            if self.context_version:
+                ctx = self.context or None
+                ctx_key = self.get_context_cache_key()
+            else:
+                ctx = None
+                ctx_key = None
             self.scheduler.set_next_run(
                 self.attrs[self.ATTR_ID],
                 status=status,
                 ts=datetime.datetime.now() + datetime.timedelta(seconds=delay),
                 duration=self.duration,
                 context_version=self.context_version,
-                context=self.context or None,
-                context_key=self.get_context_cache_key()
+                context=ctx,
+                context_key=ctx_key
             )
 
     def handler(self, **kwargs):
