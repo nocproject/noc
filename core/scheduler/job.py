@@ -17,6 +17,7 @@ import tornado.gen
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.debug import error_report
 from noc.lib.dateutils import total_seconds
+from .error import RetryAfter
 
 logger = logging.getLogger(__name__)
 
@@ -69,13 +70,15 @@ class Job(object):
     E_EXCEPTION = "X"  # Terminated by exception
     E_DEFERRED = "D"  # Cannot be run
     E_DEREFERENCE = "d"  # Cannot be dereferenced
+    E_RETRY = "r"  # Forcefully retried
 
     STATUS_MAP = {
         E_SUCCESS: "SUCCESS",
         E_FAILED: "FAILED",
         E_EXCEPTION: "EXCEPTION",
         E_DEFERRED: "DEFERRED",
-        E_DEREFERENCE: "DEREFERENCE"
+        E_DEREFERENCE: "DEREFERENCE",
+        E_RETRY: "RETRY"
     }
 
     class JobFailed(Exception):
@@ -123,6 +126,7 @@ class Job(object):
         )
         # Run handler
         status = self.E_EXCEPTION
+        delay = None
         try:
             ds = self.dereference()
             can_run = self.can_run()
@@ -140,6 +144,10 @@ class Job(object):
                         # Wait for future
                         result = yield result
                     status = self.E_SUCCESS
+                except RetryAfter as e:
+                    self.logger.info("Retry after %ss: %s", e.delay, e)
+                    status = self.E_RETRY
+                    delay = e.delay
                 except self.failed_exceptions:
                     status = self.E_FAILED
                 except Exception:
@@ -156,7 +164,19 @@ class Job(object):
                          self.STATUS_MAP.get(status, status),
                          self.duration * 1000)
         # Schedule next run
-        self.schedule_next(status)
+        if delay is None:
+            self.schedule_next(status)
+        else:
+            # Retry
+            self.scheduler.set_next_run(
+                self.attrs[self.ATTR_ID],
+                status=status,
+                ts=datetime.datetime.now() + datetime.timedelta(seconds=delay),
+                duration=self.duration,
+                context_version=self.context_version,
+                context=self.context or None,
+                context_key=self.get_context_cache_key()
+            )
 
     def handler(self, **kwargs):
         """
@@ -289,3 +309,15 @@ class Job(object):
             "job_id": self.attrs[self.ATTR_ID]
         }
         return self.context_cache_key % ctx
+
+    @classmethod
+    def retry_after(cls, delay, msg=""):
+        """
+        Must be called from job handler to deal with temporary problems.
+        Current job handler will be terminated and job
+        will be scheduled after *delay* seconds
+        :param delay: Delay in seconds
+        :param msg: Informational message
+        :return:
+        """
+        raise RetryAfter(msg, delay=delay)
