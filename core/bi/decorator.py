@@ -33,7 +33,8 @@ def get_bi_id(self):
     if not self.bi_id:
         h = getattr(self, "_bi_id", None)
         if not h:
-            self._bi_id = bi_hash(self.id)
+            h = bi_hash(self.id)
+            self._bi_id = h
         return h
     else:
         return self.bi_id
