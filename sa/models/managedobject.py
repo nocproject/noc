@@ -460,7 +460,6 @@ class ManagedObject(Model):
     def on_save(self):
         # Invalidate caches
         deleted_cache_keys = [
-            "managedobject-id-%s" % self.id,
             "managedobject-name-to-id-%s" % self.name
         ]
         # IPAM sync
@@ -557,6 +556,8 @@ class ManagedObject(Model):
         # Rebuild selector cache
         SelectorCache.rebuild_for_object(self)
         #
+        cache.delete("managedobject-id-%s" % self.id,
+                     version=MANAGEDOBJECT_CACHE_VERSION)
         cache.delete_many(deleted_cache_keys)
         # Clear alarm when necessary
         if (
