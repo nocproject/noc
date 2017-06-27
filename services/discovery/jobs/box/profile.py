@@ -77,7 +77,8 @@ class ProfileCheck(DiscoveryCheck):
         self.logger.info(message)
         if snmp_result or http_result:
             self.logger.info("SNMP Result: %s, HTTP Result: %s", snmp_result, http_result)
-            message = "Cannot find profile in \"Profile Check Rules\", OID: %s" % snmp_result
+            # message = "Cannot find profile in \"Profile Check Rules\", OID: %s" % snmp_result
+            message = "Not find profile for OID: %s or HTTP string: %s" % (snmp_result, http_result)
         self.set_problem(
             alarm_class="Discovery | Guess | Profile",
             message=message,

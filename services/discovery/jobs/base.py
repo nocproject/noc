@@ -70,10 +70,13 @@ class MODiscoveryJob(PeriodicJob):
         )
         problems = {}
         for p in self.problems:
-            if p["check"] in problems:
-                problems[p["check"]] += "; %s" % p["message"]
+            if p["check"] in problems and p["path"]:
+                problems[p["check"]][p["path"]] = p["message"]
+            elif p["check"] in problems and not p["path"]:
+                # p["path"] == ""
+                problems[p["check"]][p["path"]] += "; %s" % p["message"]
             else:
-                problems[p["check"]] = p["message"]
+                problems[p["check"]] = {p["path"]: p["message"]}
         get_db()["noc.joblog"].update({
             "_id": key
         }, {
@@ -107,7 +110,8 @@ class MODiscoveryJob(PeriodicJob):
         self.problems += [{
             "check": check,
             "alarm_class": alarm_class,
-            "path": path or "",
+            # in MongoDB Key must be string
+            "path": str(path) if path else "",
             "message": message,
             "fatal": fatal
         }]
@@ -557,6 +561,7 @@ class DiscoveryCheck(object):
             must be disabled
         :return:
         """
+        self.logger.info("Set path: %s" % path)
         self.job.set_problem(
             check=self.name,
             alarm_class=alarm_class,
@@ -651,6 +656,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     e
                 )
                 self.set_problem(
+                    path=list(candidates[remote_object])[0][0],
                     message="Cannot get neighbors from candidate %s: %s" % (
                         remote_object.name, e)
                 )
