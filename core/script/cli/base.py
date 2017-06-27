@@ -22,7 +22,7 @@ import six
 from noc.core.log import PrefixLoggerAdapter
 from noc.lib.text import replace_re_group
 from .error import (CLIError, CLIAuthFailed, CLINoSuperCommand,
-                    CLILowPrivileges)
+                    CLILowPrivileges, CLIConnectionRefused)
 
 
 class CLI(object):
@@ -177,7 +177,7 @@ class CLI(object):
                 yield self.iostream.connect(address)
             except tornado.iostream.StreamClosedError:
                 self.logger.debug("Connection refused")
-                self.error = self.CLIError("Connection refused")
+                self.error = CLIConnectionRefused("Connection refused")
                 raise tornado.gen.Return(None)
             self.logger.debug("Connected")
             yield self.iostream.startup()
