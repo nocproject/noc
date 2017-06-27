@@ -80,6 +80,31 @@ class Script(BaseScript):
                     iface["enabled_protocols"] = ["LLDP"]
                 interfaces += [iface]
 
+        for slot in range(0, 16):
+            c = self.cli("show interface plc-pon-port %d/0-7 vlans" % slot)
+            t = parse_table(
+                c, allow_wrap=True, footer="dummy footer")
+            for i in t:
+                iface = self.create_iface(i, "plc-pon-port")
+                if iface is not None:
+                    interfaces += [iface]
+
+        c = self.cli("show interface slot-channel 0-15 vlans")
+        t = parse_table(
+            c, allow_wrap=True, footer="N/A - interface doesn't exist")
+        for i in t:
+            iface = self.create_iface(i, "slot-channel")
+            if iface is not None:
+                interfaces += [iface]
+
+        c = self.cli("show interface slot-port all vlans")
+        t = parse_table(
+            c, allow_wrap=True, footer="N/A - interface doesn't exist")
+        for i in t:
+            iface = self.create_iface(i, "slot-port")
+            if iface is not None:
+                interfaces += [iface]
+
         c = self.cli("show management")
         match = self.rx_mgmt.search(c)
         ip_address = "%s/%s" % (
