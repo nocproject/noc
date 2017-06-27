@@ -6,6 +6,8 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+import six
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.forwardinginstance import ForwardingInstance
@@ -329,6 +331,7 @@ class InterfaceCheck(DiscoveryCheck):
         missed_ifindexes = [
             n[1] for n in self.if_name_cache
             if (n in self.if_name_cache and
+                self.if_name_cache[n] and
                 self.if_name_cache[n].ifindex is None and
                 self.if_name_cache[n].type in ("physical", "aggregated")
                 )
@@ -348,7 +351,7 @@ class InterfaceCheck(DiscoveryCheck):
                 updates[n] = r[n]
         if not updates:
             return
-        for n, i in updates.iteritems():
+        for n, i in six.iteritems(updates):
             iface = self.get_interface_by_name(n)
             if iface:
                 self.logger.info("Set ifindex for %s: %s", n, i)
