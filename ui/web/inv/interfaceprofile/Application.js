@@ -234,6 +234,60 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 editor: "checkbox"
                             },
                             {
+                                text: __("Stored"),
+                                dataIndex: "is_stored",
+                                width: 50,
+                                renderer: NOC.render.Bool,
+                                editor: "checkbox"
+                            },
+                            {
+                                text: __("Window"),
+                                dataIndex: "window",
+                                width: 50,
+                                editor: "textfield"
+                            },
+                            {
+                                text: __("Window Type"),
+                                dataIndex: "window_type",
+                                width: 70,
+                                renderer: NOC.render.Choices({
+                                    m: __("Measurements"),
+                                    t: __("Seconds")
+                                }),
+                                editor: {
+                                    xtype: "combobox",
+                                    store: [
+                                        ["m", __("Measurements")],
+                                        ["t", __("Seconds")]
+                                    ]
+                                }
+                            },
+                            {
+                                text: __("Window Function"),
+                                dataIndex: "window_function",
+                                width: 70,
+                                editor: {
+                                    xtype: "combobox",
+                                    store: [
+                                        ["last", "Last Value"],
+                                        ["avg", "Average"],
+                                        ["percentile", "Percentile"],
+                                        ["q1", "1st quartile"],
+                                        ["q2", "2st quartile"],
+                                        ["q3", "3st quartile"],
+                                        ["p95", "95% percentile"],
+                                        ["p99", "99% percentile"],
+                                        ["handler", "Handler"]
+                                    ]
+                                }
+                            },
+                            {
+                                text: __("Config"),
+                                dataIndex: "window_config",
+                                width: 70,
+                                editor: "textfield"
+                            },
+                            {
                                 text: __("Low Error"),
                                 dataIndex: "low_error",
                                 width: 60,
