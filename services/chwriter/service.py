@@ -60,7 +60,7 @@ class CHWriterService(Service):
             metrics["channels_active"] += 1
         return self.channels[fields]
 
-    def on_data(self, message, metrics, *args, **kwargs):
+    def on_data(self, message, records, *args, **kwargs):
         """
         Called on new dispose message
         Message format
@@ -77,7 +77,7 @@ class CHWriterService(Service):
             )
             metrics["deferred_messages"] += 1
             return False
-        fields, data = metrics.split("\n", 1)
+        fields, data = records.split("\n", 1)
         channel = self.get_channel(fields)
         n = channel.feed(data)
         metrics["records_received"] += n
