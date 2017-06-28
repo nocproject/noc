@@ -87,7 +87,7 @@ def fetch(url, method="GET",
         path = u.path
         if u.query:
             path += "?%s" % u.query
-        req = "%s %s HTTP/1.1\n%s\n\n%s" % (method, path, h, body)
+        req = "%s %s HTTP/1.1\r\n%s\r\n\r\n%s" % (method, path, h, body)
         deadline = io_loop.time() + request_timeout
         try:
             yield tornado.gen.with_timeout(
