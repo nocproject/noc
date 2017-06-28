@@ -215,6 +215,14 @@ server {
         auth_request_set $groups $upstream_http_remote_groups;
         proxy_set_header Remote-Groups $groups;
     }
+
+    location /ui/bi2/ {
+        alias {{ noc_root }}/ui/bi2/;
+        try_files $uri /index.html =404;
+        gzip on;
+        gzip_types text/css text/javascript application/x-javascript application/json;
+        access_log  {{ nginx_log_dir }}/static.access.log noc_format;
+    }
 {% endif %}
 
 {% if 'svc-grafanads' in groups and groups['svc-grafanads'] | length > 0 %}
