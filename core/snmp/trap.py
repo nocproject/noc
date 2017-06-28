@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SNMP Trap PDU Parser
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SNMP Trap PDU Parser
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
-from ber import decode
+# NOC modules
+from __future__ import absolute_import
+from .ber import decode
 
 
 class InvalidSNMPPacket(Exception):

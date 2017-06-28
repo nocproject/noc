@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SNMP methods implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SNMP methods implementation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import socket
 import errno
-## Third-party modules
+# Third-party modules
 from tornado.gen import coroutine, Return
-## NOC modules
+# NOC modules
 from noc.core.snmp.version import SNMP_v2c
 from noc.core.snmp.get import (get_pdu, getnext_pdu, getbulk_pdu,
                                parse_get_response)
@@ -205,6 +205,7 @@ def snmp_getnext(address, oid, port=161,
                     sock.close()
                     raise Return(result)
     sock.close()
+
 
 @coroutine
 def snmp_set(address, varbinds, port=161,
