@@ -80,7 +80,7 @@ def fetch(url, method="GET",
         }
         if method == "POST":
             hd["Content-Length"] = str(len(body))
-            # hd["Content-Type"] = "application/x-www-form-urlencoded"
+            hd["Content-Type"] = "application/binary"
         if headers:
             hd.update(headers)
         h = tornado.httputil.HTTPHeaders(hd)
