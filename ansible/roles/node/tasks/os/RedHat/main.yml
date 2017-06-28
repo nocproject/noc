@@ -74,7 +74,6 @@
    - procmail
    - redhat-rpm-config
    - rpm-build
-   - unzip
    - zip
    - lsof
    - numactl
@@ -99,8 +98,6 @@
   environment:
     http_proxy: "{{http_proxy}}"
 
-- include: "telegraf.yml"
-
 - include: "firewall.yml"
   tags:
     - firewall
@@ -110,7 +107,5 @@
     src: "os/RedHat/etc/systemd/system/noc.service.j2"
     dest: "/usr/lib/systemd/system//{{ noc_system_service }}.service"
     mode: "a+rx"
-
-- name: Reload systemd daemon
-  shell: /usr/bin/systemctl daemon-reload
+  notify: reload systemd
 

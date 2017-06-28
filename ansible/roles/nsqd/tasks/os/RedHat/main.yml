@@ -1,10 +1,26 @@
 ---
+- name: download nsq daemon
+  get_url:
+    url: "{{nsq_url}}"
+    dest: "{{nsq_temp_file}}"
+    validate_certs: no
+  delegate_to: 127.0.0.1
+  become: no
+  run_once: true
+  environment:
+    https_proxy: "{{http_proxy}}"
+
+- name: unanchive nsqd
+  unarchive:
+    src: "{{nsq_temp_file}}"
+    dest: "{{ noc_root }}"
+    extra_opts: ['--strip-components=1']
+    creates: "{{ noc_root }}/bin/nsqd"
+
 - name: install nsqd.service file
   template:
      src: etc/systemd/nsqd.service
      dest: /etc/systemd/system/nsqd.service
-  register: nsqd_service
-
-- name: reload systemd
-  shell: systemctl daemon-reload
-  when: nsqd_service.changed
+  notify:
+    - reload systemd
+    - restart nsqd

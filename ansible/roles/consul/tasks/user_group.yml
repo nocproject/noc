@@ -1,0 +1,13 @@
+---
+# File: user_group.yml - User and group settings
+
+# Add user
+- name: Add Consul user
+  user:
+    name: "{{ consul_user }}"
+    comment: "Consul user"
+    group: "{{ consul_group }}"
+    system: yes
+    home: "{{ consul_home }}"
+  when: consul_manage_user|bool
+

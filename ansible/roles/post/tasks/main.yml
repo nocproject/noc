@@ -1,25 +1,8 @@
 # Post-deployment tasks
 ---
-- name: Build supervisor config
-  command: "{{ noc_root }}/scripts/deploy/apply-config {{ inventory_hostname }}"
-  register: result
-  changed_when: "'CHANGED' in result.stdout"
-  args:
-    chdir: "{{ noc_root }}"
-  tags:
-    - config
-    - noc_config
-
-- name: restart telegraf
-  service:
-    name: telegraf
-    state: restarted
-    enabled: yes
-  changed_when: False
-  when: "'FreeBSD' not in ansible_distribution"
-
 - name: check if noc running
   shell: "{{ noc_root }}/noc ctl status"
+  changed_when: false
   register: noc_ctl_status
   tags:
     - config
@@ -76,6 +59,9 @@
 - name: Wait for NOC to start
   pause:
     seconds: 30
+  tags:
+    - soft_restart
+    - restart
 
 - name: Add default influx datasource
   uri:
@@ -91,7 +77,7 @@
     body:
       name: nocdb
       type: influxdb
-      url: "{{ influx_host }}"
+      url: "http://{{ influx_host }}:{{influxdb_port}}"
       access: proxy
       isDefault: True
       database: "{{ noc_influxdb_db }}"
@@ -101,9 +87,10 @@
         timeInterval: ">300s"
   ignore_errors: yes
   register: ids
+  run_once: true
   changed_when: ids.status != 409
   failed_when: ids.status == 500
-  when: "{{ has_svc_influxdb | default(False) }}"
+  when: "has_svc_influxdb | default(False)"
   tags:
     - config
 
@@ -125,9 +112,10 @@
       isDefault: False
   ignore_errors: yes
   register: gds
+  run_once: true
   changed_when: gds.status != 409
   failed_when: gds.status == 500
-  when: "{{ has_svc_grafanads | default(False) }}"
+  when: "has_svc_grafanads | default(False)"
   tags:
     - config
 

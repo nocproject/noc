@@ -2,6 +2,15 @@
 - name: include vars file with RHEL registration
   include_vars: "vars/local.yml"
 
+- name: Set proxy for yum
+  lineinfile:
+    dest: /etc/yum.conf
+    regexp: "^proxy=.*"
+    line: "proxy=http://{{ http_proxy }}"
+  when: "http_proxy is defined and http_proxy"
+  tags:
+    - config
+
 - name: Register to RHN
   redhat_subscription:
     state: present
@@ -9,7 +18,6 @@
     password: "{{rhel_subscription_password}}"
     autosubscribe: true
   when: "rhel_subscription_username is defined and rhel_subscription_username !=''"
-  become: true
   environment:
     http_proxy: "{{http_proxy}}"
   register: register_done
@@ -17,7 +25,25 @@
 - name: Add Devel repos
   command: "/sbin/subscription-manager repos --enable rhel-7-server-optional-rpms"
   ignore_errors: yes
-  become: true
   environment:
     http_proxy: "{{http_proxy}}"
   when: "register_done.changed==True"
+
+- name: Disable selinux
+  selinux:
+    policy: targeted
+    state: permissive
+
+- name: Install Rhel system packages pre
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - unzip
+    - ca-certificates
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements

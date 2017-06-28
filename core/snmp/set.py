@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SNMP SET PDU generator
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SNMP SET PDU generator
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import random
-## NOC modules
-from ber import BEREncoder
-from consts import SNMP_v2c, SNMP_v1, PDU_SET_REQUEST
+# NOC modules
+from .ber import BEREncoder
+from .consts import PDU_SET_REQUEST
+from .version import SNMP_v1, SNMP_v2c
 
 
 def set_pdu(community, varbinds, request_id=None, version=SNMP_v2c):

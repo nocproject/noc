@@ -1,51 +1,68 @@
----
-# File: defaults/main.yml - Default variables for Consul
-
-## Core
-consul_arch: "{% if 'x86_64' in ansible_architecture %}amd64{%else%}386{%endif%}"
-consul_pkg: "consul_{{ consul_version }}_linux_{{ consul_arch }}.zip"
-consul_zip: "consul_{{ consul_version }}_{{ansible_system | lower}}_{{ consul_arch }}.zip"
-consul_zip_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/{{consul_zip}}"
+### Package
+consul_architecture_map:
+  # this first entry seems... redundant (but it's required for reasons)
+  amd64: amd64
+  x86_64: amd64
+  armv7l: arm
+  aarch64: arm64
+consul_architecture: "{{ consul_architecture_map[ansible_architecture] }}"
+consul_os: "{{ ansible_system|lower }}"
+consul_pkg: "consul_{{ consul_version }}_{{ consul_os }}_{{ consul_architecture }}.zip"
+consul_zip_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/{{consul_pkg}}"
 consul_checksum_file_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version}}_SHA256SUMS"
-consul_bin_path: "/usr/bin"
-consul_node_role: client
+consul_temp_file: "{{tower_dist_dir}}/{{consul_pkg}}"
+consul_temp_file_checksum: "{{tower_dist_dir}}/{{ consul_version }}_SHA256SUMS"
 
-consul_config_dir: "/etc/consul.d"
+### Paths
+consul_bin_path: "/bin"
 consul_data_path: "/var/consul"
 consul_log_path: "/var/log/consul"
-consul_pid_dir: "/var/run/consul"
+consul_pid_path: "/var/run/consul/consul.pid"
+
+### System user and group
+consul_manage_user: yes
 consul_user: "consul"
 consul_group: "bin"
-consul_group_name: "all"
-consul_datacenter: "dc1"
+
+### Consul settings
+consul_datacenter: "{{noc_env | lower}}"
 consul_domain: "consul"
 consul_log_level: "INFO"
-consul_syslog_enable: true
-consul_bind_address: "{{ansible_host}}"
-consul_dns_bind_address: "127.0.0.1"
+consul_syslog_enable: "True"
+consul_iface: "{{ ansible_default_ipv4.interface}}"
+consul_node_name: "{{ inventory_hostname_short }}"
+consul_recursors: ["{{tower_ip}}"]
+consul_node_role: "{% if has_svc_consul_server is defined%}bootstrap{% elif has_svc_consul is defined %}server{% else %}client{%endif%}"
+consul_raw_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"
+
+### Addresses
+consul_dns_bind_address: "0.0.0.0"
 consul_http_bind_address: "0.0.0.0"
 consul_https_bind_address: "0.0.0.0"
-consul_rpc_bind_address: "0.0.0.0"
-consul_node_name: "{{ inventory_hostname_short }}"
-consul_recursors: "{{ lookup('env','CONSUL_RECURSORS') | default('[]', true) }}"
-consul_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"
-consul_encryption_key: "{{ lookup('env','CONSUL_ENCRYPTION_KEY') | default(consul_key, true) }}"
-consul_acl_master_token: "{{ lookup('env','CONSUL_MASTER_TOKEN') | default('[]', true) }}"
-consul_acl_replication_token: "{{consul_acl_master_token}}"
+consul_vault_address: "{{ vault_address | default('0.0.0.0', true) }}"
+
+### Ports
+consul_ports:
+  http: 8500
+  https: -1
+  dns: 8600
+
+### Servers
+consul_servers: "\
+  {% set _consul_servers = [] %}\
+  {% for host in groups[has_svc_consul] %}\
+    {% set _consul_node_role = hostvars[host]['consul_node_role']|default('client', true) %}\
+    {% if ( _consul_node_role == 'server' or _consul_node_role == 'bootstrap') %}\
+      {% if _consul_servers.append(host) %}{% endif %}\
+    {% endif %}\
+  {% endfor %}\
+  {{ _consul_servers }}"
+consul_gather_server_facts: no
 
 ## ACL
-consul_acl_enable: yes
-consul_acl_datacenter: "{{ consul_datacenter }}"
+consul_acl_enable: True
+consul_acl_datacenter: "{{noc_env}}"
 consul_acl_default_policy: "allow"
 consul_acl_down_policy: "allow"
-
-## TLS
-consul_tls_enable: "{{ lookup('env','CONSUL_TLS_ENABLE') | default(false, true) }}"
-consul_src_files: "{{ lookup('env','CONSUL_SRC_FILES') | default(role_path+'/files', true) }}"
-consul_tls_dir: "{{ lookup('env','CONSUL_TLS_DIR') | default('{{consul_config_dir}}/ssl', true) }}"
-consul_ca_crt: "{{ lookup('env','CONSUL_CA_CRT') | default('ca.crt', true) }}"
-consul_server_crt: "{{ lookup('env','CONSUL_SERVER_CRT') | default('server.crt', true) }}"
-consul_server_key: "{{ lookup('env','CONSUL_SERVER_KEY') | default('server.key', true) }}"
-consul_verify_incoming: false
-consul_verify_outgoing: true
-consul_verify_server_hostname: false
+consul_acl_master_token_display: False
+consul_acl_replication_token_display: False

@@ -162,6 +162,21 @@ services:
     description: Virtual ip sync
     level: global
 
+  consul:
+    description: Cluster kv
+    level: global
+    port: 8500
+
+  haproxy:
+    description: HA balancer
+    level: global
+
+  patroni:
+    description: Postgres HA template
+    level: global
+    port: 8008
+
+
 config:
   noc:
     installation_name:
@@ -247,8 +262,8 @@ config:
       type: int
       default: 300
 
-    metrics_buffer:
-      label: Metrics buffer
+    records_buffer:
+      label: Records buffer size (in records)
       type: int
       default: 1000000
 
@@ -309,16 +324,6 @@ config:
       label: IP ToS mark
       type: int
       default: 0
-
-    max_packets:
-      label: Maximum number of packets to check
-      type: int
-      default: 3
-
-    timeout:
-      label: Ping timeout (ms)
-      type: int
-      default: 1000
 
     throttle_threshold:
       label: Amount of down objects (in percents) to enter throttling mode
@@ -416,8 +421,9 @@ config:
 
     mongod_data_directory:
       type: str
-      label: Mongo journal directory
+      label: Mongo data directory
       default: /var/lib/mongo/
+      description: <strong> <a href=https://docs.mongodb.com/manual/ target=_blank> https://docs.mongodb.com/manual/ </a> </strong>
 
   influxdb:
     influxdb_wal_directory:
@@ -430,26 +436,43 @@ config:
       label: InfluxDB Data directory
       default: /var/lib/influxdb/data/
 
+    influxdb_meta_directory:
+      type: str
+      label: InfluxDB Meta directory
+      default: /var/lib/influxdb/meta/
+
+    max_cache_memory:
+      type: int
+      label: Max cache memory
+      default: 1048576000
+      description: <strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>
+
+    snapshot_memory_size:
+      type: int
+      label: Mem size for snapshot
+      default: 26214400
+      description: <strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>
+
   postgres:
     postgres_version:
       type: str
       label: Postgresql version
       default: 9.4
-      description: <strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html> docs </a> before changing that field.
+      description: <strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html target=_blank> docs </a> before changing that field.
 
-    postgres_wal_directory:
+    superuser_password:
+      label: Postgresql superuser password
       type: str
-      label: Postgresql wal directory
-      default: /var/lib/postgresql/9.4/main/pg_xlog
-      description: Unused
+      default: noc
+      description: Password for user "superuser"
 
-    postgres_data_directory:
+    replicator_password:
+      label: Postgresql replicator password
       type: str
-      label: Postgresql data directory
-      default: /var/lib/postgresql/9.4/main/
-      description: Unused
+      default: noc
+      description: Password for user "replicator"
 
-    postgres_max_clients:
+    max_clients:
       type: int
       label: Postgresql max clients
       default: 300
@@ -459,10 +482,16 @@ config:
       label: Translation language
       type: str
       default: en
+
     weight:
       label: Http nginx Weight
       type: int
       default: 5
+
+    max_threads:
+      label: Web threads
+      type: int
+      default: 10
 
   nginx:
     logging:
@@ -474,12 +503,14 @@ config:
       label: Redirect http to https
       type: bool
       default: true
+      description: <strong> <a href=https://nginx.org/en/docs/ target=_blank> https://nginx.org/en/docs/</a> </strong>
 
   nsqd:
     max_messages_in_memory:
       type: int
-      label: Keep max messanges in memory
+      label: Keep max messages in memory
       default: 10000
+      description: <strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>
 
   bi:
     query_threads:
@@ -515,12 +546,14 @@ config:
       type: str
       label: Grafana postgres password
       default: grafana
+      description: <strong> <a href=http://docs.grafana.org/ target=_blank> http://docs.grafana.org/ </a> </strong>
 
   pgbouncer:
     pgbouncer_max_clients:
       type: int
       label: Pgbouncer max clients
       default: 3000
+      description: <strong> <a href=https://pgbouncer.github.io target=_blank> https://pgbouncer.github.io </a> </strong>
 
   memcached:
     max_clients:
@@ -531,6 +564,7 @@ config:
       type: int
       label: memcached max memory
       default: 64
+      description: <strong> <a href=https://github.com/memcached/memcached/wiki target=_blank> https://github.com/memcached/memcached/wiki </a> </strong>
 
   tgsender:
     use_proxy:
@@ -548,10 +582,31 @@ config:
 
   keepalived:
     password:
-      label: Keepalived password
+      label: Keepalived password. max 8 chars
       type: str
       default: noc
 
-    virtual_ip:
+    nginx_virtual_ip:
       label: Nginx virtual IP
       type: str
+      description: <strong> <a href=http://keepalived.readthedocs.io/en/latest/ target=_blank> http://www.keepalived.org/documentation.html </a> </strong>
+
+    patroni_virtual_ip:
+      label: Patroni virtual IP
+      type: str
+
+  consul:
+    token:
+      label: consul token
+      type: str
+      description: <strong> <a href=https://www.consul.io/docs/guides/acl.html target=_blank> https://www.consul.io/docs/guides/acl.html </a> </strong>
+
+    replication_token:
+      label: consul replication token
+      type: str
+
+  patroni:
+    rest_password:
+      label: Patroni REST password
+      type: str
+      description: <strong> <a href=https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst target=_blank> https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst </a> </strong>

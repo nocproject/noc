@@ -1,0 +1,16 @@
+---
+# File: dirs.yml - Directory settings
+
+- name: Create directories
+  file:
+    dest: "{{ item }}"
+    state: directory
+    owner: "{{ consul_user }}"
+    group: "{{ consul_group}}"
+  with_items:
+    - "{{consul_config_path}}"
+    - /var/consul
+    - /var/log/consul
+    - /var/run/consul
+    - "{{consul_configd_path}}"
+    - "{{consul_scripts_path}}"

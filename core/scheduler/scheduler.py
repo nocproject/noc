@@ -1,26 +1,29 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Scheduler Job Class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Scheduler Job Class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import logging
 import datetime
 import random
-import Queue
 import threading
-## Third-party modules
+import time
+# Third-party modules
 import pymongo.errors
 import tornado.gen
 import tornado.ioloop
-from concurrent.futures import ThreadPoolExecutor
-## NOC modules
-from job import Job
+from concurrent.futures import Future
+# NOC modules
+from .job import Job
 from noc.lib.nosql import get_db
 from noc.core.handler import get_handler
+from noc.core.threadpool import ThreadPoolExecutor
+from noc.core.perf import metrics
 
 
 class Scheduler(object):
@@ -30,10 +33,12 @@ class Scheduler(object):
     MAX_CHUNK_FACTOR = 1
     UPDATES_PER_CHECK = 4
 
+    CACHE_DEFAULT_TTL = 7 * 24 * 3600
+
     def __init__(self, name, pool=None, reset_running=False,
                  max_threads=5, ioloop=None, check_time=1000,
                  submit_threshold=None, max_chunk=None,
-                 filter=None, use_cache=None):
+                 filter=None, service=None):
         """
         Create scheduler
         :param name: Unique scheduler name
@@ -60,6 +65,9 @@ class Scheduler(object):
         self.to_reset_running = reset_running
         self.running_groups = set()
         self.collection = None
+        self.bulk = None
+        self.bulk_ops = 0
+        self.bulk_lock = threading.Lock()
         self.max_threads = max_threads
         self.executor = None
         self.run_callback = None
@@ -83,10 +91,24 @@ class Scheduler(object):
         self.to_shutdown = False
         self.min_sleep = float(check_time) / self.UPDATES_PER_CHECK / 1000.0
         self.jobs_burst = []
-        self.use_cache = use_cache
         self.cache = None
-        self.cache_thread = None
-        self.cache_queue = Queue.Queue()
+        self.cache_lock = threading.Lock()
+        self.cache_set_ops = {}
+        self.service = service
+        if self.service:
+            self.scheduler_id = "%s[%s:%s]" % (
+                self.service.service_id,
+                self.service.address, self.service.port)
+        else:
+            self.scheduler_id = "standalone scheduler"
+
+    def get_cache(self):
+        with self.cache_lock:
+            if not self.cache:
+                from noc.core.cache.base import cache
+
+                self.cache = cache
+            return self.cache
 
     def run(self):
         """
@@ -98,20 +120,8 @@ class Scheduler(object):
         if self.to_reset_running:
             self.reset_running()
         self.ensure_indexes()
-        if self.use_cache:
-            self.run_cache_thread()
         self.logger.info("Running scheduler")
         self.ioloop.spawn_callback(self.scheduler_loop)
-
-    def run_cache_thread(self):
-        from noc.core.cache.base import cache
-        self.cache = cache
-        self.cache_thread = threading.Thread(
-            target=self.cache_worker,
-            name="cache_worker"
-        )
-        self.cache_thread.setDaemon(True)
-        self.cache_thread.start()
 
     def get_collection(self):
         """
@@ -121,6 +131,7 @@ class Scheduler(object):
             self.logger.debug("Open collection %s",
                               self.collection_name)
             self.collection = get_db()[self.collection_name]
+            self.reset_bulk_ops()
         return self.collection
 
     def get_executor(self):
@@ -130,7 +141,8 @@ class Scheduler(object):
         if not self.executor:
             self.logger.debug("Run thread executor (%d threads)",
                               self.max_threads)
-            self.executor = ThreadPoolExecutor(self.max_threads)
+            self.executor = ThreadPoolExecutor(self.max_threads,
+                                               name=self.name)
         return self.executor
 
     def reset_running(self):
@@ -177,6 +189,23 @@ class Scheduler(object):
         else:
             return q
 
+    def scheduler_tick(self):
+        """
+        Process single scheduler tick
+        :return:
+        """
+        n = 0
+        try:
+            n = self.run_pending()
+        except Exception as e:
+            self.logger.error("Failed to schedule next tasks: %s", e)
+        self.apply_ops()
+        return n
+
+    def apply_ops(self):
+        self.apply_bulk_ops()
+        self.apply_cache_ops()
+
     @tornado.gen.coroutine
     def scheduler_loop(self):
         """
@@ -184,16 +213,18 @@ class Scheduler(object):
         """
         while not self.to_shutdown:
             t0 = self.ioloop.time()
-            try:
-                n = yield self.run_pending()
-            except Exception as e:
-                self.logger.error("Failed to schedule next tasks: %s", e)
-                n = 0
+            n = 0
+            if self.get_executor().may_submit():
+                try:
+                    n = yield self.executor.submit(self.scheduler_tick)
+                except Exception as e:
+                    self.logger.error("Failed to execute scheduler tick: %s", e)
             dt = self.check_time - (self.ioloop.time() - t0) * 1000
             if dt > 0:
                 if n:
                     dt = min(dt, self.check_time / n)
                 yield tornado.gen.sleep(dt / 1000.0)
+        self.apply_ops()
 
     def iter_pending_jobs(self, limit):
         """
@@ -223,7 +254,6 @@ class Scheduler(object):
         except pymongo.errors.AutoReconnect:
             self.logger.error("Auto-reconnect detected. Waiting for next cycle")
 
-    @tornado.gen.coroutine
     def run_pending(self):
         """
         Read and launch all pending jobs
@@ -231,8 +261,8 @@ class Scheduler(object):
         executor = self.get_executor()
         collection = self.get_collection()
         n = 0
-        if self.submit_threshold <= executor._work_queue.qsize():
-            raise tornado.gen.Return(n)
+        if not executor.may_submit():
+            return n
         jobs, self.jobs_burst = self.jobs_burst, []
         burst_ids = set(j.attrs[Job.ATTR_ID] for j in jobs)
         if len(jobs) <= self.max_chunk // 2:
@@ -241,18 +271,15 @@ class Scheduler(object):
                 if j.attrs[Job.ATTR_ID] not in burst_ids
             ]
         while jobs:
-            may_submit = max(
-                self.submit_threshold - executor._work_queue.qsize(),
-                0
-            )
-            if not may_submit:
+            free_workers = executor.get_free_workers()
+            if not free_workers:
                 self.logger.info("All workers are busy. Sending %d jobs to burst", len(jobs))
                 self.jobs_burst = jobs
                 break
             now = datetime.datetime.now()
             rl = min(
                 sum(1 for j in jobs if j.attrs[Job.ATTR_TS] <= now),
-                may_submit
+                free_workers
             )
             rjobs, jobs = jobs[:rl], jobs[rl:]
             if rjobs:
@@ -289,7 +316,7 @@ class Scheduler(object):
                 if cjobs:
                     for v in cjobs:
                         try:
-                            ctx = self.cache.get_many(cjobs[v], version=v) or {}
+                            ctx = self.get_cache().get_many(cjobs[v], version=v) or {}
                         except Exception as e:
                             self.logger.error("Failed to restore context: %s", e)
                             ctx = {}
@@ -298,6 +325,7 @@ class Scheduler(object):
                 #
                 for job in rjobs:
                     executor.submit(job.run)
+                    metrics["%s_jobs_started" % self.name] += 1
                     n += 1
             if jobs:
                 # Wait for next job within check_interval
@@ -307,8 +335,42 @@ class Scheduler(object):
                     dt = njts - now
                     dt = (dt.microseconds + dt.seconds * 1000000.0) / 1000000.0
                     dt = max(dt, self.min_sleep)
-                    yield tornado.gen.sleep(dt)
-        raise tornado.gen.Return(n)
+                    time.sleep(dt)
+        return n
+
+    def reset_bulk_ops(self):
+        self.bulk = self.collection.initialize_unordered_bulk_op()
+        self.bulk_ops = 0
+
+    def apply_bulk_ops(self):
+        t0 = self.ioloop.time()
+        with self.bulk_lock:
+            if not self.bulk_ops:
+                return
+            try:
+                r = self.bulk.execute()
+                dt = self.ioloop.time() - t0
+                self.logger.info(
+                    "%d bulk operations complete in %dms: "
+                    "inserted=%d, updated=%d, removed=%d",
+                    self.bulk_ops,
+                    int(dt * 1000),
+                    r.get("nInserted", 0),
+                    r.get("nModified", 0),
+                    r.get("nRemoved", 0)
+                )
+            except pymongo.errors.BulkWriteError as e:
+                self.logger.error(
+                    "Cannot apply bulk operations: %s [%s]",
+                    e.details, e.code)
+                metrics["%s_bulk_failed" % self.name] += 1
+                return
+            except Exception as e:
+                self.logger.error("Cannot apply bulk operations: %s", e)
+                metrics["%s_bulk_failed" % self.name] += 1
+                return
+            finally:
+                self.reset_bulk_ops()
 
     def remove_job(self, jcls, key=None):
         """
@@ -325,9 +387,9 @@ class Scheduler(object):
         Remove job from schedule
         """
         self.logger.info("Remove job %s", jid)
-        self.get_collection().remove({
-            Job.ATTR_ID: jid
-        })
+        with self.bulk_lock:
+            self.bulk.find({Job.ATTR_ID: jid}).remove_one()
+            self.bulk_ops += 1
 
     def submit(self, jcls, key=None, data=None, ts=None, delta=None,
                keep_ts=False):
@@ -390,6 +452,7 @@ class Scheduler(object):
         :param duration: Set last run duration (in seconds)
         :param context_version: Job context format vresion
         :param context: Stored job context
+        :param context_key: Cache key for context
         """
         # Build increase/set operations
         now = datetime.datetime.now()
@@ -433,45 +496,51 @@ class Scheduler(object):
                 Job.ATTR_ID: jid
             }
             self.logger.debug("update(%s, %s)", q, op)
-            r = self.get_collection().update(q, op)
-            if not r["ok"] or r["nModified"] != 1:
-                self.logger.error("Failed to set next run for job %s", jid)
+            with self.bulk_lock:
+                self.bulk.find(q).update(op)
+                self.bulk_ops += 1
 
-    def cache_worker(self):
-        self.logger.info("Starting cache worker thread")
-        set_ops = {}  # version -> key -> value
-        SEND_INTERVAL = 0.25
-        DEFAULT_TTL = 7 * 24 * 3600
-        last = 0
-        while True:
-            t0 = self.ioloop.time()
-            timeout = min(last + SEND_INTERVAL - t0, SEND_INTERVAL)
-            if timeout > 0:
-                # Collect operations
-                try:
-                    key, value, version = self.cache_queue.get(
-                        block=True, timeout=timeout
-                    )
-                    if version not in set_ops:
-                        set_ops[version] = {}
-                    set_ops[version][key] = value
-                except Queue.Empty:
-                    pass
-            else:
-                # Apply operations
-                if set_ops:
-                    for version, data in set_ops.items():
-                        try:
-                            self.cache.set_many(
-                                data, version=version,
-                                ttl=DEFAULT_TTL)
-                            del set_ops[version]
-                        except Exception as e:
-                            self.logger.error("Error writing cache: %s", e)
-                last = t0
+    def apply_cache_ops(self):
+        with self.cache_lock:
+            cache_set_ops = self.cache_set_ops
+            self.cache_set_ops = {}
+        if not cache_set_ops:
+            return
+        cache = self.get_cache()
+        for version in cache_set_ops:
+            metrics["%s_cache_set_requests" % self.name] += 1
+            try:
+                cache.set_many(
+                    cache_set_ops[version],
+                    version=version,
+                    ttl=self.CACHE_DEFAULT_TTL)
+            except Exception as e:
+                self.logger.error("Error writing cache: %s", e)
+                metrics["%s_cache_set_errors" % self.name] += 1
 
     def cache_set(self, key, value, version):
-        assert self.cache_thread, "Cache management thread is not started"
-        self.cache_queue.put(
-            (key, value, version)
-        )
+        with self.cache_lock:
+            if version not in self.cache_set_ops:
+                self.cache_set_ops[version] = {}
+            self.cache_set_ops[version][key] = value
+
+    def apply_metrics(self, d):
+        """
+        Append scheduler metrics to dictionary d
+        :param d:
+        :return:
+        """
+        if self.executor:
+            self.executor.apply_metrics(d)
+        d.update({
+            "%s_jobs_burst" % self.name: len(self.jobs_burst)
+        })
+
+    def shutdown(self, sync=False):
+        self.to_shutdown = True
+        if self.executor:
+            return self.executor.shutdown(sync)
+        else:
+            f = Future()
+            f.set_result(True)
+            return f

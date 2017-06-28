@@ -12,6 +12,24 @@
   tags:
     - repo
 
+- name: Create required directories
+  file:
+    path: "{{item}}"
+    state: "directory"
+    mode: 0755
+    owner: "{{pgbouncer_user}}"
+  with_items:
+    - "{{etc_prefix}}/pgbouncer"
+    - "/var/log/pgbouncer"
+
+- name: Install pgbouncer config
+  template:
+    src: "etc/pgbouncer/pgbouncer.ini.j2"
+    dest: "{{etc_prefix}}/pgbouncer/pgbouncer.ini"
+  notify: reload pgbouncer
+  tags:
+    - config
+
 - name: Install pgbouncer
   apt:
     name: pgbouncer
@@ -22,14 +40,15 @@
   tags:
     - requirements
 
-- name: Create pgbouncer directories
+- name: Create required directories
   file:
-    path: "{{ item }}"
-    owner: "{{postgres_user}}"
-    mode: 0700
-    state: directory
+    path: "{{item}}"
+    state: "directory"
+    mode: 0755
+    owner: "{{pgbouncer_user}}"
   with_items:
-    - /var/log/pgbouncer/
+    - "{{etc_prefix}}/pgbouncer"
+    - "/var/log/pgbouncer"
 
 - name: Install pgbouncer limits file
   template:
@@ -59,6 +78,7 @@
   template:
     src: "etc/override.conf.j2"
     dest: "/etc/systemd/system/pgbouncer.service.d/noc.conf"
+  notify: reload systemd
   tags:
     - config
 

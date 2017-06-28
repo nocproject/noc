@@ -23,14 +23,20 @@
 - name: Install Nginx
   yum:
     name: nginx
-    state: present
+    state: latest
     disable_gpg_check: yes
+    update_cache: no
   environment:
     http_proxy: "{{http_proxy}}"
 
 - name: Remove default.conf site
-  file: path=/etc/nginx/conf.d/default.conf state=absent
-  notify: restart nginx
+  file:
+    path: /etc/nginx/conf.d/default.conf
+    state: absent
+  notify: reload nginx
 
 - name: Enable Nginx system service
-  service: name="{{ nginx_system_service }}" enabled=yes state=started
+  service:
+    name: "{{ nginx_system_service }}"
+    enabled: yes
+    state: started

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service config implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service config implementation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## Third-party modules
+# Third-party modules
 import yaml
-## NOC modules
+# NOC modules
 from noc.lib.version import get_brand
 
 
@@ -68,14 +68,14 @@ class Config(object):
             "noc",
             self._service.name,
             "%s-global-%s" % (self._service.name,
-                              self._defaults["node"])
+                              self._defaults.get("node", ""))
         ]
         if self._service.pooled:
             paths += [
                 "%s-%s-%s" % (
                     self._service.name,
-                    self._defaults["pool"],
-                    self._defaults["node"]
+                    self._defaults.get("pool", ""),
+                    self._defaults.get("node", "")
                 )
             ]
         # Build effective config

@@ -1,26 +1,56 @@
+# internal daemons
+login_methods: "{{noc_config['config'].get('login-global-%s' % ansible_hostname, {}).get('methods', 'local')}}"
+login_weight: "{{noc_config['config'].get('login-global-%s' % ansible_hostname, {}).get('weight', 1)}}"
+card_weight: "{{noc_config['config'].get('card-global-%s' % ansible_hostname, {}).get('weight', 1)}}"
+web_weight: "{{noc_config['config'].get('web-global-%s' % ansible_hostname, {}).get('weight', 1)}}"
+
+# Keys
+django_key: "{{ lookup('django_key', tower_data + '/noc/secret.key') }}"
+supervisorctl_key: "{{ lookup('supervisorctl_key', tower_data + '/noc/supervisorctl.key') }}"
+mongo_key: "{{ lookup('mongo_key', tower_data + '/mongo/mongo.key') }}"
+consul_raw_key: "{{ lookup('consul_key', tower_data + '/consul/secret.key') }}"
+
+# external daemons
+
+consul_acl_master_token: "{{noc_config['config'].get('consul-global-%s' % ansible_hostname, {}).get('token', '')}}"
+consul_acl_replication_token: "{{noc_config['config'].get('consul-global-%s' % ansible_hostname, {}).get('replication_token', '')}}"
+
 grafana_pg_password: "{{noc_config['config'].get('grafana-global-%s' % ansible_hostname, {}).get('password', 'grafana')}}"
+
+influx_host: "{% for n in groups['svc-influxdb'] %}{{ hostvars[n].ansible_host }}{% endfor %}"
+influx_max_cache_memory: "{{noc_config['config'].get('influxdb-global-%s' % ansible_hostname, {}).get('max_cache_memory', 1048576000)}}"
+influx_cache_snapshot_memory_size: "{{noc_config['config'].get('influxdb-global-%s' % ansible_hostname, {}).get('snapshot_memory_size', 26214400)}}"
+
+keepalived_password: "{{noc_config['config'].get('keepalived-global-%s' % ansible_hostname, {}).get('password', 'noc')}}"
+keepalived_nginx_virtual_ip: "{% if groups['svc-keepalived'] | count > 0 %}{{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('nginx_virtual_ip', '')}}{%endif%}"
+keepalived_patroni_virtual_ip: "{% if groups['svc-keepalived'] | count > 0 %}{{noc_config['config'].get('keepalived-global-%s' % groups['svc-keepalived'][0], {}).get('patroni_virtual_ip', '')}}{%endif%}"
+
+memcache_address: "{{ noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('listen', '127.0.0.1:11211')}}"
 memcached_max_clients: "{{noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('max_clients', '1024')| int | abs }}"
 memcached_max_files: "{{(noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('max_clients', 1024) * 1.1 )| int | abs }}"
 memcached_max_memory: "{{noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('max_memory', '64') | int | abs}}"
+
+mongo_hosts: "{{ noc_config.services.mongod | join(',')}}"
+
+nginx_http_redirect_enabled: "{{noc_config['config'].get('nginx-global-%s' % ansible_hostname, {}).get('http_redirect')}}"
+nginx_json_logging: "{{noc_config['config'].get('nginx-global-%s' % ansible_hostname, {}).get('logging')}}"
+
+nsq_max_messages_in_memory: "{{ noc_config['config'].get('nsqd-global-%s' % ansible_hostname, {}).get('max_messages_in_memory', 10000) }}"
+
 pgbouncer_max_clients: "{{noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients', '3000') | int | abs}}"
 pgbouncer_max_db_connection: "{{(noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients /10', '300')| int | abs )}}"
 pgbouncer_max_files: "{{(noc_config['config'].get('pgbouncer-global-%s' % ansible_hostname, {}).get('pgbouncer_max_clients', 3000) * 1.1 )| int | abs}}"
-web_weight: "{{noc_config['config'].get('web-global-%s' % ansible_hostname, {}).get('weight', 1)}}"
-login_weight: "{{noc_config['config'].get('login-global-%s' % ansible_hostname, {}).get('weight', 1)}}"
-card_weight: "{{noc_config['config'].get('card-global-%s' % ansible_hostname, {}).get('weight', 1)}}"
-django_key: "{{ lookup('django_key', tower_data + '/noc/secret.key') }}"
-supervisorctl_key: "{{ lookup('supervisorctl_key', tower_data + '/noc/supervisorctl.key') }}"
+
 postgres_master: "{% for n in groups['svc-postgres-master'] %}{{n}}{% endfor %}"
-mongo_key: "{{ lookup('mongo_key', tower_data + '/mongo/mongo.key') }}"
-nsq_max_messages_in_memory: "{{ noc_config['config'].get('nsqd-global-%s' % ansible_hostname, {}).get('max_messages_in_memory', 10000) }}"
-memcache_address: "{{ noc_config['config'].get('memcached-global-%s' % ansible_hostname, {}).get('listen', '127.0.0.1:11211')}}"
-nginx_json_logging: "{{noc_config['config'].get('nginx-global-%s' % ansible_hostname, {}).get('logging')}}"
-nginx_http_redirect_enabled: "{{noc_config['config'].get('nginx-global-%s' % ansible_hostname, {}).get('http_redirect')}}"
-influx_addr: "{{ noc_config['config'].get('influxdb-global-%s' % ansible_hostname, {}).get('listen', '127.0.0.1:8086')}}"
-postgres_max_connections: "{{ noc_config['config'].get('postgres-global-%s' % ansible_hostname, {}).get('postgres_max_clients', 302) }}"
-influx_host: "http://{{ noc_config.services.influxdb.0 }}"
-mongo_hosts: "{{ noc_config.services.mongod | join(',')}}"
-grafana_http_port: "{{ noc_config.services.grafana.0.split(':')[1] }}"
-keepalived_password: "{{noc_config['config'].get('keepalived-global-%s' % ansible_hostname, {}).get('password', 'noc')}}"
-keepalived_virtual_ip: "{{noc_config['config'].get('keepalived-global-%s' % ansible_hostname, {}).get('virtual_ip', '192.168.1.210')}}"
-login_methods: "{{noc_config['config'].get('login-global-%s' % ansible_hostname, {}).get('methods', 'local')}}"
+postgres_max_connections: "{{ noc_config['config'].get('postgres-global-%s' % ansible_hostname, {}).get('max_clients', 302) }}"
+postgres_superuser_password: "{{ noc_config['config'].get('postgres-global-%s' % ansible_hostname, {}).get('superuser_password', 'noc') }}"
+postgres_replicator_password: "{{ noc_config['config'].get('postgres-global-%s' % ansible_hostname, {}).get('replicator_password', 'noc') }}"
+
+patroni_rest_password: "{{ noc_config['config'].get('patroni-global-%s' % ansible_hostname, {}).get('rest_password', 'noc') }}"
+patroni_postgres_password: "{{noc_pg_password}}"
+patroni_replicator_password: "{{noc_pg_password}}"
+patroni_enabled: "{{groups['svc-patroni'] | count > 1}}"
+
+web_ui_language: "{% if noc_config['config'].get('web-global-%s' % groups['svc-web'][0], {}).get('language', 'en-us') == 'en' %}en-us{%else%}{{noc_config['config'].get('web-global-%s' % groups['svc-web'][0], {}).get('language')}}{%endif%}"
+
+install_method: hg

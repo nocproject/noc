@@ -1,0 +1,6 @@
+---
+- name: reload systemd
+  become: yes
+  systemd:
+    name: patroni
+    daemon_reload: yes

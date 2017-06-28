@@ -1,50 +1,50 @@
 ---
-# File: tasks/install.yml - package installation tasks for Consul
-
-- include: "os/{{ ansible_distribution }}/main.yml"
-
-- name: Get consul package checksum file
-  become: no
+# File: install_remote.yml - package installation tasks for Consul
+- name: Get Consul package checksum file
   get_url:
     url: "{{ consul_checksum_file_url }}"
-    dest: "/tmp/consul_{{ consul_version }}_SHA256SUMS"
+    dest: "{{ consul_temp_file_checksum }}"
+    validate_certs: no
+  delegate_to: 127.0.0.1
+  become: no
+  run_once: yes
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
 
 - name: Get Consul package checksum
-  become: no
-  shell: "grep {{ consul_pkg }} /tmp/consul_{{ consul_version }}_SHA256SUMS"
+  shell: "grep {{ consul_pkg }} {{ consul_temp_file_checksum }}"
   register: consul_sha256
-
-- name: Create tmp dir
+  delegate_to: 127.0.0.1
   become: no
-  file:
-    state: directory
-    path: "/tmp/{{consul_version}}/"
+  run_once: yes
+  changed_when: false
+  tags:
+    - requirements
 
 - name: Download Consul
-  become: no
   get_url:
     url: "{{ consul_zip_url }}"
-    dest: "/tmp/{{consul_version}}/{{ consul_pkg }}"
+    dest: "{{consul_temp_file}}"
     checksum: "sha256:{{ consul_sha256.stdout.split(' ')|first }}"
     timeout: 42
+    validate_certs: no
+  delegate_to: 127.0.0.1
+  become: no
+  run_once: yes
+  tags:
+    - requirements
   environment:
     https_proxy: "{{http_proxy}}"
 
-- name: Unarchive Consul
-  become: no
+- name: Unarchive Consul and install binary
   unarchive:
-    src: "/tmp/{{consul_version}}/{{ consul_pkg }}"
-    dest: "/tmp/{{consul_version}}/"
-    creates: "/tmp/{{consul_version}}/consul"
-    remote_src: yes
-
-- name: Install Consul
-  copy:
-    src: "/tmp/{{consul_version}}/consul"
-    dest: "{{consul_bin_path}}"
+    src: "{{consul_temp_file}}"
+    dest: "{{ consul_bin_path }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group }}"
-    mode: "0755"
-    remote_src: yes
+    mode: 0755
+    creates: "{{ consul_bin_path }}/consul"
+  tags:
+    - requirements

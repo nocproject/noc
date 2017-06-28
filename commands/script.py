@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ./noc script
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ./noc script
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import argparse
 import pprint
 import re
-## Third-party modules
+# Third-party modules
 import ujson
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.validators import is_int
 from noc.core.script.loader import loader
@@ -202,8 +202,8 @@ class Command(BaseCommand):
         def parse_json(j):
             try:
                 return ujson.loads(j)
-            except ValueError, why:
-                self.die("Failed to parse JSON: %s" % why)
+            except ValueError as e:
+                self.die("Failed to parse JSON: %s" % e)
 
         args = {}
         for a in arguments:

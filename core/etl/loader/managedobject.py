@@ -38,7 +38,11 @@ class ManagedObjectLoader(BaseLoader):
         "super_password",
         "snmp_ro",
         "description",
-        "auth_profile"
+        "auth_profile",
+        "tags",
+        "tt_system",
+        "tt_queue",
+        "tt_system_id"
     ]
 
     mapped_fields = {
@@ -48,7 +52,8 @@ class ManagedObjectLoader(BaseLoader):
         "termination_group": "terminationgroup",
         "service_terminator": "terminationgroup",
         "container": "container",
-        "auth_profile": "authprofile"
+        "auth_profile": "authprofile",
+        "tt_system": "ttsystem"
     }
 
     def __init__(self, *args, **kwargs):
@@ -61,6 +66,8 @@ class ManagedObjectLoader(BaseLoader):
         """
         v = super(ManagedObjectLoader, self).clean(row)
         v["pool"] = self.pools[v["pool"]]
+        v["tags"] = [x.strip().strip('"') for x in v["tags"].split(",")
+                     if x.strip()] if v["tags"] else []
         return v
 
     def purge(self):

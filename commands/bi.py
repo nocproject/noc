@@ -1,25 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BI extract/load commands
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# BI extract/load commands
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import datetime
 import gzip
-import functools
-## Third-party modules
+# Third-party modules
 import nsq
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
 from noc.core.etl.bi.extractor.alarms import AlarmsExtractor
-from noc.core.clickhouse.connect import connection
-from noc.core.clickhouse.model import Model
 from noc.core.clickhouse.dictionary import Dictionary
 
 
@@ -29,6 +26,7 @@ class Command(BaseCommand):
     DICT_DATA_PREFIX = "var/bi-dict-data"
 
     TOPIC = "chwriter"
+    NSQ_CONNECT_TIMEOUT = 0.5
     NSQ_PUB_RETRY_DELAY = 0.1
 
     EXTRACTORS = [
@@ -36,8 +34,27 @@ class Command(BaseCommand):
         AlarmsExtractor
     ]
 
+    # Extract by 1-day chunks
+    EXTRACT_WINDOW = 86400
+
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
+        # Args
+        parser.add_argument(
+            "--data-prefix",
+            default=self.DATA_PREFIX,
+            help="Show only summary"
+        )
+        parser.add_argument(
+            "--dict-xml-prefix",
+            default=self.DICT_XML_PREFIX,
+            help="Show only summary"
+        )
+        parser.add_argument(
+            "--dict-data-prefix",
+            default=self.DICT_DATA_PREFIX,
+            help="Show only summary"
+        )
         # extract command
         extract_parser = subparsers.add_parser("extract")
         # clean command
@@ -45,7 +62,10 @@ class Command(BaseCommand):
         # load command
         load_parser = subparsers.add_parser("load")
 
-    def handle(self, cmd, *args, **options):
+    def handle(self, cmd, data_prefix, dict_xml_prefix, dict_data_prefix, *args, **options):
+        self.DATA_PREFIX = data_prefix
+        self.DICT_XML_PREFIX = dict_xml_prefix
+        self.DICT_DATA_PREFIX = dict_data_prefix
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def get_last_extract(self, name):
@@ -71,15 +91,22 @@ class Command(BaseCommand):
     def handle_extract(self, *args, **options):
         t0 = datetime.datetime.fromtimestamp(0)
         now = datetime.datetime.now()
+        window = datetime.timedelta(seconds=self.EXTRACT_WINDOW)
         for ecls in self.EXTRACTORS:
             start = self.get_last_extract(ecls.name) or t0
             stop = now - datetime.timedelta(seconds=ecls.extract_delay)
-            e = ecls(start=start, stop=stop, prefix=self.DATA_PREFIX)
-            self.stdout.write("Extracting %s (%s - %s)\n" % (
-                e.name, start, stop
-            ))
-            e.extract()
-            self.set_last_extract(ecls.name, e.last_ts or stop)
+            while start < stop:
+                end = min(
+                    start + window,
+                    stop
+                )
+                e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
+                self.stdout.write("Extracting %s (%s - %s)\n" % (
+                    e.name, start, end
+                ))
+                e.extract()
+                self.set_last_extract(ecls.name, e.last_ts or end)
+                start += window
         # Extract dictionaries
         for dcls in Dictionary.iter_cls():
             # Temporary data
@@ -113,53 +140,45 @@ class Command(BaseCommand):
         def publish():
             def finish_pub(conn, data):
                 if isinstance(data, nsq.Error):
-                    self.stdout.write(
-                        "Failed to pub to topic '%s'. Retry\n" % self.TOPIC
-                    )
-                    writer.io_loop.call_later(
-                        self.NSQ_PUB_RETRY_DELAY,
-                        functools.partial(
-                            writer.pub, self.TOPIC, msg,
-                            callback=finish_pub
-                        )
-                    )
+                    self.stdout.write("NSQ pub error: %s\n" % data)
+                    self.stdout.write("Failed to send file: %s\n" % fn)
                 else:
                     self.stdout.write("Removing %s\n" % fn)
                     os.unlink(fn)
+                    os.unlink(meta_path)
+                writer.io_loop.add_callback(publish)
 
-            try:
-                fn = files.pop(0)
-            except IndexError:
+            if not files:
                 # Done
                 writer.io_loop.stop()
                 return
-            tn = fn.split("-", 1)[0]
+            fn = files.pop(0)
+            meta_path = fn[:-7] + ".meta"
+            with open(meta_path) as ff:
+                tn = ff.read()
             self.stdout.write("Sending %s\n" % fn)
-            with gzip.open(fn, "rb") as f:
-                data = f.read()
+            with gzip.open(fn, "rb") as ff:
+                data = ff.read()
             msg = "%s\n%s" % (tn, data)
             writer.pub(self.TOPIC, msg, callback=finish_pub)
-            writer.io_loop.add_callback(publish)
 
-        ch = connection()
-        ch.ensure_db()
+        def on_connect():
+            if writer.conns:
+                # Connected
+                writer.io_loop.add_callback(publish)
+            else:
+                self.stdout.write("Waiting for NSQ connection\n")
+                writer.io_loop.call_later(self.NSQ_CONNECT_TIMEOUT,
+                                          on_connect)
+
         files = []
-        models = set()
         for f in sorted(os.listdir(self.DATA_PREFIX)):
             if not f.endswith(".tsv.gz"):
                 continue
-            models.add(f.split(".", 1)[0])
-            files += [f]
-        # Ensure fields
-        for mn in models:
-            self.stdout.write("Ensuring %s", mn)
-            model = Model.get_model_class(mn)
-            if not model:
-                self.die("Cannot get model")
-            model.ensure_table()
+            files += [os.path.join(self.DATA_PREFIX, f)]
         # Stream to NSQ
         writer = nsq.Writer(["127.0.0.1:4150"])
-        writer.io_loop.add_callback(publish)
+        writer.io_loop.add_callback(on_connect)
         nsq.run()
 
 if __name__ == "__main__":

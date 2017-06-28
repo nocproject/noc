@@ -4,11 +4,12 @@
 - name: Install classifier monitoring
   template:
     src: "etc/telegraf/telegraf.d/noc-classifier.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/noc-classifier.conf"
+    dest: "{{ telegraf_confd_path }}/noc-classifier.conf"
   notify: reload telegraf
-  when: noc_cfg1.changed or noc_cfg2.changed or noc_cfg3.changed or noc_cfg4.changed
   tags:
     - config
+    - telegraf
+
 
 - name: Install classifier python packages
   pip:

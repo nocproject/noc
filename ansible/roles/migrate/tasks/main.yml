@@ -6,12 +6,16 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  become: yes
+  register: migrate_out
+  changed_when: "'Nothing to migrate' not in migrate_out.stdout"
 
 - name: Apply pools
   command: "{{ noc_root }}/scripts/deploy/apply-pools"
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  become: yes
   register: result
   changed_when: "'CHANGED' in result.stdout"
 
@@ -49,6 +53,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  become: yes
   when: coll_exists.stat.exists
   tags:
     - coll_sync
@@ -58,6 +63,7 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  become: yes
   tags:
     - perms
 
@@ -66,3 +72,20 @@
   args:
     chdir: "{{ noc_root }}"
   become_user: "{{ noc_user }}"
+  become: yes
+  register: mibs_out
+  changed_when: mibs_out.stdout | length > 5
+
+- name: search for clickhouse
+  getent:
+    database: hosts
+    key: "{{clickhouse_host}}"
+  ignore_errors: True
+  register: ch
+
+- name: migrate ch db
+  command: ./noc migrate-ch
+  args:
+    chdir: "{{ noc_root }}"
+  when: "ch.ansible_facts is defined"
+

@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Clickhouse models
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Clickhouse models
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
-## Third-party modules
+import hashlib
+# Third-party modules
 import six
-## NOC modules
+# NOC modules
 from fields import BaseField
 from noc.core.clickhouse.connect import connection
 from noc.core.bi.query import to_sql, escape_field
@@ -76,11 +77,23 @@ class Model(six.with_metaclass(ModelBase)):
                           ".".join(cls._fields_order))
 
     @classmethod
+    def get_short_fingerprint(cls):
+        seed = ".".join(cls._fields_order)
+        h = hashlib.sha256(seed).hexdigest()[:8]
+        return "%s.%s" % (cls._meta.db_table, h)
+
+    @classmethod
     def ensure_table(cls):
+        """
+        Check table is exists
+        :return: True, if table has been altered, False otherwise
+        """
+        changed = False
         ch = connection()
         if not ch.has_table(cls._meta.db_table):
             # Create new table
             ch.execute(post=cls.get_create_sql())
+            changed = True
         else:
             # Alter when necessary
             existing = {}
@@ -98,9 +111,15 @@ class Model(six.with_metaclass(ModelBase)):
             after = None
             for f in cls._fields_order:
                 if f not in existing:
-                    ch.execute(post="ALTER TABLE %s ADD COLUMN %s AFTER %s" % (
-                        cls._meta.db_table, cls._fields[f].get_create_sql(), after))
+                    ch.execute(
+                        post="ALTER TABLE %s ADD COLUMN %s AFTER %s" % (
+                            cls._meta.db_table,
+                            cls._fields[f].get_create_sql(),
+                            after)
+                    )
+                    changed = True
                 after = f
+        return changed
 
     @classmethod
     def get_model_class(cls, name):
@@ -110,12 +129,13 @@ class Model(six.with_metaclass(ModelBase)):
         :param name:
         :return:
         """
-        m = __import__("noc.core.bi.models.%s" % name, {}, {}, "*")
+        mname = name.split("-")[0]
+        m = __import__("noc.bi.models.%s" % mname, {}, {}, "*")
         for a in dir(m):
             o = getattr(m, a)
             if not hasattr(o, "_meta"):
                 continue
-            if getattr(o._meta, "db_table", None) == name:
+            if getattr(o._meta, "db_table", None) == mname:
                 return o
         return None
 
