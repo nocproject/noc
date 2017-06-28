@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Juniper.JUNOS..ping
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Juniper.JUNOS..ping
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
@@ -26,7 +26,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
 
     def execute(self, address, count=None, source_address=None, size=None,
-    df=None, vrf=None):
+      df=None, vrf=None):
         cmd = "ping no-resolve"
         if count:
             cmd += " count %d" % int(count)

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Refbook
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Refbook
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## Third-party modules
+# Third-party modules
 from django.db import models
-## NOC modules
+# NOC modules
 from language import Language
 from noc.main.refbooks.downloaders import downloader_registry
 
@@ -123,5 +123,5 @@ class RefBook(models.Model):
         """
         return self.refbookfield_set.order_by("order")
 
-## Circular references
+# Circular references
 from refbookdata import RefBookData

@@ -20,7 +20,7 @@ rcvar=nsqadmin_enable
 load_rc_config $name
 
 : ${nsqadmin_enable="NO"}
-: ${nsqadmin_config="{{ noc_root }}/var/etc/nsq/${name}.conf"}
+: ${nsqadmin_config="{{nsqd_config_dir}}/${name}.conf"}
 
 command="{{ noc_root }}/bin/${name}"
 required_files="${nsqadmin_config}"

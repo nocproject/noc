@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Compile loaded MIB to the compact JSON representation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Compile loaded MIB to the compact JSON representation
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sys
 import os
 from optparse import make_option
 import gzip
-## Third-party modules
+# Third-party modules
 from django.core.management.base import BaseCommand, CommandError
 import ujson
-## NOC modules
+# NOC modules
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
 

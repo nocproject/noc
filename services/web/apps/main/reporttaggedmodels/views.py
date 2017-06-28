@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Tagged Models Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Tagged Models Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.db import models as django_models
-## NOC modules
+# NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.settings import INSTALLED_APPS
 from noc.core.translation import ugettext as _

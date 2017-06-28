@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Eltex.MES.get_spanning_tree
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Eltex.MES.get_spanning_tree
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 from noc.lib.text import parse_table
@@ -18,7 +18,7 @@ class Script(BaseScript):
     name = "Eltex.MES.get_spanning_tree"
     interface = IGetSpanningTree
 
-    TIMEOUT = 240
+    TIMEOUT = 300
 
     rx_ins = re.compile(
         r"^(?P<instance>\d+)\s+Vlans Mapped:\s+(?P<vlans>\S+)$",
@@ -38,6 +38,7 @@ class Script(BaseScript):
     PORT_ROLE = {
         "altn": "alternate",
         "back": "backup",
+        "bkup": "backup",
         "boun": "master",
         "desg": "designated",
         "dsbl": "disabled",

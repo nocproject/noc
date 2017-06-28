@@ -8,7 +8,7 @@ TIME_PATTERNS=[
 ]
 
 class Migration:
-    
+
     def forwards(self):
         "Write your forwards migration here"
         for name,desc,tpd in TIME_PATTERNS:
@@ -17,6 +17,6 @@ class Migration:
                 tp_id=db.execute("SELECT id FROM main_timepattern WHERE name=%s",[name])[0][0]
                 for tp in tpd:
                     db.execute("INSERT INTO main_timepatternterm(time_pattern_id,term) VALUES(%s,%s)",[tp_id,tp])
-    
+
     def backwards(self):
         "Write your backwards migration here"

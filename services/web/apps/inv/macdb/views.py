@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## inv.macdb application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# inv.macdb application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from mongoengine import Q
-## NOC modules
+# NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.macdb import MACDB
@@ -16,8 +16,8 @@ from noc.inv.models.maclog import MACLog
 from noc.inv.models.interface import Interface
 from noc.core.translation import ugettext as _
 
-##@todo: REST proxy for backend buffered output(paging support in history)
-##@todo: search in field Managed Object/Port/Description
+# @todo: REST proxy for backend buffered output(paging support in history)
+# @todo: search in field Managed Object/Port/Description
 
 class MACApplication(ExtDocApplication):
     """
@@ -51,7 +51,7 @@ class MACApplication(ExtDocApplication):
         :return:
         """
         current = []
-        
+
         m = MACDB.objects.filter(mac=mac).order_by("-timestamp")
         for p in m:
             if p:
@@ -93,7 +93,7 @@ class MACApplication(ExtDocApplication):
                         else:
                             c = ""
                             d_cache[id, i.interface_name] = ""
-                            
+
                     else:
                         c = ""
                         d_cache[id, i.interface_name] = ""

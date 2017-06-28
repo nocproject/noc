@@ -1,21 +1,21 @@
 __author__ = 'FeNikS'
 # -*- coding: utf-8 -*-
 
-##----------------------------------------------------------------------
-## Harmonic.ProStream1000.get_config
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Harmonic.ProStream1000.get_config
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import urllib2
 from xml.dom.minidom import parseString
 import re
-## NOC modules
+# NOC modules
 import noc.sa.script
 from noc.sa.interfaces import IGetConfig
-## Python modules
+# Python modules
 import urllib2
 from xml.dom.minidom import parseString
 

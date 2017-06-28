@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## IGetSNMPGetNext
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# IGetSNMPGetNext
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## NOC modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
 from base import (ListOfParameter, OIDParameter,
                   StringParameter, IntParameter, BooleanParameter, NoneParameter)

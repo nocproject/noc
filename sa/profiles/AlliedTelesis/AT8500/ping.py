@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlliedTelesis.AT8500.ping
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## coded by azhur
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlliedTelesis.AT8500.ping
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# coded by azhur
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
@@ -16,7 +16,8 @@ import re
 class Script(BaseScript):
     name = "AlliedTelesis.AT8500.ping"
     interface = IPing
-    rx_result = re.compile(r"^Reply from [\d\.]+ time=(?P<resp>\d+)ms$",
+    rx_result = re.compile(
+        r"^Reply from [\d\.]+ time=(?P<resp>\d+)ms$",
         re.MULTILINE | re.DOTALL)
 
     def execute(self, address, size=None, count=None, timeout=None):

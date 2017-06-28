@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## inv.inv conduits plugin
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# inv.inv conduits plugin
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
-## Django modules
+# Django modules
 from django.contrib.gis.measure import D
-## NOC modules
+# NOC modules
 from base import InvPlugin
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object

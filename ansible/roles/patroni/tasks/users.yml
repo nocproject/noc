@@ -1,0 +1,25 @@
+---
+
+- name: Create postgres superuser user
+  postgresql_user:
+    name: "replicator"
+    password: "{{ postgres_replicator_password }}"
+    login_user: "{{pg_login_user}}"
+    role_attr_flags: Replication
+
+- name: Create postgres NOC user
+  postgresql_user:
+    name: "{{noc_pg_user}}"
+    password: "{{noc_pg_password}}"
+    login_user: "{{pg_login_user}}"
+    db: postgres
+    role_attr_flags: CREATEDB,NOSUPERUSER
+
+
+- name: Create postgres Grafana user
+  postgresql_user:
+    name: "{{grafana_pg_user}}"
+    password: '{{grafana_pg_password}}'
+    login_user: "{{pg_login_user}}"
+    db: postgres
+    role_attr_flags: CREATEDB,NOSUPERUSER

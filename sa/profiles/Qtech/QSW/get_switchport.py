@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Qtech.QSW.get_switchport
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Qtech.QSW.get_switchport
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetswitchport import IGetSwitchport
 
@@ -238,8 +238,11 @@ class Script(BaseScript):
                 i += 1
                 match = self.rx_vlan_au.match(iface_conf[i])
                 if match:
-                    vlans = match.group("vlans")
-                    port_vlans[interface]["untagged"] = vlans.split(',')[0]
+                    vl = match.group("vlans")
+                    vlans = vl.split(',')[0]
+                    if "-" in vlans:
+                        vlans = vlans.split("-")[0]
+                    port_vlans[interface]["untagged"] = vlans
 
 
         iface_conf = []

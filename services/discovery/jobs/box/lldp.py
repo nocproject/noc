@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## LLDP check
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# LLDP check
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-from collections import defaultdict
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
 from noc.lib.validators import is_ipv4, is_int
 from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
@@ -24,7 +22,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
     required_capabilities = ["Network | LLDP"]
 
     CHASSIS_SUBTYPE_MAC = 4
-    CHASSIS_SUBTYPE_NETWORK_ADDRESS = 4
+    CHASSIS_SUBTYPE_NETWORK_ADDRESS = 5
     CHASSIS_SUBTYPE_LOCAL = 7
 
     PORT_SUBTYPE_ALIAS = 1

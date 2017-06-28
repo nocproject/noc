@@ -1,20 +1,20 @@
 #!./bin/python
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## build noc.models._MODELS manifest
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ----------------------------------------------------------------------
+# build noc.models._MODELS manifest
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from mongoengine.base.common import _document_registry
 from mongoengine.document import Document
 from django.db.models import get_models
 from django.db.models import Model
-## NOC modules
+# NOC modules
 from noc.lib.app.site import site
 from noc.settings import INSTALLED_APPS
 

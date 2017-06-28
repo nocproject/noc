@@ -1,18 +1,18 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ./scripts/apply-patches
-## Apply local patches
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ./scripts/apply-patches
+# Apply local patches
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import sys
 import subprocess
-## Third-party packages
+# Third-party packages
 try:
     from pip.util import get_installed_distributions  # Pip 1.5
 except ImportError:

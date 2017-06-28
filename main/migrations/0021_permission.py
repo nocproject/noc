@@ -13,7 +13,7 @@ class Migration:
         ))
         db.send_create_signal('main', ['Permission'])
         Permission = db.mock_model(model_name='Permission', db_table='main_permission', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Adding ManyToManyField 'Permission.groups'
         Group = db.mock_model(model_name='Group', db_table='auth_group', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         db.create_table('main_permission_groups', (
@@ -21,7 +21,7 @@ class Migration:
             ('permission', models.ForeignKey(Permission, null=False)),
             ('group', models.ForeignKey(Group, null=False))
         ))
-        
+
         # Adding ManyToManyField 'Permission.users'
         User = db.mock_model(model_name='User', db_table='auth_user', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         db.create_table('main_permission_users', (

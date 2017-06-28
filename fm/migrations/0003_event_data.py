@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -28,7 +28,7 @@ EVENT_CATEGORY=[
 
 
 class Migration:
-    
+
     def forwards(self):
         for priority,name,description in EVENT_PRIORITY:
             db.execute("INSERT INTO fm_eventpriority(name,priority,description) VALUES(%s,%s,%s)",[name,priority,description])
@@ -38,6 +38,6 @@ class Migration:
         default_category_id=db.execute("SELECT id FROM fm_eventcategory WHERE NAME=%s",["DEFAULT"])[0][0]
         db.execute("""INSERT INTO fm_eventclass(name,category_id,default_priority_id,variables,subject_template,body_template,last_modified)
             VALUES('DEFAULT',%s,%s,'','Unclassified event','Unclassified event','now')""",[default_category_id,default_priority_id])
-    
+
     def backwards(self):
         "Write your backwards migration here"

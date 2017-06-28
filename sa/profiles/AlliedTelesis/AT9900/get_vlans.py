@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlliedTelesis.AT9900.get_vlans
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlliedTelesis.AT9900.get_vlans
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
@@ -15,7 +15,8 @@ import re
 class Script(BaseScript):
     name = "AlliedTelesis.AT9900.get_vlans"
     interface = IGetVlans
-    rx_vlan = re.compile(r"Name \.+ (?P<vlanname>\S+)\n Identifier \.+ (?P<vlanid>\d+)\n")
+    rx_vlan = re.compile(
+        r"Name \.+ (?P<vlanname>\S+)\n Identifier \.+ (?P<vlanid>\d+)\n")
 
     def execute(self):
         r = []

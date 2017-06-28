@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CLIPS Environment Pool
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# CLIPS Environment Pool
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import threading
 import logging
 import re
 import itertools
-## Third-party modules
+# Third-party modules
 import clips
 
 
@@ -74,7 +74,7 @@ class CLIPSEnv(object):
             "py-match-re"
         )
 
-## Extension functions
+# Extension functions
 def _clips_bool(r):
     """
     Returns Clips TRUE or FALSE depending of value of r
@@ -98,5 +98,5 @@ def clips_match_re(rx, s):
 CLIPS_TRUE = clips.Symbol("TRUE")
 CLIPS_FALSE = clips.Symbol("FALSE")
 
-## Initialize environment
+# Initialize environment
 CLIPSEnv.prepare()

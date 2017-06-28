@@ -1,27 +1,27 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## MetricType model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# MetricType model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import operator
-from threading import RLock
-## Third-party modules
+from threading import Lock
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, ReferenceField,
                                 UUIDField, ObjectIdField)
 import cachetools
-## NOC Modules
+# NOC Modules
 from noc.inv.models.capability import Capability
 from noc.main.models.doccategory import category
 from noc.lib.text import quote_safe_path
 from noc.lib.prettyjson import to_json
 
-id_lock = RLock()
+id_lock = Lock()
 
 
 @category

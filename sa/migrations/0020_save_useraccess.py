@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from south.db import db
 
 
@@ -20,6 +20,6 @@ class Migration:
                 db.execute("INSERT INTO sa_managedobjectselector_filter_groups(managedobjectselector_id,objectgroup_id) VALUES(%s,%s)",
                     [s_id,group_id])
             i+=1
-    
+
     def backwards(self):
         db.execute("DELETE FROM sa_managedobjectselector WHERE name LIKE 'NOC_UA_%'")

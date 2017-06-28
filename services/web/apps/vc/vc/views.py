@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## vc.vc application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# vc.vc application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from mongoengine import Q
-## NOC modules
+# NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.vc.models.vcdomain import VCDomain
 from noc.vc.models.vcfilter import VCFilter

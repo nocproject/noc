@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Basic DLink parser
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Basic DLink parser
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
     Literal, delimitedList
-## NOC modules
+# NOC modules
 from noc.cm.parsers.base import BaseParser
 from noc.core.ip import IPv4
-from noc.lib.validators import is_ipv4
+from noc.lib.validators import is_ipv4, is_int
 
 
 class BaseDLinkParser(BaseParser):
@@ -155,14 +155,22 @@ class BaseDLinkParser(BaseParser):
     def parse_create_vlan(self, tokens):
         """
         create vlan 306 tag 306
+        create vlan tag tag 306
         """
         tag = self.next_item(tokens, "tag")
-        if tag:
+        if tag and is_int(tag):
             name = self.next_item(tokens, "vlan")
             vid = int(tag)
             self.get_vlan_fact(vid).name = name
             self.vlan_ids[tag] = vid
             self.vlan_ids[name] = vid
+        else:
+            if len(tokens) == 5 and tokens[3] == "tag" and is_int(tokens[4]):
+                name = self.next_item(tokens, "vlan")
+                vid = int(tokens[4])
+                self.get_vlan_fact(vid).name = name
+                self.vlan_ids[tag] = vid
+                self.vlan_ids[name] = vid
 
     def parse_config_vlan_vlanid(self, tokens):
         """

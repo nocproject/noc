@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AddPac.APOS.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
+# ----------------------------------------------------------------------
+# AddPac.APOS.get_version
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 import re

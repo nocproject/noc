@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.administrativedomain application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.administrativedomain.Application");
@@ -11,7 +11,8 @@ Ext.define("NOC.sa.administrativedomain.Application", {
     requires: [
         "NOC.sa.administrativedomain.Model",
         "NOC.sa.administrativedomain.TreeCombo",
-        "NOC.main.pool.LookupField"
+        "NOC.main.pool.LookupField",
+        "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.sa.administrativedomain.Model",
     search: true,
@@ -74,6 +75,44 @@ Ext.define("NOC.sa.administrativedomain.Application", {
             xtype: "main.pool.LookupField",
             fieldLabel: __("Pool"),
             allowBlank: true
+        },
+        {
+            xtype: "fieldset",
+            layout: "hbox",
+            title: __("Integration"),
+            defaults: {
+                padding: 4,
+                labelAlign: "right"
+            },
+            items: [
+                {
+                    name: "remote_system",
+                    xtype: "main.remotesystem.LookupField",
+                    fieldLabel: __("Remote System"),
+                    allowBlank: true
+                },
+                {
+                    name: "remote_id",
+                    xtype: "textfield",
+                    fieldLabel: __("Remote ID"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "bi_id",
+                    xtype: "textfield",
+                    fieldLabel: __("BI ID"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                }
+            ]
+        },
+        {
+            name: "tags",
+            xtype: "tagsfield",
+            fieldLabel: __("Tags"),
+            allowBlank: true,
+            uiStyle: "extra"
         }
     ],
 

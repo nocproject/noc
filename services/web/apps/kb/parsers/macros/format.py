@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## format macro
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# format macro
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 
@@ -13,12 +13,12 @@ from noc.lib.highlight import NOCHtmlFormatter
 from noc.core.profile.loader import loader as profile_loader
 
 
-##
-## Format macro:
-## Formats and highlights text
-## Args:
-##     syntax - name of the syntax.
-##
+#
+# Format macro:
+# Formats and highlights text
+# Args:
+#     syntax - name of the syntax.
+#
 class Macro(MacroBase):
     name = "format"
     @classmethod
@@ -41,4 +41,3 @@ class Macro(MacroBase):
         except:
             lexer = get_lexer_by_name("text")
         return highlight(text, lexer, NOCHtmlFormatter())
-

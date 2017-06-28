@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Activator API
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Activator API
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python module
+# Python module
 import socket
-## Third-party modules
+# Third-party modules
 import tornado.gen
 import tornado.httpclient
-## NOC modules
+# NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
 from noc.core.script.base import BaseScript
@@ -24,6 +24,8 @@ class ActivatorAPI(API):
     Monitoring API
     """
     name = "activator"
+
+    HTTP_CLIENT_DEFAULTS = dict(connect_timeout=20, request_timeout=30)
 
     @api
     @executor("script")
@@ -141,7 +143,11 @@ class ActivatorAPI(API):
         :returns" Result as a string, or None in case of errors
         """
         self.logger.debug("HTTP GET %s", url)
-        client = tornado.httpclient.AsyncHTTPClient()
+        client = tornado.httpclient.AsyncHTTPClient(
+            force_instance=True,
+            max_clients=1
+        )
+        client.configure(None, defaults=self.HTTP_CLIENT_DEFAULTS)
         result = None
         try:
             response = yield client.fetch(

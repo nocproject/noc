@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Card handler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Card handler
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import inspect
 from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 import tornado.web
 from jinja2 import Template
 import ujson
 import cachetools
-## NOC modules
+# NOC modules
 from noc.core.service.ui import UIHandler
 from noc.services.card.cards.base import BaseCard
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.main.models import User
 
 user_lock = Lock()

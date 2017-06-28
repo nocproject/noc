@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Built-in IEEE refbooks
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Built-in IEEE refbooks
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from noc.main.refbooks.refbooks import RefBook,Field
 
-##
-## IEEE OUI Refbook
-##
+#
+# IEEE OUI Refbook
+#
 class IEEEOUI(RefBook):
     name="IEEE OUI"
     description="IEEE Assigned Organizational Units IDs. Used as first three octets of MAC Address"

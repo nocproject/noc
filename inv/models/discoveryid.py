@@ -1,23 +1,22 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Discovery id
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Discovery id
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 from threading import Lock
-## Third-party modules
+# Third-party modules
 from mongoengine.queryset import DoesNotExist
 import cachetools
-## Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
-from mongoengine.fields import (StringField, ListField,
+from mongoengine.fields import (StringField, ListField, LongField,
                                 EmbeddedDocumentField)
 from pymongo import ReadPreference
-## NOC modules
+# NOC modules
 from noc.lib.nosql import ForeignKeyField
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
@@ -25,6 +24,7 @@ from noc.inv.models.subinterface import SubInterface
 from noc.core.perf import metrics
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
+from noc.core.mac import MAC
 
 mac_lock = Lock()
 
@@ -48,8 +48,7 @@ class DiscoveryID(Document):
         "collection": "noc.inv.discovery_id",
         "allow_inheritance": False,
         "indexes": [
-            "object", "hostname", "udld_id",
-            ("chassis_mac.first_mac", "chassis_mac.last_mac")
+            "object", "hostname", "udld_id", "macs"
         ]
     }
     object = ForeignKeyField(ManagedObject)
@@ -57,6 +56,8 @@ class DiscoveryID(Document):
     hostname = StringField()
     router_id = StringField()
     udld_id = StringField()  # UDLD local identifier
+    #
+    macs = ListField(LongField())
 
     _mac_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
 
@@ -73,16 +74,25 @@ class DiscoveryID(Document):
                     last_mac=r["last_chassis_mac"]
                 ) for r in chassis_mac
             ]
+        else:
+            chassis_mac = []
         o = cls.objects.filter(object=object.id).first()
         if o:
             old_macs = set(m.first_mac for m in o.chassis_mac)
             o.chassis_mac = chassis_mac
             o.hostname = hostname
             o.router_id = router_id
-            o.save()
             old_macs -= set(m.first_mac for m in o.chassis_mac)
             if old_macs:
                 cache.delete_many(["discoveryid-mac-%s" % m for m in old_macs])
+            # MAC index
+            macs = []
+            for r in chassis_mac:
+                first = MAC(r.first_mac)
+                last = MAC(r.last_mac)
+                macs += [m for m in range(int(first), int(last) + 1)]
+            o.macs = macs
+            o.save()
         else:
             cls(object=object, chassis_mac=chassis_mac,
                 hostname=hostname, router_id=router_id).save()
@@ -92,31 +102,16 @@ class DiscoveryID(Document):
                   key="discoveryid-mac-%s",
                   lock=lambda _: mac_lock)
     def get_by_mac(cls, mac):
-        c = cls._get_collection()
-        r = c.find_one({"chassis_mac.first_mac": mac},
-               {"_id": 0, "object": 1, "chassis_mac": 1})
-        if r:
-            metrics["discoveryid_mac_first"] += 1
-        else:
-            # Slow path, find by range
-            r = c.find_one({
-                "chassis_mac": {
-                    "$elemMatch": {
-                        "first_mac": {
-                            "$lte": mac
-                        },
-                        "last_mac": {
-                            "$gte": mac
-                        }
-                    }
-                }
-            }, {"_id": 0, "object": 1})
-        return r
+        return cls._get_collection().find_one({
+            "macs": int(MAC(mac))
+        }, {"_id": 0, "object": 1})
 
     @classmethod
     def find_object(cls, mac=None, ipv4_address=None):
         """
         Find managed object
+        :param mac:
+        :param ipv4_address:
         :param cls:
         :return: Managed object instance or None
         """
@@ -195,9 +190,39 @@ class DiscoveryID(Document):
         # Other interface macs
         i_macs = set()
         for i in Interface.objects.filter(
-                managed_object=object.id, mac__exists=False):
+                managed_object=object.id, mac__exists=True):
             if i.mac:
                 if not any(1 for f, t in c_macs if f <= i.mac <= t):
                     # Not in range
                     i_macs.add(i.mac)
         return c_macs + [(m, m) for m in i_macs]
+
+    @classmethod
+    def macs_for_objects(cls, objects_ids):
+        """
+        Get MAC addresses for object
+        :param cls:
+        :param objects_ids: Lis IDs of Managed Object Instance
+        :type: list
+        :return: Dictionary mac: objects
+        :rtype: dict
+        """
+        if not objects_ids:
+            return None
+        if isinstance(objects_ids, list):
+            objects = objects_ids
+        else:
+            objects = list(objects_ids)
+
+        os = cls.objects.filter(object__in=objects)
+        if not os:
+            return None
+        # Discovered chassis id range
+        c_macs = {int(did[0][0]): did[1] for did in os.scalar("macs", "object") if did[0]}
+        # c_macs = [r.macs for r in os]
+        # Other interface macs
+        i_macs = {int(MAC(i[0])): i[1] for i in Interface.objects.filter(
+            managed_object__in=objects, mac__exists=True).scalar("mac", "managed_object")}
+        c_macs.update(i_macs)
+
+        return c_macs

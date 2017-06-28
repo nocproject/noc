@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## 3Com.SuperStack.get_vlans
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
-## Python modules
+# ----------------------------------------------------------------------
+# 3Com.SuperStack.get_vlans
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.sa.interfaces.igetvlans import IGetVlans
 from noc.core.script.base import BaseScript
 

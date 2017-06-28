@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## reportmissedp2p Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# reportmissedp2p Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Django Modules
 from django.utils.translation import ugettext_lazy as _
@@ -12,9 +12,9 @@ from django.utils.translation import ugettext_lazy as _
 from noc.lib.app.simplereport import SimpleReport
 from noc.ip.models import VRF
 from noc.core.translation import ugettext as _
-##
-##
-##
+#
+#
+#
 class Reportreportmissedp2p(SimpleReport):
     title = _("Missed Link Addresses")
     def get_data(self,**kwargs):

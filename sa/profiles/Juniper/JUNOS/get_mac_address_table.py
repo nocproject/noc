@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Juniper.JUNOS.get_mac_address_table
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Juniper.JUNOS.get_mac_address_table
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 import re
 
-rx_line = re.compile(r"(?P<vlan_name>[^ ]+)\s+(?P<mac>[^ ]+)\s+(?P<type>Learn|Static)\s+[^ ]+\s+(?P<interfaces>.*)$", re.IGNORECASE)
+rx_line = re.compile(
+    r"(?P<vlan_name>[^ ]+)\s+(?P<mac>[^ ]+)\s+(?P<type>Learn|Static)\s+"
+    r"[^ ]+\s+(?P<interfaces>.*)$", re.IGNORECASE)
 
 
 class Script(BaseScript):
@@ -33,14 +35,17 @@ class Script(BaseScript):
         for l in self.cli(cmd).splitlines():
             match = rx_line.match(l.strip())
             if match:
-                vlan_id = int(vlans[match.group("vlan_name")])
+                if match.group("vlan_name") in vlans:
+                    vlan_id = int(vlans[match.group("vlan_name")])
+                else:
+                    vlan_id = 1
                 r += [{
                     "vlan_id": vlan_id,
                     "mac": match.group("mac"),
                     "interfaces": [match.group("interfaces")],
                     "type": {
-                        "learn":"D",
-                         "static":"S"
+                        "learn": "D",
+                        "static": "S"
                     }[match.group("type").lower()],
                 }]
         return r

@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import tempfile
 import hashlib
 import urllib2
 import cStringIO
 import gzip
-## NOC modules
+# NOC modules
 from noc.lib.version import get_version
 from noc.settings import config
 
-## Setup proxy
+# Setup proxy
 PROXY = {}
 for proto in ["http", "https", "ftp"]:
     p = config.get("proxy", "%s_proxy" % proto)

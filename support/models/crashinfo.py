@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Crashinfo
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Crashinfo
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import logging
 import uuid
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (UUIDField, DateTimeField, StringField)
 import mongoengine.signals
 import dateutil.parser
 import ujson
-## NOC modules
+# NOC modules
 from noc.support.cp import CPClient
 
 logger = logging.getLogger(__name__)
@@ -145,7 +145,7 @@ class Crashinfo(Document):
         self.status = "R"
         self.save()
 
-##
+#
 mongoengine.signals.pre_delete.connect(
     Crashinfo.on_delete,
     sender=Crashinfo

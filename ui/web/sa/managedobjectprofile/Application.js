@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobjectprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2012 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobjectprofile.Application");
@@ -15,7 +15,8 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.style.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "Ext.ux.form.MultiIntervalField",
-        "NOC.pm.metrictype.LookupField"
+        "NOC.pm.metrictype.LookupField",
+        "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.sa.managedobjectprofile.Model",
     search: true,
@@ -268,13 +269,105 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     renderer: NOC.render.Duration
                                                 }
                                             ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    title: __("Ping series settings"),
+                                    layout: "vbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "ping_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Ping Policy"),
+                                            allowBlank: true,
+                                            uiStyle: "medium",
+                                            store: [
+                                                ["f", __("First Success")],
+                                                ["a", __("All Success")]
+                                            ],
+                                            value: "f"
                                         },
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "ping_size",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Packet size, bytes"),
+                                                    labelWidth: 105,
+                                                    uiStyle: "small",
+                                                    defautlValue: 64,
+                                                    minValue: 64
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "ping_count",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Packets count"),
+                                                    labelWidth: 105,
+                                                    defautlValue: 3,
+                                                    uiStyle: "small"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "ping_timeout_ms",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Timeout, msec"),
+                                                    defaultValue: 1000,
+                                                    labelWidth: 105,
+                                                    uiStyle: "small",
+                                                    listeners: {
+                                                        scope: me,
+                                                        change: function(_item, newValue, oldValue, eOpts) {
+                                                            me.form.findField("ping_tm_calculated").setValue(newValue/1000);
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    name: 'ping_tm_calculated',
+                                                    xtype: 'displayfield',
+                                                    renderer: NOC.render.Duration
+                                                }
+                                            ]
+                                        }
                                     ]
                                 },
                                 {
                                     name: "report_ping_rtt",
                                     xtype: "checkboxfield",
                                     boxLabel: __("Report ping RTT"),
+                                    allowBlank: false
+                                },
+                                {
+                                    name: "report_ping_attempts",
+                                    xtype: "checkboxfield",
+                                    boxLabel: __("Report ping attempts"),
                                     allowBlank: false
                                 }
                             ]
@@ -470,6 +563,11 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "enable_box_discovery_vlan",
                                             xtype: "checkboxfield",
                                             boxLabel: __("VLAN")
+                                        },
+                                        {
+                                            name: "enable_box_discovery_mac",
+                                            xtype: "checkboxfield",
+                                            boxLabel: __("MAC")
                                         }
                                     ]
                                 },
@@ -677,7 +775,52 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             allowBlank: true
                                         }
                                     ]
-                                }
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    layout: "hbox",
+                                    title: __("Discovery Alarm"),
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "box_discovery_alarm_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Box Alarm"),
+                                            allowBlank: true,
+                                            labelWidth: 60,
+                                            labelAlign: "left",
+                                            uiStyle: "medium",
+                                            store: [
+                                                ["E", __("Enable")],
+                                                ["D", __("Disable")]
+                                            ],
+                                            value: "D"
+                                        },
+                                        {
+                                            name: "box_discovery_fatal_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Fatal Alarm Weight"),
+                                            labelWidth: 115,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        },
+                                        {
+                                            name: "box_discovery_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Alarm Weight"),
+                                            labelWidth: 80,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        }
+                                    ]
+                                },
                             ]
                         },
                         {
@@ -757,7 +900,52 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("Metrics")
                                         }
                                     ]
-                                }
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    layout: "hbox",
+                                    title: __("Discovery Alarm"),
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "periodic_discovery_alarm_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Periodic Alarm"),
+                                            allowBlank: true,
+                                            labelWidth: 80,
+                                            labelAlign: "left",
+                                            uiStyle: "medium",
+                                            store: [
+                                                ["E", __("Enable")],
+                                                ["D", __("Disable")]
+                                            ],
+                                            value: "D"
+                                        },
+                                        {
+                                            name: "periodic_discovery_fatal_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Fatal Alarm Weight"),
+                                            labelWidth: 115,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        },
+                                        {
+                                            name: "periodic_discovery_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Alarm Weight"),
+                                            labelWidth: 80,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        }
+                                    ]
+                                },
                             ]
                         },
                         {
@@ -823,7 +1011,49 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
 
                                 }
                             ]
-                        }
+                        },
+                        {
+                            title: __("Integration"),
+                            items: [
+                                {
+                                    name: "remote_system",
+                                    xtype: "main.remotesystem.LookupField",
+                                    fieldLabel: __("Remote System"),
+                                    allowBlank: true
+                                },
+                                {
+                                    name: "remote_id",
+                                    xtype: "textfield",
+                                    fieldLabel: __("Remote ID"),
+                                    allowBlank: true,
+                                    uiStyle: "medium"
+                                },
+                                {
+                                    name: "bi_id",
+                                    xtype: "textfield",
+                                    fieldLabel: __("BI ID"),
+                                    allowBlank: true,
+                                    uiStyle: "medium"
+                                }
+                            ]
+                        },
+                        {
+                            title: __("Escalation"),
+                            items: [
+                                {
+                                    name: "escalation_policy",
+                                    xtype: "combobox",
+                                    fieldLabel: __("Escalation Policy"),
+                                    allowBlank: true,
+                                    uiStyle: "medium",
+                                    store: [
+                                        ["E", __("Enable")],
+                                        ["D", __("Disable")]
+                                    ],
+                                    value: "E"
+                                }
+                            ]
+                        },
                     ]
                 }
             ],

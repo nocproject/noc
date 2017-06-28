@@ -1,21 +1,21 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Accelerated Rule Lookup
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Accelerated Rule Lookup
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
 import operator
 import re
 import logging
 import cachetools
-## Third-party modules
+# Third-party modules
 import esm
 from pyparsing import *
-## NOC modules
+# NOC modules
 from rulelookup import RuleLookup
 
 
@@ -140,5 +140,5 @@ class XRuleLookup(RuleLookup):
         RE << SIMPLE_RE + ZeroOrMore(PIPE + RE)
         return RE
 
-## Global parser
+# Global parser
 parser = XRuleLookup.get_parser()

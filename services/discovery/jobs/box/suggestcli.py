@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Suggest SNMP check check
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Suggest SNMP check check
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.service.client import RPCClient, RPCError
+from noc.core.service.client import open_sync_rpc, RPCError
 
 
 class SuggestCLICheck(DiscoveryCheck):
@@ -27,9 +27,9 @@ class SuggestCLICheck(DiscoveryCheck):
         for user, password, super_password in self.object.auth_profile.iter_cli():
             if self.check_login(user, password, super_password):
                 if self.object._suggest_snmp:
-                    ro, rw = self.object._suggest_snmp
+                    ro, rw, version = self.object._suggest_snmp
                 else:
-                    ro, rw = None, None
+                    ro, rw, version = None, None, None
                 self.set_credentials(
                     user=user,
                     password=password,
@@ -39,13 +39,18 @@ class SuggestCLICheck(DiscoveryCheck):
                 )
                 return
         self.logger.info("Failed to guess CLI credentials")
-        self.set_problem("Failed to guess CLI credentials")
+        self.set_problem(
+            alarm_class="Discovery | Guess | CLI Credentials",
+            message="Failed to guess CLI credentials",
+            fatal=True
+        )
 
     def check_login(self, user, password, super_password):
         self.logger.info("Checking %s/%s/%s", user, password, super_password)
         try:
-            r = RPCClient(
-                "activator-%s" % self.object.pool.name,
+            r = open_sync_rpc(
+                "activator",
+                pool=self.object.pool.name,
                 calling_service="discovery"
             ).script(
                 "%s.login" % self.object.profile_name,

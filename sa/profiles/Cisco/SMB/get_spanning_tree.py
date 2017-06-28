@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Cisco.SMB.get_spanning_tree
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Cisco.SMB.get_spanning_tree
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetspanningtree import IGetSpanningTree
 from noc.lib.text import parse_table
@@ -69,9 +69,9 @@ class Script(BaseScript):
                 }
         return ports
 
-    ##
-    ## PVST+/rapid-PVST+ Parsing
-    ##
+    #
+    # PVST+/rapid-PVST+ Parsing
+    #
     rx_pvst_bridge = re.compile(
         r"(CST )?Root ID\s+Priority\s+(?P<root_priority>\d+).+Address\s+(?P<root_id>\S+).+(Bridge ID\s+Priority\s+(?P<bridge_priority>\d+).+Address\s+(?P<bridge_id>\S+))?",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
@@ -123,9 +123,9 @@ class Script(BaseScript):
             INST["interfaces"] = interfaces[INST["id"]]
         return reply
 
-    ##
-    ## MSTP Parsing
-    ##
+    #
+    # MSTP Parsing
+    #
     rx_mstp_region = re.compile(
         r"Name:\s+(?P<region>\S+).+Revision:\s+(?P<revision>\d+)",
         re.DOTALL | re.MULTILINE | re.IGNORECASE)
@@ -212,7 +212,7 @@ class Script(BaseScript):
             return self.process_pvst(v, proto="RSTP")
         elif "Spanning tree enabled mode MSTP" in v:
             return self.process_mstp(v)
-        #elif "No spanning tree instance exists" in v \
-        #or "No spanning tree instances exist" in v:
+        # elif "No spanning tree instance exists" in v \
+        # or "No spanning tree instances exist" in v:
         else:
             return {"mode": "None", "instances": []}

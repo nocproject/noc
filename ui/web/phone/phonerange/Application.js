@@ -13,7 +13,9 @@ Ext.define("NOC.phone.phonerange.Application", {
         "NOC.phone.dialplan.LookupField",
         "NOC.phone.phonerangeprofile.LookupField",
         "NOC.project.project.LookupField",
-        "NOC.crm.supplier.LookupField"
+        "NOC.crm.supplier.LookupField",
+        "NOC.sa.administrativedomain.LookupField",
+        "NOC.sa.terminationgroup.LookupField"
     ],
     model: "NOC.phone.phonerange.Model",
     search: true,
@@ -67,8 +69,25 @@ Ext.define("NOC.phone.phonerange.Application", {
                 {
                     text: __("Supplier"),
                     dataIndex: "supplier",
-                    flex: 1,
+                    width: 100,
                     renderer: NOC.render.Lookup("supplier")
+                },
+                {
+                    text: __("Administrative Domain"),
+                    dataIndex: "administrative_domain",
+                    width: 100,
+                    renderer: NOC.render.Lookup("administrative_domain")
+                },
+                {
+                    text: __("Termination Group"),
+                    dataIndex: "termination_group",
+                    width: 100,
+                    renderer: NOC.render.Lookup("termination_group")
+                },
+                {
+                    text: __("Description"),
+                    dataIndex: "description",
+                    flex: 1
                 }
             ],
 
@@ -110,6 +129,18 @@ Ext.define("NOC.phone.phonerange.Application", {
                     allowBlank: true
                 },
                 {
+                    name: "administrative_domain",
+                    xtype: "sa.administrativedomain.LookupField",
+                    fieldLabel: __("Adm. Domain"),
+                    allowBlank: true
+                },
+                {
+                    name: "termination_group",
+                    xtype: "sa.terminationgroup.LookupField",
+                    fieldLabel: __("Termination Group"),
+                    allowBlank: true
+                },
+                {
                     name: "from_number",
                     xtype: "textfield",
                     fieldLabel: __("From Number"),
@@ -125,7 +156,7 @@ Ext.define("NOC.phone.phonerange.Application", {
                     name: "to_allocate_numbers",
                     xtype: "checkbox",
                     boxLabel: __("Allocate Numbers")
-                }
+                },
             ],
 
             formToolbar: [

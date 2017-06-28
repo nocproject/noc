@@ -70,7 +70,7 @@ class Migration:
                         """,[object_id])[0][0]
                     tmap[object_id]=n_object_id
                 db.execute("UPDATE tagging_taggeditem SET content_type_id=%s,object_id=%s WHERE id=%s",[prefix_ct_id,n_object_id,t_id])
-        
+
         if address_ct_id:
             tmap={} # IPv4Address.id -> Address.id
             for t_id,tag_id,object_id in db.execute("SELECT id,tag_id,object_id FROM tagging_taggeditem WHERE content_type_id=%s",[address_ct_id]):
@@ -92,8 +92,8 @@ class Migration:
             elif fqdn_action=="D":
                 reverse_nses=fqdn_action_parameter
             db.execute("INSERT INTO ip_addressrange(name,vrf_id,afi,from_address,to_address,description,is_locked,action,fqdn_template,reverse_nses) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",[name,vrf_id,"4",from_ip,to_ip,description,is_locked,fqdn_action,fqdn_template,reverse_nses])
-    
+
     def backwards(self):
         pass
-    
+
 

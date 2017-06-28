@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## KBEntry Manager
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# KBEntry Manager
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 import re
 from django.contrib import admin
 from django import forms
@@ -13,22 +13,22 @@ from noc.lib.app.modelapplication import ModelApplication,HasPerm
 from noc.kb.models.kbentry import KBEntry
 from noc.kb.models.kbentryattachment import KBEntryAttachment
 from noc.kb.models.kbentrytemplate import KBEntryTemplate
-##
-## Inline Admin for Attachments
-##
+#
+# Inline Admin for Attachments
+#
 class KBEntryAttachmentForm(forms.ModelForm):
     class Meta:
         model=KBEntryAttachment
-##
-## Entry attacment admin
-##
+#
+# Entry attacment admin
+#
 class KBEntryAttachmentAdmin(admin.TabularInline):
     form=KBEntryAttachmentForm
     model=KBEntryAttachment
     extra=3
-##
-## Admin for Entries
-##
+#
+# Admin for Entries
+#
 class KBEntryAdmin(admin.ModelAdmin):
     list_display=["id","subject"]
     search_fields=["id","subject"]
@@ -36,18 +36,18 @@ class KBEntryAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.save(user=request.user)
 
-##
-## KBEntry application
-##
+#
+# KBEntry application
+#
 class KBEntryApplication(ModelApplication):
     model=KBEntry
     model_admin=KBEntryAdmin
     menu="Setup | Entries"
-    ##
+    #
     rx_template_var=re.compile("{{([^}]+)}}",re.MULTILINE)
-    ##
-    ##
-    ##
+    #
+    #
+    #
     def view_change(self,request,object_id,form_url="",extra_context=None):
         def response_change(*args):
             self.message_user(request,"KB%s was changed successfully"%object_id)
@@ -57,18 +57,18 @@ class KBEntryApplication(ModelApplication):
     view_change.url=r"^(\d+)/$"
     view_change.url_name="change"
     view_change.access=HasPerm("change")
-    ##
-    ## Display the list of templates
-    ##
+    #
+    # Display the list of templates
+    #
     def view_template_index(self,request):
         templates=KBEntryTemplate.objects.order_by("name")
         return self.render(request,"template_index.html", {"templates":templates})
     view_template_index.url=r"^from_template/$"
     view_template_index.menu="New from Template"
     view_template_index.access=HasPerm("add")
-    ##
-    ## Create new entry from template
-    ##
+    #
+    # Create new entry from template
+    #
     def view_from_template(self,request,template_id):
         def expand(template,vars):
             return self.rx_template_var.sub(lambda x:vars[x.group(1)],template)

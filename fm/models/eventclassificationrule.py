@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## EventClassificationRule model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# EventClassificationRule model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
-## Third-party modules
+# Third-party modules
 from mongoengine import fields
 from mongoengine.document import EmbeddedDocument, Document
-## NOC modules
+# NOC modules
 from eventclass import EventClass
 from datasource import DataSource
 from noc.lib.nosql import PlainReferenceField

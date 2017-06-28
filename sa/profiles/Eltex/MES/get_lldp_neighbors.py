@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Eltex.MES.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Eltex.MES.get_lldp_neighbors
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
@@ -21,6 +21,7 @@ class Script(BaseScript):
     interface = IGetLLDPNeighbors
 
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
+    rx_mac2 = re.compile(r"^[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}\:[0-9a-f]{2}$")
 
     CAPS_MAP = {
         "O": 1, "r": 2, "B": 4,
@@ -91,10 +92,15 @@ class Script(BaseScript):
                     cap |= self.CAPS_MAP[c]
 
             # Get remote port subtype
-            remote_port_subtype = 5
+            remote_port_subtype = 1
             if self.rx_mac.match(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
+                remote_port = MACAddressParameter().clean(remote_port)
+                remote_port_subtype = 3
+            elif self.rx_mac2.match(remote_port):
+                # Actually macAddress(3)
+                # Convert MAC2 to common form
                 remote_port = MACAddressParameter().clean(remote_port)
                 remote_port_subtype = 3
             elif is_ipv4(remote_port):
@@ -102,7 +108,7 @@ class Script(BaseScript):
                 remote_port_subtype = 4
             elif is_int(remote_port):
                 # Actually local(7)
-                remote_port_subtype = 5
+                remote_port_subtype = 7
 
             i = {
                 "local_interface": local_interface,

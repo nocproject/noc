@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Base card handler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Base card handler
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import datetime
 import operator
-## Third-party modules
+# Third-party modules
 from jinja2 import Template, Environment
-## NOC modules
+# NOC modules
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
 
@@ -200,6 +200,9 @@ class BaseCard(object):
         if "service" in s:
             from noc.sa.models.serviceprofile import ServiceProfile
             r += [get_summary(s["service"], ServiceProfile)]
+        if "fresh_alarms" in s and s["fresh_alarms"]:
+            r += ["<i class=\"fa fa-exclamation-triangle\"></i><span class=\"badge\">%s</span>"
+                  % s["fresh_alarms"]["FreshAlarm"]]
         r = [x for x in r if x]
         return "&nbsp;".join(r)
 

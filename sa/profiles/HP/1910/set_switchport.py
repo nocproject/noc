@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## HP.1910.set_switchport
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# HP.1910.set_switchport
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-from __future__ import with_statement
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.isetswitchport import ISetSwitchport
 from noc.lib.text import list_to_ranges

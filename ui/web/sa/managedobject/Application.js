@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.managedobject application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2013 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.managedobject.Application");
@@ -25,7 +25,9 @@ Ext.define("NOC.sa.managedobject.Application", {
         "NOC.sa.authprofile.LookupField",
         "NOC.sa.terminationgroup.LookupField",
         "NOC.inv.networksegment.LookupField",
-        "NOC.main.timepattern.LookupField"
+        "NOC.main.timepattern.LookupField",
+        "NOC.main.remotesystem.LookupField",
+        "NOC.fm.ttsystem.LookupField"
     ],
     model: "NOC.sa.managedobject.Model",
     search: true,
@@ -216,8 +218,7 @@ Ext.define("NOC.sa.managedobject.Application", {
                 {
                     text: __("Platform"),
                     dataIndex: "platform",
-                    width: 150,
-                    sortable: false
+                    width: 150
                 },
                 {
                     text: __("SA Profile"),
@@ -725,6 +726,117 @@ Ext.define("NOC.sa.managedobject.Application", {
                             fieldLabel: __("Config Validation pyRule"),
                             allowBlank: true,
                             groupEdit: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Integration"),
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "remote_system",
+                            xtype: "main.remotesystem.LookupField",
+                            fieldLabel: __("Remote System"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "remote_id",
+                            xtype: "textfield",
+                            fieldLabel: __("Remote ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "bi_id",
+                            xtype: "textfield",
+                            fieldLabel: __("BI ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Escalation"),
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "escalation_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Escalation Policy"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            store: [
+                                ["P", __("Profile")],
+                                ["E", __("Enable")],
+                                ["D", __("Disable")]
+                            ],
+                            value: "P"
+                        },
+                        {
+                            name: "tt_system",
+                            xtype: "fm.ttsystem.LookupField",
+                            fieldLabel: __("TT System"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "tt_queue",
+                            xtype: "textfield",
+                            fieldLabel: __("TT Queue"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "tt_system_id",
+                            xtype: "textfield",
+                            fieldLabel: __("TT System ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Discovery Alarm"),
+                    defaults: {
+                        labelAlign: "top",
+                        padding: 4
+                    },
+                    items: [
+                        {
+                            name: "box_discovery_alarm_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Box Alarm"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            store: [
+                                ["P", __("Profile")],
+                                ["E", __("Enable")],
+                                ["D", __("Disable")]
+                            ],
+                            value: "P"
+                        },
+                        {
+                            name: "periodic_discovery_alarm_policy",
+                            xtype: "combobox",
+                            fieldLabel: __("Periodic Alarm"),
+                            allowBlank: true,
+                            uiStyle: "medium",
+                            store: [
+                                ["P", __("Profile")],
+                                ["E", __("Enable")],
+                                ["D", __("Disable")]
+                            ],
+                            value: "P"
                         }
                     ]
                 },

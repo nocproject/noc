@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Slow operations registry
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Slow operations registry
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import logging
 import concurrent.futures
 import cPickle
 import time
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import DateTimeField, FloatField, StringField
-## NOC modules
-from noc.lib.debug import error_report
+# NOC modules
+from noc.core.debug import error_report
 
 logger = logging.getLogger(__name__)
 

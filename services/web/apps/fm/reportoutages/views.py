@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## fm.reportoutages
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# fm.reportoutages
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 from collections import defaultdict
-## Django modu;es
+# Django modu;es
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
-## NOC modules
+# NOC modules
 from noc.fm.models.outage import Outage
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.useraccess import UserAccess
@@ -75,7 +75,10 @@ class ReportOutagesApplication(SimpleReport):
             b = datetime.datetime.strptime(from_date, "%d.%m.%Y")
             q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
             if to_date:
-                t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y")
+                if from_date == to_date:
+                    t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(1)
+                else:
+                    t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y")
             else:
                 t1 = now
             q &= Q(start__lte=t1) | Q(stop__lte=t1)
@@ -122,8 +125,8 @@ class ReportOutagesApplication(SimpleReport):
                 m.address,
                 m.profile_name,
                 m.platform,
-                m.is_managed,
-                m.get_status(),
+                _("Yes") if m.is_managed else _("No"),
+                _("Yes") if m.get_status() else _("No"),
                 downtime,
                 avail,
                 len(outages[o])
@@ -133,8 +136,8 @@ class ReportOutagesApplication(SimpleReport):
             title=self.title,
             columns=[
                 _("Managed Object"), _("Address"), _("Profile"), _("Platform"),
-                TableColumn(_("Managed"), format="bool"),
-                TableColumn(_("Status"), format="bool"),
+                TableColumn(_("Managed"), align="right"),
+                TableColumn(_("Status"), align="right"),
                 TableColumn(_("Downtime"), align="right"),
                 TableColumn(_("Availability"), align="right", format="percent"),
                 TableColumn(_("Downs"), align="right", format="integer")

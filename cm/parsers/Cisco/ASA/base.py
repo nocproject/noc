@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Basic IOS parser
-##----------------------------------------------------------------------
-## Copyright (C) 2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Basic IOS parser
+# ---------------------------------------------------------------------
+# Copyright (C) 2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## Third-party modules
+# Third-party modules
 from pyparsing import *
-## NOC modules
+# NOC modules
 from noc.core.ip import IPv4
 from noc.cm.parsers.pyparser import BasePyParser
 from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS, RD

@@ -1,15 +1,15 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Prefix Table models
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Prefix Table models
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django Modules
+# Django Modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-## NOC Modules
+# NOC Modules
 from noc.core.ip import IP
 from noc.core.model.fields import CIDRField
 from noc.core.model.decorator import on_delete_check

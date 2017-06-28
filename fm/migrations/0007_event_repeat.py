@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -10,7 +10,7 @@ from django.db import models
 
 
 class Migration:
-    
+
     def forwards(self):
         # Mock Models
         Event = db.mock_model(model_name='Event', db_table='fm_event', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
@@ -23,7 +23,7 @@ class Migration:
         ))
         # Mock Models
         EventClass = db.mock_model(model_name='EventClass', db_table='fm_eventclass', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # Model 'EventClassVar'
         db.create_table('fm_eventclassvar', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -34,7 +34,7 @@ class Migration:
         ))
         db.create_index('fm_eventclassvar', ['event_class_id','name'], unique=True, db_tablespace='')
         db.send_create_signal('fm', ['EventRepeat','EventClassVar'])
-        
+
         db.add_column('fm_eventclass','repeat_suppression',models.BooleanField("Repeat Suppression",default=False))
         db.add_column('fm_eventclass','repeat_suppression_interval',models.IntegerField("Repeat Suppression interval (secs)",default=3600))
         # Migrate variables
@@ -43,7 +43,7 @@ class Migration:
                 for v in [v.strip() for v in vars.split(",")]:
                     db.execute("INSERT INTO fm_eventclassvar(event_class_id,name,required,repeat_suppression) VALUES(%s,%s,true,false)",[id,v])
         db.delete_column('fm_eventclass','variables')        
-    
+
     def backwards(self):
         db.delete_table('fm_eventrepeat')
         db.delete_column('fm_eventclass','repeat_suppression')

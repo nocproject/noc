@@ -1,4 +1,4 @@
-db = connect("{{mongo_hosts}}/{{noc_mongo_db}}")
+db = connect("{{mongo_hosts}}/{{noc_mongo_db}}?replicaSet={{noc_mongo_replicaset}}")
 var master = db.isMaster()
 if(!master.ismaster) {
     db = connect(master.primary + "/{{noc_mongo_db}}")

@@ -35,7 +35,7 @@ if __name__ == "__main__":
         import noc.urls
     if len(sys.argv) > 1 and sys.argv[1] in ("runserver", "debug-script"):
         # Set loglevel to DEBUG
-        #logging.root.setLevel(logging.DEBUG)
+        # logging.root.setLevel(logging.DEBUG)
         logging.basicConfig(level=logging.DEBUG,
                             format='%(asctime)s %(message)s')
     # Execute command

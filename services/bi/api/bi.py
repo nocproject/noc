@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BI API
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# BI API
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import zlib
-## Third-party modules
+# Third-party modules
 import ujson
 from mongoengine.queryset import Q
-## NOC modules
+# NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.clickhouse.model import Model
-from noc.core.bi.models.reboots import Reboots
-from noc.core.bi.models.alarms import Alarms
-from noc.bi.models.dashboard import Dashboard
+from noc.main.models import User, Group
+from noc.bi.models.reboots import Reboots
+from noc.bi.models.alarms import Alarms
+from noc.bi.models.dashboard import Dashboard, DashboardAccess, DAL_ADMIN, DAL_RO
 from noc.core.translation import ugettext as _
-from noc.lib.nosql import get_db
 
 
 class BIAPI(API):
@@ -126,26 +126,23 @@ class BIAPI(API):
         * owner
         * created
         * changed
-        @todo: Access control
         :param q:
         :return:
         """
         user = self.handler.current_user
-        # @todo: Filter by groups
-        aq = Q(owner=user.id) | Q(access__user=user.id)
+        groups = user.groups.values_list("id", flat=True)
+        aq = Q(owner=user.id) | Q(access__user=user.id) | Q(access__group__in=groups)
         return [{
-                    "id": str(d.id),
-                    "title": str(d.title),
-                    "description": str(d.description),
-                    "tags": str(d.tags),
-                    "owner": d.owner.username,
-                    "created": d.created.isoformat(),
-                    "changed": d.changed.isoformat()
-                } for d in Dashboard.objects
-                    .filter(aq)
-                    .exclude("config")]
+            "id": str(d.id),
+            "title": str(d.title),
+            "description": str(d.description),
+            "tags": str(d.tags),
+            "owner": d.owner.username,
+            "created": d.created.isoformat(),
+            "changed": d.changed.isoformat()
+        } for d in Dashboard.objects.filter(aq).exclude("config")]
 
-    def _get_dashboard(self, id, access_level=0):
+    def _get_dashboard(self, id, access_level=DAL_RO):
         """
         Returns dashboard or None
         :param id:
@@ -241,7 +238,8 @@ class BIAPI(API):
             if "children" not in node.keys():
                 return
             else:
-                node["children"] = sorted(node["children"], key=lambda x: x["text"])
+                node["children"] = sorted(node["children"],
+                                          key=lambda x: x["text"])
                 for n in node["children"]:
                     sort_children(n)
 
@@ -302,22 +300,101 @@ class BIAPI(API):
         result = model.query(query, self.handler.current_user)
         tree = {}
         for row in result["result"]:
-            names = map(lambda x: x[1:-1], row[0][1:-1].split(","))
-            ids = map(lambda x: int(x), row[1][1:-1].split(","))
-            ids.reverse()
-            names.reverse()
+            names = reversed(x[1:-1] for x in row[0][1:-1].split(","))
+            ids = reversed(int(x) for x in row[1][1:-1].split(","))
             parent_id = None
-            for col in zip(ids, names):
+            for id, text in zip(ids, names):
                 searched = search_parent(tree, parent_id)
-                parent_id = col[0]
+                parent_id = id
                 if searched:
-                    if searched["id"] != col[0]:
+                    if searched["id"] != id:
                         if "children" not in searched.keys():
                             searched["children"] = []
-                        if not col[0] in map(lambda x: x["id"], searched["children"]):
-                            searched["children"].append({"id": col[0], "text": col[1]})
-                else:  # start point
-                    tree = {"id": col[0], "text": col[1], "children": []}
+                        if id not in [x["id"] for x in searched["children"]]:
+                            searched["children"] += [{
+                                "id": id,
+                                "text": text
+                            }]
+                else:
+                    # starting point
+                    tree = {
+                        "id": id,
+                        "text": text,
+                        "children": []
+                    }
 
         sort_children(tree)
         return tree
+
+    @executor("query")
+    @api
+    def list_users(self, query=None):
+        qs = User.objects.all()
+        if query:
+            qs = qs.filter(username__icontains=query)
+        return sorted(({
+            "id": u.id,
+            "username": u.username,
+            "full_name": "%s %s" % (u.last_name, u.first_name)
+        } for u in qs),
+            key=lambda u: u["username"])
+
+    @executor("query")
+    @api
+    def list_groups(self, query=None):
+        qs = Group.objects.all()
+        if query:
+            qs = qs.filter(username__icontains=query)
+        qs = qs.order_by("name")
+        return [{
+            "id": g.id,
+            "name": g.name
+        } for g in qs]
+
+    @executor("query")
+    @api
+    def get_dashboard_access(self, id):
+        d = self._get_dashboard(id)
+        if not d:
+            return None
+        r = []
+        for ar in d.access:
+            i = {"level": ar.level}
+            if ar.user:
+                i["user"] = {
+                    "id": ar.user.id,
+                    "name": "%s %s" % (ar.user.last_name, ar.user.first_name)
+                }
+            if ar.group:
+                i["group"] = {
+                    "id": ar.group.id,
+                    "name": ar.group.name
+                }
+            r += [i]
+        return r
+
+    @executor("query")
+    @api
+    def set_dashboard_access(self, id, items):
+        """
+
+        :param id:
+        :param items:
+        :return:
+        """
+        d = self._get_dashboard(id)
+        if not d:
+            return False
+        if d.get_user_access(self.handler.current_user) < DAL_ADMIN:
+            return False
+        access = []
+        for i in items:
+            da = DashboardAccess(level=i["level"])
+            if i.get("user"):
+                da.user = User.objects.get(id=i["user"]["id"])
+            if i.get("group"):
+                da.group = Group.objects.get(id=i["group"]["id"])
+            access += [da]
+        d.access = access
+        d.save()
+        return True

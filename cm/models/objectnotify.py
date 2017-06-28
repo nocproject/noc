@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Object notifications
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Object notifications
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.db import models
-## NOC modules
+# NOC modules
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.sa.models.administrativedomain import AdministrativeDomain
 

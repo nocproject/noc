@@ -72,6 +72,23 @@ Ext.define("NOC.inv.networksegment.Model", {
             name: "max_shown_downlinks",
             type: "integer",
             defaultValue: 1000
+        },
+        {
+            name: "remote_system",
+            type: "string"
+        },
+        {
+            name: "remote_system__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "remote_id",
+            type: "string"
+        },
+        {
+            name: "bi_id",
+            type: "string"
         }
     ]
 });

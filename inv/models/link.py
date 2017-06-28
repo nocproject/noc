@@ -1,15 +1,15 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Link model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Link model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
 import datetime
-## NOC modules
+# NOC modules
 from noc.lib.nosql import (Document, PlainReferenceListField,
                            StringField, DateTimeField)
 from interface import Interface

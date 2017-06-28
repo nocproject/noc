@@ -1,12 +1,12 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## NOC models lazy loading and utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# NOC models lazy loading and utilities
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 
 
@@ -67,7 +67,7 @@ def iter_model_id():
         yield m
 
 
-## Model cache: model_id -> class
+# Model cache: model_id -> class
 _MCACHE = {}
 
 _MODELS = {
@@ -95,6 +95,7 @@ _MODELS = {
     "main.RefBook": "noc.main.models.RefBook",
     "main.RefBookData": "noc.main.models.RefBookData",
     "main.RefBookField": "noc.main.models.RefBookField",
+    "main.RemoteSystem": "noc.main.models.remotesystem.RemoteSystem",
     "main.ResourceState": "noc.main.models.resourcestate.ResourceState",
     "main.Schedule": "noc.main.models.Schedule",
     "main.SlowOp": "noc.main.models.slowop.SlowOp",
@@ -178,6 +179,8 @@ _MODELS = {
     "sa.MapTask": "noc.sa.models.maptask.MapTask",
     "sa.ObjectNotification": "noc.sa.models.objectnotification.ObjectNotification",
     "sa.ReduceTask": "noc.sa.models.reducetask.ReduceTask",
+    "sa.Service": "noc.sa.models.service.Service",
+    "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
     "sa.TerminationGroup": "noc.sa.models.terminationgroup.TerminationGroup",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
     "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
@@ -212,6 +215,7 @@ _MODELS = {
     "fm.Outage": "noc.fm.models.outage.Outage",
     "fm.Reboot": "noc.fm.models.reboot.Reboot",
     "fm.SyntaxAlias": "noc.fm.models.syntaxalias.SyntaxAlias",
+    "fm.TTSystem": "noc.fm.models.ttsystem.TTSystem",
     # pm models
     "pm.GrafanaDashboard": "noc.pm.models.grafanadashboard.GrafanaDashboard",
     "pm.MetricType": "noc.pm.models.metrictype.MetricType",

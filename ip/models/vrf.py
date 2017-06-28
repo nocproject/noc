@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## VRF model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# VRF model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import hashlib
 import struct
-## Django modules
+# Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-## NOC modules
+# NOC modules
 from noc.main.models.style import Style
 from noc.main.models import ResourceState
 from noc.project.models.project import Project
@@ -165,5 +165,5 @@ class VRF(models.Model):
         return ("ip.vrf", "history", {"args": [self.id]})
 
 
-## Avoid circular references
+# Avoid circular references
 from prefix import Prefix

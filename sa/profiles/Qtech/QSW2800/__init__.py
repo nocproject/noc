@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-##----------------------------------------------------------------------
-## Vendor: Qtech
-## OS:     QSW2800
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Qtech
+# OS:     QSW2800
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 
 # Python modules
@@ -19,13 +19,15 @@ class Profile(BaseProfile):
     name = "Qtech.QSW2800"
     pattern_more = [
         (r"^ --More-- $", " "),
-        (r"^Confirm to overwrite current startup-config configuration [Y/N]:", "\nY\n"),
-        (r"^Confirm to overwrite current startup-config configuration", "\ny\n"),
+        (r"^Confirm to overwrite current startup-config configuration "
+            r"[Y/N]:", "\nY\n"),
+        (r"^Confirm to overwrite current startup-config configuration",
+            "\ny\n"),
         (r"^Confirm to overwrite the existed destination file?", "\ny\n"),
     ]
     pattern_unpriveleged_prompt = r"^\S+>"
     pattern_syntax_error = r"% (?:Invalid input detected at '\^' marker|" \
-                           r"(?:Ambiguous|Incomplete) command)|" \
+                           r"(?:Ambiguous|Incomplete|.+Unknown) command)|" \
                            r"Error input in the position market by"
     command_disable_pager = "terminal length 0"
     command_super = "enable"
@@ -33,7 +35,9 @@ class Profile(BaseProfile):
     command_leave_config = "end"
     command_save_config = "copy running-config startup-config"
     command_submit = "\r"
-    pattern_prompt = r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?(?:\(config[^\)]*\))?#"
+    pattern_prompt = \
+        r"^(?P<hostname>[a-zA-Z0-9]\S{0,19})(?:[\.\-_\d\w]+)?" \
+        r"(?:\(config[^\)]*\))?#"
 
     rx_ifname = re.compile(r"^(?P<number>\d+)$")
     default_parser = "noc.cm.parsers.Qtech.QSW2800.base.BaseQSW2800Parser"
@@ -60,8 +64,10 @@ class Profile(BaseProfile):
         :type block: str
         :return:
         """
-        k_v_splitter = re.compile(r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
-        part_splitter = re.compile(r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
+        k_v_splitter = re.compile(
+            r"\s*(?P<key>.+?):\s+(?P<value>.+?)(?:\s\s|\n)", re.IGNORECASE)
+        part_splitter = re.compile(
+            r"\s*(?P<part_name>\S+?):\s*\n", re.IGNORECASE)
         r = {}
         is_table = False
         is_part = False
@@ -108,3 +114,18 @@ class Profile(BaseProfile):
             # r[part_name] = dict(k_v_list)
             # r[part_name]["table"] = row
         return r
+
+    @staticmethod
+    def convert_sfp(sfp_type, distance, bit_rate, wavelength):
+        print sfp_type, distance, bit_rate, wavelength
+        if " m" in distance:
+            # convert to km
+            distance = str(int(distance.split(" ")[0])/1000)
+        if " nm" in wavelength:
+            wavelength = wavelength.split(" ")[0]
+        if sfp_type and sfp_type != "unknown":
+            return ""
+        elif sfp_type == "unknown":
+            return "-".join(["QSC", "SFP" + distance + "GE", wavelength])
+        else:
+            return ""

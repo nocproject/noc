@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## DNSZone
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# DNSZone
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 import time
 from collections import defaultdict
@@ -17,7 +17,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-## NOC modules
+# NOC modules
 from dnszoneprofile import DNSZoneProfile
 from noc.main.models import (NotificationGroup, SystemNotification,
                              SystemTemplate)
@@ -36,9 +36,9 @@ from noc.main.models.synccache import SyncCache
 logger = logging.getLogger(__name__)
 
 
-##
-## Managers for DNSZone
-##
+#
+# Managers for DNSZone
+#
 class ForwardZoneManager(models.Manager):
     def get_query_set(self):
         q = (Q(name__iendswith=".in-addr.arpa") |
@@ -701,9 +701,9 @@ class DNSZone(models.Model):
         }
 
 
-##
-## Signal handlers
-##
+#
+# Signal handlers
+#
 @receiver(post_save, sender=DNSZoneProfile)
 def on_save_zone_profile(sender, instance, created, **kwargs):
     if not created:

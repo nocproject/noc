@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Reclassify events
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Reclassify events
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from optparse import OptionParser, make_option
 import re
 import hashlib
 from htmlentitydefs import name2codepoint
-## Third-party modules
+# Third-party modules
 from django.core.management.base import BaseCommand, CommandError
 from bson import ObjectId
-## NOC modules
+# NOC modules
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectselector import ManagedObjectSelector
 from noc.fm.models.activeevent import ActiveEvent
@@ -59,7 +59,7 @@ class Command(BaseCommand):
         make_option("-l", "--limit", dest="limit", default=0, type="int",
                     help="Limit action to N records")
     )
-    
+
     rx_ip = re.compile(r"\d+\.\d+\.\d+\.\d+")
     rx_float = re.compile(r"\d+\.\d+")
     rx_int = re.compile(r"\d+")

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Object Mappings
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Object Mappings
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import logging
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import ReferenceField, DictField
-## NOC modules
+# NOC modules
 from noc.main.models.pool import Pool
 from noc.sa.models.objectstatus import ObjectStatus
 from noc.core.defer import call_later
@@ -95,13 +95,23 @@ class ObjectMap(Document):
             "time_pattern__id",
             "object_profile",
             "object_profile__ping_interval",
-            "object_profile__report_ping_rtt"
+            "object_profile__ping_policy",
+            "object_profile__ping_size",
+            "object_profile__ping_count",
+            "object_profile__ping_timeout_ms",
+            "object_profile__report_ping_rtt",
+            "object_profile__report_ping_attempts"
         ):
             if mo.object_profile.ping_interval and mo.object_profile.ping_interval > 0:
                 rr = {
                     "id": mo.id,
                     "interval": mo.object_profile.ping_interval,
+                    "policy": mo.object_profile.ping_policy,
+                    "size": mo.object_profile.ping_size,
+                    "count": mo.object_profile.ping_count,
+                    "timeout": mo.object_profile.ping_timeout_ms,
                     "report_rtt": mo.object_profile.report_ping_rtt,
+                    "report_attempts": mo.object_profile.report_ping_attempts,
                     "status": None,
                     "name": mo.name
                 }

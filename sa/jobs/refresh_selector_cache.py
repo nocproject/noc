@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Refresh selector cache
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Refresh selector cache
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## NOC modules
+# NOC modules
 from noc.lib.nosql import get_db
 from noc.lib.scheduler.intervaljob import IntervalJob
 from noc.sa.models.managedobjectselector import ManagedObjectSelector

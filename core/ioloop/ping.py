@@ -2,7 +2,7 @@
 ##----------------------------------------------------------------------
 ## PingSocket implementation
 ##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
+## Copyright (C) 2007-2017 The NOC Project
 ## See LICENSE for details
 ##----------------------------------------------------------------------
 
@@ -22,6 +22,7 @@ import tornado.concurrent
 from tornado.util import errno_from_exception
 ## NOC modules
 from noc.speedup.ip import build_icmp_echo_request
+from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
 
@@ -378,20 +379,26 @@ class Ping(object):
         req_id = self.iter_request.next() & 0xFFFF
         result = False
         rtts = []
+        attempt = 0
         for seq in range(count):
             rtt = yield socket.ping(address, timeout, size, req_id, seq)
             if rtt is not None:
                 rtts += [rtt]
             if rtt and policy == self.CHECK_FIRST:
                 result = True
+                attempt = seq
                 break
             elif not rtt and policy == self.CHECK_ALL:
                 result = False
                 break
         if result:
             rtt = sum(rtts) / len(rtts)
-            logger.debug("[%s] Result: success, rtt=%s", address, rtt)
-            raise tornado.gen.Return(rtt)
+            if policy == self.CHECK_ALL:
+                attempt = 0
+            elif attempt > 0:
+                metrics["ping_check_recover"] += 1
+            logger.debug("[%s] Result: success, rtt=%s, attempt=%d", address, rtt, attempt)
+            raise tornado.gen.Return((rtt, attempt))
         else:
             logger.debug("[%s] Result: failed", address)
-            raise tornado.gen.Return(None)
+            raise tornado.gen.Return((None, attempt))

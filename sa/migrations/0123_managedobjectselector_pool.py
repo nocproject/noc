@@ -1,6 +1,6 @@
-## Third-party modules
+# Third-party modules
 from south.db import db
-## NOC models
+# NOC models
 from noc.core.model.fields import DocumentReferenceField
 from noc.lib.nosql import get_db
 

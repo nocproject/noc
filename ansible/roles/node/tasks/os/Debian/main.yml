@@ -12,26 +12,20 @@
     - python-dev
     - python-virtualenv
     - mercurial
-    - sudo
     - libjemalloc1
     - quilt
     - gcc
     - libpq-dev
     - libcurl4-openssl-dev
-    - apt-transport-https
     - libffi6
     - libffi-dev
     - libmemcached11
     - libmemcached-dev
-    - ca-certificates
-    - unzip
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
   tags:
     - requirements
-
-- include: "telegraf.yml"
 
 - name: Install supervisord init script
   template:
@@ -46,6 +40,3 @@
     dest: "/etc/systemd/system/{{ noc_system_service }}.service"
   when: "ansible_service_mgr == 'systemd'"
   notify: reload systemd
-
-- name: reload systemd
-  command: /bin/systemctl daemon-reload

@@ -1,28 +1,31 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## PhoneRange model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# PhoneRange model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 from threading import Lock
 import operator
 import logging
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, BooleanField
 from mongoengine.queryset import Q
 from mongoengine.errors import ValidationError
 import cachetools
-## NOC modules
-from dialplan import DialPlan
-from phonerangeprofile import PhoneRangeProfile
-from numbercategory import NumberCategory
+# NOC modules
+from .dialplan import DialPlan
+from .phonerangeprofile import PhoneRangeProfile
+from .numbercategory import NumberCategory
 from noc.lib.nosql import PlainReferenceField
 from noc.crm.models.supplier import Supplier
 from noc.project.models.project import Project
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.terminationgroup import TerminationGroup
 from noc.lib.nosql import ForeignKeyField
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.defer import call_later
@@ -48,6 +51,8 @@ class PhoneRange(Document):
     to_number = StringField()
     supplier = PlainReferenceField(Supplier)
     project = ForeignKeyField(Project)
+    administrative_domain = ForeignKeyField(AdministrativeDomain)
+    termination_group = ForeignKeyField(TerminationGroup)
     to_allocate_numbers = BooleanField()
     # @todo: softswitch
     # @todo: SBC
@@ -137,7 +142,7 @@ class PhoneRange(Document):
         self.parent = PhoneRange.get_closest_range(**q)
 
     def on_save(self):
-        from phonenumber import PhoneNumber
+        from .phonenumber import PhoneNumber
         # Borrow own phone numbers from parent
         if self.parent:
             for n in PhoneNumber.objects.filter(
@@ -165,7 +170,7 @@ class PhoneRange(Document):
 
     def on_delete(self):
         # Move nested phone numbers to parent
-        from phonenumber import PhoneNumber
+        from .phonenumber import PhoneNumber
         for n in PhoneNumber.objects.filter(phone_range=self.id):
             n.phone_range = self.parent
             n.save()
@@ -193,7 +198,7 @@ class PhoneRange(Document):
             yield str(n)
 
     def allocate_numbers(self):
-        from phonenumber import PhoneNumber
+        from .phonenumber import PhoneNumber
 
         # Alreacy created numbers
         existing_numbers = set(PhoneNumber.objects.filter(

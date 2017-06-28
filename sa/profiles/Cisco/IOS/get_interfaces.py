@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Cisco.IOS.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Cisco.IOS.get_interfaces
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 # Python modules
@@ -91,7 +91,7 @@ class Script(BaseScript):
             match = self.rx_lldp.search(s)
             if match:
                 if match.group("rx_state").lower() == "enabled":
-                    r += [self.profile.convert_interface_name(match.group("iface"))]
+                    r += [self.profile.convert_interface_name(match.group("iface").strip())]
         return r
 
     def get_oam_interfaces(self):
@@ -107,7 +107,7 @@ class Script(BaseScript):
         for s in v.strip().split("\n"):
             match = self.rx_oam.search(s)
             if match:
-                r += [self.profile.convert_interface_name(match.group("iface"))]
+                r += [self.profile.convert_interface_name(match.group("iface").strip())]
         return r
 
     def get_cdp_interfaces(self):
@@ -123,7 +123,7 @@ class Script(BaseScript):
         for s in v.split("\n"):
             match = self.rx_cdp.search(s)
             if match:
-                r += [self.profile.convert_interface_name(match.group("iface"))]
+                r += [self.profile.convert_interface_name(match.group("iface").strip())]
         return r
 
     def get_vtp_interfaces(self):
@@ -145,10 +145,10 @@ class Script(BaseScript):
         for s in v1.strip().split("\n"):
             match = self.rx_vtp.search(s)
             if match:
-                r += [self.profile.convert_interface_name(match.group("iface"))]
+                r += [self.profile.convert_interface_name(match.group("iface").strip())]
             match = self.rx_vtp1.search(s)
             if match:
-                r += [self.profile.convert_interface_name(match.group("iface"))]
+                r += [self.profile.convert_interface_name(match.group("iface").strip())]
         return r
 
     def get_ospfint(self):
@@ -172,7 +172,7 @@ class Script(BaseScript):
         for s in v.split("\n"):
             match = self.rx_pim.search(s)
             if match:
-                r += [self.profile.convert_interface_name(match.group("name"))]
+                r += [self.profile.convert_interface_name(match.group("name").strip())]
         return r
 
     def get_igmpint(self):
@@ -184,7 +184,7 @@ class Script(BaseScript):
         for s in v.split("\n"):
             match = self.rx_igmp.search(s)
             if match:
-                r += [self.profile.convert_interface_name(match.group("name"))]
+                r += [self.profile.convert_interface_name(match.group("name").strip())]
         return r
 
     rx_ifindex = re.compile(
@@ -262,7 +262,7 @@ class Script(BaseScript):
             match = self.rx_sh_ip_int.search(l)
             if match:
                 c_iface = self.profile.convert_interface_name(
-                    match.group("interface"))
+                    match.group("interface").strip())
                 continue
             # Primary ip
             match = self.rx_ip.search(l)
@@ -285,7 +285,7 @@ class Script(BaseScript):
             if match:
                 iface = match.group("interface")
                 try:
-                    c_iface = self.profile.convert_interface_name(iface)
+                    c_iface = self.profile.convert_interface_name(iface).strip()
                 except InterfaceTypeError:
                     c_iface = None
                 continue
@@ -311,7 +311,7 @@ class Script(BaseScript):
 
         v = self.cli("show interface")
         for match in self.rx_sh_int.finditer(v):
-            full_ifname = match.group("interface")
+            full_ifname = match.group("interface").strip()
             ifname = self.profile.convert_interface_name(full_ifname)
             if ifname[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "Co"]:
                 continue

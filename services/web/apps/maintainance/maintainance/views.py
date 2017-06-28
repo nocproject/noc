@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## maintainance.maintainance application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# maintainance.maintainance application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.lib.app.extdocapplication import ExtDocApplication, view
 from noc.maintainance.models.maintainance import Maintainance
 from noc.sa.models.managedobject import ManagedObject
@@ -27,7 +27,10 @@ class MaintainanceApplication(ExtDocApplication):
           access="read", api=True)
     def api_test(self, request, id):
         o = self.get_object_or_404(Maintainance, id=id)
-        return [
+        r = []
+        for mao in o.affected_objects:
+                mo = mao.object
+                r += [
             {
                 "id": mo.id,
                 "name": mo.name,
@@ -38,5 +41,6 @@ class MaintainanceApplication(ExtDocApplication):
                 "address": mo.address,
                 "description": mo.description,
                 "tags": mo.tags
-            } for mo in ManagedObject.objects.filter(id__in=o.currently_affected)
+            }
         ]
+        return r

@@ -17,7 +17,7 @@ class Migration:
         AS = db.mock_model(model_name='AS', db_table='peer_as', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         Person = db.mock_model(model_name='Person', db_table='peer_person', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         Maintainer = db.mock_model(model_name='Maintainer', db_table='peer_maintainer', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         db.create_table("peer_organisation", (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('organisation', models.CharField("Organisation",max_length=128,unique=True)),
@@ -26,10 +26,10 @@ class Migration:
             ('address', models.TextField("Address")),
             ('mnt_ref', models.ForeignKey(Maintainer,verbose_name="Mnt. Ref")),
         ))
-        
+
         Organisation = db.mock_model(model_name='Organisation', db_table='peer_organisation', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         db.send_create_signal('peer', ['Organisation'])
-        
+
         db.add_column("peer_as","rir",models.ForeignKey(RIR,null=True,blank=True))
         db.add_column("peer_as", "organisation", models.ForeignKey(Organisation,null=True,blank=True))
         db.add_column("peer_as",'header_remarks', models.TextField("Header Remarks", null=True, blank=True))
@@ -41,28 +41,28 @@ class Migration:
             ('as', models.ForeignKey(AS, null=False)),
             ('maintainer', models.ForeignKey(Maintainer, null=False))
         ))
-        
+
         # Adding ManyToManyField 'AS.tech_contacts'
         db.create_table('peer_as_tech_contacts', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('as', models.ForeignKey(AS, null=False)),
             ('person', models.ForeignKey(Person, null=False))
         ))
-        
+
         # Adding ManyToManyField 'AS.routes_maintainers'
         db.create_table('peer_as_routes_maintainers', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('as', models.ForeignKey(AS, null=False)),
             ('maintainer', models.ForeignKey(Maintainer, null=False))
         ))
-        
+
         # Adding ManyToManyField 'AS.administrative_contacts'
         db.create_table('peer_as_administrative_contacts', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('as', models.ForeignKey(AS, null=False)),
             ('person', models.ForeignKey(Person, null=False))
         ))
-        
+
         # Fill out RIR
         ripe_id=db.execute("SELECT id FROM peer_rir WHERE name=%s",["RIPE NCC"])[0]
         db.execute("UPDATE peer_as SET rir_id=%s",[ripe_id])
@@ -89,17 +89,17 @@ class Migration:
         db.delete_column("peer_as","rpsl_footer")        
         db.execute("ALTER TABLE peer_as ALTER rir_id SET NOT NULL")
         db.execute("ALTER TABLE peer_as ALTER organisation_id SET NOT NULL")
-    
+
     def backwards(self):
         # Dropping ManyToManyField 'AS.maintainers'
         db.delete_table('peer_as_maintainers')
-        
+
         # Dropping ManyToManyField 'AS.tech_contacts'
         db.delete_table('peer_as_tech_contacts')
-        
+
         # Dropping ManyToManyField 'AS.routes_maintainers'
         db.delete_table('peer_as_routes_maintainers')
-        
+
         # Dropping ManyToManyField 'AS.administrative_contacts'
         db.delete_table('peer_as_administrative_contacts')
 

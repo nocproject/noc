@@ -1,16 +1,15 @@
 {
   "title": "Ping | RTT",
-  "aliasColors": {},
+  "aliasColors": {
+    "Ping | Attempts": "#BF1B00"
+  },
   "bars": false,
+  "dashLength": 10,
+  "dashes": false,
   "datasource": null,
   "fill": 1,
-  "grid": {
-    "threshold1": null,
-    "threshold1Color": "rgba(216, 200, 27, 0.27)",
-    "threshold2": null,
-    "threshold2Color": "rgba(234, 112, 112, 0.22)"
-  },
-  "id": 27,
+  "grid": {},
+  "id": "c406b161-14be-411b-8455-91c1c155e5bd",
   "legend": {
     "alignAsTable": true,
     "avg": true,
@@ -30,7 +29,13 @@
   "pointradius": 5,
   "points": false,
   "renderer": "flot",
-  "seriesOverrides": [],
+  "seriesOverrides": [
+    {
+      "alias": "Ping | Attempts",
+      "yaxis": 2
+    }
+  ],
+  "spaceLength": 10,
   "span": 6,
   "stack": false,
   "steppedLine": false,
@@ -41,7 +46,7 @@
       "groupBy": [
         {
           "params": [
-            "$interval"
+            "$ping_interval"
           ],
           "type": "time"
         },
@@ -53,6 +58,7 @@
         }
       ],
       "measurement": "Ping | RTT",
+      "orderByTime": "ASC",
       "policy": "default",
       "refId": "A",
       "resultFormat": "time_series",
@@ -77,8 +83,53 @@
           "value": "/^$device$/"
         }
       ]
+    },
+    {
+      "alias": "Ping | Attempts",
+      "dsType": "influxdb",
+      "groupBy": [
+        {
+          "params": [
+            "$ping_interval"
+          ],
+          "type": "time"
+        },
+        {
+          "params": [
+            "null"
+          ],
+          "type": "fill"
+        }
+      ],
+      "measurement": "Ping | Attempts",
+      "orderByTime": "ASC",
+      "policy": "default",
+      "refId": "B",
+      "resultFormat": "time_series",
+      "select": [
+        [
+          {
+            "params": [
+              "value"
+            ],
+            "type": "field"
+          },
+          {
+            "params": [],
+            "type": "mean"
+          }
+        ]
+      ],
+      "tags": [
+        {
+          "key": "object",
+          "operator": "=~",
+          "value": "/^$device$/"
+        }
+      ]
     }
   ],
+  "thresholds": [],
   "timeFrom": null,
   "timeShift": null,
   "tooltip": {
@@ -90,7 +141,11 @@
   "type": "graph",
   "x-axis": true,
   "xaxis": {
-    "show": true
+    "buckets": null,
+    "mode": "time",
+    "name": null,
+    "show": true,
+    "values": []
   },
   "y-axis": true,
   "yaxes": [
@@ -106,7 +161,7 @@
       "format": "short",
       "label": null,
       "logBase": 1,
-      "max": null,
+      "max": "5",
       "min": null,
       "show": true
     }

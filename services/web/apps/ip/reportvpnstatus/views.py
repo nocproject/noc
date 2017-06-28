@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ip.reportvpnstatus
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ip.reportvpnstatus
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 from django.utils.translation import ugettext_lazy as _
-## NOC modules
+# NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow
 from noc.ip.models import VRF
 from noc.inv.models.forwardinginstance import ForwardingInstance

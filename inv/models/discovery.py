@@ -1,7 +1,7 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 __author__ = 'boris'
-## NOC modules
+# NOC modules
 from noc.lib.nosql import (Document, StringField, ListField,
                            ForeignKeyField, DictField, DateTimeField,
                            IntField, FloatField)

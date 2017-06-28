@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## IGetARP - interface to query ARP cache
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# IGetARP - interface to query ARP cache
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.interface.base import BaseInterface
 from base import (StringParameter, InterfaceNameParameter, ListOfParameter,
                   DictParameter, IPv4Parameter, MACAddressParameter)

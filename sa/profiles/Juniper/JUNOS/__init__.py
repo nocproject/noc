@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Juniper
-## OS:     JUNOS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Juniper
+# OS:     JUNOS
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
 class Profile(BaseProfile):
     name = "Juniper.JUNOS"
     pattern_username = "^((?!Last)\S+ login|[Ll]ogin):"
-    pattern_prompt = r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
+    pattern_prompt = \
+        r"^(({master(?::\d+)}\n)?\S+>)|(({master(?::\d+)})?" \
+        r"\[edit.*?\]\n\S+#)|(\[Type \^D at a new line to end input\])"
     pattern_more = [
         (r"^---\(more.*?\)---", " "),
         (r"\? \[yes,no\] .*?", "y\n")
@@ -37,7 +39,9 @@ class Profile(BaseProfile):
         def c(v):
             v = v.upper()
             l, r = v.split("R")
-            return [int(x) for x in l.split(".")] + [int(x) for x in r.split(".")]
+            return [int(x) for x in l.split(".")] + [
+                int(x) for x in r.split(".")
+            ]
 
         return cmp(c(x), c(y))
 
@@ -53,15 +57,15 @@ class Profile(BaseProfile):
                 rf += ["    route-filter %s upto /%d" % (prefix, max_len)]
         r = [
             "term pass {",
-            "    from {",
-            ]
+            "    from {"
+        ]
         r += rf
         r += [
             "    }",
             "    then next policy;",
             "}",
             "term reject {",
-            "    then reject;"
+            "    then reject;",
             "}"
         ]
         return "\n".join(r)

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ValidationPlugin
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ValidationPlugin
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.template import Template, Context
-## NOC modules
+# NOC modules
 from base import AlarmPlugin
 from noc.cm.models.objectfact import ObjectFact
 from noc.cm.models.errortype import ErrorType

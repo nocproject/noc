@@ -1,16 +1,16 @@
 #!./bin/python
-##----------------------------------------------------------------------
-## mongo profiling tool
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# mongo profiling tool
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
 import sys
 import csv
-## NOC modules
+# NOC modules
 from noc.lib.nosql import get_db
 
 COLLECT_TIME = 10

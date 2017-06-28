@@ -2,9 +2,11 @@
 - name: Install InfluxDB package
   apt:
     name: influxdb
-    state: present
+    state: latest
     update_cache: yes
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   environment:
     https_proxy: "{{http_proxy}}"
     http_proxy: "{{http_proxy}}"
+  tags:
+    - requirements

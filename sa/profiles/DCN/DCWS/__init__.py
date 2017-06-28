@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: DCN
-## OS:     DCWS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: DCN
+# OS:     DCWS
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 '''
 '''
-
 from noc.core.profile.base import BaseProfile
-import re
+
 
 class Profile(BaseProfile):
     name = "DCN.DCWS"
@@ -21,4 +20,3 @@ class Profile(BaseProfile):
     command_more = "\n"
     command_submit = "\n"
     command_exit = "exit"
-

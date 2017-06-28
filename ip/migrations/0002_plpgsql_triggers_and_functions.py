@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -27,20 +27,20 @@ class Migration:
             db.execute(t_ip_ipv4block_modify)
         if not self.has_trigger("ip_ipv4blockaccess","t_ip_ipv4blockaccess_modify"):
             db.execute(t_ip_ipv4blockaccess_modify)
-        
+
     def backwards(self):
         db.execute(RAW_SQL_DROP)
         db.execute("ALTER TABLE ip_ipv4block DROP COLUMN prefix_cidr")
         db.execute("ALTER TABLE ip_ipv4blockaccess DROP COLUMN prefix_cidr")
-        
+
     def has_column(self,table,name):
         return db.execute("SELECT COUNT(*)>0 FROM pg_attribute a JOIN pg_class p ON (p.oid=a.attrelid)"\
             +" WHERE p.relname='%s' AND a.attname='%s'"%(table,name))[0][0]
-        
+
     def has_trigger(self,table,name):
         return db.execute("SELECT COUNT(*)>0 FROM pg_trigger t JOIN pg_class p ON (p.oid=t.tgrelid)"\
             +" WHERE p.relname='%s' AND t.tgname='%s'"%(table,name))[0][0]
-        
+
 RAW_SQL_CREATE="""
 CREATE OR REPLACE
 FUNCTION ip_ipv4_block_depth(INTEGER,CIDR,CIDR)

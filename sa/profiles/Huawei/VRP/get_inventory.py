@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Huawei.VRP.get_inventory
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Huawei.VRP.get_inventory
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
@@ -163,7 +163,10 @@ class Script(BaseScript):
                 num = i["Slot"]
                 type = "CHASSIS"
             elif i["Slot"] == "-":
-                num = i["Sub"]
+                if "Sub" in i:
+                    num = i["Sub"]
+                elif "#" in i:
+                    num = i["#"]
             elif i["Slot"] != "-":
                 num = i["Slot"]
             elif self.rx_slot_key.match(i["Slot"]):

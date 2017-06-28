@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Write channel service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Write channel service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
 import urllib
 
@@ -36,16 +36,20 @@ class Channel(object):
         return n
 
     def is_expired(self):
+        if self.n:
+            return False
         t = time.time()
         if self.data or self.flushing:
             return False
         return t - self.last_updated > self.service.config.channel_expire_interval
 
     def is_ready(self):
+        if not self.n:
+            return False
         if self.n >= self.service.config.batch_size:
             return True
         t = time.time()
-        return (t - self.last_flushed) * 1000 >= self.service.batch_delay_ms
+        return (t - self.last_flushed) * 1000 >= self.service.config.batch_delay_ms
 
     def get_data(self):
         self.n = 0

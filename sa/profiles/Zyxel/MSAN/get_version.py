@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Zyxel.MSAN.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Zyxel.MSAN.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
@@ -35,6 +35,13 @@ class Script(BaseScript):
         r"^\s*Serial number: (?P<serial>\S+)\s*\n",
         re.MULTILINE | re.DOTALL)
     rx_ver3 = re.compile(
+        r"^\s*ZyNOS version\s*: (?P<version>\S+) \| \S+\s*\n"
+        r".+?\n"
+        r".+?\n"
+        r"^\s*bootbase version\s*: (?P<bootprom>\S+)"
+        r"\((?P<platform>MSC\S+)\) \| \S+\s*\n",
+        re.MULTILINE)
+    rx_ver4 = re.compile(
         r"^\s*Bootcode Version: (?P<bootprom>.+)\s*\n"
         r"^\s*Hardware Version: (?P<hardware>.+)\s*\n"
         r"^\s*Serial Number: (?P<serial>.+)\s*\n"
@@ -47,11 +54,16 @@ class Script(BaseScript):
         try:
             match = self.rx_ver1.search(self.cli("sys version"))
         except self.CLISyntaxError:
-            match = self.rx_ver2.search(self.cli("sys info show"))
+            c = self.cli("sys info show", cached=True)
+            match = self.rx_ver2.search(c)
+            if not match:
+                match = self.rx_ver3.search(c)
         if match:
-            platform = self.profile.get_platform(self, slots, match.group("platform"))
+            platform = self.profile.get_platform(
+                self, slots, match.group("platform")
+            )
         else:
-            match = self.rx_ver3.search(self.cli("sys info show"))
+            match = self.rx_ver4.search(self.cli("sys info show", cached=True))
             if match:
                 match1 = self.rx_chips.search(self.cli("chips info"))
                 r = {

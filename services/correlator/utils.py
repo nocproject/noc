@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Helper functions seen as utils.* in conditional rules
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012, The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Helper functions seen as utils.* in conditional rules
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012, The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
-## NOC modules
+# NOC modules
 from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 

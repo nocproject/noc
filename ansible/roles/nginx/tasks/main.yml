@@ -5,10 +5,12 @@
 - name: Install nginx monitoring
   template:
     src: "etc/telegraf/telegraf.d/nginx.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/nginx.conf"
+    dest: "{{ telegraf_confd_path }}/nginx.conf"
   notify: reload telegraf
   tags:
     - config
+    - telegraf
+
 
 - name: Set up SSL directory
   file:
@@ -23,7 +25,7 @@
     dest: "{{ nginx_ssl_key_path }}"
     mode: 0400
     owner: "{{ nginx_user }}"
-  notify: restart nginx
+  notify: reload nginx
 
 - name: Set up SSL certificate
   copy:
@@ -31,28 +33,20 @@
     dest: "{{ nginx_ssl_cert_path }}"
     mode: 0400
     owner: "{{ nginx_user }}"
-  notify: restart nginx
+  notify: reload nginx
 
 - name: Setup nginx
   template:
-    src: "etc/nginx/conf.d/noc.conf.j2"
-    dest: "{{ nginx_conf_path }}"
-  notify: restart nginx
+    src: "{{item.name}}"
+    dest: "{{item.path}}"
+  notify: reload nginx
+  with_items:
+    - name: noc.conf.j2
+      path: "{{ nginx_conf_path }}"
+    - name: upstream.conf.j2
+      path: "{{nginx_conf_upstream_path}}"
   tags:
     - config
-
-- name: Install packages
-  pip:
-    chdir: "{{noc_root}}"
-    requirements: "requirements/web.txt"
-    virtualenv: "{{noc_root}}"
-    extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --allow-all-external --upgrade"
-  when: "{{ has_svc_web | default(False) }}"
-  environment:
-    https_proxy: "{{http_proxy}}"
-    http_proxy: "{{http_proxy}}"
-    CFLAGS: "{{ pip_cflags | default('') }}"
-
 
 - name: Install assets
   command: "{{ noc_root }}/scripts/deploy/install-packages requirements/{{ item }}.json"
@@ -71,4 +65,12 @@
   service:
     name: "{{ nginx_system_service }}"
     enabled: yes
-    state: restarted
+    state: started
+
+- name: copy nginx consul templates
+  template:
+    src: nginx.json
+    dest: "{{consul_configd_path}}/"
+  notify: reload consul
+  tags:
+    - consul

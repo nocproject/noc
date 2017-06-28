@@ -1,0 +1,32 @@
+- name: create /etc/haproxy
+  file:
+    state: directory
+    dest: /etc/haproxy
+
+- name: install haproxy config
+  template:
+    src: haproxy.conf.j2
+    dest: /etc/haproxy/haproxy.cfg
+  notify: reload haproxy
+  tags:
+    - config
+
+- name: "Include OS-specific tasks"
+  include: "os/{{ ansible_distribution }}/main.yml"
+
+
+- name: put track script
+  template:
+    src: haproxy_check.sh.j2
+    dest: /usr/local/sbin/haproxy_check.sh
+    mode: 755
+  when: "'svc-patroni' in groups"
+
+- name: Install haproxy monitoring
+  template:
+    src: "etc/telegraf/telegraf.d/haproxy.conf.j2"
+    dest: "{{ telegraf_confd_path }}/haproxy.conf"
+  notify: reload telegraf
+  tags:
+    - config
+    - telegraf

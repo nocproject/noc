@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## FM Events and Alarms Hierarchy Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# FM Events and Alarms Hierarchy Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.fm.models.eventclass import EventClass, EventClassCategory
 from noc.fm.models.alarmclass import AlarmClass, AlarmClassCategory

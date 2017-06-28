@@ -5,7 +5,7 @@ from django.db import models
 from noc.peer.models import *
 
 class Migration:
-    
+
     def forwards(self):
         backup={} # backup_id->(primary_id,local_backup_ip,remote_backup_ip)
         peers=db.execute("SELECT id,peering_point_id,peer_group_id,local_asn_id,remote_asn,local_pref,import_filter,export_filter FROM peer_peer")
@@ -32,6 +32,6 @@ class Migration:
             peer_id,local_backup_ip,remote_backup_ip=args
             db.execute("UPDATE peer_peer SET local_backup_ip=%s,remote_backup_ip=%s WHERE id=%s",[local_backup_ip,remote_backup_ip,peer_id])
             db.execute("DELETE FROM peer_peer WHERE id=%s",[backup_id])
-    
+
     def backwards(self):
         pass

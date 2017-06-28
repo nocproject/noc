@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## HP.GbE2.remove_vlan
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
-from __future__ import with_statement
+# ---------------------------------------------------------------------
+# HP.GbE2.remove_vlan
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iremovevlan import IRemoveVlan
 

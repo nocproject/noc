@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Juniper.JUNOS.get_bfd_sessions
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Juniper.JUNOS.get_bfd_sessions
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetbfdsessions import IGetBFDSessions
 from noc.lib.text import find_indented
@@ -51,10 +51,15 @@ class Script(BaseScript):
                     # "local_address": IPParameter(),
                     "remote_address": match.group("remote_address"),
                     "local_interface": match.group("local_interface"),
-                    "local_discriminator": int(match.group("local_discriminator")),
-                    "remote_discriminator": int(match.group("remote_discriminator")),
+                    "local_discriminator": int(
+                        match.group("local_discriminator")
+                    ),
+                    "remote_discriminator": int(
+                        match.group("remote_discriminator")
+                    ),
                     "state": match.group("state").upper(),
-                    "clients": [self.client_map[c] for c in match.group("client").split()],
+                    "clients": [self.client_map[c] for c in match.group(
+                        "client").split()],
                     # Transmit interval, microseconds
                     "tx_interval": float(match.group("transmit")) * 1000000,
                     "multiplier": int(match.group("multiplier")),

@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Generic.get_metrics
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Generic.get_metrics
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import time
 import os
 from threading import Lock
 import re
-## Third-party modules
+# Third-party modules
 import six
 import ujson
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmetrics import IGetMetrics
-from noc.lib.mib import mib
+from noc.core.mib import mib
 from noc.core.handler import get_handler
 
 NS = 1000000000.0
@@ -244,7 +244,7 @@ class CapabilityListRule(OIDRule):
     name = "caplist"
 
     def __init__(self, oid, type=None, scale=1, capability=None, separator=",", strip=True):
-        super(CapabilityIndexRule, self).__init__(oid, type=type, scale=scale)
+        super(CapabilityListRule, self).__init__(oid, type=type, scale=scale)
         self.capability = capability
         self.separator = separator
         self.strip = strip
@@ -269,8 +269,6 @@ class Script(BaseScript):
     interface = IGetMetrics
     requires = []
 
-    # Aggregate up to GET_CHUNK requests
-    GET_CHUNK = 15
     # Define counter types
     GAUGE = "gauge"
     COUNTER = "counter"
@@ -285,6 +283,21 @@ class Script(BaseScript):
             "object": self.credentials.get("name")
         }
         self.ifindexes = {}
+
+    def get_snmp_metrics_get_timeout(self):
+        """
+        Timeout for snmp GET request
+        :return: 
+        """
+        return self.profile.snmp_metrics_get_timeout
+
+    def get_snmp_metrics_get_chunk(self):
+        """
+        Aggregate up to *snmp_metrics_get_chunk* oids
+        to one SNMP GET request
+        :return: 
+        """
+        return self.profile.snmp_metrics_get_chunk
 
     def execute(self, metrics, hints=None):
         """
@@ -343,6 +356,7 @@ class Script(BaseScript):
             return
         # Optimize fetching, aggregating up to GET_CHUNK
         # in single request
+        snmp_get_chunk = self.get_snmp_metrics_get_chunk()
         oids = set()
         for o in batch:
             if isinstance(o, six.string_types):
@@ -351,9 +365,9 @@ class Script(BaseScript):
                 oids.update(o)
         oids = list(oids)
         results = {}  # oid -> value
-        self.snmp.set_timeout_limits(3)
+        self.snmp.set_timeout_limits(self.get_snmp_metrics_get_timeout())
         while oids:
-            chunk, oids = oids[:self.GET_CHUNK], oids[self.GET_CHUNK:]
+            chunk, oids = oids[:snmp_get_chunk], oids[snmp_get_chunk:]
             chunk = dict((x, x) for x in chunk)
             try:
                 results.update(

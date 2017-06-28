@@ -2,19 +2,54 @@
 - name: include nsqd os specific tasks
   include: "os/{{ ansible_distribution }}/main.yml"
 
+- name: add nsqd group
+  group:
+    name: nsq
+
+- name: add nsqd user
+  user:
+    name: nsq
+    shell: /bin/false
+
+- name: create path for on-disk queue files
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0770
+    group: nsq
+    owner: nsq
+  with_items:
+    - "{{nsqd_db_dir}}"
+    - "{{nsqd_config_dir}}"
+
+- name: check if nsq already exists
+  stat:
+    path: "{{ noc_root }}/bin/nsqd"
+  register: nsqd_binary
+
+- name: check if version is ok
+  command: "{{ noc_root }}/bin/nsqd --version"
+  register: nsq_installed_version
+  changed_when: false
+  when: nsqd_binary.stat.exists
+
+- name: check version
+  set_fact: nsq_version_is_ok=True
+  when: "nsq_version in nsq_installed_version and nsq_installed_version is defined"
+
 - name: Install nsqd monitoring
   template:
     src: "etc/telegraf/telegraf.d/nsqd.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/nsqd.conf"
+    dest: "{{ telegraf_confd_path }}/nsqd.conf"
   notify: reload telegraf
   tags:
     - config
-
+    - telegraf
 
 - name: install nsqd config
   template:
     src: etc/config/nsqd.conf.j2
-    dest: "{{noc_root}}/var/etc/nsq/nsqd.conf"
+    dest: "{{nsqd_config_dir}}/nsqd.conf"
   notify: restart nsqd
   tags:
     - config
@@ -24,3 +59,11 @@
     name: "nsqd"
     enabled: yes
     state: started
+
+- name: copy nsqd consul templates
+  template:
+    src: nsqd.json
+    dest: "{{consul_configd_path}}"
+  notify: reload consul
+  tags:
+    - consul

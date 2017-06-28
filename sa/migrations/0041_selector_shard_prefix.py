@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -26,8 +26,8 @@ class Migration:
         db.add_column("sa_managedobjectselector", "filter_shard",
             models.ForeignKey(Shard, verbose_name="Filter by shard",
                 null=True, blank=True))
-    
+
     def backwards(self):
         db.delete_column("sa_managedobjectselector", "filter_shard_id")
         db.delete_column("sa_managedobjectselector", "filter_prefix_id")
-    
+

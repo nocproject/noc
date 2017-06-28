@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Repo management application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Repo management application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from django.shortcuts import get_object_or_404
 from django.utils.html import escape
 from noc.lib.app.modelapplication import ModelApplication
@@ -15,9 +15,9 @@ from noc.lib.highlight import NOCHtmlFormatter
 from pygments.lexers import DiffLexer
 from pygments import highlight
 import difflib
-##
-## Repository management application
-##
+#
+# Repository management application
+#
 class RepoApplication(ModelApplication):
     repo=None
     ##

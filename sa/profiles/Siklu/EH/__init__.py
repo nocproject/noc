@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Siklu
-## OS:     EH
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Siklu
+# OS:     EH
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 import re
@@ -20,7 +20,8 @@ class Profile(BaseProfile):
     command_submit = "\r"
 
     def cleaned_input(self, input):
-        rx_strip_cmd_repeat = re.compile(r'.+\x1b\[\d+G\r?\n(.*)',
+        rx_strip_cmd_repeat = re.compile(
+            r'.+\x1b\[\d+G\r?\n(.*)',
             re.MULTILINE | re.DOTALL)
         match = rx_strip_cmd_repeat.search(input)
         if match:

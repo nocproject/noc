@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-##----------------------------------------------------------------------
-## Report Discovery Link Summary
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Report Discovery Link Summary
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 
 from django import forms
-## NOC modules
+# NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference
@@ -43,9 +43,12 @@ class ReportFilterApplication(SimpleReport):
             if v["count"] > 2:
                 count[3].add(v["_id"][0])
                 continue
+            if not v["_id"]:
+                self.logger.warning("No IDS in response query")
+                continue
             count[v["count"]].add(v["_id"][0])
 
-        for p in Pool.objects.all():
+        for p in Pool.objects.order_by("name"):
             if p.name == "P0001":
                 continue
             data += [SectionRow(name=p.name)]
@@ -55,21 +58,23 @@ class ReportFilterApplication(SimpleReport):
                     profile_name="Generic.Host").exclude(
                     auth_profile__in=ap
                 ).values_list('id', flat=True))
+            all_p = 100.0/len(smos) if len(smos) else 1.0
             data += [("All polling", len(smos))]
             for c in count:
                 if c == 3:
-                    data += [("More 3", len(count[c].intersection(smos)))]
+                    data += [("More 3", len(count[c].intersection(smos)), "%.2f %%" %
+                              round(len(count[c].intersection(smos))*all_p, 2))]
                     continue
-                data += [(c, len(count[c].intersection(smos)))]
+                data += [(c, len(count[c].intersection(smos)), "%.2f %%" % round(len(count[c].intersection(smos))*all_p), 2)]
 
             # 0 links - All discovering- summary with links
             s0 = len(smos) - sum([d[1] for d in data[-3:]])
             data.pop(-4)
-            data.insert(-3, (0, s0))
+            data.insert(-3, (0, s0, "%.2f %%" % round(s0*all_p, 2)))
 
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Links count"), _("MO Count")
+                _("Links count"), _("MO Count"), _("Percent at All")
             ],
             data=data)

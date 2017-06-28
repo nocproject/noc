@@ -5,3 +5,9 @@ mongo_db_path: /var/lib/mongodb/
 mongo_pid: /var/run/mongodb.pid
 nginx_user: www-data
 pgbouncer_path_pid: /var/run/postgresql
+
+postgres_system_service: "postgresql@{{ postgresql_version }}-main"
+postgres_bin_dir: /usr/lib/postgresql/{{ postgresql_version }}/bin
+postgres_data_dir: /var/lib/postgresql/{{ postgresql_version }}/main
+postgresql_conf_path: /etc/postgresql/{{ postgresql_version }}/main/postgresql.conf
+postgresql_hba_path: /etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf

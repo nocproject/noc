@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Data type validators
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Data type validators
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 import re
 import uuid
 try:
@@ -12,9 +12,9 @@ try:
 except:  # pragma: no cover
     pass
 
-##
-## Regular expressions
-##
+#
+# Regular expressions
+#
 rx_fqdn = re.compile(r"^([a-z0-9\-]+\.)+[a-z0-9\-]+$", re.IGNORECASE)
 rx_asset = re.compile(r"^AS-[A-Z0-9\-]+$")
 rx_extension = re.compile(r"^\.[a-zA-Z0-9]+$")
@@ -25,9 +25,9 @@ rx_oid = re.compile(r"^(\d+\.){5,}\d+$")
 rx_objectid = re.compile(r"^[0-9a-f]{24}$")
 
 
-##
-## Validators returning boolean
-##
+#
+# Validators returning boolean
+#
 def is_int(v):
     """
     Check for valid integer
@@ -460,9 +460,9 @@ def generic_validator(check, error_message):
         return value
     return inner_validator
 
-##
-## Validators
-##
+#
+# Validators
+#
 check_asn = generic_validator(is_asn, "Invalid ASN")
 check_prefix = generic_validator(is_prefix, "Invalid prefix")
 check_ipv4 = generic_validator(is_ipv4, "Invalid IPv4")

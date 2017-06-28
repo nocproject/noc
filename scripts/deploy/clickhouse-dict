@@ -1,16 +1,16 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Generate clickhouse dictionaries
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Generate clickhouse dictionaries
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import sys
-## NOC modules
+# NOC modules
 from noc.core.clickhouse.dictionary import Dictionary
 from noc.lib.fileutils import safe_rewrite
 

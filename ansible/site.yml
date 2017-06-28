@@ -1,8 +1,9 @@
 ---
-- name: Common tasks
+- name: pre tasks
   hosts: all
   become: no
   any_errors_fatal: false
+  gather_facts: True
   vars_files:
     - "vars/main.yml"
   vars:
@@ -10,350 +11,531 @@
   roles:
     - role: pre
 
-    - role: consul
-      become: yes
-      when: consul_env
-      tags:
-        - consul
-
-    - role: node
-      become: yes
-      tags:
-        - node
-        - noc
-
-    - role: nsqd
-      become: yes
-      when: "{{ has_svc_nsqd | default(False) or consul_env}}"
-      tags:
-        - nsq
-        - nsqd
-        - external
-
-- name: Consul template installation
-  hosts: svc-mongo,svc-postgres,svc-mongod,svc-postgres,svc-pgbouncer,svc-influxdb,svc-nginx,svc-grafana,svc-nsqlookupd,svc-memcached
+- name: Common tasks
+  hosts: all
   become: yes
-  any_errors_fatal: true
+  any_errors_fatal: false
+  gather_facts: True
+  tags:
+    - telegraf
   vars_files:
     - "vars/main.yml"
   roles:
+    - role: telegraf
+
+
+- name: haproxy tasks
+  hosts: svc-haproxy
+  become: yes
+  any_errors_fatal: True
+  gather_facts: True
+  tags:
+    - haproxy
+    - ha
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: haproxy
+
+
+- name: keepalived tasks
+  hosts: svc-keepalived
+  become: yes
+  any_errors_fatal: True
+  gather_facts: True
+  tags:
+    - keepalived
+    - ha
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: keepalived
+
+
+- name: Consul tasks
+  hosts: svc-consul-server
+  become: yes
+  any_errors_fatal: true
+  gather_facts: True
+  tags:
+    - consul
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: consul
+
+- name: Consul tasks
+  hosts: all
+  become: yes
+  any_errors_fatal: false
+  serial: 50%
+  gather_facts: True
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: consul
+      tags:
+        - consul
+
     - role: consul-template
-      when: consul_env
       tags:
         - consul-template
         - external
 
-- name: Install and configure mongo
-  hosts: svc-mongod
+- name: Install NOC
+  hosts: all
   become: yes
-  any_errors_fatal: true
+  any_errors_fatal: false
+  gather_facts: True
+  tags:
+    - node
+    - noc
   vars_files:
     - "vars/main.yml"
   roles:
-    - role: mongod
-      become: yes
-      when: "{{ has_svc_mongod | default(False) or consul_env}}"
-      tags:
-        - mongod
-        - external
+    - role: node
+
+- name: Install and configure patroni
+  hosts: svc-patroni
+  become: yes
+  serial: 1
+  any_errors_fatal: true
+  tags:
+    - postgres
+    - patroni
+    - external
+    - ha
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: patroni
 
 - name: Install and configure postgres
   hosts: svc-postgres
   become: yes
+  serial: 1
   any_errors_fatal: true
+  tags:
+    - postgres
+    - external
   vars_files:
     - "vars/main.yml"
   roles:
     - role: postgres
-      become: yes
-      when: "{{ has_svc_postgres | default(False) or consul_env}}"
-      tags:
-        - postgres
-        - external
+
+- name: Install and configure grafana
+  hosts: svc-grafana
+  become: yes
+  serial: 50%
+  any_errors_fatal: true
+  tags:
+    - grafana
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: grafana
+
+- name: Install and configure nsq
+  hosts: all
+  become: yes
+  any_errors_fatal: true
+  tags:
+    - nsq
+    - nsqd
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: nsqd
+
+- name: Install and configure nsqlookupd
+  hosts: svc-nsqlookupd
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - nsq
+    - nsqlookupd
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: nsqlookupd
+
+- name: Install and configure mongo
+  hosts: svc-mongod
+  become: yes
+  serial: 30%
+  any_errors_fatal: true
+  tags:
+    - mongod
+    - external
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: mongod
 
 - name: Install and configure pgbouncer
   hosts: svc-pgbouncer
   become: yes
   any_errors_fatal: true
+  tags:
+    - pgbouncer
+    - external
+  strategy: free
   vars_files:
     - "vars/main.yml"
   roles:
     - role: pgbouncer
-      become: yes
-      when: "{{ has_svc_pgbouncer | default(False) or consul_env}}"
-      tags:
-        - pgbouncer
-        - external
 
 - name: Install and configure influxdb
   hosts: svc-influxdb
   become: yes
+  serial: 1
+  tags:
+    - influxdb
+    - external
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
   roles:
     - role: influxdb
-      become: yes
-      when: "{{ has_svc_influxdb | default(False) or consul_env}}"
-      tags:
-        - influxdb
-        - external
 
 - name: Install and configure nginx
   hosts: svc-nginx
+  serial: 50%
   become: yes
+  tags:
+    - nginx
+    - web
+    - external
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
   roles:
     - role: nginx
-      become: yes
-      when: "{{ has_svc_nginx | default(False) or consul_env}}"
-      tags:
-        - nginx
-        - web
-        - external
-
-- name: Install and configure grafana
-  hosts: svc-grafana
-  become: yes
-  any_errors_fatal: true
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: grafana
-      become: yes
-      when: "{{ has_svc_grafana | default(False) or consul_env}}"
-      tags:
-        - grafana
-        - external
-
-- name: Install and configure nsqlookupd
-  hosts: svc-nsqlookupd
-  become: yes
-  any_errors_fatal: true
-  vars_files:
-    - "vars/main.yml"
-  roles:
-    - role: nsqlookupd
-      become: yes
-      when: "{{ has_svc_nsqlookupd| default(False) or consul_env}}"
-      tags:
-        - nsq
-        - nsqlookupd
-        - external
 
 - name: Install and configure memcached
   hosts: svc-memcached
   become: yes
   any_errors_fatal: true
+  tags:
+    - memcached
+    - external
   vars_files:
     - "vars/main.yml"
   roles:
     - role: memcached
-      become: yes
-      when: "{{ has_svc_memcached | default(False) or consul_env}}"
-      tags:
-        - memcached
-        - external
 
 - name: Install and upgrade NOC
-  hosts: svc-activator,svc-bi,svc-card,svc-classifier,svc-correlator,svc-discovery,svc-escalator,svc-grafanads,svc-login,svc-mailsender,svc-mrt,svc-omap,svc-ping,svc-pmwriter,svc-sae,svc-scheduler,svc-syslogcollector,svc-tgsender,svc-trapcollector,svc-web,
-  become: no
-  any_errors_fatal: false
+  hosts: svc-login
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - login
+    - noc
   vars_files:
     - "vars/main.yml"
   roles:
     - role: login
-      become: yes
-      when: "{{ has_svc_login | default(False) or consul_env}}"
-      tags:
-        - login
-        - node
-        - noc
 
+
+- name: Install and upgrade NOC
+  hosts: svc-mrt
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - mrt
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: mrt
-      become: yes
-      when: "{{ has_svc_mrt | default(False) or consul_env}}"
-      tags:
-        - mrt
-        - node
-        - noc
 
+
+- name: Install and upgrade NOC
+  hosts: svc-escalator
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - escalator
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: escalator
-      become: yes
-      when: "{{ has_svc_escalator | default(False) or consul_env}}"
-      tags:
-        - escalator
-        - node
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-web
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - node
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: web
-      become: yes
-      when: "{{ has_svc_web | default(False) or consul_env}}"
-      tags:
-        - node
-        - web
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-card
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - card
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: card
-      become: yes
-      when: "{{ has_svc_card | default(False) or consul_env}}"
-      tags:
-        - node
-        - card
-        - noc
 
-    - role: grafanads
-      become: yes
-      when: "{{ has_svc_grafanads | default(False) or consul_env}}"
-      tags:
-        - node
-        - grafanads
-        - noc
-
-    - role: mailsender
-      become: yes
-      when: "{{ has_svc_mailsender | default(False) or consul_env}}"
-      tags:
-        - mailsender
-        - node
-        - noc
-
-    - role: tgsender
-      become: yes
-      when: "{{ has_svc_tgsender | default(False) or consul_env}}"
-      tags:
-        - tgsender
-        - node
-        - noc
-
+- name: Install and upgrade NOC
+  hosts: svc-omap
+  become: yes
+  strategy: free
+  tags:
+    - omap
+    - noc
+  any_errors_fatal: true
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: omap
-      become: yes
-      when: "{{ has_svc_omap | default(False) or consul_env}}"
-      tags:
-        - omap
-        - node
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-activator
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - activator
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: activator
+
+- name: Install and upgrade NOC
+  hosts: svc-grafanads
+  become: yes
+  strategy: free
+  tags:
+    - node
+    - noc
+  any_errors_fatal: true
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: grafanads
+
+- name: Install and upgrade NOC
+  hosts: svc-mailsender
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - mailsender
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: mailsender
+
+- name: Install and upgrade NOC
+  hosts: svc-tgsender
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - tgsender
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: tgsender
+
+- name: Install and upgrade NOC
+  hosts: svc-pmwriter
+  become: no
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - pmwriter
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: pmwriter
       become: yes
-      when: "{{ has_svc_pmwriter | default(False) or consul_env}}"
-      tags:
-        - pmwriter
-        - node
-        - noc
 
-    - role: activator
-      become: yes
-      when: "{{ has_svc_activator | default(False) or consul_env}}"
-      tags:
-        - activator
-        - node
-        - noc
+- name: Install and upgrade NOC
+  hosts: svc-chwriter
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - chwriter
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
+    - role: chwriter
 
+- name: Install and upgrade NOC
+  hosts: svc-classifier
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - classifier
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: classifier
-      become: yes
-      when: "{{ has_svc_classifier | default(False) or consul_env}}"
-      tags:
-        - classifier
-        - node
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-correlator
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - correlator
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: correlator
-      become: yes
-      when: "{{ has_svc_correlator | default(False) or consul_env}}"
-      tags:
-        - correlator
-        - node
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-syslogcollector
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - syslogcollector
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: syslogcollector
-      become: yes
-      when: "{{ has_svc_syslogcollector | default(False) or consul_env}}"
-      tags:
-        - syslogcollector
-        - node
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-trapcollector
+  strategy: free
+  become: yes
+  any_errors_fatal: true
+  tags:
+    - trapcollector
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: trapcollector
-      become: yes
-      when: "{{ has_svc_trapcollector | default(False) or consul_env}}"
-      tags:
-        - trapcollector
-        - node
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-ping
+  strategy: free
+  become: yes
+  any_errors_fatal: true
+  tags:
+    - ping
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: ping
-      become: yes
-      when: "{{ has_svc_ping | default(False) or consul_env}}"
-      tags:
-        - ping
-        - node
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-sae
+  become: yes
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - sae
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: sae
       become: yes
-      when: "{{ has_svc_sae | default(False) or consul_env}}"
-      tags:
-        - sae
-        - node
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-scheduler
+  become: no
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - scheduler
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: scheduler
       become: yes
-      when: "{{ has_svc_scheduler | default(False) or consul_env}}"
-      tags:
-        - scheduler
-        - node
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-discovery
+  become: no
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - discovery
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: discovery
       become: yes
-      when: "{{ has_svc_discovery | default(False) or consul_env}}"
-      tags:
-        - discovery
-        - node
-        - noc
 
+- name: Install and upgrade NOC
+  hosts: svc-bi
+  become: no
+  strategy: free
+  any_errors_fatal: true
+  tags:
+    - bi
+    - noc
+  vars_files:
+    - "vars/main.yml"
+  roles:
     - role: bi
       become: yes
-      when: "{{ has_svc_bi | default(False) or consul_env}}"
-      tags:
-        - bi
-        - node
-        - noc
 
 - name: Install and configure dev tools
   hosts: svc-dev
+  strategy: free
   become: yes
   any_errors_fatal: false
+  tags:
+    - dev
   vars_files:
     - "vars/main.yml"
   roles:
     - role: dev
       become: yes
-      when: "{{ has_svc_dev | default(False) }} or {{ has_svc_notebook | default(False)}} or consul_env"
-      tags:
-        - dev
+      when: "has_svc_dev | default(False) or has_svc_notebook | default(False) or consul_env"
 
     - role: notebook
       become: yes
-      when: "{{ has_svc_notebook | default(False) or consul_env}}"
+      when: "has_svc_notebook | default(False) or consul_env"
       tags:
         - notebook
         - external
-        - dev
 
     - role: nsqadmin
       become: yes
-      when: "{{ has_svc_nsqadmin | default(False) or consul_env}}"
+      when: "has_svc_nsqadmin | default(False) or consul_env"
       tags:
         - nsq
         - nsqadmin
         - external
-        - dev
-
 
 - name: Finally
   hosts: all

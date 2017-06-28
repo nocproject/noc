@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Maintainance card handler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Maintainance card handler
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## Third-party modules
+# Third-party modules
 import jinja2
-## NOC modules
+# NOC modules
 from base import BaseCard
 from noc.maintainance.models.maintainance import Maintainance
 from noc.sa.models.servicesummary import ServiceSummary

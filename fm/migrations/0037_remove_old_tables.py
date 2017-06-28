@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 import datetime
@@ -28,6 +28,6 @@ class Migration:
         db.delete_table("fm_eventclassvar")
         db.delete_table("fm_eventclass")
         db.delete_table("fm_eventcategory")
-    
+
     def backwards(self):
         pass

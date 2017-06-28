@@ -15,8 +15,8 @@ class Migration:
         db.delete_table("ip_ipv4blockbookmark")
         db.delete_table("ip_ipv4addressrange")
         db.execute("DROP FUNCTION free_ip(INTEGER,CIDR)")
-    
+
     def backwards(self):
         pass
-    
+
 

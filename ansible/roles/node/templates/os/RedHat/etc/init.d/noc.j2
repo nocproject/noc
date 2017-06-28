@@ -44,7 +44,7 @@ DODTIME=5                   # Time to wait for the server to die, in seconds
 if [ -f /etc/default/noc ] ; then
 	. /etc/default/noc
 fi
-DAEMON_OPTS="-c {{ noc_root }}/etc/supervisord.conf $DAEMON_OPTS"
+DAEMON_OPTS="-c {{ noc_etc }}/supervisord.conf $DAEMON_OPTS"
 
 set -e
 

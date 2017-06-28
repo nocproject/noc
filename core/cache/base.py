@@ -71,7 +71,7 @@ class BaseCache(object):
         self.get(item)
 
     def __contains__(self, item):
-        return self.has_key(item)
+        return self.get(item) is not None
 
     def incr(self, key, delta=1, version=None):
         value = self.get(key, version=version)

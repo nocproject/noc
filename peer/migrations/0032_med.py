@@ -5,7 +5,7 @@ from django.db import models
 from noc.peer.models import *
 
 class Migration:
-    
+
     def forwards(self):
         # Adding field 'PeerGroup.local_pref'
         db.add_column('peer_peergroup', 'local_pref', models.IntegerField("Local Pref",null=True,blank=True))
@@ -17,7 +17,7 @@ class Migration:
         db.add_column('peer_peer', 'export_med', models.IntegerField("Local Pref",null=True,blank=True))
         # Adding field 'PeerGroup.export_med'
         db.add_column('peer_peergroup', 'export_med', models.IntegerField("Local Pref",null=True,blank=True))
-    
+
     def backwards(self):
         # Deleting field 'PeerGroup.local_pref'
         db.delete_column('peer_peergroup', 'local_pref')

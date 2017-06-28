@@ -25,12 +25,19 @@ class YandexGeocoder(BaseGeocoder):
         self.key = key
         self.apikey = apikey
 
-    def forward(self, query):
+    def forward(self, query, bounds=None, region=None):
         url = [
             "https://geocode-maps.yandex.ru/1.x/?",
             "format=json",
-            "&geocode=%s" % urllib.quote(query)
+
         ]
+        if region:
+            url += ["&region=%s" % region]
+        if bounds:
+            # "&rspn=1&bbox=127.56,49.96~141.05,56.09"
+            url += ["&rspn=1",
+                    "&bbox=%s~%s" % bounds]
+        url += ["&geocode=%s" % urllib.quote(query)]
         if self.key:
             url += [
                 "&key=%s" % urllib.quote(self.key)

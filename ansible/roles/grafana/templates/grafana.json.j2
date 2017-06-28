@@ -1,0 +1,12 @@
+{
+  "service": {
+    "name": "grafana",
+    "tags": [ ],
+    "port": {{grafana_http_port}},
+    "enableTagOverride": false,
+    "check": {
+        "http": "http://localhost:{{grafana_http_port}}/api/health",
+        "interval": "10s"
+    }
+  }
+}

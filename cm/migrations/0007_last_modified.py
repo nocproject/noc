@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -29,7 +29,7 @@ class Migration:
                     if os.path.exists(path):
                         lm=datetime.datetime.fromtimestamp(os.stat(path)[stat.ST_MTIME])
                         db.execute("UPDATE cm_%s SET last_modified=%%s WHERE id=%%s"%ot,[lm,id])
-    
+
     def backwards(self):
         for ot in TYPES:
             db.delete_column("cm_%s"%ot,"last_modified")

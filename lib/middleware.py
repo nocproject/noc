@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## WEB Middleware Classes
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# WEB Middleware Classes
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import base64
 try:
     from threading import local
 except ImportError:
     from django.utils._threading_local import local
-## Django modules
+# Django modules
 from django.contrib import auth
 
 
-##
-## Thread local storage
-##
+#
+# Thread local storage
+#
 _tls = local()
 
 class TLSMiddleware(object):
@@ -64,6 +64,8 @@ class ExtFormatMiddleware(object):
     """
     def process_request(self, request):
         if request.GET and request.GET.get("__format") == "ext":
+            request.is_extjs = True
+        elif request.POST and request.POST.get("__format") == "ext":
             request.is_extjs = True
         else:
             request.is_extjs = False

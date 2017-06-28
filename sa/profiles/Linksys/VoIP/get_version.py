@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Linksys.VoIP.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Linksys.VoIP.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 from noc.lib.text import strip_html_tags
@@ -23,7 +23,8 @@ class Script(BaseScript):
         r"^Product Name:+(?P<platform>\S+)+Serial Number:+(?P<serial>\S+)$",
         re.MULTILINE)
     rx_version = re.compile(
-        r"^Software Version:+(?P<version>\S+)+Hardware Version:+(?P<hardware>\S+)$",
+        r"^Software Version:+(?P<version>\S+)+Hardware Version:+"
+        r"(?P<hardware>\S+)$",
         re.MULTILINE)
 
     def execute(self):
@@ -37,6 +38,6 @@ class Script(BaseScript):
                 "version": version.group("version"),
                 "attributes": {
                             "HW version": version.group("hardware"),
-                            "Serial Number": platform.group("serial"),
+                            "Serial Number": platform.group("serial")
                             }
                 }

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## VCDomainProvisioningConfig
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# VCDomainProvisioningConfig
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.db import models
-## NOC modules
+# NOC modules
 from vcdomain import VCDomain
 from vcfilter import VCFilter
 from noc.sa.models.managedobjectselector import ManagedObjectSelector

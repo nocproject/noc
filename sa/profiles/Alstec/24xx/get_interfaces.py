@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alstec.24xx.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Alstec.24xx.get_interfaces
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
@@ -20,6 +20,8 @@ class Script(BaseScript):
     rx_port = re.compile(
         r"^\s*(?P<port>\d+/\d+)\s+(?P<admin_status>\S+)\s+\S+\s+"
         r"(?P<oper_status>\S+)",  re.MULTILINE)
+    rx_desc = re.compile(r"^\s*(?P<port>\d+/\d+)\s+(?:Enable|Disable)\s+(?:Up|Down)\s+"
+        r"(?P<desc>\S+)$", re.MULTILINE)
     rx_vlan = re.compile(
         r"^interface (?P<port>\d+/\d+)\s*\n"
         r"(^vlan pvid (?P<pvid>\d+)\s*\n)?"
@@ -45,6 +47,7 @@ class Script(BaseScript):
 
     def execute(self):
         c = self.scripts.get_config()
+        d = self.cli("show port description all", ignore_errors=True)
         interfaces = []
         snmp_ifindex = 1  # Dirty hack. I can anot found another way
         for match in self.rx_port.finditer(self.cli("show port all")):
@@ -63,6 +66,10 @@ class Script(BaseScript):
                     "enabled_afi": ["BRIDGE"]
                 }]
             }
+            for matchd in self.rx_desc.finditer(d):
+                if matchd.group("port") == ifname:
+                    iface["description"] = matchd.group("desc")
+                    iface["subinterfaces"][0]["description"] = matchd.group("desc")
             for match1 in self.rx_vlan.finditer(c):
                 if match1.group("port") == ifname:
                     if match1.group("pvid"):

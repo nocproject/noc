@@ -5,14 +5,16 @@
 - name: Install nsqlookupd monitoring
   template:
     src: "etc/telegraf/telegraf.d/nsqlookupd.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/nsqlookupd.conf"
+    dest: "{{ telegraf_confd_path }}/nsqlookupd.conf"
   notify: reload telegraf
   tags:
     - config
+    - telegraf
+
 - name: install nsqlookupd config
   template:
     src: config/nsqlookupd.conf.j2
-    dest: "{{noc_root}}/var/etc/nsq/nsqlookupd.conf"
+    dest: "{{nsqd_config_dir}}/nsqlookupd.conf"
   notify: restart nsqlookupd
   tags:
     - config
@@ -22,3 +24,11 @@
     name: "nsqlookupd"
     enabled: yes
     state: started
+
+- name: copy nsqlookupd consul templates
+  template:
+    src: nsqlookupd.json
+    dest: "{{consul_configd_path}}"
+  notify: reload consul
+  tags:
+    - consul

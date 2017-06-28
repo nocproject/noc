@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## dns.check_domain_expiration task
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# dns.check_domain_expiration task
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 import noc.lib.periodic
@@ -15,7 +15,7 @@ import datetime
 class Task(noc.lib.periodic.Task):
     name="dns.check_domain_expiration"
     description=""
-    
+
     def execute(self):
         def format_table(l):
             mw=max([len(n) for n,d in l])
@@ -27,7 +27,7 @@ class Task(noc.lib.periodic.Task):
         #
         from noc.main.models import SystemNotification
         from noc.dns.models import DNSZone
-        
+
         date_format=config.get("main","date_format")
         now=datetime.date.today()
         ## Check expired soon domains

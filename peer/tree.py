@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Prefix-list-optimizing tree
-##
-## Tree is a binary tree containing prefixes.
-## Each prefix is represented as sequence of the bits.
-## All prefixes start with root.
-## Zero bit on apropriative position in prefix means
-## the prefix will be directed left from current node.
-## The set bit means right direction.
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Prefix-list-optimizing tree
+#
+# Tree is a binary tree containing prefixes.
+# Each prefix is represented as sequence of the bits.
+# All prefixes start with root.
+# Zero bit on apropriative position in prefix means
+# the prefix will be directed left from current node.
+# The set bit means right direction.
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # NOC modules
 from noc.core.ip import IP, IPv4

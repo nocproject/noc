@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## VCFilter model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# VCFilter model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 from django.db import models
 import cachetools
-## NOC modules
+# NOC modules
 from noc.core.model.decorator import on_delete_check
 
 rx_vc_filter = re.compile(r"^\s*\d+\s*(-\d+\s*)?(,\s*\d+\s*(-\d+)?)*$")

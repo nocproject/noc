@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## main.jsonimport application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# main.jsonimport application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import ujson
-## NOC modules
+# NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.sa.interfaces.base import StringParameter
 from noc.core.collection.base import Collection

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -10,7 +10,7 @@ from noc.ip.models import *
 from noc.core.model.fields import CIDRField
 
 class Migration:
-    
+
     def forwards(self):
         db.delete_column("ip_ipv4block","prefix")
         db.add_column("ip_ipv4block","prefix",CIDRField("prefix",null=True))
@@ -27,7 +27,7 @@ class Migration:
         db.execute("DROP TRIGGER t_ip_ipv4blockaccess_modify ON ip_ipv4blockaccess")
         db.execute("DROP FUNCTION f_trigger_ip_ipv4blockaccess()")
         db.execute(RAW_SQL)
-    
+
     def backwards(self):
         "Write your backwards migration here"
 

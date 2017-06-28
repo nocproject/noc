@@ -4,7 +4,7 @@
 
 - name: Remove old nginx.conf file
   file: path=/usr/local/etc/nginx/nginx.conf state=absent
-  notify: restart nginx
+  notify: reload nginx
 
 - name: Add newsyslogd rules
   template: src="os/FreeBSD/nginx.conf" dest="/usr/local/etc/newsyslog.conf.d/nginx.conf"

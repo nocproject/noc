@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## IPPool model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# IPPool model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
-## NOC modules
+# NOC modules
 from vrf import VRF
 from afi import AFI_CHOICES
 from noc.sa.models.terminationgroup import TerminationGroup

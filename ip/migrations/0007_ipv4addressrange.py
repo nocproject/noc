@@ -5,7 +5,7 @@ from django.db import models
 from noc.ip.models import *
 
 class Migration:
-    
+
     def forwards(self):
         VRF = db.mock_model(model_name='VRF', db_table='ip_vrf', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         # Adding model 'IPv4AddressRange'
@@ -21,16 +21,16 @@ class Migration:
             ('fqdn_action_parameter', models.CharField("FQDN Action Parameter", max_length=128, null=True, blank=True)),
         ))
         db.send_create_signal('ip', ['IPv4AddressRange'])
-        
+
         # Creating unique_together for [vrf, name] on IPv4AddressRange.
         db.create_unique('ip_ipv4addressrange', ['vrf_id', 'name'])
-        
-    
-    
+
+
+
     def backwards(self):
-        
+
         # Deleting model 'IPv4AddressRange'
         db.delete_table('ip_ipv4addressrange')
-        
+
         # Deleting unique_together for [vrf, name] on IPv4AddressRange.
         db.delete_unique('ip_ipv4addressrange', ['vrf_id', 'name'])

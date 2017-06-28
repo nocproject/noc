@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## VCType model test
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# VCType model test
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.lib.test import ModelTestCase
 from noc.vc.models import VCType
 
@@ -21,7 +21,7 @@ class VCTypeModelTestCase(ModelTestCase):
             "label1_min": 0,
             "label1_max": 15
         },
-        
+
         {
             "name": "Test 2",
             "min_labels": 2,

@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Basic Junos parser
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Basic Junos parser
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from pyparsing import OneOrMore, Word, alphanums, QuotedString
-## NOC modules
+# NOC modules
 from noc.core.ip import IPv4
 from noc.cm.parsers.base import BaseParser
 from noc.cm.parsers.tokens import INDENT, IPv4_ADDRESS, LINE, REST, DIGITS, ALPHANUMS
@@ -166,10 +166,11 @@ class BaseQSW2800Parser(BaseParser):
     def on_vlan(self, tokens):
         """
          if - vlan range
+         database - 
         :param tokens: 
         :return: 
         """
-        if "-" not in tokens[-1]:
+        if "-" not in tokens[-1] or "database" not in tokens:
             self.get_vlan_fact(int(tokens[-1].strip()))
 
     def on_vlan_name(self, tokens):

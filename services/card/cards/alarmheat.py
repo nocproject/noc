@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alarm heatmap
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Alarm heatmap
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 import cachetools
 import geojson
-## NOC modules
+# NOC modules
 from base import BaseCard
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem
@@ -39,8 +39,12 @@ class AlarmHeatCard(BaseCard):
     TOOLTIP_LIMIT = 5
 
     def get_data(self):
+        p = self.current_user.get_profile()
         return {
-            "maintenance": 0
+            "maintenance": 0,
+            "lon": p.heatmap_lon or 0,
+            "lat": p.heatmap_lat or 0,
+            "zoom": p.heatmap_zoom or 0
         }
 
     @classmethod

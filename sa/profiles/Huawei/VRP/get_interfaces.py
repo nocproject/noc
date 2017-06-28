@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Huawei.VRP.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Huawei.VRP.get_interfaces
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 # Python modules
@@ -25,6 +25,8 @@ class Script(BaseScript):
         r"Line protocol current state :\s*(?P<o_state>UP|DOWN)",
         re.IGNORECASE
     )
+    rx_pvid = re.compile("PVID : (?P<pvid>\d+)")
+    rx_mtu = re.compile("The Maximum Transmit Unit is (?P<mtu>\d+) bytes")
     rx_mac = re.compile(
         "Hardware [Aa]ddress(?::| is) (?P<mac>[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4})"
     )
@@ -241,6 +243,12 @@ class Script(BaseScript):
                     if d != "---":
                         sub["description"] = d
                     continue
+                # Process description
+                if l.startswith("Description :"):
+                    d = l[13:].strip()
+                    if d != "---":
+                        sub["description"] = d
+                    continue
                 # MAC
                 if not sub.get("mac"):
                     match = self.rx_mac.search(l)
@@ -248,10 +256,20 @@ class Script(BaseScript):
                         sub["mac"] = match.group("mac")
                         continue
                 # Static vlans
+                match = self.rx_pvid.search(l)
+                if match and ("untagged_vlan" not in sub):
+                    sub["untagged_vlan"] = int(match.group("pvid"))
+                    continue
+                # Static vlans
                 if l.startswith("Encapsulation "):
                     enc = l[14:]
                     if enc.startswith("802.1Q"):
                         sub["vlan_ids"] = [enc.split(",")[2].split()[2]]
+                    continue
+                # MTU
+                match = self.rx_mtu.search(l)
+                if match:
+                    sub["mtu"] = int(match.group("mtu"))
                     continue
             if "." not in ifname:
                 if o_stat is None:

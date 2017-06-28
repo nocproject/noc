@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## DatabaseStorage
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# DatabaseStorage
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party models
+# Third-party models
 from django.db import models
-## NOC modules
+# NOC modules
 from noc.core.model.fields import BinaryField
 from noc.lib.database_storage import DatabaseStorage as DBS
 
@@ -47,7 +47,7 @@ class DatabaseStorage(models.Model):
         Get DatabaseStorage instance
         """
         return DBS(cls.dbs_options())
-##
-## Default database storage
-##
+#
+# Default database storage
+#
 database_storage = DatabaseStorage.get_dbs()

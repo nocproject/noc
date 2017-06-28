@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlliedTelesis.AT9900.get_mac_address_table
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlliedTelesis.AT9900.get_mac_address_table
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
@@ -16,7 +16,9 @@ from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 class Script(BaseScript):
     name = "AlliedTelesis.AT9900.get_mac_address_table"
     interface = IGetMACAddressTable
-    rx_line = re.compile(r"^\s*(?P<vlan_id>\d+)\s*(?P<mac>\S+)\s*(?P<interfaces>\S+)\s*(?P<type>\S+)\s*(?P<test>\d+)", re.IGNORECASE)
+    rx_line = re.compile(
+        r"^\s*(?P<vlan_id>\d+)\s*(?P<mac>\S+)\s*(?P<interfaces>\S+)\s*"
+        r"(?P<type>\S+)\s*(?P<test>\d+)", re.IGNORECASE)
 
     def execute(self, interface=None, vlan=None, mac=None):
         cmd = "show switch fdb"
@@ -33,9 +35,9 @@ class Script(BaseScript):
             match = self.rx_line.match(l.strip())
             if match:
                 r += [{
-                    "vlan_id"   : match.group("vlan_id"),
-                    "mac"       : match.group("mac"),
+                    "vlan_id": match.group("vlan_id"),
+                    "mac": match.group("mac"),
                     "interfaces": [match.group("interfaces")],
-                    "type"      : [match.group("type")],
+                    "type": match.group("type")
                 }]
         return r

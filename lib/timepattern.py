@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Time Patterns DSL compiler
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Time Patterns DSL compiler
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 import types
 
@@ -172,9 +172,9 @@ class TimePattern(object):
             return x
 
 
-##
-## Enclosure for a list of time patterns
-##
+#
+# Enclosure for a list of time patterns
+#
 class TimePatternList(object):
     def __init__(self, patterns):
         self.patterns = patterns

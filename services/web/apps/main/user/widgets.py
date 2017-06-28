@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## User Access Widget
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2010 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# User Access Widget
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2010 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from django import forms
 from django.conf import settings
 from django.utils.safestring import mark_safe
@@ -12,9 +12,9 @@ from django.contrib.auth.models import User,Group
 from noc.lib.app.site import site
 from noc.main.models.permission import Permission
 
-##
-## Application access widget
-##
+#
+# Application access widget
+#
 class AccessWidget(forms.Widget):
     def render(self,name,value,attrs=None):
         r=["""<style>
@@ -27,7 +27,7 @@ class AccessWidget(forms.Widget):
             background:  #7CA0C7 url(/media/admin/img/default-bg.gif) top left repeat-x;
             color:       white;
         }
-        
+
         ul.permlist {
             margin:     0;
             padding:    0;
@@ -45,7 +45,7 @@ class AccessWidget(forms.Widget):
             width: 200px;
             font-weight: bold;
         }
-        
+
         .perm-label {
             padding-left: 4px;
         }

@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Simple key-value store
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Simple key-value store
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sqlite3
 import logging
 import os
-## NOC modules
-from noc.lib.log import PrefixLoggerAdapter
+# NOC modules
+from noc.core.log import PrefixLoggerAdapter
 
 logger = logging.getLogger(__name__)
 

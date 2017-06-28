@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Eltex.MES.get_vlans
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Eltex.MES.get_vlans
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetvlans import IGetVlans
 
@@ -18,7 +18,8 @@ class Script(BaseScript):
     interface = IGetVlans
 
     rx_vlan = re.compile(
-        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(\S+|)\s+\S+\s+\S+\s*$", re.MULTILINE)
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<name>.+?)\s+(\S+|)\s+\S+\s+\S+\s*$",
+        re.MULTILINE)
 
     def execute(self):
         r = []
@@ -38,8 +39,8 @@ class Script(BaseScript):
 
         # Fallback to CLI
         for match in self.rx_vlan.finditer(self.cli("show vlan")):
-            r.append({
-                "vlan_id": int(match.group("vlan")),
-                "name": match.group("name")
-                })
+            if match.group("name") != "-":
+                r += [match.groupdict()]
+            else:
+                r += [{"vlan_id": int(match.group("vlan_id"))}]
         return r

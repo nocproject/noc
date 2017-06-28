@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ExtModelApplication implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ExtModelApplication implementation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## Django modules
+# Third-party modules
 from django.http import HttpResponse
 from django.db.models.fields import (
     CharField, BooleanField, IntegerField, FloatField,
     DateField, DateTimeField, related)
 from django.db.models import Q
 from django.db.utils import IntegrityError
-## NOC modules
+# NOC modules
 from extapplication import ExtApplication, view
 from noc.sa.interfaces.base import (
     BooleanParameter, IntParameter,
@@ -354,12 +354,12 @@ class ExtModelApplication(ExtApplication):
             self.deserialize(request.raw_post_data))
         try:
             attrs = self.clean(attrs)
-        except ValueError, why:
+        except ValueError as e:
             return self.render_json(
                 {
                     "success": False,
                     "message": "Bad request",
-                    "traceback": str(why)
+                    "traceback": str(e)
                 }, status=self.BAD_REQUEST)
         try:
             # Exclude callable values from query
@@ -387,11 +387,11 @@ class ExtModelApplication(ExtApplication):
                 o.save()
                 if m2m_attrs:
                     self.update_m2ms(o, m2m_attrs)
-            except IntegrityError, why:
+            except IntegrityError as e:
                 return self.render_json(
                     {
                         "status": False,
-                        "message": "Integrity error: %s" % why
+                        "message": "Integrity error: %s" % e
                     }, status=self.CONFLICT)
             # Check format
             if request.is_extjs:
@@ -424,19 +424,19 @@ class ExtModelApplication(ExtApplication):
             self.deserialize(request.raw_post_data))
         try:
             attrs = self.clean(attrs)
-        except ValueError, why:
+        except ValueError as e:
             return self.render_json(
                 {
                     "success": False,
                     "message": "Bad request",
-                    "traceback": str(why)
+                    "traceback": str(e)
                 }, status=self.BAD_REQUEST)
-        except InterfaceTypeError, why:
+        except InterfaceTypeError as e:
             return self.render_json(
                 {
                     "success": False,
                     "message": "Bad request",
-                    "traceback": str(why)
+                    "traceback": str(e)
                 }, status=self.BAD_REQUEST)
         try:
             o = self.queryset(request).get(**{self.pk: int(id)})
@@ -492,21 +492,21 @@ class ExtModelApplication(ExtApplication):
         rv = self.deserialize(request.raw_post_data)
         try:
             v = validator.clean(rv)
-        except InterfaceTypeError, why:
+        except InterfaceTypeError as e:
             return self.render_json({
                 "status": False,
                 "message": "Bad request",
-                "traceback": str(why)
+                "traceback": str(e)
             }, status=self.BAD_REQUEST)
         objects = v["ids"]
         del v["ids"]
         try:
             v = self.clean(v)
-        except ValueError, why:
+        except ValueError as e:
             return self.render_json({
                 "status": False,
                 "message": "Bad request",
-                "traceback": str(why)
+                "traceback": str(e)
             }, status=self.BAD_REQUEST)
         for o in objects:
             for p in v:

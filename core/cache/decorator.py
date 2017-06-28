@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Decorators
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Decorators
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## NOC modules
-from base import cache as x_cache
+# NOC modules
+from __future__ import absolute_import
+from .base import cache as x_cache
 from noc.core.perf import metrics
 
 
-def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None):
+def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None,
+                 version=0):
     """
     Decorator to wrap class instance or method
     with memoizing callable
@@ -19,6 +21,8 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None):
         None, when no in-memory caching required
     :param key: Key mask to convert args to string
     :param lock: Callable to get threading lock
+    :param ttl: Record time-to-live
+    :param version: External cache version
     :return:
     """
     def decorator(method):
@@ -46,7 +50,7 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None):
                             except KeyError:
                                 pass
                 # Try external cache
-                v = x_cache.get(k)
+                v = x_cache.get(k, version=version)
                 if v:
                     perf_key_l2_hits += 1
                     if cache:
@@ -70,7 +74,7 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None):
                         except ValueError:
                             pass
                     # Backfill external cache
-                    x_cache.set(k, v, ttl=ttl)
+                    x_cache.set(k, v, ttl=ttl, version=version)
                 # Done
                 return v
         else:
@@ -95,7 +99,7 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None):
                         except KeyError:
                             pass
                 # Try external cache
-                v = x_cache.get(k)
+                v = x_cache.get(k, version=version)
                 if v:
                     perf_key_l2_hits += 1
                     if cache:
@@ -115,7 +119,7 @@ def cachedmethod(cache=None, key="cache-%s", lock=None, ttl=None):
                     except ValueError:
                         pass
                 # Backfill external cache
-                x_cache.set(k, v, ttl=ttl)
+                x_cache.set(k, v, ttl=ttl, version=version)
                 # Done
                 return v
         return wrapper

@@ -5,7 +5,7 @@ from django.db import models
 
 class Migration:
     def forwards(self):
-        
+
         # Adding model 'IgnoreEvents'
         db.create_table('fm_ignoreeventrules', (
             ('id', models.AutoField(primary_key=True)),

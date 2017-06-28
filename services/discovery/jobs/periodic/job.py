@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Periodic Discovery Job
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Periodic Discovery Job
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import random
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
 from uptime import UptimeCheck
 from interfacestatus import InterfaceStatusCheck
@@ -18,6 +18,8 @@ from metrics import MetricsCheck
 
 class PeriodicDiscoveryJob(MODiscoveryJob):
     name = "periodic"
+    umbrella_cls = "Discovery | Job | Periodic"
+
     # Store context
     context_version = 1
 
@@ -46,6 +48,8 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     def init_context(self):
         if "counters" not in self.context:
             self.context["counters"] = {}
+        if "metrics_window" not in self.context:
+            self.context["metric_windows"] = {}
 
     def can_run(self):
         return (
@@ -63,3 +67,13 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
 
     def get_failed_interval(self):
         return self.object.object_profile.periodic_discovery_interval
+
+    def can_update_alarms(self):
+        return self.object.can_create_periodic_alarms()
+
+
+    def get_fatal_alarm_weight(self):
+        return self.object.object_profile.periodic_discovery_fatal_alarm_weight
+
+    def get_alarm_weight(self):
+        return self.object.object_profile.periodic_discovery_alarm_weight

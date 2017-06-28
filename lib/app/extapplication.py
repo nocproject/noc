@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ExtApplication implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ExtApplication implementation
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-from __future__ import with_statement
+# Python modules
 import os
-## Django modules
+# Django modules
 from django.http import HttpResponse
 import ujson
-## NOC modules
+# NOC modules
 from application import Application, view
 from access import HasPerm, PermitLogged
 from noc.main.models.favorites import Favorites
@@ -22,7 +21,7 @@ from noc.main.models.slowop import SlowOp
 class ExtApplication(Application):
     menu = None
     icon = "icon_application_form"
-    ## HTTP Result Codes
+    # HTTP Result Codes
     OK = 200
     CREATED = 201
     DELETED = 204
@@ -35,7 +34,7 @@ class ExtApplication(Application):
     INTERNAL_ERROR = 500
     NOT_IMPLEMENTED = 501
     THROTTLED = 503
-    ## Recognized GET parameters
+    # Recognized GET parameters
     ignored_params = ["_dc"]
     page_param = "__page"
     start_param = "__start"
@@ -70,12 +69,12 @@ class ExtApplication(Application):
     def response(self, content="", status=200):
         if not isinstance(content, basestring):
             return HttpResponse(ujson.dumps(content),
-                mimetype="text/json; charset=utf-8",
-                status=status)
+                                mimetype="text/json; charset=utf-8",
+                                status=status)
         else:
             return HttpResponse(content,
-                mimetype="text/plain; charset=utf-8",
-                status=status)
+                                mimetype="text/plain; charset=utf-8",
+                                status=status)
 
     def fav_convert(self, item):
         """
@@ -94,6 +93,10 @@ class ExtApplication(Application):
         else:
             return set()
 
+    def extra_query(self, q, order):
+        # raise NotImplementedError
+        return {}, order
+
     def cleaned_query(self, q):
         raise NotImplementedError
 
@@ -106,12 +109,14 @@ class ExtApplication(Application):
         """
         # Todo: Fix
         if request.method == "POST":
-            q = dict((str(k), v[0] if len(v) == 1 else v)
-                     for k, v in request.POST.lists())
+            if request.META.get("CONTENT_TYPE") == 'application/json':
+                q = ujson.decode(request.body)
+            else:
+                q = dict((str(k), v[0] if len(v) == 1 else v)
+                         for k, v in request.POST.lists())
         else:
             q = dict((str(k), v[0] if len(v) == 1 else v)
                      for k, v in request.GET.lists())
-
         limit = q.get(self.limit_param)
         # page = q.get(self.page_param)
         start = q.get(self.start_param)
@@ -130,6 +135,8 @@ class ExtApplication(Application):
         fav_items = None
         if self.fav_status in q:
             fs = q.pop(self.fav_status) == "true"
+        # @todo Filter models field (validate) data.model._meta.get_all_field_names()
+        xaa, ordering = self.extra_query(q, ordering)
         q = self.cleaned_query(q)
         if None in q:
             w = []
@@ -144,6 +151,9 @@ class ExtApplication(Application):
             if p:
                 xa["params"] = p
             data = self.queryset(request, query).filter(**q).extra(**xa)
+        elif xaa:
+            # ExtraQuery
+            data = self.queryset(request, query).filter(**q).extra(**xaa)
         else:
             data = self.queryset(request, query).filter(**q)
         # Favorites filter
@@ -185,8 +195,8 @@ class ExtApplication(Application):
         return self.response(out, status=self.OK)
 
     @view(url="^favorites/app/(?P<action>set|reset)/$",
-        method=["POST"],
-        access=PermitLogged(), api=True)
+          method=["POST"],
+          access=PermitLogged(), api=True)
     def api_favorites_app(self, request, action):
         """
         Set/reset favorite app status
@@ -200,12 +210,12 @@ class ExtApplication(Application):
                 fv.save()
         elif v:
             Favorites(user=request.user, app=self.app_id,
-                favorite_app=v).save()
+                      favorite_app=v).save()
         return True
 
     @view(url="^favorites/item/(?P<item>[0-9a-f]+)/(?P<action>set|reset)/$",
-        method=["POST"],
-        access=PermitLogged(), api=True)
+          method=["POST"],
+          access=PermitLogged(), api=True)
     def api_favorites_items(self, request, item, action):
         """
         Set/reset favorite items

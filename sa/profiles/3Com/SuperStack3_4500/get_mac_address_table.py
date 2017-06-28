@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## 3Com.SuperStack3_4500.get_mac_address_table
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# 3Com.SuperStack3_4500.get_mac_address_table
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
@@ -32,7 +32,7 @@ class Script(BaseScript):
             cmd += " vlan %s" % vlan
         for match in self.rx_line.finditer(self.cli(cmd)):
                 iface = match.group("interfaces")
-                #if iface == '0':
+                # if iface == '0':
                 #    continue
                 r.append({
                     "vlan_id": match.group("vlan_id"),

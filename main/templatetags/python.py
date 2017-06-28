@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## python and pyrule tags
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# python and pyrule tags
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from django import template
 
 
 VARTYPES = ["internal", "hidden", "str", "mac", "bool", "int"]
 
-##
-## Parsers
-##
+#
+# Parsers
+#
 def do_var(parser, token):
     """
     {% var <name> <type> %}
@@ -54,9 +54,9 @@ def do_python(parser, token):
         raise template.TemplateSyntaxError("Python syntax error: %s" % why)
 
 
-##
-## Renderers
-##
+#
+# Renderers
+#
 class VarNode(template.Node):
     def __init__(self, name, vartype):
         self.name = name

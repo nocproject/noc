@@ -3,10 +3,10 @@ from south.db import db
 from noc.ip.models import *
 
 class Migration:
-    
+
     def forwards(self):
         db.execute(SQL)
-    
+
     def backwards(self):
         db.execute("DROP FUNCTION free_ip(INTEGER,CIDR)")
 
@@ -22,7 +22,7 @@ DECLARE
     prev_ip  INET;
 BEGIN
     prev_ip=host(network(p_prefix))::inet;
-    
+
     FOR r IN
         SELECT ip
         FROM ip_ipv4address

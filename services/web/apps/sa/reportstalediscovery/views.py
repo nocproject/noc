@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Stale Discovery Job Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Stale Discovery Job Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
-## Django modules
-## NOC modules
+# Django modules
+# NOC modules
 from noc.lib.app.simplereport import SimpleReport
 from noc.lib.nosql import get_db
 from noc.lib.dateutils import humanize_distance

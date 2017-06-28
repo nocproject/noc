@@ -1,378 +1,90 @@
-/**
- * Created by boris on 01.09.14.
- */
-console.debug("Defining NOC.sa.getnow.Application");
-Ext.define("NOC.sa.getnow.Application", {
-    extend: "NOC.core.Application",
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2017 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+
+console.debug('Defining NOC.sa.getnow.Application');
+Ext.define('NOC.sa.getnow.Application', {
+    extend: 'NOC.core.Application',
     requires: [
-        "NOC.sa.managedobject.SchemeLookupField",
-        "NOC.sa.administrativedomain.LookupField",
-        "NOC.sa.managedobjectprofile.LookupField",
-        "NOC.core.QuickRepoPreview"
+        'NOC.sa.getnow.AppController',
+        'NOC.sa.getnow.ViewModel',
+        'NOC.core.filter.Filter',
+        'NOC.sa.getnow.SelectionGrid'
     ],
-    pollingInterval: 3000,
+
+    alias: 'widget.getnow',
+
     layout: 'border',
-    rowClassField: "row_class",
-    historyHashPrefix: null,
-    restUrl: '/sa/managedobject/{0}/repo/cfg/',
-    theme: "default",
-    syntax: "groovy",
-    taskStates: {},
-    stylesInfo: {},
-    stateCodeToName: {
-        W: "Wait",
-        R: "Run",
-        S: "Stop",
-        F: "Fail",
-        D: "Disabled",
-        true: "OK",
-        false: "Fail"
-    },
-    initComponent: function () {
-        var me = this,
-            bs = Math.ceil(screen.height / 24);
+    controller: 'getnow',
+    viewModel: 'getnow',
+    border: false,
+    stateful: true,
+    stateId: 'getnow.appPanel',
 
-        me.pollingTaskHandler = Ext.bind(me.pollingTask, me);
-        me.store = Ext.create("NOC.core.ModelStore", {
-            model: "NOC.sa.getnow.Model",
-            autoLoad: true,
-            customFields: [],
-            filterParams: {},
-            pageSize: bs,
-            leadingBufferZone: bs,
-            numFromEdge: Math.ceil(bs / 2),
-            trailingBufferZone: bs
-        });
-
-        me.rawButton = Ext.create("Ext.button.Button", {
-            glyph: NOC.glyph.android,
-            text: __("Raw"),
-            tooltip: __("Raw"),
-            scope: me,
-            handler: me.onRaw
-        });
-
-        me.managedObject = Ext.create("NOC.sa.managedobject.LookupField", {
-            name: "id",
-            fieldLabel: __("Managed object"),
-            allowBlank: true,
-            valueField: "id",
-            listeners: {
-                scope: me,
-                select: me.onChangeFilter
-            }
-        });
-
-        me.saProfile = Ext.create("NOC.main.ref.profile.LookupField", {
-            name: "profile_name",
-            fieldLabel: __("By SA Profile"),
-            allowBlank: true,
-            listeners: {
-                scope: me,
-                select: me.onChangeFilter
-            }
-        });
-
-        me.administrativeDomain = Ext.create("NOC.sa.administrativedomain.TreeCombo", {
-            name: "administrative_domain",
-            fieldLabel: __("By Adm. domain"),
-            allowBlank: true,
-            labelAlign: "left",
-            //labelStyle: "background:#7f8c8d !important;",
-            defaults: {
-                //labelStyle: 'background: rgba(204, 204, 204, 0.5) !important;'
-                labelStyle: 'font-size:11px; background: #e6e6e6 !important;'
-                },
-            listeners: {
-                scope: me,
-                select: me.onChangeFilter
-            }
-        });
-
-        me.resetFilter = Ext.create("Ext.Button", {
-            text: __("Reset filter"),
-            listeners: {
-                scope: me,
-                click: function () {
-                    me.currentQuery = {};
-                    me.managedObject.reset();
-                    me.saProfile.reset();
-                    me.administrativeDomain.reset();
-                    me.reloadStore();
-                }
-            }
-        });
-
-        me.selModel = Ext.create("Ext.selection.CheckboxModel", {
-            listeners: {
-                scope: me,
-                selectionchange: me.onActionSelectionChange
-            }
-        });
-
-        me.getConfigNow = Ext.create("Ext.Button", {
-            text: __("Get config NOW"),
-            listeners: {
-                scope: me,
-                click: function () {
-                    me.onGetConfig()
-                }
-            }
-        });
-
-        // me.cmContainer = Ext.create({
-        //     xtype: "container",
-        //     layout: "fit",
-        //     tpl: [
-        //         '<div id="{cmpId}-cmEl" class="{cmpCls}" style="{size}"></div>'
-        //     ],
-        //     data: {
-        //         cmpId: me.id,
-        //         cmpCls: Ext.baseCSSPrefix
-        //             + "codemirror "
-        //             + Ext.baseCSSPrefix
-        //             + "html-editor-wrap "
-        //             + Ext.baseCSSPrefix
-        //             + "html-editor-input",
-        //         size: "width:100%;height:100%"
-        //     }
-        // });
-
-        // me.currentDeviceLabel = Ext.create("Ext.form.Label", {
-        //     layout: {type: 'hbox', align: 'middle'}
-        // });
-
-        me.quickRepoPreview = Ext.create("NOC.core.RepoPreview", {
-            app: me,
-            region: 'east',
-            width: '60%',
+    items: [
+        {
+            xtype: 'selectionGrid',
+            region: 'west',
+            resizable: true,
+            split: true,
+            width: '35%'
+        },
+        {
+            xclass: 'NOC.core.RepoPreview',
+            region: 'center',
+            width: '65%',
+            app: this,
+            reference: 'repoPreview',
             previewName: '{0} config',
             restUrl: '/sa/managedobject/{0}/repo/cfg/',
-            historyHashPrefix: 'config'
-        });
-
-        me.gridpanel = Ext.create("Ext.grid.Panel", {
-            region: 'west',
-            store: me.store,
-            width: '40%',
-            selModel: me.selModel,
+            historyHashPrefix: 'config',
             listeners: {
-                rowdblclick: function (grid, record, rec) {
-                    me.currentDeviceId = record.get("id");
-                    me.currentDeviceLabel = record.get("name");
-                    me.quickRepoPreview.preview(record);
-                }
+                destroy: 'onStopPolling'
             },
-            columns: [
+            tbar: [
                 {
-                    xtype: 'gridcolumn',
-                    text: __("ID"),
-                    dataIndex: "id",
-                    width: 60
+                    text: __('Get config NOW'),
+                    tooltip: __('Get config NOW'),
+                    bind: {
+                        disabled: '{!selectionGrid.selection}'
+                    },
+                    handler: 'onGetConfig'
                 },
                 {
-                    xtype: 'gridcolumn',
-                    dataIndex: 'name',
-                    text: 'Managed object',
-                    width: 120
+                    text: __('Stop Polling'),
+                    tooltip: __('Stop Polling'),
+                    bind: {
+                        disabled: '{!isStarted}'
+                    },
+                    handler: 'onStopPolling'
                 },
+                '->',
                 {
-                    xtype: 'gridcolumn',
-                    dataIndex: "profile_name",
-                    text: 'SA Profile'
-                },
-                {
-                    xtype: 'gridcolumn',
-                    dataIndex: 'last_success',
-                    text: 'Last success'
-                },
-                {
-                    xtype: 'gridcolumn',
-                    dataIndex: "last_update",
-                    text: 'Last update'
-                },
-                {
-                    xtype: 'gridcolumn',
-                    dataIndex: 'status',
-                    text: 'Status',
-                    width: 50,
-                    renderer: NOC.render.Choices(me.stateCodeToName)
-
-                },
-                {
-                    xtype: 'gridcolumn',
-                    dataIndex: 'last_status',
-                    text: 'Last status',
-                    width: 50,
-                    renderer: NOC.render.Choices(me.stateCodeToName)
-                }
-            ],
-            viewConfig: {
-                getRowClass: function (record, index, params, store) {
-                    var device_id = record.get("id");
-                    var status = record.get("status");
-                    var last_status = record.get("last_status");
-                    if (me.taskStates.hasOwnProperty(device_id)) {
-                        var previous_status = me.taskStates[device_id];
-                        if (status == "R" && last_status == "S"
-                                || previous_status == "I") {
-                            me.taskStates[device_id] = "R";
-                            return me.stylesInfo["get_now_task_done_in_progress"] || "noc-color-1";
-                        }
-                        if (status == "W" && last_status == "S") {
-                            me.taskStates[device_id] = "S";
-                            return me.stylesInfo["get_now_task_done_ok"] || "noc-color-5";
-                        }
-                        if (status == "W" && last_status == "F") {
-                            me.taskStates[device_id] = "F";
-                            return me.stylesInfo["get_now_task_done_fail"] || "noc-color-3";
-                        }
+                    xtype: 'box',
+                    bind: {
+                        html: '<span style="text-align: center;" class="noc-badge {polling.style}">{polling.leave}</span>'
                     }
                 }
-            }
-        });
-
-        Ext.apply(me, {
-            tbar: [
-                me.managedObject,
-                me.saProfile,
-                me.administrativeDomain,
-                me.resetFilter,
-                "-",
-                me.getConfigNow,
-                "-",
-                me.rawButton
-            ],
-            items: [
-                me.gridpanel,
-                me.quickRepoPreview
             ]
-        });
-        me.callParent();
-        me.getStylesInfo();
-        me.urlTemplate = '/sa/managedobject/{0}/repo/cfg/';
-    },
-    onCloseApp: function() {
-        var me = this;
-        console.log("onCloseApp");
-        me.taskStates = {};
-    },
-    onRaw: function () {
-        var me = this;
-        var data = me.quickRepoPreview.viewer.getValue();
-        var myWindow = window.open();
-        myWindow.document.write('<pre>' + data + '</pre>');
-    },
-
-    getStylesInfo: function () {
-        var me = this;
-        Ext.Ajax.request({
-            url: "/main/style/",
-            method: "GET",
-            scope: me,
-            failure: function () {
-                NOC.error(__("Failed to run tasks"));
-            },
-            success: function(response) {
-                var data = Ext.decode(response.responseText);
-                for (var item in data) {
-                    var style = data[item];
-                    me.stylesInfo[style["name"]] = style["row_class"];
-                }
-            }
-        });
-    },
-
-    onActionSelectionChange: function (o, selected, opts) {
-        var me = this;
-        me.getConfigNow.setDisabled(!selected.length);
-    },
-
-    reloadStore: function () {
-        var me = this;
-        if (me.currentQuery)
-            me.store.setFilterParams(me.currentQuery);
-        me.store.load();
-    },
-
-    onChangeFilter: function () {
-        var me = this,
-            q = {},
-            setIf = function (k, v) {
-                if (v) {
-                    q[k] = v;
-                }
-            };
-        setIf("id", me.managedObject.getValue());
-        setIf("profile_name", me.saProfile.getValue());
-        setIf("administrative_domain", me.administrativeDomain.getValue());
-        me.currentQuery = q;
-        me.reloadStore();
-    },
-
-    afterRender: function () {
-        var me = this;
-        me.callParent(arguments);
-    },
-
-    onResize: function () {
-        var me = this;
-        if (me.viewer) {
-            me.viewer.refresh();
+        },
+        {
+            xtype: 'NOC.Filter',
+            // appId: this.appId,
+            appId: 'sa.getnow',
+            reference: 'filterPanel',
+            region: 'east',
+            width: 300,
+            collapsed: true,
+            border: true,
+            animCollapse: false,
+            collapseMode: 'mini',
+            hideCollapseTool: true,
+            split: true,
+            resizable: true,
+            stateful: true,
+            stateId: 'getnow.filterPanel',
+            selectionStore: 'getnow.objectsStore'
         }
-    },
-
-    onGetConfig: function () {
-        var me = this;
-        var selected_devices = me.gridpanel.getSelectionModel().getSelection();
-        Ext.each(selected_devices, function (device) {
-            var device_id = device.get("id");
-            me.runTask(device_id);
-            me.taskStates[device_id] = "I";
-        });
-        me.startPolling();
-    },
-
-    runTask: function (id) {
-        var me = this;
-        Ext.Ajax.request({
-            url: "/sa/managedobject/" + id + "/discovery/run/",
-            method: "POST",
-            scope: me,
-            jsonData: {
-                "names": ['box']
-            },
-            failure: function () {
-                NOC.error(__("Failed to run tasks"));
-            }
-        });
-    },
-
-    getStatuses: function () {
-        var me = this;
-        var in_progress = false;
-        for (var device_id in me.taskStates) {
-            var status = me.taskStates[device_id];
-            if (status == "R" || status == "I")
-                in_progress = true;
-        }
-        if (in_progress) {
-            me.reloadStore();
-        }
-    },
-
-    pollingTask: function () {
-        var me = this;
-        me.getStatuses();
-    },
-
-    startPolling: function () {
-        var me = this;
-        if (!me.pollingTaskId) {
-            me.pollingTaskId = Ext.TaskManager.start({
-                run: me.pollingTaskHandler,
-                interval: me.pollingInterval
-            });
-        }
-    }
+    ]
 });

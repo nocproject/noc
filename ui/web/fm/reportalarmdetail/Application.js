@@ -9,7 +9,8 @@ console.debug("Defining NOC.fm.reportalarmdetail.Application");
 Ext.define("NOC.fm.reportalarmdetail.Application", {
     extend: "NOC.core.Application",
     requires: [
-        "NOC.inv.networksegment.TreeCombo"
+        "NOC.inv.networksegment.TreeCombo",
+        "NOC.sa.administrativedomain.TreeCombo"
     ],
 
     initComponent: function() {
@@ -28,19 +29,22 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 ["duration_sec", __("Duration"), true],
                 ["object_name", __("Object Name"), true],
                 ["object_address", __("IP"), true],
+                ["object_profile", __("IP"), true],
                 ["object_platform", __("Platform"), true],
+                ["object_version", __("Version"), true],
                 ["alarm_class", __("Alarm Class"), true],
                 ["objects", __("Affected Objects"), true],
                 ["subscribers", __("Affected Subscriber"), true],
                 ["tt", __("TT"), true],
                 ["escalation_ts", __("Escalation Time"), true],
-                ["container_0", __("Container (Level 1)"), true],
-                ["container_1", __("Container (Level 2)"), true],
-                ["container_2", __("Container (Level 3)"), true],
-                ["container_3", __("Container (Level 4)"), true],
-                ["container_4", __("Container (Level 5)"), true],
-                ["container_5", __("Container (Level 6)"), true],
-                ["container_6", __("Container (Level 7)"), true],
+                ["container_address", __("Container Address"), true],
+                ["container_0", __("Container (Level 1)"), false],
+                ["container_1", __("Container (Level 2)"), false],
+                ["container_2", __("Container (Level 3)"), false],
+                ["container_3", __("Container (Level 4)"), false],
+                ["container_4", __("Container (Level 5)"), false],
+                ["container_5", __("Container (Level 6)"), false],
+                ["container_6", __("Container (Level 7)"), false],
                 ["segment_0", __("Segment (Level 1)"), true],
                 ["segment_1", __("Segment (Level 2)"), true],
                 ["segment_2", __("Segment (Level 3)"), true],
@@ -87,11 +91,11 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             items: [
                 {
                     text: __("CSV"),
-                    pressed: true,
                     width: 70
                 },
                 {
                     text: __("Excel"),
+                    pressed: true,
                     width: 70
                 }
             ],
@@ -99,6 +103,7 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
         });
 
         me.segment = null;
+        me.adm_domain = null;
 
         me.formPanel = Ext.create("Ext.form.Panel", {
             autoScroll: true,
@@ -106,6 +111,19 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                 labelWidth: 60
             },
             items: [
+                {
+                    name: "alarms_source",
+                    xtype: "radiogroup",
+                    columns: 3,
+                    vertical: false,
+                    fieldLabel: __("Alarms source"),
+                    allowBlank: false,
+                    width: 300,
+                    items: [
+                        {boxLabel: 'Active Alarms', name: 'rb', inputValue: 'active', checked: true},
+                        {boxLabel: 'Archived Alarms', name: 'rb', inputValue: 'archive'},
+                        {boxLabel: 'Both', name: 'rb', inputValue: 'both'}]
+                },
                 {
                     name: "from_date",
                     xtype: "datefield",
@@ -140,11 +158,35 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
                     }
                 },
                 {
+                    name: "administrative_domain",
+                    xtype: "sa.administrativedomain.TreeCombo",
+                    fieldLabel: __("By Adm. domain"),
+                    listWidth: 1,
+                    listAlign: 'left',
+                    labelAlign: "left",
+                    width: 500,
+                    allowBlank: true,
+                    listeners: {
+                        scope: me,
+                        select: function(combo, record) {
+                            me.adm_domain = record.get("id")
+                        }
+                    }
+                },
+                {
                     name: "min_duration",
                     xtype: "numberfield",
                     fieldLabel: __("Min. Duration"),
                     allowBlank: false,
                     value: 300,
+                    uiStyle: "small"
+                },
+                {
+                    name: "max_duration",
+                    xtype: "numberfield",
+                    fieldLabel: __("Max. Duration"),
+                    allowBlank: false,
+                    value: 0,
                     uiStyle: "small"
                 },
                 {
@@ -205,10 +247,15 @@ Ext.define("NOC.fm.reportalarmdetail.Application", {
             + "&format=" + format + "&min_duration=" + v.min_duration
             + "&min_objects=" + v.min_objects
             + "&min_subscribers=" + v.min_subscribers
+            + "&source=" + v.rb
         ];
 
         if(me.segment) {
             url.push("&segment=" + me.segment);
+        }
+
+        if(me.adm_domain) {
+            url.push("&administrative_domain=" + me.adm_domain);
         }
 
         me.columnsStore.each(function(record) {

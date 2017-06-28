@@ -1,0 +1,5 @@
+patroni_scope: noc
+patroni_path: /opt/patroni
+patroni_config_dir: "{{etc_prefix}}/patroni"
+patroni_bootstrap_file: "{{patroni_config_dir}}/.patroni_bootstrapped"
+patroni_replication_network: "{{ ansible_default_ipv4.network }}/{{ ansible_default_ipv4.netmask}}"

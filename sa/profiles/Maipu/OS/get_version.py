@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Maipu.OS.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Maipu.OS.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 test on Maipu SM3220-28TF(E1)
 
 
 """
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
 
@@ -33,9 +33,7 @@ class Script(BaseScript):
     def execute(self):
         v = ""
         v = self.cli("show version", cached=True)
-        rx = self.find_re([
-            self.rx_ver
-        ], v)
+        rx = self.find_re([self.rx_ver], v)
 
         match = self.re_search(self.rx_ver, v)
 
@@ -48,6 +46,6 @@ class Script(BaseScript):
                 "HW version": match.group("hwversion"),
                 "Serial Number" : match.group("serial"),
                 "cpldversion": match.group("cpldversion")
-                 }
             }
+        }
 

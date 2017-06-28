@@ -4,26 +4,26 @@
 // Copyright (C) 2007-2013 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.fm.alarmclass.Application");
+console.debug('Defining NOC.fm.alarmclass.Application');
 
-Ext.define("NOC.fm.alarmclass.Application", {
-    extend: "NOC.core.ModelApplication",
+Ext.define('NOC.fm.alarmclass.Application', {
+    extend: 'NOC.core.ModelApplication',
     uses: [
-        "NOC.fm.alarmclass.Model",
-        "NOC.fm.alarmclass.LookupField",
-        "NOC.fm.alarmseverity.LookupField",
-        "Ext.ux.form.JSONField",
-        "Ext.ux.form.StringsField"
+        'NOC.fm.alarmclass.Model',
+        'NOC.fm.alarmclass.LookupField',
+        'NOC.fm.alarmseverity.LookupField',
+        'Ext.ux.form.JSONField',
+        'Ext.ux.form.StringsField'
     ],
-    model: "NOC.fm.alarmclass.Model",
+    model: 'NOC.fm.alarmclass.Model',
     search: true,
-    treeFilter: "category",
-    rowClassField: "row_class",
+    treeFilter: 'category',
+    rowClassField: 'row_class',
 
     initComponent: function() {
         var me = this;
 
-        me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+        me.jsonPanel = Ext.create('NOC.core.JSONPreview', {
             app: me,
             restUrl: new Ext.XTemplate('/fm/alarmclass/{id}/json/'),
             previewName: new Ext.XTemplate('Alarm Class: {name}')
@@ -33,369 +33,404 @@ Ext.define("NOC.fm.alarmclass.Application", {
         Ext.apply(me, {
             columns: [
                 {
-                    text: __("Name"),
-                    dataIndex: "name",
+                    text: __('Name'),
+                    dataIndex: 'name',
                     width: 250
                 },
                 {
-                    text: __("Builtin"),
-                    dataIndex: "is_builtin",
+                    text: __('Builtin'),
+                    dataIndex: 'is_builtin',
                     renderer: NOC.render.Bool,
                     width: 30
                 },
                 {
-                    text: __("Description"),
-                    dataIndex: "description",
+                    text: __('Description'),
+                    dataIndex: 'description',
                     flex: 1
                 }
             ],
             fields: [
                 {
-                    xtype: "container",
-                    layout: "hbox",
+                    xtype: 'container',
+                    layout: 'hbox',
                     items: [
                         {
-                            name: "name",
-                            xtype: "textfield",
-                            fieldLabel: __("Name"),
+                            name: 'name',
+                            xtype: 'textfield',
+                            fieldLabel: __('Name'),
                             allowBlank: false,
-                            uiStyle: "large"
+                            uiStyle: 'large'
                         },
                         {
-                            name: "uuid",
-                            xtype: "displayfield",
-                            fieldLabel: __("UUID")
+                            name: 'uuid',
+                            xtype: 'displayfield',
+                            style: 'padding-left: 10px',
+                            fieldLabel: __('UUID')
                         }
                     ]
                 },
                 {
-                    xtype: "tabpanel",
-                    layout: "fit",
+                    xtype: 'tabpanel',
+                    layout: 'fit',
                     autoScroll: true,
-                    anchor: "-0, -50",
+                    anchor: '-0, -50',
                     defaults: {
                         autoScroll: true,
-                        layout: "anchor"
+                        layout: 'anchor'
                     },
-                    items: [
+                    items: [ // tabs
                         {
-                            title: __("Text"),
+                            title: __('Text'),
                             items: [
                                 {
-                                    name: "description",
-                                    xtype: "textarea",
-                                    fieldLabel: __("Description"),
-                                    uiStyle: "extra"
+                                    name: 'description',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Description'),
+                                    uiStyle: 'extra'
                                 },
                                 {
-                                    name: "subject_template",
-                                    xtype: "textfield",
-                                    fieldLabel: __("Subject Template"),
-                                    uiStyle: "extra",
+                                    name: 'subject_template',
+                                    xtype: 'textfield',
+                                    fieldLabel: __('Subject Template'),
+                                    uiStyle: 'extra',
                                     allowBlank: false
                                 },
                                 {
-                                    name: "body_template",
-                                    xtype: "textarea",
-                                    fieldLabel: __("Body Template"),
-                                    uiStyle: "extra",
+                                    name: 'body_template',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Body Template'),
+                                    uiStyle: 'extra',
                                     allowBlank: false
                                 },
                                 {
-                                    name: "symptoms",
-                                    xtype: "textarea",
-                                    fieldLabel: __("Symptoms"),
-                                    uiStyle: "extra",
+                                    name: 'symptoms',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Symptoms'),
+                                    uiStyle: 'extra',
                                     allowBlank: true
                                 },
                                 {
-                                    name: "probable_causes",
-                                    xtype: "textarea",
-                                    fieldLabel: __("Probable Causes"),
-                                    uiStyle: "extra",
+                                    name: 'probable_causes',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Probable Causes'),
+                                    uiStyle: 'extra',
                                     allowBlank: true
                                 },
                                 {
-                                    name: "recommended_actions",
-                                    xtype: "textarea",
-                                    fieldLabel: __("Recommended Actions"),
-                                    uiStyle: "extra",
+                                    name: 'recommended_actions',
+                                    xtype: 'textarea',
+                                    fieldLabel: __('Recommended Actions'),
+                                    uiStyle: 'extra',
                                     allowBlank: true
                                 }
                             ]
-                        },
+                        }, // Text
                         {
-                            title: __("Severity"),
+                            title: __('Severity'),
                             items: [
                                 {
-                                    name: "default_severity",
-                                    xtype: "fm.alarmseverity.LookupField",
-                                    fieldLabel: __("Default Severity")
+                                    name: 'default_severity',
+                                    xtype: 'fm.alarmseverity.LookupField',
+                                    fieldLabel: __('Default Severity')
                                 },
                                 {
-                                    name: "is_unique",
-                                    xtype: "checkboxfield",
-                                    boxLabel: __("Unique")
+                                    name: 'is_unique',
+                                    xtype: 'checkboxfield',
+                                    boxLabel: __('Unique')
                                 },
                                 {
-                                    name: "user_clearable",
-                                    xtype: "checkboxfield",
-                                    boxLabel: __("User Clearable")
+                                    name: 'user_clearable',
+                                    xtype: 'checkboxfield',
+                                    boxLabel: __('User Clearable')
                                 },
                                 {
-                                    name: "discriminator",
-                                    xtype: "stringsfield",
-                                    fieldLabel: __("Discriminator")
+                                    name: 'discriminator',
+                                    xtype: 'stringsfield',
+                                    fieldLabel: __('Discriminator')
                                 }
                             ]
-                        },
+                        }, // Severity
                         {
-                            title: __("Variables"),
+                            title: __('Variables'),
                             items: [
                                 {
-                                    name: "vars",
-                                    xtype: "gridfield",
+                                    name: 'vars',
+                                    xtype: 'gridfield',
                                     columns: [
                                         {
-                                            text: __("Name"),
-                                            dataIndex: "name",
+                                            text: __('Name'),
+                                            dataIndex: 'name',
                                             width: 100,
-                                            editor: "textfield"
+                                            editor: 'textfield'
                                         },
                                         {
-                                            text: __("Description"),
-                                            dataIndex: "description",
+                                            text: __('Description'),
+                                            dataIndex: 'description',
                                             flex: 1,
-                                            editor: "textfield"
+                                            editor: 'textfield'
                                         },
                                         {
-                                            text: __("Default"),
-                                            dataIndex: "default",
+                                            text: __('Default'),
+                                            dataIndex: 'default',
                                             width: 150,
-                                            editor: "textfield"
+                                            editor: 'textfield'
                                         }
                                     ]
                                 }
                             ]
-                        },
+                        }, // Variables
                         {
-                            title: __("Data Sources"),
+                            title: __('Data Sources'),
                             items: [
                                 {
-                                    name: "datasources",
-                                    xtype: "gridfield",
+                                    name: 'datasources',
+                                    xtype: 'gridfield',
                                     columns: [
                                         {
-                                            text: __("Name"),
-                                            dataIndex: "name",
+                                            text: __('Name'),
+                                            dataIndex: 'name',
                                             width: 100,
-                                            editor: "textfield"
+                                            editor: 'textfield'
                                         },
                                         {
-                                            text: __("Datasource"),
-                                            dataIndex: "datasource",
+                                            text: __('Datasource'),
+                                            dataIndex: 'datasource',
                                             width: 100,
-                                            editor: "textfield"
+                                            editor: 'textfield'
                                         },
                                         {
-                                            text: __("Search"),
-                                            dataIndex: "search",
+                                            text: __('Search'),
+                                            dataIndex: 'search',
                                             flex: 1,
-                                            editor: "jsonfield",
+                                            editor: 'jsonfield',
                                             renderer: NOC.render.JSON
                                         }
                                     ]
                                 }
                             ]
-                        },
+                        }, // Data Sources
                         {
-                            title: __("Root Cause"),
+                            title: __('Root Cause'),
                             items: [
                                 {
-                                    name: "root_cause",
-                                    xtype: "gridfield",
+                                    name: 'root_cause',
+                                    xtype: 'gridfield',
                                     columns: [
                                         {
-                                            text: __("Name"),
-                                            dataIndex: "name",
+                                            text: __('Name'),
+                                            dataIndex: 'name',
                                             width: 200,
-                                            editor: "textfield"
+                                            editor: 'textfield'
                                         },
                                         {
-                                            text: __("Root"),
-                                            dataIndex: "root",
-                                            renderer: NOC.render.Lookup("root"),
-                                            editor: "fm.alarmclass.LookupField",
+                                            text: __('Root'),
+                                            dataIndex: 'root',
+                                            renderer: NOC.render.Lookup('root'),
+                                            editor: 'fm.alarmclass.LookupField',
                                             width: 200
                                         },
                                         {
-                                            text: __("Window"),
-                                            dataIndex: "window",
+                                            text: __('Window'),
+                                            dataIndex: 'window',
                                             width: 50,
-                                            editor: "numberfield"
+                                            editor: 'numberfield'
                                         },
                                         {
-                                            text: __("Condition"),
-                                            dataIndex: "condition",
-                                            editor: "textfield",
+                                            text: __('Condition'),
+                                            dataIndex: 'condition',
+                                            editor: 'textfield',
                                             width: 150
                                         },
                                         {
-                                            text: __("Match Condition"),
-                                            dataIndex: "match_condition",
-                                            editor: "jsonfield",
+                                            text: __('Match Condition'),
+                                            dataIndex: 'match_condition',
+                                            editor: 'jsonfield',
                                             flex: 1,
                                             renderer: NOC.render.JSON
                                         }
                                     ]
                                 }
                             ]
-                        },
+                        }, // Root Cause
                         {
-                            title: __("Jobs"),
+                            title: __('Jobs'),
                             items: [
                                 {
-                                    name: "jobs",
-                                    xtype: "gridfield",
+                                    name: 'jobs',
+                                    xtype: 'gridfield',
                                     columns: [
                                         {
-                                            text: __("Job"),
-                                            dataIndex: "job",
+                                            text: __('Job'),
+                                            dataIndex: 'job',
                                             width: 100,
-                                            editor: "textfield"
+                                            editor: 'textfield'
                                         },
                                         {
-                                            text: __("Interval"),
-                                            dataIndex: "interval",
+                                            text: __('Interval'),
+                                            dataIndex: 'interval',
                                             width: 50,
-                                            editor: "numberfield"
+                                            editor: 'numberfield'
                                         },
                                         {
-                                            text: __("Vars"),
-                                            dataIndex: "vars",
+                                            text: __('Vars'),
+                                            dataIndex: 'vars',
                                             flex: 1,
-                                            editor: "jsonfield",
+                                            editor: 'jsonfield',
                                             renderer: NOC.render.JSON
                                         }
                                     ]
                                 }
                             ]
-                        },
+                        }, // Jobs
                         {
-                            title: __("Handlers"),
+                            title: __('Handlers'),
                             items: [
                                 {
-                                    xtype: "stringsfield",
-                                    name: "handlers",
-                                    fieldLabel: __("Handlers")
+                                    xtype: 'stringsfield',
+                                    name: 'handlers',
+                                    fieldLabel: __('Handlers')
                                 },
                                 {
-                                    xtype: "stringsfield",
-                                    name: "clear_handlers",
-                                    fieldLabel: __("Clear Handlers")
+                                    xtype: 'stringsfield',
+                                    name: 'clear_handlers',
+                                    fieldLabel: __('Clear Handlers')
                                 }
                             ]
-                        },
+                        }, // Handlers
                         {
-                            title: __("Plugins"),
+                            title: __('Plugins'),
                             items: [
                                 {
-                                    xtype: "gridfield",
-                                    name: "plugins",
-                                    fieldLabel: __("Plugins"),
+                                    xtype: 'gridfield',
+                                    name: 'plugins',
+                                    fieldLabel: __('Plugins'),
                                     columns: [
                                         {
-                                            text: __("Name"),
-                                            dataIndex: "name",
-                                            editor: "textfield",
+                                            text: __('Name'),
+                                            dataIndex: 'name',
+                                            editor: 'textfield',
                                             width: 150
                                         },
                                         {
-                                            text: __("Config"),
-                                            dataIndex: "config",
-                                            editor: "jsonfield",
+                                            text: __('Config'),
+                                            dataIndex: 'config',
+                                            editor: 'jsonfield',
                                             flex: 1,
                                             renderer: NOC.render.JSON
                                         }
                                     ]
                                 }
                             ]
-                        },
+                        }, // Plugins
                         {
-                            title: __("Timing"),
+                            title: __('Timing'),
+                            defaults: {
+                                labelWidth: 150
+                            },
                             items: [
                                 {
-                                    name: "flap_condition",
-                                    xtype: "combobox",
-                                    fieldLabel: __("Flap Condition"),
+                                    name: 'flap_condition',
+                                    xtype: 'combobox',
+                                    fieldLabel: __('Flap Condition'),
+                                    tooltip: __('Flap detection'),
                                     allowBlank: false,
-                                    uiStyle: "small",
+                                    uiStyle: 'small',
                                     store: [
-                                        ["none", __("None")],
-                                        ["count", __("Count")]
-                                    ]
+                                        ['none', __('None')],
+                                        ['count', __('Count')]
+                                    ],
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
-                                    name: "flap_window",
-                                    xtype: "numberfield",
-                                    fieldLabel: __("Flap Window"),
+                                    name: 'flap_window',
+                                    xtype: 'numberfield',
+                                    fieldLabel: __('Flap Window (sec)'),
+                                    tooltip: __('Time in seconds, while waiting of reopen'),
                                     allowBlank: true,
-                                    uiStyle: "small"
+                                    uiStyle: 'small',
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
-                                    name: "flap_threshold",
-                                    xtype: "numberfield",
-                                    fieldLabel: __("Flap Threshold"),
+                                    name: 'flap_threshold',
+                                    xtype: 'numberfield',
+                                    fieldLabel: __('Flap Threshold (pcs)'),
+                                    tooltip: __('Number of flaps while close Flap Window'),
                                     allowBlank: true,
-                                    uiStyle: "small"
+                                    uiStyle: 'small',
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
-                                    name: "notification_delay",
-                                    xtype: "numberfield",
-                                    fieldLabel: __("Notification Delay"),
+                                    name: 'notification_delay',
+                                    xtype: 'numberfield',
+                                    fieldLabel: __('Notification Delay (sec)'),
+                                    tooltip: __('Time in seconds to delay alarm risen notification'),
                                     allowBlank: true,
-                                    uiStyle: "small"
+                                    uiStyle: 'small',
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
-                                    name: "control_time0",
-                                    xtype: "numberfield",
-                                    fieldLabel: __("Control Time 0"),
+                                    name: 'control_time0',
+                                    xtype: 'numberfield',
+                                    fieldLabel: __('Control Time 0 (sec)'),
+                                    tooltip: __('Control time to reopen alarm instead of creating new'),
                                     allowBlank: true,
-                                    uiStyle: "small"
+                                    uiStyle: 'small',
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
-                                    name: "control_time1",
-                                    xtype: "numberfield",
-                                    fieldLabel: __("Control Time 1"),
+                                    name: 'control_time1',
+                                    xtype: 'numberfield',
+                                    fieldLabel: __('Control Time 1 (sec)'),
+                                    tooltip: __('Control time to reopen alarm after 1 reopen'),
                                     allowBlank: true,
-                                    uiStyle: "small"
+                                    uiStyle: 'small',
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
-                                    name: "control_timeN",
-                                    xtype: "numberfield",
-                                    fieldLabel: __("Control Time N"),
+                                    name: 'control_timeN',
+                                    xtype: 'numberfield',
+                                    fieldLabel: __('Control Time N (sec)'),
+                                    tooltip: __('Control time to reopen alarm after >1 reopen'),
                                     allowBlank: true,
-                                    uiStyle: "small"
+                                    uiStyle: 'small',
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 },
                                 {
-                                    name: "recover_time",
-                                    xtype: "numberfield",
-                                    fieldLabel: __("Recover Time"),
+                                    name: 'recover_time',
+                                    xtype: 'numberfield',
+                                    fieldLabel: __('Recover Time (sec)'),
+                                    tooltip: __('Consequence recover time. Root cause will be detached if consequence alarm will not clear itself in *recover_time*'),
                                     allowBlank: true,
-                                    uiStyle: "small"
+                                    uiStyle: 'small',
+                                    listeners: {
+                                        render: me.addTooltip
+                                    }
                                 }
-
                             ]
-                        }
+                        }  // Timing
                     ]
                 }
             ],
             formToolbar: [
                 {
-                    text: __("JSON"),
+                    text: __('JSON'),
                     glyph: NOC.glyph.file,
-                    tooltip: __("View as JSON"),
-                    hasAccess: NOC.hasPermission("read"),
+                    tooltip: __('View as JSON'),
+                    hasAccess: NOC.hasPermission('read'),
                     scope: me,
                     handler: me.onJSON
                 }
@@ -406,9 +441,9 @@ Ext.define("NOC.fm.alarmclass.Application", {
     //
     filters: [
         {
-            title: __("By Builtin"),
-            name: "is_builtin",
-            ftype: "boolean"
+            title: __('By Builtin'),
+            name: 'is_builtin',
+            ftype: 'boolean'
         }
     ],
     //
@@ -416,5 +451,12 @@ Ext.define("NOC.fm.alarmclass.Application", {
         var me = this;
         me.showItem(me.ITEM_JSON);
         me.jsonPanel.preview(me.currentRecord);
+    },
+    //
+    addTooltip: function(element) {
+        Ext.create('Ext.tip.ToolTip', {
+            target: element.getEl(),
+            html: element.tooltip
+        });
     }
 });

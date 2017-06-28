@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Service control api
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service control api
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import cStringIO
-## NOC modules
-from api import API, api
+import logging
+# NOC modules
+from .api import API, api
 
 
 class CtlAPI(API):
@@ -78,3 +80,27 @@ class CtlAPI(API):
         import manhole
         mh = manhole.install()
         return mh.uds_name
+
+    @api
+    def inc_verbosity(self):
+        """
+        Increase logging verbosity
+        :return:
+        """
+        current_level = logging.root.getEffectiveLevel()
+        new_level = max(logging.DEBUG, current_level - 10)
+        self.logger.critical("Changing loglevel: %s -> %s", current_level, new_level)
+        logging.root.setLevel(new_level)
+        return new_level
+
+    @api
+    def dec_verbosity(self):
+        """
+        Decrease logging verbosity
+        :return:
+        """
+        current_level = logging.root.getEffectiveLevel()
+        new_level = min(logging.CRITICAL, current_level + 10)
+        self.logger.critical("Changing loglevel: %s -> %s", current_level, new_level)
+        logging.root.setLevel(new_level)
+        return new_level

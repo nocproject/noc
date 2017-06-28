@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-##----------------------------------------------------------------------
-## Failed Scripts Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Failed Scripts Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 
 from django import forms
-## NOC modules
+# NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport, SectionRow
 from noc.lib.nosql import get_db
 from pymongo import ReadPreference
@@ -50,6 +50,10 @@ class ReportForm(forms.Form):
         label=_("Filter None problems"),
         required=False
     )
+    filter_view_other = forms.BooleanField(
+        label=_("Show other problems"),
+        required=False
+    )
 
 
 class ReportFilterApplication(SimpleReport):
@@ -70,7 +74,7 @@ class ReportFilterApplication(SimpleReport):
     def get_data(self, request, pool=None, obj_profile=None,
                  avail_status=None, profile_check_only=None,
                  failed_scripts_only=None, filter_pending_links=None,
-                 filter_none_objects=None,
+                 filter_none_objects=None, filter_view_other=None,
                  **kwargs):
         data = []
         avail = {}
@@ -83,6 +87,9 @@ class ReportFilterApplication(SimpleReport):
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         if obj_profile:
             mos = mos.filter(object_profile=obj_profile)
+        if filter_view_other:
+            mnp_in = list(ManagedObjectProfile.objects.filter(enable_ping=False))
+            mos = mos.filter(profile_name="Generic.Host").exclude(object_profile__in=mnp_in)
         discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         mos_id = list(mos.values_list("id", flat=True))
         if avail_status:
@@ -97,6 +104,8 @@ class ReportFilterApplication(SimpleReport):
                 {"job.problems": {"$exists": "true", "$ne": {}}},
                 {"job.problems.suggest_snmp": {"$exists": False}},
                 {"job.problems.suggest_cli": {"$exists": False}}]}
+        elif filter_view_other:
+            match = {"job.problems.suggest_snmp": {"$exists": False}}
         else:
             match = {"job.problems": {"$exists": True, "$ne": {  }}}
 

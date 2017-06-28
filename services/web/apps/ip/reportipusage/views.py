@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ip.reportipusage
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ip.reportipusage
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 from django.utils.translation import ugettext_lazy as _
-## NOC modules
+# NOC modules
 from noc.lib.app.simplereport import SimpleReport, SectionRow, TableColumn
 from noc.core.ip import IP
 

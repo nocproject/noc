@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## DLink.DxS_Smart.get_arp
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# DLink.DxS_Smart.get_arp
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.script.base import BaseScript
@@ -25,18 +25,27 @@ class Script(BaseScript):
 
     def execute(self):
         r = []
-
-        # BUG http://bt.nocproject.org/browse/NOC-36
-        # Only one way: SNMP.
         if self.has_snmp():
             try:
-                for ip, mac, i in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.3",
-                                                        "1.3.6.1.2.1.4.22.1.2",
-                                                        "1.3.6.1.2.1.4.22.1.1",
-                                                        cached=True):  # IP-MIB
-                    r += [{"ip": ip, "mac": mac, "interface": self.snmp.get(
-                        "1.3.6.1.2.1.2.2.1.2" + '.' + i, cached=True)}]
-                return r
+                mac_ip = {}
+                for mac, ip in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.2",
+                    "1.3.6.1.2.1.4.22.1.3", cached=True):  # IP-MIB
+                    mac = ":".join(["%02x" % ord(c) for c in mac])
+                    #ip = ["%02x" % ord(c) for c in ip]
+                    #mac_ip[mac] = ".".join(str(int(c, 16)) for c in ip)
+                    mac_ip[mac] = ip
+                for i, mac in self.snmp.join_tables("1.3.6.1.2.1.4.22.1.1",
+                    "1.3.6.1.2.1.4.22.1.2", cached=True):  # IP-MIB
+                    mac = ":".join(["%02x" % ord(c) for c in mac])
+                    interface = self.snmp.get("1.3.6.1.2.1.2.2.1.1." + str(i),
+                        cached=True)  # IF-MIB
+                    try:
+                        r.append({"ip": mac_ip[mac],
+                            "mac": mac,
+                            "interface": interface,
+                            })
+                    except KeyError:
+                        pass
             except self.snmp.TimeOutError:
                 pass
 

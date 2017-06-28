@@ -22,7 +22,7 @@ Ext.define("NOC.core.LookupField", {
     query: {},
     stateful: false,
     autoSelect: false,
-    pageSize: 25,
+    pageSize: true,
     listConfig: {
         minWidth: 240
     },
@@ -30,13 +30,15 @@ Ext.define("NOC.core.LookupField", {
     restUrl: null,
 
     initComponent: function() {
-        var me = this,
-            p;
+        var me = this;
+
         // Calculate restUrl
-        p = me.$className.split(".");
-        if(!me.restUrl && p[0] === "NOC" && p[3] === "LookupField") {
-            me.restUrl = "/" + p[1] + "/" + p[2] + "/lookup/"
+        if(!me.restUrl
+            && Ext.String.startsWith(me.$className, 'NOC.')
+            && Ext.String.endsWith(me.$className, 'LookupField')) {
+            me.restUrl = me.$className.replace('NOC', '').replace(/\./g, '/').replace('/LookupField', '/lookup/');
         }
+
         if(!me.restUrl) {
             throw "Cannot determine restUrl for " + me.$className;
         }
@@ -44,6 +46,7 @@ Ext.define("NOC.core.LookupField", {
         Ext.apply(me, {
             store: Ext.create("Ext.data.Store", {
                 fields: ["id", "label"],
+                pageSize: 25,
                 proxy: {
                     type: "rest",
                     url: me.restUrl,
@@ -66,6 +69,9 @@ Ext.define("NOC.core.LookupField", {
         if(me.query) {
             Ext.apply(me.store.proxy.extraParams, me.query);
         }
+        // Fix combobox with remote paging
+        me.pickerId = me.getId() + '_picker';
+        // end
         me.callParent();
         me.on("specialkey", me.onSpecialKey, me, {delay: 100});
         me.on('change', function(element, newValue) {

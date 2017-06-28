@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## job management
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# job management
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from optparse import make_option
 import csv
 import sys
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
-## NOC modules
+# NOC modules
 from noc.lib.scheduler.scheduler import Scheduler
 
 

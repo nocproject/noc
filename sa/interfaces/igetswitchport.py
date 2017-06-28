@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## IGetSwitchport
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# IGetSwitchport
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.core.interface.base import BaseInterface
@@ -12,14 +12,14 @@ from base import (ListOfParameter, DictParameter, VLANIDParameter,
                   InterfaceNameParameter, StringParameter, BooleanParameter)
 
 
-##
-## All L2 switched interfaces on box
-## Port-channel members must be returned as elements in "members" field,
-## Not as separate entry
-##
-## For Q-in-Q tunneling both "802.1Q Enabled" and "802.1ad Tunnel"
-## must be set to True, while "untagged" must contain top label
-##
+#
+# All L2 switched interfaces on box
+# Port-channel members must be returned as elements in "members" field,
+# Not as separate entry
+#
+# For Q-in-Q tunneling both "802.1Q Enabled" and "802.1ad Tunnel"
+# must be set to True, while "untagged" must contain top label
+#
 class IGetSwitchport(BaseInterface):
     returns = ListOfParameter(element=DictParameter(attrs={
         # Interface name

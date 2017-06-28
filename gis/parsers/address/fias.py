@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Parse and load FIAS data
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Parse and load FIAS data
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 from collections import namedtuple
 import re
 import csv
-## Third-party modules
+# Third-party modules
 import dbf
-## NOC modules
+# NOC modules
 from noc.gis.models.division import Division
 from noc.gis.models.building import Building
 from noc.gis.models.street import Street
@@ -428,5 +428,5 @@ class FIASParser(AddressParser):
         self.sync_buildings()
         self.update_levels()
 
-##
+#
 OKTMO = namedtuple("OKTMO", ["okato", "oktmo", "name", "parent"])

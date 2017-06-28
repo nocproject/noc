@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Probe Setting
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Probe Setting
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import cachetools
 
 tp_cache = {}
+
+POLICY_MAP = {
+    "f": 0,
+    "a": 1
+}
 
 
 class ProbeSetting(object):
@@ -19,36 +24,61 @@ class ProbeSetting(object):
         "name",
         "interval",
         "status",
+        "policy",
+        "size",
+        "count",
+        "timeout",
         "sent_status",
         "report_rtt",
+        "report_attempts",
         "time_expr",
         "time_cond",
         "task"
     ]
 
     def __init__(self, id, address, name, interval, status=None,
-                 report_rtt=False, time_expr=None, *args, **kwargs):
+                 policy="f", size=64, count=3, timeout=1000,
+                 report_rtt=False, report_attempts=False,
+                 time_expr=None, *args, **kwargs):
         self.id = id
         self.address = address
         self.name = name
         self.interval = interval
         self.status = status
+        self.policy = POLICY_MAP.get(policy, 0)
+        self.size = max(size, 64)
+        self.count = max(count, 1)
+        self.timeout = max(timeout, 1)
         self.sent_status = None
         self.report_rtt = report_rtt
+        self.report_attempts = report_attempts
         self.time_expr = time_expr
         self.time_cond = self.compile(time_expr)
         self.task = None
 
-    def update(self, interval, report_rtt, time_expr=None, *args, **kwargs):
+    def update(self, interval, report_rtt, report_attempts=False,
+               policy="f", size=64, count=3, timeout=1000,
+               time_expr=None,
+               *args, **kwargs):
         self.interval = interval
+        self.policy = POLICY_MAP.get(policy, 0)
+        self.size = max(size, 64)
+        self.count = max(count, 1)
+        self.timeout = max(timeout, 1)
         self.report_rtt = report_rtt
+        self.report_attempts = report_attempts
         self.time_expr = time_expr
         self.time_cond = self.compile(time_expr)
 
     def is_differ(self, data):
         return (
             self.interval != data["interval"] or
+            self.policy != data["policy"] or
+            self.size != data["size"] or
+            self.count != data["count"] or
+            self.timeout != data["timeout"] or
             self.report_rtt != data.get("report_rtt") or
+            self.report_attempts != data.get("report_attempts") or
             self.time_expr != data.get("time_expr")
         )
 

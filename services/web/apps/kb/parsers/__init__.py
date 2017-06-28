@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Abstract Wiki parsers class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Abstract Wiki parsers class
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from noc.lib.registry import Registry
 from noc.lib.validators import is_int
 from noc.settings import config
@@ -21,6 +21,8 @@ class ParserRegistry(Registry):
     apps = ["noc.kb"]
     exclude_daemons = ["noc-sae", "debug-script",
                        "noc-classifier", "noc-correlator"]
+
+
 parser_registry = ParserRegistry()
 
 
@@ -53,12 +55,12 @@ class Parser(object):
     def check(cls, text):
         """Check syntax"""
         cls.to_html(text)
-    ##
-    ## Convert extracted link to URL
-    ## Following link types are supported:
-    ##   KB<n> - Link to Knowledge Base article <n>
-    ##   TT<n> - Link to Trouble Ticket <n>
-    ##   attach:<name> - Link to attachment <name>
+    #
+    # Convert extracted link to URL
+    # Following link types are supported:
+    #   KB<n> - Link to Knowledge Base article <n>
+    #   TT<n> - Link to Trouble Ticket <n>
+    #   attach:<name> - Link to attachment <name>
 
     @classmethod
     def convert_link(cls, kb_entry, link, text=None):
@@ -74,12 +76,16 @@ class Parser(object):
             if text == link:
                 text = link[7:]
             link = link[7:]
-            return u"<a href='/kb/view/%d/attachment/%s/'>%s</a>" % (kb_entry.id, link, text)
+            return u"<a href='/kb/view/%d/attachment/%s/'>%s</a>" % (
+                kb_entry.id, link, text
+            )
         elif link.startswith("attachment:"):
             if text == link:
                 text = link[11:]
             link = link[11:]
-            return u"<a href='/kb/%d/attachment/%s/'>%s</a>" % (kb_entry.id, link, text)
+            return u"<a href='/kb/%d/attachment/%s/'>%s</a>" % (
+                kb_entry.id, link, text
+            )
         else:
             try:
                 le = kb_entry.__class__.objects.get(subject=link)

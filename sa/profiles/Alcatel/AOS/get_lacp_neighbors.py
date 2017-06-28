@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
-##----------------------------------------------------------------------
-## Alcatel.AOS.get_lacp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-## Python modules
+# ----------------------------------------------------------------------
+# Alcatel.AOS.get_lacp_neighbors
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlacpneighbors import IGetLACPNeighbors
 from noc.sa.interfaces.base import MACAddressParameter
@@ -36,7 +35,8 @@ class Script(BaseScript):
                     "remote_system_id": d["Partner Oper System Id"].strip(",[]"),
                     "remote_port_id": d["Partner Oper Port"].strip(",")
                 }]
-
+            if not lag["members"]:
+                return []
             r += [{"lag_id": lag["interface"],
                    "interface": "Ag " + lag["interface"],
                    "system_id": d["Actor System Id"].strip(",[]"),

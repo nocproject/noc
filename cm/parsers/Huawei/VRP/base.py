@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Basic Huawei parser
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Basic Huawei parser
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from pyparsing import nums, Word, Group, Optional, Suppress, Combine,\
     Literal, delimitedList
-## NOC modules
+# NOC modules
 from noc.lib.text import ranges_to_list
 from noc.cm.parsers.base import BaseParser
 from noc.core.ip import IPv4
@@ -207,7 +207,7 @@ class BaseVRPParser(BaseParser):
 
     def on_interface_speed_duplex(self, tokens):
         """
-                
+
         """
         self.get_current_interface().speed = tokens[1].split("-")[0]
         self.get_current_interface().duplex = tokens[1].split("-")[1]
@@ -329,7 +329,7 @@ class BaseVRPParser(BaseParser):
             if tokens[-1] == "untagged":
                 si.untagged_vlan = int(tokens[-2])
             elif tokens[-1] == "tagged":
-                si.tagged_vlan += [int(tokens[-2])]
+                si.tagged_vlans += [int(tokens[-2])]
             else:
                 si.untagged_vlan = int(tokens[4])
             si.add_afi("BRIDGE")

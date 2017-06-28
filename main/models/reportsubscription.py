@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ReportSubscription model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ReportSubscription model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import time
 import datetime
 import os
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, BooleanField, DateTimeField)
-## NOC modules
+# NOC modules
 from noc.main.models import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.lib.nosql import ForeignKeyField
 from noc.lib.app.site import site
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.scheduler.job import Job
 from noc.core.service.pub import pub

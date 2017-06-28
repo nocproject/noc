@@ -1,22 +1,22 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## noc-correlator daemon
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017, The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# noc-correlator daemon
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017, The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sys
 import datetime
 import re
 from collections import defaultdict
 from threading import Lock
-## Third-party modules
+# Third-party modules
 import tornado.gen
 from mongoengine.queryset import Q
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
 from rule import Rule
@@ -33,7 +33,7 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.lib.version import get_version
-from noc.lib.debug import format_frames, get_traceback_frames, error_report
+from noc.core.debug import format_frames, get_traceback_frames, error_report
 import utils
 from noc.lib.dateutils import total_seconds
 
@@ -41,6 +41,7 @@ from noc.lib.dateutils import total_seconds
 class CorrelatorService(Service):
     name = "correlator"
     pooled = True
+    leader_lock_name = "correlator-%(pool)s"
     process_name = "noc-%(name).10s-%(pool).3s"
 
     def __init__(self):
@@ -73,10 +74,6 @@ class CorrelatorService(Service):
             max_in_flight=self.config.max_threads
         )
         self.scheduler.run()
-
-    @tornado.gen.coroutine
-    def on_deactivate(self):
-        pass
 
     def load_config(self):
         """

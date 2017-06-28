@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## fm.monitor application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# fm.monitor application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import itertools
 import operator
 from cachetools import TTLCache, cachedmethod
 from collections import defaultdict
 from django.db import connection
-## NOC modules
+# NOC modules
 from noc.lib.app.extapplication import ExtApplication, view
 from noc.lib.nosql import get_db
 from noc.lib.dateutils import humanize_timedelta

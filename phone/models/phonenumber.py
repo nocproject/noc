@@ -1,27 +1,30 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## PhoneRange model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# PhoneRange model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField, ListField,
                                 EmbeddedDocumentField)
 import cachetools
-## NOC modules
-from phonerange import PhoneRange
-from numbercategory import NumberCategory
+# NOC modules
+from .phonerange import PhoneRange
+from .numbercategory import NumberCategory
 from noc.sa.models.service import Service
-from dialplan import DialPlan
-from phonenumberprofile import PhoneNumberProfile
-from phonelinktype import PhoneLinkType
+from .dialplan import DialPlan
+from .phonenumberprofile import PhoneNumberProfile
+from .phonelinktype import PhoneLinkType
 from noc.project.models.project import Project
+from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.terminationgroup import TerminationGroup
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 
 id_lock = Lock()
@@ -78,6 +81,9 @@ class PhoneNumber(Document):
     changed = DateTimeField()
     #
     linked_numbers = ListField(EmbeddedDocumentField(LinkedNumber))
+    #
+    administrative_domain = ForeignKeyField(AdministrativeDomain)
+    termination_group = ForeignKeyField(TerminationGroup)
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
 

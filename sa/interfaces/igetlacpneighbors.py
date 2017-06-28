@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## IGetLACPNeighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# IGetLACPNeighbors
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOc modules
+# NOc modules
 from noc.core.interface.base import BaseInterface
 from base import (IntParameter, InterfaceNameParameter,
                   MACAddressParameter, DictListParameter)

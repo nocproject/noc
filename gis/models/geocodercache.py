@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Geoconding cache
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Geoconding cache
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 
-## Python modules
+# Python modules
 import re
 import hashlib
 import base64
 import datetime
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, FloatField, ListField,
                                 DateTimeField)
-## NOC modules
+# NOC modules
 from noc.core.geocoding.base import GeoCoderError, GeoCoderResult
 from noc.core.config.base import config
 from noc.core.handler import get_handler
@@ -49,7 +49,8 @@ class GeocoderCache(Document):
     #
     expires = DateTimeField()
 
-    NEGATIVE_TTL = 86400
+    NEGATIVE_TTL = 7 * 86400
+
     rx_slash = re.compile(r"\s+/")
     rx_dots = re.compile(r"\.\.+")
     rx_sep = re.compile(r"[ \t;:!]+")
@@ -92,7 +93,7 @@ class GeocoderCache(Document):
         return base64.b64encode(hashlib.sha256(query).digest())[:12]
 
     @classmethod
-    def forward(cls, query):
+    def forward(cls, query, bounds=None):
         # Clean query
         query = cls.clean_query(query)
         if not query:
@@ -105,10 +106,12 @@ class GeocoderCache(Document):
         r = c.find_one({"_id": hash})
         if r:
             # Found
-            if r.get("error"):
+            if r.get("error") and r.get("exact") is None:
+                # If exact result - continue
+                print("Error result is not exact")
                 return None
             return GeoCoderResult(
-                exact=True,
+                exact=r.get("exact", True),
                 query=query,
                 path=r.get("path") or [],
                 lon=r.get("lon"),
@@ -118,11 +121,12 @@ class GeocoderCache(Document):
         r = None
         error = "Not found"
         gsys = None
+        lr = None
         for gcls in cls.iter_geocoders():
             g = gcls()
             gsys = g.name
             try:
-                r = g.forward(query)
+                r = g.forward(query, bounds)
                 if r and r.exact:
                     if r.lon is not None and r.lat is not None:
                         error = None
@@ -131,6 +135,8 @@ class GeocoderCache(Document):
                         r = None
                         error = "No coordinates"
                 else:
+                    if r and not lr and r.lon and r.lat:
+                        lr = r  # Save first non-exact
                     r = None
             except GeoCoderError as e:
                 error = str(e)
@@ -139,12 +145,15 @@ class GeocoderCache(Document):
             "system": gsys,
             "error": error
         }
+        if not r and lr:
+            r = lr  # Reuse first non-exact message
         if r:
             if r.path:
                 sq["path"] = r.path
             if r.lon and r.lat:
                 sq["lon"], sq["lat"] = r.lon, r.lat
-        else:
+            sq["exact"] = r.exact
+        if not r or not r.exact:
             sq["expires"] = datetime.datetime.now() + datetime.timedelta(seconds=cls.NEGATIVE_TTL)
         # Write to database
         c.update({

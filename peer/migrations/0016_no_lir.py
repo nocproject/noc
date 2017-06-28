@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
 from noc.peer.models import *
 
 class Migration:
-    
+
     def forwards(self):
         rir_id=db.execute("SELECT id FROM peer_rir LIMIT 1")[0][0]
         lir_to_rir={}
@@ -23,6 +23,6 @@ class Migration:
         db.execute("ALTER TABLE peer_as ALTER maintainer_id SET NOT NULL")
         db.delete_column("peer_as","lir_id")
         db.delete_table("peer_lir")
-    
+
     def backwards(self):
         "Write your backwards migration here"

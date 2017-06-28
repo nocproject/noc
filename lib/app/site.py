@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Site implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Site implementation
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
+import re
 import types
 import glob
 import os
@@ -15,7 +16,7 @@ import hashlib
 import logging
 import json
 from collections import defaultdict
-## Third-party modules
+# Third-party modules
 from django.http import HttpResponse, HttpResponseNotFound,\
                         HttpResponseForbidden
 from django.conf.urls.defaults import *
@@ -24,9 +25,9 @@ from django.conf import settings
 from django.utils.encoding import smart_str
 import six
 import ujson
-## NOC modules
+# NOC modules
 from noc.settings import config
-from noc.lib.debug import error_report
+from noc.core.debug import error_report
 
 logger = logging.getLogger(__name__)
 
@@ -568,7 +569,7 @@ class Site(object):
                 for pr in self.apps[app].predefined_reports:
                     yield "%s:%s" % (app, pr), self.apps[app].predefined_reports[pr]
 
-##
-## Global application site instance
-##
+#
+# Global application site instance
+#
 site = Site()

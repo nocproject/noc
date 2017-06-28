@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Local Classification Rules Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Local Classification Rules Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.utils.html import escape
-## NOC modules
+# NOC modules
 from noc.lib.app.reportapplication import ReportApplication
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.lib.text import indent

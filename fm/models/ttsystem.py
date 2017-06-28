@@ -1,24 +1,28 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## TTSystem
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# TTSystem
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
 from threading import Lock
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, ListField
 import cachetools
-## NOC modules
+# NOC modules
+from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
 
 id_lock = Lock()
 
 
+@on_delete_check(check=[
+    ("sa.ManagedObject", "tt_system"),
+])
 class TTSystem(Document):
     meta = {
         "collection": "noc.ttsystem",

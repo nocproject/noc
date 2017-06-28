@@ -30,7 +30,7 @@ class Migration:
                     d_id,=db.execute("SELECT id FROM vc_vcdomain WHERE name=%s",[n])[0]
                     # Fix collisions
                     db.execute("UPDATE vc_vc SET vc_domain_id=%s WHERE vc_domain_id=%s AND type_id=%s",[d_id,vc_domain_id,t])
-    
+
     def backwards(self):
         VCType = db.mock_model(model_name='VCType', db_table='vc_vctype', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         db.add_column("vc_vc","type", models.ForeignKey(VCType,verbose_name="type",blank=True,null=True))

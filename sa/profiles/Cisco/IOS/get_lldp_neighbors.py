@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Cisco.IOS.get_lldp_neighbors
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Cisco.IOS.get_lldp_neighbors
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
+from noc.lib.validators import is_int, is_ipv4, is_ipv6
 from noc.sa.interfaces.base import MACAddressParameter
-from noc.lib.validators import is_int, is_ipv4
 
 
 class Script(BaseScript):
@@ -23,14 +23,15 @@ class Script(BaseScript):
                                   re.MULTILINE | re.IGNORECASE)
     rx_s_line = re.compile(
         r"^\S+\s*(?P<local_if>(?:Fa|Gi|Te)\d+[\d/\.]*)\s+.+$")
-    rx_chassis_id = re.compile(r"^Chassis id:\s*(?P<id>\S+)",
+    rx_chassis_id = re.compile(
+        r"^Chassis id:\s*(?P<id>\S+)", re.MULTILINE | re.IGNORECASE)
+    rx_remote_port = re.compile(
+        "^Port id:\s*(?P<remote_if>.+?)\s*$", re.MULTILINE | re.IGNORECASE)
+    rx_enabled_caps = re.compile(
+        "^Enabled Capabilities:\s*(?P<caps>\S*)\s*$",
         re.MULTILINE | re.IGNORECASE)
-    rx_remote_port = re.compile("^Port id:\s*(?P<remote_if>.+?)\s*$",
-        re.MULTILINE | re.IGNORECASE)
-    rx_enabled_caps = re.compile("^Enabled Capabilities:\s*(?P<caps>\S*)\s*$",
-        re.MULTILINE | re.IGNORECASE)
-    rx_system = re.compile(r"^System Name:\s*(?P<name>\S+)",
-                           re.MULTILINE | re.IGNORECASE)
+    rx_system = re.compile(
+        r"^System Name:\s*(?P<name>\S+)", re.MULTILINE | re.IGNORECASE)
     rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 
     def execute(self):
@@ -109,6 +110,9 @@ class Script(BaseScript):
             match = self.rx_system.search(v)
             if match:
                 n["remote_system_name"] = match.group("name")
+            if is_ipv4(n["remote_chassis_id"]) \
+              or is_ipv6(n["remote_chassis_id"]):
+                n["remote_chassis_id_subtype"] = 5
             i["neighbors"] += [n]
             r += [i]
         return r

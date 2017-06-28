@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Update segment redundancy
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Update segment redundancy
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
-## NOC modules
+# NOC modules
 from noc.sa.models.objectdata import ObjectData
 from noc.sa.models.managedobject import ManagedObject
 
 
 def fix():
     uplinks = dict(
-        (d["_id"], d["uplinks"])
+        (d["_id"], d.get("uplinks", []))
         for d in ObjectData._get_collection().find()
     )
     seg_status = defaultdict(lambda: False)

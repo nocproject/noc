@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlarmClass model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlarmClass model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import hashlib
 import os
 from threading import Lock
 import operator
-## Third-party modules
+# Third-party modules
 from mongoengine import fields
 import cachetools
-## NOC modules
+# NOC modules
 import noc.lib.nosql as nosql
 from alarmseverity import AlarmSeverity
 from alarmclassvar import AlarmClassVar
@@ -98,7 +98,9 @@ class AlarmClass(nosql.Document):
     #
     category = nosql.ObjectIdField()
 
-    _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
+
     _handlers_cache = {}
     _clear_handlers_cache = {}
 
@@ -109,6 +111,11 @@ class AlarmClass(nosql.Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, id):
         return AlarmClass.objects.filter(id=id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name):
+        return AlarmClass.objects.filter(name=name).first()
 
     def get_handlers(self):
         @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
@@ -218,9 +225,9 @@ class AlarmClass(nosql.Document):
         # Text
         r += ["    \"subject_template\": \"%s\"," % q(c.subject_template)]
         r += ["    \"body_template\": \"%s\"," % q(c.body_template)]
-        r += ["    \"symptoms\": \"%s\"," % q(c.symptoms)]
-        r += ["    \"probable_causes\": \"%s\"," % q(c.probable_causes)]
-        r += ["    \"recommended_actions\": \"%s\"," % q(c.recommended_actions)]
+        r += ["    \"symptoms\": \"%s\"," % q(c.symptoms if c.symptoms else "")]
+        r += ["    \"probable_causes\": \"%s\"," % q(c.probable_causes if c.probable_causes else "")]
+        r += ["    \"recommended_actions\": \"%s\"," % q(c.recommended_actions if c.recommended_actions else "")]
         # Root cause
         if self.root_cause:
             rc = []
@@ -326,5 +333,5 @@ class AlarmClass(nosql.Document):
             else:
                 return self.control_timeN or None
 
-## Avoid circular references
+# Avoid circular references
 from alarmclassconfig import AlarmClassConfig

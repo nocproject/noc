@@ -1,49 +1,59 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Basic MO discovery job
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Basic MO discovery job
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import defaultdict
-import cStringIO
 import contextlib
 import time
 import zlib
-## Third-party modules
+import datetime
+# Third-party modules
 import bson
-## NOC modules
+import six
+from six.moves import StringIO
+# NOC modules
 from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.lib.debug import error_report
-from noc.lib.log import PrefixLoggerAdapter
+from noc.core.debug import error_report
+from noc.core.log import PrefixLoggerAdapter
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.inv.models.interface import Interface
 from noc.lib.nosql import get_db
-from noc.core.service.rpc import RPCError
+from noc.core.service.error import RPCError, RPCRemoteError
+from noc.core.service.loader import get_service
+from noc.core.error import (
+    ERR_CLI_AUTH_FAILED, ERR_CLI_NO_SUPER_COMMAND,
+    ERR_CLI_LOW_PRIVILEGES, ERR_CLI_SSH_PROTOCOL_ERROR
+)
 
 
 class MODiscoveryJob(PeriodicJob):
     model = ManagedObject
     use_get_by_id = True
     use_offset = True
+    # Name of umbrella class to cover discovery problems
+    umbrella_cls = None
 
     def __init__(self, *args, **kwargs):
         super(MODiscoveryJob, self).__init__(*args, **kwargs)
-        self.out_buffer = cStringIO.StringIO()
+        self.out_buffer = StringIO()
         self.logger = PrefixLoggerAdapter(
             self.logger,
             "",
             target=self.out_buffer
         )
         self.check_timings = []
-        self.problems = {}  # check -> problem
+        self.problems = []
         self.caps = None
+        self.has_fatal_error = False
 
     def schedule_next(self, status):
         if self.check_timings:
@@ -51,17 +61,28 @@ class MODiscoveryJob(PeriodicJob):
                 "%s = %.2fms" % (n, t * 1000) for n, t in self.check_timings
             ))
         super(MODiscoveryJob, self).schedule_next(status)
+        # Update alarm statuses
+        self.update_alarms()
         # Write job log
         key = "discovery-%s-%s" % (
             self.attrs[self.ATTR_CLASS],
             self.attrs[self.ATTR_KEY]
         )
+        problems = {}
+        for p in self.problems:
+            if p["check"] in problems and p["path"]:
+                problems[p["check"]][p["path"]] = p["message"]
+            elif p["check"] in problems and not p["path"]:
+                # p["path"] == ""
+                problems[p["check"]][p["path"]] += "; %s" % p["message"]
+            else:
+                problems[p["check"]] = {p["path"]: p["message"]}
         get_db()["noc.joblog"].update({
             "_id": key
         }, {
             "$set": {
                 "log": bson.Binary(zlib.compress(self.out_buffer.getvalue())),
-                "problems": self.problems
+                "problems": problems
             }
         }, upsert=True)
 
@@ -74,8 +95,28 @@ class MODiscoveryJob(PeriodicJob):
         yield
         self.check_timings += [(name, time.time() - t)]
 
-    def set_problem(self, name, problem):
-        self.problems[name] = problem
+    def set_problem(self, check=None, alarm_class=None, path=None,
+                    message=None, fatal=False):
+        """
+        Set discovery problem
+        :param check: Check name
+        :param alarm_class: Alarm class instance or name
+        :param path: Additional path
+        :param message: Text message
+        :param fatal: True if problem is fatal and all following checks
+            must be disabled
+        :return:
+        """
+        self.problems += [{
+            "check": check,
+            "alarm_class": alarm_class,
+            # in MongoDB Key must be string
+            "path": str(path) if path else "",
+            "message": message,
+            "fatal": fatal
+        }]
+        if fatal:
+            self.has_fatal_error = True
 
     def get_caps(self):
         """
@@ -92,6 +133,147 @@ class MODiscoveryJob(PeriodicJob):
     def allow_sessions(self):
         return bool(self.get_caps().get("Management | Allow Sessions"))
 
+    def update_umbrella(self, umbrella_cls, details):
+        """
+        Update umbrella alarm status for managed object
+
+        :param umbrella_cls: Umbrella alarm class (AlarmClass instance)
+        :param details: List of dicts, containing
+            * alarm_class - Detail alarm class
+            * path - Additional path
+            * severity - Alarm severity
+            * vars - dict of alarm vars
+        :return:
+        """
+        from noc.fm.models.activealarm import ActiveAlarm
+
+        now = datetime.datetime.now()
+        umbrella = ActiveAlarm.objects.filter(
+            alarm_class=umbrella_cls.id,
+            managed_object=self.object.id
+        ).first()
+        u_sev = sum(d.get("severity", 0) for d in details)
+        if not umbrella and not details:
+            # No money, no honey
+            return
+        elif not umbrella and details:
+            # Open new umbrella
+            umbrella = ActiveAlarm(
+                timestamp=now,
+                managed_object=self.object.id,
+                alarm_class=umbrella_cls.id,
+                severity=u_sev
+            )
+            umbrella.save()
+            self.logger.info("Opening umbrella alarm %s (%s)",
+                             umbrella.id, umbrella_cls.name)
+        elif umbrella and not details:
+            # Close existing umbrella
+            self.logger.info("Clearing umbrella alarm %s (%s)",
+                             umbrella.id, umbrella_cls.name)
+            umbrella.clear_alarm("Closing umbrella")
+        elif umbrella and details and u_sev != umbrella.severity:
+            self.logger.info(
+                "Change umbrella alarm %s severity %s -> %s (%s)",
+                umbrella.id, umbrella.severity, u_sev,
+                umbrella_cls.name
+            )
+            umbrella.change_severity(severity=u_sev)
+        # Get existing details for umbrella
+        active_details = {}  # path -> alarm
+        if umbrella:
+            for da in ActiveAlarm.objects.filter(root=umbrella.id):
+                d_path = da.vars.get("path", "")
+                active_details[d_path] = da
+        # Synchronize details
+        seen = set()
+        for d in details:
+            d_path = d.get("path", "")
+            d_sev = d.get("severity", 0)
+            seen.add(d_path)
+            if d_path in active_details and active_details[d_path].severity != d_sev:
+                # Change severity
+                self.logger.info(
+                    "Change detail alarm %s severity %s -> %s",
+                    active_details[d_path].id,
+                    active_details[d_path].severity,
+                    d_sev
+                )
+                active_details[d_path].change_severity(severity=d_sev)
+            elif d_path not in active_details:
+                # Create alarm
+                self.logger.info("Create detail alarm to path %s",
+                                 d_path)
+                v = d.get("vars", {})
+                v["path"] = d_path
+                da = ActiveAlarm(
+                    timestamp=now,
+                    managed_object=self.object.id,
+                    alarm_class=d["alarm_class"],
+                    severity=d_sev,
+                    vars=v,
+                    root=umbrella.id
+                )
+                da.save()
+                self.logger.info("Opening detail alarm %s %s (%s)",
+                                 da.id, d_path, da.alarm_class.name)
+        # Close details when necessary
+        for d in set(active_details) - seen:
+            self.logger.info("Clearing detail alarm %s",
+                             active_details[d].id)
+            active_details[d].clear_alarm("Closing")
+
+    def update_alarms(self):
+        from noc.fm.models.alarmseverity import AlarmSeverity
+        from noc.fm.models.alarmclass import AlarmClass
+
+        prev_status = self.context.get("umbrella_settings", False)
+        current_status = self.can_update_alarms()
+        self.context["umbrella_settings"] = current_status
+
+        if not prev_status and not current_status:
+            return
+        self.logger.info("Updating alarm statuses")
+        umbrella_cls = AlarmClass.get_by_name(self.umbrella_cls)
+        if not umbrella_cls:
+            self.logger.info("No umbrella alarm class. Alarm statuses not updated")
+            return
+        details = []
+        if current_status:
+            fatal_weight = self.get_fatal_alarm_weight()
+            weight = self.get_alarm_weight()
+            for p in self.problems:
+                if not p["alarm_class"]:
+                    continue
+                ac = AlarmClass.get_by_name(p["alarm_class"])
+                if not ac:
+                    self.logger.info("Unknown alarm class %s. Skipping",
+                                     p["alarm_class"])
+                    continue
+                details += [{
+                    "alarm_class": ac,
+                    "path": p["path"],
+                    "severity": AlarmSeverity.severity_for_weight(
+                        fatal_weight if p["fatal"] else weight),
+                    "vars": {
+                        "path": p["path"],
+                        "message": p["message"]
+                    }
+                }]
+        else:
+            # Clean up all open alarms as they has been disabled
+            details = []
+        self.update_umbrella(umbrella_cls, details)
+
+    def can_update_alarms(self):
+        return False
+
+    def get_fatal_alarm_weight(self):
+        return 1
+
+    def get_alarm_weight(self):
+        return 1
+
 
 class DiscoveryCheck(object):
     name = None
@@ -101,8 +283,23 @@ class DiscoveryCheck(object):
     # If not none, check object has all required capablities
     # from list
     required_capabilities = None
+    #
+    fatal_errors = set([
+        ERR_CLI_AUTH_FAILED,
+        ERR_CLI_NO_SUPER_COMMAND,
+        ERR_CLI_LOW_PRIVILEGES,
+        ERR_CLI_SSH_PROTOCOL_ERROR
+    ])
+    # Error -> Alarm class mappings
+    error_map = {
+        ERR_CLI_AUTH_FAILED: "Discovery | Error | Auth Failed",
+        ERR_CLI_NO_SUPER_COMMAND: "Discovery | Error | No Super",
+        ERR_CLI_LOW_PRIVILEGES: "Discovery | Error | Low Privileges",
+        ERR_CLI_SSH_PROTOCOL_ERROR: "Discovery | Error | SSH Protocol"
+    }
 
     def __init__(self, job):
+        self.service = get_service()
         self.job = job
         self.object = self.job.object
         self.logger = self.job.logger.get_logger(
@@ -117,6 +314,9 @@ class DiscoveryCheck(object):
     def is_enabled(self):
         checks = self.job.attrs.get("_checks", set())
         return not checks or self.name in checks
+
+    def has_fatal_error(self):
+        return self.job.has_fatal_error
 
     def has_required_script(self):
         return (not self.required_script or
@@ -162,6 +362,9 @@ class DiscoveryCheck(object):
         if not self.is_enabled():
             self.logger.info("Check is disabled. Skipping")
             return
+        if self.has_fatal_error():
+            self.logger.info("Check is disabled due to previous fatal error. Skipping")
+            return
         with self.job.check_timer(self.name):
             # Check required scripts
             if not self.has_required_script():
@@ -174,11 +377,27 @@ class DiscoveryCheck(object):
             # Run check
             try:
                 self.handler()
+            except RPCRemoteError as e:
+                self.logger.error(
+                    "RPC Remote error (%s): %s",
+                    e.remote_code, e)
+                self.set_problem(
+                    alarm_class=self.error_map.get(e.remote_code),
+                    message="Remote error code %s" % e.remote_code,
+                    fatal=e.remote_code in self.fatal_errors
+                )
             except RPCError as e:
-                self.set_problem("RPC Error: %s" % e)
+                self.set_problem(
+                    alarm_class=self.error_map.get(e.default_code),
+                    message="RPC Error: %s" % e,
+                    fatal=e.default_code in self.fatal_errors
+                )
                 self.logger.error("Terminated due RPC error: %s", e)
-            except Exception:
-                self.set_problem("Unhandled exception")
+            except Exception as e:
+                self.set_problem(
+                    alarm_class="Discovery | Error | Unhandled Exception",
+                    message="Unhandled exception: %s" % e
+                )
                 error_report(logger=self.logger)
 
     def handler(self):
@@ -200,7 +419,7 @@ class DiscoveryCheck(object):
         """
         changes = []
         ignore_empty = ignore_empty or []
-        for k, v in values.items():
+        for k, v in six.iteritems(values):
             vv = getattr(obj, k)
             if v != vv:
                 if type(v) != int or not hasattr(vv, "id") or v != vv.id:
@@ -331,8 +550,25 @@ class DiscoveryCheck(object):
                 except ValueError as e:
                     self.logger.info("Failed to unlink: %s", e)
 
-    def set_problem(self, problem):
-        self.job.set_problem(self.name, problem)
+    def set_problem(self, alarm_class=None, path=None,
+                    message=None, fatal=False):
+        """
+        Set discovery problem
+        :param alarm_class: Alarm class instance or name
+        :param path: Additional path
+        :param message: Text message
+        :param fatal: True if problem is fatal and all following checks
+            must be disabled
+        :return:
+        """
+        self.logger.info("Set path: %s" % path)
+        self.job.set_problem(
+            check=self.name,
+            alarm_class=alarm_class,
+            path=path,
+            message=message,
+            fatal=fatal
+        )
 
 
 class TopologyDiscoveryCheck(DiscoveryCheck):
@@ -409,8 +645,24 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     remote_object.name, self.required_script
                 )
                 continue
+            try:
+                remote_neighbors = list(
+                    self.iter_neighbors(remote_object)
+                )
+            except Exception as e:
+                self.logger.error(
+                    "Cannot get neighbors from candidate %s: %s",
+                    remote_object.name,
+                    e
+                )
+                self.set_problem(
+                    path=list(candidates[remote_object])[0][0],
+                    message="Cannot get neighbors from candidate %s: %s" % (
+                        remote_object.name, e)
+                )
+                continue
             confirmed = set()
-            for li, ro_id, ri in self.iter_neighbors(remote_object):
+            for li, ro_id, ri in remote_neighbors:
                 ro = self.get_neighbor(ro_id)
                 if not ro or ro.id != self.object.id:
                     self.logger.debug("Candidates check %s %s %s %s" % (li, ro_id, ro, ri))
@@ -466,7 +718,11 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     remote_object, ri
                 )
         if problems:
-            self.set_problem(problems)
+            for i in problems:
+                self.set_problem(
+                    path=i,
+                    message=problems[i]
+                )
 
     def iter_neighbors(self, mo):
         """

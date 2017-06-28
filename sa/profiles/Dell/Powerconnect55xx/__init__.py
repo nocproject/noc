@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Dell
-## OS:     Powerconnect55xx
-## Compatible:
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Dell
+# OS:     Powerconnect55xx
+# Compatible:
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-import re
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 

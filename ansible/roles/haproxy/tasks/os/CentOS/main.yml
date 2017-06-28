@@ -1,0 +1,10 @@
+---
+- name: Install haproxy
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - haproxy
+  environment:
+    https_proxy: "{{http_proxy}}"
+    http_proxy: "{{http_proxy}}"

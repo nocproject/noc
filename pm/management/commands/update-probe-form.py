@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Update Probe Form
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Update Probe Form
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import logging
 import datetime
 from optparse import make_option
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
 from django.template import Template, Context
-## NOC modules
+# NOC modules
 from noc.pm.probes.base import probe_registry
 
 logger = logging.getLogger(__name__)

@@ -1,40 +1,46 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Box Discovery Job
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Box Discovery Job
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import random
-## NOC modules
+# NOC modules
 from noc.services.discovery.jobs.base import MODiscoveryJob
-from suggestsnmp import SuggestSNMPCheck
-from profile import ProfileCheck
-from suggestcli import SuggestCLICheck
-from version import VersionCheck
-from caps import CapsCheck
-from interface import InterfaceCheck
-from id import IDCheck
-from config import ConfigCheck
-from asset import AssetCheck
-from vlan import VLANCheck
-from cdp import CDPCheck
-from huawei_ndp import HuaweiNDPCheck
-from oam import OAMCheck
-from lldp import LLDPCheck
-from lacp import LACPCheck
-from stp import STPCheck
-from nri import NRICheck
-from sla import SLACheck
-from cpe import CPECheck
-from hk import HouseKeepingCheck
+from .suggestsnmp import SuggestSNMPCheck
+from .profile import ProfileCheck
+from .suggestcli import SuggestCLICheck
+from .version import VersionCheck
+from .caps import CapsCheck
+from .interface import InterfaceCheck
+from .id import IDCheck
+from .config import ConfigCheck
+from .asset import AssetCheck
+from .vlan import VLANCheck
+from .cdp import CDPCheck
+from .huawei_ndp import HuaweiNDPCheck
+from .oam import OAMCheck
+from .lldp import LLDPCheck
+from .lacp import LACPCheck
+from .stp import STPCheck
+from .nri import NRICheck
+from .sla import SLACheck
+from .cpe import CPECheck
+from .hk import HouseKeepingCheck
+from noc.services.discovery.jobs.periodic.mac import MACCheck
 
 
 class BoxDiscoveryJob(MODiscoveryJob):
     name = "box"
+    umbrella_cls = "Discovery | Job | Box"
+
+    # Store context
+    context_version = 1
 
     TOPOLOGY_METHODS = [
         OAMCheck,
@@ -86,6 +92,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
             NRICheck(self).run()
         if self.object.object_profile.enable_box_discovery_cpe:
             CPECheck(self).run()
+        if self.object.object_profile.enable_box_discovery_mac:
+            MACCheck(self).run()
         # Topology discovery
         # Most preferable methods first
         for check in self.TOPOLOGY_METHODS:
@@ -126,3 +134,12 @@ class BoxDiscoveryJob(MODiscoveryJob):
         except ValueError:
             return False
         return i1 <= i2
+
+    def can_update_alarms(self):
+        return self.object.can_create_box_alarms()
+
+    def get_fatal_alarm_weight(self):
+        return self.object.object_profile.box_discovery_fatal_alarm_weight
+
+    def get_alarm_weight(self):
+        return self.object.object_profile.box_discovery_alarm_weight

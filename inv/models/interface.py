@@ -1,21 +1,21 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Interface model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Interface model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import logging
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, IntField, BooleanField,
                                 ListField, DateTimeField, ReferenceField)
 from pymongo import ReadPreference
 
-## NOC Modules
+# NOC Modules
 from noc.lib.nosql import ForeignKeyField, PlainReferenceField
 from interfaceprofile import InterfaceProfile
 from coverage import Coverage
@@ -372,7 +372,7 @@ class Interface(Document):
         else:
             return self
 
-## Avoid circular references
+# Avoid circular references
 from link import Link
 from macdb import MACDB
 from noc.sa.models.servicesummary import ServiceSummary

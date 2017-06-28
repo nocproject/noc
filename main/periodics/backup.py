@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Backup database,  repo and configs to main.backupdir
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Backup database,  repo and configs to main.backupdir
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from __future__ import with_statement
 import os
 import subprocess
 import datetime
 import re
 import shutil
-## NOC modules
+# NOC modules
 from noc.lib.periodic import Task as PeriodicTask
 from noc.settings import config
 from noc import settings

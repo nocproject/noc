@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Eltex
-## OS:     LTP
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Eltex
+# OS:     LTP
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-## NOC modules
+# Python modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -18,7 +18,7 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"--More-- ", " "),
         (r"\[Yes/press any key for no\]", "Y")
-        ]
+    ]
     pattern_unpriveleged_prompt = r"^\S+>"
     pattern_syntax_error = \
         r"^(Command not found. Use '?' to view available commands|" + \

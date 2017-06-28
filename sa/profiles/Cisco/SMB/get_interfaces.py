@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Cisco.SMB.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-"""
-"""
+# ----------------------------------------------------------------------
+# Cisco.SMB.get_interfaces
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
 # Python modules
 import re
 from collections import defaultdict
@@ -31,6 +30,7 @@ class Script(BaseScript):
            "Po": "aggregated",  # Port-channel/Portgroup
            "Tu": "tunnel",      # Tunnel
            "Vl": "SVI",         # Vlan
+           "oo": "management",  # oob
            }
 
     def execute(self):

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## PrefixAccess model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# PrefixAccess model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
 from django.contrib.auth.models import User
-## NOC modules
+# NOC modules
 from vrf import VRF
 from prefix import Prefix
 from afi import AFI_CHOICES

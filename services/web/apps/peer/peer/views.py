@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## peer.peer application
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# peer.peer application
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.lib.app.extmodelapplication import ExtModelApplication, view
 from noc.peer.models import Peer
-from noc.lib.tt import admin_tt_url
 from noc.lib.validators import is_prefix
 from noc.core.ip import IP
-from noc.sa.interfaces.base import (ListOfParameter, ModelParameter,
-                                    StringParameter)
+from noc.sa.interfaces.base import ListOfParameter, ModelParameter
 from noc.core.translation import ugettext as _
 
 

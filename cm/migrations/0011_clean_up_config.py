@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from south.db import db
@@ -28,6 +28,6 @@ class Migration:
         db.execute("DELETE FROM cm_objectcategory")
         db.drop_table("cm_objectcategory")
         db.drop_table("cm_objectlocation")
-    
+
     def backwards(self):
         "Write your backwards migration here"

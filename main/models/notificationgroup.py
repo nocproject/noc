@@ -1,28 +1,28 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## NotificationGroup model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# NotificationGroup model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import datetime
 import logging
 import operator
-from threading import RLock
-## Django modules
+from threading import Lock
+# Django modules
 from django.db import models
 from django.contrib.auth.models import User
 import cachetools
-## NOC modules
+# NOC modules
 from noc.settings import LANGUAGE_CODE
 from noc.lib.timepattern import TimePatternList
 from timepattern import TimePattern
 from noc.core.service.pub import pub
 from noc.core.model.decorator import on_delete_check
 
-id_lock = RLock()
+id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 

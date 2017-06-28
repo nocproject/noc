@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Event Summary Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Event Summary Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django import forms
-## NOC modules
+# NOC modules
 from noc.lib.app.simplereport import SimpleReport, TableColumn
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activeevent import ActiveEvent
@@ -18,7 +18,7 @@ from noc.fm.models.failedevent import FailedEvent
 from noc.fm.models.archivedevent import ArchivedEvent
 from noc.core.translation import ugettext as _
 
-## Report types
+# Report types
 report_types = [
     ("class", _("By Event Class")),
     ("object", _("By Managed Object")),

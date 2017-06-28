@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ExtDocApplication implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ExtDocApplication implementation
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import uuid
-## Django modules
+from functools import reduce
+# Django modules
 from django.http import HttpResponse
-## Third-party modules
+# Third-party modules
 from mongoengine.fields import (StringField, BooleanField, ListField,
                                 EmbeddedDocumentField, ReferenceField,
                                 BinaryField)
 from mongoengine.errors import ValidationError
-## NOC modules
-from extapplication import ExtApplication, view
+# NOC modules
+from .extapplication import ExtApplication, view
 from noc.lib.nosql import (GeoPointField, ForeignKeyField,
                            PlainReferenceField, Q)
 from noc.sa.interfaces.base import (
@@ -138,7 +140,7 @@ class ExtDocApplication(ExtApplication):
 
         qfx = [get_q(f) for f in self.query_fields]
         qfx = [x for x in qfx if x]
-        q = reduce(lambda x, y: x | Q(**{get_q(y):query}),
+        q = reduce(lambda x, y: x | Q(**{get_q(y): query}),
                    qfx[1:],
                    Q(**{qfx[0]: query}))
         if self.int_query_fields and is_int(query):
@@ -167,7 +169,9 @@ class ExtDocApplication(ExtApplication):
         if "id" in data:
             del data["id"]
         for f in data:
-            if f in self.clean_fields:
+            if data[f] == "":
+                data[f] = None
+            elif f in self.clean_fields:
                 data[f] = self.clean_fields[f].clean(data[f])
         return dict((str(k), data[k]) for k in data)
 
@@ -261,7 +265,7 @@ class ExtDocApplication(ExtApplication):
         if not self.parent_field:
             return None
         q = dict((str(k), v[0] if len(v) == 1 else v)
-            for k, v in request.GET.lists())
+                 for k, v in request.GET.lists())
         model = self.parent_model or self.model
         parent = q.get("parent")
         if not parent:
@@ -341,8 +345,8 @@ class ExtDocApplication(ExtApplication):
     def api_update(self, request, id):
         try:
             attrs = self.clean(self.deserialize(request.raw_post_data))
-        except ValueError, why:
-            return self.response(str(why), status=self.BAD_REQUEST)
+        except ValueError as e:
+            return self.response(str(e), status=self.BAD_REQUEST)
         try:
             o = self.queryset(request).get(**{self.pk: id})
         except self.model.DoesNotExist:
@@ -419,21 +423,21 @@ class ExtDocApplication(ExtApplication):
         rv = self.deserialize(request.raw_post_data)
         try:
             v = validator.clean(rv)
-        except InterfaceTypeError, why:
+        except InterfaceTypeError as e:
             return self.render_json({
                 "status": False,
                 "message": "Bad request",
-                "traceback": str(why)
+                "traceback": str(e)
             }, status=self.BAD_REQUEST)
         objects = v["ids"]
         del v["ids"]
         try:
             v = self.clean(v)
-        except ValueError, why:
+        except ValueError as e:
             return self.render_json({
                 "status": False,
                 "message": "Bad request",
-                "traceback": str(why)
+                "traceback": str(e)
             }, status=self.BAD_REQUEST)
         for o in objects:
             for p in v:

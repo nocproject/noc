@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.TIMOS.get_arp
-##----------------------------------------------------------------------
-## Writen by Boba boba@boba.su
+# ----------------------------------------------------------------------
+# Alcatel.TIMOS.get_arp
+# ----------------------------------------------------------------------
+# Writen by Boba boba@boba.su
 
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetarp import IGetARP

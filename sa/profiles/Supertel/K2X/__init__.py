@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Supertel
-## OS:     K2X
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Supertel
+# OS:     K2X
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     pattern_more = [
         (r"^More: <space>,  Quit: q, One line: <return>$", " "),
         (r"\[Yes/press any key for no\]", "Y")
-        ]
+    ]
     pattern_unpriveleged_prompt = r"^\S+> "
     pattern_syntax_error = r"^%\s+(Unrecognized command|Incomplete command|\
 missing mandatory parameter|bad parameter value|\

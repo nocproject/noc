@@ -3,7 +3,7 @@ reporting-disabled = true
 [registration]
 
 [meta]
-  dir = "{{ influxdb_db_path }}/meta"
+  dir = "{{ influxdb_db_path_meta }}"
   hostname = "{{ ansible_hostname }}"
   bind-address = ":8088"
   retention-autocreate = true
@@ -12,15 +12,15 @@ reporting-disabled = true
   lease-duration = "1m0s"
 
 [data]
-  dir = "{{ influxdb_db_path }}/data"
+  dir = "{{ influxdb_db_path_data }}"
   engine = "tsm1"
-  wal-dir = "{{ influxdb_db_path }}/wal"
+  wal-dir = "{{ influxdb_db_path_wal }}"
   wal-logging-enabled = true
   query-log-enabled = false
-  cache-max-memory-size = 1048576000
-  cache-snapshot-memory-size = 26214400
-  cache-snapshot-write-cold-duration = "0h10m0s"
-  compact-full-write-cold-duration = "4h0m0s"
+  cache-max-memory-size = {{influx_max_cache_memory}}
+  cache-snapshot-memory-size = {{influx_cache_snapshot_memory_size}}
+  cache-snapshot-write-cold-duration = "0h30m0s"
+  compact-full-write-cold-duration = "1h0m0s"
   max-points-per-block = 0
   data-logging-enabled = true
   max-series-per-database = 0
@@ -40,7 +40,7 @@ reporting-disabled = true
 
 [retention]
   enabled = true
-  check-interval = "30m0s"
+  check-interval = "10m0s"
 
 [shard-precreation]
   enabled = true
@@ -64,11 +64,11 @@ reporting-disabled = true
 
 [http]
   enabled = true
-  bind-address = ":8086"
+  bind-address = ":{{ influxdb_port }}"
   auth-enabled = false
   log-enabled = false
   write-tracing = false
-  pprof-enabled = false
+  pprof-enabled = true
   https-enabled = false
   https-certificate = "/etc/ssl/influxdb.pem"
   max-row-limit = 10000

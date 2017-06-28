@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Brocade.CER-ADV.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Brocade.CER-ADV.get_interfaces
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 """
 """
-## Python modules
+# Python modules
 import re
 import string
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
@@ -188,7 +188,7 @@ class Script(BaseScript):
                             else:
                                 untagged[ifc] = vlan
 
-## deal with VPLS and VLL vlans
+# deal with VPLS and VLL vlans
         shmplsconf = self.cli('sh mpls config | excl vp|vll')
         r = []
         for v in shmplsconf.split('!'):

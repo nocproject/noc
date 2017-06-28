@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## TileCache updater
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# TileCache updater
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import logging
 import threading
 import Queue
 import time
 import datetime
-## NOC modules
+# NOC modules
 from noc.settings import config, IS_TEST
 from noc.gis.models import TileCache, Area
 from noc.gis.mapxml import map_to_xml
 from noc.gis.geo import xy_to_ll, ll_to_xy, TS, MIN_ZOOM, MAX_ZOOM
-## Third-party modules
+# Third-party modules
 try:
     import mapnik2
 except ImportError, why:

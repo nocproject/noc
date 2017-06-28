@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ArchivedEvent model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# ArchivedEvent model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from mongoengine import document, fields
-## Django modules
+# Django modules
 from django.template import Template, Context
-## NOC modules
+# NOC modules
 from eventlog import EventLog
 from eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject

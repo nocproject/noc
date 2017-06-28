@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CSV-file downloader
-## First line is a field names
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# CSV-file downloader
+# First line is a field names
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 from noc.main.refbooks.downloaders import Downloader as DownloaderBase
 import csv,gzip,cStringIO
 from noc.lib.fileutils import urlopen
-##
-## Download reference book from CSV file
-## First line of CSV file is field names
-##
+#
+# Download reference book from CSV file
+# First line of CSV file is field names
+#
 class Downloader(DownloaderBase):
     name="CSV"
     @classmethod

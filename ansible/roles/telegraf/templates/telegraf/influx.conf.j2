@@ -1,0 +1,28 @@
+# Configuration for influxdb server to send metrics to
+[[outputs.influxdb]]
+  # The full HTTP or UDP endpoint URL for your InfluxDB instance.
+  # Multiple urls can be specified but it is assumed that they are part of the same
+  # cluster, this means that only ONE of the urls will be written to each interval.
+  # urls = ["udp://localhost:8089"] # UDP endpoint example
+  {% if noc_metrics_collector and noc_metrics_collector != '' %}
+  urls = ["http://{{ noc_metrics_collector }}"] # required
+  {% elif "influxdb" in noc_config.services %}
+  urls = ["http://{{influx_host}}:{{influxdb_port}}"] # required
+  {% else %}
+  urls = []
+  {% endif %}
+  # The target database for metrics (telegraf will create it if not exists)
+  database = "telegraf" # required
+  # Precision of writes, valid values are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+  # note: using second precision greatly helps InfluxDB compression
+  precision = "s"
+
+  ## Write timeout (for the InfluxDB client), formatted as a string.
+  ## If not provided, will default to 5s. 0s means no timeout (not recommended).
+  timeout = "5s"
+  # username = "telegraf"
+  # password = "metricsmetricsmetricsmetrics"
+  # Set the user agent for HTTP POSTs (can be useful for log differentiation)
+  # user_agent = "telegraf"
+  # Set UDP payload size, defaults to InfluxDB UDP Client default (512 bytes)
+  # udp_payload = 512

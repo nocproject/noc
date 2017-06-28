@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Zyxel.ZyNOS.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Zyxel.ZyNOS.get_interfaces
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import with_statement
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.ip import IPv4
-from noc.lib.mib import mib
+from noc.core.mib import mib
 
 
 class Script(BaseScript):

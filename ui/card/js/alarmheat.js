@@ -8,12 +8,12 @@ var Heatmap = function () {
     this.map = null;
 };
 
-Heatmap.prototype.initialize = function () {
+Heatmap.prototype.initialize = function (lon, lat, zoom) {
     var me = this,
         q = this.parseQuerystring(),
-        lon = q.lon ? parseFloat(q.lon) : 37.5077,
-        lat = q.lat ? parseFloat(q.lat) : 55.7766,
-        scale = q.zoom ? parseInt(q.zoom) : 11;
+        lon = q.lon ? parseFloat(q.lon) : lon || 37.5077,
+        lat = q.lat ? parseFloat(q.lat) : lat || 55.7766,
+        scale = q.zoom ? parseInt(q.zoom) : zoom || 11;
     this.map = L.map("map");
     // Subscribe to events
     this.map.on("moveend", function() {me.poll_data();});
@@ -40,9 +40,9 @@ Heatmap.prototype.parseQuerystring = function() {
     return r;
 };
 
-Heatmap.prototype.run = function (maintenance) {
+Heatmap.prototype.run = function (maintenance, lon, lat, zoom) {
     this.maintenance = maintenance;
-    this.initialize();
+    this.initialize(lon, lat, zoom);
 };
 
 Heatmap.prototype.poll_data = function () {

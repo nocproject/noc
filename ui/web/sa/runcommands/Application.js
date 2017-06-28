@@ -1,20 +1,13 @@
-console.debug("Defining NOC.sa.runcommands.Application");
+console.debug('Defining NOC.sa.runcommands.Application');
 
-Ext.define("NOC.sa.runcommands.Application", {
+Ext.define('NOC.sa.runcommands.Application', {
     extend: 'NOC.core.Application',
     layout: 'card',
+    alias: 'widget.runcommands',
 
     requires: [
         'NOC.sa.runcommands.ApplicationModel',
-        'Ext.ux.form.SearchField',
-        'NOC.main.ref.profile.LookupField',
-        'NOC.main.pool.LookupField',
-        'NOC.sa.administrativedomain.TreeCombo',
-        'NOC.inv.networksegment.TreeCombo',
-        'NOC.sa.managedobjectprofile.LookupField',
-        'NOC.sa.managedobjectselector.LookupField',
-        'NOC.sa.commandsnippet.LookupField',
-        'NOC.sa.actioncommands.LookupField'
+        'NOC.core.filter.Filter'
     ],
     stateMap: {
         w: __('Waiting'),
@@ -30,13 +23,12 @@ Ext.define("NOC.sa.runcommands.Application", {
         f: 'noc-status-failed'
     },
 
-    filterObject: {},
-
     initComponent: function() {
-        var me = this,
-            bs = 40;
+        var me = this;
+        var bs = Math.ceil(screen.height / 24);
 
         me.viewModel = Ext.create('Ext.app.ViewModel', {
+            alias: 'viewmodel.runcommands',
             data: {
                 total: {
                     selection: 0,
@@ -50,12 +42,22 @@ Ext.define("NOC.sa.runcommands.Application", {
                 }
             },
             stores: {
-                selected: {
+                selectedStore: {
                     model: 'NOC.sa.runcommands.ApplicationModel',
                     listeners: {
                         scope: me,
                         datachanged: me.onStoreSizeChange
                     }
+                },
+                selectionStore: {
+                    xclass: 'NOC.core.ModelStore',
+                    model: 'NOC.sa.runcommands.ApplicationModel',
+                    autoLoad: false,
+                    pageSize: bs,
+                    leadingBufferZone: bs,
+                    numFromEdge: Math.ceil(bs / 2),
+                    trailingBufferZone: bs,
+                    purgePageCount: 10
                 }
             },
             formulas: {
@@ -84,24 +86,17 @@ Ext.define("NOC.sa.runcommands.Application", {
                 text: __('Platform'),
                 dataIndex: 'platform',
                 flex: 1
+            },
+            {
+                text: __('Version'),
+                dataIndex: 'version',
+                flex: 1
             }
         ];
-        me.selectedStore = me.viewModel.get('selected');
-        me.selectionStore = Ext.create('NOC.core.ModelStore', {
-            model: 'NOC.sa.runcommands.ApplicationModel',
-            autoLoad: false,
-            pageSize: bs,
-            leadingBufferZone: bs * 5,
-            numFromEdge: Math.ceil(bs / 2),
-            trailingBufferZone: bs * 5,
-            purgePageCount: 10,
-            actionMethods: {
-                read: 'POST'
-            }
-        });
-
-        me.filterPanel = Ext.create('Ext.panel.Panel', {
-            title: "Filters",
+        me.selectedStore = me.viewModel.get('selectedStore');
+        me.selectionStore = me.viewModel.get('selectionStore');
+        me.filterPanel = Ext.create('NOC.core.filter.Filter', {
+            appId: me.appId,
             region: 'east',
             width: 300,
             collapsed: true,
@@ -111,122 +106,8 @@ Ext.define("NOC.sa.runcommands.Application", {
             hideCollapseTool: true,
             split: true,
             resizable: true,
-            layout: {
-                type: 'vbox',
-                align: 'right'
-            },
-            defaults: {
-                labelAlign: 'top',
-                minWidth: 270,
-                margin: '5 10 0 10'
-            },
-            items: [
-                {
-                    xtype: 'searchfield',
-                    isLookupField: true,
-                    itemId: '__query',  // name of http request query param
-                    fieldLabel: __('Name'),
-                    labelWidth: 50,
-                    triggers: {
-                        clear: {
-                            cls: 'x-form-clear-trigger',
-                            scope: me,
-                            handler: 'cleanFilter'
-                        }
-                    },
-                    listeners: {
-                        scope: me,
-                        specialkey: me.setFilter
-                    }
-                },
-                {
-                    xtype: 'main.ref.profile.LookupField',
-                    itemId: 'profile_name', // name of http request query param
-                    fieldLabel: __('By SA Profile:'),
-                    listeners: {
-                        scope: me,
-                        change: me.setFilter
-                    }
-                },
-                {
-                    xtype: 'sa.managedobjectprofile.LookupField',
-                    itemId: 'object_profile', // name of http request query param
-                    fieldLabel: __('By Obj. Profile:'),
-                    listeners: {
-                        scope: me,
-                        change: me.setFilter
-                    }
-                },
-                {
-                    xtype: 'sa.administrativedomain.TreeCombo',
-                    isLookupField: true,
-                    itemId: 'administrative_domain', // name of http request query param
-                    fieldLabel: __('By Adm. Domain:'),
-                    listeners: {
-                        scope: me,
-                        clear: me.setFilter,
-                        select: me.setFilter
-                    }
-                },
-                {
-                    xtype: 'inv.networksegment.TreeCombo',
-                    isLookupField: true,
-                    itemId: 'segment', // name of http request query param
-                    fieldLabel: __('By Segment:'),
-                    listeners: {
-                        scope: me,
-                        select: me.setFilter
-                    }
-                },
-                {
-                    xtype: 'sa.managedobjectselector.LookupField',
-                    itemId: 'selector', // name of http request query param
-                    fieldLabel: __('By Selector:'),
-                    listeners: {
-                        scope: me,
-                        change: me.setFilter
-                    }
-                },
-                {
-                    xtype: 'main.pool.LookupField',
-                    itemId: 'pool', // name of http request query param
-                    fieldLabel: __('By Pool:'),
-                    listeners: {
-                        scope: me,
-                        change: me.setFilter
-                    }
-                },
-                // {
-                //     xtype: '',
-                //     itemId: 'tag', // name of http request query param
-                //     fieldLabel: __('By Tag:'),
-                //     listeners: {
-                //         scope: me,
-                //         change: me.setFilter
-                //     }
-                // },
-                {
-                    xtype: 'textarea',
-                    itemId: 'addresses',
-                    fieldLabel: __('By IP list (max. 500):'),
-                    listeners: {
-                        scope: me,
-                        change: me.setFilter
-                    },
-                    bind: {
-                        value: '{ips}'
-                    }
-                },
-                {
-                    xtype: 'button',
-                    itemId: 'clean-btn',
-                    minWidth: 50,
-                    text: __('Clean All'),
-                    handler: Ext.bind(me.cleanAllFilters, me)
-                }
-            ]
+            selectionStore: 'runcommands.selectionStore'
         });
-        me.restoreFilter();
         me.ITEM_SELECT = me.registerItem(
             me.createSelectPanel()
         );
@@ -260,7 +141,7 @@ Ext.define("NOC.sa.runcommands.Application", {
 
         selectionGrid = Ext.create('Ext.grid.Panel', {
             reference: selectionGridStateId,
-            store: me.selectionStore,
+            bind: '{selectionStore}',
             pageSize: 0,
             border: false,
             scrollable: true,
@@ -269,13 +150,13 @@ Ext.define("NOC.sa.runcommands.Application", {
             emptyText: __('Not Found'),
             selModel: {
                 mode: 'SIMPLE',
-                pruneRemoved: false,
+                // pruneRemoved: false,
                 selType: 'checkboxmodel'
             },
             region: 'west',
-            width: "50%",
+            width: '50%',
             columns: me.cols.concat({
-                xtype: "glyphactioncolumn",
+                xtype: 'glyphactioncolumn',
                 width: 25,
                 items: [
                     {
@@ -287,15 +168,18 @@ Ext.define("NOC.sa.runcommands.Application", {
             }),
             dockedItems: [
                 {
-                    xtype: "toolbar",
-                    dock: "top",
+                    xtype: 'toolbar',
+                    dock: 'top',
                     items: [
                         // @todo: Search
                         {
-                            glyph: NOC.glyph.refresh
+                            glyph: NOC.glyph.refresh,
+                            handler: function() {
+                                selectionGrid.getStore().reload();
+                            }
                         },
                         {
-                            text: __("Select Checked"),
+                            text: __('Select Checked'),
                             glyph: NOC.glyph.check_square_o,
                             bind: {
                                 disabled: selectionGridHasSelection
@@ -307,7 +191,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                             }
                         },
                         {
-                            text: __("Select All"),
+                            text: __('Select All'),
                             glyph: NOC.glyph.plus_circle,
                             handler: function() {
                                 var renderPlugin = selectionGrid.findPlugin('bufferedrenderer');
@@ -315,7 +199,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                             }
                         },
                         {
-                            text: __("Unselect All"),
+                            text: __('Unselect All'),
                             glyph: NOC.glyph.minus_circle,
                             bind: {
                                 disabled: selectionGridHasSelection
@@ -324,7 +208,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                                 selectionGrid.getSelectionModel().deselectAll();
                             }
                         },
-                        "->",
+                        '->',
                         {
                             xtype: 'box',
                             bind: {
@@ -343,24 +227,25 @@ Ext.define("NOC.sa.runcommands.Application", {
                 }
             },
             viewConfig: {
+                enableTextSelection: true,
                 getRowClass: Ext.bind(me.getRowClass, me, 'row_class', true)
             }
         });
 
-        selectedGrid = Ext.create("Ext.grid.Panel", {
+        selectedGrid = Ext.create('Ext.grid.Panel', {
             reference: selectedGridStateId,
-            bind: '{selected}',
+            bind: '{selectedStore}',
             border: false,
             scrollable: true,
             pageSize: 0,
             stateful: true,
             stateId: selectedGridStateId,
-            selModel: "checkboxmodel",
+            selModel: 'checkboxmodel',
             region: 'center',
-            width: "50%",
+            width: '50%',
             columns: [
                 {
-                    xtype: "glyphactioncolumn",
+                    xtype: 'glyphactioncolumn',
                     width: 25,
                     items: [
                         {
@@ -372,11 +257,11 @@ Ext.define("NOC.sa.runcommands.Application", {
                 }].concat(me.cols),
             dockedItems: [
                 {
-                    xtype: "toolbar",
-                    dock: "top",
+                    xtype: 'toolbar',
+                    dock: 'top',
                     items: [
                         {
-                            text: __("Remove Checked"),
+                            text: __('Remove Checked'),
                             glyph: NOC.glyph.check_square_o,
                             bind: {
                                 disabled: selectedGridHasSelection
@@ -388,7 +273,7 @@ Ext.define("NOC.sa.runcommands.Application", {
                             }
                         },
                         {
-                            text: __("Remove All"),
+                            text: __('Remove All'),
                             glyph: NOC.glyph.minus_circle,
                             bind: {
                                 disabled: selectedGridHasRecords
@@ -397,12 +282,11 @@ Ext.define("NOC.sa.runcommands.Application", {
                                 selectedGrid.getStore().removeAll();
                             }
                         },
-                        "->",
+                        '->',
                         {
                             xtype: 'box',
                             bind: {
                                 html: __('Total : {total.selected}')
-                                // html: __('Total : {selected.data.length}')
                             }
                         }
                     ]
@@ -413,8 +297,8 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         });
 
-        me.selectContinueButton = Ext.create("Ext.button.Button", {
-            text: __("Continue"),
+        me.selectContinueButton = Ext.create('Ext.button.Button', {
+            text: __('Continue'),
             glyph: NOC.glyph.play,
             bind: {
                 disabled: selectedGridHasRecords
@@ -425,7 +309,7 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         });
 
-        return Ext.create("Ext.panel.Panel", {
+        return Ext.create('Ext.panel.Panel', {
             layout: 'border',
             scrollable: false,
             items: [
@@ -435,14 +319,15 @@ Ext.define("NOC.sa.runcommands.Application", {
             ],
             dockedItems: [
                 {
-                    xtype: "toolbar",
-                    dock: "top",
+                    xtype: 'toolbar',
+                    dock: 'top',
                     items: [
                         me.selectContinueButton,
                         '->',
                         {
-                            xtype: 'button',
-                            text: '<i class="fa fa-filter" aria-hidden="true"></i>',
+                            text: __('Filter'),
+                            glyph: NOC.glyph.filter,
+                            tooltip: __('Show/Hide Filter'),
                             scope: me,
                             handler: function() {
                                 me.filterPanel.toggleCollapse();
@@ -459,22 +344,22 @@ Ext.define("NOC.sa.runcommands.Application", {
             selectedGrid,
             appName = me.appId.replace('.', '_');
 
-        selectedGrid = Ext.create("Ext.grid.Panel", {
-            bind: '{selected}',
+        selectedGrid = Ext.create('Ext.grid.Panel', {
+            bind: '{selectedStore}',
             border: false,
             scrollable: true,
             stateful: true,
-            stateId: appName + "-selected-grid",
+            stateId: appName + '-selected-grid',
             region: 'west',
-            width: "50%",
+            width: '50%',
             columns: me.cols,
             viewConfig: {
                 getRowClass: Ext.bind(me.getRowClass, me, 'row_class', true)
             }
         });
 
-        me.runButton = Ext.create("Ext.button.Button", {
-            text: __("Run"),
+        me.runButton = Ext.create('Ext.button.Button', {
+            text: __('Run'),
             glyph: NOC.glyph.play,
             disabled: true,
             scope: me,
@@ -483,15 +368,15 @@ Ext.define("NOC.sa.runcommands.Application", {
 
         me.commandField = {
             xtype: 'textareafield',
-            fieldLabel: __("Commands"),
-            labelAlign: "top",
+            fieldLabel: __('Commands'),
+            labelAlign: 'top',
             allowBlank: false,
-            name: "cmd",
+            name: 'cmd',
             width: '95%',
             height: 500,
             scrollable: true,
             padding: 30,
-            componentId: "commands",
+            componentId: 'commands',
             itemId: 'commands'
         };
 
@@ -530,15 +415,15 @@ Ext.define("NOC.sa.runcommands.Application", {
                 change: function(field, newValue) {
                     me.actionField.setHidden(true);
                     me.snippetField.setHidden(true);
-                    if(newValue == 'actions') {
+                    if(newValue === 'actions') {
                         selectedMode(me.actionField);
                         return;
                     }
-                    if(newValue == 'snippets') {
+                    if(newValue === 'snippets') {
                         selectedMode(me.snippetField);
                         return;
                     }
-                    if(newValue == 'commands') {
+                    if(newValue === 'commands') {
                         me.commandPanel.removeAll();
                         me.commandPanel.add(me.commandField);
                         return;
@@ -597,17 +482,17 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         });
 
-        return Ext.create("Ext.panel.Panel", {
-            layout: "border",
+        return Ext.create('Ext.panel.Panel', {
+            layout: 'border',
             activeItem: 1,
             items: [
                 selectedGrid,
                 {
                     region: 'east',
-                    width: "50%",
+                    width: '50%',
                     border: false,
                     defaults: {
-                        width: "80%"
+                        width: '80%'
                     },
                     items: [
                         me.modeField,
@@ -619,18 +504,18 @@ Ext.define("NOC.sa.runcommands.Application", {
             ],
             dockedItems: [
                 {
-                    xtype: "toolbar",
-                    dock: "top",
+                    xtype: 'toolbar',
+                    dock: 'top',
                     items: [
                         {
                             glyph: NOC.glyph.arrow_left,
                             scope: me,
-                            tooltip: __("Back"),
+                            tooltip: __('Back'),
                             handler: function() {
                                 me.showItem(me.ITEM_SELECT);
                             }
                         },
-                        "-",
+                        '-',
                         me.runButton
                     ]
                 }
@@ -691,27 +576,27 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         };
 
-        selectedGrid = Ext.create("Ext.grid.Panel", {
-            bind: '{selected}',
+        selectedGrid = Ext.create('Ext.grid.Panel', {
+            bind: '{selectedStore}',
             border: false,
             scrollable: true,
             stateful: true,
             region: 'west',
-            width: "50%",
-            stateId: appName + "-selected-grid",
+            width: '50%',
+            stateId: appName + '-selected-grid',
             selModel: {
                 mode: 'SINGLE',
                 selType: 'checkboxmodel'
             },
             columns: me.cols.concat({
-                text: __("Status"),
-                dataIndex: "status",
+                text: __('Status'),
+                dataIndex: 'status',
                 width: 70,
                 renderer: NOC.render.Choices({
-                    w: __("Waiting"),
-                    r: __("Running"),
-                    f: __("Failed"),
-                    s: __("Success")
+                    w: __('Waiting'),
+                    r: __('Running'),
+                    f: __('Failed'),
+                    s: __('Success')
                 })
             }),
             listeners: {
@@ -719,8 +604,8 @@ Ext.define("NOC.sa.runcommands.Application", {
                 select: me.onShowResult
             },
             dockedItems: [{
-                xtype: "toolbar",
-                dock: "top",
+                xtype: 'toolbar',
+                dock: 'top',
                 items: me.progressState
             }],
             viewConfig: {
@@ -728,9 +613,9 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         });
 
-        me.progressBackButton = Ext.create("Ext.button.Button", {
+        me.progressBackButton = Ext.create('Ext.button.Button', {
             glyph: NOC.glyph.arrow_left,
-            tooltip: __("Back"),
+            tooltip: __('Back'),
             disabled: true,
             scope: me,
             handler: function() {
@@ -738,9 +623,9 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         });
 
-        me.progressReportButton = Ext.create("Ext.button.Button", {
+        me.progressReportButton = Ext.create('Ext.button.Button', {
             glyph: NOC.glyph.print,
-            tooltip: __("Report"),
+            tooltip: __('Report'),
             disabled: true,
             handler: function() {
                 var r = me.showItem(me.ITEM_REPORT);
@@ -750,20 +635,24 @@ Ext.define("NOC.sa.runcommands.Application", {
             }
         });
 
-        return Ext.create("Ext.panel.Panel", {
-            layout: "border",
+        return Ext.create('Ext.panel.Panel', {
+            layout: 'border',
             items: [
                 selectedGrid,
                 {
                     region: 'east',
-                    width: "50%",
+                    width: '50%',
                     items: {
-                        xtype: "textarea",
+                        xtype: 'textarea',
                         layout: 'fit',
                         width: '100%',
                         height: 700,
                         scrollable: true,
                         padding: 4,
+                        fieldStyle: {
+                            'fontFamily': 'courier new',
+                            'fontSize': '12px'
+                        },
                         bind: {
                             value: '{resultOutput}'
                         }
@@ -772,8 +661,8 @@ Ext.define("NOC.sa.runcommands.Application", {
             ],
             dockedItems: [
                 {
-                    xtype: "toolbar",
-                    dock: "top",
+                    xtype: 'toolbar',
+                    dock: 'top',
                     items: [
                         me.progressBackButton,
                         me.progressReportButton
@@ -785,17 +674,17 @@ Ext.define("NOC.sa.runcommands.Application", {
     //
     createReportPanel: function() {
         var me = this;
-        return Ext.create("Ext.panel.Panel", {
-            html: "",
+        return Ext.create('Ext.panel.Panel', {
+            html: '',
             scrollable: true,
             bodyPadding: 4,
             dockedItems: [{
-                xtype: "toolbar",
-                dock: "top",
+                xtype: 'toolbar',
+                dock: 'top',
                 items: [
                     {
                         glyph: NOC.glyph.arrow_left,
-                        tooltip: __("Back"),
+                        tooltip: __('Back'),
                         scope: me,
                         handler: function() {
                             me.showItem(me.ITEM_PROGRESS);
@@ -858,14 +747,14 @@ Ext.define("NOC.sa.runcommands.Application", {
         me.viewModel.set('progressState.s', 0);
         me.selectedStore.each(function(record) {
             var v = {
-                id: record.get("id")
+                id: record.get('id')
             };
 
 
             if('commands' === mode) {
                 // Copy config
                 Ext.Object.each(cfg, function(key, value) {
-                    if(key !== "id") {
+                    if(key !== 'id') {
                         v[key] = value;
                     }
                 });
@@ -889,11 +778,11 @@ Ext.define("NOC.sa.runcommands.Application", {
         // Start streaming request
         xhr = new XMLHttpRequest();
         xhr.open(
-            "POST",
-            "/api/mrt/",
+            'POST',
+            '/api/mrt/',
             true
         );
-        xhr.setRequestHeader("Content-Type", "text/json");
+        xhr.setRequestHeader('Content-Type', 'text/json');
         xhr.onprogress = function() {
             // Parse incoming chunks
             var ft = xhr.responseText.substr(offset),
@@ -989,9 +878,10 @@ Ext.define("NOC.sa.runcommands.Application", {
                         if(obj.hasOwnProperty(key) && obj[key]) {
                             commands.push({
                                 id: key,
-                                script: "commands",
+                                script: 'commands',
                                 args: {
-                                    commands: obj[key].split("\n")
+                                    commands: obj[key].split('\n'),
+                                    include_commands: true
                                 }
                             });
                         }
@@ -1011,9 +901,11 @@ Ext.define("NOC.sa.runcommands.Application", {
 
         if('commands' === me.modeField.getValue()) {
             me.sendCommands('commands', {
-                "script": "commands",
-                "args": {
-                    "commands": me.commandPanel.getValues().cmd.split("\n")
+                'script': 'commands',
+                'args': {
+                    'commands': me.commandPanel.getValues().cmd.split('\n'),
+                    'include_commands': 'true',
+                    'ignore_cli_errors': 'true'
                 }
             });
         } else if('snippets' === me.modeField.getValue()) {
@@ -1024,138 +916,20 @@ Ext.define("NOC.sa.runcommands.Application", {
     },
     //
     onShowResult: function(grid, record) {
-        this.viewModel.set('resultOutput', record.get("result"))
+        this.viewModel.set('resultOutput', record.get('result'))
     },
 
     buildReport: function() {
         var r = [];
 
         this.selectedStore.each(function(record) {
-            r.push("<div class='noc-mrt-section'>" + record.get("name") + "(" + record.get("address") + ")</div>");
-            r.push("<div class='noc-mrt-result'>" + record.get("result") + "</div>");
+            r.push('<div class=\'noc-mrt-section\'>' + record.get('name') + '(' + record.get('address') + ')</div>');
+            r.push('<div class=\'noc-mrt-result\'>' + record.get('result') + '</div>');
         });
-        return r.join("\n");
+        return r.join('\n');
     },
     //
     onStoreSizeChange: function() {
         this.viewModel.set('total.selected', this.selectedStore.getCount());
-    },
-
-    lookupFields: function() {
-        var items = [];
-        Ext.Array.each(this.filterPanel.items.items, function(item) {
-            if(item.isLookupField) {
-                items.push(item);
-            }
-        });
-        return items;
-    },
-
-    restoreFilter: function() {
-        var queryStr = Ext.util.History.getToken().split('?')[1];
-        if(queryStr) {
-            this.filterObject = Ext.Object.fromQueryString(queryStr, true);
-            Ext.Array.each(this.lookupFields(), function(item) {
-                if(item.itemId in this.filterObject) {
-                    if(Ext.String.endsWith(item.xtype, 'TreeCombo', true)) {
-                        item.restoreById(this.filterObject[item.itemId]);
-                    } else {
-                        item.setValue(this.filterObject[item.itemId]);
-                    }
-                }
-            }, this);
-            this.selectionStore.setFilterParams(this.filterObject);
-        }
-        this.selectionStore.load();
-    },
-
-    setFilter: function(field, event) {
-        var value = field.getValue();
-
-        if(field.itemId && 'addresses' === field.itemId) {
-            value = value.split('\n')
-                .filter(function(ip) {
-                    return ip.length > 0;
-                })
-                .map(function(ip) {
-                    return ip.trim();
-                });
-
-            if(value.length > 500) {
-                NOC.msg.failed(__('Too many IP, max 500'));
-                return;
-            }
-        }
-
-        if(Ext.String.endsWith(field.xtype, 'TreeCombo', true)) {
-            if(Ext.isFunction(event.get)) { // event -> data
-                value = event.get('id');
-            }
-        }
-
-        if('Ext.event.Event' === Ext.getClassName(event)) {
-            if(Ext.EventObject.ENTER === event.getKey()) {
-                this.reloadData(field.itemId, value);
-            }
-            return;
-        }
-
-        this.reloadData(field.itemId, value);
-    },
-
-    cleanAllFilters: function() {
-        Ext.History.add(this.appId);
-        this.filterObject = {};
-        Ext.Array.each(this.lookupFields(), function(item) {
-            if(Ext.String.endsWith(item.xtype, 'TreeCombo', true)) {
-                item.reset();
-            } else {
-                item.setValue('');
-            }
-        });
-        this.viewModel.set('ips', '');
-        this.reload();
-    },
-
-    cleanFilter: function(field) {
-        var fieldName = field;
-
-        if(Ext.isObject(field) && 'itemId' in field) {
-            field.setValue('');
-            fieldName = field.itemId;
-        }
-        this.reloadData(fieldName, '');
-    },
-
-    reloadData: function(name, value) {
-        if((typeof value === 'string' && value.length > 0)
-            || (typeof value === 'number')
-            || (value !== null && typeof value === 'object')) {
-            if(value === this.filterObject[name]) return;
-            this.filterObject[name] = value;
-        } else {
-            if(this.filterObject.hasOwnProperty(name)) {
-                delete this.filterObject[name];
-            } else return;
-        }
-
-        var queryObject = Ext.clone(this.filterObject);
-        if(queryObject.hasOwnProperty('addresses')) {
-            delete queryObject['addresses'];
-        }
-
-        var token = '', query = Ext.Object.toQueryString(queryObject, true);
-
-        if(query.length > 0) {
-            token = '?' + query;
-        }
-
-        Ext.History.add(this.appId + token, true);
-        this.reload();
-    },
-
-    reload: function() {
-        this.selectionStore.setFilterParams(this.filterObject);
-        this.selectionStore.load();
     }
 });

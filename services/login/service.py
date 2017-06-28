@@ -1,13 +1,13 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Login service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Login service
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.service.ui import UIService
 from auth import AuthRequestHandler
 from logout import LogoutRequestHandler
@@ -23,6 +23,8 @@ class LoginService(UIService):
         LoginAPI
     ]
     use_translation = True
+    traefik_backend = "login"
+    traefik_frontend_rule = "PathPrefix:/api/login,/api/auth/auth"
 
     def get_handlers(self):
         return super(LoginService, self).get_handlers() + [
@@ -64,6 +66,7 @@ class LoginService(UIService):
             try:
                 user = backend.authenticate(**credentials)
             except backend.LoginError as e:
+                self.logger.info("[%s] Login Error: %s", method, e)
                 le = str(e)
                 continue
             self.logger.info("Authorized credentials %s as user %s", c, user)

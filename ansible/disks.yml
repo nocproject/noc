@@ -4,6 +4,7 @@
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
+    - "vars/disks.yml"
   roles:
     - role: node_disks
       become: yes
@@ -16,10 +17,11 @@
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
+    - "vars/disks.yml"
   roles:
     - role: mongod_disks
       become: yes
-      when: "{{ has_svc_mongod | default(False) or consul_env}}"
+      when: "has_svc_mongod | default(False) or consul_env"
       tags:
         - disk
 
@@ -29,10 +31,11 @@
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
+    - "vars/disks.yml"
   roles:
     - role: postgres_disks
       become: yes
-      when: "{{ has_svc_postgres | default(False) or consul_env}}"
+      when: "has_svc_postgres | default(False) or consul_env"
       tags:
         - disk
 
@@ -42,9 +45,10 @@
   any_errors_fatal: true
   vars_files:
     - "vars/main.yml"
+    - "vars/disks.yml"
   roles:
     - role: influxdb_disks
       become: yes
-      when: "{{ has_svc_influxdb | default(False) or consul_env}}"
+      when: "has_svc_influxdb | default(False) or consul_env"
       tags:
         - disk

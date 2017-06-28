@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-##----------------------------------------------------------------------
-## Objects Summary Report
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Objects Summary Report
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 # Third-party modules
 from django import forms
@@ -13,9 +13,9 @@ from django import forms
 from noc.lib.app.simplereport import SimpleReport, TableColumn, PredefinedReport
 from noc.sa.models.useraccess import UserAccess
 from noc.core.translation import ugettext as _
-##
-##
-##
+#
+#
+#
 report_types = [
     ("profile", _("By Profile")),
     ("domain", _("By Administrative Domain")),
@@ -28,9 +28,9 @@ report_types = [
 
 class ReportForm(forms.Form):
     report_type = forms.ChoiceField(label=_("Report Type"), choices=report_types)
-##
-##
-##
+#
+#
+#
 
 
 class ReportObjectsSummary(SimpleReport):

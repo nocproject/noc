@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Alcatel.AOS.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Alcatel.AOS.get_interfaces
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 # Python modules
 import re
@@ -224,9 +224,7 @@ class Script(BaseScript):
         portchannel_members = {}
         for pc in self.scripts.get_portchannel():
             i = pc["interface"]
-            print i
             t = pc["type"] == "L"
-            print t
             for m in pc["members"]:
                 portchannel_members[m] = (i, t)
             n = {}

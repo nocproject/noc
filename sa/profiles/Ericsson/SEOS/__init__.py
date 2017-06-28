@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Ericsson
-## OS:     SEOS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Ericsson
+# OS:     SEOS
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -20,4 +20,4 @@ class Profile(BaseProfile):
     command_super = "enable"
     command_enter_config = "configure"
     command_leave_config = "exit"
-    pattern_prompt = r"^(\[(?P<context>\S+)\])?(?P<hostname>\S+)#"
+    pattern_prompt = r"^\[(?P<context>\S+)\](?P<hostname>\S+)#"

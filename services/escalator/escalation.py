@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Escalation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016, The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Escalation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017, The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import cachetools
 import datetime
 import operator
-## NOC modules
+# NOC modules
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.ttsystem import TTSystem
 from noc.sa.models.selectorcache import SelectorCache
-from noc.inv.models.extnrittmap import ExtNRITTMap
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
@@ -24,14 +23,19 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.sa.models.objectdata import ObjectData
+from noc.maintainance.models.maintainance import Maintainance
 from noc.core.config.base import config
+from noc.core.tt.error import TTError, TemporaryTTError
+from noc.core.scheduler.job import Job
 
 
 logger = logging.getLogger(__name__)
 
+RETRY_TIMEOUT = 60
 
-def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
+
+def escalate(alarm_id, escalation_id, escalation_delay,
+             *args, **kwargs):
     def log(message, *args):
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
@@ -94,6 +98,8 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
             log("No escalation template, skipping")
             continue
         # Check global limits
+        # @todo: Move into escalator service
+        # @todo: Process per-ttsystem limits
         ets = datetime.datetime.now() - datetime.timedelta(seconds=60)
         ae = ActiveAlarm._get_collection().find({
             "escalation_ts": {
@@ -111,6 +117,9 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                 ae, config.tt_escalation_limit
             )
             metrics["escalation_throttled"] += 1
+            alarm.set_escalation_error(
+                "Escalation limit exceeded (%s/%s). Skipping" % (
+                    ae, config.tt_escalation_limit))
             return
         # Check whether consequences has escalations
         cons_escalated = sorted(alarm.iter_escalated(),
@@ -142,7 +151,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
             "affected_services": affected_services
         }
         # Escalate to TT
-        if a.create_tt:
+        if a.create_tt and mo.can_escalate():
             tt_id = None
             if alarm.escalation_tt:
                 log(
@@ -150,75 +159,81 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                     alarm.escalation_tt
                 )
             else:
-                # Get external TT system
-                d = ExtNRITTMap._get_collection().find_one({
-                    "managed_object": mo.id
-                })
-                if d:
-                    tt_system = tt_system_cache[d["tt_system"]]
-                    if tt_system:
-                        pre_reason = escalation.get_pre_reason(tt_system)
-                        if pre_reason is not None:
-                            subject = a.template.render_subject(**ctx)
-                            body = a.template.render_body(**ctx)
-                            logger.debug("[%s] Escalation message:\nSubject: %s\n%s",
-                                         alarm_id, subject, body)
-                            log("Creating TT in system %s", tt_system.name)
-                            tts = tt_system.get_system()
-                            try:
-                                tt_id = tts.create_tt(
-                                    queue=d["queue"],
-                                    obj=d["remote_id"],
-                                    reason=pre_reason,
-                                    subject=subject,
-                                    body=body,
-                                    login="correlator",
-                                    timestamp=alarm.timestamp
-                                )
-                                ctx["tt"] = "%s:%s" % (tt_system.name, tt_id)
-                                alarm.escalate(ctx["tt"], close_tt=a.close_tt)
-                                if tts.promote_group_tt:
-                                    # Greate group TT
-                                    log("Promoting to group tt")
-                                    gtt = tts.create_group_tt(tt_id, alarm.timestamp)
-                                    # Add objects
-                                    objects = dict(
-                                        (o.id, o.name)
-                                        for o in alarm.iter_affected()
-                                    )
-                                    for d in ExtNRITTMap._get_collection().find({
-                                        "managed_object": {
-                                            "$in": list(objects)
-                                        }
-                                    }):
+                pre_reason = escalation.get_pre_reason(mo.tt_system)
+                active_maintenance = Maintainance.get_object_maintenance(mo)
+                if active_maintenance:
+                    for m in active_maintenance:
+                        log("Object is under maintenance: %s (%s-%s)",
+                            m.subject, m.start, m.stop)
+                    metrics["escalation_stop_on_maintenance"] += 1
+                elif pre_reason is not None:
+                    subject = a.template.render_subject(**ctx)
+                    body = a.template.render_body(**ctx)
+                    logger.debug("[%s] Escalation message:\nSubject: %s\n%s",
+                                 alarm_id, subject, body)
+                    log("Creating TT in system %s", mo.tt_system.name)
+                    tts = mo.tt_system.get_system()
+                    try:
+                        try:
+                            tt_id = tts.create_tt(
+                                queue=mo.tt_queue,
+                                obj=mo.tt_system_id,
+                                reason=pre_reason,
+                                subject=subject,
+                                body=body,
+                                login="correlator",
+                                timestamp=alarm.timestamp
+                            )
+                        except TemporaryTTError as e:
+                            metrics["escalation_tt_retry"] += 1
+                            log("Temporary error detected. Retry after %ss", RETRY_TIMEOUT)
+                            Job.retry_after(RETRY_TIMEOUT, str(e))
+                        ctx["tt"] = "%s:%s" % (mo.tt_system.name, tt_id)
+                        alarm.escalate(ctx["tt"], close_tt=a.close_tt)
+                        if tts.promote_group_tt:
+                            # Create group TT
+                            log("Promoting to group tt")
+                            gtt = tts.create_group_tt(
+                                tt_id,
+                                alarm.timestamp
+                            )
+                            # Append affected objects
+                            for ao in alarm.iter_affected():
+                                if ao.can_escalate():
+                                    if ao.tt_system == mo.tt_system:
                                         log(
                                             "Appending object %s to group tt %s",
-                                            objects[d["managed_object"]],
+                                            ao.name,
                                             gtt
                                         )
                                         tts.add_to_group_tt(
                                             gtt,
-                                            d["remote_id"]
+                                            ao.tt_system_id
                                         )
-                                metrics["escalation_tt_create"] += 1
-                            except tts.TTError as e:
-                                log("Failed to create TT: %s", e)
-                                metrics["escalation_tt_fail"] += 1
-                                alarm.log_message(
-                                    "Failed to escalate: %s" % e,
-                                    to_save=True
-                                )
-                                alarm.set_escalation_error(
-                                    "[%s] %s" % (tt_system.name, e))
-                        else:
-                            log("Cannot find pre reason")
-                            metrics["escalation_tt_fail"] += 1
-                    else:
-                        log("Cannot find TT system %s", d["tt_system"])
+                                    else:
+                                        log(
+                                            "Cannot append object %s to group tt %s: Belongs to other TT system",
+                                            ao.name,
+                                            gtt
+                                        )
+                                else:
+                                    log(
+                                        "Cannot append object %s to group tt %s: Escalations are disabled",
+                                        ao.name,
+                                        gtt
+                                    )
+                        metrics["escalation_tt_create"] += 1
+                    except TTError as e:
+                        log("Failed to create TT: %s", e)
                         metrics["escalation_tt_fail"] += 1
+                        alarm.log_message(
+                            "Failed to escalate: %s" % e,
+                            to_save=True
+                        )
+                        alarm.set_escalation_error(
+                            "[%s] %s" % (mo.tt_system.name, e))
                 else:
-                    log("Cannot find TT system for %s",
-                        alarm.managed_object.name)
+                    log("Cannot find pre reason")
                     metrics["escalation_tt_fail"] += 1
             if tt_id and cons_escalated:
                 # Notify consequences
@@ -238,7 +253,7 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
                         except NotImplementedError:
                             log("Cannot add comment to %s: Feature not implemented", ca.escalation_tt)
                             metrics["escalation_tt_comment_fail"] += 1
-                        except tts.TTError as e:
+                        except TTError as e:
                             log("Failed to add comment to %s: %s",
                                 ca.escalation_tt, e)
                             metrics["escalation_tt_comment_fail"] += 1
@@ -263,15 +278,34 @@ def escalate(alarm_id, escalation_id, escalation_delay, *args, **kwargs):
         if a.stop_processing:
             logger.debug("Stopping processing")
             break
+    nalarm = get_alarm(alarm_id)
+    if nalarm and nalarm.status == "C" and nalarm.escalation_tt:
+        log("Alarm has been closed during escalation. Try to deescalate")
+        metrics["escalation_closed_while_escalated"] += 1
+        if not nalarm.escalation_close_ts and not nalarm.escalation_close_error:
+            notify_close(
+                alarm_id=alarm_id,
+                tt_id=nalarm.escalation_tt,
+                subject="Closing",
+                body="Closing",
+                notification_group_id=alarm.clear_notification_group.id if alarm.clear_notification_group else None,
+                close_tt=alarm.close_tt
+            )
     logger.info("[%s] Escalations loop end", alarm_id)
 
 
-def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt=False):
+def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
+                 close_tt=False):
     def log(message, *args):
         msg = message % args
         logger.info("[%s] %s", alarm_id, msg)
 
     if tt_id:
+        alarm = get_alarm(alarm_id)
+        if alarm and (alarm.escalation_close_ts or alarm.escalation_close_error):
+            log("Alarm is already deescalated")
+            metrics["escalation_already_deescalated"] += 1
+            return
         c_tt_name, c_tt_id = tt_id.split(":")
         cts = tt_system_id_cache[c_tt_name]
         if cts:
@@ -287,10 +321,20 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt
                         login="correlator"
                     )
                     metrics["escalation_tt_close"] += 1
-                except tts.TTError as e:
+                    if alarm:
+                        alarm.close_escalation()
+                except TemporaryTTError as e:
+                    log("Temporary error detected while closing tt %s: %s", tt_id, e)
+                    metrics["escalation_tt_close_retry"] += 1
+                    Job.retry_after(RETRY_TIMEOUT, str(e))
+                except TTError as e:
                     log("Failed to close tt %s: %s",
                         tt_id, e)
                     metrics["escalation_tt_close_fail"] += 1
+                    if alarm:
+                        alarm.set_escalation_close_error(
+                            "[%s] %s" % (alarm.managed_object.tt_system.name, e)
+                        )
             else:
                 # Append comment to tt
                 try:
@@ -302,7 +346,7 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id, close_tt
                         login="correlator"
                     )
                     metrics["escalation_tt_comment"] += 1
-                except tts.TTError as e:
+                except TTError as e:
                     log("Failed to add comment to %s: %s",
                         tt_id, e)
                     metrics["escalation_tt_comment_fail"] += 1

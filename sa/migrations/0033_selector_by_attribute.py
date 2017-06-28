@@ -4,7 +4,7 @@ from south.db import db
 from django.db import models
 
 class Migration:
-    
+
     def forwards(self):
         # Adding field 'UserAccess.selector'
         ManagedObjectSelector=db.mock_model(model_name="ManagedObjectSelector",db_table="sa_managedobjectselector")
@@ -14,8 +14,8 @@ class Migration:
             ('key_re',   models.CharField("Filter by key (REGEXP)", max_length=256)),
             ('value_re', models.CharField("Filter by value (REGEXP)", max_length=256))
         ))
-    
+
     def backwards(self):
         # Deleting field 'UserAccess.selector'
         db.delete_table('sa_managedobjectselectorbyattribute')
-    
+

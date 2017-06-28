@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Vendor: Zhone
-## OS:     MXK
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Vendor: Zhone
+# OS:     MXK
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
-import re
-## NOC modules
+# NOC modules
 from noc.core.profile.base import BaseProfile
 
 
@@ -18,5 +16,6 @@ class Profile(BaseProfile):
     pattern_unpriveleged_prompt = r"^(?P<hostname>\S+)\s*>"
     pattern_prompt = r"^(?P<hostname>\S+)\s*#"
     pattern_syntax_error = r"ERROR: Permission denied."
-    pattern_more = "<SPACE> for next page, <CR> for next line, A for all, Q to quit"
+    pattern_more = \
+        "<SPACE> for next page, <CR> for next line, A for all, Q to quit"
     command_more = "a"

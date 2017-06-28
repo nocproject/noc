@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## AlarmEscalation model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# AlarmEscalation model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import operator
 from threading import Lock
 import datetime
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, IntField, ReferenceField,
                                 ListField, EmbeddedDocumentField,
                                 BooleanField)
 import cachetools
-## NOC modules
+# NOC modules
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.ttsystem import TTSystem
 from noc.main.models.notificationgroup import NotificationGroup

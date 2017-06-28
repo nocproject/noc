@@ -1,17 +1,17 @@
 #!./bin/python
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SAE service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SAE service
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import contextlib
-## Third-party modules
+# Third-party modules
 from psycopg2.pool import ThreadedConnectionPool
-## NOC modules
+# NOC modules
 from noc.core.service.base import Service
 from noc.main.models.pool import Pool
 from api.sae import SAEAPI
@@ -47,16 +47,6 @@ class SAEService(Service):
         Returns pool name by id
         """
         return self.pool_cache.get(str(pool_id))
-
-    def get_activator(self, pool):
-        """
-        Returns RPC service for pool
-        """
-        activator = self.activators.get(pool)
-        if not activator:
-            activator = self.open_rpc("activator", pool=pool)
-            self.activators[pool] = activator
-        return activator
 
     @contextlib.contextmanager
     def get_pg_connect(self):

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Django modules
+# Django modules
 from django.db import models
-## Third-party modules
+# Third-party modules
 from south.db import db
 
 
@@ -19,7 +19,7 @@ class Migration:
         for pn, e, t in db.execute("SELECT periodic_name, is_enabled, run_every FROM sa_taskschedule"):
             db.execute("INSERT INTO main_schedule(periodic_name, is_enabled, time_pattern_id, run_every) VALUES(%s, %s, %s, %s )",
                 [pn, e, time_pattern_id, t])
-    
+
     def backwards(self):
         pass
-    
+

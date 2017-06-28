@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## rack macro
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# rack macro
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 import xml.parsers.expat
 
 import re
@@ -32,10 +32,10 @@ class RackSet(object):
             self.label="bottom"
         else:
             self.label=label.lower()
-    ##
-    ## Return a list of allocations for a rack
-    ## allocation is a tuple of: top position, height, is empty space, allocation
-    ##
+    #
+    # Return a list of allocations for a rack
+    # allocation is a tuple of: top position, height, is empty space, allocation
+    #
     def compile_allocations(self,rack):
         allocations=sorted(rack.allocations,lambda x,y: -cmp(x.position,y.position))
         sp=[]
@@ -57,13 +57,13 @@ class RackSet(object):
             if a.position>1:
                 sp+=[(a.position-1,a.position-1,True,None)]
         return sp
-    ##
-    ## Render RackSet contents to HTML
-    ##
+    #
+    # Render RackSet contents to HTML
+    #
     def render_html(self):
         if len(self.racks)==0: # Empty rackset
             return u""
-        #return "<div>%s</div>"%"\n".join([r.render_html() for r in self.racks])
+        # return "<div>%s</div>"%"\n".join([r.render_html() for r in self.racks])
         self.height=max([r.height for r in self.racks]) # RackSet height is a maximal height of the racks
         # Fill RackSet matrix
         # RSM is a hash: row -> column -> {"colspan","rowspan","style","text"}
@@ -136,9 +136,9 @@ class RackSet(object):
             out+=rack_labels
         out+=["</table>"]
         return u"\n".join(out)
-##
-## Rack Representation
-##
+#
+# Rack Representation
+#
 class Rack(object):
     def __init__(self,rackset,id,height):
         self.rackset=rackset
@@ -146,10 +146,10 @@ class Rack(object):
         self.height=height
         self.rackset.racks.append(self)
         self.allocations=[]
-##
-## Allocation representation
-## Rendered to HTML by Rack.render_html
-##
+#
+# Allocation representation
+# Rendered to HTML by Rack.render_html
+#
 class Allocation(object):
     def __init__(self,rack,id,position,height,reserved=False,model="",asset_no="",serial="",hostname="",description="",href=""):
         self.rack=rack
@@ -165,12 +165,12 @@ class Allocation(object):
         self.href=href
         self.rack.allocations.append(self)
         self.slots=[]
-    
+
     def __repr__(self):
         return "Allocation: id=%s position=%s height=%s"%(self.id,self.position,self.height)
-    ##
-    ## Render allocation's cell
-    ##
+    #
+    # Render allocation's cell
+    #
     def to_html(self):
         r=[]
         if self.id:
@@ -196,9 +196,9 @@ class Allocation(object):
             rr+=["</table>"]
             r+=["".join(rr)]
         return "<br/>".join(r)
-##
-##
-##
+#
+#
+#
 class Slot(object):
     def __init__(self,allocation,id=None,model="",hostname="",description="",reserved=False,asset_no="",serial="",href=""):
         self.allocation=allocation
@@ -227,14 +227,14 @@ class Slot(object):
         if self.href:
             r+=["<a href='%s'>Link...</a>"%self.href]
         return "<br/>".join(r)
-##
-## Expat parser to render simple XML grammar
-## Tag hirrarchy:
-##     rackset attrs: id
-##       `-> rack attrs: id, height
-##              `-> allocation attrs: id, position, height, reserved, model, hostname, description, assetno, href, serial
-##                    `-> slot attrs: id, model, hostname, description, reserved, assetno, href, serial
-##
+#
+# Expat parser to render simple XML grammar
+# Tag hirrarchy:
+#     rackset attrs: id
+#       `-> rack attrs: id, height
+#              `-> allocation attrs: id, position, height, reserved, model, hostname, description, assetno, href, serial
+#                    `-> slot attrs: id, model, hostname, description, reserved, assetno, href, serial
+#
 class XMLParser(object):
     def __init__(self,text):
         self.parser=xml.parsers.expat.ParserCreate()
@@ -247,9 +247,9 @@ class XMLParser(object):
         if not text.startswith("<?"):
             text=u"<?xml version='1.0' encoding='utf-8' ?>\n"+text # Add missed XML prolog
         self.parser.Parse(unicode(text).encode("utf-8"))
-    ##
-    ## Called on tag opening
-    ##
+    #
+    # Called on tag opening
+    #
     def start_element(self,name,attrs):
         if name=="rackset":
             self.rackset=RackSet(id=attrs.get("id",None),label=attrs.get("label",None))
@@ -287,9 +287,9 @@ class XMLParser(object):
     def end_element(self,name): pass
     def char_data(self,name): pass
 
-##
-## rack macro. XML contained in macro text
-##
+#
+# rack macro. XML contained in macro text
+#
 class Macro(MacroBase):
     name="rack"
     @classmethod

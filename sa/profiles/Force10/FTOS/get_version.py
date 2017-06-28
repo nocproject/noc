@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Force10.FTOS.get_version
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Force10.FTOS.get_version
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
-##
-## A list of known F10 chasiss type from FORCE10-TC
-##
+#
+# A list of known F10 chasiss type from FORCE10-TC
+#
 F10_CHASSIS = {
     1: "E1200",    # Force10 E1200 16-slot switch/router
     2: "E600",     # Force10 E600 9-slot switch/router

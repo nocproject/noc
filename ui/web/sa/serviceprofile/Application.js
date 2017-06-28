@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // sa.serviceprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2016 The NOC Project
+// Copyright (C) 2007-2017 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.sa.serviceprofile.Application");
@@ -11,6 +11,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
     requires: [
         "NOC.sa.serviceprofile.Model",
         "NOC.main.ref.glyph.LookupField",
+        "NOC.main.remotesystem.LookupField",
         "NOC.inv.interfaceprofile.LookupField"
     ],
     model: "NOC.sa.serviceprofile.Model",
@@ -110,6 +111,44 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     fieldLabel: __("Alarm weight"),
                     allowBlank: true,
                     uiStyle: "small"
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Integration"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "remote_system",
+                            xtype: "main.remotesystem.LookupField",
+                            fieldLabel: __("Remote System"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "remote_id",
+                            xtype: "textfield",
+                            fieldLabel: __("Remote ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "bi_id",
+                            xtype: "textfield",
+                            fieldLabel: __("BI ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        }
+                    ]
+                },
+                {
+                    name: "tags",
+                    xtype: "tagsfield",
+                    fieldLabel: __("Tags"),
+                    allowBlank: true,
+                    uiStyle: "extra"
                 }
             ]
         });

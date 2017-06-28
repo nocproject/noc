@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Juniper.JUNOS.get_chassis_id
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2013 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Juniper.JUNOS.get_chassis_id
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2013 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetchassisid import IGetChassisID
 from noc.core.mac import MAC
@@ -28,8 +28,10 @@ class Script(BaseScript):
     def execute(self):
         v = self.cli("show chassis mac-addresses")
         macs = []
-        for f, t in [(mac, MAC(mac).shift(int(count) - 1))
-                for _, mac, count in self.rx_range.findall(v)]:
+        for f, t in [
+            (mac, MAC(mac).shift(int(count) - 1))
+            for _, mac, count in self.rx_range.findall(v)
+        ]:
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:

@@ -3,10 +3,15 @@
   become: yes
   service:
     name: telegraf
-    state: restarted
+    state: reloaded
 
 - name: reload memcached
   become: yes
   service:
     name: memcached
     state: restarted
+
+- name: reload consul
+  service:
+    name: consul
+    state: reloaded

@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
-## Django modules
+# Django modules
 from django.db import models
 from south.db import db
 
 
 class Migration:
-    
+
     def forwards(self):
-        
+
         # Model 'ObjectCategory'
         db.create_table('cm_objectcategory', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -37,7 +37,7 @@ class Migration:
         # Mock Models
         Object = db.mock_model(model_name='Object', db_table='cm_object', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
         ObjectCategory = db.mock_model(model_name='ObjectCategory', db_table='cm_objectcategory', db_tablespace='', pk_field_name='id', pk_field_type=models.AutoField)
-        
+
         # M2M field 'Object.categories'
         db.create_table('cm_object_categories', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -45,10 +45,10 @@ class Migration:
             ('objectcategory', models.ForeignKey(ObjectCategory, null=False))
         )) 
         db.create_index('cm_object', ['handler_class_name','repo_path'], unique=True, db_tablespace='')
-        
-        
+
+
         db.send_create_signal('cm', ['ObjectCategory','Object'])
-    
+
     def backwards(self):
         db.delete_table('cm_object_categories')
         db.delete_table('cm_object')

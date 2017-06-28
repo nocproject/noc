@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Escape/unescape to various encodings
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Escape/unescape to various encodings
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2011 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import binascii
 
 
-##
-## JSON
-##
+#
+# JSON
+#
 def json_escape(s):
     """
     Escape JSON predefined sequences
@@ -22,13 +22,13 @@ def json_escape(s):
     return s.replace("\\", "\\\\").replace("\n", "\\n").replace("\"", "\\\"")
 
 
-##
-## Fault management
-##
+#
+# Fault management
+#
 def fm_escape(s):
     """
     Escape binary FM data to string
-    
+
     >>> fm_escape("ab\xffcd")
     'ab=FFcd'
     """
@@ -38,7 +38,7 @@ def fm_escape(s):
 def fm_unescape(s):
     """
     Decode escaped FM data to a raw string
-    
+
     >>> fm_unescape("ab=FFcd")
     'ab\\xffcd'
     """

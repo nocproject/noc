@@ -1,12 +1,12 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SubInterface model
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# SubInterface model
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## NOC modules
+# NOC modules
 from noc.lib.nosql import (Document, PlainReferenceField,
                            ForeignKeyField, StringField,
                            ListField, IntField)

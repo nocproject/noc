@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Eltex.MES.add_vlan
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Eltex.MES.add_vlan
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2012 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from __future__ import with_statement
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.iaddvlan import IAddVlan
 
@@ -67,10 +67,10 @@ class Script(BaseScript):
                 self.cli("exit")
             if tagged_ports:
                 self.cli("interface range %s" % tagged)
-### 802.1q
+# 802.1q
 #                self.cli("switchport general allowed vlan add %d tagged"
 #                    % vlan_id)
-## trunk
+# trunk
                 self.cli("switchport trunk allowed vlan add  %d" % vlan_id)
         self.save_config()
         return True

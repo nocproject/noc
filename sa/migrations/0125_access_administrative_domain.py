@@ -1,4 +1,4 @@
-## Third-party modules
+# Third-party modules
 from south.db import db
 from django.db import models
 

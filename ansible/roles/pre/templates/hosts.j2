@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+# The following lines are desirable for IPv6 capable hosts.
+fe00::0     ip6-localnet
+ff00::0     ip6-mcastprefix
+ff02::1     ip6-allnodes
+ff02::2     ip6-allrouters
+
+127.0.0.1 consul
+# Network nodes as generated through Ansible.
+{% for host in play_hosts %}
+{{ hostvars[host].ansible_host }} {{hostvars[ansible_nodename].ansible_nodename}}
+{% endfor %}

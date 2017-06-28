@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 """
 """
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetmacaddresstable import IGetMACAddressTable
 
@@ -21,7 +21,7 @@ class Script(BaseScript):
         r"^(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+"
         r"(?P<interfaces>.*)$")  # Catalyst 3500XL
     ignored_interfaces = (
-        "router", "switch", "stby-switch", "yes", "no", "-", "cpu", "drop"
+        "router", "switch", "stby-switch", "yes", "no", "-", "cpu", "drop", "<drop>"
     )
 
     def is_ignored_interface(self, i):

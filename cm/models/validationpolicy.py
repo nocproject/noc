@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Validation Policy
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Validation Policy
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Mongoengine modules
+# Mongoengine modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import EmbeddedDocumentField, StringField, BooleanField, ListField, ReferenceField
-## NOC modules
+# NOC modules
 from validationrule import ValidationRule
 
 

@@ -1,16 +1,16 @@
-## -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Firmware
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014=6 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# ---------------------------------------------------------------------
+# Firmware
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014=6 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ReferenceField, ListField,
                                 EmbeddedDocumentField)
-## NOC modules
+# NOC modules
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from firmware import Firmware
 from noc.lib.nosql import ForeignKeyField

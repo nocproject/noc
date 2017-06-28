@@ -3,6 +3,6 @@
 # Set by ansible
 # Do not edit
 #
-CONF={{ noc_root }}/var/etc/mongo/mongod-arbiter.conf
-chown {{ mongo_user }} {{ noc_root }}/var/etc/mongo/mongo.key
-chmod 0400 {{ noc_root }}/var/etc/mongo/mongo.key
+CONF={{ mongo_dir }}/mongod-arbiter.conf
+chown {{ mongo_user }} {{ mongo_dir }}/mongo.key
+chmod 0400 {{ mongo_dir }}/mongo.key

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Russian Number Plan (E.164 +7 zone)
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2009 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Russian Number Plan (E.164 +7 zone)
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2009 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 from noc.main.refbooks.refbooks import RefBook,Field
 
-##
-## Russian Number Plan
-##
+#
+# Russian Number Plan
+#
 class RussianNumberPlan(RefBook):
     name="Российский План Нумерации"
     description="Российский план нумерации, коды ABC"

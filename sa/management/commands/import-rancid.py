@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Import managed objects from rancid
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ---------------------------------------------------------------------
+# Import managed objects from rancid
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2014 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 from optparse import make_option
 import subprocess
 import re
 import datetime
 import os
-## Django modules
+# Django modules
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
-## Third-party modules
+# Third-party modules
 import pytz
-## NOC modules
+# NOC modules
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
