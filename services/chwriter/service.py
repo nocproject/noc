@@ -3,7 +3,7 @@
 # ----------------------------------------------------------------------
 # chwriter service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -124,7 +124,8 @@ class CHWriterService(Service):
                 )
                 if response.code == 200:
                     self.logger.info(
-                        "%d metrics sent in %.2fms",
+                        "[%s] %d records sent in %.2fms",
+                        channel.name,
                         n, (self.ioloop.time() - t0) * 1000
                     )
                     self.perf_metrics["records_written"] += n
@@ -133,17 +134,18 @@ class CHWriterService(Service):
                     written = True
                 else:
                     self.logger.info(
-                        "Failed to write metrics: %s",
+                        "[%s] Failed to write records: %s",
+                        channel.name,
                         response.body
                     )
                     self.perf_metrics["records_spool_failed"] += 1
             except tornado.httpclient.HTTPError as e:
-                self.logger.error("Failed to spool %d records: %s",
-                                  n, e)
+                self.logger.error("[%s] Failed to spool %d records: %s",
+                                  channel.name, n, e)
             except Exception as e:
                 self.logger.error(
-                    "Failed to spool %d records due to unknown error: %s",
-                    n, e
+                    "[%s] Failed to spool %d records due to unknown error: %s",
+                    channel.name, n, e
                 )
             if written:
                 raise tornado.gen.Return()
@@ -155,7 +157,7 @@ class CHWriterService(Service):
             )
             self.perf_metrics["slept_time"] += int(timeout)
             yield tornado.gen.sleep(timeout)
-        self.logger.info("Recovering records")
+        self.logger.info("[%s] Recovering records", channel)
         channel.recover(n, data)
         channel.stop_flushing()
 
