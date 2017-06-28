@@ -96,7 +96,7 @@ class MetricsCheck(DiscoveryCheck):
             mt = MetricType.get_by_id(mt_id)
             if not mt:
                 continue
-            if not m.is_active or mt.scope != "o":
+            if not m.get("is_active") or mt.scope != "o":
                 continue
             le = m.get("low_error")
             lw = m.get("low_warn")
