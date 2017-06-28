@@ -15,6 +15,8 @@ import tornado.ioloop
 import tornado.iostream
 import tornado.httputil
 from http_parser.parser import HttpParser
+# NOC modules
+from noc.core.perf import metrics
 
 
 DEFAULT_CONNECT_TIMEOUT = 10
@@ -46,6 +48,8 @@ def fetch(url, method="GET",
     :param max_buffer_size:
     :return: code, headers, body
     """
+    metrics["httpclient_requests"] += 1
+    metrics["httpclient_%s_requests" % method] += 1
     io_loop = io_loop or tornado.ioloop.IOLoop.current()
     u = urlparse.urlparse(url)
     if ":" in u.netloc:
@@ -63,8 +67,10 @@ def fetch(url, method="GET",
                 io_loop=io_loop
             )
         except tornado.iostream.StreamClosedError:
+            metrics["httpclient_timeouts"] += 1
             raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection refused"))
         except tornado.gen.TimeoutError:
+            metrics["httpclient_timeouts"] += 1
             raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection timed out"))
         body = body or ""
         hd = {
@@ -79,13 +85,21 @@ def fetch(url, method="GET",
             hd.update(headers)
         h = tornado.httputil.HTTPHeaders(hd)
         req = "%s %s HTTP/2.0\n%s\n\n%s" % (method, u.path, h, body)
+        deadline = io_loop.time() + request_timeout
         try:
-            yield stream.write(req)
+            yield tornado.gen.with_timeout(
+                deadline,
+                future=stream.write(req),
+                io_loop=io_loop
+            )
         except tornado.iostream.StreamClosedError:
-            raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection reset"))
+            metrics["httpclient_timeouts"] += 1
+            raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection reset while sending request"))
+        except tornado.gen.TimeoutError:
+            metrics["httpclient_timeouts"] += 1
+            raise tornado.gen.Return((ERR_TIMEOUT, {}, "Timed out while sending request"))
         parser = HttpParser()
         response_body = []
-        deadline = io_loop.time() + request_timeout
         while not parser.is_message_complete():
             try:
                 data = yield tornado.gen.with_timeout(
@@ -94,8 +108,10 @@ def fetch(url, method="GET",
                     io_loop=io_loop
                 )
             except tornado.iostream.StreamClosedError:
+                metrics["httpclient_timeouts"] += 1
                 raise tornado.gen.Return((ERR_READ_TIMEOUT, {}, "Connection reset"))
             except tornado.gen.TimeoutError:
+                metrics["httpclient_timeouts"] += 1
                 raise tornado.gen.Return((ERR_READ_TIMEOUT, {}, "Request timed out"))
             received = len(data)
             parsed = parser.execute(data, received)
