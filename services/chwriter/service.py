@@ -15,7 +15,9 @@ import tornado.gen
 import tornado.httpclient
 # NOC modules
 from noc.core.service.base import Service
+from noc.core.http.client import fetch
 from channel import Channel
+from noc.core.perf import metrics
 
 
 class CHWriterService(Service):
@@ -55,7 +57,7 @@ class CHWriterService(Service):
     def get_channel(self, fields):
         if fields not in self.channels:
             self.channels[fields] = Channel(self, fields)
-            self.perf_metrics["channels_active"] += 1
+            metrics["channels_active"] += 1
         return self.channels[fields]
 
     def on_data(self, message, metrics, *args, **kwargs):
@@ -67,32 +69,32 @@ class CHWriterService(Service):
         ...
         <v1>\t...\t<vN>\n
         """
-        if self.perf_metrics["records_buffered"].value > self.config.records_buffer:
+        if metrics["records_buffered"].value > self.config.records_buffer:
             self.logger.info(
                 "Input buffer is full (%s/%s). Deferring message",
-                self.perf_metrics["records_buffered"].value,
+                metrics["records_buffered"].value,
                 self.config.records_buffer
             )
-            self.perf_metrics["deferred_messages"] += 1
+            metrics["deferred_messages"] += 1
             return False
         fields, data = metrics.split("\n", 1)
         channel = self.get_channel(fields)
         n = channel.feed(data)
-        self.perf_metrics["records_received"] += n
-        self.perf_metrics["records_buffered"] += n
+        metrics["records_received"] += n
+        metrics["records_buffered"] += n
         return True
 
     @tornado.gen.coroutine
     def report(self):
-        nm = self.perf_metrics["records_written"].value
+        nm = metrics["records_written"].value
         t = self.ioloop.time()
         if self.last_ts:
             speed = float(nm - self.last_metrics) / (t - self.last_ts)
             self.logger.info(
                 "Feeding speed: %.2frecords/sec, active channels: %s, buffered records: %d",
                 speed,
-                self.perf_metrics["channels_active"],
-                self.perf_metrics["records_buffered"].value
+                metrics["channels_active"],
+                metrics["records_buffered"].value
             )
         self.last_metrics = nm
         self.last_ts = t
@@ -103,7 +105,7 @@ class CHWriterService(Service):
         for x in expired:
             self.logger.info("Closing expired channel %s", x)
             del self.channels[x]
-        self.perf_metrics["channels_active"] = len(self.channels)
+        metrics["channels_active"] = len(self.channels)
         for c in list(self.channels):
             channel = self.channels[c]
             if channel.is_ready():
@@ -116,37 +118,39 @@ class CHWriterService(Service):
         data = channel.get_data()
         for i in range(10):
             t0 = self.ioloop.time()
-            self.logger.debug("Sending %d records to channel %s", n, channel.name)
-            client = tornado.httpclient.AsyncHTTPClient()
+            self.logger.debug("[%s] Sending %s records", channel.name, n)
             written = False
             try:
-                response = yield client.fetch(
+                code, headers, body = yield fetch(
                     "http://%s:%s/?database=%s&query=%s" % (
                         self.HOST, self.PORT, self.DB,
                         channel.get_encoded_insert_sql()),
                     method="POST",
                     body=data
                 )
-                if response.code == 200:
+                if code == 200:
                     self.logger.info(
                         "[%s] %d records sent in %.2fms",
                         channel.name,
                         n, (self.ioloop.time() - t0) * 1000
                     )
-                    self.perf_metrics["records_written"] += n
-                    self.perf_metrics["records_buffered"] -= n
+                    metrics["records_written"] += n
+                    metrics["records_buffered"] -= n
                     channel.stop_flushing()
                     written = True
+                elif code in (598, 599):
+                    self.logger.info(
+                        "[%s] Timed out",
+                        channel.name
+                    )
+                    metrics["records_spool_timeouts"] += 1
                 else:
                     self.logger.info(
-                        "[%s] Failed to write records: %s",
+                        "[%s] Failed to write records: %s %s",
                         channel.name,
-                        response.body
+                        code, body
                     )
-                    self.perf_metrics["records_spool_failed"] += 1
-            except tornado.httpclient.HTTPError as e:
-                self.logger.error("[%s] Failed to spool %d records: %s",
-                                  channel.name, n, e)
+                    metrics["records_spool_failed"] += 1
             except Exception as e:
                 self.logger.error(
                     "[%s] Failed to spool %d records due to unknown error: %s",
@@ -160,11 +164,12 @@ class CHWriterService(Service):
                 "Giving chance to recover. Waiting for %.2fms",
                 timeout * 1000
             )
-            self.perf_metrics["slept_time"] += int(timeout)
+            metrics["slept_time"] += int(timeout)
             yield tornado.gen.sleep(timeout)
         self.logger.info("[%s] Recovering records", channel)
         channel.recover(n, data)
         channel.stop_flushing()
+
 
 if __name__ == "__main__":
     CHWriterService().start()
