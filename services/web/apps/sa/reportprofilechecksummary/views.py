@@ -97,14 +97,14 @@ class ReportFilterApplication(SimpleReport):
             is_managed_g_in = ["discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" %
                                m_id for m_id in is_managed_undef_in]
 
-            bad_snmp_cred = get_db()["noc.joblog"].find({"problems.suggest_snmp": "Failed to guess SNMP community",
+            bad_snmp_cred = get_db()["noc.joblog"].find({"problems.suggest_snmp.": "Failed to guess SNMP community",
                                                          "_id": {"$in": is_managed_alive_in}},
                                                         read_preference=ReadPreference.SECONDARY_PREFERRED).count()
-            bad_cli_cred = get_db()["noc.joblog"].find({"problems.suggest_cli": "Failed to guess CLI credentials",
+            bad_cli_cred = get_db()["noc.joblog"].find({"problems.suggest_cli.": "Failed to guess CLI credentials",
                                                         "_id": {"$in": is_managed_ng_in}},
                                                        read_preference=ReadPreference.SECONDARY_PREFERRED).count()
             profile_not_found = get_db()["noc.joblog"].find({
-                "problems.profile": {"$regex": "^Not find profile for OID:.*"},
+                "problems.profile.": {"$regex": "^Not find profile for OID:.*"},
                 "_id": {"$in": is_managed_g_in}},
                 read_preference=ReadPreference.SECONDARY_PREFERRED).count()
 
@@ -116,11 +116,11 @@ class ReportFilterApplication(SimpleReport):
             # not_procc_yet = get_db()["noc.schedules.discovery." + p.name].find({"ls": {"$exists": False},
             #
             bad_snmp_cred_id = [r["_id"] for r in get_db()["noc.joblog"].find({
-                "problems.suggest_snmp": "Failed to guess SNMP community",
+                "problems.suggest_snmp.": "Failed to guess SNMP community",
                 "_id": {"$in": is_managed_alive_in}},
                 read_preference=ReadPreference.SECONDARY_PREFERRED)]
             profile_not_detect_id = [r["_id"] for r in get_db()["noc.joblog"].find({
-                "problems.profile": {"$regex": "^Cannot find profile in.*"},
+                "problems.profile.": {"$regex": "^Cannot find profile in.*"},
                 "_id": {"$in": is_managed_g_in}},
                 read_preference=ReadPreference.SECONDARY_PREFERRED)]
             not_procc_yet = 0
