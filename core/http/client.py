@@ -80,11 +80,14 @@ def fetch(url, method="GET",
         }
         if method == "POST":
             hd["Content-Length"] = str(len(body))
-            hd["Content-Type"] = "application/x-www-form-urlencoded"
+            # hd["Content-Type"] = "application/x-www-form-urlencoded"
         if headers:
             hd.update(headers)
         h = tornado.httputil.HTTPHeaders(hd)
-        req = "%s %s HTTP/2.0\n%s\n\n%s" % (method, u.path, h, body)
+        path = u.path
+        if u.query:
+            path += "?%s" % u.query
+        req = "%s %s HTTP/1.1\n%s\n\n%s" % (method, path, h, body)
         deadline = io_loop.time() + request_timeout
         try:
             yield tornado.gen.with_timeout(
