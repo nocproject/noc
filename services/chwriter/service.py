@@ -104,7 +104,7 @@ class CHWriterService(Service):
             self.logger.info("Closing expired channel %s", x)
             del self.channels[x]
         self.perf_metrics["channels_active"] = len(self.channels)
-        for c in self.channels:
+        for c in list(self.channels):
             channel = self.channels[c]
             if channel.is_ready():
                 yield self.flush_channel(channel)
