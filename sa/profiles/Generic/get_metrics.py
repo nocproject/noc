@@ -244,7 +244,7 @@ class CapabilityListRule(OIDRule):
     name = "caplist"
 
     def __init__(self, oid, type=None, scale=1, capability=None, separator=",", strip=True):
-        super(CapabilityIndexRule, self).__init__(oid, type=type, scale=scale)
+        super(CapabilityListRule, self).__init__(oid, type=type, scale=scale)
         self.capability = capability
         self.separator = separator
         self.strip = strip
