@@ -140,8 +140,8 @@ class CHWriterService(Service):
                     written = True
                 elif code in (598, 599):
                     self.logger.info(
-                        "[%s] Timed out",
-                        channel.name
+                        "[%s] Timed out: %s",
+                        channel.name, body
                     )
                     metrics["records_spool_timeouts"] += 1
                 else:
@@ -166,7 +166,7 @@ class CHWriterService(Service):
             )
             metrics["slept_time"] += int(timeout)
             yield tornado.gen.sleep(timeout)
-        self.logger.info("[%s] Recovering records", channel)
+        self.logger.info("[%s] Recovering records", channel.name)
         channel.recover(n, data)
         channel.stop_flushing()
 

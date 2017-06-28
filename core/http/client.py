@@ -96,7 +96,7 @@ def fetch(url, method="GET",
             except tornado.iostream.StreamClosedError:
                 raise tornado.gen.Return((ERR_READ_TIMEOUT, {}, "Connection reset"))
             except tornado.gen.TimeoutError:
-                raise tornado.gen.Return((ERR_READ_TIMEOUT, {}, "Connection timed out"))
+                raise tornado.gen.Return((ERR_READ_TIMEOUT, {}, "Request timed out"))
             received = len(data)
             parsed = parser.execute(data, received)
             if parsed != received:
