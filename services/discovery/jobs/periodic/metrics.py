@@ -460,12 +460,15 @@ class MetricsCheck(DiscoveryCheck):
             )
             return alarms
         # Check thresholds
+        path = m["name"]
         if "interface" in m["tags"]:
-            path = m["tags"]["interface"]
+            scope = m["tags"]["interface"]
         elif "probe" in m["tags"]:
-            path = m["tags"]["probe"]
+            scope = m["tags"]["probe"]
         else:
-            path = ""
+            scope = ""
+        if scope:
+            path += " | %s" % scope
         if cfg.low_error is not None and w_value <= cfg.low_error:
             alarms += [{
                 "alarm_class": self.AC_PM_LOW_ERROR,
@@ -473,6 +476,8 @@ class MetricsCheck(DiscoveryCheck):
                 "severity": cfg.low_error_severity,
                 "vars": {
                     "path": path,
+                    "metric": m["name"],
+                    "scope": scope,
                     "value": w_value,
                     "threshold": cfg.low_error,
                     "window_type": cfg.window_type,
@@ -487,6 +492,8 @@ class MetricsCheck(DiscoveryCheck):
                 "severity": cfg.low_warn_severity,
                 "vars": {
                     "path": path,
+                    "metric": m["name"],
+                    "scope": scope,
                     "value": w_value,
                     "threshold": cfg.low_warn,
                     "window_type": cfg.window_type,
@@ -501,6 +508,8 @@ class MetricsCheck(DiscoveryCheck):
                 "severity": cfg.high_error_severity,
                 "vars": {
                     "path": path,
+                    "metric": m["name"],
+                    "scope": scope,
                     "value": w_value,
                     "threshold": cfg.high_error,
                     "window_type": cfg.window_type,
@@ -515,6 +524,8 @@ class MetricsCheck(DiscoveryCheck):
                 "severity": cfg.high_warn_severity,
                 "vars": {
                     "path": path,
+                    "metric": m["name"],
+                    "scope": scope,
                     "value": w_value,
                     "threshold": cfg.high_warn,
                     "window_type": cfg.window_type,
