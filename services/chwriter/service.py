@@ -68,6 +68,11 @@ class CHWriterService(Service):
         <v1>\t...\t<vN>\n
         """
         if self.perf_metrics["records_buffered"].value > self.config.records_buffer:
+            self.logger.info(
+                "Input buffer is full (%s/%s). Deferring message",
+                self.perf_metrics["records_buffered"].value,
+                self.config.records_buffer
+            )
             self.perf_metrics["deferred_messages"] += 1
             return False
         fields, data = metrics.split("\n", 1)
