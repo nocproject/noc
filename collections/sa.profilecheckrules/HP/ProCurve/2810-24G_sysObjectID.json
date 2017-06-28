@@ -1,0 +1,13 @@
+{
+    "name": "HP | ProCurve | 2810-24G sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "7a2ffb3f-4577-4b0e-a8aa-68227f3058c0",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.11.2.3.7.11.63",
+    "action": "match",
+    "profile": "HP.ProCurve"
+}
