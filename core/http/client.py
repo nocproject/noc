@@ -81,7 +81,7 @@ def fetch(url, method="GET",
     metrics["httpclient_requests"] += 1
     metrics["httpclient_%s_requests" % method] += 1
     io_loop = io_loop or tornado.ioloop.IOLoop.current()
-    u = urlparse.urlparse(url)
+    u = urlparse.urlparse(str(url))
     if ":" in u.netloc:
         host, port = u.netloc.rsplit(":")
         port = int(port)
@@ -110,7 +110,7 @@ def fetch(url, method="GET",
             raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection timed out"))
         body = body or ""
         h = {
-            "Host": u.netloc,
+            "Host": str(u.netloc),
             "Connection": "close",
             "User-Agent": DEFAULT_USER_AGENT
         }
@@ -122,10 +122,10 @@ def fetch(url, method="GET",
         path = u.path
         if u.query:
             path += "?%s" % u.query
-        req = "%s %s HTTP/1.1\r\n%s\r\n\r\n%s" % (
+        req = b"%s %s HTTP/1.1\r\n%s\r\n\r\n%s" % (
             method,
             path,
-            "\r\n".join("%s: %s" % (k, h[k]) for k in h),
+            "\r\n".join(b"%s: %s" % (k, h[k]) for k in h),
             body
         )
         deadline = io_loop.time() + request_timeout
