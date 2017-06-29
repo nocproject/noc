@@ -156,7 +156,10 @@ class RPCProxy(object):
         )
         if response:
             if not is_notify:
-                result = ujson.loads(response)
+                try:
+                    result = ujson.loads(response)
+                except ValueError as e:
+                    raise RPCHTTPError("Cannot decode json: %s" % e)
                 if result.get("error"):
                     self._logger.error("RPC call failed: %s",
                                        result["error"])
