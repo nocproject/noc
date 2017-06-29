@@ -9,14 +9,16 @@
 # Python modules
 import socket
 import urlparse
+import threading
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
 import tornado.iostream
-import tornado.httputil
 from http_parser.parser import HttpParser
+import cachetools
 # NOC modules
 from noc.core.perf import metrics
+from noc.lib.validators import is_ipv4
 
 
 DEFAULT_CONNECT_TIMEOUT = 10
@@ -28,6 +30,33 @@ ERR_TIMEOUT = 599
 ERR_READ_TIMEOUT = 598
 ERR_PARSE_ERROR = 597
 
+NS_CACHE_SIZE = 1000
+RESOLVER_TTL = 3
+
+
+ns_lock = threading.Lock()
+ns_cache = cachetools.TTLCache(NS_CACHE_SIZE, ttl=RESOLVER_TTL)
+
+
+@tornado.gen.coroutine
+def resolve(host):
+    """
+    Resolve host and return address
+    :param host:
+    :return:
+    """
+    with ns_lock:
+        addr = ns_cache.get(host)
+    if addr:
+        raise tornado.gen.Return(addr)
+    try:
+        addr = socket.gethostbyname(host)
+        with ns_lock:
+            ns_cache[host] = addr
+        raise tornado.gen.Return(addr)
+    except socket.gaierror:
+        return None
+
 
 @tornado.gen.coroutine
 def fetch(url, method="GET",
@@ -35,6 +64,7 @@ def fetch(url, method="GET",
           connect_timeout=DEFAULT_CONNECT_TIMEOUT,
           request_timeout=DEFAULT_REQUEST_TIMEOUT,
           io_loop=None,
+          resolver=resolve,
           max_buffer_size=DEFAULT_BUFFER_SIZE):
     """
 
@@ -57,13 +87,19 @@ def fetch(url, method="GET",
         port = int(port)
     else:
         host, port = u.netloc, 80
+    if is_ipv4(host):
+        addr = host
+    else:
+        addr = yield resolver(host)
+    if not addr:
+        raise tornado.gen.Return((ERR_TIMEOUT, {}, "Cannot resolve host: %s" % host))
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         stream = tornado.iostream.IOStream(s, io_loop=io_loop)
         try:
             yield tornado.gen.with_timeout(
                 io_loop.time() + connect_timeout,
-                future=stream.connect((host, port)),
+                future=stream.connect((addr, port)),
                 io_loop=io_loop
             )
         except tornado.iostream.StreamClosedError:
@@ -73,21 +109,25 @@ def fetch(url, method="GET",
             metrics["httpclient_timeouts"] += 1
             raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection timed out"))
         body = body or ""
-        hd = {
+        h = {
             "Host": u.netloc,
             "Connection": "close",
             "User-Agent": DEFAULT_USER_AGENT
         }
         if method == "POST":
-            hd["Content-Length"] = str(len(body))
-            hd["Content-Type"] = "application/binary"
+            h["Content-Length"] = str(len(body))
+            h["Content-Type"] = "application/binary"
         if headers:
-            hd.update(headers)
-        h = tornado.httputil.HTTPHeaders(hd)
+            h.update(headers)
         path = u.path
         if u.query:
             path += "?%s" % u.query
-        req = "%s %s HTTP/1.1\r\n%s\r\n%s" % (method, path, h, body)
+        req = "%s %s HTTP/1.1\r\n%s\r\n\r\n%s" % (
+            method,
+            path,
+            "\r\n".join("%s: %s" % (k, h[k]) for k in h),
+            body
+        )
         deadline = io_loop.time() + request_timeout
         try:
             yield tornado.gen.with_timeout(
