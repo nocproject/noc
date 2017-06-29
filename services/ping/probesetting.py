@@ -16,7 +16,6 @@ POLICY_MAP = {
     "a": 1
 }
 
-
 class ProbeSetting(object):
     __slots__ = [
         "id",
@@ -73,12 +72,12 @@ class ProbeSetting(object):
     def is_differ(self, data):
         return (
             self.interval != data["interval"] or
-            self.policy != data["policy"] or
-            self.size != data["size"] or
-            self.count != data["count"] or
-            self.timeout != data["timeout"] or
-            self.report_rtt != data.get("report_rtt") or
-            self.report_attempts != data.get("report_attempts") or
+            self.policy != POLICY_MAP.get(data.get("policy", "f"), 0) or
+            self.size != max(data.get("size", 64), 64) or
+            self.count != max(data.get("count", 3), 1) or
+            self.timeout != max(data.get("timeout", 1000), 1) or
+            self.report_rtt != data.get("report_rtt", False) or
+            self.report_attempts != data.get("report_attempts", False) or
             self.time_expr != data.get("time_expr")
         )
 
