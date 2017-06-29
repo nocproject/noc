@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Eltex.MES.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -29,6 +29,16 @@ class Script(BaseScript):
         "C": 64, "S": 128, "D": 256,
         "H": 512, "TP": 1024,
     }
+
+    rx_detail = re.compile(
+        r"^Device ID: (?P<dev_id>\S+)\s*\n"
+        r"^Port ID: (?P<port_id>\S+)\s*\n"
+        r"^Capabilities:(?P<caps>.*)\n"
+        r"^System Name:(?P<sys_name>.*)\n"
+        r"^System description:(?P<sys_descr>.*)\n"
+        r"^Port description:(?P<port_descr>.*)\n",
+        re.MULTILINE
+    )
 
     def execute(self):
         r = []
@@ -92,7 +102,7 @@ class Script(BaseScript):
                     cap |= self.CAPS_MAP[c]
 
             # Get remote port subtype
-            remote_port_subtype = 1
+            remote_port_subtype = 5
             if self.rx_mac.match(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
@@ -109,7 +119,6 @@ class Script(BaseScript):
             elif is_int(remote_port):
                 # Actually local(7)
                 remote_port_subtype = 7
-
             i = {
                 "local_interface": local_interface,
                 "neighbors": []
@@ -117,13 +126,43 @@ class Script(BaseScript):
             n = {
                 "remote_chassis_id": remote_chassis_id,
                 "remote_port": remote_port,
-                "remote_capabilities": cap,
                 "remote_port_subtype": remote_port_subtype,
+                "remote_capabilities": cap,
             }
             if remote_system_name:
                 n["remote_system_name"] = remote_system_name
-            # @todo:
-            # n["remote_chassis_id_subtype"] = 4
+            try:
+                c = self.cli("show lldp neighbors %s" % local_interface)
+                match = self.rx_detail.search(c)
+                if match:
+                    remote_chassis_id = match.group("dev_id")
+                    if self.rx_mac.match(remote_chassis_id):
+                        remote_chassis_id = MACAddressParameter().clean(
+                            remote_chassis_id
+                        )
+                        remote_chassis_id_subtype = 4
+                    elif self.rx_mac2.match(remote_chassis_id):
+                        remote_chassis_id = MACAddressParameter().clean(
+                            remote_chassis_id
+                        )
+                        remote_chassis_id_subtype = 4
+                    elif is_ipv4(remote_chassis_id):
+                        remote_chassis_id_subtype = 5
+                    else:
+                        remote_chassis_id_subtype = 7
+                    n["remote_chassis_id"] = remote_chassis_id
+                    n["remote_chassis_id_subtype"] = remote_chassis_id_subtype
+                    if match.group("sys_name").strip():
+                        sys_name = match.group("sys_name").strip()
+                        n["remote_system_name"] = sys_name
+                    if match.group("sys_descr").strip():
+                        sys_descr = match.group("sys_descr").strip()
+                        n["remote_system_description"] = sys_descr
+                    if match.group("port_descr").strip():
+                        port_descr = match.group("port_descr").strip()
+                        n["remote_port_description"] = port_descr
+            except:
+                pass
             i["neighbors"] += [n]
             r += [i]
         return r
