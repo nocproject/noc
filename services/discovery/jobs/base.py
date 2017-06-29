@@ -31,7 +31,8 @@ from noc.core.service.error import RPCError, RPCRemoteError
 from noc.core.service.loader import get_service
 from noc.core.error import (
     ERR_CLI_AUTH_FAILED, ERR_CLI_NO_SUPER_COMMAND,
-    ERR_CLI_LOW_PRIVILEGES, ERR_CLI_SSH_PROTOCOL_ERROR
+    ERR_CLI_LOW_PRIVILEGES, ERR_CLI_SSH_PROTOCOL_ERROR,
+    ERR_CLI_CONNECTION_REFUSED
 )
 
 
@@ -288,6 +289,7 @@ class DiscoveryCheck(object):
         ERR_CLI_AUTH_FAILED,
         ERR_CLI_NO_SUPER_COMMAND,
         ERR_CLI_LOW_PRIVILEGES,
+        ERR_CLI_CONNECTION_REFUSED,
         ERR_CLI_SSH_PROTOCOL_ERROR
     ])
     # Error -> Alarm class mappings
@@ -295,6 +297,7 @@ class DiscoveryCheck(object):
         ERR_CLI_AUTH_FAILED: "Discovery | Error | Auth Failed",
         ERR_CLI_NO_SUPER_COMMAND: "Discovery | Error | No Super",
         ERR_CLI_LOW_PRIVILEGES: "Discovery | Error | Low Privileges",
+        ERR_CLI_CONNECTION_REFUSED: "Discovery | Error | Connection Refused",
         ERR_CLI_SSH_PROTOCOL_ERROR: "Discovery | Error | SSH Protocol"
     }
 
