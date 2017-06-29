@@ -102,7 +102,7 @@ class Script(BaseScript):
                     cap |= self.CAPS_MAP[c]
 
             # Get remote port subtype
-            remote_port_subtype = 5
+            remote_port_subtype = 1
             if self.rx_mac.match(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
