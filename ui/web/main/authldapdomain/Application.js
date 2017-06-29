@@ -140,6 +140,11 @@ Ext.define("NOC.main.authldapdomain.Application", {
                     ]
                 },
                 {
+                    name: "require_any_group",
+                    xtype: "checkbox",
+                    boxLabel: __("Require any group")
+                },
+                {
                     name: "groups",
                     xtype: "gridfield",
                     fieldLabel: __("Groups"),

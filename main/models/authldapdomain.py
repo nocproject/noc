@@ -69,6 +69,8 @@ class AuthLDAPDomain(Document):
     # Authenticate user only if the member of group, provided by DN
     # Authenticate anyway if empty
     require_group = StringField()
+    # Authenticane ony if any mapped group is active
+    require_any_group = BooleanField(default=False)
     # Do not authenticate user if the member of group, provided by DN
     # Ignore if empty
     deny_group = StringField()
