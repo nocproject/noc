@@ -48,9 +48,7 @@ class Script(BaseScript):
                 "local_interface": match.group("port"),
                 "neighbors": []
             }
-            print "%s\n" % match.group("port")
             for m in self.rx_entity.finditer(match.group("entities")):
-                print "222\n"
                 n = {}
                 n["remote_chassis_id_subtype"] = {
                     "chassis component": 1,
@@ -63,7 +61,6 @@ class Script(BaseScript):
                     "interface name": 6,
                     "local": 7
                 }[m.group("chassis_id_subtype").strip().lower()]
-                print "%s\n" % n
                 n["remote_chassis_id"] = m.group("chassis_id").strip()
                 remote_port_subtype = m.group("port_id_subtype")
                 remote_port_subtype.replace("_", " ")
