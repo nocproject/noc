@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Base geocoding class
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Base geocoding class
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from collections import namedtuple
-## Third-party modules
-import pycurl
-import six
+# NOC modules
+from noc.core.http.client import fetch_sync
 
 
 GeoCoderResult = namedtuple(
@@ -44,18 +43,15 @@ class BaseGeocoder(object):
         :param url:
         :return:
         """
-        buff = six.StringIO()
-        c = pycurl.Curl()
-        c.setopt(c.URL, url)
-        c.setopt(c.WRITEDATA, buff)
-        try:
-            c.perform()
-        except pycurl.error as e:
-            raise GeoCoderError(str(e))
-        finally:
-            code = c.getinfo(c.RESPONSE_CODE)
-            c.close()
-        return code, buff.getvalue()
+        code, headers, body = fetch_sync(
+            url,
+            follow_redirects=True,
+            validate_cert=False
+        )
+        if 200 <= code <= 299:
+            return code, body
+        else:
+            raise GeoCoderError("HTTP Error %s" % code)
 
     @staticmethod
     def get_path(data, path):
