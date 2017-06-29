@@ -12,15 +12,17 @@ import itertools
 import logging
 import time
 import random
+import threading
+import sys
 # Third-party modules
 import tornado.concurrent
 import tornado.gen
 import ujson
-from six.moves import queue
+import six
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from .client import (RPCError, RPCNoService, RPCHTTPError,
-                     RETRY_SOCKET_ERRORS, RPCException, RPCRemoteError)
+                     RPCException, RPCRemoteError)
 from noc.core.http.client import fetch
 from noc.core.perf import metrics
 
@@ -59,18 +61,23 @@ class RPCProxy(object):
             def _call():
                 try:
                     r = yield self._call(item, *args, **kwargs)
-                    q.put(r)
+                    result.append(r)
                 except tornado.gen.Return as e:
-                    q.put(e.value)
-                except Exception as e:
-                    q.put(e)
+                    result.append(e.value)
+                except Exception:
+                    error.append(sys.exc_info())
+                finally:
+                    ev.set()
 
-            q = queue.Queue()
+            ev = threading.Event()
+            result = []
+            error = []
             self._service.ioloop.add_callback(_call)
-            result = q.get()
-            if isinstance(result, Exception):
-                raise result
-            return result
+            ev.wait()
+            if error:
+                six.reraise(*error[0])
+            else:
+                return result[0]
 
         if item.startswith("_"):
             return self.__dict__[item]
