@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "Ruckus.SmartZone.get_chassis_id"
     cache = True
     interface = IGetChassisID
-    
+
     def execute(self):
         # Try SNMP first
         if self.has_snmp():
@@ -31,4 +31,4 @@ class Script(BaseScript):
                 pass
 
         # Fallback to CLI
-        raise Exception("Not implemented")    
+        raise Exception("Not implemented")

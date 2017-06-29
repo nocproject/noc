@@ -94,7 +94,7 @@ class Script(BaseScript):
                     vlans = vlans.replace(" ", ",")
                     tagged = self.expand_rangelist(vlans)
                     # For VRP version 5.3
-                    if r and r[-1]["interface"] == match.group("interface"): 
+                    if r and r[-1]["interface"] == match.group("interface"):
                         r[-1]["tagged"] += [v for v in tagged if v in known_vlans]
                         continue
             members = []

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Proscend.SHDSL.get_interfaces
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
-## Python modules
+# ---------------------------------------------------------------------
+# Proscend.SHDSL.get_interfaces
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+# Python modules
 import re
-## NOC modules
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.sa.interfaces.base import MACAddressParameter
@@ -57,7 +57,7 @@ class Script(BaseScript):
                         o_stat = True
                     else:
                         o_stat = False
-                    #print repr("%s\n" % admin_status)
+                    # print repr("%s\n" % admin_status)
                     interfaces += [{
                             "type": iftype,
                             "name": name,
@@ -74,6 +74,6 @@ class Script(BaseScript):
                                 "enabled_afi": ["BRIDGE"]
                             }]
                         }]
-                return [{"interfaces": interfaces}]    
+                return [{"interfaces": interfaces}]
             except self.snmp.TimeOutError:
                 pass

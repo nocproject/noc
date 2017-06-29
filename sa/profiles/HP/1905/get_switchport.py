@@ -58,7 +58,6 @@ class Script(BaseScript):
                     untagged = v[3]
 
                     s = self.hex_to_bin(untagged)
-                    print s
                     un = []
                     for i in range(len(s)):
                         if s[i] == '1':

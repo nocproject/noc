@@ -21,9 +21,7 @@ class Script(BaseScript):
             try:
                 c = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 v = c.split("$")
-                print v
                 pr = v[1].split()
-                print pr
                 platform = pr[1].strip()
                 vr = v[2].split()
                 for ver in vr:

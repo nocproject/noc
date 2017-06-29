@@ -103,12 +103,10 @@ class Script(BaseScript):
                         if not serial:
                             serial = t_sn
                         if not part_no:
-                            print "!!! UNKNOWN: ", match.groupdict()
                             continue
                     elif type == 'MOTHERBOARD':
                         part_no = "CISCO%s-MB" % match.group("descr")[1:5]
                     else:
-                        print "!!! UNKNOWN: ", match.groupdict()
                         continue
                 if serial in self.IGNORED_SERIAL:
                     serial = None
@@ -187,7 +185,7 @@ class Script(BaseScript):
                     }]
             return objects
         except self.CLISyntaxError:
-            print "%s command not supported" % cmd
+            pass
 
     def get_idprom(self, int, descr):
         try:
@@ -228,7 +226,6 @@ class Script(BaseScript):
             else:
                 return None, None, None, None
         except self.CLISyntaxError:
-            print "sh idprom command not supported"
             return None, None, None, None
 
 

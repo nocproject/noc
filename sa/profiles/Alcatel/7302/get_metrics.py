@@ -31,7 +31,6 @@ class SlotRule(OIDRule):
         else:
             sys_slot_index = [0]
 
-        print sys_slot_index
         for ms in sys_slot_index:
             if ms in [0]:
                 # nt-a card - 3 sensors

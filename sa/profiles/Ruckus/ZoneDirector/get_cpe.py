@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
 # Ruckus.ZoneDirector.get_cpe
 # ---------------------------------------------------------------------
@@ -36,7 +36,7 @@ class Script(BaseScript):
                     #cpename = self.snmp.get("1.3.6.1.4.1.25053.1.2.2.4.1.1.1.1.5." + cpeid)
                     s = str(self.snmp.get("1.3.6.1.4.1.25053.1.2.2.4.1.1.1.1.2.%s" % cpeid))
                     mac = MACAddressParameter().clean(s) # convert mac
-                    #print "%s\n" % mac                                             
+                    # print "%s\n" % mac
                     key = ".".join(str(int(x, 16)) for x in mac.split(":"))  # convert mac - > bytes
                     # print "%s\n" % key
                     status = self.snmp.get("1.3.6.1.4.1.25053.1.2.2.1.1.2.1.1.3.6.%s" % key)
@@ -61,7 +61,7 @@ class Script(BaseScript):
                         "description": description,
                         "location": location
                         })
-                    #print ("%s\n" % r)
+                    # print ("%s\n" % r)
                 return r
             except self.snmp.TimeOutError:
                 pass

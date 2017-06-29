@@ -61,7 +61,6 @@ class Script(BaseScript):
                     mac_gw = MACAddressParameter().clean([mac[0] for mac in macs if mac[3] == "Learned"][0])
         except self.CLISyntaxError:
             macs = parse_table(self.cli("show mac-addr-table"))
-            print(macs)
             f_mac_gw = [mac[0] for mac in macs if mac[2] == "1"]
             if not f_mac_gw:
                 f_mac_gw = [mac[0] for mac in macs if mac[2] == gw_vlan[0] and mac[3] == "Learned"]

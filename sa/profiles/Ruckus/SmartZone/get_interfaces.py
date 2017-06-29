@@ -45,7 +45,7 @@ class Script(BaseScript):
         # Try SNMP first
         if self.has_snmp():
             try:
-                for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True): 
+                for v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.1", cached=True):
                     i = v[1]
                     name = self.snmp.get("1.3.6.1.2.1.2.2.1.2.%s" % str(i))
                     iftype = self.get_interface_type(name)
@@ -59,7 +59,7 @@ class Script(BaseScript):
                     if status == 1:
                         admin_status = "up"
                     else:
-                        admin_status = "down" 
+                        admin_status = "down"
                     #print repr("%s\n" % admin_status)
                     interfaces += [{
                             "type": iftype,
@@ -72,7 +72,7 @@ class Script(BaseScript):
                                 "enabled_afi": ["BRIDGE"]
                             }]
                         }]
-                return [{"interfaces": interfaces}]    
+                return [{"interfaces": interfaces}]
             except self.snmp.TimeOutError:
                 pass
-        
+

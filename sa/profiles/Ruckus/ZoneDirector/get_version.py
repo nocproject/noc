@@ -16,16 +16,16 @@ class Script(BaseScript):
     name = "Ruckus.ZoneDirector.get_version"
     cache = True
     interface = IGetVersion
-    
+
     rx_ver = re.compile(r"\s*Version=\s+(?P<version>\S+).+\n", re.MULTILINE)
-    rx_platform = re.compile(r"^\s*Model=\s+(?P<platform>\S+)\s*\n", re.MULTILINE)         
+    rx_platform = re.compile(r"^\s*Model=\s+(?P<platform>\S+)\s*\n", re.MULTILINE)
     rx_serial = re.compile(r"^\s*Serial Number=\s+(?P<serial>\S+)\s*\n", re.MULTILINE)
     def execute(self):
         ver = self.cli("show sysinfo", cached=True)
-        #print (ver)
+        # print (ver)
         match = self.re_search(self.rx_ver, ver)
         pmatch = self.re_search(self.rx_platform, ver)
-        smatch = self.re_search(self.rx_serial, ver)   
+        smatch = self.re_search(self.rx_serial, ver)
         return {
             "vendor": "Ruckus",
             "platform": pmatch.group("platform"),

@@ -55,8 +55,6 @@ class Script(BaseScript):
                 consist only Interfaces"""
                 nextinterface = True
 
-            print("Format {0}".format(row[3]))
-
             r += [{
                 "interface": "Po %s" % interface['Group'],
                 "members": members,

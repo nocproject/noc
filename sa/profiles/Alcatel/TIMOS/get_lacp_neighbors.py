@@ -52,7 +52,6 @@ class Script(BaseScript):
                     is_table_body = False
                 if is_table_body:
                     row = l.split()
-                    print row
                     bundle += [{
                         "interface": row[0],
                         "local_port_id": row[1],

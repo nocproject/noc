@@ -79,7 +79,6 @@ class Script(BaseScript):
             serial = [match.group("serial"), None]["N/A" in match.group("serial")]
             rev = [match.group("vid"), None]["N/A" in match.group("vid")]
             if not part_no:
-                print "!!! UNKNOWN: ", match.groupdict()
                 continue
             else:
                 vendor = "CISCO" if "NoName" not in part_no else "NONAME"

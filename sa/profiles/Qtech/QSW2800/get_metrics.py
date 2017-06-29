@@ -15,7 +15,7 @@ class Script(GetMetricsScript):
     name = "Qtech.QSW2800.get_metrics"
 
 
-                    
+
 class SlotRule(OIDRule):
 
     name = "slot"

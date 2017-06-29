@@ -76,7 +76,6 @@ class Script(BaseScript):
         s_templ = self.get_teplate_bw(set(s_templ_table.values()))
         for ifindex in r:
             s = s_table.get(ifindex)
-            print s
             if s is not None:
                 s = int(s)
                 if s == 4294967295:
