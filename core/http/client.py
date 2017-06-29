@@ -33,6 +33,11 @@ ERR_PARSE_ERROR = 597
 NS_CACHE_SIZE = 1000
 RESOLVER_TTL = 3
 
+DEFAULT_PORTS = {
+    "http": 80,
+    "https": 443
+}
+
 
 ns_lock = threading.Lock()
 ns_cache = cachetools.TTLCache(NS_CACHE_SIZE, ttl=RESOLVER_TTL)
@@ -86,7 +91,10 @@ def fetch(url, method="GET",
         host, port = u.netloc.rsplit(":")
         port = int(port)
     else:
-        host, port = u.netloc, 80
+        host = u.netloc
+        port = DEFAULT_PORTS.get(u.scheme)
+        if not port:
+            raise tornado.gen.Return((ERR_TIMEOUT, {}, "Cannot resolve port for scheme: %s" % u.scheme))
     if is_ipv4(host):
         addr = host
     else:
@@ -95,11 +103,14 @@ def fetch(url, method="GET",
         raise tornado.gen.Return((ERR_TIMEOUT, {}, "Cannot resolve host: %s" % host))
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        stream = tornado.iostream.IOStream(s, io_loop=io_loop)
+        if u.scheme == "https":
+            stream = tornado.iostream.SSLIOStream(s, io_loop=io_loop)
+        else:
+            stream = tornado.iostream.IOStream(s, io_loop=io_loop)
         try:
             yield tornado.gen.with_timeout(
                 io_loop.time() + connect_timeout,
-                future=stream.connect((addr, port)),
+                future=stream.connect((addr, port), server_hostname=u.netloc),
                 io_loop=io_loop
             )
         except tornado.iostream.StreamClosedError:
