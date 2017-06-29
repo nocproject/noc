@@ -169,3 +169,28 @@ def fetch(url, method="GET",
         ))
     finally:
         s.close()
+
+
+def fetch_sync(url, method="GET",
+               headers=None, body=None,
+               connect_timeout=DEFAULT_CONNECT_TIMEOUT,
+               request_timeout=DEFAULT_REQUEST_TIMEOUT,
+               resolver=resolve,
+               max_buffer_size=DEFAULT_BUFFER_SIZE):
+
+    @tornado.gen.coroutine
+    def _fetch():
+        result = yield fetch(
+            url,
+            method=method, headers=headers, body=body,
+            connect_timeout=connect_timeout,
+            request_timeout=request_timeout,
+            resolver=resolver,
+            max_buffer_size=max_buffer_size
+        )
+        r.append(result)
+
+    r = []
+    ioloop = tornado.ioloop.IOLoop()
+    ioloop.run_sync(_fetch)
+    return r[0]
