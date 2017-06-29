@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## HTTP methods implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# HTTP methods implementation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import cStringIO
-## Third-party modules
+# Third-party modules
 import pycurl
 import ujson
-## NOC modules
+# NOC modules
 from noc.core.log import PrefixLoggerAdapter
 
 
@@ -74,8 +74,8 @@ class HTTP(object):
         if json:
             try:
                 result = ujson.loads(result)
-            except ValueError, why:
-                raise self.HTTPError("Failed to decode JSON: %s", why)
+            except ValueError as e:
+                raise self.HTTPError("Failed to decode JSON: %s", e)
         self.logger.debug("Result: %r", result)
         return result
 
@@ -101,8 +101,8 @@ class HTTP(object):
         if json:
             try:
                 return ujson.loads(result)
-            except ValueError, why:
-                raise self.HTTPError("Failed to decode JSON: %s", why)
+            except ValueError as e:
+                raise self.HTTPError("Failed to decode JSON: %s", e)
         self.logger.debug("Result: %r", result)
         return result
 
