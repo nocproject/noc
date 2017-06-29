@@ -12,7 +12,7 @@ import urllib
 # Third-party modules
 import six
 # NOC modules
-from noc.core.http.client import fetch
+from noc.core.http.client import fetch_sync
 
 
 class ClickhouseError(Exception):
@@ -45,7 +45,7 @@ class ClickhouseClient(object):
                 sql = sql % tuple(q(v) for v in args)
             qs += ["query=%s" % urllib.quote(sql.encode('utf8'))]
         url = "http://%s:%s/?%s" % (self.HOST, self.PORT, "&".join(qs))
-        code, headers, body = fetch(
+        code, headers, body = fetch_sync(
             url,
             method="POST" if post else "GET",
             body=post if post else None,

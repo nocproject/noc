@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # InfluxDB client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import urllib
 import ujson
 # NOC modules
 from noc.core.config.base import config
-from noc.core.http.client import fetch
+from noc.core.http.client import fetch_sync
 
 
 class InfluxDBClient(object):
@@ -39,7 +39,7 @@ class InfluxDBClient(object):
             config.influx_db,
             urllib.quote(query)
         )
-        code, headers, body = fetch(
+        code, headers, body = fetch_sync(
             url,
             connect_timeout=self.CONNECT_TIMEOUT,
             request_timeout=self.REQUEST_TIMEOUT
