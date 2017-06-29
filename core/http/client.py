@@ -10,6 +10,7 @@
 import socket
 import urlparse
 import threading
+import ssl
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -25,6 +26,7 @@ DEFAULT_CONNECT_TIMEOUT = 10
 DEFAULT_REQUEST_TIMEOUT = 3600
 DEFAULT_USER_AGENT = "NOC"
 DEFAULT_BUFFER_SIZE = 128 * 1024
+DEFAULT_MAX_REDIRECTS = 5
 
 ERR_TIMEOUT = 599
 ERR_READ_TIMEOUT = 598
@@ -70,7 +72,10 @@ def fetch(url, method="GET",
           request_timeout=DEFAULT_REQUEST_TIMEOUT,
           io_loop=None,
           resolver=resolve,
-          max_buffer_size=DEFAULT_BUFFER_SIZE):
+          max_buffer_size=DEFAULT_BUFFER_SIZE,
+          follow_redirects=False,
+          max_redirects=DEFAULT_MAX_REDIRECTS,
+          validate_cert=False):
     """
 
     :param url:
@@ -104,7 +109,12 @@ def fetch(url, method="GET",
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         if u.scheme == "https":
-            stream = tornado.iostream.SSLIOStream(s, io_loop=io_loop)
+            ssl_options = {}
+            if validate_cert:
+                ssl_options["cert_reqs"] = ssl.CERT_REQUIRED
+            stream = tornado.iostream.SSLIOStream(
+                s, io_loop=io_loop, ssl_options=ssl_options
+            )
         else:
             stream = tornado.iostream.IOStream(s, io_loop=io_loop)
         try:
@@ -173,9 +183,31 @@ def fetch(url, method="GET",
                 raise tornado.gen.Return((ERR_PARSE_ERROR, {}, "Parse error"))
             if parser.is_partial_body():
                 response_body += [parser.recv_body()]
+        code = parser.get_status_code()
+        parsed_headers = parser.get_headers()
+        if 300 <= code <= 399 and follow_redirects:
+            # Process redirect
+            if max_redirects > 0:
+                new_url = parsed_headers.get("Location")
+                if not new_url:
+                    raise tornado.gen.Return((ERR_PARSE_ERROR, {}, "No Location header"))
+                code, parsed_headers, response_body = yield fetch(
+                    new_url,
+                    method=method, headers=headers, body=body,
+                    connect_timeout=connect_timeout,
+                    request_timeout=request_timeout,
+                    resolver=resolver,
+                    max_buffer_size=max_buffer_size,
+                    follow_redirects=follow_redirects,
+                    max_redirects=max_redirects - 1,
+                    validate_cert=validate_cert
+                )
+                raise tornado.gen.Return((code, parsed_headers, response_body))
+            else:
+                raise tornado.gen.Return((404, {}, "Redirect limit exceeded"))
         raise tornado.gen.Return((
-            parser.get_status_code(),
-            parser.get_headers(),
+            code,
+            parsed_headers,
             "".join(response_body)
         ))
     finally:
@@ -187,7 +219,10 @@ def fetch_sync(url, method="GET",
                connect_timeout=DEFAULT_CONNECT_TIMEOUT,
                request_timeout=DEFAULT_REQUEST_TIMEOUT,
                resolver=resolve,
-               max_buffer_size=DEFAULT_BUFFER_SIZE):
+               max_buffer_size=DEFAULT_BUFFER_SIZE,
+               follow_redirects=False,
+               max_redirects=DEFAULT_MAX_REDIRECTS,
+               validate_cert=False):
 
     @tornado.gen.coroutine
     def _fetch():
@@ -197,7 +232,10 @@ def fetch_sync(url, method="GET",
             connect_timeout=connect_timeout,
             request_timeout=request_timeout,
             resolver=resolver,
-            max_buffer_size=max_buffer_size
+            max_buffer_size=max_buffer_size,
+            follow_redirects=follow_redirects,
+            max_redirects=max_redirects,
+            validate_cert=validate_cert
         )
         r.append(result)
 
