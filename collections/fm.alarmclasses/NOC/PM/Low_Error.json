@@ -2,7 +2,7 @@
     "name": "NOC | PM | Low Error",
     "$collection": "fm.alarmclasses",
     "uuid": "dbe0d74c-0f5f-4392-9ca0-28df58caed28",
-    "desciption": "Alarm Class for low thresholds",
+    "desciption": "Alarm Class for low error thresholds",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "MAJOR",
@@ -17,7 +17,7 @@
         },
         {
             "name": "path",
-            "description": "Path to component raising alarm "
+            "description": "Path to component raising alarm"
         },
         {
             "name": "value",
@@ -40,7 +40,7 @@
             "description": "Function apply to window"
         }
     ],
-    "subject_template": "Measured values are out of low threshold",
+    "subject_template": "{{alarm.vars.metric}} measured value Low Error on {{alarm.managed_object.name}}: {{ alarm.vars.path }}",
     "body_template": "Measured values: {{ alarm.vars.value }} for {{alarm.vars.metric}} are out of normal range: {{alarm.vars.threshold}} on {{alarm.managed_object.name}}: {{ alarm.vars.path }}.  (Managed Object IP: {{alarm.managed_object.address}})",
     "symptoms": "Values are out of first threshold value.",
     "probable_causes": "",

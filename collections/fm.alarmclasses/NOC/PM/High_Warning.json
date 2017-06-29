@@ -2,7 +2,7 @@
     "name": "NOC | PM | High Warning",
     "$collection": "fm.alarmclasses",
     "uuid": "51c2a38c-82f0-4b85-994c-5369e8834ec5",
-    "desciption": "Alarm Class for low thresholds",
+    "desciption": "Alarm Class for high warning thresholds",
     "is_unique": true,
     "user_clearable": true,
     "default_severity__name": "WARNING",
@@ -17,7 +17,7 @@
         },
         {
             "name": "path",
-            "description": "Path to component raising alarm "
+            "description": "Path to component raising alarm"
         },
         {
             "name": "value",
@@ -40,7 +40,7 @@
             "description": "Function apply to window"
         }
     ],
-    "subject_template": "Measured values are out of high threshold",
+    "subject_template": "{{alarm.vars.metric}} measured value High Warning on {{alarm.managed_object.name}}: {{ alarm.vars.path }}",
     "body_template": "Measured values: {{ alarm.vars.value }} for {{alarm.vars.metric}} are out of normal range: {{alarm.vars.threshold}} on {{alarm.managed_object.name}}: {{ alarm.vars.path }}.  (Managed Object IP: {{alarm.managed_object.address}})",
     "symptoms": "Values are out of second threshold value.",
     "probable_causes": "Metric value cross critical threshold",
