@@ -68,6 +68,9 @@ class UDPSocket(object):
         self.stop_timeout()
         self.timeout = timeout
 
+    def get_timeout(self):
+        return self.timeout
+
     def start_timeout(self):
         self.stop_timeout()
         if self.timeout:
