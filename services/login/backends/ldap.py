@@ -50,8 +50,7 @@ class LdapBackend(BaseAuthBackend):
         )
         if not connect.bind():
             raise self.LoginError(
-                "Failed to bind to LDAP: %s",
-                connect.result
+                "Failed to bind to LDAP: %s" % connect.result
             )
         # Rebind as privileged user
         if ldap_domain.bind_user:
@@ -76,6 +75,12 @@ class LdapBackend(BaseAuthBackend):
         user_info["is_active"] = True
         # Get user groups
         user_groups = set(g.lower() for g in self.get_user_groups(connect, ldap_domain, user_info))
+        if ldap_domain.require_any_group and not user_groups:
+            self.logger.error(
+                "User %s in not a member of any mapped groups. Deny access",
+                user
+            )
+            raise self.LoginError("No groups")
         if ldap_domain.require_group and ldap_domain.require_group.lower() not in user_groups:
             self.logger.error(
                 "User %s is not a member of required group %s but member of %s",
