@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # inv.map application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,6 @@ import json
 import datetime
 import threading
 # Third-party modules
-import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import six
 # NOC modules

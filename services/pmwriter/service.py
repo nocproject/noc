@@ -12,7 +12,6 @@ import time
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-import tornado.httpclient
 # NOC modules
 from noc.core.service.base import Service
 from noc.core.http.client import fetch
