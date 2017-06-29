@@ -58,6 +58,7 @@ INCONSISTENT_NAME = 18
 
 # Virtual code
 TIMED_OUT = -1
+UNREACHABLE = -2
 
 
 class SNMPError(Exception):
