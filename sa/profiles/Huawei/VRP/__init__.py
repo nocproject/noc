@@ -23,7 +23,7 @@ class Profile(BaseProfile):
         (r"^Squeeze flash:", "y\n\r")
     ]
     pattern_prompt = \
-        r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:]+)" \
+        r"^[<#\[](?P<hostname>[a-zA-Z0-9-_\\\.\[\(/`'\"\|\s:,]+)" \
         r"(?:-[a-zA-Z0-9/]+)*[>#\]\)]"
     pattern_syntax_error = \
         r"(ERROR: |% Wrong parameter found at|" \
