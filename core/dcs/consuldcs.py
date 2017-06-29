@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Distributed coordinated storage
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Distributed coordinated storage
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import uuid
 import random
 import time
-## Third-party modules
+# Third-party modules
 from six.moves.urllib.parse import unquote
 import tornado.gen
 import tornado.ioloop
@@ -18,8 +19,8 @@ import tornado.httpclient
 import consul.base
 import consul.tornado
 import ujson
-## NOC modules
-from base import DCSBase, ResolverBase
+# NOC modules
+from .base import DCSBase, ResolverBase
 from noc.core.perf import metrics
 
 ConsulRepeatableErrors = consul.base.Timeout
@@ -125,8 +126,9 @@ class ConsulResolver(ResolverBase):
             if old_index == index:
                 continue  # Timed out
             r = dict(
-                (svc["Service"]["ID"], "%s:%s" % (
-                    svc["Service"]["Address"], svc["Service"]["Port"]))
+                (str(svc["Service"]["ID"]), "%s:%s" % (
+                    str(svc["Service"]["Address"]),
+                    str(svc["Service"]["Port"])))
                 for svc in services
             )
             self.set_services(r)
@@ -515,5 +517,5 @@ class ConsulDCS(DCSBase):
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue
             for svc in services:
-                return "%s:%s" % (svc["ServiceAddress"],
-                                  svc["ServicePort"])
+                return "%s:%s" % (str(svc["ServiceAddress"]),
+                                  str(svc["ServicePort"]))

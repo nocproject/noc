@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Distributed coordinated storage
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Distributed coordinated storage
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import logging
 import signal
 import os
@@ -14,12 +14,12 @@ from threading import Lock
 import random
 import datetime
 import Queue
-## Third-party modules
+# Third-party modules
 import tornado.gen
 import tornado.locks
 import tornado.ioloop
 from six.moves.urllib.parse import urlparse
-## Python modules
+# Python modules
 from noc.core.perf import metrics
 
 
@@ -51,7 +51,7 @@ class DCSBase(object):
     def start(self):
         """
         Run IOLoop if not started yet
-        :return: 
+        :return:
         """
         self.resolver_expiration_task.start()
         self.ioloop.start()
@@ -59,7 +59,7 @@ class DCSBase(object):
     def stop(self):
         """
         Stop IOLoop if not stopped yet
-        :return: 
+        :return:
         """
         self.resolver_expiration_task.stop()
         self.ioloop.stop()
@@ -68,13 +68,13 @@ class DCSBase(object):
     def register(self, name, address, port, pool=None, lock=None, tags=None):
         """
         Register service
-        :param name: 
-        :param address: 
-        :param port: 
-        :param pool: 
+        :param name:
+        :param address:
+        :param port:
+        :param pool:
         :param lock:
         :param tags: List of extra tags
-        :return: 
+        :return:
         """
         raise NotImplementedError()
 
@@ -87,8 +87,8 @@ class DCSBase(object):
         """
         Acquire shard slot
         :param name: <service name>-<pool>
-        :param limit: Configured limit        
-        :return: (slot number, number of instances) 
+        :param limit: Configured limit
+        :return: (slot number, number of instances)
         """
         raise NotImplementedError()
 
@@ -132,10 +132,10 @@ class DCSBase(object):
     def resolve_sync(self, name, hint=None):
         """
         Returns *hint* when service is active or new service
-        instance, 
-        :param name: 
-        :param hint: 
-        :return: 
+        instance,
+        :param name:
+        :param hint:
+        :return:
         """
         q = Queue.Queue()
         self.ioloop.add_callback(self._resolve_sync, q, name, hint)
@@ -181,7 +181,7 @@ class ResolverBase(object):
         """
         Update actual list of services
         :param services: dict of service_id -> <address>:<port>
-        :return: 
+        :return:
         """
         if self.to_shutdown:
             return
@@ -222,14 +222,14 @@ class ResolverBase(object):
     def policy_random(self):
         """
         Randomly select service
-        :return: 
+        :return:
         """
         return random.choice(self.service_ids)
 
     def policy_rr(self):
         """
         Round-robin selection of service
-        :return: 
+        :return:
         """
         self.rr_index = min(self.rr_index + 1, len(self.service_ids) - 1)
         return self.service_ids[self.rr_index]
