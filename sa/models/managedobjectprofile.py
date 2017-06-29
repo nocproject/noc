@@ -28,14 +28,30 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
 from .objectmap import ObjectMap
-from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter, IntParameter)
+from noc.sa.interfaces.base import (DictListParameter, ObjectIdParameter, BooleanParameter,
+                                    IntParameter, StringParameter)
 
 m_valid = DictListParameter(attrs={"metric_type": ObjectIdParameter(required=True),
-                                   "is_active": BooleanParameter(required=True),
+                                   "is_active": BooleanParameter(default=False),
+                                   "is_stored": BooleanParameter(default=True),
+                                   "window_type": StringParameter(choices=["m", "t"],
+                                                                  default="m"),
+                                   "window": IntParameter(default=1),
+                                   "window_function": StringParameter(choices=["handler", "last", "avg",
+                                                                               "percentile", "q1", "q2", "q3",
+                                                                               "p95", "p99"],
+                                                                      default="last"),
+                                   "window_config": StringParameter(default=None),
+                                   "window_related": BooleanParameter(default=False),
                                    "low_error": IntParameter(required=False),
                                    "high_error": IntParameter(required=False),
                                    "low_warn": IntParameter(required=False),
-                                   "high_warn": IntParameter(required=False)})
+                                   "high_warn": IntParameter(required=False),
+                                   "low_error_weight": IntParameter(default=10),
+                                   "low_warn_weight": IntParameter(default=1),
+                                   "high_warn_weight": IntParameter(default=1),
+                                   "high_error_weight": IntParameter(default=10)})
+
 id_lock = Lock()
 
 
