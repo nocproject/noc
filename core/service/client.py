@@ -9,8 +9,6 @@
 # Python modules
 from __future__ import absolute_import
 import errno
-# Third-party modules
-import pycurl
 # NOC modules
 from .loader import get_service
 from .error import (RPCError, RPCHTTPError, RPCException, RPCNoService,
@@ -31,12 +29,6 @@ RETRIES = 5
 #
 RETRY_SOCKET_ERRORS = (errno.ECONNREFUSED, errno.EHOSTDOWN,
                        errno.EHOSTUNREACH, errno.ENETUNREACH)
-
-RETRY_CURL_ERRORS = set([
-    pycurl.E_COULDNT_CONNECT,
-    pycurl.E_OPERATION_TIMEDOUT,
-    pycurl.E_RECV_ERROR
-])
 
 
 def open_sync_rpc(name, pool=None, calling_service=None, hints=None):
