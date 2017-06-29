@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SNMP methods implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SNMP methods implementation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import tornado.ioloop
 import tornado.gen
-## NOC modules
+# NOC modules
 from noc.core.ioloop.snmp import (snmp_get, snmp_count, snmp_getnext,
                                   snmp_set)
 from noc.core.snmp.error import SNMPError, TIMED_OUT
@@ -36,8 +36,8 @@ class SNMP(object):
     def set_timeout_limits(self, n):
         """
         Set sequental timeouts l
-        :param n: 
-        :return: 
+        :param n:
+        :return:
         """
         self.timeouts_limit = n
         self.timeouts = n
@@ -216,7 +216,7 @@ class SNMP(object):
                 pass
 
     def get_tables(self, oids, community_suffix=None, bulk=False,
-                      min_index=None, max_index=None, cached=False):
+                   min_index=None, max_index=None, cached=False):
         """
         Query list of SNMP tables referenced by oids and yields
         tuples of (key, value1, ..., valueN)
