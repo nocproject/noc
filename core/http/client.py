@@ -154,7 +154,7 @@ def fetch(url, method="GET",
         try:
             yield tornado.gen.with_timeout(
                 deadline,
-                future=stream.write(req),
+                future=stream.write(bytes(req)),
                 io_loop=io_loop
             )
         except tornado.iostream.StreamClosedError:
