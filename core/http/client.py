@@ -131,6 +131,8 @@ def fetch(url, method="GET",
             metrics["httpclient_timeouts"] += 1
             raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection timed out"))
         body = body or ""
+        if isinstance(body, unicode):
+            body = body.encode("utf-8")
         h = {
             "Host": str(u.netloc),
             "Connection": "close",
@@ -154,7 +156,7 @@ def fetch(url, method="GET",
         try:
             yield tornado.gen.with_timeout(
                 deadline,
-                future=stream.write(bytes(req)),
+                future=stream.write(req),
                 io_loop=io_loop
             )
         except tornado.iostream.StreamClosedError:
