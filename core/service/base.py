@@ -24,7 +24,6 @@ import tornado.gen
 import tornado.web
 import tornado.netutil
 import tornado.httpserver
-import tornado.httpclient
 import setproctitle
 import nsq
 import ujson
