@@ -1,25 +1,24 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Various debugging and error logging utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Various debugging and error logging utilities
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import sys
 import re
 import logging
 import datetime
 import os
-import stat
 import hashlib
 import pprint
 import traceback
 import uuid
-## Third-party modules
+# Third-party modules
 import ujson
-## NOC modules
+# NOC modules
 from noc.settings import TRACEBACK_REVERSE, SENTRY_URL
 from noc.lib.version import get_branch, get_tip
 from noc.lib.fileutils import safe_rewrite
@@ -37,7 +36,7 @@ CP_SET_UID = None
 
 SERVICE_NAME = os.path.relpath(sys.argv[0] or sys.executable)
 
-## Sentry error reporting
+# Sentry error reporting
 if SENTRY_URL:
     from raven import Client as RavenClient
 
@@ -107,9 +106,8 @@ def get_traceback_frames(tb):
         lineno = tb.tb_lineno - 1
         loader = tb.tb_frame.f_globals.get("__loader__")
         module_name = tb.tb_frame.f_globals.get("__name__")
-        pre_context_lineno, pre_context, context_line,\
-        post_context = get_lines_from_file(filename, lineno, 7,
-                                           loader, module_name)
+        pre_context_lineno, pre_context, context_line, post_context = get_lines_from_file(
+            filename, lineno, 7, loader, module_name)
         if pre_context_lineno is not None:
             frames += [{
                 "tb": tb,
@@ -147,9 +145,8 @@ def get_execution_frames(frame):
         lineno = frame.f_lineno - 1
         loader = frame.f_globals.get("__loader__")
         module_name = frame.f_globals.get("__name__")
-        pre_context_lineno, pre_context, context_line,\
-        post_context = get_lines_from_file(filename, lineno, 7,
-                                           loader, module_name)
+        pre_context_lineno, pre_context, context_line, post_context = get_lines_from_file(
+            filename, lineno, 7, loader, module_name)
         if pre_context_lineno is not None:
             frames += [{
                 "filename": filename,
@@ -348,8 +345,7 @@ def error_fingerprint():
             tb_file = tb_file.replace(p, "python2.X")
         tb_function = tb.tb_frame.f_code.co_name
         tb_lineno = tb.tb_lineno - 1
-        if not (tb_file.startswith("..") or
-                    tb_file.startswith("lib/python")):
+        if not (tb_file.startswith("..") or tb_file.startswith("lib/python")):
             noc_file = tb_file
             noc_function = tb_function
             noc_lineno = tb_lineno
