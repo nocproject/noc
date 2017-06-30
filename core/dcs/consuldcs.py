@@ -46,7 +46,11 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
         )
         if code == 500 or code == 599:
             raise consul.base.Timeout
-        raise tornado.gen.Return(callback(code, headers, body))
+        raise tornado.gen.Return(
+            callback(
+                consul.base.Response(code=code, headers=headers, body=body)
+            )
+        )
 
     def get(self, callback, path, params=None):
         url = self.uri(path, params)
@@ -64,7 +68,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
     def post(self, callback, path, params=None, data=''):
         url = self.uri(path, params)
         return self._request(callback, url, method="POST",
-                             body="" if data is None else data)
+                             body=data)
 
 
 class ConsulClient(consul.base.Consul):
