@@ -726,7 +726,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     allowBlank: true,
                                                     minValue: 0,
                                                     uiStyle: "small"
-                                                },
+                                                }
                                             ]
                                         },
                                         {
@@ -820,7 +820,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             uiStyle: "small"
                                         }
                                     ]
-                                },
+                                }
                             ]
                         },
                         {
@@ -866,7 +866,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     renderer: NOC.render.Duration
                                                 }
                                             ]
-                                        },
+                                        }
                                     ]
                                 },
                                 {
@@ -915,7 +915,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             xtype: "combobox",
                                             fieldLabel: __("Periodic Alarm"),
                                             allowBlank: true,
-                                            labelWidth: 80,
+                                            labelWidth: 90,
                                             labelAlign: "left",
                                             uiStyle: "medium",
                                             store: [
@@ -945,7 +945,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             uiStyle: "small"
                                         }
                                     ]
-                                },
+                                }
                             ]
                         },
                         {
@@ -974,6 +974,64 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             width: 50,
                                             renderer: NOC.render.Bool,
                                             editor: "checkbox"
+                                        },
+                                        {
+                                            text: __("Is Stored"),
+                                            dataIndex: "is_stored",
+                                            width: 50,
+                                            renderer: NOC.render.Bool,
+                                            editor: "checkbox"
+                                        },
+                                        {
+                                            text: __("Window Type"),
+                                            dataIndex: "window_type",
+                                            width: 80,
+                                            editor: {
+                                                xtype: "combo",
+                                                editable: false,
+                                                // mode: "local",
+                                                // value: "m",
+                                                // displayField: 'text',
+                                                // valueField: 'value',
+                                                store: [
+                                                    ["m", "Measurements"],
+                                                    ["t", "Time"]
+                                                ]
+                                            },
+                                            align: "right"
+                                        },
+                                        {
+                                            text: __("Window"),
+                                            dataIndex: "window",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right"
+                                        },
+                                        {
+                                            text: __("Window Function"),
+                                            dataIndex: "window_function",
+                                            width: 70,
+                                            editor: {
+                                                xtype: "combobox",
+                                                store: [
+                                                    ["last", "Last Value"],
+                                                    ["avg", "Average"],
+                                                    ["percentile", "Percentile"],
+                                                    ["q1", "1st quartile"],
+                                                    ["q2", "2st quartile"],
+                                                    ["q3", "3st quartile"],
+                                                    ["p95", "95% percentile"],
+                                                    ["p99", "99% percentile"],
+                                                    ["handler", "Handler"]
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            text: __("Config"),
+                                            dataIndex: "window_config",
+                                            width: 80,
+                                            editor: "textfield"
+                                            //value: ""
                                         },
                                         {
                                             text: __("Low Error"),
@@ -1007,6 +1065,41 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             align: "right",
                                             renderer: NOC.render.Size
                                         }
+                                        /*
+                                        {
+                                            text: __("Low Error Weight"),
+                                            dataIndex: "low_error_weight",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: __("Low Warn Wight"),
+                                            dataIndex: "low_warn_weight",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: __("High Warn Wight"),
+                                            dataIndex: "high_warn_weight",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: __("High Error Wight"),
+                                            dataIndex: "high_error_weight",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        }
+                                        */
+
                                     ]
 
                                 }
