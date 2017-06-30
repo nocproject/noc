@@ -137,7 +137,7 @@ class SAEAPI(API):
          ap_user, ap_password, ap_super_password,
          ap_snmp_ro, ap_snmp_rw, attrs) = data[0]
         # Get attributes
-        attributes = dict(a.split(" := ", 1) for a in attrs)
+        attributes = dict(a.split(" := ", 1) for a in attrs if a)
         # Check object is managed
         if not is_managed:
             raise APIError("Object is not managed")
