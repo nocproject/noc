@@ -57,8 +57,8 @@ class BaseCommand(object):
             self.setup_logging(loglevel)
         try:
             return self.handle(*args, **cmd_options) or 0
-        except CommandError, why:
-            self.stderr.write(str(why))
+        except CommandError as e:
+            self.stderr.write(str(e))
             self.stderr.write("\n")
             self.stderr.flush()
             return 1
