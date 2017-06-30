@@ -188,6 +188,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                             metrics["escalation_tt_retry"] += 1
                             log("Temporary error detected. Retry after %ss", RETRY_TIMEOUT)
                             Job.retry_after(RETRY_TIMEOUT, str(e))
+                            mo.tt_system.register_failure()
                         ctx["tt"] = "%s:%s" % (mo.tt_system.name, tt_id)
                         alarm.escalate(ctx["tt"], close_tt=a.close_tt)
                         if tts.promote_group_tt:
@@ -327,6 +328,7 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                     log("Temporary error detected while closing tt %s: %s", tt_id, e)
                     metrics["escalation_tt_close_retry"] += 1
                     Job.retry_after(RETRY_TIMEOUT, str(e))
+                    cts.register_failure()
                 except TTError as e:
                     log("Failed to close tt %s: %s",
                         tt_id, e)
