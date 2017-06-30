@@ -130,6 +130,7 @@ class Application(object):
 
     def __init__(self, site):
         self.site = site
+        self.service = site.service  # Set by web
         parts = self.__class__.__module__.split(".")
         if parts[1] == "custom":
             self.module = parts[5]

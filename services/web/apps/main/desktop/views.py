@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # main.desktop application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ class DesktopApplication(ExtApplication):
         Get theme for request
         """
         user = request.user
-        language = self.site.service.config.language
+        language = self.service.config.language
         if user.is_authenticated:
             try:
                 profile = user.get_profile()
