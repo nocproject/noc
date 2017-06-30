@@ -487,6 +487,7 @@ class ManagedObject(Model):
         if (
             self.initial_data["id"] is None or
             "is_managed" in self.changed_fields or
+            "object_profile" in self.changed_fields or
             "trap_source_type" in self.changed_fields or
             "trap_source_ip" in self.changed_fields or
             "syslog_source_type" in self.changed_fields or
