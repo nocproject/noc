@@ -70,6 +70,10 @@ Ext.define("NOC.main.authldapdomain.Model", {
         {
             name: "require_any_group",
             type: "boolean"
+        },
+        {
+            name: "convert_username",
+            type: "string"
         }
     ]
 });

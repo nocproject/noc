@@ -76,6 +76,15 @@ class AuthLDAPDomain(Document):
     deny_group = StringField()
     # Group mappings
     groups = ListField(EmbeddedDocumentField(AuthLDAPGroup))
+    # Convert username
+    convert_username = StringField(
+        choices=[
+            ("0", "As-is"),
+            ("l", "Lowercase"),
+            ("u", "Uppercase")
+        ],
+        default="l"
+    )
 
     DEFAULT_USER_SEARCH_FILTER = {
         "ldap": "(uid=%(user)s)",
@@ -118,3 +127,14 @@ class AuthLDAPDomain(Document):
             return self.group_search_filter
         else:
             return self.DEFAULT_GROUP_SEARCH_FILTER[self.type]
+
+    def clean_username(self, username):
+        if self.convert_username == "0":
+            return username
+        elif self.convert_username == "l":
+            return username.lower()
+        elif self.convert_username == "u":
+            return username.upper()
+        else:
+            # Preserve existing behavior
+            return username.lower()
