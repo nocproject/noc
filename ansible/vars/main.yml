@@ -89,7 +89,6 @@ grafana_http_port: 8002
 influxdb_port: 8086
 
 apt_cache_valid_time: 86400
-pycurl_ssl_library: openssl
 
 memcahed_user: memcache
 memcahed_log_file: /var/log/memcached.log
