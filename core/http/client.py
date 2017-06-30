@@ -7,10 +7,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import os
 import socket
 import urlparse
 import threading
 import ssl
+import logging
 # Third-party modules
 import tornado.gen
 import tornado.ioloop
@@ -21,6 +23,7 @@ import cachetools
 from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
 
+logger = logging.getLogger(__name__)
 
 DEFAULT_CONNECT_TIMEOUT = 10
 DEFAULT_REQUEST_TIMEOUT = 3600
@@ -39,6 +42,9 @@ DEFAULT_PORTS = {
     "http": 80,
     "https": 443
 }
+
+SYSTEM_PROXIES = {}
+
 # Methods require Content-Length header
 REQUIRE_LENGTH_METHODS = set(["POST", "PUT"])
 
@@ -76,7 +82,10 @@ def fetch(url, method="GET",
           max_buffer_size=DEFAULT_BUFFER_SIZE,
           follow_redirects=False,
           max_redirects=DEFAULT_MAX_REDIRECTS,
-          validate_cert=False):
+          validate_cert=False,
+          allow_proxy=False,
+          proxies=None
+    ):
     """
 
     :param url:
@@ -89,8 +98,15 @@ def fetch(url, method="GET",
     :param max_buffer_size:
     :return: code, headers, body
     """
+    def get_ssl_options():
+        ssl_options = {}
+        if validate_cert:
+            ssl_options["cert_reqs"] = ssl.CERT_REQUIRED
+        return ssl_options
+
     metrics["httpclient_requests"] += 1
     metrics["httpclient_%s_requests" % method] += 1
+    # Detect proxy when necessary
     io_loop = io_loop or tornado.ioloop.IOLoop.current()
     u = urlparse.urlparse(str(url))
     if ":" in u.netloc:
@@ -107,21 +123,30 @@ def fetch(url, method="GET",
         addr = yield resolver(host)
     if not addr:
         raise tornado.gen.Return((ERR_TIMEOUT, {}, "Cannot resolve host: %s" % host))
+    # Detect proxy server
+    if allow_proxy:
+        proxies = proxies or SYSTEM_PROXIES
+        proxy = proxies.get(u.scheme)
+    else:
+        proxy = None
+    # Connect
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        if u.scheme == "https":
-            ssl_options = {}
-            if validate_cert:
-                ssl_options["cert_reqs"] = ssl.CERT_REQUIRED
+        if u.scheme == "https" and not proxy:
             stream = tornado.iostream.SSLIOStream(
-                s, io_loop=io_loop, ssl_options=ssl_options
+                s, io_loop=io_loop, ssl_options=get_ssl_options()
             )
         else:
             stream = tornado.iostream.IOStream(s, io_loop=io_loop)
         try:
+            if proxy:
+                connect_address = proxy
+            else:
+                connect_address = (addr, port)
+
             yield tornado.gen.with_timeout(
                 io_loop.time() + connect_timeout,
-                future=stream.connect((addr, port), server_hostname=u.netloc),
+                future=stream.connect(connect_address, server_hostname=u.netloc),
                 io_loop=io_loop
             )
         except tornado.iostream.StreamClosedError:
@@ -130,6 +155,42 @@ def fetch(url, method="GET",
         except tornado.gen.TimeoutError:
             metrics["httpclient_timeouts"] += 1
             raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection timed out"))
+        deadline = io_loop.time() + request_timeout
+        # Proxy CONNECT
+        if proxy:
+            req = b"CONNECT %s:%s HTTP/1.1\r\nUser-Agent: %s\r\n\r\n" % (
+                addr, port, DEFAULT_USER_AGENT
+            )
+            try:
+                yield tornado.gen.with_timeout(
+                    deadline,
+                    future=stream.write(req),
+                    io_loop=io_loop
+                )
+            except tornado.iostream.StreamClosedError:
+                metrics["httpclient_proxy_timeouts"] += 1
+                raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"))
+            except tornado.gen.TimeoutError:
+                metrics["httpclient_proxy_timeouts"] += 1
+                raise tornado.gen.Return((ERR_TIMEOUT, {}, "Timed out while sending request to proxy"))
+            # Switch to SSL when necessary
+            if u.scheme == "https":
+                try:
+                    yield tornado.gen.with_timeout(
+                        deadline,
+                        future=stream.start_tls(
+                            ssl_options=get_ssl_options(),
+                            server_hostname=u.netloc
+                        ),
+                        io_loop=io_loop
+                    )
+                except tornado.iostream.StreamClosedError:
+                    metrics["httpclient_proxy_timeouts"] += 1
+                    raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"))
+                except tornado.gen.TimeoutError:
+                    metrics["httpclient_proxy_timeouts"] += 1
+                    raise tornado.gen.Return((ERR_TIMEOUT, {}, "Timed out while sending request to proxy"))
+        # Process request
         body = body or ""
         if isinstance(body, unicode):
             body = body.encode("utf-8")
@@ -152,7 +213,6 @@ def fetch(url, method="GET",
             "\r\n".join(b"%s: %s" % (k, h[k]) for k in h),
             body
         )
-        deadline = io_loop.time() + request_timeout
         try:
             yield tornado.gen.with_timeout(
                 deadline,
@@ -189,14 +249,14 @@ def fetch(url, method="GET",
         code = parser.get_status_code()
         parsed_headers = parser.get_headers()
         if 300 <= code <= 399 and follow_redirects:
-            # Process redirect
+            # Process redirects
             if max_redirects > 0:
                 new_url = parsed_headers.get("Location")
                 if not new_url:
                     raise tornado.gen.Return((ERR_PARSE_ERROR, {}, "No Location header"))
                 code, parsed_headers, response_body = yield fetch(
                     new_url,
-                    method=method, headers=headers, body=body,
+                    method="GET", headers=headers,
                     connect_timeout=connect_timeout,
                     request_timeout=request_timeout,
                     resolver=resolver,
@@ -225,7 +285,9 @@ def fetch_sync(url, method="GET",
                max_buffer_size=DEFAULT_BUFFER_SIZE,
                follow_redirects=False,
                max_redirects=DEFAULT_MAX_REDIRECTS,
-               validate_cert=False):
+               validate_cert=False,
+               allow_proxy=False,
+               proxies=None):
 
     @tornado.gen.coroutine
     def _fetch():
@@ -238,7 +300,9 @@ def fetch_sync(url, method="GET",
             max_buffer_size=max_buffer_size,
             follow_redirects=follow_redirects,
             max_redirects=max_redirects,
-            validate_cert=validate_cert
+            validate_cert=validate_cert,
+            allow_proxy=allow_proxy,
+            proxies=proxies
         )
         r.append(result)
 
@@ -246,3 +310,28 @@ def fetch_sync(url, method="GET",
     ioloop = tornado.ioloop.IOLoop()
     ioloop.run_sync(_fetch)
     return r[0]
+
+
+def setup_proxies():
+    def get_addr(a):
+        aa = a.split("://", 1)[1]
+        if aa.endswith("/"):
+            aa = aa[:-1]
+        host, port = aa.split(":")
+        return host, int(port)
+
+    http_proxy = os.environ.get("http_proxy")
+    if http_proxy:
+        SYSTEM_PROXIES["http"] = get_addr(http_proxy)
+    https_proxy = os.environ.get("https_proxy")
+    if https_proxy:
+        SYSTEM_PROXIES["https"] = get_addr(https_proxy)
+    if not SYSTEM_PROXIES:
+        logger.debug("No proxy servers configures")
+    else:
+        logger.debug("Using proxy servers: %s",
+                     ", ".join("%s = %s" % (
+                         k, SYSTEM_PROXIES[k]
+                     ) for k in sorted(SYSTEM_PROXIES)))
+
+setup_proxies()
