@@ -2,25 +2,25 @@
 # ---------------------------------------------------------------------
 # Syncronize permissions
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Django modules
-from django.core.management.base import BaseCommand, CommandError
 # NOC modules
-from noc.lib.app.site import site
+from noc.core.management.base import BaseCommand
 from noc.main.models.permission import Permission
+from noc.core.service.loader import get_service
 
 
 class Command(BaseCommand):
-    """
-    ./noc sync-perm
-    """
-    help = "Synchronize permissions"
-
     def handle(self, *args, **options):
+        from noc.lib.app.site import site
+        site.service = get_service()
         try:
             Permission.sync()
-        except ValueError, why:
-            raise CommandError(why)
+        except ValueError as e:
+            self.die(str(e))
+
+
+if __name__ == "__main__":
+    Command().run()
