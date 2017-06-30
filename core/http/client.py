@@ -39,7 +39,8 @@ DEFAULT_PORTS = {
     "http": 80,
     "https": 443
 }
-
+# Methods require Content-Length header
+REQUIRE_LENGTH_METHODS = set(["POST", "PUT"])
 
 ns_lock = threading.Lock()
 ns_cache = cachetools.TTLCache(NS_CACHE_SIZE, ttl=RESOLVER_TTL)
@@ -135,7 +136,7 @@ def fetch(url, method="GET",
             "Connection": "close",
             "User-Agent": DEFAULT_USER_AGENT
         }
-        if method == "POST":
+        if method in REQUIRE_LENGTH_METHODS:
             h["Content-Length"] = str(len(body))
             h["Content-Type"] = "application/binary"
         if headers:
