@@ -30,7 +30,6 @@ import nsq
 import ujson
 import threading
 # NOC modules
-import noc.core.service.httpclient  # Use curl
 from noc.core.debug import excepthook, error_report
 from .config import Config
 from .api import APIRequestHandler
@@ -44,6 +43,7 @@ from .loader import set_service
 from noc.core.perf import metrics, apply_metrics
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from noc.core.threadpool import ThreadPoolExecutor
+from noc.core.nsq.reader import Reader as NSQReader
 
 
 class Service(object):
@@ -685,7 +685,7 @@ class Service(object):
         lookupd = self.config.get_service("nsqlookupd")
         self.logger.info("Subscribing to %s/%s (lookupd: %s)",
                          topic, channel, ", ".join(lookupd))
-        self.nsq_readers[handler] = nsq.Reader(
+        self.nsq_readers[handler] = NSQReader(
             message_handler=call_raw_handler if raw else call_json_handler,
             topic=topic,
             channel=channel,
