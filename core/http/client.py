@@ -104,6 +104,7 @@ def fetch(url, method="GET",
             ssl_options["cert_reqs"] = ssl.CERT_REQUIRED
         return ssl_options
 
+    logger.debug("HTTP %s %s", method, url)
     metrics["httpclient_requests"] += 1
     metrics["httpclient_%s_requests" % method] += 1
     # Detect proxy when necessary
@@ -126,8 +127,7 @@ def fetch(url, method="GET",
         raise tornado.gen.Return((ERR_TIMEOUT, {}, "Cannot resolve host: %s" % host))
     # Detect proxy server
     if allow_proxy:
-        proxies = proxies or SYSTEM_PROXIES
-        proxy = proxies.get(u.scheme)
+        proxy = (proxies or SYSTEM_PROXIES).get(u.scheme)
     else:
         proxy = None
     # Connect
@@ -145,6 +145,9 @@ def fetch(url, method="GET",
             else:
                 connect_address = (addr, port)
 
+            if proxy:
+                logger.debug("Connecting to proxy %s:%s",
+                             connect_address[0], connect_address[1])
             yield tornado.gen.with_timeout(
                 io_loop.time() + connect_timeout,
                 future=stream.connect(connect_address, server_hostname=u.netloc),
@@ -159,6 +162,7 @@ def fetch(url, method="GET",
         deadline = io_loop.time() + request_timeout
         # Proxy CONNECT
         if proxy:
+            logger.debug("Sending CONNECT %s:%s", addr, port)
             # Send CONNECT request
             req = b"CONNECT %s:%s HTTP/1.1\r\nUser-Agent: %s\r\n\r\n" % (
                 addr, port, DEFAULT_USER_AGENT
@@ -195,12 +199,14 @@ def fetch(url, method="GET",
                 if parsed != received:
                     raise tornado.gen.Return((ERR_PARSE_ERROR, {}, "Parse error"))
             code = parser.get_status_code()
+            logger.debug("Proxy response: %s", code)
             if not (200 <= code <= 299):
                 raise tornado.gen.Return((code, parser.get_headers(), "Proxy error: %s" % code))
             # Switch to TLS when necessary
             if use_tls:
+                logger.debug("Starting TLS negotiation")
                 try:
-                    yield tornado.gen.with_timeout(
+                    stream = yield tornado.gen.with_timeout(
                         deadline,
                         future=stream.start_tls(
                             server_side=False,
@@ -273,12 +279,14 @@ def fetch(url, method="GET",
                 response_body += [parser.recv_body()]
         code = parser.get_status_code()
         parsed_headers = parser.get_headers()
+        logger.debug("HTTP Response %s", code)
         if 300 <= code <= 399 and follow_redirects:
             # Process redirects
             if max_redirects > 0:
                 new_url = parsed_headers.get("Location")
                 if not new_url:
                     raise tornado.gen.Return((ERR_PARSE_ERROR, {}, "No Location header"))
+                logger.debug("HTTP redirect %s %s", code, new_url)
                 code, parsed_headers, response_body = yield fetch(
                     new_url,
                     method="GET", headers=headers,
@@ -288,7 +296,9 @@ def fetch(url, method="GET",
                     max_buffer_size=max_buffer_size,
                     follow_redirects=follow_redirects,
                     max_redirects=max_redirects - 1,
-                    validate_cert=validate_cert
+                    validate_cert=validate_cert,
+                    allow_proxy=allow_proxy,
+                    proxies=proxies
                 )
                 raise tornado.gen.Return((code, parsed_headers, response_body))
             else:
