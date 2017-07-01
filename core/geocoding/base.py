@@ -46,7 +46,8 @@ class BaseGeocoder(object):
         code, headers, body = fetch_sync(
             url,
             follow_redirects=True,
-            validate_cert=False
+            validate_cert=False,
+            allow_proxy=True
         )
         if 200 <= code <= 299:
             return code, body
