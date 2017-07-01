@@ -109,6 +109,7 @@ def fetch(url, method="GET",
     # Detect proxy when necessary
     io_loop = io_loop or tornado.ioloop.IOLoop.current()
     u = urlparse.urlparse(str(url))
+    use_tls = u.scheme == "https"
     if ":" in u.netloc:
         host, port = u.netloc.rsplit(":")
         port = int(port)
@@ -132,7 +133,7 @@ def fetch(url, method="GET",
     # Connect
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        if u.scheme == "https" and not proxy:
+        if use_tls and not proxy:
             stream = tornado.iostream.SSLIOStream(
                 s, io_loop=io_loop, ssl_options=get_ssl_options()
             )
@@ -158,6 +159,7 @@ def fetch(url, method="GET",
         deadline = io_loop.time() + request_timeout
         # Proxy CONNECT
         if proxy:
+            # Send CONNECT request
             req = b"CONNECT %s:%s HTTP/1.1\r\nUser-Agent: %s\r\n\r\n" % (
                 addr, port, DEFAULT_USER_AGENT
             )
@@ -173,12 +175,35 @@ def fetch(url, method="GET",
             except tornado.gen.TimeoutError:
                 metrics["httpclient_proxy_timeouts"] += 1
                 raise tornado.gen.Return((ERR_TIMEOUT, {}, "Timed out while sending request to proxy"))
-            # Switch to SSL when necessary
-            if u.scheme == "https":
+            # Wait for proxy response
+            parser = HttpParser()
+            while not parser.is_headers_complete():
+                try:
+                    data = yield tornado.gen.with_timeout(
+                        deadline,
+                        future=stream.read_bytes(max_buffer_size, partial=True),
+                        io_loop=io_loop
+                    )
+                except tornado.iostream.StreamClosedError:
+                    metrics["httpclient_proxy_timeouts"] += 1
+                    raise tornado.gen.Return((ERR_TIMEOUT, {}, "Connection reset while connecting to proxy"))
+                except tornado.gen.TimeoutError:
+                    metrics["httpclient_proxy_timeouts"] += 1
+                    raise tornado.gen.Return((ERR_TIMEOUT, {}, "Timed out while sending request to proxy"))
+                received = len(data)
+                parsed = parser.execute(data, received)
+                if parsed != received:
+                    raise tornado.gen.Return((ERR_PARSE_ERROR, {}, "Parse error"))
+            code = parser.get_status_code()
+            if not (200 <= code <= 299):
+                raise tornado.gen.Return((code, parser.get_headers(), "Proxy error: %s" % code))
+            # Switch to TLS when necessary
+            if use_tls:
                 try:
                     yield tornado.gen.with_timeout(
                         deadline,
                         future=stream.start_tls(
+                            server_side=False,
                             ssl_options=get_ssl_options(),
                             server_hostname=u.netloc
                         ),
