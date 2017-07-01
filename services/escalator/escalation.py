@@ -187,8 +187,8 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                         except TemporaryTTError as e:
                             metrics["escalation_tt_retry"] += 1
                             log("Temporary error detected. Retry after %ss", RETRY_TIMEOUT)
-                            Job.retry_after(RETRY_TIMEOUT, str(e))
                             mo.tt_system.register_failure()
+                            Job.retry_after(RETRY_TIMEOUT, str(e))
                         ctx["tt"] = "%s:%s" % (mo.tt_system.name, tt_id)
                         alarm.escalate(ctx["tt"], close_tt=a.close_tt)
                         if tts.promote_group_tt:

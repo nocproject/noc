@@ -94,6 +94,6 @@ class TTSystem(Document):
             "_id": self.id
         }, {
             "$set": {
-                "failure_cooldown": d
+                "failed_till": d
             }
         })
