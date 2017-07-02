@@ -72,8 +72,12 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                     },
                     {
                         text: __("MAC"),
-                        dataIndex: "mac_discovery",
-                        renderer: NOC.render.Bool,
+                        dataIndex: "mac_discovery_policy",
+                        renderer: NOC.render.Choices({
+                            e: __("Enable"),
+                            d: __("Disable"),
+                            m: __("Management VLAN")
+                        }),
                         width: 50
                     },
                     {
@@ -149,10 +153,16 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                         uiStyle: "small"
                     },
                     {
-                        name: "mac_discovery",
-                        xtype: "checkbox",
-                        boxLabel: __("MAC Discovery"),
-                        allowBlank: true
+                        name: "mac_discovery_policy",
+                        xtype: "combobox",
+                        fieldLabel: __("MAC Discovery Policy"),
+                        allowBlank: false,
+                        store: [
+                            ["e", __("Enable")],
+                            ["d", __("Disable")],
+                            ["m", __("Management VLAN")]
+                        ],
+                        uiStyle: "medium"
                     },
                     {
                         name: "allow_lag_mismatch",

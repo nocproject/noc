@@ -50,7 +50,8 @@ class MACCheck(DiscoveryCheck):
             ifprofile = iface.profile
             if not ifprofile:
                 ifprofile = InterfaceProfile.get_default_profile()
-            if not ifprofile.mac_discovery:
+            if ifprofile.mac_discovery_policy != "e":
+                # @todo: Management VLAN processing
                 disabled_by_profile.add(ifname)
                 continue  # MAC discovery disabled on interface
             data += ["\t".join((

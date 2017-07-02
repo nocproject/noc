@@ -33,8 +33,8 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             defaultValue: "A"
         },
         {
-            name: "mac_discovery",
-            type: "bool",
+            name: "mac_discovery_policy",
+            type: "string",
             defaultValue: false
         },
         {
