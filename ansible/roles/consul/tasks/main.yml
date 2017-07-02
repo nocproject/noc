@@ -44,10 +44,11 @@
       state: started
       enabled: yes
 
-  - name: Consul HTTP API reachable? wait for port 8500 for 15 seconds
+  - name: Consul HTTP API reachable? wait for port 8500 for 60 seconds
     wait_for:
       delay: 15
       port: 8500
+      timeout: 60
 
   - name: Create bootstrapped marker
     file:
