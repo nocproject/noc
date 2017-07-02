@@ -176,6 +176,10 @@ services:
     level: global
     port: 8008
 
+  clickhouse:
+    description: ClickHouse is an open source column-oriented database management system capable of real time generation of analytical data reports using SQL queries.
+    level: global
+    port: 8123
 
 config:
   noc:
@@ -610,3 +614,10 @@ config:
       label: Patroni REST password
       type: str
       description: <strong> <a href=https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst target=_blank> https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst </a> </strong>
+
+  clickhouse:
+    password:
+      label: Password for user default
+      type: str
+      description: test
+      default: noc
