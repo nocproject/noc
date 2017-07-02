@@ -154,7 +154,6 @@ Ext.define('NOC.fm.alarm.Application', {
             tooltip: __('From'),
             format: 'd.m.Y',
             width: 95,
-            startDay: 1,
             listeners: {
                 scope: me,
                 change: me.onChangeFilter
@@ -165,7 +164,6 @@ Ext.define('NOC.fm.alarm.Application', {
             tooltip: __('To'),
             format: 'd.m.Y',
             width: 95,
-            startDay: 1,
             listeners: {
                 scope: me,
                 change: me.onChangeFilter
@@ -619,10 +617,10 @@ Ext.define('NOC.fm.alarm.Application', {
                         var tt = record.get('escalation_tt') || '';
                         var ee = record.get('escalation_error') || '';
                         if(tt !== '') {
-                            r.push('<a href=\'/api/card/view/tt/' + tt + '/\' target=\'_blank\'>' + tt + '</a>');
+                            r.push('<a href="/api/card/view/tt/' + tt + '/" target="_blank">' + tt + '</a>');
                         } else {
                             if(ee !== '') {
-                                r.push('<i class=\'fa fa-exclamation-triangle></i> Error')
+                                r.push('<i class="fa fa-exclamation-triangle"></i> Error')
                             }
                         }
                         return r.join('<br>');
