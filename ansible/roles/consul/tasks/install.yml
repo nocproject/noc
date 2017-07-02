@@ -61,6 +61,7 @@
     src: "{{ consul_temp_unarchive }}/consul"
     dest : "{{ consul_bin_path }}/consul"
     remote_src: yes
+    mode: 0755
   tags:
     - requirements
   notify:
