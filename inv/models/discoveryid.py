@@ -60,6 +60,7 @@ class DiscoveryID(Document):
     macs = ListField(LongField())
 
     _mac_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
+    _udld_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return self.object.name
@@ -104,6 +105,14 @@ class DiscoveryID(Document):
     def get_by_mac(cls, mac):
         return cls._get_collection().find_one({
             "macs": int(MAC(mac))
+        }, {"_id": 0, "object": 1})
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_udld_cache"), lock=lambda _: mac_lock)
+    def get_by_udld_id(cls, device_id):
+        return cls._get_collection().find_one({
+            "udld_id": device_id
         }, {"_id": 0, "object": 1})
 
     @classmethod
