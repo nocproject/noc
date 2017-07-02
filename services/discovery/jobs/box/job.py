@@ -43,7 +43,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
     # Store context
     context_version = 1
 
-    TOPOLOGY_METHODS = [
+    TOPOLOGY_METHODS = dict((m.name, m) for m in [
         OAMCheck,
         LACPCheck,
         UDLDCheck,
@@ -52,9 +52,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
         HuaweiNDPCheck,
         STPCheck,
         NRICheck
-    ]
-
-    TOPOLOGY_NAMES = [m.name for m in TOPOLOGY_METHODS]
+    ])
 
     def handler(self, **kwargs):
         if self.object.auth_profile and self.object.auth_profile.enable_suggest:
@@ -68,6 +66,17 @@ class BoxDiscoveryJob(MODiscoveryJob):
                 "Cannot choose valid credentials. Stopping"
             )
             return
+        # Build topology methods
+        self.topology_methods = []
+        for ms in self.object.segment.profile.topology_methods:
+            if not ms.is_active:
+                continue
+            if ms.method in ("custom", "handler"):
+                # @todo: Implement
+                continue
+            self.topology_methods += [self.TOPOLOGY_METHODS[ms.method]]
+        self.topology_names = [m.name for m in self.topology_methods]
+        # Run remaining checks
         if self.allow_sessions():
             self.logger.debug("Using CLI sessions")
             with self.object.open_session():
@@ -98,7 +107,7 @@ class BoxDiscoveryJob(MODiscoveryJob):
             MACCheck(self).run()
         # Topology discovery
         # Most preferable methods first
-        for check in self.TOPOLOGY_METHODS:
+        for check in self.topology_methods:
             if getattr(self.object.object_profile,
                        "enable_box_discovery_%s" % check.name) and check.name != "nri":
                 check(self).run()
@@ -131,8 +140,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
         if m1 == m2:
             return True
         try:
-            i1 = self.TOPOLOGY_NAMES.index(m1)
-            i2 = self.TOPOLOGY_NAMES.index(m2)
+            i1 = self.topology_names.index(m1)
+            i2 = self.topology_names.index(m2)
         except ValueError:
             return False
         return i1 <= i2
