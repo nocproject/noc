@@ -1,13 +1,3 @@
-- name: Create pgbouncer directories
-  file:
-    path: "{{ item }}"
-    owner: "{{ postgres_user }}"
-    mode: 0700
-    state: directory
-  with_items:
-    - /var/log/pgbouncer
-    - "{{ etc_prefix }}/pgbouncer"
-
 - name: Create required directories
   file:
     path: "{{item}}"
