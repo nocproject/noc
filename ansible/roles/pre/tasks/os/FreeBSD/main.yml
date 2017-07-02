@@ -1,6 +1,6 @@
 ---
 - name: Setting hostname in rc.conf
-  lineinfile: dest=/etc/rc.conf regexp=^hostname= line="hostname=\"{{ ansible_hostname }}\""
+  lineinfile: dest=/etc/rc.conf regexp=^hostname= line="hostname=\"{{ ansible_nodename }}\""
   tags:
     - config
 
@@ -17,6 +17,6 @@
     - requirements
 
 #- name: Update hostname
-#  command: hostname {{ ansible_hostname }}
+#  command: hostname {{ ansible_nodename }}
 #  tags:
 #    - config
