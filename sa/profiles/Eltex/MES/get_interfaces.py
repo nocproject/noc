@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+import time
 from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -133,9 +134,10 @@ class Script(BaseScript):
             name = res[0].strip()
             if (
                 self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
-                self.match_version(version__regex="4\.0\.[4-7]")
+                self.match_version(version__regex="4\.0\.[4-7]$")
             ):
                 v = self.cli("show interface %s" % name)
+                time.sleep(1)
                 for match in self.rx_sh_int.finditer(v):
                     ifname = match.group("interface")
                     ifindex = match.group("ifindex")
@@ -203,6 +205,7 @@ class Script(BaseScript):
             iface["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
             # Vlans
             cmd = self.cli("show interfaces switchport %s" % name)
+            time.sleep(1)
             rcmd = cmd.split("\n\n")
             tvlan = []
             utvlan = None
@@ -218,6 +221,7 @@ class Script(BaseScript):
                 iface["subinterfaces"][0]["untagged_vlan"] = utvlan
 
             cmd = self.cli("show ip interface %s" % name)
+            time.sleep(1)
             for match in self.rx_sh_ip_int.finditer(cmd):
                 if not match:
                     continue
