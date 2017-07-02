@@ -149,6 +149,7 @@ _MODELS = {
     "inv.ModelInterface": "noc.inv.models.modelinterface.ModelInterface",
     "inv.ModelMapping": "noc.inv.models.modelmapping.ModelMapping",
     "inv.NetworkSegment": "noc.inv.models.networksegment.NetworkSegment",
+    "inv.NetworkSegmentProfile": "noc.inv.models.networksegment.NetworkSegmentProfile",
     "inv.NewAddressDiscoveryLog": "noc.inv.models.newaddressdiscoverylog.NewAddressDiscoveryLog",
     "inv.NewPrefixDiscoveryLog": "noc.inv.models.newprefixdiscoverylog.NewPrefixDiscoveryLog",
     "inv.Object": "noc.inv.models.object.Object",
