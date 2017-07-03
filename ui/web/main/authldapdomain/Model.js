@@ -74,6 +74,14 @@ Ext.define("NOC.main.authldapdomain.Model", {
         {
             name: "convert_username",
             type: "string"
+        },
+        {
+            name: "sync_name",
+            type: "boolean"
+        },
+        {
+            name: "sync_mail",
+            type: "boolean"
         }
     ]
 });

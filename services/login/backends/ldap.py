@@ -93,6 +93,7 @@ class LdapBackend(BaseAuthBackend):
                 user, ldap_domain.deny_group
             )
             user_info["is_active"] = False
+        # Synchronize user
         user = ldap_domain.clean_username(user)
         u = self.ensure_user(user, **user_info)
         # Apply groups
@@ -207,8 +208,17 @@ class LdapBackend(BaseAuthBackend):
         if not connection.entries:
             self.logger.info("Cannot find user %s", user)
             return user_info
-        user_info["user_dn"] = connection.entries[0].entry_get_dn()
-        # @todo: Map additional attributes
+        entry = connection.entries[0]
+        user_info["user_dn"] = entry.entry_get_dn()
+        for k, v in ldap_domain.get_attr_mappings().items():
+            if k in entry:
+                user_info[v] = entry[k]
+        if "email" in user_info and not ldap_domain.sync_mail:
+            del user_info["mail"]
+        if "first_name" in user_info and not ldap_domain.sync_name:
+            del user_info["first_name"]
+        if "last_name" in user_info and not ldap_domain.sync_name:
+            del user_info["last_name"]
         return user_info
 
     def get_user_groups(self, connection, ldap_domain, user_info):

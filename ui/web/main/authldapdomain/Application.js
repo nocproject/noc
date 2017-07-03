@@ -152,6 +152,16 @@ Ext.define("NOC.main.authldapdomain.Application", {
                     uiStyle: "medium"
                 },
                 {
+                    name: "sync_name",
+                    xtype: "checkbox",
+                    boxLabel: __("Synchronize name")
+                },
+                {
+                    name: "sync_mail",
+                    xtype: "checkbox",
+                    boxLabel: __("Synchronize mail")
+                },
+                {
                     name: "require_any_group",
                     xtype: "checkbox",
                     boxLabel: __("Require any group")

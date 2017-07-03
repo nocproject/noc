@@ -41,7 +41,9 @@ class BaseAuthBackend(object):
         """
         raise NotImplementedError
 
-    def ensure_user(self, username, is_active=True, **kwargs):
+    def ensure_user(self, username, is_active=True,
+                    first_name=None, last_name=None, email=None,
+                    **kwargs):
         from django.contrib.auth.models import User
         changed = False
         try:
@@ -54,9 +56,14 @@ class BaseAuthBackend(object):
             )
             u.set_unusable_password()
             changed = True
-        for k, v in [("is_active", is_active)]:
+        for k, v in [
+            ("is_active", is_active),
+            ("first_name", first_name),
+            ("last_name", last_name),
+            ("email", email)
+        ]:
             cv = getattr(u, k)
-            if cv != v:
+            if cv != v and v is not None:
                 self.logger.info(
                     "Changing user %s %s: %s -> %s",
                     username, k, cv, v

@@ -85,6 +85,10 @@ class AuthLDAPDomain(Document):
         ],
         default="l"
     )
+    # Synchronize first_name/last_name with LDAP
+    sync_name = BooleanField(default=False)
+    # Synchronize email with LDAP
+    sync_mail = BooleanField(default=False)
 
     DEFAULT_USER_SEARCH_FILTER = {
         "ldap": "(uid=%(user)s)",
@@ -94,6 +98,15 @@ class AuthLDAPDomain(Document):
     DEFAULT_GROUP_SEARCH_FILTER = {
         "ldap": "(&((objectClass=groupOfNames))(member=%(user_dn)s))",
         "ad": "(&(objectClass=group)(member=%(user_dn)s))"
+    }
+
+    DEFAULT_ATTR_MAPPING = {
+        "ldap": {},
+        "ad": {
+            "givenName": "first_name",
+            "sn": "last_name",
+            "mail": "email"
+        }
     }
 
     DEFAULT_DOMAIN = "default"
@@ -138,3 +151,6 @@ class AuthLDAPDomain(Document):
         else:
             # Preserve existing behavior
             return username.lower()
+
+    def get_attr_mappings(self):
+        return self.DEFAULT_ATTR_MAPPING[self.type]
