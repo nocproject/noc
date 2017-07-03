@@ -477,42 +477,108 @@ services:
       <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
   grafana:
-    description: "Graphana server"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: The open platform for beautiful analytics and monitoring <br/>
+      <strong>Long description</strong>: Shows graphs based on noc collected data.<br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. Stores data in postgres. Uses noc internal auth. <br/>
+      <strong>docs</strong>: http://docs.grafana.org/<br/>
+      <strong>Placement constraint</strong>: On node with nginx<br/>
     level: system
     port: 8002
   grafanads:
-    description: "Grafana DataSource"
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Grafanads service <br/>
+      <strong>Long description</strong>: Displays annotations on grafanas graphs with alarms info <br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one per system. Stateless. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with nginx<br/>
     level: global
   haproxy:
-    description: "HA balancer"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: The Reliable, High Performance TCP/HTTP Load Balancer <br/>
+      <strong>Long description</strong>: Used with patroni, keepalived for Postgres HA scheme. Have to be enabled <strong>only</strong> after reading docs.<br/>
+      <strong>Scale Recommendations</strong>: At least two separate nodes. <br/>
+      <strong>docs</strong>: https://kb.nocproject.org/pages/viewpage.action?pageId=22970899 <br/>
+      <strong>Placement constraint</strong>: On node with keepalived <br/>
     level: global
   influxdb:
-    description: "InfluxDB server"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: The Reliable, High Performance TCP/HTTP Load Balancer <br/>
+      <strong>Long description</strong>: InfluxDB is a custom high performance datastore written specifically for timestamped data, including DevOps monitoring, application metrics, IoT sensor data, & real-time analytics.<br/>
+      <strong>Scale Recommendations</strong>: At least one per installation. <br/>
+      <strong>docs</strong>: https://docs.influxdata.com/influxdb/v1.2/<br/>
+      <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
     level: system
     port: 8086
   keepalived:
-    description: "Virtual ip sync"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Keealived service <br/>
+      <strong>Long description</strong>: Used to serve floating ip for ha-proxy and nginx<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>docs</strong>: http://www.keepalived.org/documentation.html<br/>
+      <strong>Placement constraint</strong>: On node with nginxes and on node with ha-proxies<br/>
     level: global
   login:
-    description: "Login service "
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>:Login service <br/>
+      <strong>Long description</strong>: Internal auth service. Acts as internal api endpoint to auth every web request to NOC web. Can authentificate via LDAP and internal database <br/>
+      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with nginx<br/>
     level: global
     scope: test
   mailsender:
-    description: "SMTP mail sender"
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Sends emails. <br/>
+      <strong>Long description</strong>: Reads mail queue from nsqd and sends via gateway<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
   memcached:
-    description: "Caching layer"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Memcached daemon <br/>
+      <strong>Long description</strong>: Database caching. For both Mongodb and Postgres<br/>
+      <strong>Scale Recommendations</strong>: Optional. <br/>
+      <strong>docs</strong>: https://github.com/memcached/memcached/wiki <br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
     port: 11211
   mongod:
-    description: "Mongod server"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Primary database <br/>
+      <strong>Long description</strong>: Used for most of operations<br/>
+      <strong>Scale Recommendations</strong>: At least one. Have to be run in replicated mode with 3 or even 5 nodes. <br/>
+      <strong>docs</strong>: https://docs.mongodb.com/manual/ <br/>
+      <strong>Placement constraint</strong>: Long living nodes. Medium cpu usage. Consumes at least 50%+1Gb of memery on node. Better use separate one.<br/>
     level: system
     port: 27017
   mrt:
-    description: "MRT worker"
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: MRT service <br/>
+      <strong>Long description</strong>: Launch and supervise tasks from Run commands app<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with nginx<br/>
     level: global
   nginx:
-    description: "Nginx server"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Nginx <br/>
+      <strong>Long description</strong>: Primary web service.<br/>
+      <strong>Scale Recommendations</strong>: At least one per installation. <br/>
+      <strong>docs</strong>: http://nginx.org/en/docs/http/ngx_http_upstream_module.html <br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: system
     port: 443
     require_cert: true
@@ -521,58 +587,154 @@ services:
       - card
       - bi
   notebook:
-    description: Notebook
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Ipython notebook <br/>
+      <strong>Long description</strong>: Used mainly by developers for running python console via web interface.<br/>
+      <strong>Scale Recommendations</strong>: Optional. Please do not install untul you understands what it for. <br/>
+      <strong>docs</strong>: https://ipython.org/notebook.html <br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
   nsqadmin:
-    description: "NSQ Admin interface"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: NSQ admin interface <br/>
+      <strong>Long description</strong>: Used to view and manage nsqd queue. Can be reached on http://node_ip:4171 <br/>
+      <strong>Scale Recommendations</strong>: Optional. <br/>
+      <strong>docs</strong>: http://nsq.io/components/nsqadmin.html <br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: system
     port: 4171
   nsqd:
-    description: "NSQD daemon"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: NSQd daemon <br/>
+      <strong>Long description</strong>: nsqd is the daemon that receives, queues, and delivers messages to clients. <br/>
+      <strong>Scale Recommendations</strong>: Have to be on each node. <br/>
+      <strong>docs</strong>: http://nsq.io/components/nsqd.html <br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: system
     port: 4151
   nsqlookupd:
-    description: "NSQ lookup daemon"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Nsqlookupd daemon <br/>
+      <strong>Long description</strong>: Clients query nsqlookupd to discover nsqd producers for a specific topic and nsqd nodes broadcasts topic and channel information.<br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one <br/>
+      <strong>docs</strong>: http://nsq.io/components/nsqlookupd.html <br/>
+      <strong>Placement constraint</strong>: Long living node. <br/>
     level: system
     port: 4161
   omap:
-    description: OMap
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Omap service <br/>
+      <strong>Long description</strong>: Maps ip<->database_id for ping service<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
   patroni:
-    description: "Postgres HA template"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Zalando Patroni <br/>
+      <strong>Long description</strong>: Patroni is a template for you to create your own customized, high-availability solution using Python and - for maximum accessibility - a distributed configuration store like ZooKeeper, etcd or Consul. <br/>
+      <strong>Scale Recommendations</strong>: At least two separate nodes. <br/>
+      <strong>docs</strong>: https://kb.nocproject.org/pages/viewpage.action?pageId=22970899 <br/>
+      <strong>Placement constraint</strong>: On node with postgres <br/>
     level: global
     port: 8008
   pgbouncer:
-    description: "pgbouncer daemon"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: PGbouncer <br/>
+      <strong>Long description</strong>: Used for pool connections to postgres. Optional, but hihgly recommended. <br/>
+      <strong>Scale Recommendations</strong>: Can be placed on one node with postgres or on each node. <br/>
+      <strong>docs</strong>: https://pgbouncer.github.io/config.html <br/>
+      <strong>Placement constraint</strong>: On node with postgres <br/>
     level: system
     port: 6432
   ping:
-    description: Ping
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Ping service <br/>
+      <strong>Long description</strong>: Pings network equipment with icmp. Creates events on state changes<br/>
+      <strong>Scale Recommendations</strong>: At least one per pool.  <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with activator<br/>
     level: pool
   pmwriter:
-    description: PMWriter
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Pmwriter service <br/>
+      <strong>Long description</strong>:  Reads nsqd queue and writes data to InfluxDB. <br/>
+      <strong>Scale Recommendations</strong>: At least two per system. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with InfluxDB<br/>
     level: global
   postgres:
-    description: "PostgreSQL server"
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: PostgresSQL database <br/>
+      <strong>Long description</strong>: Secondary DB. Used to store network equipment info, IPAM and others. <br/>
+      <strong>Scale Recommendations</strong>: At least one per system. <br/>
+      <strong>docs</strong>: https://www.postgresql.org/docs/9.6/static/index.html<br/>
+      <strong>Placement constraint</strong>: Low cpu usage, low memory usage. low io usage. Nothing works without it.<br/>
     level: system
     port: 5432
   sae:
-    description: "Service activation engine"
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Service activation engine <br/>
+      <strong>Long description</strong>:  Acts as proxy between discovery and databases. <br/>
+      <strong>Scale Recommendations</strong>: At least two per system. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with discovery<br/>
     level: global
   scheduler:
-    description: "Scheduler and Cron"
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Scheduler service<br/>
+      <strong>Long description</strong>: Launches internal tasks. <br/>
+      <strong>Scale Recommendations</strong>: At least one per system. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with discovery<br/>
     level: global
   syslogcollector:
-    description: "Syslog Collector"
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Syslog listener service<br/>
+      <strong>Long description</strong>: Listen for syslog events from network equipment adds them to nsqd queue<br/>
+      <strong>Scale Recommendations</strong>: One per pool. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with activator<br/>
     level: pool
   tgsender:
-    description: "Telegram sender"
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Telegram sender<br/>
+      <strong>Long description</strong>: Sends alarms and messages to Telegram messandger.<br/>
+      <strong>Scale Recommendations</strong>: One per system. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
     level: global
   trapcollector:
-    description: "SNMP Trap Collector"
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: SNMP Trap listener service<br/>
+      <strong>Long description</strong>: Listen for SNMP Traps from network equipment adds them to nsqd queue<br/>
+      <strong>Scale Recommendations</strong>: One per pool. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with activator<br/>
     level: pool
   web:
-    description: "Legacy web interface"
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Web interface daemon<br/>
+      <strong>Long description</strong>: Nginx upstream to show web interface<br/>
+      <strong>Scale Recommendations</strong>: At least two per system. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with activator<br/>
     level: global
     required_assets:
       - web
