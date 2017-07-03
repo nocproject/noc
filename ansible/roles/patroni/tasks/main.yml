@@ -42,6 +42,7 @@
   template:
     src: postgres0.yml.j2
     dest: "{{patroni_config_dir}}/postgres.yml"
+  no_log: true
   register: config_install
 
 - name: include patroni bootstrap

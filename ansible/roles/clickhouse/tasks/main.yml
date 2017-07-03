@@ -16,6 +16,7 @@
   template:
     src: "{{item}}"
     dest: "{{ch_etc_path}}/"
+  no_log: true
   with_items:
     - "config.xml"
     - "users.xml"

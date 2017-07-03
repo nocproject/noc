@@ -7,6 +7,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
+  no_log: true
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
       when: "{{ consul_node_role == 'bootstrap' }}"
@@ -23,6 +24,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
+  no_log: true
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
       when: "{{ consul_node_role == 'server' }}"
@@ -39,6 +41,7 @@
     dest: "{{ item.dest }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group}}"
+  no_log: true
   with_items:
     - dest: "{{ consul_config_path }}/config.json"
       when: "{{ consul_node_role == 'client' }}"
