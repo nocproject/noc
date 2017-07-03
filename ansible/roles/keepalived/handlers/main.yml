@@ -4,3 +4,9 @@
   service:
     name: keepalived
     state: reloaded
+
+- name: reload consul
+  become: yes
+  service:
+    name: consul
+    state: reloaded
