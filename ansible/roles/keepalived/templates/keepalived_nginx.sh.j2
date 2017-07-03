@@ -1,0 +1,9 @@
+#!/bin/sh
+export FLOAT_IP={{keepalived_nginx_virtual_ip}}
+isok=$(ip ro get ${FLOAT_IP}|grep "src ${FLOAT_IP}")
+if [ "$?" == "0" ]
+then
+    exit 0
+else
+    exit 2
+fi
