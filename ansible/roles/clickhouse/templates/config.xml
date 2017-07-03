@@ -5,15 +5,7 @@
 		<log>{{ ch_log_dir }}/clickhouse-server.log</log>
 		<errorlog>{{ ch_log_dir }}/clickhouse-server.err.log</errorlog>
 
-		<!-- Built-in method of logs rotation.
-		     			 Threshold is big enough because 'logrotate' is used instead of built-in method.
-			 So, this threshold setting just protects from cases when 'logrotate' get called too late.
-
-			 Why logrotate? Becase built-in method doesn't allow to specify
-			  that two last files must be uncompressed and other compressed
-			  (important for some administration scripts).
-		  -->
-		<size>1000M</size>
+		<size>10M</size>
 		<count>10</count>
 	</logger>
 
@@ -33,7 +25,7 @@
 
     <!-- Set limit on number of open files (default: maximum). This setting makes sense on Mac OS X because getrlimit() fails to retrieve
          correct maximum value. -->
-    <!-- <max_open_files>262144</max_open_files> -->
+    <max_open_files>262144</max_open_files>
 
 	<!-- Size of cache of uncompressed blocks of data, used in tables of MergeTree family.
 	     		 In bytes. Cache is single for server. Memory is allocated only on demand.
@@ -64,15 +56,6 @@
 	<!-- Default database. -->
 	<default_database>default</default_database>
 
-    <!-- Server time zone could be set here.
-
-         Time zone is used when converting between String and DateTime types,
-          when printing DateTime in text formats and parsing DateTime from text,
-          it is used in date and time related functions, if specific time zone was not passed as an argument.
-
-         Time zone is specified as identifier from IANA time zone database, like UTC or Africa/Abidjan.
-         If not specified, system time zone at server startup is used.
-    -->
     <!-- <timezone>Europe/Moscow</timezone> -->
 
 	<!-- Configuration of clusters that could be used in Distributed tables.
