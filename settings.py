@@ -10,10 +10,7 @@
 import sys
 import os
 import logging
-# NOC modules
 from noc.config import config
-
-config.setup_logging()
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
