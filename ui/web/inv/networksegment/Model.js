@@ -28,6 +28,10 @@ Ext.define("NOC.inv.networksegment.Model", {
             type: "string"
         },
         {
+            name: "profile",
+            type: "string"
+        },
+        {
             name: "parent__label",
             type: "string",
             persist: false
