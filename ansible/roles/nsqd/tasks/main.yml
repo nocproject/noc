@@ -40,7 +40,7 @@
 - name: Install nsqd monitoring
   template:
     src: "etc/telegraf/telegraf.d/nsqd.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/nsqd.conf"
+    dest: "{{ telegraf_confd_path }}/nsqd.conf"
   notify: reload telegraf
   tags:
     - config

@@ -10,13 +10,13 @@
 import socket
 # Third-party modules
 import tornado.gen
-import tornado.httpclient
 # NOC modules
 from noc.core.service.api import API, APIError, api, executor
 from noc.core.script.loader import loader
 from noc.core.script.base import BaseScript
 from noc.core.ioloop.snmp import snmp_get, SNMPError
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c
+from noc.core.http.client import fetch
 
 
 class ActivatorAPI(API):
@@ -143,24 +143,16 @@ class ActivatorAPI(API):
         :returns" Result as a string, or None in case of errors
         """
         self.logger.debug("HTTP GET %s", url)
-        client = tornado.httpclient.AsyncHTTPClient(
-            force_instance=True,
-            max_clients=1
+        code, header, body = yield fetch(
+            url,
+            follow_redirects=True,
+            validate_cert=False
         )
-        client.configure(None, defaults=self.HTTP_CLIENT_DEFAULTS)
-        result = None
-        try:
-            response = yield client.fetch(
-                url,
-                follow_redirects=True,
-                validate_cert=False
-            )
-            result = response.body
-        except (tornado.httpclient.HTTPError, socket.error) as e:
-            self.logger.debug("HTTP GET %s failed: %s", url, e)
-        finally:
-            client.close()
-        raise tornado.gen.Return(result)
+        if 200 <= code <= 299:
+            raise tornado.gen.Return(body)
+        else:
+            self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
+            raise tornado.gen.Return(None)
 
     @api
     @executor("script")

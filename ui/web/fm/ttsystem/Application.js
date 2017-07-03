@@ -52,6 +52,14 @@ Ext.define("NOC.fm.ttsystem.Application", {
                     xtype: "textfield",
                     fieldLabel: __("Connection"),
                     allowBlank: false
+                },
+                {
+                    name: "failure_cooldown",
+                    xtype: "numberfield",
+                    fieldLabel: __("Failure Cooldown"),
+                    allowBlank: true,
+                    min: 0,
+                    uiStyle: "small"
                 }
             ]
         });

@@ -297,6 +297,14 @@ Ext.define("NOC.sa.managedobject.Model", {
             type: "string"
         },
         {
+            name: "box_discovery_alarm_policy",
+            type: "string"
+        },
+        {
+            name: "periodic_discovery_alarm_policy",
+            type: "string"
+        },
+        {
             name: "row_class",
             type: "string",
             persist: false

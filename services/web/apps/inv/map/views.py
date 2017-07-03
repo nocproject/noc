@@ -11,7 +11,6 @@ from collections import defaultdict
 import datetime
 import threading
 # Third-party modules
-import tornado.httpclient
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import six
 # NOC modules

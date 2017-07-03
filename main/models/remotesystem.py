@@ -150,7 +150,7 @@ class RemoteSystem(Document):
     def check(self, extractors=None):
         extractors = extractors or self.get_extractors()
         try:
-            self.get_handler().check(extractors)
+            return self.get_handler().check(extractors)
         except Exception as e:
             error_report()
 

@@ -11,6 +11,7 @@ consul_pkg: "consul_{{ consul_version }}_{{ consul_os }}_{{ consul_architecture 
 consul_zip_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/{{consul_pkg}}"
 consul_checksum_file_url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version}}_SHA256SUMS"
 consul_temp_file: "{{tower_dist_dir}}/{{consul_pkg}}"
+consul_temp_unarchive: "/tmp/consul/{{ consul_version }}"
 consul_temp_file_checksum: "{{tower_dist_dir}}/{{ consul_version }}_SHA256SUMS"
 
 ### Paths

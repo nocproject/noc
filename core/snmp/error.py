@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SNMP Error Codes
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2014 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SNMP Error Codes
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
 # No error occurred. This code is also used in all request PDUs,
 # since they have no error status to report.
@@ -56,8 +56,9 @@ NOT_WRITABLE = 17
 # a variable that does not exist.
 INCONSISTENT_NAME = 18
 
-## Virtual code
+# Virtual code
 TIMED_OUT = -1
+UNREACHABLE = -2
 
 
 class SNMPError(Exception):

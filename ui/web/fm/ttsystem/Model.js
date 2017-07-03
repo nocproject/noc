@@ -30,6 +30,10 @@ Ext.define("NOC.fm.ttsystem.Model", {
         {
             name: "name",
             type: "string"
+        },
+        {
+            name: "failure_cooldown",
+            type: "int"
         }
     ]
 });

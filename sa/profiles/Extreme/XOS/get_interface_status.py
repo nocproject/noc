@@ -44,7 +44,7 @@ class Script(BaseScript):
                        continue
                     if match:
                         n = match.group("port")
-                        #print " !!! PORT --   %s " % n
+                        # print " !!! PORT --   %s " % n
                     macaddr = ""
                     if m:
                         macaddr = MACAddressParameter().clean(m)

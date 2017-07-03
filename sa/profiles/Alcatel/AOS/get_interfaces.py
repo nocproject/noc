@@ -334,7 +334,6 @@ class Script(BaseScript):
                 ip_list = [ip]
             vlan = match.group("vlan")
             a_stat = "UP"
-            print ifname
             if ospf_enable and ifname in ospf:
                 enabled_protocols += ["OSPF"]
             if ospf3_enable and ifname in ospf3:
@@ -349,7 +348,6 @@ class Script(BaseScript):
                 enabled_protocols += ["ISIS"]
             if bgp_enable and ifname in bgp:
                 enabled_protocols += ["BGP"]
-            print ifname
             iface = {
                 "name": ifname,
                 "type": "SVI",

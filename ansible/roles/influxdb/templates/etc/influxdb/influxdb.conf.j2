@@ -4,7 +4,7 @@ reporting-disabled = true
 
 [meta]
   dir = "{{ influxdb_db_path_meta }}"
-  hostname = "{{ ansible_hostname }}"
+  hostname = "{{ ansible_nodename }}"
   bind-address = ":8088"
   retention-autocreate = true
   logging-enabled = true
@@ -64,7 +64,7 @@ reporting-disabled = true
 
 [http]
   enabled = true
-  bind-address = ":8086"
+  bind-address = ":{{ influxdb_port }}"
   auth-enabled = false
   log-enabled = false
   write-tracing = false

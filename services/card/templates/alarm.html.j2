@@ -65,6 +65,14 @@
         </td>
     </tr>
     {% endif %}
+    {% if tt_system_failed %}
+    <tr>
+        <th scope="row">{{ _("Escalation Error") }}</th>
+        <td>
+            {{ tt_system }}: {{ _("Temporary unavailable") }}
+        </td>
+    </tr>
+    {% endif %}
     <tr>
         <th scope="row">{{ _("Body") }}</th>
         <td><pre>{{ body }}</pre></td>

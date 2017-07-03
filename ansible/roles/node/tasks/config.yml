@@ -2,7 +2,6 @@
   template:
     src: "etc/noc.yml.j2"
     dest: "{{ noc_etc }}/noc.yml"
-  register: noc_cfg1
   tags:
     - config
     - noc_config
@@ -11,7 +10,6 @@
   template:
     src: "etc/supervisord.conf.j2"
     dest: "{{ noc_etc }}/supervisord.conf"
-  register: noc_cfg2
   tags:
     - config
     - noc_config
@@ -60,7 +58,6 @@
     - section: customization
       option: installation_name
       value: "{{ noc_installation_name }}"
-  register: noc_cfg3
   tags:
     - config
     - noc_config
@@ -72,7 +69,6 @@
     option: "{{item.option}}"
     value: "{{item.value}}"
     create: yes
-  register: noc_cfg4
   with_items:
     - section: main
       option: sentry_url

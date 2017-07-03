@@ -86,6 +86,26 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: true
         },
         {
+            name: "ping_policy",
+            type: "string",
+            defaultValue: "f"
+        },
+        {
+            name: "ping_size",
+            type: "int",
+            defaultValue: 64
+        },
+        {
+            name: "ping_count",
+            type: "int",
+            defaultValue: 3
+        },
+        {
+            name: "ping_timeout_ms",
+            type: "int",
+            defaultValue: 1000
+        },
+        {
             name: "weight",
             type: "int",
             defaultValue: 0
@@ -251,6 +271,18 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             defaultValue: false
         },
         {
+            name: "box_discovery_alarm_policy",
+            type: "string"
+        },
+        {
+            name: "box_discovery_fatal_alarm_weight",
+            type: "int"
+        },
+        {
+            name: "box_discovery_alarm_weight",
+            type: "int"
+        },
+        {
             name: "enable_periodic_discovery",
             xtype: "boolean",
             defaultValue: false
@@ -279,6 +311,18 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
             name: "enable_periodic_discovery_metrics",
             xtype: "boolean",
             defaultValue: false
+        },
+        {
+            name: "periodic_discovery_alarm_policy",
+            type: "string"
+        },
+        {
+            name: "periodic_discovery_fatal_alarm_weight",
+            type: "int"
+        },
+        {
+            name: "periodic_discovery_alarm_weight",
+            type: "int"
         },
         {
             name: "clear_links_on_platform_change",
@@ -356,7 +400,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "escalation_policy",
             type: "string"
-        }
+        },
     ]
 })
 ;

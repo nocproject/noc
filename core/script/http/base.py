@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## HTTP methods implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# HTTP methods implementation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
-import cStringIO
-## Third-party modules
-import pycurl
+# Third-party modules
 import ujson
-## NOC modules
+# NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.http.client import fetch_sync
 
 
 class HTTP(object):
@@ -34,26 +32,6 @@ class HTTP(object):
         proto = self.script.credentials.get("http_protocol", "http")
         return "%s://%s%s" % (proto, address, path)
 
-    def get_curl(self, path, headers=None):
-        """
-        Create and prepare Curl instance
-        """
-        # Build full URL
-        url = self.get_url(path)
-        # Prepare client
-        is_ssl = self.script.credentials.get("http_protocol", "http") == "https"
-        c = pycurl.Curl()
-        c.setopt(c.URL, url)
-        if headers:
-            c.setopt(c.HTTPHEADER, headers)
-        c.setopt(c.NOPROXY, "*")
-        c.setopt(c.TIMEOUT, self.REQUEST_TIMEOUT)
-        c.setopt(c.CONNECTTIMEOUT, self.CONNECT_TIMEOUT)
-        c.setopt(c.FOLLOWLOCATION, 1)
-        if is_ssl:
-            c.setopt(c.SSL_VERIFYPEER, 0)
-        return c
-
     def get(self, path, headers=None, json=False):
         """
         Perform HTTP GET request
@@ -62,20 +40,19 @@ class HTTP(object):
         :param json: Decode json if set to True
         """
         self.logger.debug("GET %s", path)
-        buff = cStringIO.StringIO()
-        c = self.get_curl(path, headers=headers)
-        c.setopt(c.WRITEDATA, buff)
-        try:
-            c.perform()
-        except pycurl.error as e:
-            self.logger.error("HTTP Error: %s", e)
-            raise self.HTTPError(str(e))
-        result = buff.getvalue()
+        code, headers, result = fetch_sync(
+            self.get_url(path),
+            headers=headers,
+            follow_redirects=True,
+            validate_cert=False
+        )
+        if not (200 <= result <= 299):
+            raise self.HTTPError("HTTP Error %d" % code)
         if json:
             try:
                 result = ujson.loads(result)
-            except ValueError, why:
-                raise self.HTTPError("Failed to decode JSON: %s", why)
+            except ValueError as e:
+                raise self.HTTPError("Failed to decode JSON: %s", e)
         self.logger.debug("Result: %r", result)
         return result
 
@@ -87,22 +64,20 @@ class HTTP(object):
         :param json: Decode json if set to True
         """
         self.logger.debug("POST %s %s", path, data)
-        buff = cStringIO.StringIO()
-        c = self.get_curl(path, headers=headers)
-        c.setopt(c.POST, 1)
-        c.setopt(c.POSTFIELDS, data)
-        c.setopt(c.WRITEDATA, buff)
-        try:
-            c.perform()
-        except pycurl.error as e:
-            self.logger.error("HTTP Error: %s", e)
-            raise self.HTTPError(str(e))
-        result = buff.getvalue()
+        code, headers, result = fetch_sync(
+            self.get_url(path),
+            method="POST",
+            headers=headers,
+            follow_redirects=True,
+            validate_cert=False
+        )
+        if not (200 <= result <= 299):
+            raise self.HTTPError("HTTP Error %d" % code)
         if json:
             try:
                 return ujson.loads(result)
-            except ValueError, why:
-                raise self.HTTPError("Failed to decode JSON: %s", why)
+            except ValueError as e:
+                raise self.HTTPError("Failed to decode JSON: %s", e)
         self.logger.debug("Result: %r", result)
         return result
 

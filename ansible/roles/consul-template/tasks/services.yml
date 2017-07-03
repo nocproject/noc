@@ -1,0 +1,31 @@
+- name: install nginx upstream template
+  copy:
+    src: upstream.conf.ctmpl
+    dest: "{{ consul_template_templates_dir }}/upstream.conf.ctmpl"
+  notify: reload consul-template
+  tags:
+    - config
+
+- name: install nginx upstream template for template
+  template:
+    src: services/upstream.conf.j2
+    dest: "{{consul_template_config_dir}}/upstream.conf"
+  notify: reload consul-template
+  tags:
+    - config
+
+- name: install noc_card template
+  copy:
+    src: noc_card.ctmpl
+    dest: "{{ consul_template_templates_dir }}/noc_card.ctmpl"
+  notify: reload consul-template
+  tags:
+    - config
+
+- name: install nginx upstream template for template
+  template:
+    src: services/noc_card.conf.j2
+    dest: "{{consul_template_config_dir}}/noc_card.conf"
+  notify: reload consul-template
+  tags:
+    - config

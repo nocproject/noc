@@ -12,7 +12,6 @@ from threading import Lock
 # Third-party modules
 from mongoengine.queryset import DoesNotExist
 import cachetools
-# Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, ListField, LongField,
                                 EmbeddedDocumentField)
@@ -61,6 +60,7 @@ class DiscoveryID(Document):
     macs = ListField(LongField())
 
     _mac_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
+    _udld_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __unicode__(self):
         return self.object.name
@@ -108,9 +108,19 @@ class DiscoveryID(Document):
         }, {"_id": 0, "object": 1})
 
     @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_udld_cache"), lock=lambda _: mac_lock)
+    def get_by_udld_id(cls, device_id):
+        return cls._get_collection().find_one({
+            "udld_id": device_id
+        }, {"_id": 0, "object": 1})
+
+    @classmethod
     def find_object(cls, mac=None, ipv4_address=None):
         """
         Find managed object
+        :param mac:
+        :param ipv4_address:
         :param cls:
         :return: Managed object instance or None
         """
@@ -189,9 +199,39 @@ class DiscoveryID(Document):
         # Other interface macs
         i_macs = set()
         for i in Interface.objects.filter(
-                managed_object=object.id, mac__exists=False):
+                managed_object=object.id, mac__exists=True):
             if i.mac:
                 if not any(1 for f, t in c_macs if f <= i.mac <= t):
                     # Not in range
                     i_macs.add(i.mac)
         return c_macs + [(m, m) for m in i_macs]
+
+    @classmethod
+    def macs_for_objects(cls, objects_ids):
+        """
+        Get MAC addresses for object
+        :param cls:
+        :param objects_ids: Lis IDs of Managed Object Instance
+        :type: list
+        :return: Dictionary mac: objects
+        :rtype: dict
+        """
+        if not objects_ids:
+            return None
+        if isinstance(objects_ids, list):
+            objects = objects_ids
+        else:
+            objects = list(objects_ids)
+
+        os = cls.objects.filter(object__in=objects)
+        if not os:
+            return None
+        # Discovered chassis id range
+        c_macs = {int(did[0][0]): did[1] for did in os.scalar("macs", "object") if did[0]}
+        # c_macs = [r.macs for r in os]
+        # Other interface macs
+        i_macs = {int(MAC(i[0])): i[1] for i in Interface.objects.filter(
+            managed_object__in=objects, mac__exists=True).scalar("mac", "managed_object")}
+        c_macs.update(i_macs)
+
+        return c_macs

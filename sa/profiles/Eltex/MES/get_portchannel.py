@@ -61,7 +61,10 @@ class Script(BaseScript):
             """
 
         # Fallback to CLI
-        if self.match_version(version__regex="[12]\.[15]\.4[4-9]"):
+        if (
+            self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
+            self.match_version(version__regex="4\.0\.[4-7]$")
+        ):
             cmd = self.cli("show interfaces channel-group")
         else:
             cmd = self.cli("show interfaces port-channel")

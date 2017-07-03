@@ -401,6 +401,12 @@ class TableColumn(ReportNode):
         else:
             return SafeString("<img src='/static/pkg/famfamfam-silk/cross.png' />")
 
+    def f_url(self, url):
+        """
+        Display url field
+        """
+        return SafeString("<a href=\"%s\", target=\"_blank\">Link</a>" % url)
+
     def f_integer(self, f):
         """
         Display pretty-formatted integer

@@ -106,10 +106,12 @@ class GeocoderCache(Document):
         r = c.find_one({"_id": hash})
         if r:
             # Found
-            if r.get("error"):
+            if r.get("error") and r.get("exact") is None:
+                # If exact result - continue
+                print("Error result is not exact")
                 return None
             return GeoCoderResult(
-                exact=True,
+                exact=r.get("exact", True),
                 query=query,
                 path=r.get("path") or [],
                 lon=r.get("lon"),

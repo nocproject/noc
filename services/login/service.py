@@ -67,6 +67,7 @@ class LoginService(UIService):
             try:
                 user = backend.authenticate(**credentials)
             except backend.LoginError as e:
+                self.logger.info("[%s] Login Error: %s", method, e)
                 le = str(e)
                 continue
             self.logger.info("Authorized credentials %s as user %s", c, user)

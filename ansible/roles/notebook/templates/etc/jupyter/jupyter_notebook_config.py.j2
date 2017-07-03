@@ -65,7 +65,7 @@ c.JupyterApp.answer_yes = True
 # c.NotebookApp.jinja_environment_options = traitlets.Undefined
 
 # The IP address the notebook server will listen on.
-c.NotebookApp.ip = '{{ noc_config["services"]["notebook"][0].split(":")[0] }}'
+c.NotebookApp.ip = '{{ hostvars[inventory_hostname].ansible_host }}'
 
 # DEPRECATED use base_url
 # c.NotebookApp.base_project_url = '/'
@@ -86,7 +86,7 @@ c.NotebookApp.ip = '{{ noc_config["services"]["notebook"][0].split(":")[0] }}'
 # c.NotebookApp.default_url = '/tree'
 
 # The port the notebook server will listen on.
-c.NotebookApp.port = {{ noc_config["services"]["notebook"][0].split(":")[1] }}
+c.NotebookApp.port = {{ notebook_port }}
 
 # The kernel spec manager class to use. Should be a subclass of
 # `jupyter_client.kernelspec.KernelSpecManager`.

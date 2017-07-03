@@ -11,6 +11,7 @@ import logging
 import cachetools
 import datetime
 import operator
+import threading
 # NOC modules
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.ttsystem import TTSystem
@@ -23,10 +24,19 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.perf import metrics
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.maintainance.models.maintainance import Maintainance
 from noc.config import config
+from noc.core.tt.error import TTError, TemporaryTTError
+from noc.core.scheduler.job import Job
 
 
 logger = logging.getLogger(__name__)
+
+RETRY_TIMEOUT = 60
+RETRY_DELTA = 60 / max(config.tt_escalation_limit - 1, 1)
+
+retry_lock = threading.Lock()
+next_retry = datetime.datetime.now()
 
 
 def escalate(alarm_id, escalation_id, escalation_delay,
@@ -93,6 +103,8 @@ def escalate(alarm_id, escalation_id, escalation_delay,
             log("No escalation template, skipping")
             continue
         # Check global limits
+        # @todo: Move into escalator service
+        # @todo: Process per-ttsystem limits
         ets = datetime.datetime.now() - datetime.timedelta(seconds=60)
         ae = ActiveAlarm._get_collection().find({
             "escalation_ts": {
@@ -159,7 +171,13 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                 )
             else:
                 pre_reason = escalation.get_pre_reason(mo.tt_system)
-                if pre_reason is not None:
+                active_maintenance = Maintainance.get_object_maintenance(mo)
+                if active_maintenance:
+                    for m in active_maintenance:
+                        log("Object is under maintenance: %s (%s-%s)",
+                            m.subject, m.start, m.stop)
+                    metrics["escalation_stop_on_maintenance"] += 1
+                elif pre_reason is not None:
                     subject = a.template.render_subject(**ctx)
                     body = a.template.render_body(**ctx)
                     logger.debug("[%s] Escalation message:\nSubject: %s\n%s",
@@ -167,15 +185,21 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                     log("Creating TT in system %s", mo.tt_system.name)
                     tts = mo.tt_system.get_system()
                     try:
-                        tt_id = tts.create_tt(
-                            queue=mo.tt_queue,
-                            obj=mo.tt_system_id,
-                            reason=pre_reason,
-                            subject=subject,
-                            body=body,
-                            login="correlator",
-                            timestamp=alarm.timestamp
-                        )
+                        try:
+                            tt_id = tts.create_tt(
+                                queue=mo.tt_queue,
+                                obj=mo.tt_system_id,
+                                reason=pre_reason,
+                                subject=subject,
+                                body=body,
+                                login="correlator",
+                                timestamp=alarm.timestamp
+                            )
+                        except TemporaryTTError as e:
+                            metrics["escalation_tt_retry"] += 1
+                            log("Temporary error detected. Retry after %ss", RETRY_TIMEOUT)
+                            mo.tt_system.register_failure()
+                            Job.retry_after(get_next_retry(), str(e))
                         ctx["tt"] = "%s:%s" % (mo.tt_system.name, tt_id)
                         alarm.escalate(ctx["tt"], close_tt=a.close_tt)
                         if tts.promote_group_tt:
@@ -211,7 +235,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                                         gtt
                                     )
                         metrics["escalation_tt_create"] += 1
-                    except tts.TTError as e:
+                    except TTError as e:
                         log("Failed to create TT: %s", e)
                         metrics["escalation_tt_fail"] += 1
                         alarm.log_message(
@@ -241,7 +265,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                         except NotImplementedError:
                             log("Cannot add comment to %s: Feature not implemented", ca.escalation_tt)
                             metrics["escalation_tt_comment_fail"] += 1
-                        except tts.TTError as e:
+                        except TTError as e:
                             log("Failed to add comment to %s: %s",
                                 ca.escalation_tt, e)
                             metrics["escalation_tt_comment_fail"] += 1
@@ -266,6 +290,19 @@ def escalate(alarm_id, escalation_id, escalation_delay,
         if a.stop_processing:
             logger.debug("Stopping processing")
             break
+    nalarm = get_alarm(alarm_id)
+    if nalarm and nalarm.status == "C" and nalarm.escalation_tt:
+        log("Alarm has been closed during escalation. Try to deescalate")
+        metrics["escalation_closed_while_escalated"] += 1
+        if not nalarm.escalation_close_ts and not nalarm.escalation_close_error:
+            notify_close(
+                alarm_id=alarm_id,
+                tt_id=nalarm.escalation_tt,
+                subject="Closing",
+                body="Closing",
+                notification_group_id=alarm.clear_notification_group.id if alarm.clear_notification_group else None,
+                close_tt=alarm.close_tt
+            )
     logger.info("[%s] Escalations loop end", alarm_id)
 
 
@@ -276,6 +313,11 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
         logger.info("[%s] %s", alarm_id, msg)
 
     if tt_id:
+        alarm = get_alarm(alarm_id)
+        if alarm and (alarm.escalation_close_ts or alarm.escalation_close_error):
+            log("Alarm is already deescalated")
+            metrics["escalation_already_deescalated"] += 1
+            return
         c_tt_name, c_tt_id = tt_id.split(":")
         cts = tt_system_id_cache[c_tt_name]
         if cts:
@@ -291,10 +333,21 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                         login="correlator"
                     )
                     metrics["escalation_tt_close"] += 1
-                except tts.TTError as e:
+                    if alarm:
+                        alarm.close_escalation()
+                except TemporaryTTError as e:
+                    log("Temporary error detected while closing tt %s: %s", tt_id, e)
+                    metrics["escalation_tt_close_retry"] += 1
+                    Job.retry_after(get_next_retry(), str(e))
+                    cts.register_failure()
+                except TTError as e:
                     log("Failed to close tt %s: %s",
                         tt_id, e)
                     metrics["escalation_tt_close_fail"] += 1
+                    if alarm:
+                        alarm.set_escalation_close_error(
+                            "[%s] %s" % (alarm.managed_object.tt_system.name, e)
+                        )
             else:
                 # Append comment to tt
                 try:
@@ -306,7 +359,7 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                         login="correlator"
                     )
                     metrics["escalation_tt_comment"] += 1
-                except tts.TTError as e:
+                except TTError as e:
                     log("Failed to add comment to %s: %s",
                         tt_id, e)
                     metrics["escalation_tt_comment_fail"] += 1
@@ -351,3 +404,20 @@ tt_system_id_cache = cachetools.TTLCache(
 notification_group_cache = cachetools.TTLCache(
     CACHE_SIZE, TTL, missing=lambda x: get_item(NotificationGroup, id=x)
 )
+
+
+def get_next_retry():
+    """
+    Return next retry considering throttling rate
+    :return:
+    """
+    global RETRY_DELTA, RETRY_TIMEOUT, next_retry, retry_lock
+
+    now = datetime.datetime.now()
+    retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
+    with retry_lock:
+        if retry < next_retry:
+            retry = next_retry
+        next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
+    delta = retry - now
+    return delta.seconds + (1 if delta.microseconds else 0)

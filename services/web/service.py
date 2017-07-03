@@ -61,9 +61,13 @@ class NOCWSGIHandler(tornado.web.RequestHandler):
             django.core.handlers.wsgi.WSGIHandler()
         )
         self.executor = self.service.get_executor("max")
+        self.backend_id = "%s (%s:%s)" % (
+            self.service.service_id,
+            self.service.address, self.service.port)
 
     @tornado.gen.coroutine
     def prepare(self):
+        self.set_header("X-NOC-Backend", self.backend_id)
         yield self.executor.submit(self.wsgi, self.request)
         self._finished = True
 

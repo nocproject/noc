@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SNMP utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SNMP utilities
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import re
 
 
@@ -18,14 +18,15 @@ rx_os_format = re.compile(
     r"(?P<rt>[^*0-9]?)"
 )
 
+
 def render_tc(value, base_type, format=None):
     """
     Render SNMP TC using DISPLAY-HINT according to RFC 2579
-    
+
     :param value: Binary string
     :param base_type: Basic SNMP TC Type
     :param format: Optional format string (DISPLAY-HINT)
-    
+
     Integer32 formatting
     >>> render_tc(1234, "Integer32")
     '1234'
@@ -41,7 +42,7 @@ def render_tc(value, base_type, format=None):
     '0.1234'
     >>> render_tc(1234, "Integer32", "d-6")
     '0.001234'
-    
+
     OctetString formatting
     >>> render_tc("\x80", "OctetString", "1x")
     '80'
@@ -67,7 +68,7 @@ def render_tc(value, base_type, format=None):
     '2014-2-2,3:42:11.1,+1:1'
     """
     if format is None:
-        #if base_type == "OctetString":
+        # if base_type == "OctetString":
         #    # Apply default formatting for octet strings
         #    if len(value) == 4:
         #        # Format as IPv4 address

@@ -13,6 +13,7 @@ import tornado.web
 import tornado.gen
 import ujson
 # NOC modules
+from noc.core.error import NOCError
 from noc.core.debug import error_report
 
 
@@ -90,10 +91,11 @@ class APIRequestHandler(tornado.web.RequestHandler):
                     "error": None,
                     "result": result
                 }))
-        except APIError as e:
+        except NOCError as e:
             self.api_error(
                 "Failed: %s" % e,
-                id=id
+                id=id,
+                code=e.code
             )
         except Exception as e:
             error_report()
@@ -102,13 +104,15 @@ class APIRequestHandler(tornado.web.RequestHandler):
                 id=id
             )
 
-    def api_error(self, msg, id=None):
+    def api_error(self, msg, id=None, code=None):
         if id is not None:
             rsp = {
                 "error": str(msg)
             }
             if id:
                 rsp["id"] = id
+            if code:
+                rsp["code"] = code
             self.write(ujson.dumps(rsp))
 
 
@@ -181,5 +185,5 @@ class lock(object):
         return method
 
 
-class APIError(Exception):
+class APIError(NOCError):
     pass

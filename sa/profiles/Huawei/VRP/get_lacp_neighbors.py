@@ -29,7 +29,7 @@ class Script(BaseScript):
         first = True
         pc_name = ""
         for block in self.split_re.split(v):
-            print("Split %s" % self.split_re.split(v))
+            # print("Split %s" % self.split_re.split(v))
             if not block:
                 continue
             if first:
@@ -48,7 +48,7 @@ class Script(BaseScript):
                 if i == 0:
                     i += 1
                     continue
-                print("Bundle %s" % bun)
+                # print("Bundle %s" % bun)
                 bundle += [{
                     "interface": bun[0],
                     "local_port_id": int(bun[4]),

@@ -11,7 +11,6 @@
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-import tornado.httpclient
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
@@ -66,6 +65,7 @@ class DiscoveryService(Service):
         if self.scheduler:
             self.scheduler.apply_metrics(r)
         return r
+
 
 if __name__ == "__main__":
     DiscoveryService().start()

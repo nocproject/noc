@@ -8,7 +8,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import functools
 import time
 import datetime
@@ -18,13 +17,12 @@ import os
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-import tornado.httpclient
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
 from noc.core.ioloop.timers import PeriodicOffsetCallback
 from noc.core.ioloop.ping import Ping
-from .probesetting import ProbeSetting
+from probesetting import ProbeSetting
 
 
 class PingService(Service):
@@ -69,7 +67,7 @@ class PingService(Service):
         #
         self.perf_metrics["down_objects"] = 0
         # Open ping sockets
-        self.ping = Ping(self.ioloop, tos=config.ping.tos)
+        self.ping = Ping(self.ioloop, tos=self.config.tos)
         # Register RPC aliases
         self.omap = self.open_rpc("omap")
         # Set event listeners
@@ -210,9 +208,11 @@ class PingService(Service):
                 self.perf_metrics["ping_check_skips"] += 1
                 return
         rtt, attempts = yield self.ping.ping_check_rtt(
-            address,
-            count=config.ping.max_packets,
-            timeout=config.ping.timeout
+            ps.address,
+            policy=ps.policy,
+            size=ps.size,
+            count=ps.count,
+            timeout=ps.timeout
         )
         s = rtt is not None
         if s:

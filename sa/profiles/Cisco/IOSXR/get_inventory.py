@@ -35,7 +35,6 @@ class Script(BaseScript):
                 match.group("descr"), len(objects)
             )
             if not part_no:
-                print "!!! UNKNOWN: ", match.groupdict()
                 continue
             else:
                 vendor = "CISCO" if "NoName" not in part_no else "NONAME"

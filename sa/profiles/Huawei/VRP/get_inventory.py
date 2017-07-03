@@ -124,7 +124,7 @@ class Script(BaseScript):
                 try:
                     v = self.cli("display elabel unit %s" % subcard_num)
                 except self.CLISyntaxError:
-                    print("Exception !!!!!!!!!!!!!")
+                    # print("Exception !!!!!!!!!!!!!")
                     return []
         # Avoid of rotten devices, where part_on contains 0xFF characters
         v = v.decode("ascii", "ignore")

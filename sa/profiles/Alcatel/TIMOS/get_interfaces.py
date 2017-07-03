@@ -206,7 +206,7 @@ class Script(BaseScript):
                             }
                         ]
                 else:
-                    print iface
+                    pass
             else:
                 continue
             if my_dict['description'] == '(Not Specified)':

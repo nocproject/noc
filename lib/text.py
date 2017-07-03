@@ -45,7 +45,7 @@ def parse_table(s, allow_wrap=False, allow_extend=False, max_width=0, footer=Non
     if footer is not None:
         rx_footer = re.compile(footer)
     for l in s.splitlines():
-        if not l.strip():
+        if not l.strip() and footer is None:
             columns = []
             continue
         if (footer is not None) and rx_footer.search(l):

@@ -36,4 +36,5 @@ etc/etl.yml
 speedup/**.c
 speedup/**.so
 ui/bi/**
+ui/bi2/**
 collections/**

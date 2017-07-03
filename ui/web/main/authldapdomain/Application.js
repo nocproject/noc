@@ -140,6 +140,33 @@ Ext.define("NOC.main.authldapdomain.Application", {
                     ]
                 },
                 {
+                    name: "convert_username",
+                    xtype: "combobox",
+                    fieldLabel: __("Convert Username"),
+                    store: [
+                        ["0", __("Do not convert")],
+                        ["l", __("Lowercase")],
+                        ["u", __("Uppercase")]
+                    ],
+                    allowBlank: false,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "sync_name",
+                    xtype: "checkbox",
+                    boxLabel: __("Synchronize name")
+                },
+                {
+                    name: "sync_mail",
+                    xtype: "checkbox",
+                    boxLabel: __("Synchronize mail")
+                },
+                {
+                    name: "require_any_group",
+                    xtype: "checkbox",
+                    boxLabel: __("Require any group")
+                },
+                {
                     name: "groups",
                     xtype: "gridfield",
                     fieldLabel: __("Groups"),

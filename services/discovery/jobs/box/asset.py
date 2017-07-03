@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Asset check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,8 @@
 from collections import defaultdict
 import hashlib
 import base64
+# Third-party modules
+import six
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.objectmodel import ObjectModel
@@ -100,7 +102,7 @@ class AssetCheck(DiscoveryCheck):
         #
         if is_unknown_xcvr:
             self.logger.debug("%s S/N %s should be resolved later",
-                part_no[0], serial)
+                              part_no[0], serial)
             self.prepare_context(type, number)
             self.objects += [
                 ("XCVR", part_no[0], self.ctx.copy(), serial)
@@ -117,7 +119,8 @@ class AssetCheck(DiscoveryCheck):
             # Try to resolve via model map
             m = self.get_model_map(vendor, part_no, serial)
             if not m:
-                self.logger.error("Unknown vendor '%s' for S/N %s (%s)",
+                self.logger.error(
+                    "Unknown vendor '%s' for S/N %s (%s)",
                     vendor, serial, description)
                 return
         else:
@@ -197,7 +200,7 @@ class AssetCheck(DiscoveryCheck):
             o.save()
             o.log(
                 "Object revision changed: %s -> %s" % (
-                o.get_data("asset", "revision"), revision),
+                    o.get_data("asset", "revision"), revision),
                 system="DISCOVERY", managed_object=self.object,
                 op="CHANGE"
             )
@@ -212,7 +215,7 @@ class AssetCheck(DiscoveryCheck):
             o.save()
             o.log(
                 "Object manufacturing date: %s -> %s" % (
-                o.get_data("asset", "mfg_date"), mfg_date),
+                    o.get_data("asset", "mfg_date"), mfg_date),
                 system="DISCOVERY", managed_object=self.object,
                 op="CHANGE"
             )
@@ -292,7 +295,7 @@ class AssetCheck(DiscoveryCheck):
         for i, o in enumerate(self.objects):
             type, object, context, serial = o
             self.logger.debug("Trying to connect #%d. %s (%s)",
-                i, type, str_dict(context))
+                              i, type, str_dict(context))
             if type not in self.rule:
                 continue
             # Find applicable rule
@@ -308,7 +311,7 @@ class AssetCheck(DiscoveryCheck):
                 for t_type, t_object, t_ctx in self.iter_object(
                         i, scope, context.get(scope),
                         r.target_type, fwd=fwd):
-                    if isinstance(t_object, basestring):
+                    if isinstance(t_object, six.string_types):
                         continue
                     if not t_n or t_n == t_ctx["N"]:
                         # Check target object has proper connection
@@ -316,10 +319,10 @@ class AssetCheck(DiscoveryCheck):
                             r.target_connection, context)
                         if not t_object.has_connection(t_c):
                             continue
-                        # Check source object has proper conneciton
+                        # Check source object has proper connection
                         m_c = self.expand_context(
                             r.match_connection, context)
-                        if isinstance(object, basestring):
+                        if isinstance(object, six.string_types):
                             # Resolving unknown object
                             o = self.resolve_object(
                                 object, m_c, t_object, t_c, serial)
@@ -363,8 +366,8 @@ class AssetCheck(DiscoveryCheck):
                     managed_object=self.object,
                     op="CONNECT"
                 )
-        except ConnectionError, why:
-            self.logger.error("Failed to connect: %s", why)
+        except ConnectionError as e:
+            self.logger.error("Failed to connect: %s", e)
 
     def connect_twinax(self, o1, c1, o2, c2):
         """
@@ -421,7 +424,7 @@ class AssetCheck(DiscoveryCheck):
                         break
                 # Report error
                 self.logger.error("Unknown part number for %s: %s (%s)",
-                    platform, ", ".join(pns), description)
+                                  platform, ", ".join(pns), description)
 
     def register_unknown_part_no(self, vendor, part_no, descripton):
         """
@@ -490,7 +493,7 @@ class AssetCheck(DiscoveryCheck):
         else:
             self.ctx[n] += 1
         self.logger.debug("Set context %s = %s -> %s",
-            name, value, str_dict(self.ctx))
+                          name, value, str_dict(self.ctx))
 
     def reset_context(self, names):
         for n in names:
@@ -500,7 +503,7 @@ class AssetCheck(DiscoveryCheck):
             if m in self.ctx:
                 del self.ctx[m]
         self.logger.debug("Reset context scopes %s -> %s",
-            ", ".join(names), str_dict(self.ctx))
+                          ", ".join(names), str_dict(self.ctx))
 
     def find_managed(self):
         """
@@ -518,7 +521,7 @@ class AssetCheck(DiscoveryCheck):
             o = Object.objects.filter(id=oid).first()
             if o:
                 self.logger.info("Revoking management from %s %s",
-                    o.model.name, o.id)
+                                 o.model.name, o.id)
                 o.reset_data("management", "managed_object")
                 o.save()
                 o.log(
@@ -545,7 +548,7 @@ class AssetCheck(DiscoveryCheck):
         c = t_object.model.get_model_connection(t_c)
         if c is None:
             self.logger.error("Connection violation for %s SN %s",
-                name, serial)
+                              name, serial)
             return None  # ERROR
         # Transceiver formfactor
         tp = c.type.name.split(" | ")
@@ -585,7 +588,7 @@ class AssetCheck(DiscoveryCheck):
             return None
         # Create object
         self.logger.info("Creating new object. model='%s', serial='%s'",
-            m, serial)
+                         m, serial)
         if self.object.container:
             container = self.object.container.id
         else:
@@ -617,7 +620,8 @@ class AssetCheck(DiscoveryCheck):
                 if mm.from_serial <= serial and serial <= mm.to_serial:
                     return True
             else:
-                self.logger.debug("Mapping %s %s %s to %s",
+                self.logger.debug(
+                    "Mapping %s %s %s to %s",
                     vendor, part_no, serial, mm.model.name)
                 return mm.model
         return None

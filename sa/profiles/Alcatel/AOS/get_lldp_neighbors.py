@@ -98,8 +98,6 @@ class Script(BaseScript):
                 # remote_port
             match = self.rx_remote_port_id.search(s)
             if not match:
-                # Debug string
-                print "\n\n\n\n\nremote_port_id\n\n\n\n\n"
                 continue
             n["remote_port"] = match.group("port").strip()
             if n["remote_port_subtype"] == 7 \

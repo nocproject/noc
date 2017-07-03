@@ -12,11 +12,10 @@ import time
 # Third-party modules
 import tornado.ioloop
 import tornado.gen
-import tornado.httpclient
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
-import noc.core.service.httpclient
+from noc.core.http.client import fetch
 
 
 class PMWriterService(Service):
@@ -123,7 +122,7 @@ class PMWriterService(Service):
                 self.perf_metrics["slept_time"] += sleep_time
                 yield tornado.gen.sleep(sleep_time)
             batch, self.buffer = self.buffer[:bs], self.buffer[bs:]
-            body = "\n".join(batch)
+            data = "\n".join(batch)
             while True:
                 t0 = self.ioloop.time()
                 self.logger.debug("Sending %d metrics", len(batch))
@@ -133,7 +132,7 @@ class PMWriterService(Service):
                         # Configurable database name
                         "http://%s/write?db=%s&precision=s" % (
                             self.influx,
-                            config.influx.db
+                            self.config.influx_db
                         ),
                         method="POST",
                         body=body

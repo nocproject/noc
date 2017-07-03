@@ -5,7 +5,7 @@
 # Copyright (C) 2007-2015 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
- 
+
 # Python modules
 import re
 import datetime

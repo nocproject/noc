@@ -954,6 +954,8 @@ class MACAddressParameter(StringParameter):
             return self.default
         if isinstance(value, six.string_types):
             value = super(MACAddressParameter, self).clean(value)
+        if not self.accept_bin and len(value) <= 6:
+            self.raise_error(value)
         try:
             return str(MAC(value))
         except ValueError:

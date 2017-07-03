@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # EdgeCore.ES.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 """
@@ -19,9 +19,9 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
 
-    ##
-    ## Main dispatcher
-    ##
+    #
+    # Main dispatcher
+    #
     def execute(self):
         s = ""
         if self.has_snmp():
@@ -37,13 +37,16 @@ class Script(BaseScript):
                     oid = oid[1: -1].replace(", ", ".")
                 if oid[-3:] == "2.4":
                     # 3528M-SFP OID (v1.4.x.x)
-                    v = self.snmp.get(oid[: -3] + "1.4.1.1.3.1.6.1",
-                        cached=True)
+                    v = self.snmp.get(
+                        oid[: -3] + "1.4.1.1.3.1.6.1",
+                        cached=True
+                    )
                 else:
                     if oid[-3:] == "101":
                         # 3528MV2-Style OID
                         v = self.snmp.get(
-                            oid[: -3] + "1.1.3.1.6.1", cached=True)
+                            oid[: -3] + "1.1.3.1.6.1", cached=True
+                        )
                     else:
                         # 3526-Style OID
                         v = self.snmp.get(oid + ".1.1.3.1.6.1", cached=True)
@@ -66,9 +69,9 @@ class Script(BaseScript):
                 return self.get_version_4xxx(None, None)
             return self.get_version_35xx(s, None)
 
-    ##
-    ## 35xx
-    ##
+    #
+    # 35xx
+    #
     rx_sys_35 = re.compile(
         r"^\s*System description\s*:\s(?P<platform>.+?)\s*$",
         re.MULTILINE | re.IGNORECASE)
@@ -121,6 +124,8 @@ class Script(BaseScript):
             platform = "ES3528M"
         elif "ES3526S" in platform:
             pass
+        elif "ES4100-28T" in platform:
+            pass
         elif "MR2228N" in platform:
             vendor = "MRV"
         elif platform.lower() == "8 sfp ports + 4 gigabit combo ports " \
@@ -163,10 +168,11 @@ class Script(BaseScript):
             r["attributes"].update({"Serial Number": match.group("serial")})
         return r
 
-    ##
-    ## ES4626
-    ##
-    rx_sys_4 = re.compile(r"(?P<platform>ES.+?) Device, Compiled",
+    #
+    # ES4626
+    #
+    rx_sys_4 = re.compile(
+        r"(?P<platform>ES.+?) Device, Compiled",
         re.MULTILINE | re.DOTALL | re.IGNORECASE)
     rx_ver_4 = re.compile(
         r"SoftWare (Package )?Version.*?(?:_|Vco\.)(?P<version>\d.+?)$",

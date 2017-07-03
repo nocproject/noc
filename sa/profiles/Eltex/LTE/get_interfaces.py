@@ -47,7 +47,6 @@ class Script(BaseScript):
             cmd = self.cli("show interfaces mac-address")
             for match in self.rx_mac1.finditer(cmd):
                 macs[match.group("port")] = match.group("mac")
-            cmd = self.cli("show interfaces vlans")
             for l in self.cli("show interfaces vlans").split("\n\n"):
                 match = self.rx_vlan.search(l)
                 if match:
@@ -116,6 +115,6 @@ class Script(BaseScript):
                 }]
             }
             if match.group("vlan_id") != "none":
-                iface["subinterfaces"][0]["vlan_ids"] = [match.group("vlan_id")]
+                iface["subinterfaces"][0]["vlan_id"] = [match.group("vlan_id")]
             interfaces += [iface]
         return [{"interfaces": interfaces}]

@@ -1,0 +1,12 @@
+{
+  "service": {
+    "name": "notebook",
+    "tags": [ ],
+    "port": {{notebook_port}},
+    "enableTagOverride": false,
+    "check": {
+        "http": "http://{{ hostvars[inventory_hostname].ansible_host }}:{{ notebook_port }}/notebook/login",
+        "interval": "60s"
+    }
+  }
+}

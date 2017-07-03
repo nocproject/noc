@@ -18,10 +18,10 @@ class Script(BaseScript):
         if self.match_version(platform__regex="^ZD"):
             caps["CPE | Controller"] = True
         if self.has_snmp():
-            stat = self.snmp.get("1.3.6.1.4.1.25053.1.2.1.1.1.1.30.0", cached=True)  
+            stat = self.snmp.get("1.3.6.1.4.1.25053.1.2.1.1.1.1.30.0", cached=True)
             if stat == 1:
                 caps["CPE | Controller Status"] = "Master"
             elif stat ==2:
-                caps["CPE | Controller Status"] = "Standby" 
+                caps["CPE | Controller Status"] = "Standby"
             elif stat ==3:
                 caps["CPE | Controller Status"] = "Noredundancy"

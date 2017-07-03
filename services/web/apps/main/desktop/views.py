@@ -60,7 +60,7 @@ class DesktopApplication(ExtApplication):
         Get theme for request
         """
         user = request.user
-        language = self.site.service.config.language
+        language = self.service.config.language
         if user.is_authenticated:
             try:
                 profile = user.get_profile()

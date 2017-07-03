@@ -13,7 +13,8 @@ Ext.define("NOC.inv.networksegment.Application", {
         "NOC.inv.networksegment.TreeCombo",
         "NOC.sa.managedobjectselector.LookupField",
         "NOC.main.remotesystem.LookupField",
-        "Ext.ux.form.DictField"
+        "Ext.ux.form.DictField",
+        "NOC.inv.networksegmentprofile.LookupField"
     ],
     model: "NOC.inv.networksegment.Model",
     search: true,
@@ -109,6 +110,12 @@ Ext.define("NOC.inv.networksegment.Application", {
                     margin: '0 0 5',
                     allowBlank: true
                 }),
+                {
+                    name: "profile",
+                    xtype: "inv.networksegmentprofile.LookupField",
+                    fieldLabel: __("Profile"),
+                    allowBlank: false
+                },
                 {
                     name: "description",
                     xtype: "textarea",

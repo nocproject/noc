@@ -8,90 +8,7 @@ http {
     default_type  application/octet-stream;
 {% endif %}
 
-{% if noc_config["services"].get("web", []) %}
-upstream noc-web {
-{% for n in noc_config["services"].get("web", []) %}
-    {% if n.split(":")[0] in ansible_all_ipv4_addresses %}
-    server {{ n }} weight={{web_weight}}  max_fails=3 fail_timeout=10;
-    {% else %}
-    server {{ n }} weight={{web_weight | int + 10}}  max_fails=3 fail_timeout=10 backup;
-    {% endif %}
-{% endfor %}
-}
-{% endif %}
-
-{% if noc_config["services"].get("login", []) %}
-upstream login {
-{% for n in noc_config["services"].get("login", []) %}
-    {% if n.split(":")[0] in ansible_all_ipv4_addresses %}
-    server {{ n }} weight={{login_weight}}  max_fails=3 fail_timeout=10;
-    {% else %}
-    server {{ n }} weight={{login_weight | int + 10}}  max_fails=3 fail_timeout=10 backup;
-    {% endif %}
-{% endfor %}
-}
-{% endif %}
-
-{% if noc_config["services"].get("card", []) %}
-upstream card {
-{% for n in noc_config["services"].get("card", []) %}
-    {% if n.split(":")[0] in ansible_all_ipv4_addresses %}
-    server {{ n }} weight={{card_weight}}  max_fails=3 fail_timeout=10;
-    {% else %}
-    server {{ n }} weight={{card_weight | int + 10 }}  max_fails=3 fail_timeout=10 backup;
-    {% endif %}
-{% endfor %}
-}
-{% endif %}
-
-{% if noc_config["services"].get("mrt", []) %}
-upstream mrt {
-{% for n in noc_config["services"].get("mrt", []) %}
-    server {{ n }} weight={{mrt_weight}};
-{% endfor %}
-}
-{% endif %}
-
-{% if noc_config["services"].get("bi", []) %}
-upstream bi {
-{% for n in noc_config["services"].get("bi", []) %}
-    server {{ n }};
-{% endfor %}
-}
-{% endif %}
-
-{% if noc_config["services"].get("notebook", []) %}
-upstream notebook {
-{% for n in noc_config["services"].get("notebook", []) %}
-    server {{ n }};
-{% endfor %}
-}
-{% endif %}
-
-{% if noc_config["services"].get("grafana", []) %}
-upstream grafana {
-{% for n in noc_config["services"].get("grafana", []) %}
-    {% if n.split(":")[0] in ansible_all_ipv4_addresses %}
-    server {{ n }} weight={{grafana_weight}}  max_fails=3 fail_timeout=10;
-    {% else %}
-    server {{ n }} weight={{grafana_weight | int + 10 }}  max_fails=3 fail_timeout=10;
-    {% endif %}
-{% endfor %}
-}
-{% endif %}
-
-{% if noc_config["services"].get("grafanads", []) %}
-upstream grafanads {
-{% for n in noc_config["services"].get("grafanads", []) %}
-    {% if n.split(":")[0] in ansible_all_ipv4_addresses %}
-    server {{ n }} weight={{grafana_weight}}  max_fails=3 fail_timeout=10;
-    {% else %}
-    server {{ n }} weight={{grafanads_weight | int + 10 }}  max_fails=3 fail_timeout=10 backup;
-    {% endif %}
-{% endfor %}
-}
-{% endif %}
-
+include upstream.conf;
 
 {% if nginx_json_logging == "1" %}
 log_format noc_format '{ "@timestamp": "$time_iso8601", '
@@ -203,7 +120,7 @@ server {
         access_log off;
     }
 
-{% if noc_config["services"].get("login", []) %}
+{% if 'svc-login' in groups and groups['svc-login'] | length > 0 %}
     # Login service api
     location /api/auth/ {
         internal;
@@ -236,7 +153,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("card", []) %}
+{% if 'svc-card' in groups and groups['svc-card'] | length > 0 %}
     # Card service api
     location /api/card/ {
         proxy_pass http://card;
@@ -257,7 +174,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("mrt", []) %}
+{% if 'svc-mrt' in groups and groups['svc-mrt'] | length > 0 %}
     # mrt service api
     location /api/mrt/ {
         proxy_pass http://mrt;
@@ -279,7 +196,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("bi", []) %}
+{% if 'svc-bi' in groups and groups['svc-bi'] | length > 0 %}
 
     # bi service api
     location /api/bi/ {
@@ -298,9 +215,17 @@ server {
         auth_request_set $groups $upstream_http_remote_groups;
         proxy_set_header Remote-Groups $groups;
     }
+
+    location /ui/bi2/ {
+        alias {{ noc_root }}/ui/bi2/;
+        try_files $uri /index.html =404;
+        gzip on;
+        gzip_types text/css text/javascript application/x-javascript application/json;
+        access_log  {{ nginx_log_dir }}/static.access.log noc_format;
+    }
 {% endif %}
 
-{% if noc_config["services"].get("grafanads", []) %}
+{% if 'svc-grafanads' in groups and groups['svc-grafanads'] | length > 0 %}
 
     # grafanads service api
     location /api/grafanads/ {
@@ -345,7 +270,7 @@ server {
         access_log  {{ nginx_log_dir }}/static.access.log noc_format;
     }
 
-{% if noc_config["services"].get("bi", []) %}
+{% if 'svc-bi' in groups and groups['svc-bi'] | length > 0 %}
     location /ui/bi/editor/ {
         alias {{ noc_root }}/ui/bi/;
         try_files $uri /index.html =404;
@@ -355,7 +280,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("notebook", []) %}
+{% if 'svc-notebook' in groups and groups['svc-notebook'] | length > 0 %}
     location ~* ^/notebook/(api/kernels/[^/]+/(channels|iopub|shell|stdin)|terminals/websocket)/? {
         proxy_pass http://notebook;
         gzip on;
@@ -386,7 +311,7 @@ server {
     }
 {% endif %}
 
-{% if noc_config["services"].get("grafana", []) %}
+{% if 'svc-grafana' in groups and groups['svc-grafana'] | length > 0 %}
     location /ui/grafana {
         proxy_pass http://grafana;
         auth_request /api/auth/auth/;

@@ -8,6 +8,7 @@
 
 # Python modules
 import re
+import time
 from collections import defaultdict
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -81,6 +82,8 @@ class Script(BaseScript):
                     if int(sifindex) < 3000:
                         sm = str(self.snmp.get("1.3.6.1.2.1.2.2.1.6.%s" % sifindex))
                         smac = MACAddressParameter().clean(sm)
+                        if n.startswith("oob"):
+                            continue
                         sname = self.profile.convert_interface_name(n)
                     else:
                         continue
@@ -131,9 +134,10 @@ class Script(BaseScript):
             name = res[0].strip()
             if (
                 self.match_version(version__regex="[12]\.[15]\.4[4-9]") or
-                self.match_version(version__regex="4\.0\.[4-5]")
+                self.match_version(version__regex="4\.0\.[4-7]$")
             ):
                 v = self.cli("show interface %s" % name)
+                time.sleep(1)
                 for match in self.rx_sh_int.finditer(v):
                     ifname = match.group("interface")
                     ifindex = match.group("ifindex")
@@ -201,6 +205,7 @@ class Script(BaseScript):
             iface["subinterfaces"][0]["enabled_afi"] += ["BRIDGE"]
             # Vlans
             cmd = self.cli("show interfaces switchport %s" % name)
+            time.sleep(1)
             rcmd = cmd.split("\n\n")
             tvlan = []
             utvlan = None
@@ -214,6 +219,26 @@ class Script(BaseScript):
             iface["subinterfaces"][0]["tagged_vlans"] = tvlan
             if utvlan:
                 iface["subinterfaces"][0]["untagged_vlan"] = utvlan
+
+            cmd = self.cli("show ip interface %s" % name)
+            time.sleep(1)
+            for match in self.rx_sh_ip_int.finditer(cmd):
+                if not match:
+                    continue
+                ip = match.group("ip")
+                netmask = match.group("mask")
+                ip = ip + '/' + netmask
+                ip_list = [ip]
+                enabled_afi = []
+                if ":" in ip:
+                    ip_interfaces = "ipv6_addresses"
+                    enabled_afi += ["IPv6"]
+                else:
+                    ip_interfaces = "ipv4_addresses"
+                    enabled_afi += ["IPv4"]
+                iface["subinterfaces"][0]["enabled_afi"] = enabled_afi
+                iface["subinterfaces"][0][ip_interfaces] = ip_list
+
 
             interfaces += [iface]
 
@@ -232,8 +257,11 @@ class Script(BaseScript):
             else:
                 ip_interfaces = "ipv4_addresses"
                 enabled_afi += ["IPv4"]
-            vlan = ifname.split(' ')[1]
-            ifname = ifname.strip(' ')
+            if ifname.startswith("vlan"):
+                vlan = ifname.split(' ')[1]
+                ifname = ifname.strip()
+            else:
+                continue
             if match.group("admin_status"):
                 a_stat = match.group("admin_status").lower() == "up"
             else:
@@ -242,10 +270,6 @@ class Script(BaseScript):
                 o_stat = match.group("oper_status").lower() == "up"
             else:
                 o_stat = True
-            rx_vlan_name = re.compile(
-                r"^\s*" + vlan + "\s+(?P<name>.+?)\s+\S+\s+\S+\s+\S+\s*$",
-                re.MULTILINE)
-
             iface = {
                 "name": self.profile.convert_interface_name(ifname),
                 "type": typ,

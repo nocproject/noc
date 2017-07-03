@@ -15,6 +15,18 @@ function get_format(fmt) {
             return ['%d.%m.%Y'];
     }
 }
+function buttonAnimation() {
+    var b = [".", "..", "..." ];
+    var i = 0;
+
+
+    setInterval(function () {
+        $("#generate-report")
+            .val("Generate " + b[i++])
+            .attr("disabled", "disabled");
+        if(i >= b.length) i = 0;
+    }, 500);
+}
 django = {
     jQuery: $
 };
@@ -27,5 +39,5 @@ django = {
 <table border="0">
     {{form.as_table}}
 </table>
-<input type="submit" value="Generate Report"/>
+<input id="generate-report" type="submit" value="Generate Report" onclick="buttonAnimation()" style="width: 140px;"/>
 {% endblock %}

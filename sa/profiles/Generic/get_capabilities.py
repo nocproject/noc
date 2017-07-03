@@ -12,7 +12,7 @@ import functools
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetcapabilities import IGetCapabilities
 from noc.core.mib import mib
-from noc.core.snmp.consts import SNMP_v1, SNMP_v2c, SNMP_v3
+from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.snmp.error import SNMPError
 
 

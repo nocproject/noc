@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## BI extract/load commands
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# BI extract/load commands
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2016 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import datetime
 import gzip
-## Third-party modules
+# Third-party modules
 import nsq
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.lib.nosql import get_db
 from noc.core.etl.bi.extractor.reboots import RebootsExtractor
@@ -34,8 +34,27 @@ class Command(BaseCommand):
         AlarmsExtractor
     ]
 
+    # Extract by 1-day chunks
+    EXTRACT_WINDOW = 86400
+
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
+        # Args
+        parser.add_argument(
+            "--data-prefix",
+            default=self.DATA_PREFIX,
+            help="Show only summary"
+        )
+        parser.add_argument(
+            "--dict-xml-prefix",
+            default=self.DICT_XML_PREFIX,
+            help="Show only summary"
+        )
+        parser.add_argument(
+            "--dict-data-prefix",
+            default=self.DICT_DATA_PREFIX,
+            help="Show only summary"
+        )
         # extract command
         extract_parser = subparsers.add_parser("extract")
         # clean command
@@ -43,7 +62,10 @@ class Command(BaseCommand):
         # load command
         load_parser = subparsers.add_parser("load")
 
-    def handle(self, cmd, *args, **options):
+    def handle(self, cmd, data_prefix, dict_xml_prefix, dict_data_prefix, *args, **options):
+        self.DATA_PREFIX = data_prefix
+        self.DICT_XML_PREFIX = dict_xml_prefix
+        self.DICT_DATA_PREFIX = dict_data_prefix
         return getattr(self, "handle_%s" % cmd)(*args, **options)
 
     def get_last_extract(self, name):
@@ -69,15 +91,22 @@ class Command(BaseCommand):
     def handle_extract(self, *args, **options):
         t0 = datetime.datetime.fromtimestamp(0)
         now = datetime.datetime.now()
+        window = datetime.timedelta(seconds=self.EXTRACT_WINDOW)
         for ecls in self.EXTRACTORS:
             start = self.get_last_extract(ecls.name) or t0
             stop = now - datetime.timedelta(seconds=ecls.extract_delay)
-            e = ecls(start=start, stop=stop, prefix=self.DATA_PREFIX)
-            self.stdout.write("Extracting %s (%s - %s)\n" % (
-                e.name, start, stop
-            ))
-            e.extract()
-            self.set_last_extract(ecls.name, e.last_ts or stop)
+            while start < stop:
+                end = min(
+                    start + window,
+                    stop
+                )
+                e = ecls(start=start, stop=end, prefix=self.DATA_PREFIX)
+                self.stdout.write("Extracting %s (%s - %s)\n" % (
+                    e.name, start, end
+                ))
+                e.extract()
+                self.set_last_extract(ecls.name, e.last_ts or end)
+                start += window
         # Extract dictionaries
         for dcls in Dictionary.iter_cls():
             # Temporary data

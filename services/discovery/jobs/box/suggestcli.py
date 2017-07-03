@@ -27,9 +27,9 @@ class SuggestCLICheck(DiscoveryCheck):
         for user, password, super_password in self.object.auth_profile.iter_cli():
             if self.check_login(user, password, super_password):
                 if self.object._suggest_snmp:
-                    ro, rw = self.object._suggest_snmp
+                    ro, rw, version = self.object._suggest_snmp
                 else:
-                    ro, rw = None, None
+                    ro, rw, version = None, None, None
                 self.set_credentials(
                     user=user,
                     password=password,
@@ -39,7 +39,11 @@ class SuggestCLICheck(DiscoveryCheck):
                 )
                 return
         self.logger.info("Failed to guess CLI credentials")
-        self.set_problem("Failed to guess CLI credentials")
+        self.set_problem(
+            alarm_class="Discovery | Guess | CLI Credentials",
+            message="Failed to guess CLI credentials",
+            fatal=True
+        )
 
     def check_login(self, user, password, super_password):
         self.logger.info("Checking %s/%s/%s", user, password, super_password)

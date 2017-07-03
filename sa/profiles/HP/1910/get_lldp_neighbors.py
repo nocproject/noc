@@ -94,7 +94,6 @@ class Script(BaseScript):
 
                 # Get remote chassis id subtype
                 chassis_type = match.group("chassis_type")
-                print chassis_type
                 if chassis_type == 'MAC address':
                     remote_chassis_id_subtype = 4
                 # Get remote port subtype

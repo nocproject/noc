@@ -273,6 +273,92 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     ]
                                 },
                                 {
+                                    xtype: "fieldset",
+                                    title: __("Ping series settings"),
+                                    layout: "vbox",
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "ping_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Ping Policy"),
+                                            allowBlank: true,
+                                            uiStyle: "medium",
+                                            store: [
+                                                ["f", __("First Success")],
+                                                ["a", __("All Success")]
+                                            ],
+                                            value: "f"
+                                        },
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "ping_size",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Packet size, bytes"),
+                                                    labelWidth: 105,
+                                                    uiStyle: "small",
+                                                    defautlValue: 64,
+                                                    minValue: 64
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "ping_count",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Packets count"),
+                                                    labelWidth: 105,
+                                                    defautlValue: 3,
+                                                    uiStyle: "small"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            xtype: "container",
+                                            layout: "hbox",
+                                            defaults: {
+                                                padding: "0 8 0 0"
+                                            },
+                                            items: [
+                                                {
+                                                    name: "ping_timeout_ms",
+                                                    xtype: "numberfield",
+                                                    fieldLabel: __("Timeout, msec"),
+                                                    defaultValue: 1000,
+                                                    labelWidth: 105,
+                                                    uiStyle: "small",
+                                                    listeners: {
+                                                        scope: me,
+                                                        change: function(_item, newValue, oldValue, eOpts) {
+                                                            me.form.findField("ping_tm_calculated").setValue(newValue/1000);
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    name: 'ping_tm_calculated',
+                                                    xtype: 'displayfield',
+                                                    renderer: NOC.render.Duration
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
                                     name: "report_ping_rtt",
                                     xtype: "checkboxfield",
                                     boxLabel: __("Report ping RTT"),
@@ -640,7 +726,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     allowBlank: true,
                                                     minValue: 0,
                                                     uiStyle: "small"
-                                                },
+                                                }
                                             ]
                                         },
                                         {
@@ -689,6 +775,51 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             allowBlank: true
                                         }
                                     ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    layout: "hbox",
+                                    title: __("Discovery Alarm"),
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "box_discovery_alarm_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Box Alarm"),
+                                            allowBlank: true,
+                                            labelWidth: 60,
+                                            labelAlign: "left",
+                                            uiStyle: "medium",
+                                            store: [
+                                                ["E", __("Enable")],
+                                                ["D", __("Disable")]
+                                            ],
+                                            value: "D"
+                                        },
+                                        {
+                                            name: "box_discovery_fatal_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Fatal Alarm Weight"),
+                                            labelWidth: 115,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        },
+                                        {
+                                            name: "box_discovery_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Alarm Weight"),
+                                            labelWidth: 80,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -735,7 +866,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                                     renderer: NOC.render.Duration
                                                 }
                                             ]
-                                        },
+                                        }
                                     ]
                                 },
                                 {
@@ -769,6 +900,51 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             boxLabel: __("Metrics")
                                         }
                                     ]
+                                },
+                                {
+                                    xtype: "fieldset",
+                                    layout: "hbox",
+                                    title: __("Discovery Alarm"),
+                                    defaults: {
+                                        labelAlign: "top",
+                                        padding: 4
+                                    },
+                                    items: [
+                                        {
+                                            name: "periodic_discovery_alarm_policy",
+                                            xtype: "combobox",
+                                            fieldLabel: __("Periodic Alarm"),
+                                            allowBlank: true,
+                                            labelWidth: 90,
+                                            labelAlign: "left",
+                                            uiStyle: "medium",
+                                            store: [
+                                                ["E", __("Enable")],
+                                                ["D", __("Disable")]
+                                            ],
+                                            value: "D"
+                                        },
+                                        {
+                                            name: "periodic_discovery_fatal_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Fatal Alarm Weight"),
+                                            labelWidth: 115,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        },
+                                        {
+                                            name: "periodic_discovery_alarm_weight",
+                                            xtype: "numberfield",
+                                            fieldLabel: __("Alarm Weight"),
+                                            labelWidth: 80,
+                                            labelAlign: "left",
+                                            allowBlank: true,
+                                            minValue: 0,
+                                            uiStyle: "small"
+                                        }
+                                    ]
                                 }
                             ]
                         },
@@ -798,6 +974,64 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             width: 50,
                                             renderer: NOC.render.Bool,
                                             editor: "checkbox"
+                                        },
+                                        {
+                                            text: __("Is Stored"),
+                                            dataIndex: "is_stored",
+                                            width: 50,
+                                            renderer: NOC.render.Bool,
+                                            editor: "checkbox"
+                                        },
+                                        {
+                                            text: __("Window Type"),
+                                            dataIndex: "window_type",
+                                            width: 80,
+                                            editor: {
+                                                xtype: "combo",
+                                                editable: false,
+                                                // mode: "local",
+                                                // value: "m",
+                                                // displayField: 'text',
+                                                // valueField: 'value',
+                                                store: [
+                                                    ["m", "Measurements"],
+                                                    ["t", "Time"]
+                                                ]
+                                            },
+                                            align: "right"
+                                        },
+                                        {
+                                            text: __("Window"),
+                                            dataIndex: "window",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right"
+                                        },
+                                        {
+                                            text: __("Window Function"),
+                                            dataIndex: "window_function",
+                                            width: 70,
+                                            editor: {
+                                                xtype: "combobox",
+                                                store: [
+                                                    ["last", "Last Value"],
+                                                    ["avg", "Average"],
+                                                    ["percentile", "Percentile"],
+                                                    ["q1", "1st quartile"],
+                                                    ["q2", "2st quartile"],
+                                                    ["q3", "3st quartile"],
+                                                    ["p95", "95% percentile"],
+                                                    ["p99", "99% percentile"],
+                                                    ["handler", "Handler"]
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            text: __("Config"),
+                                            dataIndex: "window_config",
+                                            width: 80,
+                                            editor: "textfield"
+                                            //value: ""
                                         },
                                         {
                                             text: __("Low Error"),
@@ -831,6 +1065,41 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             align: "right",
                                             renderer: NOC.render.Size
                                         }
+                                        /*
+                                        {
+                                            text: __("Low Error Weight"),
+                                            dataIndex: "low_error_weight",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: __("Low Warn Wight"),
+                                            dataIndex: "low_warn_weight",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: __("High Warn Wight"),
+                                            dataIndex: "high_warn_weight",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        },
+                                        {
+                                            text: __("High Error Wight"),
+                                            dataIndex: "high_error_weight",
+                                            width: 60,
+                                            editor: "textfield",
+                                            align: "right",
+                                            renderer: NOC.render.Size
+                                        }
+                                        */
+
                                     ]
 
                                 }
@@ -877,7 +1146,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     value: "E"
                                 }
                             ]
-                        }
+                        },
                     ]
                 }
             ],

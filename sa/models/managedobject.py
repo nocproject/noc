@@ -19,7 +19,7 @@ from threading import Lock
 # Third-party modules
 from django.db.models import (Q, Model, CharField, BooleanField,
                               ForeignKey, IntegerField, FloatField,
-                              DateTimeField, SET_NULL)
+                              DateTimeField, BigIntegerField, SET_NULL)
 from django.contrib.auth.models import User, Group
 import cachetools
 import six
@@ -62,6 +62,8 @@ from noc.core.cache.base import cache
 from noc.core.script.caller import SessionContext
 from noc.core.bi.decorator import bi_sync
 
+# Increase whenever new field added
+MANAGEDOBJECT_CACHE_VERSION = 2
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
@@ -286,10 +288,31 @@ class ManagedObject(Model):
     # Object id in remote system
     remote_id = CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = IntegerField(null=True, blank=True)
+    bi_id = BigIntegerField(null=True, blank=True)
     # Object alarms can be escalated
     escalation_policy = CharField(
         "Escalation Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
+    # Raise alarms on discovery problems
+    box_discovery_alarm_policy = CharField(
+        "Box Discovery Alarm Policy",
+        max_length=1,
+        choices=[
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("P", "From Profile")
+        ],
+        default="P"
+    )
+    periodic_discovery_alarm_policy = CharField(
+        "Box Discovery Alarm Policy",
         max_length=1,
         choices=[
             ("E", "Enable"),
@@ -337,7 +360,8 @@ class ManagedObject(Model):
     @classmethod
     @cachedmethod(operator.attrgetter("_id_cache"),
                   key="managedobject-id-%s",
-                  lock=lambda _: id_lock)
+                  lock=lambda _: id_lock,
+                  version=MANAGEDOBJECT_CACHE_VERSION)
     def get_by_id(cls, id):
         mo = ManagedObject.objects.filter(id=id)[:1]
         if mo:
@@ -436,7 +460,6 @@ class ManagedObject(Model):
     def on_save(self):
         # Invalidate caches
         deleted_cache_keys = [
-            "managedobject-id-%s" % self.id,
             "managedobject-name-to-id-%s" % self.name
         ]
         # IPAM sync
@@ -464,6 +487,7 @@ class ManagedObject(Model):
         if (
             self.initial_data["id"] is None or
             "is_managed" in self.changed_fields or
+            "object_profile" in self.changed_fields or
             "trap_source_type" in self.changed_fields or
             "trap_source_ip" in self.changed_fields or
             "syslog_source_type" in self.changed_fields or
@@ -533,6 +557,8 @@ class ManagedObject(Model):
         # Rebuild selector cache
         SelectorCache.rebuild_for_object(self)
         #
+        cache.delete("managedobject-id-%s" % self.id,
+                     version=MANAGEDOBJECT_CACHE_VERSION)
         cache.delete_many(deleted_cache_keys)
         # Clear alarm when necessary
         if (
@@ -1069,6 +1095,47 @@ class ManagedObject(Model):
         else:
             return False
 
+    def can_create_box_alarms(self):
+        if self.box_discovery_alarm_policy == "E":
+            return True
+        elif self.box_discovery_alarm_policy == "P":
+            return self.object_profile.can_create_box_alarms()
+        else:
+            return False
+
+    def can_create_periodic_alarms(self):
+        if self.periodic_discovery_alarm_policy == "E":
+            return True
+        elif self.periodic_discovery_alarm_policy == "P":
+            return self.object_profile.can_create_periodic_alarms()
+        else:
+            return False
+
+    @property
+    def management_vlan(self):
+        """
+        Return management vlan settings
+        :return: Vlan id or None
+        """
+        if self.segment.management_vlan_policy == "d":
+            return None
+        elif self.segment.management_vlan_policy == "e":
+            return self.segment.management_vlan
+        else:
+            return self.segment.profile.management_vlan
+
+    @property
+    def multicast_vlan(self):
+        """
+        Return multicast vlan settings
+        :return: Vlan id or None
+        """
+        if self.segment.multicast_vlan_policy == "d":
+            return None
+        elif self.segment.multicast_vlan_policy == "e":
+            return self.segment.multicast_vlan
+        else:
+            return self.segment.profile.multicast_vlan
 
 @on_save
 class ManagedObjectAttribute(Model):

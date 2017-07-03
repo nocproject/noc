@@ -50,7 +50,6 @@ class Script(BaseScript):
                         part_no = pid
 
             if not part_no:
-                print "!!! UNKNOWN: ", match.groupdict()
                 continue
             else:
                 if not vendor:

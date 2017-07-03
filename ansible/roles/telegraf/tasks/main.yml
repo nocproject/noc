@@ -17,14 +17,14 @@
 - name: render telegraf config inputs
   template:
     src: "telegraf/basic_inputs.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/basic_inputs.conf"
+    dest: "{{ telegraf_confd_path }}/basic_inputs.conf"
   tags:
     - config
 
 - name: render telegraf config prom config
   template:
     src: "telegraf/prom.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/prom.conf"
+    dest: "{{ telegraf_confd_path }}/prom.conf"
   when: telegraf_prometheus_enabled
   tags:
     - config
@@ -32,7 +32,7 @@
 - name: render telegraf config influxdb config
   template:
     src: "telegraf/influx.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/influx.conf"
+    dest: "{{ telegraf_confd_path }}/influx.conf"
   when: telegraf_influxdb_enabled
   tags:
     - config
@@ -40,13 +40,13 @@
 - name: remove influxdb output if disabled
   file:
     state: absent
-    path: "{{etc_prefix}}/telegraf/telegraf.d/influx.conf"
+    path: "{{ telegraf_confd_path }}/influx.conf"
   when: not telegraf_influxdb_enabled
 
 - name: remove prom output if disabled
   file:
     state: absent
-    path: "{{etc_prefix}}/telegraf/telegraf.d/prom.conf"
+    path: "{{ telegraf_confd_path }}/prom.conf"
   when: not telegraf_prometheus_enabled
 
 - name: Enable telegraf system service
