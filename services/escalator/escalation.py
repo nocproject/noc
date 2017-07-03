@@ -11,6 +11,7 @@ import logging
 import cachetools
 import datetime
 import operator
+import threading
 # NOC modules
 from noc.fm.models.utils import get_alarm
 from noc.fm.models.ttsystem import TTSystem
@@ -32,6 +33,10 @@ from noc.core.scheduler.job import Job
 logger = logging.getLogger(__name__)
 
 RETRY_TIMEOUT = 60
+RETRY_DELTA = 60 / max(config.tt_escalation_limit - 1, 1)
+
+retry_lock = threading.Lock()
+next_retry = datetime.datetime.now()
 
 
 def escalate(alarm_id, escalation_id, escalation_delay,
@@ -188,7 +193,7 @@ def escalate(alarm_id, escalation_id, escalation_delay,
                             metrics["escalation_tt_retry"] += 1
                             log("Temporary error detected. Retry after %ss", RETRY_TIMEOUT)
                             mo.tt_system.register_failure()
-                            Job.retry_after(RETRY_TIMEOUT, str(e))
+                            Job.retry_after(get_next_retry(), str(e))
                         ctx["tt"] = "%s:%s" % (mo.tt_system.name, tt_id)
                         alarm.escalate(ctx["tt"], close_tt=a.close_tt)
                         if tts.promote_group_tt:
@@ -327,7 +332,7 @@ def notify_close(alarm_id, tt_id, subject, body, notification_group_id,
                 except TemporaryTTError as e:
                     log("Temporary error detected while closing tt %s: %s", tt_id, e)
                     metrics["escalation_tt_close_retry"] += 1
-                    Job.retry_after(RETRY_TIMEOUT, str(e))
+                    Job.retry_after(get_next_retry(), str(e))
                     cts.register_failure()
                 except TTError as e:
                     log("Failed to close tt %s: %s",
@@ -393,3 +398,20 @@ tt_system_id_cache = cachetools.TTLCache(
 notification_group_cache = cachetools.TTLCache(
     CACHE_SIZE, TTL, missing=lambda x: get_item(NotificationGroup, id=x)
 )
+
+
+def get_next_retry():
+    """
+    Return next retry considering throttling rate
+    :return:
+    """
+    global RETRY_DELTA, RETRY_TIMEOUT, next_retry, retry_lock
+
+    now = datetime.datetime.now()
+    retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
+    with retry_lock:
+        if retry < next_retry:
+            retry = next_retry
+        next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
+    delta = retry - now
+    return delta.seconds + (1 if delta.microseconds else 0)
