@@ -8,8 +8,11 @@
 
 # Python modules
 import itertools
+import logging
 # Third-party modules
 import six
+
+logger = logging.getLogger(__name__)
 
 
 class BaseParameter(object):
@@ -158,16 +161,30 @@ class ServiceParameter(BaseParameter):
     """
     def __init__(self, service, near=False, wait=True, help=None):
         self.service = service
-        self.near = False
-        super(ServiceParameter, self).__init__(default=None, help=help)
+        self.near = near
+        self.wait = wait
+        super(ServiceParameter, self).__init__(default=[], help=help)
         self.value = []
 
+    def __get__(self, instance, owner):
+        if not self.value:
+            self.resolve()
+        return self.value
+
     def resolve(self):
-        raise NotImplementedError()
+        from noc.core.consul import ConsulClient
+        # @todo: Token
+        c = ConsulClient(host="consul", port=8500)
+        index = 0
+        index, services = yield c.health.service(
+            service=self.name,
+            index=index,
+            passing=True
+        )
+        print index, services
 
     def as_list(self):
         """
-
         :return: List of <host>:<port>
         """
         return [str(i) for i in self.value]
