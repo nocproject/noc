@@ -377,7 +377,7 @@ class Ping(object):
         if not socket:
             raise tornado.gen.Return(None)
         req_id = self.iter_request.next() & 0xFFFF
-        result = False
+        result = policy == self.CHECK_ALL and count > 0
         rtts = []
         attempt = 0
         for seq in range(count):
