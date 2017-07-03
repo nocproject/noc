@@ -16,7 +16,6 @@
     - quilt
     - gcc
     - libpq-dev
-    - libcurl4-openssl-dev
     - libffi6
     - libffi-dev
     - libmemcached11

@@ -10,20 +10,20 @@
 from __future__ import absolute_import
 import itertools
 import logging
-import socket
 import time
 import random
+import threading
+import sys
 # Third-party modules
 import tornado.concurrent
 import tornado.gen
-import tornado.httpclient
 import ujson
-from six.moves import queue
+import six
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from .client import (RPCError, RPCNoService, RPCHTTPError,
-                    RETRY_SOCKET_ERRORS, RPCException, RPCRemoteError)
-from . import httpclient  # Setup global httpclient
+                     RPCException, RPCRemoteError)
+from noc.core.http.client import fetch
 from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)
@@ -61,18 +61,23 @@ class RPCProxy(object):
             def _call():
                 try:
                     r = yield self._call(item, *args, **kwargs)
-                    q.put(r)
+                    result.append(r)
                 except tornado.gen.Return as e:
-                    q.put(e.value)
-                except Exception as e:
-                    q.put(e)
+                    result.append(e.value)
+                except Exception:
+                    error.append(sys.exc_info())
+                finally:
+                    ev.set()
 
-            q = queue.Queue()
+            ev = threading.Event()
+            result = []
+            error = []
             self._service.ioloop.add_callback(_call)
-            result = q.get()
-            if isinstance(result, Exception):
-                raise result
-            return result
+            ev.wait()
+            if error:
+                six.reraise(*error[0])
+            else:
+                return result[0]
 
         if item.startswith("_"):
             return self.__dict__[item]
@@ -85,55 +90,35 @@ class RPCProxy(object):
     def _call(self, method, *args, **kwargs):
         @tornado.gen.coroutine
         def make_call(url, body, limit=3):
-            client = tornado.httpclient.AsyncHTTPClient(
-                force_instance=True,
-                max_clients=1
+            code, headers, data = yield fetch(
+                url,
+                method="POST",
+                headers={
+                    "X-NOC-Calling-Service": self._service.name,
+                    "Content-Type": "text/json"
+                },
+                body=body,
+                connect_timeout=CONNECT_TIMEOUT,
+                request_timeout=REQUEST_TIMEOUT
             )
-            try:
-                response = yield client.fetch(
-                    url,
-                    method="POST",
-                    body=body,
-                    headers={
-                        "X-NOC-Calling-Service": self._service.name,
-                        "Content-Type": "text/json",
-                        "Connection": "close"
-                    },
-                    follow_redirects=False,
-                    raise_error=False,
-                    connect_timeout=CONNECT_TIMEOUT,
-                    request_timeout=REQUEST_TIMEOUT
-                )
-            except socket.error as e:
-                if e.args[0] in RETRY_SOCKET_ERRORS:
-                    self._logger.debug("Socket error: %s" % e)
-                    raise tornado.gen.Return(None)
-                raise RPCException(str(e))
-            except Exception as e:
-                raise RPCException(str(e))
-            finally:
-                client.close()
-                # Resolve CurlHTTPClient circular dependencies
-                client._force_timeout_callback = None
-                client._multi = None
             # Process response
-            if response.code == 200:
-                raise tornado.gen.Return(response)
-            elif response.code == 307:
+            if code == 200:
+                raise tornado.gen.Return(data)
+            elif code == 307:
                 # Process redirect
                 if not limit:
                     raise RPCException("Redirects limit exceeded")
-                url = response.headers.get("location")
+                url = headers.get("location")
                 self._logger.debug("Redirecting to %s", url)
-                r = yield make_call(url, response.body, limit - 1)
+                r = yield make_call(url, data, limit - 1)
                 raise tornado.gen.Return(r)
-            elif response.code == 599:
+            elif code in (598, 599):
                 self._logger.debug("Timed out")
                 raise tornado.gen.Return(None)
             else:
                 raise RPCHTTPError(
                     "HTTP Error %s: %s" % (
-                        response.code, response.body
+                        code, body
                     ))
 
         t0 = time.time()
@@ -178,12 +163,16 @@ class RPCProxy(object):
         )
         if response:
             if not is_notify:
-                result = ujson.loads(response.body)
+                try:
+                    result = ujson.loads(response)
+                except ValueError as e:
+                    raise RPCHTTPError("Cannot decode json: %s" % e)
                 if result.get("error"):
                     self._logger.error("RPC call failed: %s",
                                        result["error"])
                     raise RPCRemoteError(
-                        "RPC call failed: %s" % result["error"]
+                        "RPC call failed: %s" % result["error"],
+                        remote_code=result.get("code", None)
                     )
                 else:
                     raise tornado.gen.Return(result["result"])

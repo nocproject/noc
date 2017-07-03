@@ -38,13 +38,31 @@
   environment:
     https_proxy: "{{http_proxy}}"
 
+- name: create consul tmp dir
+  file:
+    dest: "{{ consul_temp_unarchive }}"
+    state: directory
+  tags:
+    - requirements
+
 - name: Unarchive Consul and install binary
   unarchive:
     src: "{{consul_temp_file}}"
-    dest: "{{ consul_bin_path }}"
+    dest: "{{ consul_temp_unarchive }}"
     owner: "{{ consul_user }}"
     group: "{{ consul_group }}"
     mode: 0755
-    creates: "{{ consul_bin_path }}/consul"
+    creates: "{{ consul_temp_unarchive }}/consul"
   tags:
     - requirements
+
+- name: Overwrite Consul binary if needed
+  copy:
+    src: "{{ consul_temp_unarchive }}/consul"
+    dest : "{{ consul_bin_path }}/consul"
+    remote_src: yes
+    mode: 0755
+  tags:
+    - requirements
+  notify:
+    - restart consul

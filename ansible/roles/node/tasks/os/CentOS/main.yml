@@ -44,7 +44,6 @@
    - postgresql{{ postgresql_version|replace(".","") }}
    - postgresql-devel
    - postgresql{{ postgresql_version|replace(".","") }}-devel
-   - libcurl-devel
    - libffi
    - libffi-devel
    - libmemcached

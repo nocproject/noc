@@ -10,7 +10,6 @@
     virtualenv: "{{noc_root}}"
     extra_args: "--trusted-host cdn.getnoc.com --find-links https://cdn.getnoc.com/npkg/simple/ --upgrade"
   environment:
-    PYCURL_SSL_LIBRARY: "{{ pycurl_ssl_library | default('openssl')}}"
     http_proxy: "{{http_proxy}}"
     https_proxy: "{{http_proxy}}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgresql_version }}/bin/"

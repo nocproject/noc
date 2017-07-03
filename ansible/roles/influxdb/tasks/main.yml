@@ -4,7 +4,7 @@
 - name: Install influx monitoring
   template:
     src: "etc/telegraf/telegraf.d/influxdb.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/influxdb.conf"
+    dest: "{{ telegraf_confd_path }}/influxdb.conf"
   tags:
     - config
     - telegraf
@@ -25,7 +25,7 @@
 
 - name: Waiting for influx db to finish restart. timeout 20 minutes
   wait_for:
-    port: 8086
+    port: "{{influxdb_port}}"
     timeout: 1200
     state: present
 
@@ -41,3 +41,12 @@
 - name: Create InfluxDB user
   command: "{{ influx_path }} -database {{ noc_influxdb_db }} -execute \"CREATE USER {{noc_influxdb_user}} WITH PASSWORD '{{ noc_influxdb_password }}' WITH ALL PRIVILEGES\""
   when: "us.rc == 1"
+
+- name: copy InfluxDB consul templates
+  template:
+    src: influxdb.json
+    dest: "{{consul_configd_path}}/influxdb.json"
+    force: no
+  notify: reload consul
+  tags:
+    - consul

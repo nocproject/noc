@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ASN.1 BER utitities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ASN.1 BER utitities
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import math
 import struct
-## NOC modules
+# NOC modules
 from noc.speedup.ber import parse_tlv_header, parse_p_oid
 
 
@@ -102,7 +102,6 @@ class BERDecoder(object):
                 0x10: 4,
                 0x20: 16
             }[f & 0x30]  # 8.5.6.2
-            factor = (f & 0x0c) >> 2
             n = (f & 0x03) + 1
             e = self.parse_int(msg[1:n + 1])  # 8.5.6.4
             p = self.parse_int(msg[n + 1:])  # 8.5.6.5
@@ -409,6 +408,7 @@ def decode(msg):
     decoder = BERDecoder()
     data, _ = decoder.parse_tlv(msg)
     return data
+
 
 # Calculate bitsting cache
 # value -> string of bits

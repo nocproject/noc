@@ -107,9 +107,8 @@ def get_traceback_frames(tb):
         lineno = tb.tb_lineno - 1
         loader = tb.tb_frame.f_globals.get("__loader__")
         module_name = tb.tb_frame.f_globals.get("__name__")
-        pre_context_lineno, pre_context, context_line,\
-        post_context = get_lines_from_file(filename, lineno, 7,
-                                           loader, module_name)
+        pre_context_lineno, pre_context, context_line, post_context = get_lines_from_file(
+            filename, lineno, 7, loader, module_name)
         if pre_context_lineno is not None:
             frames += [{
                 "tb": tb,
@@ -147,9 +146,8 @@ def get_execution_frames(frame):
         lineno = frame.f_lineno - 1
         loader = frame.f_globals.get("__loader__")
         module_name = frame.f_globals.get("__name__")
-        pre_context_lineno, pre_context, context_line,\
-        post_context = get_lines_from_file(filename, lineno, 7,
-                                           loader, module_name)
+        pre_context_lineno, pre_context, context_line, post_context = get_lines_from_file(
+            filename, lineno, 7, loader, module_name)
         if pre_context_lineno is not None:
             frames += [{
                 "filename": filename,
@@ -348,8 +346,7 @@ def error_fingerprint():
             tb_file = tb_file.replace(p, "python2.X")
         tb_function = tb.tb_frame.f_code.co_name
         tb_lineno = tb.tb_lineno - 1
-        if not (tb_file.startswith("..") or
-                    tb_file.startswith("lib/python")):
+        if not (tb_file.startswith("..") or tb_file.startswith("lib/python")):
             noc_file = tb_file
             noc_function = tb_function
             noc_lineno = tb_lineno

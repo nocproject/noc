@@ -1,5 +1,6 @@
 atomiclong==0.1.1
 csiphash==0.0.5
+http-parser==0.8.3
 psycopg2>=2.5
 pymongo==2.8
 geopy==0.97
@@ -33,7 +34,6 @@ Pygments==1.2.2
 noc-pkg-pyclips==1.0.7
 markerlib>=0.6.0
 distribute>=0.7.3
-pycurl==7.43.0
 PyYAML>=3.11
 setproctitle>=1.1.9
 ujson>=1.35

@@ -69,15 +69,40 @@
   - include: "users.yml"
     become_user: "{{postgres_user}}"
 
+  - name: install pgpassword for consul user
+    template:
+      src: "pgpass.j2"
+      dest: "{{ consul_home }}/.pgpass"
+      mode: "0400"
+      owner: "{{consul_user}}"
+
+  - name: copy postgres consul templates
+    template:
+      src: postgres.json.j2
+      dest: "{{consul_configd_path}}/postgres.json"
+    notify: reload consul
+    tags:
+      - consul
+
+  - name: copy postgres check script
+    template:
+      src: postgres_check.sh.j2
+      dest: "{{consul_scripts_path}}/postgres_check.sh"
+      mode: 0755
+    notify: reload consul
+    tags:
+      - consul
+
   when: not patroni_enabled
 
 - name: Install postgres monitoring
   template:
     src: "etc/telegraf/telegraf.d/postgres.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/postgres.conf"
+    dest: "{{ telegraf_confd_path }}/postgres.conf"
   notify: reload telegraf
   tags:
     - config
     - telegraf
 
 - meta: flush_handlers
+

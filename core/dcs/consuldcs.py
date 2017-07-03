@@ -15,15 +15,65 @@ import time
 from six.moves.urllib.parse import unquote
 import tornado.gen
 import tornado.ioloop
-import tornado.httpclient
 import consul.base
 import consul.tornado
 import ujson
 # NOC modules
 from .base import DCSBase, ResolverBase
 from noc.core.perf import metrics
-from noc.core.consul import (ConsulClient, ConsulRepeatableErrors,
-                             CONSUL_NEAR_RETRY_TIMEOUT)
+from noc.core.http.client import fetch
+
+ConsulRepeatableErrors = consul.base.Timeout
+
+CONSUL_CONNECT_TIMEOUT = 5
+CONSUL_REQUEST_TIMEOUT = 3600
+CONSUL_NEAR_RETRY_TIMEOUT = 1
+
+
+class ConsulHTTPClient(consul.tornado.HTTPClient):
+    """
+    Gentler version of tornado http client
+    """
+    @tornado.gen.coroutine
+    def _request(self, callback, url, method="GET", body=None):
+        code, headers, body = yield fetch(
+            url,
+            method=method,
+            body=body,
+            connect_timeout=CONSUL_CONNECT_TIMEOUT,
+            request_timeout=CONSUL_REQUEST_TIMEOUT,
+            validate_cert=self.verify
+        )
+        if code == 500 or code == 599:
+            raise consul.base.Timeout
+        raise tornado.gen.Return(
+            callback(
+                consul.base.Response(code=code, headers=headers, body=body)
+            )
+        )
+
+    def get(self, callback, path, params=None):
+        url = self.uri(path, params)
+        return self._request(callback, url, method="GET")
+
+    def put(self, callback, path, params=None, data=""):
+        url = self.uri(path, params)
+        return self._request(callback, url, method="PUT",
+                             body="" if data is None else data)
+
+    def delete(self, callback, path, params=None):
+        url = self.uri(path, params)
+        return self._request(callback, url, method="DELETE")
+
+    def post(self, callback, path, params=None, data=''):
+        url = self.uri(path, params)
+        return self._request(callback, url, method="POST",
+                             body=data)
+
+
+class ConsulClient(consul.base.Consul):
+    def connect(self, host, port, scheme, verify=True):
+        return ConsulHTTPClient(host, port, scheme, verify=verify)
 
 
 class ConsulResolver(ResolverBase):
@@ -45,8 +95,9 @@ class ConsulResolver(ResolverBase):
             if old_index == index:
                 continue  # Timed out
             r = dict(
-                (svc["Service"]["ID"], "%s:%s" % (
-                    svc["Service"]["Address"], svc["Service"]["Port"]))
+                (str(svc["Service"]["ID"]), "%s:%s" % (
+                    str(svc["Service"]["Address"]),
+                    str(svc["Service"]["Port"])))
                 for svc in services
             )
             self.set_services(r)
@@ -132,7 +183,6 @@ class ConsulDCS(DCSBase):
         :return:
         """
         self.logger.info("Creating session")
-        # @todo: Add http healthcheck
         checks = ["serfHealth"]
         while True:
             try:
@@ -140,7 +190,7 @@ class ConsulDCS(DCSBase):
                     name=self.name,
                     checks=checks,
                     behavior="delete",
-                    lock_delay=1,
+                    lock_delay=self.DEFAULT_CONSUL_LOCK_DELAY,
                     ttl=self.DEFAULT_CONSUL_SESSION_TTL
                 )
                 break
@@ -391,7 +441,7 @@ class ConsulDCS(DCSBase):
                     value=ujson.dumps({
                         "Limit": total_slots,
                         "Holders": holders
-                    }),
+                    }, indent=2),
                     cas=cas
                 )
             except ConsulRepeatableErrors as e:
@@ -436,5 +486,5 @@ class ConsulDCS(DCSBase):
                 time.sleep(CONSUL_NEAR_RETRY_TIMEOUT)
                 continue
             for svc in services:
-                return "%s:%s" % (svc["ServiceAddress"],
-                                  svc["ServicePort"])
+                return "%s:%s" % (str(svc["ServiceAddress"]),
+                                  str(svc["ServicePort"]))

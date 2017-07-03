@@ -15,3 +15,9 @@
   service:
     name: telegraf
     state: reloaded
+
+- name: reload consul
+  become: yes
+  service:
+    name: consul
+    state: reloaded

@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Telnet CLI
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Telnet CLI
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
-import json
-## NOC modules
-from base import CLI
+# Python modules
+from __future__ import absolute_import
+# NOC modules
+from .base import CLI
+from .error import CLIError
 
 
 class BeefCLI(CLI):
@@ -28,7 +29,7 @@ class BeefCLI(CLI):
         try:
             result = self.beef.cli[c]
         except KeyError:
-            raise self.CLIError(cmd)
+            raise CLIError(cmd)
         # Strip echo
         if result.startswith(cmd):
             result = result[len(cmd):]

@@ -4,7 +4,7 @@
 - name: Install memcached monitoring
   template:
     src: "etc/telegraf/telegraf.d/memcached.conf.j2"
-    dest: "{{etc_prefix}}/telegraf/telegraf.d/memcached.conf"
+    dest: "{{ telegraf_confd_path }}/memcached.conf"
   notify: reload telegraf
   tags:
     - config

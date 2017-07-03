@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## SNMP methods implementation
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# SNMP methods implementation
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2015 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Third-party modules
+# Third-party modules
 import tornado.ioloop
 import tornado.gen
-## NOC modules
+# NOC modules
 from noc.core.ioloop.snmp import (snmp_get, snmp_count, snmp_getnext,
                                   snmp_set)
 from noc.core.snmp.error import SNMPError, TIMED_OUT
 from noc.core.snmp.version import SNMP_v1, SNMP_v2c, SNMP_v3
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.ioloop.udp import UDPSocket
 
 
 class SNMP(object):
@@ -32,17 +33,22 @@ class SNMP(object):
         self.logger = PrefixLoggerAdapter(script.logger, "snmp")
         self.timeouts_limit = 0
         self.timeouts = 0
+        self.socket = None
 
     def set_timeout_limits(self, n):
         """
         Set sequental timeouts l
-        :param n: 
-        :return: 
+        :param n:
+        :return:
         """
         self.timeouts_limit = n
         self.timeouts = n
 
     def close(self):
+        if self.socket:
+            self.logger.debug("Closing UDP socket")
+            self.socket.close()
+            self.socket = None
         if self.ioloop:
             self.logger.debug("Closing IOLoop")
             self.ioloop.close(all_fds=True)
@@ -53,6 +59,15 @@ class SNMP(object):
             self.logger.debug("Creating IOLoop")
             self.ioloop = tornado.ioloop.IOLoop()
         return self.ioloop
+
+    def get_socket(self):
+        if not self.socket:
+            self.logger.debug("Create UDP socket")
+            self.socket = UDPSocket(
+                ioloop=self.get_ioloop(),
+                tos=self.script.tos
+            )
+        return self.socket
 
     def _get_snmp_version(self, version=None):
         if version is not None:
@@ -81,6 +96,7 @@ class SNMP(object):
                     community=str(self.script.credentials["snmp_ro"]),
                     tos=self.script.tos,
                     ioloop=self.get_ioloop(),
+                    udp_socket=self.get_socket(),
                     version=version
                 )
                 self.timeouts = self.timeouts_limit
@@ -115,7 +131,8 @@ class SNMP(object):
                     varbinds=varbinds,
                     community=str(self.script.credentials["snmp_rw"]),
                     tos=self.script.tos,
-                    ioloop=self.get_ioloop()
+                    ioloop=self.get_ioloop(),
+                    udp_socket=self.get_socket()
                 )
             except SNMPError as e:
                 if e.code == TIMED_OUT:
@@ -149,6 +166,7 @@ class SNMP(object):
                     filter=filter,
                     tos=self.script.tos,
                     ioloop=self.get_ioloop(),
+                    udp_socket=self.get_socket(),
                     version=version
                 )
             except SNMPError as e:
@@ -178,6 +196,7 @@ class SNMP(object):
                     only_first=only_first,
                     tos=self.script.tos,
                     ioloop=self.get_ioloop(),
+                    udp_socket=self.get_socket(),
                     version=version
                 )
             except SNMPError as e:
@@ -216,7 +235,7 @@ class SNMP(object):
                 pass
 
     def get_tables(self, oids, community_suffix=None, bulk=False,
-                      min_index=None, max_index=None, cached=False):
+                   min_index=None, max_index=None, cached=False):
         """
         Query list of SNMP tables referenced by oids and yields
         tuples of (key, value1, ..., valueN)

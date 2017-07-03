@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Base TT System
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016, The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Base TT System
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017, The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
+from __future__ import absolute_import
 import logging
+# NOC modules
+from .error import TTError, TemporaryTTError
 
 
 class BaseTTSystem(object):
     promote_group_tt = False
 
-    class TTError(Exception):
-        pass
+    TTError = TTError
+    TemporaryTTError = TemporaryTTError
 
     def __init__(self, name, connection):
         """

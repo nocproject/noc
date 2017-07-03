@@ -8,16 +8,18 @@
 
 # Python modules
 import urllib
-import cStringIO
 # Third-party modules
 import ujson
-import pycurl
 import six
 # NOC modules
 from noc.config import config
+from noc.core.http.client import fetch_sync
 
 
 class InfluxDBClient(object):
+    REQUEST_TIMEOUT = 600
+    CONNECT_TIMEOUT = 10
+
     def __init__(self):
         pass
 
@@ -26,30 +28,27 @@ class InfluxDBClient(object):
         Perform queries and return result
         :param query: String or list of queries
         """
-        buff = cStringIO.StringIO()
         if not isinstance(query, six.string_types):
             query = ";".join(query)
         if isinstance(query, unicode):
             query = query.encode("utf-8")
+        svc = config.get_service("influxdb", limit=1)
+        if not svc:
+            raise ValueError("No service configured")
         url = "http://%s/query?db=%s&q=%s" % (
-            str(config.influxdb.addresses[0]),
-            config.influxdb.db,
+            svc[0],
+            config.influx_db,
             urllib.quote(query)
         )
-        c = pycurl.Curl()
-        c.setopt(c.URL, url)
-        c.setopt(c.WRITEDATA, buff)
-        c.setopt(c.NOPROXY, "*")
-        c.setopt(c.TIMEOUT, 30)
-        c.setopt(c.CONNECTTIMEOUT, 3)
+        code, headers, body = fetch_sync(
+            url,
+            connect_timeout=self.CONNECT_TIMEOUT,
+            request_timeout=self.REQUEST_TIMEOUT
+        )
+        if code != 200:
+            raise ValueError("%s: %s" % (code, body))
         try:
-            c.perform()
-        except pycurl.error as e:
-            raise ValueError("Request error: %s" % e)
-        finally:
-            c.close()
-        try:
-            data = ujson.loads(buff.getvalue())
+            data = ujson.loads(body)
         except ValueError as e:
             raise ValueError("Failed to decode JSON: %s" % e)
         if type(data) == dict and "error" in data:

@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Clickhouse connection
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Clickhouse connection
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import urllib
-## Third-party modules
-import pycurl
+# Third-party modules
 import six
+# NOC modules
+from noc.core.http.client import fetch_sync
 
 
 class ClickhouseError(Exception):
@@ -44,31 +45,17 @@ class ClickhouseClient(object):
                 sql = sql % tuple(q(v) for v in args)
             qs += ["query=%s" % urllib.quote(sql.encode('utf8'))]
         url = "http://%s:%s/?%s" % (self.HOST, self.PORT, "&".join(qs))
-        buff = six.StringIO()
-        c = pycurl.Curl()
-        c.setopt(c.URL, url)
-        if post:
-            c.setopt(c.POST, 1)
-            c.setopt(c.POSTFIELDS, post)
-        c.setopt(c.WRITEDATA, buff)
-        c.setopt(c.NOPROXY, "*")
-        c.setopt(c.TIMEOUT, self.REQUEST_TIMEOUT)
-        c.setopt(c.CONNECTTIMEOUT, self.CONNECT_TIMEOUT)
-        c.setopt(c.TCP_KEEPALIVE, 1)
-        c.setopt(c.TCP_KEEPIDLE, 60)
-        c.setopt(c.TCP_KEEPINTVL, 60)
-        try:
-            c.perform()
-        except pycurl.error as e:
-            raise ClickhouseError(str(e))
-        finally:
-            code = c.getinfo(c.RESPONSE_CODE)
-            c.close()
-        v = buff.getvalue()
+        code, headers, body = fetch_sync(
+            url,
+            method="POST" if post else "GET",
+            body=post if post else None,
+            connect_timeout=self.CONNECT_TIMEOUT,
+            request_timeout=self.REQUEST_TIMEOUT
+        )
         if code != 200:
-            raise ClickhouseError(v)
+            raise ClickhouseError("%s: %s" % (code, body))
         return [
-            row.split("\t") for row in v.splitlines()
+            row.split("\t") for row in body.splitlines()
         ]
 
     def ensure_db(self):
