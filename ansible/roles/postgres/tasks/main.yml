@@ -88,8 +88,8 @@
     template:
       src: postgres_check.sh.j2
       dest: "{{consul_scripts_path}}/postgres_check.sh"
-    mode: u+rx
-    owner: "{{consul_user}}"
+      mode: u+rx
+      owner: "{{consul_user}}"
     notify: reload consul
     tags:
       - consul
