@@ -15,4 +15,7 @@ class HealthRequestHandler(tornado.web.RequestHandler):
         self.service = service
 
     def get(self):
+        service = self.get_argument("service", None)
+        if service and not self.service.is_valid_health_check(service):
+            raise tornado.web.HTTPError(400, "Invalid service id")
         self.write("OK")

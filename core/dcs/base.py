@@ -44,6 +44,7 @@ class DCSBase(object):
             self.expire_resolvers,
             10000
         )
+        self.health_check_service_id = None
 
     def parse_url(self, u):
         pass
