@@ -26,6 +26,7 @@
     mode: 0400
     owner: "{{ nginx_user }}"
   notify: reload nginx
+  no_log: true
 
 - name: Set up SSL certificate
   copy:
@@ -34,6 +35,7 @@
     mode: 0400
     owner: "{{ nginx_user }}"
   notify: reload nginx
+  no_log: true
 
 - name: Setup nginx
   template:

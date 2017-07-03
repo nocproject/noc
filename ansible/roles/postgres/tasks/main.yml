@@ -104,6 +104,7 @@
     src: "etc/telegraf/telegraf.d/postgres.conf.j2"
     dest: "{{ telegraf_confd_path }}/postgres.conf"
   notify: reload telegraf
+  no_log: true
   tags:
     - config
     - telegraf
