@@ -325,3 +325,4 @@ class Config(BaseConfig):
 
 config = Config()
 config.load()
+config.setup_logging()
