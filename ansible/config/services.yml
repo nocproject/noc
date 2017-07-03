@@ -1,44 +1,518 @@
 # NOC services description
 ---
 product: "noc"
-services:
-  nsqlookupd:
-    description: NSQ lookup daemon
-    level: system
-    port: 4161
-
-  nsqd:
-    description: NSQD daemon
-    level: system
-    port: 4151
-
-  nsqadmin:
-    description: NSQ Admin interface
-    level: system
-    port: 4171
-
-  postgres:
-    description: PostgreSQL server
-    level: system
-    port: 5432
-
-  pgbouncer:
-    description: pgbouncer daemon
-    level: system
-    port: 6432
-
-  mongod:
-    description: Mongod server
-    level: system
-    port: 27017
-
+config:
+  activator:
+    script_threads:
+      default: 20
+      label: "Script threads"
+      type: int
+    tos:
+      default: 0
+      label: "IP ToS mark"
+      type: int
+  bi:
+    language:
+      default: en
+      label: "Translation language"
+      type: str
+      description: "en-us, ru, pt_BR"
+    query_threads:
+      default: 10
+      label: "Concurrent query limit per process"
+      type: int
+  card:
+    language:
+      default: en
+      label: "Translation language"
+      type: str
+      description: "en-us, ru, pt_BR"
+    weight:
+      default: 5
+      label: "Http nginx Weight"
+      type: int
+  chwriter:
+    batch_delay_ms:
+      default: 1000
+      label: "Delay batch write up to ms"
+      type: int
+    batch_size:
+      default: 50000
+      label: "Write batch size (rows)"
+      type: int
+    channel_expire_interval:
+      default: 300
+      label: "Channel expiration interval (s)"
+      type: int
+    records_buffer:
+      default: 1000000
+      label: "Records buffer size (in records)"
+      type: int
+  classifier:
+    default_interface_profile:
+      default: default
+      label: "Default interface profile"
+      type: str
+    lookup_solution:
+      default: "noc.services.classifier.rulelookup.RuleLookup"
+      label: "Lookup solution"
+      type: str
+  clickhouse:
+    password:
+      default: noc
+      description: test
+      label: "Password for user default"
+      type: str
+  consul:
+    replication_token:
+      label: "consul replication token"
+      type: str
+    token:
+      description: "<strong> <a href=https://www.consul.io/docs/guides/acl.html target=_blank> https://www.consul.io/docs/guides/acl.html </a> </strong>"
+      label: "consul token"
+      type: str
+  correlator:
+    max_threads:
+      default: 10
+      label: "Correlator threads"
+      type: int
+  discovery:
+    max_threads:
+      default: 10
+      label: "Discovery threads"
+      type: int
+  escalator:
+    max_threads:
+      default: 10
+      label: "Escalator threads"
+      type: int
+  grafana:
+    password:
+      default: grafana
+      description: "<strong> <a href=http://docs.grafana.org/ target=_blank> http://docs.grafana.org/ </a> </strong>"
+      label: "Grafana postgres password"
+      type: str
+  grafanads:
+    db_threads:
+      default: 10
+      label: "Concurrent query limit per process"
+      type: int
   influxdb:
-    description: InfluxDB server
+    influxdb_data_directory:
+      default: "/var/lib/influxdb/data/"
+      label: "InfluxDB Data directory"
+      type: str
+    influxdb_meta_directory:
+      default: "/var/lib/influxdb/meta/"
+      label: "InfluxDB Meta directory"
+      type: str
+    influxdb_wal_directory:
+      default: "/var/lib/influxdb/wal/"
+      label: "InfluxDB Wal directory"
+      type: str
+    max_cache_memory:
+      default: 1048576000
+      description: "<strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>"
+      label: "Max cache memory"
+      type: int
+    snapshot_memory_size:
+      default: 26214400
+      description: "<strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>"
+      label: "Mem size for snapshot"
+      type: int
+  keepalived:
+    nginx_virtual_ip:
+      description: "<strong> <a href=http://keepalived.readthedocs.io/en/latest/ target=_blank> http://www.keepalived.org/documentation.html </a> </strong>"
+      label: "Nginx virtual IP"
+      type: str
+    password:
+      default: noc
+      label: "Keepalived password. max 8 chars"
+      type: str
+    patroni_virtual_ip:
+      label: "Patroni virtual IP"
+      type: str
+  login:
+    language:
+      default: en
+      label: "Translation language"
+      type: str
+      description: "en-us, ru, pt_BR"
+    methods:
+      default: local
+      label: "Authentication methods"
+      type: str
+      description: "local, ldap. can be multiple"
+    pam_service:
+      default: noc
+      label: "PAM Service"
+      type: str
+    radius_secret:
+      label: "RADIUS Secret"
+      type: str
+    radius_server:
+      label: "RADIUS Server"
+      type: str
+    session_ttl:
+      default: 7
+      label: "Session TTL (days)"
+      type: int
+    weight:
+      default: 5
+      label: "Http nginx Weight"
+      type: int
+  mailsender:
+    from_address:
+      default: "noc@example.com"
+      label: "Email sender address"
+      type: str
+    helo_hostname:
+      default: noc
+      label: "SMTP HELO hostname"
+      type: str
+    smtp_password:
+      label: "SMTP Password"
+      type: str
+    smtp_port:
+      default: 25
+      label: "SMTP server port"
+      type: int
+    smtp_server:
+      label: "SMTP server address"
+      type: str
+    smtp_user:
+      label: "SMTP User"
+      type: str
+    use_tls:
+      default: false
+      label: "Use SMTP TLS"
+      type: bool
+  memcached:
+    max_clients:
+      default: 1024
+      label: "memcached max clients"
+      type: int
+    max_memory:
+      default: 64
+      description: "<strong> <a href=https://github.com/memcached/memcached/wiki target=_blank> https://github.com/memcached/memcached/wiki </a> </strong>"
+      label: "memcached max memory"
+      type: int
+  mongod:
+    mongod_data_directory:
+      default: "/var/lib/mongo/"
+      description: "<strong> <a href=https://docs.mongodb.com/manual/ target=_blank> https://docs.mongodb.com/manual/ </a> </strong>"
+      label: "Mongo data directory"
+      type: str
+    mongod_journal_directory:
+      default: "/var/lib/mongo/journal"
+      label: "Mongo journal directory"
+      type: str
+  mrt:
+    max_concurrency:
+      default: 50
+      label: "Amount of concurrent tasks"
+      type: int
+  nginx:
+    http_redirect:
+      default: true
+      description: "<strong> <a href=https://nginx.org/en/docs/ target=_blank> https://nginx.org/en/docs/</a> </strong>"
+      label: "Redirect http to https"
+      type: bool
+    logging:
+      default: false
+      label: "Use JSON logging"
+      type: bool
+  noc:
+    geocoding_google_key:
+      default: null
+      label: "Google API key"
+      type: str
+    geocoding_google_language:
+      default: en
+      label: "Google response language"
+      type: str
+    geocoding_order:
+      default: "yandex,google"
+      label: "List of geocoding methods"
+      type: str
+    geocoding_yandex_key:
+      default: null
+      label: "Yandex API key"
+      type: str
+    installation_name:
+      default: "Unconfigured installation"
+      label: "Installation name"
+      type: str
+    rpc_choose_services:
+      default: 3
+      label: "Choose RPC services"
+      type: int
+    rpc_retry_timeout:
+      default: "0.1,0.5,1,3,10,30"
+      label: "RPC Retry timeout"
+      type: str
+    timezone:
+      default: "Europe/Moscow"
+      label: "Time Zone"
+      type: str
+    topology_rca_window:
+      default: 0
+      label: "Topology-based RCA window (seconds)"
+      type: int
+    tt_escalation_limit:
+      default: 10
+      label: "TT escalation limin (tt/minute)"
+      type: int
+  nsqd:
+    max_messages_in_memory:
+      default: 10000
+      description: "<strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>"
+      label: "Keep max messages in memory"
+      type: int
+  patroni:
+    rest_password:
+      description: "<strong> <a href=https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst target=_blank> https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst </a> </strong>"
+      label: "Patroni REST password"
+      type: str
+  pgbouncer:
+    pgbouncer_max_clients:
+      default: 3000
+      description: "<strong> <a href=https://pgbouncer.github.io target=_blank> https://pgbouncer.github.io </a> </strong>"
+      label: "Pgbouncer max clients"
+      type: int
+  ping:
+    restore_threshold:
+      default: 0
+      label: "Amount of down objects (in percents) to leave throttling mode"
+      type: int
+    throttle_threshold:
+      default: 0
+      label: "Amount of down objects (in percents) to enter throttling mode"
+      type: int
+    tos:
+      default: 0
+      label: "IP ToS mark"
+      type: int
+  pmwriter:
+    batch_size:
+      default: 2500
+      label: "Write batch size (metrics)"
+      type: int
+    metrics_buffer:
+      default: 50000
+      label: "Metrics buffer size (metrics)"
+      type: int
+  postgres:
+    max_clients:
+      default: 300
+      label: "Postgresql max clients"
+      type: int
+    postgres_version:
+      default: 9.4
+      description: "<strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html target=_blank> docs </a> before changing that field."
+      label: "Postgresql version"
+      type: str
+    replicator_password:
+      default: noc
+      description: "Password for user \"replicator\""
+      label: "Postgresql replicator password"
+      type: str
+    superuser_password:
+      default: noc
+      description: "Password for user \"superuser\""
+      label: "Postgresql superuser password"
+      type: str
+  sae:
+    db_threads:
+      default: 4
+      label: "DB threads"
+      type: int
+  scheduler:
+    max_threads:
+      default: 10
+      label: "Scheduler threads"
+      type: int
+  syslogcollector:
+    listen_syslog:
+      default: "0.0.0.0:514"
+      label: "Listen SYSLOG"
+      type: str
+  tgsender:
+    proxy_addres:
+      label: "Proxy Addres (https://ip:port) If use auth (https://us:pass@ip:port)"
+      type: str
+    token:
+      label: Token
+      type: str
+    use_proxy:
+      default: false
+      label: "Use Proxy"
+      type: bool
+  trapcollector:
+    listen_traps:
+      default: "0.0.0.0:162"
+      label: "Listen SNNP Traps"
+      type: str
+  web:
+    language:
+      default: en
+      label: "Translation language"
+      type: str
+      description: "en-us, ru, pt_BR"
+    max_threads:
+      default: 10
+      label: "Web threads"
+      type: int
+    weight:
+      default: 5
+      label: "Http nginx Weight"
+      type: int
+services:
+  activator:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Activator service" <br/>
+      <strong>Long description</strong>: Responsible for the collecting and processing data from network equipment.<br/>
+      <strong>Scale Recommendations</strong>: At least two per core on node. <br/>
+      <strong>docs</strong>: To be done<br/>
+      <strong>Placement constraint</strong>: On separate node<br/>
+    level: pool
+  bi:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Report service <br/>
+      <strong>Long description</strong>: Executes Bi requests on Clickhouse db<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation.<br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with Clickhouse<br/>
+    level: global
+    required_assets:
+      - bi
+  card:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Card service <br/>
+      <strong>Long description</strong>: Responsible for an alternative web interface - cards. They are ReadOnly pages showing information on netwrk equipment, segments, and accidents.<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation.<br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with nginx<br/>
+    level: global
+    required_assets:
+      - card
+      - web
+  chwriter:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Clickhouse writer <br/>
+      <strong>Long description</strong>: That one is for writing data from nsqd to Clickhouse<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation.<br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with Clickhouse<br/>
+    level: global
+  classifier:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Classifier service <br/>
+      <strong>Long description</strong>: Responsible for the classification of the incoming message flow from syslog-collector and snmp-collector according to the rules recorded in the NOC. After classification into the database, go to the Event, i.e. event.<br/>
+      <strong>Scale Recommendations</strong>: At least two per pool.<br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: On node with correlator<br/>
+    level: pool
+  clickhouse:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: ClickHouse database <br/>
+      <strong>Long description</strong>: ClickHouse is an open source column-oriented database management system capable of real time generation of analytical data reports using SQL queries.<br/>
+      <strong>Scale Recommendations</strong>: See docs<br/>
+      <strong>docs</strong>: "https://clickhouse.yandex/docs/en/"<br/>
+      <strong>Placement constraint</strong>: High memory node with large enough disk capacity<br/>
+    level: global
+    port: 8123
+  consul:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Consul KV <br/>
+      <strong>Long description</strong>: Key/Value and Service discovery service. Have to be installed in quorum with 1,3,5 nodes. One node with instance count 2 will be "bootstrap" node other nodes with 1 instance will be run in server mode. If no node with instance count 2 is set some node will be selected. Other nodes will get agent only service. They will not participate in quorum. For production type installation fast timimgs mode will be enabled.<br/>
+      <strong>Scale Recommendations</strong>: See docs<br/>
+      <strong>docs</strong>: "https://www.consul.io/intro/index.html"<br/>
+      <strong>Placement constraint</strong>: Long living node. <br/>
+    level: global
+    port: 8500
+  correlator:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Correlator <br/>
+      <strong>Long description</strong>: Correlate events to alarms. <br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one per pool. Can be more than one. Will select active one via consul lock.<br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    level: pool
+  dev:
+    description: >
+      <strong>Service type</strong>: External <br/>
+      <strong>Short description</strong>: Various develompent tools <br/>
+      <strong>Long description</strong>: ipython, ipython notebook. <br/>
+      <strong>Scale Recommendations</strong>: Do not install until you exactly know what for.<br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    level: global
+    required_assets:
+      - mib
+  discovery:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Discovery service <br/>
+      <strong>Long description</strong>: Primary SAE service. Launches tasks on activators, parses results writes to databases. <br/>
+      <strong>Scale Recommendations</strong>:  At least two per pool. <br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: High cpu/memory usage.<br/>
+    level: pool
+  escalator:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Escalator service <br/>
+      <strong>Long description</strong>: Send notifications to external TT systems.<br/>
+      <strong>Scale Recommendations</strong>: Have to be at least one per system. Can be more than one. Will select active one via consul lock.<br/>
+      <strong>docs</strong>: "To be done"<br/>
+      <strong>Placement constraint</strong>: No special recommendations.<br/>
+    level: global
+  grafana:
+    description: "Graphana server"
+    level: system
+    port: 8002
+  grafanads:
+    description: "Grafana DataSource"
+    level: global
+  haproxy:
+    description: "HA balancer"
+    level: global
+  influxdb:
+    description: "InfluxDB server"
     level: system
     port: 8086
-
+  keepalived:
+    description: "Virtual ip sync"
+    level: global
+  login:
+    description: "Login service "
+    level: global
+    scope: test
+  mailsender:
+    description: "SMTP mail sender"
+    level: global
+  memcached:
+    description: "Caching layer"
+    level: global
+    port: 11211
+  mongod:
+    description: "Mongod server"
+    level: system
+    port: 27017
+  mrt:
+    description: "MRT worker"
+    level: global
   nginx:
-    description: Nginx server
+    description: "Nginx server"
     level: system
     port: 443
     require_cert: true
@@ -46,578 +520,60 @@ services:
       - web
       - card
       - bi
-
-  grafana:
-    description: Graphana server
-    level: system
-    port: 8002
-
-  classifier:
-    description: Classifier
-    level: pool
-
-  correlator:
-    description: Correlator
-    level: pool
-
-  pmwriter:
-    description: PMWriter
-    level: global
-
-  chwriter:
-    description: PMWriter
-    level: global
-
-  omap:
-    description: OMap
-    level: global
-
-  ping:
-    description: Ping
-    level: pool
-
-  syslogcollector:
-    description: Syslog Collector
-    level: pool
-
-  trapcollector:
-    description: SNMP Trap Collector
-    level: pool
-
-  web:
-    description: Legacy web interface
-    level: global
-    required_assets:
-      - web
-      - mib
-
-  card:
-    description: Card web interface
-    level: global
-    required_assets:
-      - card
-      - web
-
-  sae:
-    description: Service activation engine
-    level: global
-
-  dev:
-    description: Development node
-    level: global
-    required_assets:
-      - mib
-
   notebook:
     description: Notebook
     level: global
-
-  activator:
-    description: Activator service
-    level: pool
-
-  discovery:
-    description: Service and resource discovery
-    level: pool
-
-  scheduler:
-    description: Scheduler and Cron
+  nsqadmin:
+    description: "NSQ Admin interface"
+    level: system
+    port: 4171
+  nsqd:
+    description: "NSQD daemon"
+    level: system
+    port: 4151
+  nsqlookupd:
+    description: "NSQ lookup daemon"
+    level: system
+    port: 4161
+  omap:
+    description: OMap
     level: global
-
-  login:
-    description: Login
-    level: global
-
-  mailsender:
-    description: SMTP mail sender
-    level: global
-
-  tgsender:
-    description: Telegram sender
-    level: global
-
-  memcached:
-    description: Caching layer
-    level: global
-    port: 11211
-
-  bi:
-    description: Reports
-    level: global
-    required_assets:
-      - bi
-  mrt:
-    description: MRT worker
-    level: global
-
-  grafanads:
-    description: Grafana DataSource
-    level: global
-
-  escalator:
-    description: Alarm escalator
-    level: global
-
-  keepalived:
-    description: Virtual ip sync
-    level: global
-
-  consul:
-    description: Cluster kv
-    level: global
-    port: 8500
-
-  haproxy:
-    description: HA balancer
-    level: global
-
   patroni:
-    description: Postgres HA template
+    description: "Postgres HA template"
     level: global
     port: 8008
-
-  clickhouse:
-    description: ClickHouse is an open source column-oriented database management system capable of real time generation of analytical data reports using SQL queries.
-    level: global
-    port: 8123
-
-config:
-  noc:
-    installation_name:
-      label: Installation name
-      type: str
-      default: Unconfigured installation
-
-    timezone:
-      label: Time Zone
-      type: str
-      default: Europe/Moscow
-
-    rpc_choose_services:
-      label: Choose RPC services
-      type: int
-      default: 3
-
-    rpc_retry_timeout:
-      label: RPC Retry timeout
-      type: str
-      default: 0.1,0.5,1,3,10,30
-
-    topology_rca_window:
-      label: Topology-based RCA window (seconds)
-      type: int
-      default: 0
-
-    geocoding_order:
-      label: List of geocoding methods
-      type: str
-      default: yandex,google
-
-    geocoding_yandex_key:
-      label: Yandex API key
-      type: str
-      default:
-
-    geocoding_google_key:
-      label: Google API key
-      type: str
-      default:
-
-    geocoding_google_language:
-      label: Google response language
-      type: str
-      default: en
-
-    tt_escalation_limit:
-      label: TT escalation limin (tt/minute)
-      type: int
-      default: 10
-
-  correlator:
-    max_threads:
-      label: Correlator threads
-      type: int
-      default: 10
-
-  pmwriter:
-    batch_size:
-      label: Write batch size (metrics)
-      type: int
-      default: 2500
-
-    metrics_buffer:
-      label: Metrics buffer size (metrics)
-      type: int
-      default: 50000
-
-  chwriter:
-    batch_size:
-      label: Write batch size (rows)
-      type: int
-      default: 50000
-
-    batch_delay_ms:
-      label: Delay batch write up to ms
-      type: int
-      default: 1000
-
-    channel_expire_interval:
-      label: Channel expiration interval (s)
-      type: int
-      default: 300
-
-    records_buffer:
-      label: Records buffer size (in records)
-      type: int
-      default: 1000000
-
-  classifier:
-    lookup_solution:
-      label: Lookup solution
-      type: str
-      default: noc.services.classifier.rulelookup.RuleLookup
-
-    default_interface_profile:
-      label: Default interface profile
-      type: str
-      default: default
-
-  syslogcollector:
-    listen_syslog:
-      label: Listen SYSLOG
-      type: str
-      default: 0.0.0.0:514
-
-  trapcollector:
-    listen_traps:
-      label: Listen SNNP Traps
-      type: str
-      default: 0.0.0.0:162
-
-  sae:
-    db_threads:
-      label: DB threads
-      type: int
-      default: 4
-
-  activator:
-    script_threads:
-      label: Script threads
-      type: int
-      default: 20
-
-    tos:
-      label: IP ToS mark
-      type: int
-      default: 0
-
-  discovery:
-    max_threads:
-      label: Discovery threads
-      type: int
-      default: 10
-
-  scheduler:
-    max_threads:
-      label: Scheduler threads
-      type: int
-      default: 10
-
-  ping:
-    tos:
-      label: IP ToS mark
-      type: int
-      default: 0
-
-    throttle_threshold:
-      label: Amount of down objects (in percents) to enter throttling mode
-      type: int
-      default: 0
-
-    restore_threshold:
-      label: Amount of down objects (in percents) to leave throttling mode
-      type: int
-      default: 0
-
-  card:
-    language:
-      label: Translation language
-      type: str
-      default: en
-
-    weight:
-      label: Http nginx Weight
-      type: int
-      default: 5
-
-  login:
-    language:
-      label: Translation language
-      type: str
-      default: en
-
-    weight:
-      label: Http nginx Weight
-      type: int
-      default: 5
-
-    methods:
-      label: Authentication methods
-      type: str
-      default: local
-
-    session_ttl:
-      label: Session TTL (days)
-      type: int
-      default: 7
-
-    radius_server:
-      label: RADIUS Server
-      type: str
-
-    radius_secret:
-      label: RADIUS Secret
-      type: str
-
-    pam_service:
-      label: PAM Service
-      type: str
-      default: noc
-
-  mailsender:
-    smtp_server:
-      label: SMTP server address
-      type: str
-
-    smtp_port:
-      label: SMTP server port
-      type: int
-      default: 25
-
-    use_tls:
-      label: Use SMTP TLS
-      type: bool
-      default: false
-
-    helo_hostname:
-      label: SMTP HELO hostname
-      type: str
-      default: noc
-
-    from_address:
-      label: Email sender address
-      type: str
-      default: noc@example.com
-
-    smtp_user:
-      label: SMTP User
-      type: str
-
-    smtp_password:
-      label: SMTP Password
-      type: str
-
-  mongod:
-    mongod_journal_directory:
-      type: str
-      label: Mongo journal directory
-      default: /var/lib/mongo/journal
-
-    mongod_data_directory:
-      type: str
-      label: Mongo data directory
-      default: /var/lib/mongo/
-      description: <strong> <a href=https://docs.mongodb.com/manual/ target=_blank> https://docs.mongodb.com/manual/ </a> </strong>
-
-  influxdb:
-    influxdb_wal_directory:
-      type: str
-      label: InfluxDB Wal directory
-      default: /var/lib/influxdb/wal/
-
-    influxdb_data_directory:
-      type: str
-      label: InfluxDB Data directory
-      default: /var/lib/influxdb/data/
-
-    influxdb_meta_directory:
-      type: str
-      label: InfluxDB Meta directory
-      default: /var/lib/influxdb/meta/
-
-    max_cache_memory:
-      type: int
-      label: Max cache memory
-      default: 1048576000
-      description: <strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>
-
-    snapshot_memory_size:
-      type: int
-      label: Mem size for snapshot
-      default: 26214400
-      description: <strong> <a href=https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ target=_blank> https://docs.influxdata.com/influxdb/v1.2/concepts/storage_engine/ </a> </strong>
-
-  postgres:
-    postgres_version:
-      type: str
-      label: Postgresql version
-      default: 9.4
-      description: <strong>There will be no automatic migration beetween versions.</strong> Valid versions are 9.4, 9.6. Use <a href=https://www.postgresql.org/docs/9.6/static/upgrading.html target=_blank> docs </a> before changing that field.
-
-    superuser_password:
-      label: Postgresql superuser password
-      type: str
-      default: noc
-      description: Password for user "superuser"
-
-    replicator_password:
-      label: Postgresql replicator password
-      type: str
-      default: noc
-      description: Password for user "replicator"
-
-    max_clients:
-      type: int
-      label: Postgresql max clients
-      default: 300
-
-  web:
-    language:
-      label: Translation language
-      type: str
-      default: en
-
-    weight:
-      label: Http nginx Weight
-      type: int
-      default: 5
-
-    max_threads:
-      label: Web threads
-      type: int
-      default: 10
-
-  nginx:
-    logging:
-      label: Use JSON logging
-      type: bool
-      default: false
-
-    http_redirect:
-      label: Redirect http to https
-      type: bool
-      default: true
-      description: <strong> <a href=https://nginx.org/en/docs/ target=_blank> https://nginx.org/en/docs/</a> </strong>
-
-  nsqd:
-    max_messages_in_memory:
-      type: int
-      label: Keep max messages in memory
-      default: 10000
-      description: <strong> <a href=http://nsq.io/components/nsqd.html target=_blank> http://nsq.io/components/nsqd.html </a> </strong>
-
-  bi:
-    query_threads:
-      type: int
-      label: Concurrent query limit per process
-      default: 10
-
-    language:
-      label: Translation language
-      type: str
-      default: en
-
-  mrt:
-    max_concurrency:
-      type: int
-      label: Amount of concurrent tasks
-      default: 50
-
-  grafanads:
-    db_threads:
-      type: int
-      label: Concurrent query limit per process
-      default: 10
-
-  escalator:
-    max_threads:
-      label: Escalator threads
-      type: int
-      default: 10
-
-  grafana:
-    password:
-      type: str
-      label: Grafana postgres password
-      default: grafana
-      description: <strong> <a href=http://docs.grafana.org/ target=_blank> http://docs.grafana.org/ </a> </strong>
-
   pgbouncer:
-    pgbouncer_max_clients:
-      type: int
-      label: Pgbouncer max clients
-      default: 3000
-      description: <strong> <a href=https://pgbouncer.github.io target=_blank> https://pgbouncer.github.io </a> </strong>
-
-  memcached:
-    max_clients:
-      type: int
-      label: memcached max clients
-      default: 1024
-    max_memory:
-      type: int
-      label: memcached max memory
-      default: 64
-      description: <strong> <a href=https://github.com/memcached/memcached/wiki target=_blank> https://github.com/memcached/memcached/wiki </a> </strong>
-
+    description: "pgbouncer daemon"
+    level: system
+    port: 6432
+  ping:
+    description: Ping
+    level: pool
+  pmwriter:
+    description: PMWriter
+    level: global
+  postgres:
+    description: "PostgreSQL server"
+    level: system
+    port: 5432
+  sae:
+    description: "Service activation engine"
+    level: global
+  scheduler:
+    description: "Scheduler and Cron"
+    level: global
+  syslogcollector:
+    description: "Syslog Collector"
+    level: pool
   tgsender:
-    use_proxy:
-      label: Use Proxy
-      type: bool
-      default: false
-
-    token:
-      label: Token
-      type: str
-
-    proxy_addres:
-      label: Proxy Addres (https://ip:port) If use auth (https://us:pass@ip:port)
-      type: str
-
-  keepalived:
-    password:
-      label: Keepalived password. max 8 chars
-      type: str
-      default: noc
-
-    nginx_virtual_ip:
-      label: Nginx virtual IP
-      type: str
-      description: <strong> <a href=http://keepalived.readthedocs.io/en/latest/ target=_blank> http://www.keepalived.org/documentation.html </a> </strong>
-
-    patroni_virtual_ip:
-      label: Patroni virtual IP
-      type: str
-
-  consul:
-    token:
-      label: consul token
-      type: str
-      description: <strong> <a href=https://www.consul.io/docs/guides/acl.html target=_blank> https://www.consul.io/docs/guides/acl.html </a> </strong>
-
-    replication_token:
-      label: consul replication token
-      type: str
-
-  patroni:
-    rest_password:
-      label: Patroni REST password
-      type: str
-      description: <strong> <a href=https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst target=_blank> https://github.com/zalando/patroni/blob/master/docs/SETTINGS.rst </a> </strong>
-
-  clickhouse:
-    password:
-      label: Password for user default
-      type: str
-      description: test
-      default: noc
+    description: "Telegram sender"
+    level: global
+  trapcollector:
+    description: "SNMP Trap Collector"
+    level: pool
+  web:
+    description: "Legacy web interface"
+    level: global
+    required_assets:
+      - web
+      - mib
