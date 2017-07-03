@@ -29,6 +29,7 @@
     mode: "{{item.mode}}"
     owner: "{{noc_user}}"
   ignore_errors: true
+  no_log: true
   with_items:
     - { name: env.j2, dest: "{{ noc_root }}/var/etc/postgres/env", mode: "u=rw,g=r,o=r" }
     - { name: pgpass.j2, dest: "{{ noc_root }}/var/etc/postgres/.pgpass", mode: "u=rw,g-rwx,o-rwx" }
@@ -75,6 +76,7 @@
       dest: "{{ consul_home }}/.pgpass"
       mode: "0400"
       owner: "{{consul_user}}"
+    no_log: true
 
   - name: copy postgres consul templates
     template:
@@ -90,6 +92,7 @@
       dest: "{{consul_scripts_path}}/postgres_check.sh"
       mode: u+rx
       owner: "{{consul_user}}"
+    no_log: true
     notify: reload consul
     tags:
       - consul
