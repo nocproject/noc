@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import operator
 import cachetools
 from threading import Lock
@@ -24,6 +25,7 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.core.model.decorator import on_delete_check
 from noc.core.defer import call_later
 from noc.core.bi.decorator import bi_sync
+from .networksegmentprofile import NetworkSegmentProfile
 
 id_lock = Lock()
 
@@ -41,7 +43,35 @@ class NetworkSegment(Document):
 
     name = StringField(unique=True)
     parent = ReferenceField("self", required=False)
+    profile = ReferenceField(NetworkSegmentProfile, required=True)
     description = StringField(required=False)
+    # Management VLAN processing order
+    # * d - disable management vlan
+    # * e - enable management vlan and get from management_vlan field
+    # * p - use profile settings
+    management_vlan_policy = StringField(
+        choices=[
+            ("d", "Disable"),
+            ("p", "Profile"),
+            ("e", "Enable")
+        ],
+        default="p"
+    )
+    management_vlan = IntField(required=False, min_value=1, max_value=4095)
+    # MVR VLAN processing order
+    # * d - disable multicast vlan
+    # * e - enable multicast vlan and get from multicast_vlan field
+    # * p - use profile settings
+    multicast_vlan_policy = StringField(
+        choices=[
+            ("d", "Disable"),
+            ("p", "Profile"),
+            ("e", "Enable")
+        ],
+        default="p"
+    )
+    multicast_vlan = IntField(required=False, min_value=1, max_value=4095)
+
     settings = DictField(default=lambda: {}.copy())
     tags = ListField(StringField())
     # Selectors for fake segments

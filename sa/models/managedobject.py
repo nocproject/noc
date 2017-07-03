@@ -1111,6 +1111,31 @@ class ManagedObject(Model):
         else:
             return False
 
+    @property
+    def management_vlan(self):
+        """
+        Return management vlan settings
+        :return: Vlan id or None
+        """
+        if self.segment.management_vlan_policy == "d":
+            return None
+        elif self.segment.management_vlan_policy == "e":
+            return self.segment.management_vlan
+        else:
+            return self.segment.profile.management_vlan
+
+    @property
+    def multicast_vlan(self):
+        """
+        Return multicast vlan settings
+        :return: Vlan id or None
+        """
+        if self.segment.multicast_vlan_policy == "d":
+            return None
+        elif self.segment.multicast_vlan_policy == "e":
+            return self.segment.multicast_vlan
+        else:
+            return self.segment.profile.multicast_vlan
 
 @on_save
 class ManagedObjectAttribute(Model):
