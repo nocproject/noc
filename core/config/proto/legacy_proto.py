@@ -59,8 +59,8 @@ class LegacyProtocol(BaseProtocol):
                 d = d[p]
             d[parts[-1]] = value
 
-        svc_pool = os.environ.get("NOC_POOL", "global")
-        svc_node = os.environ.get("NOC_NODE")
+        svc_pool = os.environ.get("NOC_POOL", "")
+        svc_node = os.environ.get("NOC_NODE", "")
 
         cfg = {}
         with open(self.PATH) as f:
