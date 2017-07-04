@@ -146,6 +146,9 @@ class ServiceItem(object):
     def __str__(self):
         return "%s:%s" % (self.host, self.port)
 
+    def __repr__(self):
+        return "<ServiceItem %s:%s>" % (self.host, self.port)
+
 
 class ServiceParameter(BaseParameter):
     """
@@ -159,12 +162,16 @@ class ServiceParameter(BaseParameter):
     :param wait: Block and wait until at least one instance of
        service will be available
     """
+    DEFAULT_RESOLUTION_TIMEOUT = 1
+
     def __init__(self, service, near=False, wait=True, help=None):
-        self.service = service
+        if isinstance(service, six.string_types):
+            self.services = [service]
+        else:
+            self.services = service
         self.near = near
         self.wait = wait
         super(ServiceParameter, self).__init__(default=[], help=help)
-        self.value = []
 
     def __get__(self, instance, owner):
         if not self.value:
@@ -172,16 +179,26 @@ class ServiceParameter(BaseParameter):
         return self.value
 
     def resolve(self):
-        from noc.core.consul import ConsulClient
-        # @todo: Token
-        c = ConsulClient(host="consul", port=8500)
-        index = 0
-        index, services = yield c.health.service(
-            service=self.name,
-            index=index,
-            passing=True
-        )
-        print index, services
+        from noc.core.service.loader import get_dcs
+        from noc.core.dcs.base import ResolutionError
+
+        dcs = get_dcs()
+        while True:
+            for svc in self.services:
+                try:
+                    items = dcs.resolve_sync(
+                        svc,
+                        wait=self.wait,
+                        timeout=self.DEFAULT_RESOLUTION_TIMEOUT,
+                        full_result=True
+                    )
+                    self.value = [ServiceItem(*i.rsplit(":", 1))
+                                  for i in items]
+                    break
+                except ResolutionError:
+                    pass
+            if not self.wait or self.value:
+                break
 
     def as_list(self):
         """
