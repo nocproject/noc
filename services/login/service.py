@@ -8,11 +8,10 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from __future__ import absolute_import
 from noc.core.service.ui import UIService
-from .auth import AuthRequestHandler
-from .logout import LogoutRequestHandler
-from .api.login import LoginAPI
+from noc.services.login.auth import AuthRequestHandler
+from noc.services.login.logout import LogoutRequestHandler
+from noc.services.login.api.login import LoginAPI
 from noc.services.login.backends.base import BaseAuthBackend
 from noc.config import config
 
