@@ -111,7 +111,6 @@ class Service(object):
         tornado.ioloop.IOLoop.handle_callback_exception = self.handle_callback_exception
         self.ioloop = None
         self.logger = None
-        self.config = None
         self.service_id = str(uuid.uuid4())
         self.perf_metrics = metrics
         self.executors = {}
@@ -195,13 +194,6 @@ class Service(object):
             dest="debug",
             default=False,
             help="Dump additional debugging info"
-        )
-        parser.add_argument(
-            "--config",
-            action="store",
-            dest="config",
-            default=os.environ.get("NOC_CONFIG", "etc/noc.yml"),
-            help="Configuration path"
         )
         parser.add_argument(
             "--dcs",
@@ -290,13 +282,12 @@ class Service(object):
         """
         Set process title
         """
-        vars = {
+        v = {
             "name": self.name,
-            "instance": self.config.instance or "",
-            "pool": self.config.pool or ""
+            "instance": config.instance or "",
+            "pool": config.pool or ""
         }
-        vars.update(self.config._conf)
-        title = self.process_name % vars
+        title = self.process_name % v
         self.logger.debug("Setting process title to: %s", title)
         setproctitle.setproctitle(title)
 
@@ -334,10 +325,9 @@ class Service(object):
                 tornado.ioloop.IOLoop.configure(UVLoop)
             self.ioloop = tornado.ioloop.IOLoop.instance()
             # Initialize DCS
-            self.dcs = get_dcs(cmd_options["dcs"])
+            self.dcs = get_dcs(cmd_options["dcs"], self.ioloop)
             # Activate service
-            self.logger.warn("Activating service")
-            self.activate()
+            self.ioloop.add_callback(self.activate)
             self.logger.warn("Starting IOLoop")
             self.ioloop.start()
         except KeyboardInterrupt:
@@ -378,9 +368,9 @@ class Service(object):
         """
         if self.address and self.port:
             return self.address, self.port
-        if self.config.listen:
-            addr, port = self.config.listen.split(":")
-            port_tracker = self.config.instance
+        if config.listen:
+            addr, port = config.listen.split(":")
+            port_tracker = config.instance
         else:
             addr, port = "auto", 0
             port_tracker = 0
@@ -422,6 +412,7 @@ class Service(object):
         """
         Initialize services before run
         """
+        self.logger.warn("Activating service")
         handlers = [
             (r"^/mon/$", MonRequestHandler, {"service": self}),
             (r"^/health/$", HealthRequestHandler, {"service": self})
@@ -532,7 +523,7 @@ class Service(object):
         addr, port = self.get_service_address()
         r = yield self.dcs.register(
             self.name, addr, port,
-            pool=self.config.pool or None,
+            pool=config.pool or None,
             lock=self.get_leader_lock_name(),
             tags=self.get_register_tags()
         )
@@ -553,12 +544,12 @@ class Service(object):
     @tornado.gen.coroutine
     def acquire_slot(self):
         if self.pooled:
-            name = "%s-%s" % (self.name, self.config.pool)
+            name = "%s-%s" % (self.name, config.pool)
         else:
             name = self.name
         slot_number, total_slots = yield self.dcs.acquire_slot(
             name,
-            self.config.global_n_instances
+            config.global_n_instances
         )
         raise tornado.gen.Return((slot_number, total_slots))
 
@@ -586,15 +577,14 @@ class Service(object):
         r = {
             "status": self.get_mon_status(),
             "service": self.name,
-            "instance": str(self.config.instance),
-            "node": self.config.node,
-            "dc": self.config.dc,
+            "instance": str(config.instance),
+            "node": config.node,
             "pid": self.pid,
             # Current process uptime
             "uptime": time.time() - self.start_time
         }
         if self.pooled:
-            r["pool"] = self.config.pool
+            r["pool"] = config.pool
         if self.executors:
             for x in self.executors:
                 self.executors[x].apply_metrics(r)
@@ -605,7 +595,7 @@ class Service(object):
         """
         Yield timeout to wait after unsuccessful RPC connection
         """
-        for t in self.config.rpc_retry_timeout.split(","):
+        for t in config.rpc_retry_timeout.split(","):
             yield float(t)
 
     def subscribe(self, topic, channel, handler, raw=False, **kwargs):
@@ -651,14 +641,14 @@ class Service(object):
         metric_decode_fail = "nsq_msg_decode_fail_%s" % t
         metric_processed = "nsq_msg_processed_%s" % t
         metric_deferred = "nsq_msg_deferred_%s" % t
-        lookupd = self.config.get_service("nsqlookupd")
+        lookupd = config.nsqlookupd.addresses
         self.logger.info("Subscribing to %s/%s (lookupd: %s)",
                          topic, channel, ", ".join(lookupd))
         self.nsq_readers[handler] = NSQReader(
             message_handler=call_raw_handler if raw else call_json_handler,
             topic=topic,
             channel=channel,
-            lookupd_http_addresses=lookupd,
+            lookupd_http_addresses=config.nsqlookupd.addresses,
             **kwargs
         )
 
