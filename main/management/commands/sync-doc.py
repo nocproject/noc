@@ -16,7 +16,7 @@ import sys
 import six
 from django.core.management.base import BaseCommand, CommandError
 # NOC modules
-from noc.lib.fileutils import rewrite_when_differ
+from noc.core.fileutils import rewrite_when_differ
 
 INIT = "__init__.py"
 

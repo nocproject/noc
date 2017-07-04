@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Django's model manager for GridVCS
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2012 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Django's model manager for GridVCS
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import logging
-## NOC modules
+# Third-party modules
+import six
+# NOC modules
 from gridvcs import GridVCS
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 
 logger = logging.getLogger(__name__)
 
@@ -100,9 +102,9 @@ class GridVCSObjectProxy(object):
         if r and self.mirror:
             try:
                 safe_rewrite(self.mirror, data)
-            except OSError, why:
+            except OSError as e:
                 logger.error("Cannot mirror file to %s: %s",
-                             self.mirror, why)
+                             self.mirror, e)
         return r
 
     def delete(self):
@@ -110,7 +112,7 @@ class GridVCSObjectProxy(object):
 
     def get_revision(self, r):
         g = self.get_gridvcs()
-        if isinstance(r, basestring):
+        if isinstance(r, six.string_types):
             r = g.find_revision(self.id, r)
         return g.get(self.id, r)
 
@@ -119,8 +121,8 @@ class GridVCSObjectProxy(object):
 
     def diff(self, r1, r2):
         g = self.get_gridvcs()
-        if isinstance(r1, basestring):
+        if isinstance(r1, six.string_types):
             r1 = g.find_revision(self.id, r1)
-        if isinstance(r2, basestring):
+        if isinstance(r2, six.string_types):
             r2 = g.find_revision(self.id, r2)
         return g.diff(self.id, r1, r2)

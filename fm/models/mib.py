@@ -15,7 +15,7 @@ import os
 # NOC modules
 import noc.lib.nosql as nosql
 from noc.settings import config
-from noc.lib.fileutils import temporary_file, safe_rewrite
+from noc.core.fileutils import temporary_file, safe_rewrite
 from error import (MIBNotFoundException, MIBRequiredException,
                    OIDCollision)
 from mibpreference import MIBPreference

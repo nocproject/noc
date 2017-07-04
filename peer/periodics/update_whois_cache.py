@@ -13,7 +13,7 @@ import socket
 # NOC modules
 from noc.lib.periodic import Task as NOCTask
 from noc.settings import config
-from noc.lib.fileutils import urlopen
+from noc.core.fileutils import urlopen
 
 
 class Task(NOCTask):
