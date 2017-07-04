@@ -179,14 +179,13 @@ class ServiceParameter(BaseParameter):
         return self.value
 
     def resolve(self):
-        from noc.core.service.loader import get_dcs
-        from noc.core.dcs.base import ResolutionError
+        from noc.core.dcs.util import resolve
+        from noc.core.dcs.error import ResolutionError
 
-        dcs = get_dcs()
         while True:
             for svc in self.services:
                 try:
-                    items = dcs.resolve_sync(
+                    items = resolve(
                         svc,
                         wait=self.wait,
                         timeout=self.DEFAULT_RESOLUTION_TIMEOUT,

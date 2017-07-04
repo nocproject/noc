@@ -6,13 +6,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
 from __future__ import absolute_import
+
 _service = None
 
 
 def set_service(svc):
     global _service
 
+    if _service:
+        print "@@@@ STUB SERVICE IS ALREADY ACTIVATED"
     _service = svc
 
 
@@ -23,7 +27,6 @@ def get_service():
         from .stub import ServiceStub
         _service = ServiceStub()
         _service.start()
-        _service.is_ready.wait()
     return _service
 
 
