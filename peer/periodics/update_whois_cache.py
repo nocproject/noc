@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # peer.update_whois_cache periodic task
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -96,12 +96,12 @@ class Task(NOCTask):
         n = 0
         try:
             f = self.urlopen(url)
-        except urllib2.URLError, why:
-            self.error("Failed to download %s: %s" % (url, why))
+        except urllib2.URLError as e:
+            self.error("Failed to download %s: %s" % (url, e))
             self.download_status = False
             return 0
-        except socket.error, why:
-            self.error("Failed to download %s: %s" % (url, why))
+        except socket.error as e:
+            self.error("Failed to download %s: %s" % (url, e))
             self.download_status = False
             return 0
         for o in parser(f, [key_field, values_field]):

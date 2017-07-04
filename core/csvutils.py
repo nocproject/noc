@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## CSV import/export utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2011 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# CSV import/export utilities
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import csv
-import cStringIO
-## Django modules
+# Third-party modules
+import six
+# Django modules
 from django.db import models
 
 
@@ -77,7 +78,7 @@ def csv_export(model, queryset=None, first_row_only=False):
     """
     Export to CSV
     """
-    io = cStringIO.StringIO()
+    io = six.StringIO()
     writer = csv.writer(io)
     fields = get_model_fields(model)
     # Write header
@@ -113,7 +114,7 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
     :returns: (record_count,error_message).
               record_count is None if error_message set
     """
-    ## Detect UTF8 BOM (EF BB BF)
+    # Detect UTF8 BOM (EF BB BF)
     if not f.read(3) == "\xef\xbb\xbf":
         # No BOM found, seek to start
         f.seek(0)
@@ -121,13 +122,13 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
     # Process model fields
     field_names = set()
     required_fields = set()
-    unique_fields = set([f.name for f in model._meta.fields if f.unique])
+    unique_fields = set([ff.name for ff in model._meta.fields if ff.unique])
     fk = {}  # Foreign keys: name->(model,field)
     # find boolean fields
-    booleans = set([f.name for f in model._meta.fields if
-                    isinstance(f, models.BooleanField)])
-    integers = set([f.name for f in model._meta.fields if
-                    isinstance(f, models.IntegerField)])
+    booleans = set([ff.name for ff in model._meta.fields if
+                    isinstance(ff, models.BooleanField)])
+    integers = set([ff.name for ff in model._meta.fields if
+                    isinstance(ff, models.IntegerField)])
     # Search for foreign keys and required fields
     ir = set(getattr(model, "csv_ignored_fields", []))
     ir.add("id")
@@ -135,14 +136,14 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
         field_names.add(name)
         if rel:
             fk[name] = (rel, rname)
-        if required and not name in ir:
+        if required and name not in ir:
             required_fields.add(name)
     # Read and validate header
-    header = reader.next()
+    header = next(reader)
     left = field_names.copy()
     u_fields = [h for h in header if h in unique_fields]
     ut_fields = [fs for fs in model._meta.unique_together
-                 if len(fs) == len([f for f in fs if f in header])]
+                 if len(fs) == len([ff for ff in fs if ff in header])]
     # Check field names
     for h in header:
         if h not in field_names:
@@ -165,8 +166,7 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
                 v = None
             # Check required field is not none
             if not v and h in required_fields:
-                return None, "Required field '%s' is empty at line %d" % (
-                h, count)
+                return None, "Required field '%s' is empty at line %d" % (h, count)
             # Delete empty values
             if not v:
                 del vars[h]

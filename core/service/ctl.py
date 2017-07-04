@@ -8,8 +8,9 @@
 
 # Python modules
 from __future__ import absolute_import
-import cStringIO
 import logging
+# Third-party modules
+import six
 # NOC modules
 from .api import API, api
 
@@ -48,7 +49,7 @@ class CtlAPI(API):
         """
         import yappi
         i = yappi.get_thread_stats()
-        out = cStringIO.StringIO()
+        out = six.StringIO()
         i.print_all(out=out)
         return out.getvalue()
 
@@ -59,7 +60,7 @@ class CtlAPI(API):
         """
         import yappi
         i = yappi.get_func_stats()
-        out = cStringIO.StringIO()
+        out = six.StringIO()
         i.print_all(
             out=out,
             columns={
