@@ -59,8 +59,6 @@ class Config(BaseConfig):
     )
     secret_key = StringParameter(default="12345")
 
-    mirror_path = StringParameter(default="/opt/noc/var/config_mirror")
-
     instance = IntParameter(default=0)
     listen = StringParameter(default="auto:0")
 
@@ -154,6 +152,18 @@ class Config(BaseConfig):
         config_ttl = SecondsParameter(default="1y")
         db_ttl = SecondsParameter(default="5y")
 
+    class logging(ConfigSection):
+        log_api_calls = BooleanParameter(default=False)
+        log_sql_statements = BooleanParameter(default=False)
+
+    class gridvcs(ConfigSection):
+        config_mirror_path = StringParameter("")
+
+    class path(ConfigSection):
+        smilint = StringParameter()
+        smidump = StringParameter()
+        dig = StringParameter()
+
     class proxy(ConfigSection):
         http_proxy = StringParameter(default=os.environ.get("http_proxy"))
         https_proxy = StringParameter(default=os.environ.get("https_proxy"))
@@ -165,6 +175,7 @@ class Config(BaseConfig):
         restrict_to_group = StringParameter(default="")
         single_session_group = StringParameter(default="")
         mutual_exclusive_group = StringParameter(default="")
+        idle_timeout = SecondsParameter(default="1w")
 
     class ping(ConfigSection):
         max_packets = IntParameter(default=3)
