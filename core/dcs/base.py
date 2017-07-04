@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 import signal
 import os
@@ -21,11 +22,8 @@ import tornado.ioloop
 from six.moves.urllib.parse import urlparse
 import six
 # Python modules
+from .error import ResolutionError
 from noc.core.perf import metrics
-
-
-class ResolutionError(Exception):
-    pass
 
 
 class DCSBase(object):
@@ -132,6 +130,7 @@ class DCSBase(object):
         instance,
         :param name:
         :param hint:
+        :param full_result:
         :return:
         """
         @tornado.gen.coroutine

@@ -22,20 +22,29 @@ _lock = Lock()
 _instances = {}
 
 
+def get_dcs_url(url=None):
+    return url or DEFAULT_DCS
+
+
+def get_dcs_class(url=None):
+    url = get_dcs_url(url)
+    scheme = url.split(":", 1)[0]
+    if scheme not in DCS_HANDLERS:
+        raise ValueError("Unknown DCS handler: %s" % scheme)
+    handler = get_handler(DCS_HANDLERS[scheme])
+    if not handler:
+        raise ValueError("Cannot initialize DCS handler: %s", scheme)
+    return handler
+
+
 def get_dcs(url=None):
     """
     Return initialized DCS instance
     :param url: 
     :return: 
     """
-    url = url or DEFAULT_DCS
+    url = get_dcs_url(url)
     with _lock:
         if url not in _instances:
-            scheme = url.split(":", 1)[0]
-            if scheme not in DCS_HANDLERS:
-                raise ValueError("Unknown DCS handler: %s" % scheme)
-            handler = get_handler(DCS_HANDLERS[scheme])
-            if not handler:
-                raise ValueError("Cannot initialize DCS handler: %s", scheme)
-            _instances[url] = handler(url)
+            _instances[url] = get_dcs_class(url)(url)
         return _instances[url]
