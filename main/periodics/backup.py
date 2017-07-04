@@ -17,7 +17,7 @@ import shutil
 from noc.lib.periodic import Task as PeriodicTask
 from noc.settings import config
 from noc import settings
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 from noc.config import config
 
 
@@ -241,6 +241,8 @@ class Task(PeriodicTask):
         return self.tar(etc_out, files)
 
     def execute(self):
+        from django.conf import settings
+
         if not self.check_paths():
             return False
         self.clean_backups()

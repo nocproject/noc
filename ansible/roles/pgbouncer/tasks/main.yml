@@ -30,5 +30,6 @@
     dest: "{{consul_scripts_path}}/pgbouncer_check.sh"
     mode: 0755
   notify: reload consul
+  no_log: true
   tags:
     - consul

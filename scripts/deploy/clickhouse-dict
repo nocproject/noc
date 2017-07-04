@@ -12,13 +12,16 @@ import os
 import sys
 # NOC modules
 from noc.core.clickhouse.dictionary import Dictionary
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 
 
 def main(path):
     for dc in Dictionary.iter_cls():
         xml = dc.get_config()
-        safe_rewrite(os.path.join(path, "%s.xml" % (dc._meta.name, xml)))
+        safe_rewrite(
+            os.path.join(path, "%s.xml" % dc._meta.name),
+            xml
+        )
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ from django.core.management.base import BaseCommand, CommandError
 # NOC modules
 from noc.settings import config
 from noc.lib.db import check_postgis, check_srs
-from noc.lib.fileutils import search_path, temporary_file
+from noc.core.fileutils import search_path, temporary_file
 from noc.gis.models import Area
 from noc.gis.geo import MIN_ZOOM, MAX_ZOOM
 from noc.gis.utils import parse_osm_bounds

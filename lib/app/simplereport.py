@@ -2,17 +2,17 @@
 # ---------------------------------------------------------------------
 # SimpleReport implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import cStringIO
 import csv
 import decimal
 import pprint
 from functools import reduce
-# Django modules
+# Third-party modules
+import six
 from django.utils.dateformat import DateFormat
 # NOC modules
 from reportapplication import *
@@ -598,7 +598,7 @@ class TableSection(ReportSection):
         Return CSV representation of table
         :return:
         """
-        f = cStringIO.StringIO()
+        f = six.StringIO()
         writer = csv.writer(f)
         if self.enumerate:
             writer.writerow(["#"] + [c.title for c in self.columns])

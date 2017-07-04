@@ -2,6 +2,7 @@
   template:
     src: "etc/noc.yml.j2"
     dest: "{{ noc_etc }}/noc.yml"
+  no_log: true
   tags:
     - config
     - noc_config
@@ -21,6 +22,7 @@
     option: "{{item.option}}"
     value: "{{item.value}}"
     create: yes
+  no_log: true
   with_items:
     - section: main
       option: secret_key
@@ -69,6 +71,7 @@
     option: "{{item.option}}"
     value: "{{item.value}}"
     create: yes
+  no_log: true
   with_items:
     - section: main
       option: sentry_url
@@ -116,6 +119,7 @@
   tags:
     - config
     - noc_config
+
 - name: install various configs
   copy:
     src: "etc/{{item.file}}"

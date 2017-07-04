@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Full-text search index management
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ from django.core.management.base import BaseCommand, CommandError
 from noc.sa.models.managedobject import ManagedObject
 from noc.lib.validators import is_int
 from noc.settings import config
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 
 
 class Command(BaseCommand):

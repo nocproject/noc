@@ -11,11 +11,10 @@
 import sys
 import glob
 import ConfigParser
-import cStringIO
 import sys
 import os
-import subprocess
 # Third party modules
+import six
 import yaml
 
 
@@ -103,7 +102,7 @@ def build(node):
 
 
     # Convert to .ini format
-    buffer = cStringIO.StringIO()
+    buffer = six.StringIO()
     out.write(buffer)
     cfg = buffer.getvalue()
     # Read old config

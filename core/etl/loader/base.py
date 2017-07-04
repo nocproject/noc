@@ -21,7 +21,7 @@ import itertools
 import six
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 
 logger = logging.getLogger(__name__)
 

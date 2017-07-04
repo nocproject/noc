@@ -9,8 +9,9 @@ import os
 import tempfile
 import hashlib
 import urllib2
-import cStringIO
 import gzip
+# Third-party modules
+import six
 # NOC modules
 from noc.lib.version import get_version
 from noc.settings import config
@@ -160,7 +161,7 @@ def urlopen(url, auto_deflate=False):
         r = url
     if auto_deflate and url.endswith(".gz"):
         u = urllib2.urlopen(r)
-        f = cStringIO.StringIO(u.read())
+        f = six.StringIO(u.read())
         return gzip.GzipFile(fileobj=f)
     else:
         return urllib2.urlopen(r)

@@ -22,7 +22,7 @@ import ujson
 # NOC modules
 from noc.config import config
 from noc.lib.version import get_branch, get_tip
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 from noc.core.perf import metrics
 
 logger = logging.getLogger(__name__)

@@ -11,7 +11,7 @@ import os
 import subprocess
 # NOC modules
 from noc.lib.registry import Registry
-from noc.lib.fileutils import copy_file
+from noc.core.fileutils import copy_file
 from noc.settings import config
 
 

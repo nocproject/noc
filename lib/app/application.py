@@ -7,6 +7,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from __future__ import absolute_import
 import logging
 import os
 import datetime
@@ -29,12 +30,11 @@ from django.http import Http404
 import ujson
 import six
 # NOC modules
-from access import HasPerm, Permit, Deny
-from site import site
+from .access import HasPerm, Permit, Deny
 from noc.lib.forms import NOCForm
 from noc import settings
 from noc.sa.interfaces.base import DictParameter
-from noc.lib.fileutils import safe_append
+from noc.core.fileutils import safe_append
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,

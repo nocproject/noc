@@ -11,12 +11,12 @@ import os
 import glob
 import subprocess
 import csv
-import cStringIO
 import sys
-# Django modules
+# Third-party modules
+import six
 from django.core.management.base import BaseCommand, CommandError
 # NOC modules
-from noc.lib.fileutils import rewrite_when_differ
+from noc.core.fileutils import rewrite_when_differ
 
 INIT = "__init__.py"
 
@@ -27,12 +27,12 @@ INIT = "__init__.py"
 class Command(BaseCommand):
     help = "Synchronize online documentation"
 
-    ##
-    ## Rebuild supported equipment database.
-    ## Returns true if database was updated
-    ##
+    #
+    # Rebuild supported equipment database.
+    # Returns true if database was updated
+    #
     def update_se_db(self):
-        out = cStringIO.StringIO()
+        out = six.StringIO()
         writer = csv.writer(out)
         for dirpath, dirname, files in os.walk("sa/profiles/"):
             if "supported.csv" in files:
