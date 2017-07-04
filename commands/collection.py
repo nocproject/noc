@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Collections manipulation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ import ujson
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.collection.base import Collection
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 from noc.models import COLLECTIONS, get_model
 
 

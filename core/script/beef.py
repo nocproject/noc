@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Beef API
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2015 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Beef API
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import json
 import re
 import uuid
 import os
 import glob
 import datetime
-## NOC modules
-from noc.lib.fileutils import safe_rewrite
+# NOC modules
+from noc.core.fileutils import safe_rewrite
 
 
 class Beef(object):
