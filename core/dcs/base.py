@@ -10,15 +10,16 @@
 import logging
 import signal
 import os
-from threading import Lock
+from threading import Lock, Event
 import random
 import datetime
-import Queue
+import sys
 # Third-party modules
 import tornado.gen
 import tornado.locks
 import tornado.ioloop
 from six.moves.urllib.parse import urlparse
+import six
 # Python modules
 from noc.core.perf import metrics
 
@@ -105,9 +106,13 @@ class DCSBase(object):
         raise tornado.gen.Return(resolver)
 
     @tornado.gen.coroutine
-    def resolve(self, name, hint=None):
+    def resolve(self, name, hint=None, wait=True, timeout=None,
+                full_result=False):
         resolver = yield self.get_resolver(name)
-        r = yield resolver.resolve(hint=hint)
+        r = yield resolver.resolve(
+            hint=hint, wait=wait, timeout=timeout,
+            full_result=full_result
+        )
         raise tornado.gen.Return(r)
 
     @tornado.gen.coroutine
@@ -120,17 +125,8 @@ class DCSBase(object):
                     r.stop()
                     del self.resolvers[svc]
 
-    @tornado.gen.coroutine
-    def _resolve_sync(self, queue, name, hint=None):
-        try:
-            result = yield self.resolve(name, hint=hint)
-            queue.put(result)
-        except tornado.gen.Return as e:
-            queue.put(e.value)
-        except Exception as e:
-            queue.put(e)
-
-    def resolve_sync(self, name, hint=None):
+    def resolve_sync(self, name, hint=None, wait=True, timeout=None,
+                     full_result=False):
         """
         Returns *hint* when service is active or new service
         instance,
@@ -138,13 +134,30 @@ class DCSBase(object):
         :param hint:
         :return:
         """
-        q = Queue.Queue()
-        self.ioloop.add_callback(self._resolve_sync, q, name, hint)
-        result = q.get()
-        if isinstance(result, Exception):
-            raise result
+        @tornado.gen.coroutine
+        def _resolve():
+            try:
+                r = yield self.resolve(
+                    name, hint=hint, wait=wait,
+                    timeout=timeout,
+                    full_result=full_result
+                )
+                result.append(r)
+            except tornado.gen.Return as e:
+                result.append(e.value)
+            except Exception:
+                error.append(sys.exc_info())
+            event.set()
+
+        event = Event()
+        result = []
+        error = []
+        self.ioloop.add_callback(_resolve)
+        event.wait()
+        if error:
+            six.reraise(*error[0])
         else:
-            return result
+            return result[0]
 
     def resolve_near(self, name):
         """
@@ -203,18 +216,25 @@ class ResolverBase(object):
             metrics["dcs.resolver.%s.activeservices" % self.name] = len(self.services)
 
     @tornado.gen.coroutine
-    def resolve(self, hint=None):
+    def resolve(self, hint=None, wait=True, timeout=None, full_result=False):
         metrics["dcs.resolver.requests"] += 1
-        # Wait until service catalog populated
-        try:
-            yield self.ready_event.wait(timeout=self.dcs.DEFAULT_SERVICE_RESOLUTION_TIMEOUT)
-        except tornado.gen.TimeoutError:
-            metrics["dcs.resolver.errors"] += 1
+        if wait:
+            # Wait until service catalog populated
+            try:
+                yield self.ready_event.wait(
+                    timeout=datetime.timedelta(seconds=timeout or self.dcs.DEFAULT_SERVICE_RESOLUTION_TIMEOUT)
+                )
+            except tornado.gen.TimeoutError:
+                metrics["dcs.resolver.errors"] += 1
+                raise ResolutionError()
+        if not wait and not self.ready_event.is_set():
             raise ResolutionError()
         with self.lock:
             if hint and hint in self.service_addresses:
                 location = hint
                 metrics["dcs.resolver.hints"] += 1
+            elif full_result:
+                location = list(self.services.values())
             else:
                 location = self.services[self.policy()]
         metrics["dcs.resolver.success"] += 1

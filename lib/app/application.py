@@ -35,6 +35,7 @@ from noc.lib.forms import NOCForm
 from noc import settings
 from noc.sa.interfaces.base import DictParameter
 from noc.core.fileutils import safe_append
+from .site import site
 
 
 def view(url, access, url_name=None, menu=None, method=None, validate=None,

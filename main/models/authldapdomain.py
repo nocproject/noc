@@ -154,3 +154,6 @@ class AuthLDAPDomain(Document):
 
     def get_attr_mappings(self):
         return self.DEFAULT_ATTR_MAPPING[self.type]
+
+    def get_user_search_attributes(self):
+        return ["dn"] + list(self.DEFAULT_ATTR_MAPPING[self.type])
