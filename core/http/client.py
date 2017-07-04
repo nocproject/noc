@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
+from __future__ import absolute_import
 import socket
 import urlparse
 import threading
@@ -22,6 +22,7 @@ import cachetools
 # NOC modules
 from noc.core.perf import metrics
 from noc.lib.validators import is_ipv4
+from .proxy import SYSTEM_PROXIES
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +43,6 @@ DEFAULT_PORTS = {
     "http": 80,
     "https": 443
 }
-
-SYSTEM_PROXIES = {}
 
 # Methods require Content-Length header
 REQUIRE_LENGTH_METHODS = set(["POST", "PUT"])
@@ -345,28 +344,3 @@ def fetch_sync(url, method="GET",
     ioloop = tornado.ioloop.IOLoop()
     ioloop.run_sync(_fetch)
     return r[0]
-
-
-def setup_proxies():
-    def get_addr(a):
-        aa = a.split("://", 1)[1]
-        if aa.endswith("/"):
-            aa = aa[:-1]
-        host, port = aa.split(":")
-        return host, int(port)
-
-    http_proxy = os.environ.get("http_proxy")
-    if http_proxy:
-        SYSTEM_PROXIES["http"] = get_addr(http_proxy)
-    https_proxy = os.environ.get("https_proxy")
-    if https_proxy:
-        SYSTEM_PROXIES["https"] = get_addr(https_proxy)
-    if not SYSTEM_PROXIES:
-        logger.debug("No proxy servers configures")
-    else:
-        logger.debug("Using proxy servers: %s",
-                     ", ".join("%s = %s" % (
-                         k, SYSTEM_PROXIES[k]
-                     ) for k in sorted(SYSTEM_PROXIES)))
-
-setup_proxies()
