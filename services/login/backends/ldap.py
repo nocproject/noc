@@ -203,16 +203,21 @@ class LdapBackend(BaseAuthBackend):
         connection.search(
             ldap_domain.root,
             ldap_domain.get_user_search_filter() % {"user": user},
-            ldap3.SUBTREE
+            ldap3.SUBTREE,
+            attributes=ldap_domain.get_user_search_attributes()
         )
         if not connection.entries:
             self.logger.info("Cannot find user %s", user)
             return user_info
         entry = connection.entries[0]
+        attrs = entry.entry_get_attributes_dict()
         user_info["user_dn"] = entry.entry_get_dn()
         for k, v in ldap_domain.get_attr_mappings().items():
-            if k in entry:
-                user_info[v] = entry[k]
+            if k in attrs:
+                value = attrs[k]
+                if isinstance(value, (list, tuple)):
+                    value = " ".join(value)
+                user_info[v] = value
         if "email" in user_info and not ldap_domain.sync_mail:
             del user_info["mail"]
         if "first_name" in user_info and not ldap_domain.sync_name:
