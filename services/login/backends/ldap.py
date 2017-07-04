@@ -211,6 +211,7 @@ class LdapBackend(BaseAuthBackend):
             return user_info
         entry = connection.entries[0]
         attrs = entry.entry_get_attributes_dict()
+        self.logger.debug("User attributes: %s", attrs if attrs else "No attributes response")
         user_info["user_dn"] = entry.entry_get_dn()
         for k, v in ldap_domain.get_attr_mappings().items():
             if k in attrs:
