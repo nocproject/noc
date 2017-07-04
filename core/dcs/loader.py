@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Base service
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Service loader
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+#----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from threading import Lock
 import os
-## NOC modules
+# NOC modules
 from noc.core.handler import get_handler
 
 DEFAULT_DCS = os.environ.get("NOC_DCS", "consul://consul/noc")
