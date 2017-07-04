@@ -12,11 +12,10 @@ import urllib
 import sys
 # NOC modules
 from noc.core.config.base import BaseConfig, ConfigSection
-from noc.core.config.params import (StringParameter, MapParameter,
-                                    IntParameter, BooleanParameter,
-                                    HandlerParameter, SecondsParameter,
-                                    FloatParameter,
-                                    ServiceParameter)
+from noc.core.config.params import (
+    StringParameter, MapParameter, IntParameter, BooleanParameter,
+    HandlerParameter, SecondsParameter, FloatParameter,
+    ServiceParameter)
 
 
 class Config(BaseConfig):
@@ -283,7 +282,7 @@ class Config(BaseConfig):
             has_credentials = self.mongo.user or self.mongo.password
             if has_credentials:
                 self._mongo_connection_args["authentication_source"] = self.mongo.db
-            hosts = [self.mongo.host]
+            hosts = self.mongo.addresses
             if self.mongo.rs:
                 self._mongo_connection_args["replicaSet"] = self.mongo.rs
                 self._mongo_connection_args["slave_okay"] = True
@@ -293,7 +292,7 @@ class Config(BaseConfig):
             if has_credentials:
                 url += ["%s:%s@" % (urllib.quote(self.mongo.user),
                                     urllib.quote(self.mongo.password))]
-            url += [",".join(hosts)]
+            url += [",".join(str(h) for h in hosts)]
             url += ["/%s" % self.mongo.db]
             self._mongo_connection_args["host"] = "".join(url)
         return self._mongo_connection_args
