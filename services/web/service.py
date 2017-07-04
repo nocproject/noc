@@ -38,6 +38,9 @@ class WebService(Service):
         ]
 
     def on_activate(self):
+        # Initialize audit trail
+        from noc.main.models.audittrail import AuditTrail
+        AuditTrail.install()
         # Initialize site
         self.logger.info("Registering web applications")
         from noc.lib.app.site import site

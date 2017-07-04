@@ -5,14 +5,18 @@
 # Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-from site import *
-from access import *
-from application import *
-from modelapplication import *
-from extapplication import *
-from extmodelapplication import *
-from extdocapplication import *
-from noc.settings import config, IS_WEB
+
+# Python modules
+from __future__ import absolute_import
+# NOC modules
+from .site import *
+from .access import *
+from .application import *
+from .modelapplication import *
+from .extapplication import *
+from .extmodelapplication import *
+from .extdocapplication import *
+from noc.config import config
 
 
 def setup_processor(request):
@@ -26,7 +30,7 @@ def setup_processor(request):
     :param request:
     :return:
     """
-    favicon_url = config.get("customization", "favicon_url")
+    favicon_url = config.get.customization.favicon_url
     if favicon_url.endswith(".png"):
         favicon_mime = "image/png"
     elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
@@ -36,11 +40,10 @@ def setup_processor(request):
 
     return {
         "setup": {
-            "installation_name": config.get("customization",
-                                            "installation_name"),
-            "logo_url": config.get("customization", "logo_url"),
-            "logo_width": config.get("customization", "logo_width"),
-            "logo_height": config.get("customization", "logo_height"),
+            "installation_name": config.customization.installation_name,
+            "logo_url": config.customization.logo_url,
+            "logo_width": config.customization.logo_width,
+            "logo_height": config.customization.logo_height,
             "favicon_url": favicon_url,
             "favicon_mime": favicon_mime,
         }

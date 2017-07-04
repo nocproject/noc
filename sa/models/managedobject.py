@@ -67,7 +67,6 @@ MANAGEDOBJECT_CACHE_VERSION = 2
 
 scheme_choices = [(1, "telnet"), (2, "ssh"), (3, "http"), (4, "https")]
 
-CONFIG_MIRROR = config.get("gridvcs", "mirror.sa.managedobject.config") or None
 Credentials = namedtuple("Credentials", [
     "user", "password", "super_password", "snmp_ro", "snmp_rw"])
 Version = namedtuple("Version", ["profile", "vendor", "platform", "version"])
@@ -203,7 +202,7 @@ class ManagedObject(Model):
         null=True, blank=True
     )
     # CM
-    config = GridVCSField("config", mirror=CONFIG_MIRROR)
+    config = GridVCSField("config", mirror=config.gridvcs.config_mirror_path)
     # Default VRF
     vrf = ForeignKey("ip.VRF", verbose_name="VRF",
                             blank=True, null=True)

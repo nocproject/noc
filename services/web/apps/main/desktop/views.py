@@ -33,13 +33,10 @@ class DesktopApplication(ExtApplication):
     def __init__(self, *args, **kwargs):
         ExtApplication.__init__(self, *args, **kwargs)
         # Login restrictions
-        self.restrict_to_group = self.get_group(
-            config.get("authentication", "restrict_to_group"))
-        self.single_session_group = self.get_group(
-            config.get("authentication", "single_session_group"))
-        self.mutual_exclusive_group = self.get_group(
-            config.get("authentication", "mutual_exclusive_group"))
-        self.idle_timeout = config.getint("authentication", "idle_timeout")
+        self.restrict_to_group = self.get_group(config.login.restrict_to_group)
+        self.single_session_group = self.get_group(config.login.single_session_group)
+        self.mutual_exclusive_group = self.get_group(config.login.mutual_exclusive_group)
+        self.idle_timeout = config.login.idle_timeout
 
     def get_group(self, name):
         """

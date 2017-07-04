@@ -91,7 +91,7 @@ class ExtDocApplication(ExtApplication):
                 self._api_to_json,
                 url="^(?P<id>[0-9a-f]{24})/json/$",
                 method=["GET"], access="read", api=True)
-            if self.json_collection and config.develop.install_collection:
+            if self.json_collection and config.web.install_collection:
                 self.add_view(
                     "api_install_json",
                     self._api_install_json,

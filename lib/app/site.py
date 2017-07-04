@@ -17,33 +17,19 @@ import logging
 import json
 from collections import defaultdict
 # Third-party modules
-from django.http import HttpResponse, HttpResponseNotFound,\
-                        HttpResponseForbidden
-from django.conf.urls.defaults import *
-from django.core.urlresolvers import *
+from django.http import (HttpResponse, HttpResponseNotFound,
+                         HttpResponseForbidden, Http404)
+from django.conf.urls import patterns
+from django.core.urlresolvers import RegexURLResolver, RegexURLPattern, reverse
 from django.conf import settings
 from django.utils.encoding import smart_str
 import six
 import ujson
 # NOC modules
-from noc.settings import config
+from noc.config import config
 from noc.core.debug import error_report
 
 logger = logging.getLogger(__name__)
-
-
-class DynamicMenu(object):
-    title = "DYNAMIC MENU"
-    icon = "icon_folder"
-    glyph = "folder"
-
-    @property
-    def items(self):
-        """
-        Generator yielding (title, app, access)
-        """
-        raise StopIteration
-
 
 class ProxyNode:
     pass
@@ -61,7 +47,7 @@ class URL(object):
         if method is None:
             self.method = HTTP_METHODS
         else:
-            if isinstance(method, basestring):
+            if isinstance(method, six.string_types):
                 method = [method]
             if type(method) not in (types.ListType, types.TupleType):
                 raise TypeError("Invalid type for 'method'")
@@ -104,10 +90,8 @@ class Site(object):
         self.reports = []  # app_id -> title
         self.views = ProxyNode()  # Named views proxy
         self.testing_mode = hasattr(settings, "IS_TEST")
-        self.log_api_calls = (config.has_option("main", "log_api_calls") and
-                              config.getboolean("main", "log_api_calls"))
-        self.log_sql_statements = config.getboolean("main",
-                                                    "log_sql_statements")
+        self.log_api_calls = config.logging.log_api_calls
+        self.log_sql_statements = config.logging.log_sql_statements
         self.app_contributors = defaultdict(set)
 
     @property
@@ -133,7 +117,7 @@ class Site(object):
         """
         Generator returning view's URL objects
         """
-        if isinstance(view.url, basestring):  # view.url is string type
+        if isinstance(view.url, six.string_types):  # view.url is string type
             yield URL(view.url,
                       name=getattr(view, "url_name", None),
                       method=getattr(view, "method", None))
@@ -142,7 +126,7 @@ class Site(object):
         elif (isinstance(view.url, types.ListType) or
               isinstance(view.url, types.TupleType)):  # List type
             for o in view.url:
-                if isinstance(o, basestring):  # Given by string
+                if isinstance(o, six.string_types):  # Given by string
                     yield URL(o)
                 elif isinstance(o, URL):
                     yield o

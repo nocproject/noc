@@ -67,7 +67,7 @@ class PMWriterService(Service):
                 break
         if not influx:
             # Fallback to default
-            influx = self.resolve_service("influxdb", 1)[0]
+            influx = self.dcs.resolve_sync("influxdb", 1)[0]
             channel = "pmwriter"
         return influx, channel
 

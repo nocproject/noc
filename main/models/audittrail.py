@@ -17,8 +17,8 @@ from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (StringField, DateTimeField,
                                 ListField, EmbeddedDocumentField)
 # NOC modules
+from noc.config import config
 from noc.lib.middleware import get_user
-from noc import settings
 from noc.lib.utils import get_model_id
 from noc.lib.text import to_seconds
 
@@ -74,7 +74,7 @@ class AuditTrail(Document):
         "sa.reducetask",
     ])
 
-    DEFAULT_TTL = to_seconds(settings.config.get("audit", "ttl.db"))
+    DEFAULT_TTL = config.audit.db_ttl
     _model_ttls = {}
 
     @classmethod
@@ -163,12 +163,7 @@ class AuditTrail(Document):
     @classmethod
     def get_model_ttl(cls, model_id):
         m = model_id.split(".")[0]
-        if settings.config.has_option("audit", "ttl.db.%s" % model_id):
-            v = to_seconds(settings.config.get("audit", "ttl.db.%s" % model_id))
-        elif settings.config.has_option("audit", "ttl.db.%s" % m):
-            v = to_seconds(settings.config.get("audit", "ttl.db.%s" % m))
-        else:
-            v = cls.DEFAULT_TTL
+        v = cls.DEFAULT_TTL
         return datetime.timedelta(seconds=v)
 
     @classmethod
@@ -192,5 +187,4 @@ class AuditTrail(Document):
         """
         Install signal handlers
         """
-        if settings.IS_WEB:
-            django_signals.class_prepared.connect(cls.on_new_model)
+        django_signals.class_prepared.connect(cls.on_new_model)
