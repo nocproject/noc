@@ -10,6 +10,7 @@
 import logging
 import urllib
 import sys
+import os
 # NOC modules
 from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (
@@ -152,6 +153,11 @@ class Config(BaseConfig):
         reboot_ttl = SecondsParameter(default="0")
         config_ttl = SecondsParameter(default="1y")
         db_ttl = SecondsParameter(default="5y")
+
+    class proxy(ConfigSection):
+        http_proxy = StringParameter(default=os.environ.get("http_proxy"))
+        https_proxy = StringParameter(default=os.environ.get("https_proxy"))
+        ftp_proxy = StringParameter(default=os.environ.get("ftp_proxy"))
 
     class login(ConfigSection):
         methods = StringParameter(default="local")
