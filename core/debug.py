@@ -12,7 +12,6 @@ import re
 import logging
 import datetime
 import os
-import stat
 import hashlib
 import pprint
 import traceback
@@ -226,7 +225,7 @@ def check_fatal_errors(t, v):
         die("Improperly configured: %s", v)
 
 
-def get_traceback(reverse=TRACEBACK_REVERSE, fp=None):
+def get_traceback(reverse=config.traceback.reverse, fp=None):
     t, v, tb = sys.exc_info()
     try:
         check_fatal_errors(t, v)
@@ -274,7 +273,7 @@ def excepthook(t, v, tb):
     sys.stdout.flush()
 
 
-def error_report(reverse=TRACEBACK_REVERSE, logger=logger):
+def error_report(reverse=config.traceback.reverse, logger=logger):
     fp = error_fingerprint()
     r = get_traceback(reverse=reverse, fp=fp)
     logger.error(r)
