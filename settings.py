@@ -142,10 +142,6 @@ INSTALLED_APPS = [
     "noc.sla",
     "noc.phone"
 ]
-# Populate list of locally-installed apps
-apps = config.get("main", "installed_apps").strip()
-if apps:
-    INSTALLED_APPS += [app.strip() for app in apps.split(",")]
 
 FORCE_SCRIPT_NAME = ""
 
@@ -176,25 +172,9 @@ FORCE_LOWERCASE_TAGS = False
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 # Store sessions in mongodb
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
-# X-Forwarded-Proto
-if config.get("main", "x_forwarded_proto"):
-    h = config.get("main", "x_forwarded_proto").upper().replace("-", "_")
-    SECURE_PROXY_SSL_HEADER = ("HTTP_%s" % h, "https")
-# Set up crashinfo limit
-CRASHINFO_LIMIT = config.getint("main", "crashinfo_limit")
 # Fixed beefs directory
 # Set up by test runner
 TEST_FIXED_BEEF_BASE = None
 
-LOG_MRT_COMMAND = None
-if config.get("audit", "log_mrt_commands"):
-    lmc = config.get("audit", "log_mrt_commands")
-    if os.access(lmc, os.W_OK):
-        LOG_MRT_COMMAND = lmc
-    else:
-        import sys
-        sys.stderr.write(
-            "Cannot write to '%s'. MRT command logging disabled\n" % lmc
-        )
 # Disable SQL statement logging
 logging.getLogger("django.db.backends").setLevel(logging.ERROR)

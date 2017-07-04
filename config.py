@@ -20,7 +20,7 @@ from noc.core.config.params import (
 
 
 class Config(BaseConfig):
-    pool = StringParameter(default="global")
+    pool = StringParameter()
 
     loglevel = MapParameter(default="info", mappings={
         "critical": logging.CRITICAL,
