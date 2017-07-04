@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Collection utilities
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Collection utilities
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import os
 import zlib
 import csv
@@ -15,11 +15,11 @@ import hashlib
 import uuid
 from collections import namedtuple
 import sys
-## Third-party modules
+# Third-party modules
 import ujson
 import bson
 from mongoengine.fields import ListField, EmbeddedDocumentField
-from noc.lib.fileutils import safe_rewrite
+from noc.core.fileutils import safe_rewrite
 
 
 class Collection(object):

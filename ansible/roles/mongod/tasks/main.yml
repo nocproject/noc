@@ -28,6 +28,7 @@
   template:
     src: "mongo.key.j2"
     dest: "{{ mongo_dir }}/mongo.key"
+  no_log: true
 
 - include: "os/{{ ansible_distribution }}/main.yml"
 
@@ -72,6 +73,7 @@
   template:
     src: shell.js.j2
     dest: "{{ mongo_dir }}/shell.js"
+  no_log: true
   tags:
     - config
 
@@ -92,6 +94,7 @@
     src: "etc/telegraf/telegraf.d/mongodb.conf.j2"
     dest: "{{ telegraf_confd_path }}/mongodb.conf"
   notify: reload telegraf
+  no_log: true
   tags:
     - config
     - telegraf
@@ -110,5 +113,6 @@
     dest: "{{consul_scripts_path}}/mongodb.sh"
     mode: 0755
   notify: reload consul
+  no_log: true
   tags:
     - consul
