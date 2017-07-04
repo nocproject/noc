@@ -223,12 +223,14 @@ class ConsulDCS(DCSBase):
         if pool:
             name = "%s-%s" % (name, pool)
         self.name = name
-        self.svc_check_url = "http://%s:%s/health/" % (address, port)
         if lock:
             yield self.acquire_lock(lock)
         svc_id = self.session or str(uuid.uuid4())
         tags = tags[:] if tags else []
         tags += [svc_id]
+        self.svc_check_url = "http://%s:%s/health/?service=%s" % (
+            address, port, svc_id)
+        self.health_check_service_id = svc_id
         checks = consul.Check.http(
             self.svc_check_url,
             self.check_interval,

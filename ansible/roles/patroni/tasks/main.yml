@@ -48,3 +48,20 @@
   include: "os/{{ ansible_distribution }}/bootstrap.yml"
   when: not patroni_bootstrap_marker.stat.exists
 
+- name: copy postgres consul templates
+  template:
+    src: postgres.json.j2
+    dest: "{{consul_configd_path}}/postgres.json"
+  notify: reload consul
+  tags:
+    - consul
+
+- name: copy postgres check script
+  template:
+    src: postgres_check.sh.j2
+    dest: "{{consul_scripts_path}}/postgres_check.sh"
+    mode: u+rx
+    owner: "{{consul_user}}"
+  notify: reload consul
+  tags:
+    - consul

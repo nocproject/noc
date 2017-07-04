@@ -64,14 +64,15 @@
             {{ alarm.escalation_error }}
         </td>
     </tr>
-    {% endif %}
-    {% if tt_system_failed %}
-    <tr>
-        <th scope="row">{{ _("Escalation Error") }}</th>
-        <td>
-            {{ tt_system }}: {{ _("Temporary unavailable") }}
-        </td>
-    </tr>
+    {% else %}
+        {% if tt_system_failed %}
+        <tr>
+            <th scope="row">{{ _("Escalation Error") }}</th>
+            <td>
+                {{ tt_system }}: {{ _("Temporary unavailable") }}
+            </td>
+        </tr>
+        {% endif %}
     {% endif %}
     <tr>
         <th scope="row">{{ _("Body") }}</th>

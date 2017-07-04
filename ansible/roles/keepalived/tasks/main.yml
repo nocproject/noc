@@ -39,3 +39,43 @@
     enabled: yes
   tags:
     - keepalived
+
+- name: copy keepalived_nginx consul templates
+  template:
+    src: keepalived_nginx.json.j2
+    dest: "{{consul_configd_path}}/keepalived_nginx.json"
+  notify: reload consul
+  when: has_svc_nginx| default(False)
+  tags:
+    - consul
+
+- name: copy keepalived_nginx check script
+  template:
+    src: keepalived_nginx.sh.j2
+    dest: "{{consul_scripts_path}}/keepalived_nginx.sh"
+    mode: u+rx
+    owner: "{{consul_user}}"
+  notify: reload consul
+  when: has_svc_nginx| default(False)
+  tags:
+    - consul
+
+- name: copy keepalived_patroni consul templates
+  template:
+    src: keepalived_patroni.json.j2
+    dest: "{{consul_configd_path}}/keepalived_patroni.json"
+  notify: reload consul
+  when: has_svc_haproxy| default(False)
+  tags:
+    - consul
+
+- name: copy keepalived_patroni check script
+  template:
+    src: keepalived_patroni.sh.j2
+    dest: "{{consul_scripts_path}}/keepalived_patroni.sh"
+    mode: u+rx
+    owner: "{{consul_user}}"
+  notify: reload consul
+  when: has_svc_haproxy| default(False)
+  tags:
+    - consul
