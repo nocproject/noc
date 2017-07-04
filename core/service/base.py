@@ -826,3 +826,15 @@ class Service(object):
         :return:
         """
         return None
+
+    def is_valid_health_check(self, service_id):
+        """
+        Check received service id matches own service id
+        :param service_id:
+        :return:
+        """
+        if (self.dcs and self.dcs.health_check_service_id and
+                self.dcs.health_check_service_id != service_id):
+            return False
+        else:
+            return True
