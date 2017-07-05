@@ -26,19 +26,24 @@ class Script(BaseScript):
 
     def execute(self):
         match = self.rx_ver.search(self.cli("ver"))
-        version = match.group("version")
-        cardtype = match.group("cardtype")
-        if "IPNI" in cardtype:
-            with self.profile.shell(self):
-                self.cli("SHELF")
+        if not match:
+            version = "None"
+            cardtype = "None"
+            platform = "None"
+        else:
+            version = match.group("version")
+            cardtype = match.group("cardtype")
+            if "IPNI" in cardtype:
+                with self.profile.shell(self):
+                    self.cli("SHELF")
+                    c = self.cli("EXISTSH ALL")
+                    self.cli("END")
+                    match = self.rx_platform.search(c)
+                    platform = match.group("platform")
+            elif "SANI" in cardtype:
                 c = self.cli("EXISTSH ALL")
-                self.cli("END")
                 match = self.rx_platform.search(c)
                 platform = match.group("platform")
-        elif "SANI" in cardtype:
-            c = self.cli("EXISTSH ALL")
-            match = self.rx_platform.search(c)
-            platform = match.group("platform")
         return {
             "vendor": "ECI",
             "platform": platform,
