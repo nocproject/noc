@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Data type validators
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2009 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 import re
@@ -11,6 +11,7 @@ try:
     from django.forms import ValidationError
 except:  # pragma: no cover
     pass
+from noc.core.mac import MAC
 
 #
 # Regular expressions
@@ -369,6 +370,44 @@ def is_vlan(v):
     except:
         return False
 
+def is_mac(v):
+    """
+    >>> is_mac("1234.5678.9ABC")
+    True
+    >>> is_mac("1234.5678.9abc")
+    True
+    >>> is_mac("0112.3456.789a.bc")
+    True
+    >>> is_mac("1234.5678.9abc.def0")
+    False
+    >>> is_mac("12:34:56:78:9A:BC")
+    True
+    >>> is_mac("12-34-56-78-9A-BC")
+    True
+    >>> is_mac("0:13:46:50:87:5")
+    True
+    >>> is_mac("123456-789abc")
+    True
+    >>> is_mac("12-34-56-78-9A-BC-DE")
+    False
+    >>> is_mac("AB-CD-EF-GH-HJ-KL")
+    False
+    >>> is_mac("aabb-ccdd-eeff")
+    True
+    >>> is_mac("aabbccddeeff")
+    True
+    >>> is_mac("AABBCCDDEEFF")
+    True
+    >>> is_mac("\\xa8\\xf9K\\x80\\xb4\\xc0")
+    False
+    """
+    if v is None or len(v) < 12:
+        return False
+    try:
+        m = MAC(v)
+        return True
+    except ValueError:
+        return False
 
 def is_email(v):
     """

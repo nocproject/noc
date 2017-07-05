@@ -89,6 +89,8 @@ class KBEntry(models.Model):
         """
         Write article preview log
         """
+        from kbentrypreviewlog import KBEntryPreviewLog
+
         KBEntryPreviewLog(kb_entry=self, user=user).save()
 
     @property
@@ -181,5 +183,4 @@ class KBEntry(models.Model):
 
 # Avoid circular references
 from kbentryhistory import KBEntryHistory
-from kbentrypreviewlog import KBEntryPreviewLog
 from kbuserbookmark import KBUserBookmark
