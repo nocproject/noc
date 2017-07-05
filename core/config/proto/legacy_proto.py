@@ -25,6 +25,8 @@ class LegacyProtocol(BaseProtocol):
     NOC_MAPPINGS = {
         "noc.installation_name": "installation_name",
         "noc.language": "language",
+        "noc.mongo_password": "mongo.password",
+        "noc.mongo_user": "mongo.user",
         #
         "web.max_treads": "web.max_threads"
     }
