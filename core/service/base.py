@@ -33,6 +33,7 @@ from noc.core.debug import excepthook, error_report
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
+from .metrics import MetricsHandler
 from .health import HealthRequestHandler
 from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
@@ -415,6 +416,7 @@ class Service(object):
         self.logger.warn("Activating service")
         handlers = [
             (r"^/mon/$", MonRequestHandler, {"service": self}),
+            (r"^/metrics$", MetricsHandler, {"service": self}),
             (r"^/health/$", HealthRequestHandler, {"service": self})
         ]
         api = [CtlAPI]
@@ -778,7 +780,7 @@ class Service(object):
         if status == 200 and uri == "/mon/" and method == "GET":
             self.logger.debug("Monitoring request (%s)", remote_ip)
             self.perf_metrics["mon_requests"] += 1
-        elif status == 200 and uri == "/health/" and method == "GET":
+        elif status == 200 and uri.startswith("/health/") and method == "GET":
             pass
         else:
             self.logger.info(
