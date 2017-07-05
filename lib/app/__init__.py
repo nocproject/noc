@@ -30,7 +30,7 @@ def setup_processor(request):
     :param request:
     :return:
     """
-    favicon_url = config.get.customization.favicon_url
+    favicon_url = config.customization.favicon_url
     if favicon_url.endswith(".png"):
         favicon_mime = "image/png"
     elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
@@ -40,7 +40,7 @@ def setup_processor(request):
 
     return {
         "setup": {
-            "installation_name": config.customization.installation_name,
+            "installation_name": config.installation_name,
             "logo_url": config.customization.logo_url,
             "logo_width": config.customization.logo_width,
             "logo_height": config.customization.logo_height,

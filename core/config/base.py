@@ -102,6 +102,9 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
             value = self.expand(value)
         self._params[path].set_value(value)
 
+    def get_parameter(self, path):
+        return self._params[path].value
+
     def dump_parameter(self, path):
         return self._params[path].dump_value()
 

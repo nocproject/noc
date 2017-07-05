@@ -29,7 +29,7 @@ class WelcomeApplication(ExtApplication):
     @view(url="^welcome/$", access=True, api=True)
     def api_welcome(self, request):
         setup = {
-            "installation_name": config.customization.installation_name
+            "installation_name": config.installation_name
         }
         for p in self.WELCOME_PATH:
             if not os.path.exists(p):

@@ -110,7 +110,7 @@ class Config(BaseConfig):
         repo = StringParameter(default="/var/repo")
 
     class customization(ConfigSection):
-        favicon = StringParameter(
+        favicon_url = StringParameter(
             default="/static/img/logo_24x24_deep_azure.png"
         )
         logo_url = StringParameter(

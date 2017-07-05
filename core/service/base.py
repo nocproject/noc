@@ -708,8 +708,13 @@ class Service(object):
         """
         executor = self.executors.get(name)
         if not executor:
-            xt = "%s_threads" % name
-            executor = ThreadPoolExecutor(self.config[xt], name=name)
+            xt = "%s.%s_threads" % (self.name, name)
+            max_threads = config.get_parameter(xt)
+            self.logger.info(
+                "Starting threadpool executor %s (up to %d threads)",
+                name, max_threads
+            )
+            executor = ThreadPoolExecutor(max_threads, name=name)
             self.executors[name] = executor
         return executor
 

@@ -57,7 +57,7 @@ class DesktopApplication(ExtApplication):
         Get theme for request
         """
         user = request.user
-        language = self.service.config.language
+        language = config.language
         if user.is_authenticated:
             try:
                 profile = user.get_profile()
@@ -80,7 +80,7 @@ class DesktopApplication(ExtApplication):
         ]
         apps = [a.split(".") for a in sorted(ext_apps)]
         # Prepare settings
-        favicon_url = config.customization.favicon
+        favicon_url = config.customization.favicon_url
         if favicon_url.endswith(".png"):
             favicon_mime = "image/png"
         elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
