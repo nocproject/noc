@@ -97,10 +97,9 @@ class ConsulResolver(ResolverBase):
                 continue  # Timed out
             r = dict(
                 (str(svc["Service"]["ID"]), "%s:%s" % (
-                    str(svc["Service"]["Address"]),
+                    str(svc["Service"]["Address"] or svc["Node"]["Address"]),
                     str(svc["Service"]["Port"])))
                 for svc in services
-                if svc["Service"]["Address"]
             )
             self.set_services(r)
         self.logger.info("[%s] Stopping resolver", self.name)
