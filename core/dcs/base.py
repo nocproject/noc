@@ -219,10 +219,12 @@ class ResolverBase(object):
         metrics["dcs.resolver.requests"] += 1
         if wait:
             # Wait until service catalog populated
+            if timeout:
+                t = datetime.timedelta(seconds=timeout)
+            else:
+                t = self.dcs.DEFAULT_SERVICE_RESOLUTION_TIMEOUT
             try:
-                yield self.ready_event.wait(
-                    timeout=datetime.timedelta(seconds=timeout or self.dcs.DEFAULT_SERVICE_RESOLUTION_TIMEOUT)
-                )
+                yield self.ready_event.wait(timeout=t)
             except tornado.gen.TimeoutError:
                 metrics["dcs.resolver.errors"] += 1
                 raise ResolutionError()

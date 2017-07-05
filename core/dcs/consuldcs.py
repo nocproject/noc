@@ -23,6 +23,7 @@ from .base import DCSBase, ResolverBase
 from noc.core.perf import metrics
 from noc.core.http.client import fetch
 
+ConsulRepearableCodes = set([500, 598, 599])
 ConsulRepeatableErrors = consul.base.Timeout
 
 CONSUL_CONNECT_TIMEOUT = 5
@@ -44,7 +45,7 @@ class ConsulHTTPClient(consul.tornado.HTTPClient):
             request_timeout=CONSUL_REQUEST_TIMEOUT,
             validate_cert=self.verify
         )
-        if code == 500 or code == 599:
+        if code in ConsulRepearableCodes:
             raise consul.base.Timeout
         raise tornado.gen.Return(
             callback(
@@ -96,7 +97,7 @@ class ConsulResolver(ResolverBase):
                 continue  # Timed out
             r = dict(
                 (str(svc["Service"]["ID"]), "%s:%s" % (
-                    str(svc["Service"]["Address"]),
+                    str(svc["Service"]["Address"] or svc["Node"]["Address"]),
                     str(svc["Service"]["Port"])))
                 for svc in services
             )
