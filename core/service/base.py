@@ -34,6 +34,7 @@ from .config import Config
 from .api import APIRequestHandler
 from .doc import DocRequestHandler
 from .mon import MonRequestHandler
+from .metrics import MetricsHandler
 from .health import HealthRequestHandler
 from .sdl import SDLRequestHandler
 from .rpc import RPCProxy
@@ -441,6 +442,7 @@ class Service(object):
         """
         handlers = [
             (r"^/mon/$", MonRequestHandler, {"service": self}),
+            (r"^/metrics$", MetricsHandler, {"service": self}),
             (r"^/health/$", HealthRequestHandler, {"service": self})
         ]
         api = [CtlAPI]
