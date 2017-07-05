@@ -26,7 +26,7 @@ class YAMLProtocol(BaseProtocol):
 
     def __init__(self, config, url):
         super(YAMLProtocol, self).__init__(config, url)
-        if self.parsed_url == "/":
+        if self.parsed_url.path == "/":
             self.path = ""
         else:
             self.path = self.parsed_url.path
@@ -42,7 +42,7 @@ class YAMLProtocol(BaseProtocol):
         r = ["---"]
         current = []
         for path in self.config:
-            v = self.config.get_parameter(path)
+            v = self.config.dump_parameter(path)
             if v is None:
                 continue
             p = path.split(".")

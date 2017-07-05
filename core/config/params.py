@@ -34,11 +34,17 @@ class BaseParameter(object):
         return self.value
 
     def __set__(self, instance, value):
+        self.set_value(value)
+
+    def set_value(self, value):
         self.orig_value = value
         self.value = self.clean(value)
 
     def clean(self, v):
         return v
+
+    def dump_value(self):
+        return self.value
 
 
 class StringParameter(BaseParameter):
@@ -178,6 +184,13 @@ class ServiceParameter(BaseParameter):
             self.resolve()
         return self.value
 
+    def set_value(self, value):
+        self.value = None
+        if isinstance(value, six.string_types):
+            self.services = [value]
+        else:
+            self.services = value
+
     def resolve(self):
         from noc.core.dcs.util import resolve
         from noc.core.dcs.error import ResolutionError
@@ -204,3 +217,9 @@ class ServiceParameter(BaseParameter):
         :return: List of <host>:<port>
         """
         return [str(i) for i in self.value]
+
+    def dump_value(self):
+        if len(self.services) == 1:
+            return self.services[0]
+        else:
+            return self.services
