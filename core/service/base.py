@@ -820,7 +820,7 @@ class Service(object):
         if status == 200 and uri == "/mon/" and method == "GET":
             self.logger.debug("Monitoring request (%s)", remote_ip)
             self.perf_metrics["mon_requests"] += 1
-        elif status == 200 and uri == "/health/" and method == "GET":
+        elif status == 200 and uri.startswith("/health/") and method == "GET":
             pass
         else:
             self.logger.info(
