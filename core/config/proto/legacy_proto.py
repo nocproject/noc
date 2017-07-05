@@ -27,6 +27,11 @@ class LegacyProtocol(BaseProtocol):
         "noc.language": "language",
         "noc.mongo_password": "mongo.password",
         "noc.mongo_user": "mongo.user",
+        "noc.mongo_rs": "mongo.rs",
+        "noc.mongo_db": "mongo.db",
+        "noc.pg_db": "pg.db",
+        "noc.pg_password": "pg.password",
+        "pg_user:" "pg.user"
         #
         "web.max_treads": "web.max_threads"
     }
