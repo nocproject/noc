@@ -100,21 +100,10 @@ class BaseConfig(six.with_metaclass(ConfigBase)):
     def set_parameter(self, path, value):
         if isinstance(value, six.string_types):
             value = self.expand(value)
-        c = self
-        parts = path.split(".")
-        for n in parts[:-1]:
-            c = getattr(c, n)
-        setattr(c, parts[-1], value)
+        self._params[path].set_value(value)
 
-    def get_parameter(self, path):
-        v = self._params[path].orig_value
-        if v is not None:
-            return v
-        c = self
-        parts = path.split(".")
-        for n in parts[:-1]:
-            c = getattr(c, n)
-        return getattr(c, parts[-1])
+    def dump_parameter(self, path):
+        return self._params[path].dump_value()
 
     @classmethod
     def get_protocol(cls, url):

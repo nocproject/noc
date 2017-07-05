@@ -22,7 +22,7 @@ class EnvProtocol(BaseProtocol):
     """
 
     def load(self):
-        prefix = self.parsed_url[1:]
+        prefix = self.parsed_url.path[1:]
         for v in self.config:
             env_name = "%s_%s" % (
                 prefix,
@@ -39,6 +39,6 @@ class EnvProtocol(BaseProtocol):
                 prefix,
                 v.upper().replace(".", "_")
             )
-            v = self.config.get_parameter(v)
+            v = self.config.dump_parameter(v)
             if v is not None:
                 print("%s=%s" % (env_name, v))
