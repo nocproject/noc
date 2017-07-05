@@ -13,16 +13,17 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "ECI.SAM"
-    pattern_username = r"^Login :"
-    pattern_password = r"^Password :"
-    username_submit = "\r"
-    password_submit = "\r"
-    command_submit = "\r"
-    pattern_prompt = r"^(?P<hostname>\S+) (?:\- SHOW(?:\\\S+)?)?>"
+    pattern_username = r"^[Ll]ogin :"
+    pattern_password = r"^[Pp]assword :"
+    username_submit = "\r\n"
+    password_submit = "\r\n"
+    command_submit = "\r\n"
+    pattern_prompt = r"^( >>|\S+ >(?: \S+ >)?|\S+ (?:\- SHOW(?:\\\S+)?)?>)"
 
     #pattern_prompt = r"^Select menu option.*:"
     pattern_more = [
         (r"Enter <CR> for more or 'q' to quit--:", "\r"),
+        (r"press <SPACE> to continue or <ENTER> to quit", "               \n"),
     ]
     command_exit = "logout"
     #telnet_slow_send_password = True
@@ -36,5 +37,17 @@ class Profile(BaseProfile):
             # Do not remove this
             script.credentials["user"] = "   " + user
 
-    def setup_session(self, script):
-        script.cli("SHOW")
+    class shell(object):
+        """Switch context manager to use with "with" statement"""
+
+        def __init__(self, script):
+            self.script = script
+
+        def __enter__(self):
+            """Enter switch context"""
+            self.script.cli("SHOW")
+
+        def __exit__(self, exc_type, exc_val, exc_tb):
+            """Leave switch context"""
+            if exc_type is None:
+                self.script.cli("END\r")
