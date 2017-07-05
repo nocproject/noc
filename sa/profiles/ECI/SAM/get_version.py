@@ -31,12 +31,12 @@ class Script(BaseScript):
         if "IPNI" in cardtype:
             with self.profile.shell(self):
                 self.cli("SHELF")
-                c = self.cli("EXISTSH 0 ")
+                c = self.cli("EXISTSH ALL")
                 self.cli("END")
                 match = self.rx_platform.search(c)
                 platform = match.group("platform")
         elif "SANI" in cardtype:
-            c = self.cli("EXISTSH 0 ")
+            c = self.cli("EXISTSH ALL")
             match = self.rx_platform.search(c)
             platform = match.group("platform")
         return {
