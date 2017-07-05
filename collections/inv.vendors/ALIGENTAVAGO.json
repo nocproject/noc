@@ -1,0 +1,7 @@
+{
+    "name": "Agilent-Avago",
+    "uuid": "ade4c9a5-4d77-418a-ace5-26974bc94557",
+    "code": "AGILENT",
+    "site": "http://www.avagotech.com/",
+    "$collection": "inv.vendors"
+}
