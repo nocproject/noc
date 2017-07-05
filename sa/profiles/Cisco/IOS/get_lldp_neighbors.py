@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
-from noc.lib.validators import is_int, is_ipv4, is_ipv6
+from noc.lib.validators import is_int, is_ipv4, is_ipv6, is_mac
 from noc.sa.interfaces.base import MACAddressParameter
 
 
@@ -32,7 +32,6 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE)
     rx_system = re.compile(
         r"^System Name:\s*(?P<name>\S+)", re.MULTILINE | re.IGNORECASE)
-    rx_mac = re.compile(r"^[0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}$")
 
     def execute(self):
         r = []
@@ -71,8 +70,8 @@ class Script(BaseScript):
             # Get remote port
             match = self.re_search(self.rx_remote_port, v)
             remote_port = match.group("remote_if")
-            remote_port_subtype = 128
-            if self.rx_mac.match(remote_port):
+            remote_port_subtype = 1
+            if is_mac(remote_port):
                 # Actually macAddress(3)
                 # Convert MAC to common form
                 remote_port = MACAddressParameter().clean(remote_port)
