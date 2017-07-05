@@ -131,6 +131,7 @@ def fetch(url, method="GET",
     else:
         proxy = None
     # Connect
+    stream = None
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         if use_tls and not proxy:
@@ -309,7 +310,10 @@ def fetch(url, method="GET",
             "".join(response_body)
         ))
     finally:
-        s.close()
+        if stream:
+            stream.close()
+        else:
+            s.close()
 
 
 def fetch_sync(url, method="GET",
