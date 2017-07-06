@@ -219,7 +219,7 @@ class LdapBackend(BaseAuthBackend):
                 if isinstance(value, (list, tuple)):
                     value = " ".join(value)
                 user_info[v] = value
-        if "email" in user_info and not ldap_domain.sync_mail:
+        if "mail" in user_info and not ldap_domain.sync_mail:
             del user_info["mail"]
         if "first_name" in user_info and not ldap_domain.sync_name:
             del user_info["first_name"]
