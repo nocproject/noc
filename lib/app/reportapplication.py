@@ -12,7 +12,8 @@ from noc.core.translation import ugettext as _
 
 
 class ReportApplication(Application):
-    form = None # django.forms.Form class for report queries
+    # django.forms.Form class for report queries
+    form = None
     content_types = {
         "text": "text/plain; charset=utf-8",
         "html": "text/html; charset=utf-8",
@@ -46,9 +47,10 @@ class ReportApplication(Application):
         """
         pass
 
-    def report_html(self, result, query):
+    def report_html(self, request, result, query):
         """
         Returns render report as HTML
+        :param request: HTTP Request
         :param result:
         :param query:
         :return:
