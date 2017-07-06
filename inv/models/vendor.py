@@ -25,6 +25,7 @@ id_lock = threading.Lock()
 @bi_sync
 @on_delete_check(check=[
     ("inv.ObjectModel", "vendor"),
+    ("inv.Platform", "vendor"),
     ("inv.Firmware", "vendor")
 ])
 class Vendor(Document):
