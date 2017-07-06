@@ -12,13 +12,15 @@ import time
 import operator
 # Third-party modules
 from mongoengine.document import Document
-from mongoengine.fields import StringField, IntField
+from mongoengine.fields import StringField, IntField, LongField
 import cachetools
 from noc.core.model.decorator import on_delete_check
+from noc.core.bi.decorator import bi_sync
 
 id_lock = threading.Lock()
 
 
+@bi_sync
 @on_delete_check(check=[
     ("sa.ManagedObject", "pool"),
     # ("fm.EscalationItem", "administrative_domain")
@@ -32,6 +34,8 @@ class Pool(Document):
                        regex="^[0-9a-zA-Z]{1,16}$")
     description = StringField()
     discovery_reschedule_limit = IntField(default=50)
+    # Object id in BI
+    bi_id = LongField()
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
     _name_cache = cachetools.TTLCache(1000, ttl=60)
