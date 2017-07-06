@@ -18,11 +18,15 @@ import cachetools
 # NOC modules
 from noc.core.bi.decorator import bi_sync
 from noc.lib.prettyjson import to_json
+from noc.core.model.decorator import on_delete_check
 
 id_lock = threading.Lock()
 
 
 @bi_sync
+@on_delete_check(check=[
+    ("inv.Firmware", "profile")
+])
 class Profile(Document):
     meta = {
         "collection": "noc.profiles",

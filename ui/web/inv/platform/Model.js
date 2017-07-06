@@ -20,6 +20,11 @@ Ext.define("NOC.inv.platform.Model", {
             type: "string"
         },
         {
+            name: "vendor__label",
+            type: "string",
+            persist: false
+        },
+        {
             name: "name",
             type: "string"
         },
