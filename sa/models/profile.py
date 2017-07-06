@@ -29,7 +29,7 @@ class Profile(Document):
         "allow_inheritance": False,
         "json_collection": "inv.profiles"
     }
-    name = StringField()
+    name = StringField(unique=True)
     description = StringField(required=False)
     # Global ID
     uuid = UUIDField(binary=True)
