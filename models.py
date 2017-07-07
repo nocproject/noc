@@ -136,7 +136,7 @@ _MODELS = {
     "inv.Coverage": "noc.inv.models.coverage.Coverage",
     "inv.CoveredBuilding": "noc.inv.models.coveredbuilding.CoveredBuilding",
     "inv.CoveredObject": "noc.inv.models.coveredobject.CoveredObject",
-    "inv.Firmware": "noc.inv.models.Firmware",
+    "inv.Firmware": "noc.inv.models.firmware.Firmware",
     "inv.FirmwarePolicy": "noc.inv.models.firmwarepolicy.FirmwarePolicy",
     "inv.ForwardingInstance": "noc.inv.models.forwardinginstance.ForwardingInstance",
     "inv.Interface": "noc.inv.models.interface.Interface",
@@ -187,6 +187,7 @@ _MODELS = {
     "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
     "sa.TerminationGroup": "noc.sa.models.terminationgroup.TerminationGroup",
     "sa.UserAccess": "noc.sa.models.useraccess.UserAccess",
+    "sa.Profile": "noc.sa.models.profile.Profile",
     "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
     # fm models
     "fm.ActiveAlarm": "noc.fm.models.activealarm.ActiveAlarm",
@@ -306,7 +307,7 @@ FTS_MODELS = [
 
 COLLECTIONS = [
     "fm.SyntaxAlias",
-    "inv.Profile",
+    "sa.Profile",
     "sa.Action",
     "inv.Capability",
     "pm.MetricType",
