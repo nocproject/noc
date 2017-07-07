@@ -16,6 +16,7 @@ import tornado.ioloop
 from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
 from .rpc import RPCProxy
 from noc.core.perf import metrics
+from config import config
 
 
 class ServiceStub(object):
@@ -60,7 +61,7 @@ class ServiceStub(object):
         """
         Yield timeout to wait after unsuccessful RPC connection
         """
-        for t in self.config.rpc_retry_timeout.split(","):
+        for t in config.rpc.retry_timeout.split(","):
             yield float(t)
 
     def register_metrics(self, batch):
