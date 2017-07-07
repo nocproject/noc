@@ -5,13 +5,13 @@
 # Copyright (C) 2007-2011 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-"""
-"""
+
 # Python modules
 import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -36,8 +36,7 @@ class Script(BaseScript):
     def execute(self):
         if self.has_snmp():
             try:
-                # sysDescr.0
-                v = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
+                v = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
                 if v:
                     match = self.re_search(self.rx_snmp_ver, v)
                     platform = match.group("platform")
@@ -46,9 +45,7 @@ class Script(BaseScript):
                             "vendor": "Cisco",
                             "platform": match.group("platform"),
                             "version": match.group("version"),
-                            "attributes": {
-                                "image": match.group("image"),
-                            }
+                            "image": match.group("image"),
                         }
             except self.snmp.TimeOutError:
                 pass
@@ -66,7 +63,5 @@ class Script(BaseScript):
             "vendor": "Cisco",
             "platform": platform,
             "version": match.group("version"),
-            "attributes": {
-                "image": match.group("image"),
-            }
+            "image": match.group("image"),
         }
