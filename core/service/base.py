@@ -535,8 +535,10 @@ class Service(object):
         tags = []
         if self.traefik_backend and self.traefik_frontend_rule:
             tags += [
+                "traefik.tags=backend",
                 "traefik.backend=%s" % self.traefik_backend,
-                "traefik.frontend.rule=%s" % self.traefik_frontend_rule
+                "traefik.frontend.rule=%s" % self.traefik_frontend_rule,
+                "traefik.backend.load-balancing=wrr"
             ]
             weight = self.get_backend_weight()
             if weight:
