@@ -58,18 +58,7 @@ class PMWriterService(Service):
         Returns influx service, channel name
         """
         # Influx affinity
-        node_addr = config.pmwriter.listen.host
-        influx = None
-        channel = "pmwriter-%s" % node_addr
-        for s in self.config.get_service("influxdb"):
-            if s.split(":")[0] == node_addr:
-                influx = s
-                break
-        if not influx:
-            # Fallback to default
-            influx = self.dcs.resolve_sync("influxdb", 1)[0]
-            channel = "pmwriter"
-        return influx, channel
+        return config.pmwriter.write_to, config.pmwriter.read_from
 
     def on_metric(self, message, metrics, *args, **kwargs):
         """
@@ -107,7 +96,7 @@ class PMWriterService(Service):
             config.pmwriter.batch_size,
             config.pmwriter.metrics_buffer
         )
-        bs = self.config.batch_size
+        bs = config.pmwriter.batch_size
         while True:
             if not self.buffer:
                 self.perf_metrics["slept_time"] += int(self.MAX_DELAY)
