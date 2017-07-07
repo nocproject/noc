@@ -597,7 +597,7 @@ class Service(object):
         """
         Yield timeout to wait after unsuccessful RPC connection
         """
-        for t in config.rpc_retry_timeout.split(","):
+        for t in config.rpc.retry_timeout.split(","):
             yield float(t)
 
     def subscribe(self, topic, channel, handler, raw=False, **kwargs):
@@ -799,7 +799,7 @@ class Service(object):
 
     def get_leader_lock_name(self):
         if self.leader_lock_name:
-            return self.leader_lock_name % self.config
+            return self.leader_lock_name % {"pool": config.pool}
         else:
             return None
 
