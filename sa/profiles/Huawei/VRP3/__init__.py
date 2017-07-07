@@ -14,8 +14,8 @@ from noc.core.profile.base import BaseProfile
 
 class Profile(BaseProfile):
     name = "Huawei.VRP3"
-    pattern_username = r"^> User name \(<\d+ chars\): "
-    pattern_password = r"^> Password \(<\d+ chars\): "
+    pattern_username = r"^>(?:\>| )User name( \(<\d+ chars\))?:"
+    pattern_password = r"^>(?:\>| )(?:User )?[Pp]assword( \(<\d+ chars\))?:"
     pattern_more = [
         (r"^--More\(Enter: next line, spacebar: next page, "
             r"any other key: quit\)--", " "),
