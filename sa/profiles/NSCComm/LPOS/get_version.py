@@ -13,8 +13,8 @@ import re
 
 class Script(BaseScript):
     name = "NSCComm.LPOS.get_version"
-    cache = True
     interface = IGetVersion
+    cache = True
 
     rx_ver = re.compile(
         r"^System ID\s+: (?P<platform>\S+)\s*\n"

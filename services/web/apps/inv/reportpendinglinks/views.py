@@ -131,6 +131,7 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                     mo.name,
                     mo.address,
                     mo.profile_name,
+                    mo.administrative_domain.name,
                     iface,
                     problem[problems[mo_id][iface]["problem"]],
                     problems[mo_id][iface]["remote_id"]
@@ -154,8 +155,8 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
         return self.from_dataset(
             title=self.title,
             columns=[
-                _("Managed Object"), _("Address"), _("Profile"), _("Interface"),
-                _("Direction"), _("Remote Object")
+                _("Managed Object"), _("Address"), _("Profile"), _("Administrative domain"),
+                _("Interface"), _("Direction"), _("Remote Object")
                 # _("Discovery"), _("Error")
             ],
             data=data)

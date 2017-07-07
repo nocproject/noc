@@ -33,17 +33,9 @@ class Script(BaseScript):
         else:
             version = match.group("version")
             cardtype = match.group("cardtype")
-            if "IPNI" in cardtype:
-                with self.profile.shell(self):
-                    self.cli("SHELF")
-                    c = self.cli("EXISTSH ALL")
-                    self.cli("END")
-                    match = self.rx_platform.search(c)
-                    platform = match.group("platform")
-            elif "SANI" in cardtype:
-                c = self.cli("EXISTSH ALL")
-                match = self.rx_platform.search(c)
-                platform = match.group("platform")
+            c = self.cli("EXISTSH ALL")
+            match = self.rx_platform.search(c)
+            platform = match.group("platform")
         return {
             "vendor": "ECI",
             "platform": platform,

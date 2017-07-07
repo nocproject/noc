@@ -43,6 +43,9 @@ class Script(BaseScript):
                     port_id_subtype = 3
                 except ValueError:
                     port_id_subtype = 7
+            # Do no remove these lines
+            if (chassis_id == "") or (port_id == ""):
+                continue
             caps = 0
             for c in i[4].split(","):
                 c = c.strip()

@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # LDAP Authentication backend
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -44,10 +44,14 @@ class LdapBackend(BaseAuthBackend):
                 "No active servers configured for domain '%s'" % domain
             )
         # Connect and bind
-        connect = ldap3.Connection(
-            server_pool,
-            **self.get_connection_kwargs(ldap_domain, user, password)
+        connect_kwargs = self.get_connection_kwargs(ldap_domain, user, password)
+        dkw = connect_kwargs.copy()
+        if "password" in dkw:
+            dkw["password"] = "******"
+        self.logger.debug("Connect to ldap: %s", ", ".join(
+            "%s='%s'" % (kk, dkw[kk]) for kk in dkw)
         )
+        connect = ldap3.Connection(server_pool, **connect_kwargs)
         if not connect.bind():
             raise self.LoginError(
                 "Failed to bind to LDAP: %s" % connect.result
@@ -219,7 +223,7 @@ class LdapBackend(BaseAuthBackend):
                 if isinstance(value, (list, tuple)):
                     value = " ".join(value)
                 user_info[v] = value
-        if "email" in user_info and not ldap_domain.sync_mail:
+        if "mail" in user_info and not ldap_domain.sync_mail:
             del user_info["mail"]
         if "first_name" in user_info and not ldap_domain.sync_name:
             del user_info["first_name"]
