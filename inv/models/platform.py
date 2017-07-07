@@ -11,9 +11,11 @@ from __future__ import absolute_import
 import os
 import threading
 import operator
+import uuid
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField
+from mongoengine.errors import NotUniqueError
 import cachetools
 # NOC modules
 from .vendor import Vendor
@@ -46,6 +48,7 @@ class Platform(Document):
     bi_id = LongField()
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
+    _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -68,3 +71,33 @@ class Platform(Document):
     def get_json_path(self):
         return os.path.join(self.vendor.code,
                             "%s.json" % self.code)
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_ensure_cache"),
+        key=lambda s, v, n: "%s-%s" % (v.id, n),
+        lock=lambda _: id_lock)
+    def ensure_platform(cls, vendor, name):
+        """
+        Get or create platform by vendor and code
+        :param vendor:
+        :param name:
+        :return:
+        """
+        while True:
+            platform = Platform.objects.filter(
+                vendor=vendor.id,
+                name=name
+            ).first()
+            if platform:
+                return platform
+            try:
+                platform = Platform(
+                    vendor=vendor,
+                    name=name,
+                    uuid=uuid.uuid4()
+                )
+                platform.save()
+                return platform
+            except NotUniqueError:
+                pass  # Already created by concurrent process, reread

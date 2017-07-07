@@ -2,12 +2,15 @@
 # ---------------------------------------------------------------------
 # Version check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2017 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.inv.models.vendor import Vendor
+from noc.inv.models.platform import Platform
+from noc.inv.models.firmware import Firmware
 
 
 class VersionCheck(DiscoveryCheck):
@@ -19,27 +22,52 @@ class VersionCheck(DiscoveryCheck):
 
     def handler(self):
         self.logger.info("Checking version")
-        old_platform = self.object.platform
         result = self.object.scripts.get_version()
-        r = {}
-        for k in result:
-            v = result[k]
-            if k == "attributes":
-                for kk in v:
-                    r[kk] = v[kk]
+        changed = False
+        # Sync vendor
+        vendor = Vendor.ensure_vendor(result["vendor"])
+        if not self.object.vendor or vendor.id != self.object.vendor.id:
+            if self.object.vendor:
+                self.logger.info("Vendor changed: %s -> %s",
+                                 self.object.vendor.name, vendor.name)
             else:
-                r[k] = v
-        for k in r:
-            v = r[k]
-            ov = self.object.get_attr(k)
-            if ov != v:
-                self.object.set_attr(k, v)
-                self.logger.info("%s: %s -> %s", k, ov, v)
-        new_platform = self.object.platform
-        if old_platform != new_platform:
-            self.logger.info(
-                "Platform changed: %s -> %s",
-                old_platform, new_platform
-            )
-            if self.object.object_profile.clear_links_on_platform_change:
-                self.clear_links()
+                self.logger.info("Set vendor: %s", vendor.name)
+            self.object.vendor = vendor
+            changed = True
+        # Sync platform
+        platform = Platform.ensure_platform(vendor, result["platform"])
+        if not self.object.platform or platform.id != self.object.platform.id:
+            if self.object.platform:
+                self.logger.info("Platform changed: %s -> %s",
+                                 self.object.platform.name, platform.name)
+            else:
+                self.logger.info("Set platform: %s", platform.name)
+            self.object.platform = platform
+            changed = True
+            # Platform changed, clear links
+            self.clear_links()
+        # Sync version
+        version = Firmware.ensure_firmware(self.object.profile, vendor, result["version"])
+        if not self.object.version or version.id != self.object.version.id:
+            if self.object.version:
+                self.logger.info("Version changed: %s -> %s",
+                                 self.object.version.name, version.name)
+            else:
+                self.logger.info("Set version: %s", version.name)
+            self.object.version = version
+            changed = True
+            # @todo: Check next_version and report upgrade
+        # Sync image
+        image = result.get("image")
+        if image and image != self.object.software_image:
+            if self.object.version:
+                self.logger.info("Image changed: %s -> %s",
+                                 self.object.software_image, image)
+            else:
+                self.logger.info("Set image: %s", image)
+        # Sync attributes
+        if result["attributes"]:
+            self.object.update_attributes(result["attributes"])
+        #
+        if changed:
+            self.object.save()

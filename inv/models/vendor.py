@@ -9,10 +9,12 @@
 # Python modules
 import threading
 import operator
+import uuid
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import (StringField, LongField, URLField,
                                 UUIDField, ListField)
+from mongoengine.errors import NotUniqueError
 import cachetools
 # NOC modules
 from noc.lib.prettyjson import to_json
@@ -49,6 +51,7 @@ class Vendor(Document):
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
     _code_cache = cachetools.TTLCache(1000, ttl=60)
+    _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
         return self.name
@@ -81,3 +84,27 @@ class Vendor(Document):
 
     def get_json_path(self):
         return "%s.json" % self.code
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_ensure_cache"),
+                             lock=lambda _: id_lock)
+    def ensure_vendor(cls, code):
+        """
+        Get or create vendor by code
+        :param code:
+        :return:
+        """
+        while True:
+            vendor = Vendor.get_by_code(code)
+            if vendor:
+                return vendor
+            try:
+                vendor = Vendor(
+                    name=code,
+                    code=code,
+                    uuid=uuid.uuid4()
+                )
+                vendor.save()
+                return vendor
+            except NotUniqueError:
+                pass  # Already created by concurrent process, reread

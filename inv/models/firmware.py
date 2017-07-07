@@ -11,9 +11,11 @@ from __future__ import absolute_import
 import os
 import threading
 import operator
+import uuid
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, LongField, UUIDField
+from mongoengine.errors import NotUniqueError
 import cachetools
 # NOC modules
 from .vendor import Vendor
@@ -55,6 +57,7 @@ class Firmware(Document):
     bi_id = LongField()
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
+    _ensure_cache = cachetools.TTLCache(1000, ttl=60)
 
     def __unicode__(self):
         return self.version
@@ -80,3 +83,36 @@ class Firmware(Document):
             self.profile.name,
             "%s.json" % self.version.replace(os.sep, "_")
         )
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_ensure_cache"),
+        key=lambda s, p, v, vv: "%s-%s-%s" % (p.id, v.id, vv),
+        lock=lambda _: id_lock)
+    def ensure_firmware(cls, profile, vendor, version):
+        """
+        Get or create firmware by profile, vendor and version
+        :param profile:
+        :param vendor:
+        :param version:
+        :return:
+        """
+        while True:
+            firmware = Firmware.objects.filter(
+                profile=profile.id,
+                vendor=vendor.id,
+                version=version
+            ).first()
+            if firmware:
+                return firmware
+            try:
+                firmware = Firmware(
+                    profile=profile,
+                    vendor=vendor,
+                    version=version,
+                    uuid=uuid
+                )
+                firmware.save()
+                return firmware
+            except NotUniqueError:
+                pass  # Already created by concurrent process, reread
