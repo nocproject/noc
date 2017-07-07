@@ -8,7 +8,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import sys
 import datetime
 import re
@@ -20,9 +19,9 @@ from mongoengine.queryset import Q
 from noc.config import config
 from noc.core.service.base import Service
 from noc.core.scheduler.scheduler import Scheduler
-from .rule import Rule
-from .rcacondition import RCACondition
-from .trigger import Trigger
+from services.correlator.rule import Rule
+from services.correlator.rcacondition import RCACondition
+from services.correlator.trigger import Trigger
 from noc.fm.models.activeevent import ActiveEvent
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activealarm import ActiveAlarm
@@ -35,7 +34,7 @@ from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.lib.version import get_version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
-from . import utils
+from services.correlator import utils
 from noc.lib.dateutils import total_seconds
 
 
@@ -72,7 +71,7 @@ class CorrelatorService(Service):
             "correlator.dispose.%s" % config.pool,
             "dispose",
             self.on_dispose_event,
-            max_in_flight=config.max_threads
+            max_in_flight=config.correlator.max_threads
         )
         self.scheduler.run()
 
