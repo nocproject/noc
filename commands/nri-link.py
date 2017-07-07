@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## ./noc apply-nri-links
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2016 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# ./noc apply-nri-links
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 import operator
-## Third-party modules
+# Third-party modules
 import cachetools
-## NOC modules
+# NOC modules
 from noc.core.management.base import BaseCommand
 from noc.inv.models.extnrilink import ExtNRILink
 from noc.sa.models.managedobject import ManagedObject
@@ -40,10 +40,10 @@ class Command(BaseCommand):
         for l in ExtNRILink.objects.filter(link__exists=False):
             # Get objects
             src_mo = self.get_mo(l.src_mo)
-            if not src_mo or src_mo.profile_name == "Generic.Host":
+            if not src_mo or src_mo.profile.is_generic:
                 continue
             dst_mo = self.get_mo(l.dst_mo)
-            if not dst_mo or dst_mo.profile_name == "Generic.Host":
+            if not dst_mo or dst_mo.profile.is_generic:
                 continue
             #
             if src_mo.id == dst_mo.id:
@@ -58,7 +58,7 @@ class Command(BaseCommand):
                 self.update_warn(
                     l.id,
                     "No port mapper for %s (%s)" % (
-                        src_mo.name, src_mo.platform or src_mo.profile_name
+                        src_mo.name, src_mo.platform or src_mo.profile.name
                     )
                 )
                 continue
@@ -67,7 +67,7 @@ class Command(BaseCommand):
                 self.update_warn(
                     l.id,
                     "No port mapper for %s (%s)" % (
-                        dst_mo.name, dst_mo.platform or dst_mo.profile_name
+                        dst_mo.name, dst_mo.platform or dst_mo.profile.name
                     )
                 )
                 continue
@@ -77,7 +77,7 @@ class Command(BaseCommand):
                 self.update_warn(
                     l.id,
                     "Cannot map interface %s for %s (%s)" % (
-                        l.src_interface, src_mo.name, src_mo.platform or src_mo.profile_name
+                        l.src_interface, src_mo.name, src_mo.platform or src_mo.profile.name
                     )
                 )
                 continue
@@ -86,7 +86,7 @@ class Command(BaseCommand):
                 self.update_warn(
                     l.id,
                     "Cannot map interface %s for %s (%s)" % (
-                        l.dst_interface, dst_mo.name, dst_mo.platform or dst_mo.profile_name
+                        l.dst_interface, dst_mo.name, dst_mo.platform or dst_mo.profile.name
                     )
                 )
                 continue

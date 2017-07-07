@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-##----------------------------------------------------------------------
-## Script caller client
-##----------------------------------------------------------------------
-## Copyright (C) 2007-2017 The NOC Project
-## See LICENSE for details
-##----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+# Script caller client
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2017 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
 
-## Python modules
+# Python modules
 from threading import Lock
 import uuid
 import itertools
-## NOC modules
-from noc.core.service.client import open_sync_rpc, RPCError
+# NOC modules
+from noc.core.service.client import open_sync_rpc
 from noc.core.script.loader import loader
 from noc.core.service.loader import get_dcs
 
@@ -36,7 +36,7 @@ class Session(object):
 
     def __getattr__(self, name):
         if not loader.has_script("%s.%s" % (
-                self._object.profile_name, name)):
+                self._object.profile.name, name)):
             raise AttributeError("Invalid script %s" % name)
         return lambda **kwargs: self._call_script(name, kwargs)
 
@@ -46,14 +46,14 @@ class Session(object):
         """
         if "." not in item:
             # Normalize to full name
-            item = "%s.%s" % (self._object.profile_name, item)
+            item = "%s.%s" % (self._object.profile.name, item)
         return loader.has_script(item)
 
     def __iter__(self):
         return itertools.imap(
                 lambda y: y.split(".")[-1],
                 itertools.ifilter(
-                        lambda x: x.startswith(self._object.profile_name + "."),
+                        lambda x: x.startswith(self._object.profile.name + "."),
                         loader.iter_scripts()
                 )
         )
@@ -86,7 +86,7 @@ class Session(object):
             calling_service=CALLING_SERVICE,
             hints=[service]
         ).script(
-            "%s.%s" % (self._object.profile_name, script),
+            "%s.%s" % (self._object.profile.name, script),
             data["credentials"],
             data["capabilities"],
             data["version"],

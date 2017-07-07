@@ -82,7 +82,7 @@ class Command(BaseCommand):
         # Load script
         script = script[0]
         if "." not in script:
-            script = "%s.%s" % (obj.profile_name, script)
+            script = "%s.%s" % (obj.profile.name, script)
         script_class = loader.get_script(script)
         if not script_class:
             self.die("Failed to load script %s" % script_class)
