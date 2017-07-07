@@ -121,8 +121,8 @@ class Float64Field(Float32Field):
 
 
 class ArrayField(BaseField):
-    def __init__(self, field_type):
-        super(ArrayField, self).__init__()
+    def __init__(self, field_type, description=None):
+        super(ArrayField, self).__init__(description=description)
         self.field_type = field_type
 
     def to_tsv(self, value):
