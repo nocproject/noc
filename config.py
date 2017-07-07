@@ -155,6 +155,7 @@ class Config(BaseConfig):
         reboot_ttl = SecondsParameter(default="0")
         config_ttl = SecondsParameter(default="1y")
         db_ttl = SecondsParameter(default="5y")
+        config_changed_ttl = SecondsParameter(default="1y")
 
     class logging(ConfigSection):
         log_api_calls = BooleanParameter(default=False)
