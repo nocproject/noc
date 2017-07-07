@@ -61,14 +61,10 @@ class StringParameter(BaseParameter):
 
 class SecretParameter(BaseParameter):
     def __init__(self, default=None, help=None, choices=None):
-        self.choices = choices
         super(SecretParameter, self).__init__(default=default, help=help)
 
     def clean(self, v):
         v = str(v)
-        if self.choices:
-            if v not in self.choices:
-                raise ValueError("Invalid value: %s" % v)
         return v
 
     def __repr__(self):
