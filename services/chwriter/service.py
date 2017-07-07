@@ -70,11 +70,11 @@ class CHWriterService(Service):
         ...
         <v1>\t...\t<vN>\n
         """
-        if metrics["records_buffered"].value > self.config.records_buffer:
+        if metrics["records_buffered"].value > config.chwriter.records_buffer:
             self.logger.info(
                 "Input buffer is full (%s/%s). Deferring message",
                 metrics["records_buffered"].value,
-                self.config.records_buffer
+                config.chwriter.records_buffer
             )
             metrics["deferred_messages"] += 1
             return False

@@ -83,7 +83,7 @@ class PMWriterService(Service):
                 self.logger.info(
                     "Temporary buffer overrun. "
                     "Suspending message reading (%s/%s)",
-                    l, self.config.metrics_buffer
+                    l, config.pmwriter.metrics_buffer
                 )
                 self.overrun_start = time.time()
             self.perf_metrics["metrics_deferred"] += ld
@@ -121,7 +121,7 @@ class PMWriterService(Service):
                         # Configurable database name
                         "http://%s/write?db=%s&precision=s" % (
                             self.influx,
-                            self.config.influx_db
+                            config.pmwriter.influx_db
                         ),
                         method="POST",
                         body=body

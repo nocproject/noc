@@ -67,7 +67,7 @@ class PingService(Service):
         #
         self.perf_metrics["down_objects"] = 0
         # Open ping sockets
-        self.ping = Ping(self.ioloop, tos=self.config.tos)
+        self.ping = Ping(self.ioloop, tos=config.ping.tos)
         # Register RPC aliases
         self.omap = self.open_rpc("omap")
         # Set event listeners

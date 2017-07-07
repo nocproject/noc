@@ -18,6 +18,7 @@ import time
 # NOC modules
 from noc.core.service.base import Service
 from noc.core.perf import metrics
+from config import config
 
 
 class TgSenderService(Service):
@@ -50,17 +51,17 @@ class TgSenderService(Service):
 
     def send_tb(self, messages, address, subject, body):
         RETRY_TIME = 2.0
-        TOKEN = self.config.token
+        TOKEN = config.tgsender.token
         API = 'https://api.telegram.org/bot'
         URL = API + TOKEN
-        proxy_addres = self.config.proxy_addres
+        proxy_addres = config.tgsender.proxy_addres
         sendMessage = {
             'chat_id': address,
             'text': '*' + self.escape_markdown(subject) + '*\n' + self.escape_markdown(body),
             'parse_mode': 'Markdown'
         }
         time.sleep(RETRY_TIME)
-        if self.config.use_proxy:
+        if config.tgsender.use_proxy:
             try:
                 proxy = urllib2.ProxyHandler({'https': proxy_addres})
                 auth = urllib2.HTTPBasicAuthHandler()
