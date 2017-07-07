@@ -292,6 +292,8 @@ class Config(BaseConfig):
     class tgsender(ConfigSection):
         token = SecretParameter()
 
+    class consul(ConfigSection):
+        token = SecretParameter()
 
     def __init__(self):
         self.setup_logging()
