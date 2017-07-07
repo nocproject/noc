@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 from collections import defaultdict
 import operator
 import re
@@ -17,7 +16,7 @@ import cachetools
 import esm
 from pyparsing import *
 # NOC modules
-from .rulelookup import RuleLookup
+from noc.services.classifier.rulelookup import RuleLookup
 
 
 logger = logging.getLogger(__name__)
