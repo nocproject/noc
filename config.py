@@ -11,12 +11,13 @@ import logging
 import urllib
 import sys
 import os
+import socket
 # NOC modules
 from noc.core.config.base import BaseConfig, ConfigSection
 from noc.core.config.params import (
     StringParameter, MapParameter, IntParameter, BooleanParameter,
     HandlerParameter, SecondsParameter, FloatParameter,
-    ServiceParameter)
+    ServiceParameter, SecretParameter, ListParameter)
 
 
 class Config(BaseConfig):
@@ -61,6 +62,9 @@ class Config(BaseConfig):
 
     instance = IntParameter(default=0)
     listen = StringParameter(default="auto:0")
+    rpc_retry_timeout = StringParameter(default="0.1,0.5,1,3,10,30")
+
+    node=socket.gethostname()
 
     class traceback(ConfigSection):
         reverse = BooleanParameter(default=True)
@@ -69,7 +73,7 @@ class Config(BaseConfig):
         addresses = ServiceParameter(service="mongo", wait=True)
         db = StringParameter(default="noc")
         user = StringParameter()
-        password = StringParameter()
+        password = SecretParameter()
         rs = StringParameter()
 
     class pg(ConfigSection):
@@ -79,19 +83,19 @@ class Config(BaseConfig):
         )
         db = StringParameter(default="noc")
         user = StringParameter()
-        password = StringParameter()
+        password = SecretParameter()
 
     class clickhouse(ConfigSection):
         addresses = ServiceParameter(service="clickhouse", wait=True)
         db = StringParameter(default="noc")
         user = StringParameter()
-        password = StringParameter()
+        password = SecretParameter()
 
     class influxdb(ConfigSection):
         addresses = ServiceParameter(service="influxdb", wait=True)
         db = StringParameter(default="noc")
         user = StringParameter()
-        password = StringParameter()
+        password = SecretParameter()
 
     class nsqlookupd(ConfigSection):
         addresses = ServiceParameter(service="nsqlookupd", wait=True)
@@ -138,8 +142,8 @@ class Config(BaseConfig):
 
     class geocoding(ConfigSection):
         order = StringParameter(default="yandex,google")
-        yandex_key = StringParameter(default="")
-        google_key = StringParameter(default="")
+        yandex_key = SecretParameter(default="")
+        google_key = SecretParameter(default="")
         google_language = StringParameter(default="en")
 
     class escalation(ConfigSection):
@@ -163,6 +167,7 @@ class Config(BaseConfig):
         smilint = StringParameter()
         smidump = StringParameter()
         dig = StringParameter()
+        backup_dir = StringParameter(default="/var/backup")
 
     class proxy(ConfigSection):
         http_proxy = StringParameter(default=os.environ.get("http_proxy"))
@@ -172,14 +177,15 @@ class Config(BaseConfig):
     class login(ConfigSection):
         methods = StringParameter(default="local")
         session_ttl = SecondsParameter(default="7d")
+        language = StringParameter(default="en")
         restrict_to_group = StringParameter(default="")
         single_session_group = StringParameter(default="")
         mutual_exclusive_group = StringParameter(default="")
         idle_timeout = SecondsParameter(default="1w")
+        pam_service = StringParameter(default="noc")
+        radius_secret = SecretParameter(default="noc")
 
     class ping(ConfigSection):
-        max_packets = IntParameter(default=3)
-        timeout = IntParameter(default=2)
         throttle_threshold = FloatParameter()
         restore_threshold = FloatParameter()
         tos = IntParameter(
@@ -192,6 +198,7 @@ class Config(BaseConfig):
             min=0, max=255,
             default=0
         )
+        script_threads = IntParameter(default=10)
 
     class sync(ConfigSection):
         config_ttl = SecondsParameter(default="1d")
@@ -264,7 +271,24 @@ class Config(BaseConfig):
         helo_hostname = StringParameter(default="noc")
         from_address = StringParameter(default="noc@example.com")
         smtp_user = StringParameter()
-        smtp_password = StringParameter()
+        smtp_password = SecretParameter()
+
+    class bi(ConfigSection):
+        language = StringParameter(default="en")
+        query_threads = IntParameter(default=10)
+
+    class card(ConfigSection):
+        language = StringParameter(default="en")
+
+    class grafanads(ConfigSection):
+        db_threads = IntParameter(default=10)
+
+    class mrt(ConfigSection):
+        max_concurrency = IntParameter(default=50)
+
+    class tgsender(ConfigSection):
+        token = SecretParameter()
+
 
     def __init__(self):
         self.setup_logging()
