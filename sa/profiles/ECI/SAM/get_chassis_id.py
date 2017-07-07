@@ -22,16 +22,13 @@ class Script(BaseScript):
     rx_mac2 = re.compile(r"^\s*INBAND\s+\|\s(?P<mac>\S+)$", re.MULTILINE)
 
     def execute(self):
-        with self.profile.shell(self):
-            self.cli("SHELF")
-            self.cli("EEPROM")
-            cmd = self.cli("MACREAD")
-            match1 = self.rx_mac1.search(cmd)
-            if match1:
-                mac1 = match1.group("mac")
-            match2 = self.rx_mac2.search(cmd)
-            if match2:
-                mac2 = match2.group("mac")
+        cmd = self.cli("MACREAD")
+        match1 = self.rx_mac1.search(cmd)
+        if match1:
+            mac1 = match1.group("mac")
+        match2 = self.rx_mac2.search(cmd)
+        if match2:
+            mac2 = match2.group("mac")
         return [{
             "first_chassis_mac": mac1,
             "last_chassis_mac": mac2
