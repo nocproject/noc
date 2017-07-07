@@ -8,7 +8,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import socket
 from collections import defaultdict
 # Third-party modules
@@ -17,7 +16,7 @@ import tornado.gen
 # NOC modules
 from noc.config import config
 from noc.core.service.base import Service
-from .syslogserver import SyslogServer
+from noc.services.syslogcollector.syslogserver import SyslogServer
 
 
 class SyslogCollectorService(Service):
@@ -48,7 +47,7 @@ class SyslogCollectorService(Service):
         #                self.on_object_map_change)
         # Listen sockets
         server = SyslogServer(service=self)
-        for l in config.syslog.listen.split(","):
+        for l in config.syslogcollector.listen.split(","):
             if ":" in l:
                 addr, port = l.split(":")
             else:
