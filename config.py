@@ -21,7 +21,7 @@ from noc.core.config.params import (
 
 
 class Config(BaseConfig):
-    pool = StringParameter()
+    pool = StringParameter(default=os.environ.get("NOC_POOL", ""))
 
     loglevel = MapParameter(default="info", mappings={
         "critical": logging.CRITICAL,
@@ -62,9 +62,10 @@ class Config(BaseConfig):
 
     instance = IntParameter(default=0)
     listen = StringParameter(default="auto:0")
-    rpc_retry_timeout = StringParameter(default="0.1,0.5,1,3,10,30")
 
-    node=socket.gethostname()
+    global_n_instances = IntParameter(default=1)
+
+    node = socket.gethostname()
 
     class traceback(ConfigSection):
         reverse = BooleanParameter(default=True)
@@ -185,6 +186,7 @@ class Config(BaseConfig):
         idle_timeout = SecondsParameter(default="1w")
         pam_service = StringParameter(default="noc")
         radius_secret = SecretParameter(default="noc")
+        radius_server = StringParameter()
 
     class ping(ConfigSection):
         throttle_threshold = FloatParameter()
