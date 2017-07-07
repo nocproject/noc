@@ -8,7 +8,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import time
 import datetime
 import os
@@ -45,10 +44,10 @@ from noc.sa.interfaces.base import (IPv4Parameter, IPv6Parameter,
                                     IPv6PrefixParameter, PrefixParameter,
                                     MACAddressParameter, InterfaceTypeError)
 from noc.lib.nosql import ObjectId
-from .trigger import Trigger
-from .exception import InvalidPatternException, EventProcessingFailed
-from .cloningrule import CloningRule
-from .rule import Rule
+from noc.services.classifier.trigger import Trigger
+from noc.services.classifier.exception import InvalidPatternException, EventProcessingFailed
+from noc.services.classifier.cloningrule import CloningRule
+from noc.services.classifier.rule import Rule
 from noc.core.handler import get_handler
 from noc.core.cache.base import cache
 

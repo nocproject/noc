@@ -7,10 +7,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import re
 # NOC modules
-from .exception import InvalidPatternException
+from noc.services.classifier.exception import InvalidPatternException
 
 
 class CloningRule(object):

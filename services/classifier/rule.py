@@ -7,7 +7,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from __future__ import absolute_import
 import re
 import logging
 import new
@@ -15,7 +14,7 @@ import new
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.lib.datasource import datasource_registry
-from .exception import InvalidPatternException
+from noc.services.classifier.exception import InvalidPatternException
 from noc.lib.escape import fm_unescape
 
 rx_named_group = re.compile(r"\(\?P<([^>]+)>")
