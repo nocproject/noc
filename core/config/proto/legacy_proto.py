@@ -31,9 +31,18 @@ class LegacyProtocol(BaseProtocol):
         "noc.mongo_db": "mongo.db",
         "noc.pg_db": "pg.db",
         "noc.pg_password": "pg.password",
-        "pg_user:" "pg.user"
+        "pg_user": "pg.user",
+        "activator.script_threads": "activator.script_threads",
+        "activator.tos": "activator.tos",
+        "bi.language": "bi.language",
+        "bi.query_threads": "bi.query_threads",
         #
-        "web.max_treads": "web.max_threads"
+        "web.max_treads": "web.max_threads",
+        "web.language": "web.language",
+        "login.language": "login.language",
+        "discovery.max_threads": "discovery.max_threads",
+        "classifier.lookup_solution": "classifier.lookup_handler."
+
     }
 
     def load(self):

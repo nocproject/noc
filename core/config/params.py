@@ -59,6 +59,20 @@ class StringParameter(BaseParameter):
                 raise ValueError("Invalid value: %s" % v)
         return v
 
+class SecretParameter(BaseParameter):
+    def __init__(self, default=None, help=None, choices=None):
+        self.choices = choices
+        super(SecretParameter, self).__init__(default=default, help=help)
+
+    def clean(self, v):
+        v = str(v)
+        if self.choices:
+            if v not in self.choices:
+                raise ValueError("Invalid value: %s" % v)
+        return v
+
+    def __repr__(self):
+        return "****hidden****"
 
 class IntParameter(BaseParameter):
     def __init__(self, default=None, help=None, min=None, max=None):
@@ -155,6 +169,8 @@ class ServiceItem(object):
     def __repr__(self):
         return "<ServiceItem %s:%s>" % (self.host, self.port)
 
+    def __contains__(self, item):
+        return item in "%s:%s"
 
 class ServiceParameter(BaseParameter):
     """
